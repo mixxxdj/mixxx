@@ -130,14 +130,18 @@
         disconnect: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
-                    conn.disconnect();
+                    if (conn !== undefined) {
+                        conn.disconnect();
+                    }
                 });
             }
         },
         trigger: function() {
             if (this.connections[0] !== undefined) {
                 this.connections.forEach(function(conn) {
-                    conn.trigger();
+                    if (conn !== undefined) {
+                        conn.trigger();
+                    }
                 });
             }
         },
@@ -708,13 +712,14 @@
         setCurrentDeck: function(newGroup) {
             this.currentDeck = newGroup;
             this.reconnectComponents(function(component) {
-                if (component.group === undefined
-                      || component.group.search(script.channelRegEx) !== -1) {
+                if (component.group === undefined) {
                     component.group = newGroup;
-                } else if (component.group.search(script.eqRegEx) !== -1) {
-                    component.group = "[EqualizerRack1_" + newGroup + "_Effect1]";
-                } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-                    component.group = "[QuickEffectRack1_" + newGroup + "]";
+                } else {
+                    // Match the channel anywhere it might appear in the group
+                    // whether it includes the closing brace or is part of
+                    // another group name such as "Channel1_Stem1".
+                    const anyChannelRegEx = /\[Channel\d+([\]_])/;
+                    component.group = component.group.replace(anyChannelRegEx, `${newGroup.slice(0, -1)}$1`);
                 }
                 // Do not alter the Component's group if it does not match any of those RegExs.
 
@@ -750,7 +755,7 @@
         }
 
         const deck = options.deck;
-        const group = script.deckFromGroup(options.group);
+        const deckFromGroup = script.deckFromGroup(options.group);
         delete options.deck;
         delete options.group;
 
@@ -761,7 +766,7 @@
         Object.defineProperties(this, {
             deck: {
                 get: () => this._deck,
-                set: (value) => {
+                set: value => {
                     if (Number.isInteger(value) && value > 0) {
                         this._deck = value;
                         this.reset();
@@ -769,13 +774,9 @@
                 },
             },
             group: {
-                get: () => `[Channel${deck}]`,
+                get: () => `[Channel${this.deck}]`,
                 set: value => {
-                    const deck = script.deckFromGroup(value);
-                    if (deck > 0) {
-                        this._deck = deck;
-                        this.reset();
-                    }
+                    this.deck = script.deckFromGroup(value);
                 },
             }
         });
@@ -783,9 +784,13 @@
         this.deck = deck;
 
         if (!this.deck) {
-            this.group = group;  // try setting deck from group
+            this.deck = deckFromGroup;  // try setting deck from group
         }
 
+        if (!Number.isInteger(this.deck)) {
+            console.warn("missing deck or group");
+            return;
+        }
         if (!Number.isInteger(this.wheelResolution)) {
             console.warn("missing jogwheel resolution");
             return;
@@ -805,7 +810,7 @@
     };
 
     JogWheelBasic.prototype = new Component({
-        vinylMode: true,
+        _vinylMode: true, // private, accessible via setters defined below
         isPress: Button.prototype.isPress,
         inValueScale: function(value) {
             // default implementation for converting signed ints
@@ -843,6 +848,19 @@
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
         reset() {},
+    });
+    Object.defineProperty(JogWheelBasic.prototype, "vinylMode", {
+        get() {
+            return this._vinylMode;
+        },
+        set(vinylMode) {
+            // Disable scratching immediately when disabling vinylMode in case
+            // the touch surface malfunctions
+            if (!vinylMode && engine.isScratching(this.deck)) {
+                engine.scratchDisable(this.deck);
+            }
+            this._vinylMode = vinylMode;
+        },
     });
 
     const EffectUnit = function(unitNumbers, allowFocusWhenParametersHidden, colors) {

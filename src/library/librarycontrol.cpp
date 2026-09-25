@@ -1,6 +1,7 @@
 #include "library/librarycontrol.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QWindow>
@@ -17,6 +18,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
+#include "widget/wsearchrelatedtracksmenu.h"
 #include "widget/wtracktableview.h"
 
 namespace {
@@ -373,6 +375,13 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 &LibraryControl::slotIncrementFontSize);
     }
 
+    // Set BPM lock (button state does not reflect track(s) state)
+    m_pBpmLock = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "set_bpmlock"));
+    connect(m_pBpmLock.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            &LibraryControl::slotToggleBpmLock);
+
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
     m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
@@ -384,6 +393,26 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotTrackColorNext);
+
+    // Track Rating controls
+    m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "stars_up"));
+    m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "stars_down"));
+    connect(m_pStarsUp.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequestRelative(1);
+                }
+            });
+    connect(m_pStarsDown.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackRatingChangeRequestRelative(-1);
+                }
+            });
 
     // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
@@ -767,7 +796,8 @@ void LibraryControl::slotMoveVertical(double v) {
                 QEvent::KeyPress, key, Qt::NoModifier, QString(), false, times});
         return;
     }
-    case FocusWidget::ContextMenu: {
+    case FocusWidget::ContextMenu:
+    case FocusWidget::SearchRelatedMenu: {
         // To navigate menus (and activate menus that were just opened) send the
         // keyEvent to focusWindow() (not focusWidget() like emitKeyEvent() does)
         const auto key = (v < 0) ? Qt::Key_Up : Qt::Key_Down;
@@ -924,7 +954,15 @@ FocusWidget LibraryControl::getFocusedWidget() {
         // qt_edit_menuWindow    = QLineEdit/QCombobox context menu
         // QComboBoxPrivateContainerClassWindow
         //    = QComboBoxListView of WEffectSelector, WSearchLineEdit, ...
-        return FocusWidget::ContextMenu;
+        auto* pFocusWidget = QApplication::focusWidget();
+        if (pFocusWidget &&
+                qobject_cast<QCheckBox*>(pFocusWidget) &&
+                qobject_cast<WSearchRelatedTracksMenu*>(pFocusWidget->parent())) {
+            // TODO Also use this for the Crates menu?
+            return FocusWidget::SearchRelatedMenu;
+        } else {
+            return FocusWidget::ContextMenu;
+        }
     } else if (focusWindow->type() == Qt::Dialog) {
         // DlgPreferencesDlgWindow
         // DlgDeveloperToolsWindow
@@ -956,15 +994,11 @@ FocusWidget LibraryControl::getFocusedWidget() {
     }
 }
 
-void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
-    if (!QApplication::focusWindow()) {
-        qInfo() << "No Mixxx window, popup or menu has focus."
-                << "Don't attempt to focus a specific widget.";
-        return;
-    }
-
-    // ignore no-op
-    if (newFocusWidget == m_focusedWidget) {
+void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget, Qt::FocusReason focusReason) {
+    // The search box wants to do special handling when the Ctrl+f is used
+    // while it is already focused. Non-shortcut cases should still be a
+    // no-op when a control is already focused.
+    if (newFocusWidget == m_focusedWidget && focusReason != Qt::ShortcutFocusReason) {
         return;
     }
 
@@ -973,13 +1007,13 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
         VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
             return;
         }
-        m_pSearchbox->setFocus();
+        m_pSearchbox->setFocus(focusReason);
         return;
     case FocusWidget::Sidebar:
         VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
             return;
         }
-        m_pSidebarWidget->setFocus();
+        m_pSidebarWidget->setFocus(focusReason);
         return;
     case FocusWidget::TracksTable:
         VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
@@ -1106,8 +1140,11 @@ void LibraryControl::slotGoToItem(double v) {
         }
         return;
     }
-    case FocusWidget::Dialog: {
-        // press & release Space (QAbstractButton::clicked() is emitted on release)
+    case FocusWidget::Dialog:
+    case FocusWidget::SearchRelatedMenu: {
+        // Press Space to click dialog buttons. In SearchRelatedMenu this toggles
+        // individual search checkboxes and triggers the Search Selected action.
+        // Press & release Space because QAbstractButton::clicked() is emitted on release.
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
         QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
         auto* pWindow = QApplication::focusWindow();
@@ -1186,6 +1223,17 @@ void LibraryControl::slotDecrementFontSize(double v) {
     }
 }
 
+void LibraryControl::slotToggleBpmLock(double v) {
+    if (!m_pLibraryWidget || v < 0) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->toggleBpmLock(v > 0);
+    }
+}
+
 void LibraryControl::slotTrackColorPrev(double v) {
     if (!m_pLibraryWidget || v <= 0) {
         return;
@@ -1205,5 +1253,16 @@ void LibraryControl::slotTrackColorNext(double v) {
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
         pTrackTableView->assignNextTrackColor();
+    }
+}
+
+void LibraryControl::slotTrackRatingChangeRequestRelative(int change) {
+    if (!m_pLibraryWidget || change == 0) {
+        return;
+    }
+
+    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+    if (pTrackTableView) {
+        pTrackTableView->trackRatingChangeRequestRelative(change);
     }
 }

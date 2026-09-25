@@ -1,6 +1,7 @@
 #pragma once
 
 #include "nonglwaveformwidgetabstract.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class QWidget;
 
@@ -29,6 +30,8 @@ class SoftwareWaveformWidget : public NonGLWaveformWidgetAbstract {
     virtual void paintEvent(QPaintEvent* event);
 
   private:
-    SoftwareWaveformWidget(const QString& groupp, QWidget* parent);
+    SoftwareWaveformWidget(const QString& groupp,
+            QWidget* parent,
+            WaveformRendererSignalBase::Options options);
     friend class WaveformWidgetFactory;
 };

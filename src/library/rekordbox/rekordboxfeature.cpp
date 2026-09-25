@@ -4,10 +4,12 @@
 #include <rekordbox_anlz.h>
 #include <rekordbox_pdb.h>
 
+#include <QDir>
 #include <QMap>
 #include <QMessageBox>
 #include <QSettings>
 #include <QString>
+#include <QStringList>
 #include <QTextCodec>
 #include <QtDebug>
 
@@ -41,8 +43,24 @@ const QString kRekordboxLibraryTable = QStringLiteral("rekordbox_library");
 const QString kRekordboxPlaylistsTable = QStringLiteral("rekordbox_playlists");
 const QString kRekordboxPlaylistTracksTable = QStringLiteral("rekordbox_playlist_tracks");
 
-const QString kPdbPath = QStringLiteral("PIONEER/rekordbox/export.pdb");
+// depending on the filesystem of the external media, rekordbox seems
+// to store its metadata in different paths:
+const QStringList kPdbPaths = {
+        QStringLiteral("PIONEER/rekordbox/export.pdb"),  // FAT32/exFat
+        QStringLiteral(".PIONEER/rekordbox/export.pdb"), // HFS+ media
+};
 const QString kPLaylistPathDelimiter = QStringLiteral("-->");
+
+QString findRekordboxPdbPath(const QString& devicePath) {
+    const QDir deviceDir(devicePath);
+    for (const auto& pdbPath : kPdbPaths) {
+        const QFileInfo pdbFileInfo(deviceDir.filePath(pdbPath));
+        if (pdbFileInfo.exists() && pdbFileInfo.isFile()) {
+            return pdbFileInfo.filePath();
+        }
+    }
+    return {};
+}
 
 enum class IDForColor : uint8_t {
     Pink = 1,
@@ -185,9 +203,7 @@ QList<TreeItem*> findRekordboxDevices() {
         // drive.filePath() doesn't make any access to the filesystem and consequently
         // shorten the delay
 
-        QFileInfo rbDBFileInfo(drive.filePath() + kPdbPath);
-
-        if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
+        if (!findRekordboxPdbPath(drive.filePath()).isEmpty()) {
             QString displayPath = drive.filePath();
             if (displayPath.endsWith("/")) {
                 displayPath.chop(1);
@@ -220,9 +236,7 @@ QList<TreeItem*> findRekordboxDevices() {
             QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
-
-        if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
+        if (!findRekordboxPdbPath(device.filePath()).isEmpty()) {
             auto* pFoundDevice = new TreeItem(
                     device.fileName(),
                     QVariant(QList<QString>{device.filePath(), IS_RECORDBOX_DEVICE}));
@@ -233,9 +247,7 @@ QList<TreeItem*> findRekordboxDevices() {
     QFileInfoList devices = QDir(QStringLiteral("/Volumes")).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
     foreach (QFileInfo device, devices) {
-        QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
-
-        if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
+        if (!findRekordboxPdbPath(device.filePath()).isEmpty()) {
             QList<QString> data;
             data << device.filePath();
             data << IS_RECORDBOX_DEVICE;
@@ -255,9 +267,16 @@ inline bool instanceof (const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-QString toUnicode(const std::string& toConvert) {
+QString fromUtf16LeString(const std::string& toConvert) {
+    // Kaitai uses std::string as single container for all string encodings.
     return QTextCodec::codecForName("UTF-16LE")
             ->toUnicode(toConvert.data(), static_cast<int>(toConvert.length()));
+}
+
+QString fromUtf16BeString(const std::string& toConvert) {
+    // Kaitai uses std::string as single container for all string encodings.
+    int length = static_cast<int>(toConvert.length()) - 2; // strip off trailing nullbyte
+    return QTextCodec::codecForName("UTF-16BE")->toUnicode(toConvert.data(), length);
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
@@ -278,7 +297,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     } else if (instanceof <rekordbox_pdb_t::device_sql_long_utf16le_t>(deviceString->body())) {
         rekordbox_pdb_t::device_sql_long_utf16le_t* longUtf16leString =
                 static_cast<rekordbox_pdb_t::device_sql_long_utf16le_t*>(deviceString->body());
-        text = toUnicode(longUtf16leString->text());
+        text = fromUtf16LeString(longUtf16leString->text());
     }
 
     // Some strings read from Rekordbox *.PDB files contain random null characters
@@ -434,13 +453,13 @@ void buildPlaylistTree(
 
 QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* deviceItem) {
     QString device = deviceItem->getLabel();
-    QString devicePath = deviceItem->getData().toList()[0].toString();
+    QString devicePath = deviceItem->getData().toList().at(0).toString();
 
     qDebug() << "parseDeviceDB device: " << device << " devicePath: " << devicePath;
 
-    QString dbPath = devicePath + QStringLiteral("/") + kPdbPath;
+    const QString dbPath = findRekordboxPdbPath(devicePath);
 
-    if (!QFile(dbPath).exists()) {
+    if (dbPath.isEmpty()) {
         return devicePath;
     }
 
@@ -997,7 +1016,7 @@ void readAnalyze(TrackPointer track,
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
                         memoryCue.endPosition = mixxx::audio::kInvalidFramePos;
-                        memoryCue.comment = toUnicode(cueExtendedEntry->comment());
+                        memoryCue.comment = fromUtf16BeString(cueExtendedEntry->comment());
                         memoryCue.color = colorFromID(static_cast<int>(
                                 cueExtendedEntry->color_id()));
                         memoryCuesAndLoops << memoryCue;
@@ -1016,7 +1035,7 @@ void readAnalyze(TrackPointer track,
                         loop.startPosition = position;
                         loop.endPosition = mixxx::audio::FramePos(
                                 sampleRateKhz * static_cast<double>(endTime));
-                        loop.comment = toUnicode(cueExtendedEntry->comment());
+                        loop.comment = fromUtf16BeString(cueExtendedEntry->comment());
                         loop.color = colorFromID(static_cast<int>(cueExtendedEntry->color_id()));
                         memoryCuesAndLoops << loop;
                     } break;
@@ -1031,14 +1050,14 @@ void readAnalyze(TrackPointer track,
                             position,
                             mixxx::audio::kInvalidFramePos,
                             hotCueIndex,
-                            toUnicode(cueExtendedEntry->comment()),
+                            fromUtf16BeString(cueExtendedEntry->comment()),
                             mixxx::RgbColor(qRgb(
                                     static_cast<int>(
                                             cueExtendedEntry->color_red()),
                                     static_cast<int>(
                                             cueExtendedEntry->color_green()),
                                     static_cast<int>(cueExtendedEntry
-                                                             ->color_blue()))));
+                                                    ->color_blue()))));
                 } break;
                 }
             }
@@ -1198,7 +1217,9 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     qDebug() << "RekordboxTrackModel::getTrack";
 
     TrackPointer track = BaseExternalPlaylistModel::getTrack(index);
-    QString location = index.sibling(index.row(), fieldIndex("location")).data().toString();
+    QString location = getFieldVariant(
+            index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)
+                               .toString();
 
     if (!QFile(location).exists()) {
         return track;
@@ -1255,7 +1276,9 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     mixxx::audio::SampleRate sampleRate = track->getSampleRate();
 
-    QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
+    QString anlzPath =
+            getFieldVariant(index, ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH)
+                    .toString();
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";
 
     if (QFile(anlzPathExt).exists()) {
@@ -1276,11 +1299,11 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     // Decision: We normalize the KeyText here to not write garbage to the
     // file metadata and it is unlikely to loose extra info.
     track->setKeys(KeyFactory::makeBasicKeysNormalized(
-            index.sibling(index.row(), fieldIndex("key")).data().toString(),
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_KEY).toString(),
             mixxx::track::io::key::USER));
 
     track->setColor(mixxx::RgbColor::fromQVariant(
-            index.sibling(index.row(), fieldIndex("color")).data()));
+            getFieldVariant(index, ColumnCache::COLUMN_LIBRARYTABLE_COLOR)));
 
     return track;
 }
@@ -1400,10 +1423,17 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 std::unique_ptr<BaseSqlTableModel>
-RekordboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+RekordboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
+    VERIFY_OR_DEBUG_ASSERT(data.canConvert<QVariantList>()) {
+        return {};
+    }
+    QVariantList playlists = data.toList();
+    VERIFY_OR_DEBUG_ASSERT(playlists.size() > 0) {
+        return {};
+    }
     auto pModel = std::make_unique<RekordboxPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
-    pModel->setPlaylist(playlist);
+    pModel->setPlaylist(playlists.at(0).toString());
     return pModel;
 }
 

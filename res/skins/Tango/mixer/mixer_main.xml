@@ -1,6 +1,6 @@
 <!--
 Description:
-	Container for Main mixer in topbar.
+  Container for Main mixer in topbar.
 -->
 <Template>
   <WidgetGroup><!-- Main Mixer -->

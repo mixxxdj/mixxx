@@ -1041,7 +1041,7 @@ MC7000.parameterButtonRightShifted = function(channel, control, value, status, g
 };
 
 // Set Crossfader Curve
-MC7000.crossFaderCurve = function(control, value) {
+MC7000.crossFaderCurve = function(channel, control, value) {
     script.crossfaderCurve(value);
 };
 
@@ -1140,7 +1140,7 @@ MC7000.TrackPositionLEDs = function(value, group) {
     if (!MC7000.experimental) {
         return;
     }
-    if (MC7000.PADModeSlicer[deckIndex]) {
+    if (MC7000.PADMode[deckIndex] === "Slicer") {
         // only send new LED status when beatCountLED really changes
         if (MC7000.prevPadLED[deckIndex] !== beatCountLED) {
             // first set all LEDs to default color incl shifted

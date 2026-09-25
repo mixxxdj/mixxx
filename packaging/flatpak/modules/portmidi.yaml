@@ -1,0 +1,20 @@
+name: portmidi
+buildsystem: cmake-ninja
+config-opts:
+  - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+sources:
+  - type: archive
+    url: https://github.com/PortMidi/portmidi/archive/refs/tags/v2.0.7.tar.gz
+    sha256: 43fa65b4ed7ebaa68b0028a538ba8b2ca4dc9b86a7e22ec48842070e010f823f
+    x-checker-data:
+      type: anitya
+      project-id: 10595
+      stable-only: true
+      url-template: https://github.com/PortMidi/portmidi/archive/refs/tags/v$version.tar.gz
+cleanup:
+  - /bin
+  - /include
+  - /lib/cmake
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/portmidi license.txt

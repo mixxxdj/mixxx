@@ -84,7 +84,11 @@ void WSpinnyGLSL::updateVinylSignalQualityImage(
                 0,
                 m_iVinylScopeSize,
                 m_iVinylScopeSize,
+#if defined(GL_RED)
                 GL_RED,
+#else
+                GL_RED_EXT,
+#endif
                 GL_UNSIGNED_BYTE,
                 data);
         m_qTexture.release();

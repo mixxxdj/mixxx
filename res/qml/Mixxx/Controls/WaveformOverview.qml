@@ -5,64 +5,111 @@ import QtQuick 2.12
 Mixxx.WaveformOverview {
     id: root
 
-    required property string group
+    property color cueMarkerColor: "red"
+    property color introOutroMarkerColor: "blue"
+    property bool interactive: true
+    property color loopMarkerColor: "green"
+    property string playPositionMarkerColor: "white"
+    property color analyzerStatusColor: "orangered"
+    property bool showAnalyzerStatus: false
+    readonly property var player: Mixxx.PlayerManager.getPlayer(root.group)
+    readonly property double playerAnalyzerProgress: root.player?.analyzerProgress ?? -1
+    readonly property string analyzerStatusText: {
+        if (!root.showAnalyzerStatus || !root.player?.isLoaded) {
+            return "";
+        }
+        if (!root.player?.trackLoaded) {
+            return qsTr("Loading track...");
+        }
+        if (root.playerAnalyzerProgress < 0 || root.playerAnalyzerProgress >= 1) {
+            return "";
+        }
+        if (root.playerAnalyzerProgress <= 0.5) {
+            return qsTr("Ready to play, analyzing...");
+        }
+        if (root.playerAnalyzerProgress >= 0.95) {
+            return qsTr("Finalizing...");
+        }
+        return "";
+    }
 
-    player: Mixxx.PlayerManager.getPlayer(root.group)
+    minuteMarkers: Mixxx.Config.waveformOverviewMinuteMarkers
+    analyzerProgress: root.playerAnalyzerProgress
+    normalized: Mixxx.Config.waveformOverviewNormalized
+    renderer: Mixxx.Config.waveformOverviewType === 0 ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.Config.waveformOverviewType === 1 ? Mixxx.WaveformOverview.Renderer.HSV : Mixxx.WaveformOverview.Renderer.RGB
+    stereo: Mixxx.Config.waveformOverviewStereo
+    track: player?.currentTrack
 
     Mixxx.ControlProxy {
         id: trackLoadedControl
 
         group: root.group
         key: "track_loaded"
-        onValueChanged: (value) => {
+
+        onValueChanged: value => {
             markers.visible = value;
         }
     }
-
     Mixxx.ControlProxy {
         id: playPositionControl
 
         group: root.group
         key: "playposition"
     }
-
+    Text {
+        x: 10
+        y: 0
+        color: Qt.rgba(root.analyzerStatusColor.r,
+                root.analyzerStatusColor.g,
+                root.analyzerStatusColor.b,
+                0.5)
+        font.family: "Open Sans"
+        font.pixelSize: 13
+        text: root.analyzerStatusText
+        visible: text.length > 0
+    }
     Item {
         id: markers
 
         anchors.fill: parent
         visible: trackLoadedControl.value
 
-        Repeater {
-            model: 8
-
-            MixxxControls.WaveformOverviewHotcueMarker {
-                required property int index
-
-                anchors.fill: parent
-                group: root.group // qmllint disable unqualified
-                hotcueNumber: this.index + 1
-            }
+        MixxxControls.WaveformOverviewMarkerLayer {
+            anchors.fill: parent
+            cueColor: root.cueMarkerColor
+            cueText: "C"
+            group: root.group
+            introOutroColor: root.introOutroMarkerColor
+            introStartText: "IN"
+            labelColor: "white"
+            loopColor: root.loopMarkerColor
+            loopStartText: "LOOP"
+            outroStartText: "OUT"
+            showHotcueLabels: false
+            showIntroOutroLabels: false
+            showLoopLabel: false
         }
-
         MixxxControls.WaveformOverviewMarker {
             id: playPositionMarker
 
             anchors.fill: parent
+            color: root.playPositionMarkerColor
             group: root.group
             key: "playposition"
         }
     }
-
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
+        enabled: root.interactive
         hoverEnabled: true
-        onPressed: (mouse) => {
-            playPositionControl.value = mouse.x / this.width;
-        }
-        onPositionChanged: (mouse) => {
+
+        onPositionChanged: mouse => {
             if (this.containsPress)
                 playPositionControl.value = mouse.x / this.width;
+        }
+        onPressed: mouse => {
+            playPositionControl.value = mouse.x / this.width;
         }
     }
 }

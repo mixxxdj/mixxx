@@ -114,7 +114,7 @@ Variables:
                 <Size>1me,34f</Size>
                 <Group><Variable name="group"/></Group>
                 <BgColor>#151515</BgColor>
-                <SignalColor>#bababa</SignalColor>
+                <SignalColor><Variable name="SignalColor"/></SignalColor>
                 <PlayPosColor>#FF4300</PlayPosColor>
                 <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                 <MarkerColor>#00FF00</MarkerColor>

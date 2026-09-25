@@ -10,18 +10,18 @@ struct FidFilter {
    			//   is a constant across changes in frequency for this filter type
    			//   Bit 15, if set, indicates that val[15..inf] are constant.
    int len;		// Number of doubles stored in val[], or 0 for end of list
-   double val[1];
+   double val[];
 };
 
 // Lets you write: for (; ff->typ; ff= FFNEXT(ff)) { ... }
 #define FFNEXT(ff) ((FidFilter*)((ff)->val + (ff)->len))
 
 // Size of a sub-filter with 'cnt' double values attached
-#define FFSIZE(cnt) (sizeof(FidFilter) + ((cnt)-1)*sizeof(double))
+#define FFSIZE(cnt) (sizeof(FidFilter) + (cnt)*sizeof(double))
 
 // Size required for the memory chunk to contain the given number
 // headers and values, plus termination
-#define FFCSIZE(n_head,n_val) ((sizeof(FidFilter)-sizeof(double))*((n_head)+1) + sizeof(double)*(n_val))
+#define FFCSIZE(n_head,n_val) ((sizeof(FidFilter)*((n_head)+1)) + sizeof(double)*(n_val))
 
 // Allocate the chunk of memory to hold a list of FidFilters, with
 // n_head FidFilters and n_val total double values in the whole list.

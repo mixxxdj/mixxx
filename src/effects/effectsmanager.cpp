@@ -129,7 +129,7 @@ EffectChainPointer EffectsManager::getOutputEffectChain() const {
 }
 
 EffectChainPointer EffectsManager::getStandardEffectChain(int unitNumber) const {
-    VERIFY_OR_DEBUG_ASSERT(0 <= unitNumber || unitNumber < m_standardEffectChains.size()) {
+    VERIFY_OR_DEBUG_ASSERT(0 <= unitNumber && unitNumber < m_standardEffectChains.size()) {
         return EffectChainPointer();
     }
     return m_standardEffectChains.at(unitNumber);
@@ -162,6 +162,19 @@ void EffectsManager::addStem(const ChannelHandleAndGroup& stemHandleGroup) {
     if (m_initializedFromEffectsXml) {
         readEffectsXmlSingleDeckStem(stemHandleGroup.m_name);
     }
+}
+
+void EffectsManager::resetStemQuickFxKnob(const ChannelHandleAndGroup& stemHandleGroup) {
+    VERIFY_OR_DEBUG_ASSERT(m_quickStemEffectChains.contains(stemHandleGroup.name())) {
+        return;
+    }
+    auto pChainSlot = m_quickStemEffectChains[stemHandleGroup.name()];
+
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return;
+    }
+
+    pChainSlot->resetToDefault();
 }
 
 void EffectsManager::addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {

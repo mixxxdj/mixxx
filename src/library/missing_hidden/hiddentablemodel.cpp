@@ -13,7 +13,7 @@ const QString kModelName = "hidden:";
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager)
-        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.missing") {
+        : BaseSqlTableModel(parent, pTrackCollectionManager, "mixxx.db.model.hidden") {
     setTableModel();
 }
 
@@ -31,8 +31,6 @@ void HiddenTableModel::setTableModel() {
             "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName +
             " AS SELECT " + columns.join(",") +
             " FROM library "
-            "INNER JOIN track_locations "
-            "ON library.location=track_locations.id "
             "WHERE mixxx_deleted=1");
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
@@ -49,7 +47,7 @@ void HiddenTableModel::setTableModel() {
             LIBRARYTABLE_ID,
             std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
+    setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
     setSearch("");
 }
 
@@ -78,8 +76,10 @@ bool HiddenTableModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BEATS_VERSION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_DIRECTORY) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||

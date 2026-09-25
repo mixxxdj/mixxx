@@ -7,192 +7,290 @@ import "Theme"
 Item {
     id: root
 
-    required property string group
-    property bool splitStemTracks: false
-
     enum MouseStatus {
         Normal,
         Bending,
         Scratching
     }
 
-    MixxxControls.WaveformDisplay {
-        anchors.fill: parent
-        group: root.group
-        zoom: zoomControl.value
-        backgroundColor: "#5e000000"
+    required property string group
+    property bool splitStemTracks: false
+    readonly property int activeWaveformType: Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Simple || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Filtered || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.HSV || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.RGB || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Stacked ? Mixxx.Config.waveformType : Mixxx.WaveformDisplay.Type.RGB
+    // Renderer factories are created once by QmlWaveformDisplay. Keep track
+    // of the type that was used for the scene-graph stack so a change from
+    // the legacy preferences dialog can recreate that stack explicitly.
+    property int renderedWaveformType: -1
+    readonly property string zoomGroup: Mixxx.Config.waveformZoomSynchronization ? "[Channel1]" : group
 
-        Mixxx.WaveformRendererEndOfTrack {
-            color: '#ff8872'
-            endOfTrackWarningTime: 30
+    Connections {
+        target: Mixxx.Config
+
+        function onWaveformTypeChanged() {
+            // Defer until activeWaveformType has been reevaluated, then
+            // rebuild the renderer list on the scene-graph thread.
+            Qt.callLater(function() {
+                if (root.activeWaveformType === root.renderedWaveformType) {
+                    return;
+                }
+                root.renderedWaveformType = root.activeWaveformType;
+                waveformDisplay.refreshRenderers();
+            });
         }
 
-        Mixxx.WaveformRendererPreroll {
-            color: '#ff8872'
-        }
-
-        Mixxx.WaveformRendererMarkRange {
-            // Loop
-            Mixxx.WaveformMarkRange {
-                startControl: "loop_start_position"
-                endControl: "loop_end_position"
-                enabledControl: "loop_enabled"
-                color: '#00b400'
-                opacity: 0.7
-                disabledColor: '#FFFFFF'
-                disabledOpacity: 0.6
-            }
-            // Intro
-            Mixxx.WaveformMarkRange {
-                startControl: "intro_start_position"
-                endControl: "intro_end_position"
-                color: '#2c5c9a'
-                opacity: 0.6
-                durationTextColor: '#ffffff'
-                durationTextLocation: 'after'
-            }
-            // Outro
-            Mixxx.WaveformMarkRange {
-                startControl: "outro_start_position"
-                endControl: "outro_end_position"
-                color: '#2c5c9a'
-                opacity: 0.6
-                durationTextColor: '#ffffff'
-                durationTextLocation: 'before'
-            }
-        }
-
-        Mixxx.WaveformRendererRGB {
-            axesColor: '#a1a1a1a1'
-            lowColor: '#ff2154d7'
-            midColor: '#cfb26606'
-            highColor: '#e5029c5c'
-
-            gainAll: 1.0
-            gainLow: 1.0
-            gainMid: 1.0
-            gainHigh: 1.0
-        }
-
-        Mixxx.WaveformRendererStem {
-            gainAll: root.splitStemTracks ? 2.0 : 1.0
-            splitStemTracks: root.splitStemTracks
-        }
-
-        Mixxx.WaveformRendererBeat {
-            color: '#a1a1a1a1'
-        }
-
-        Mixxx.WaveformRendererMark {
-            playMarkerColor: 'cyan'
-            playMarkerBackground: 'orange'
-            defaultMark: Mixxx.WaveformMark {
-                align: "bottom|right"
-                color: "#00d9ff"
-                textColor: "#1a1a1a"
-                text: " %1 "
-            }
-
-            untilMark.showTime: true
-            untilMark.showBeats: true
-            untilMark.align: Qt.AlignBottom
-            untilMark.textSize: 11
-
-            Mixxx.WaveformMark {
-                control: "cue_point"
-                text: 'CUE'
-                align: 'top|right'
-                color: 'red'
-                textColor: '#1a1a1a'
-            }
-            Mixxx.WaveformMark {
-                control: "loop_start_position"
-                text: '↻'
-                align: 'top|left'
-                color: 'green'
-                textColor: '#FFFFFF'
-            }
-            Mixxx.WaveformMark {
-                control: "loop_end_position"
-                align: 'bottom|right'
-                color: 'green'
-                textColor: '#FFFFFF'
-            }
-            Mixxx.WaveformMark {
-                control: "intro_start_position"
-                text: '◢'
-                align: 'top|right'
-                color: 'blue'
-                textColor: '#FFFFFF'
-            }
-            Mixxx.WaveformMark {
-                control: "intro_end_position"
-                text: '◢'
-                align: 'top|left'
-                color: 'blue'
-                textColor: '#FFFFFF'
-            }
-            Mixxx.WaveformMark {
-                control: "outro_start_position"
-                text: '◣'
-                align: 'top|right'
-                color: 'blue'
-                textColor: '#FFFFFF'
-            }
-            Mixxx.WaveformMark {
-                control: "outro_end_position"
-                text: '◣'
-                align: 'top|left'
-                color: 'blue'
-                textColor: '#FFFFFF'
+        function onWaveformDefaultZoomChanged() {
+            if (zoomControl.group === root.group) {
+                zoomControl.value = Mixxx.Config.waveformDefaultZoom;
             }
         }
     }
 
+    MixxxControls.WaveformDisplay {
+        id: waveformDisplay
+
+        anchors.fill: parent
+        backgroundColor: "transparent"
+        frameRate: Mixxx.Config.waveformFrameRate
+        group: root.group
+        options: Mixxx.Config.waveformOptions
+        visible: Mixxx.Config.waveformEnabled
+        zoom: zoomControl.value
+
+        Behavior on zoom {
+            SmoothedAnimation {
+                duration: 500
+                velocity: -1
+            }
+        }
+
+        Mixxx.WaveformRendererEndOfTrack {
+            color: '#ff8872'
+            endOfTrackWarningTime: Mixxx.Config.waveformEndOfTrackWarningTime
+        }
+        Mixxx.WaveformRendererPreroll {
+            color: '#ff8872'
+        }
+        Mixxx.WaveformRendererMarkRange {
+            // Loop
+            Mixxx.WaveformMarkRange {
+                color: '#00b400'
+                disabledColor: '#FFFFFF'
+                disabledOpacity: 0.6
+                enabledControl: "loop_enabled"
+                endControl: "loop_end_position"
+                opacity: 0.7
+                startControl: "loop_start_position"
+            }
+            // Intro
+            Mixxx.WaveformMarkRange {
+                color: '#2c5c9a'
+                durationTextColor: '#ffffff'
+                durationTextLocation: 'after'
+                endControl: "intro_end_position"
+                opacity: 0.6
+                startControl: "intro_start_position"
+            }
+            // Outro
+            Mixxx.WaveformMarkRange {
+                color: '#2c5c9a'
+                durationTextColor: '#ffffff'
+                durationTextLocation: 'before'
+                endControl: "outro_end_position"
+                opacity: 0.6
+                startControl: "outro_start_position"
+            }
+        }
+        Mixxx.WaveformRendererFiltered {
+            axesColor: '#a1a1a1a1'
+            enabled: root.activeWaveformType === Mixxx.WaveformDisplay.Type.Filtered
+            gainAll: Mixxx.Config.waveformVisualGainAll
+            gainHigh: Mixxx.Config.waveformVisualGainHigh
+            gainLow: Mixxx.Config.waveformVisualGainLow
+            gainMid: Mixxx.Config.waveformVisualGainMedium
+            highColor: '#D5C2A2'
+            lowColor: '#2154D7'
+            midColor: '#97632D'
+        }
+        Mixxx.WaveformRendererFiltered {
+            axesColor: '#a1a1a1a1'
+            enabled: root.activeWaveformType === Mixxx.WaveformDisplay.Type.Stacked
+            gainAll: Mixxx.Config.waveformVisualGainAll
+            gainHigh: Mixxx.Config.waveformVisualGainHigh
+            gainLow: Mixxx.Config.waveformVisualGainLow
+            gainMid: Mixxx.Config.waveformVisualGainMedium
+            highColor: '#D5C2A2'
+            lowColor: '#2154D7'
+            midColor: '#97632D'
+            stacked: true
+        }
+        Mixxx.WaveformRendererSimple {
+            axesColor: '#a1a1a1a1'
+            color: '#D5C2A2'
+            enabled: root.activeWaveformType === Mixxx.WaveformDisplay.Type.Simple
+            gain: Mixxx.Config.waveformVisualGainAll
+        }
+        Mixxx.WaveformRendererHSV {
+            axesColor: '#a1a1a1a1'
+            color: '#D5C2A2'
+            enabled: root.activeWaveformType === Mixxx.WaveformDisplay.Type.HSV
+            gainAll: Mixxx.Config.waveformVisualGainAll
+            gainHigh: Mixxx.Config.waveformVisualGainHigh
+            gainLow: Mixxx.Config.waveformVisualGainLow
+            gainMid: Mixxx.Config.waveformVisualGainMedium
+        }
+        Mixxx.WaveformRendererRGB {
+            axesColor: '#a1a1a1a1'
+            enabled: root.activeWaveformType === Mixxx.WaveformDisplay.Type.RGB
+            gainAll: Mixxx.Config.waveformVisualGainAll
+            gainHigh: Mixxx.Config.waveformVisualGainHigh
+            gainLow: Mixxx.Config.waveformVisualGainLow
+            gainMid: Mixxx.Config.waveformVisualGainMedium
+            highColor: '#D5C2A2'
+            lowColor: '#2154D7'
+            midColor: '#97632D'
+        }
+        Mixxx.WaveformRendererStem {
+            gainAll: root.splitStemTracks ? 2.0 : 1.0
+            opacity: Mixxx.Config.waveformStemOpacity
+            outlineOpacity: Mixxx.Config.waveformStemOutlineOpacity
+            reorderOnChange: Mixxx.Config.waveformStemReorderOnChange
+            splitStemTracks: root.splitStemTracks || Mixxx.Config.waveformStemSplitTracks
+        }
+        Mixxx.WaveformRendererBeat {
+            color: Qt.rgba(161 / 255, 161 / 255, 161 / 255, Mixxx.Config.waveformBeatGridAlpha / 100)
+        }
+        Mixxx.WaveformRendererMark {
+            playMarkerBackground: '#D9D9D9'
+            playMarkerColor: '#D9D9D9'
+            playMarkerPosition: Mixxx.Config.waveformPlayMarkerPosition
+            untilMark.align: Mixxx.Config.waveformUntilMarkAlign === 0 ? Qt.AlignTop : Mixxx.Config.waveformUntilMarkAlign === 2 ? Qt.AlignBottom : Qt.AlignVCenter
+            untilMark.showBeats: Mixxx.Config.waveformUntilMarkShowBeats
+            untilMark.showTime: Mixxx.Config.waveformUntilMarkShowTime
+            untilMark.textHeightLimit: Mixxx.Config.waveformUntilMarkTextHeightLimit
+            untilMark.textSize: Mixxx.Config.waveformUntilMarkTextPointSize
+
+            defaultMark: Mixxx.WaveformMark {
+                align: "bottom|right"
+                color: "#00d9ff"
+                endIcon: Qt.resolvedUrl("images/jump_%1.svg")
+                text: " %1 "
+                textColor: "#1a1a1a"
+            }
+
+            Mixxx.WaveformMark {
+                align: 'top|right'
+                color: 'red'
+                control: "cue_point"
+                text: 'CUE'
+                textColor: '#1a1a1a'
+            }
+            Mixxx.WaveformMark {
+                align: 'top|left'
+                color: 'green'
+                control: "loop_start_position"
+                text: '↻'
+                textColor: '#FFFFFF'
+            }
+            Mixxx.WaveformMark {
+                align: 'bottom|right'
+                color: 'green'
+                control: "loop_end_position"
+                textColor: '#FFFFFF'
+            }
+            Mixxx.WaveformMark {
+                align: 'top|right'
+                color: 'blue'
+                control: "intro_start_position"
+                text: '◢'
+                textColor: '#FFFFFF'
+            }
+            Mixxx.WaveformMark {
+                align: 'top|left'
+                color: 'blue'
+                control: "intro_end_position"
+                text: '◢'
+                textColor: '#FFFFFF'
+            }
+            Mixxx.WaveformMark {
+                align: 'top|right'
+                color: 'blue'
+                control: "outro_start_position"
+                text: '◣'
+                textColor: '#FFFFFF'
+            }
+            Mixxx.WaveformMark {
+                align: 'top|left'
+                color: 'blue'
+                control: "outro_end_position"
+                text: '◣'
+                textColor: '#FFFFFF'
+            }
+        }
+    }
     Mixxx.ControlProxy {
         id: scratchPositionEnableControl
 
         group: root.group
         key: "scratch_position_enable"
     }
-
     Mixxx.ControlProxy {
         id: scratchPositionControl
 
         group: root.group
         key: "scratch_position"
     }
-
     Mixxx.ControlProxy {
         id: wheelControl
 
         group: root.group
         key: "wheel"
     }
-
     Mixxx.ControlProxy {
         id: rateRatioControl
 
         group: root.group
         key: "rate_ratio"
     }
-
     Mixxx.ControlProxy {
         id: zoomControl
 
-        group: root.group
+        group: root.zoomGroup
         key: "waveform_zoom"
+
+        Component.onCompleted: {
+            if (group == root.group) {
+                value = Mixxx.Config.waveformDefaultZoom
+            }
+        }
     }
-
     MouseArea {
-        property int mouseStatus: WaveformDisplay.MouseStatus.Normal
         property point mouseAnchor: Qt.point(0, 0)
+        property int mouseStatus: WaveformDisplay.MouseStatus.Normal
 
-        anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
+        anchors.fill: parent
+
         onDoubleClicked: {
             if (mouse.button == Qt.RightButton) {
                 root.splitStemTracks = !root.splitStemTracks;
+            }
+        }
+        onPositionChanged: {
+            const diff = mouse.x - mouseAnchor.x;
+            switch (mouseStatus) {
+            case WaveformDisplay.MouseStatus.Bending:
+                {
+                    // Start at the middle of [0.0, 1.0], and emit values based on how far
+                    // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
+                    // this is tuned to 127.
+                    const v = 0.5 + (diff / root.width);
+                    // clamp to [0.0, 1.0]
+                    wheelControl.parameter = Math.max(Math.min(v, 1), 0);
+                    break;
+                }
+                ;
+            case WaveformDisplay.MouseStatus.Scratching:
+                scratchPositionControl.value = -mouse.x * waveformDisplay.audioSamplePerPixel * 2;
+                break;
             }
         }
         onPressed: {
@@ -202,7 +300,7 @@ Item {
                     wheelControl.parameter = 0.5;
 
                 mouseStatus = WaveformDisplay.MouseStatus.Scratching;
-                scratchPositionControl.value = 0;
+                scratchPositionControl.value = -mouse.x * waveformDisplay.audioSamplePerPixel * 2;
                 scratchPositionEnableControl.value = 1;
             } else {
                 if (mouseStatus == WaveformDisplay.MouseStatus.Scratching)
@@ -212,41 +310,22 @@ Item {
                 mouseStatus = WaveformDisplay.MouseStatus.Bending;
             }
         }
-        onPositionChanged: {
-            const diff = mouse.x - mouseAnchor.x;
-            switch (mouseStatus) {
-                case WaveformDisplay.MouseStatus.Bending: {
-                    // Start at the middle of [0.0, 1.0], and emit values based on how far
-                    // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
-                    // this is tuned to 127.
-                    const v = 0.5 + (diff / root.width);
-                    // clamp to [0.0, 1.0]
-                    wheelControl.parameter = Math.max(Math.min(v, 1), 0);
-                    break;
-                };
-                case WaveformDisplay.MouseStatus.Scratching:
-                // TODO: Calculate position properly
-                    scratchPositionControl.value = -diff * zoomControl.value * 200;
-                    break;
-            }
-        }
         onReleased: {
             switch (mouseStatus) {
-                case WaveformDisplay.MouseStatus.Bending:
-                    wheelControl.parameter = 0.5;
-                    break;
-                case WaveformDisplay.MouseStatus.Scratching:
-                    scratchPositionEnableControl.value = 0;
-                    scratchPositionControl.value = 0;
-                    break;
+            case WaveformDisplay.MouseStatus.Bending:
+                wheelControl.parameter = 0.5;
+                break;
+            case WaveformDisplay.MouseStatus.Scratching:
+                scratchPositionEnableControl.value = 0;
+                scratchPositionControl.value = 0;
+                break;
             }
             mouseStatus = WaveformDisplay.MouseStatus.Normal;
         }
-
-        onWheel: {
-            if (wheel.angleDelta.y < 0 && zoomControl.value > 1) {
+        onWheel: mouse => {
+            if (mouse.angleDelta.y < 0 && zoomControl.value > 1) {
                 zoomControl.value -= 1;
-            } else if (wheel.angleDelta.y > 0 && zoomControl.value < 10.0) {
+            } else if (mouse.angleDelta.y > 0 && zoomControl.value < 10.0) {
                 zoomControl.value += 1;
             }
         }

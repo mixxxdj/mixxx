@@ -58,8 +58,9 @@ class LibraryControl : public QObject {
     void bindLibraryWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
     void bindSearchboxWidget(WSearchLineEdit* pSearchbox);
-    // Give the keyboard focus to one of the library widgets
-    void setLibraryFocus(FocusWidget newFocusWidget);
+    /// Give the keyboard focus to one of the library widgets
+    void setLibraryFocus(FocusWidget newFocusWidget,
+            Qt::FocusReason focusReason = Qt::OtherFocusReason);
     FocusWidget getFocusedWidget();
 
   signals:
@@ -105,8 +106,12 @@ class LibraryControl : public QObject {
     void slotEditItem(double);
     void slotGoToItem(double v);
 
+    void slotToggleBpmLock(double v);
+
     void slotTrackColorPrev(double v);
     void slotTrackColorNext(double v);
+
+    void slotTrackRatingChangeRequestRelative(int change);
 
     // Deprecated navigation slots
     void slotSelectNextTrack(double v);
@@ -186,9 +191,15 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pSortOrder;
     std::unique_ptr<ControlPushButton> m_pSortFocusedColumn;
 
+    std::unique_ptr<ControlPushButton> m_pBpmLock;
+
     // Controls to change track color
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+
+    // Controls to change track rating
+    std::unique_ptr<ControlPushButton> m_pStarsUp;
+    std::unique_ptr<ControlPushButton> m_pStarsDown;
 
     // Control to show/hide the track menu
     std::unique_ptr<ControlPushButton> m_pShowTrackMenu;

@@ -33,7 +33,6 @@
             </Connection>
           </PushButton>
 
-
           <WidgetGroup>
             <Size>50f,20f</Size>
             <Pos>26,10</Pos>
@@ -130,7 +129,7 @@
       </WidgetGroup>
 
       <WidgetGroup><!-- loop controls -->
-        <Size>332f,40f</Size>
+        <Size>353f,40f</Size>
         <BackPath>style/style_bg_looping.png</BackPath>
         <Children>
           <PushButton>
@@ -235,7 +234,28 @@
           **********************************************
           -->
           <PushButton>
-            <Pos>160,10</Pos>
+            <Pos>152,10</Pos>
+            <TooltipId>loop_anchor</TooltipId>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_loop_anchor_start_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_loop_anchor_start.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>skin:/btn/btn_loop_anchor_end_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_loop_anchor_end.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],loop_anchor</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Pos>181,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -267,7 +287,7 @@
           </PushButton>
 
           <PushButton>
-            <Pos>181,10</Pos>
+            <Pos>202,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -299,7 +319,7 @@
           </PushButton>
 
           <PushButton>
-            <Pos>202,10</Pos>
+            <Pos>223,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
             <NumberStates>2</NumberStates>
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
@@ -344,7 +364,7 @@
               <Pressed>skin:/btn/btn_beatloop_1_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_1_over.png</Unpressed>
             </State>
-            <Pos>223,10</Pos>
+            <Pos>244,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_1_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -375,7 +395,7 @@
               <Pressed>skin:/btn/btn_beatloop_2_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_2_over.png</Unpressed>
             </State>
-            <Pos>244,10</Pos>
+            <Pos>265,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_2_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -406,7 +426,7 @@
               <Pressed>skin:/btn/btn_beatloop_4_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_4_over.png</Unpressed>
             </State>
-            <Pos>265,10</Pos>
+            <Pos>286,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -437,7 +457,7 @@
               <Pressed>skin:/btn/btn_beatloop_8_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_8_over.png</Unpressed>
             </State>
-            <Pos>286,10</Pos>
+            <Pos>307,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_8_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -468,7 +488,7 @@
               <Pressed>skin:/btn/btn_beatloop_16_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_16_over.png</Unpressed>
             </State>
-            <Pos>307,10</Pos>
+            <Pos>328,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_16_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>

@@ -72,7 +72,7 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
             sampleRate, frameLength, mainWaveformSampleRate, summaryWaveformSamples, stemCount));
 
     // Now, that the Waveform memory is initialized, we can set set them to
-    // the TIO. Be aware that other threads of Mixxx can touch them from
+    // the track. Be aware that other threads of Mixxx can touch them from
     // now.
     track.getTrack()->setWaveform(m_waveform);
     track.getTrack()->setWaveformSummary(m_waveformSummary);
@@ -99,16 +99,16 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
     return true;
 }
 
-bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
-    ConstWaveformPointer pTrackWaveform = tio->getWaveform();
-    ConstWaveformPointer pTrackWaveformSummary = tio->getWaveformSummary();
+bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
+    ConstWaveformPointer pTrackWaveform = pTrack->getWaveform();
+    ConstWaveformPointer pTrackWaveformSummary = pTrack->getWaveformSummary();
     ConstWaveformPointer pLoadedTrackWaveform;
     ConstWaveformPointer pLoadedTrackWaveformSummary;
 #ifdef __STEM__
-    bool isStemTrack = !tio->getStemInfo().isEmpty();
+    bool isStemTrack = !pTrack->getStemInfo().isEmpty();
 #endif
 
-    TrackId trackId = tio->getId();
+    TrackId trackId = pTrack->getId();
     bool missingWaveform = pTrackWaveform.isNull();
     bool missingWavesummary = pTrackWaveformSummary.isNull();
 
@@ -162,10 +162,10 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer tio) const {
     if (!missingWaveform && !missingWavesummary) {
         kLogger.debug() << "loadStored - Stored waveform loaded";
         if (pLoadedTrackWaveform) {
-            tio->setWaveform(pLoadedTrackWaveform);
+            pTrack->setWaveform(pLoadedTrackWaveform);
         }
         if (pLoadedTrackWaveformSummary) {
-            tio->setWaveformSummary(pLoadedTrackWaveformSummary);
+            pTrack->setWaveformSummary(pLoadedTrackWaveformSummary);
         }
         return false;
     }
@@ -319,7 +319,7 @@ void AnalyzerWaveform::cleanup() {
     m_waveformSummaryData = nullptr;
 }
 
-void AnalyzerWaveform::storeResults(TrackPointer tio) {
+void AnalyzerWaveform::storeResults(TrackPointer pTrack) {
     // Force completion to waveform size
     if (m_waveform) {
         m_waveform->setSaveState(Waveform::SaveState::SavePending);
@@ -327,7 +327,6 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
         m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
     }
-    tio->setWaveform(m_waveform);
 
     // Force completion to waveform size
     if (m_waveformSummary) {
@@ -336,7 +335,6 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
         m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
     }
-    tio->setWaveformSummary(m_waveformSummary);
 
 #ifdef TEST_HEAT_MAP
     test_heatMap->save("heatMap.png");
@@ -347,11 +345,16 @@ void AnalyzerWaveform::storeResults(TrackPointer tio) {
     // and then it is not called. The other analyzers have signals which control
     // the update of their data.
     m_analysisDao.saveTrackAnalyses(
-            tio->getId(),
+            pTrack->getId(),
             m_waveform,
             m_waveformSummary);
 
-    kLogger.debug() << "Waveform generation for track" << tio->getId() << "done"
+    // Set waveforms on track AFTER they'been written to disk in order to have
+    // a consistency when OverviewCache asks AnalysisDAO for a waveform summary.
+    pTrack->setWaveform(m_waveform);
+    pTrack->setWaveformSummary(m_waveformSummary);
+
+    kLogger.debug() << "Waveform generation for track" << pTrack->getId() << "done"
                     << m_timer.elapsed().debugSecondsWithUnit();
 }
 

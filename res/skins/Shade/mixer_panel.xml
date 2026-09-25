@@ -218,10 +218,11 @@
               <!--
               **********************************************
               Button- Cue
-              **********************************************
-              -->
-              <PushButton>
+              ********************************************** -->
+              <!-- Deck 1 -->
+              <CueButton>
                 <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+                <Group>[Channel1]</Group>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -247,9 +248,11 @@
                 <Connection>
                   <ConfigKey>[Channel1],cue_indicator</ConfigKey>
                 </Connection>
-              </PushButton>
-              <PushButton>
+              </CueButton>
+              <!-- Deck 2 -->
+              <CueButton>
                 <TooltipId>cue_default_cue_gotoandstop</TooltipId>
+                <Group>[Channel2]</Group>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -275,7 +278,7 @@
                 <Connection>
                   <ConfigKey>[Channel2],cue_indicator</ConfigKey>
                 </Connection>
-              </PushButton>
+              </CueButton>
 
               <!--
               **********************************************

@@ -1,4 +1,3 @@
-
 /** ColorMapperJSProxy */
 
 declare class ColorMapper {
@@ -7,7 +6,7 @@ declare class ColorMapper {
      *
      * @param availableColors List of number pairs (e.g. {0xFF0000: 1, 0x00FF00: 2} )
      */
-    constructor (availableColors: { [rgbColor: number]: number });
+    constructor(availableColors: { [rgbColor: number]: number });
 
     /**
      * For a given RGB color code (e.g. 0xFF0000), this finds the nearest
@@ -16,7 +15,7 @@ declare class ColorMapper {
      *
      * @param colorCode Device specific color code
      */
-    getNearestColor(colorCode: number): {[rgb: number]: number};
+    getNearestColor(colorCode: number): { [rgb: number]: number };
 
     /**
      * For a given RGB color code (e.g. 0xFF0000), this finds the nearest

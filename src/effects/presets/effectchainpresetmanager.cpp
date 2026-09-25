@@ -516,6 +516,7 @@ void EffectChainPresetManager::updatePreset(EffectChainPointer pChainSlot) {
     m_effectChainPresetsSorted.replace(index, pPreset);
     m_effectChainPresets.insert(name, pPreset);
     savePresetXml(pPreset);
+    emit effectChainPresetListUpdated();
 }
 
 void EffectChainPresetManager::importUserPresets() {
@@ -860,7 +861,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
 
     // Read names of presets that were loaded into stem QuickEffects on last shutdown
     QDomElement quickStemEffectPresetsElement =
-            XmlParse::selectElement(root, EffectXml::kQuickStemEffectList);
+            XmlParse::selectElement(root, EffectXml::kStemQuickEffectChainPresets);
     const QDomNodeList quickStemEffectNodeList =
             quickStemEffectPresetsElement.elementsByTagName(
                     EffectXml::kChainPresetName);
@@ -950,7 +951,7 @@ EffectChainPresetPointer EffectChainPresetManager::readEffectsXmlSingleDeckStem(
 
     // Read name of last loaded QuickEffect preset
     QDomElement quickEffectPresetsElement =
-            XmlParse::selectElement(root, EffectXml::kQuickStemEffectList);
+            XmlParse::selectElement(root, EffectXml::kStemQuickEffectChainPresets);
     const QDomNodeList quickEffectNodeList =
             quickEffectPresetsElement.elementsByTagName(
                     EffectXml::kChainPresetName);
@@ -1065,7 +1066,7 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
 
     // Save which presets are loaded to stem QuickEffects
     QDomElement quickStemEffectPresetsElement =
-            pDoc->createElement(EffectXml::kQuickStemEffectList);
+            pDoc->createElement(EffectXml::kStemQuickEffectChainPresets);
     QHashIterator<QString, EffectChainPresetPointer> qseIt(data.quickStemEffectChainPresets);
     while (qseIt.hasNext()) {
         qseIt.next();

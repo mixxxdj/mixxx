@@ -42,11 +42,11 @@ TEST_F(MathUtilTest, MathClampUnsafe) {
 TEST_F(MathUtilTest, IsNaN) {
     // Test floats can be recognized as nan.
     EXPECT_FALSE(util_isnan(0.0f));
-    EXPECT_TRUE(util_isnan(std::numeric_limits<float>::quiet_NaN()));
+    EXPECT_TRUE(util_isnan(util_float_nan()));
 
     // Test doubles can be recognized as nan.
     EXPECT_FALSE(util_isnan(0.0));
-    EXPECT_TRUE(util_isnan(std::numeric_limits<double>::quiet_NaN()));
+    EXPECT_TRUE(util_isnan(util_double_nan()));
 }
 
 TEST_F(MathUtilTest, IsInf) {
@@ -98,8 +98,12 @@ TEST_F(MathUtilTest, DoubleValues) {
     long long int_value;
     double double_value = util_double_infinity();
     std::memcpy(&int_value, &double_value, sizeof(double_value));
-    // IEC 559 (IEEE 754) Infinity
-    EXPECT_EQ(int_value, 0x7FF0000000000000);
+    long long int_diff = int_value - 0x7FF0000000000000; // IEC 559 (IEEE 754) Infinity
+    EXPECT_EQ(int_diff, 0);
+    // Comparing directly does not work because the compiler (clang >= 19) may
+    // optimize the long long roundtrip away, compares as double and discards the
+    // comparison because of -ffastmath (clang >= 19)
+    // EXPECT_EQ(int_value, 0x7FF0000000000000);
 }
 
 }  // namespace

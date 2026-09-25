@@ -1,0 +1,194 @@
+name: Unit tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request: {}
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        cpp-standard:
+          - '98'
+          - '11'
+          - '20'
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install GoogleTest
+        env:
+          CPP_STANDARD: ${{ matrix.cpp-standard }}
+        run: .build/install-gtest "$CPP_STANDARD"
+      - name: Update package lists
+        run: sudo apt-get update
+      - name: Install packages
+        run: sudo apt-get install -y iwyu valgrind
+      - name: Build
+        env:
+          CPP_STANDARD: ${{ matrix.cpp-standard }}
+          # This tells the C++ compiler to produce debugging info that Valgrind needs to report line numbers.
+          # See also https://valgrind.org/docs/manual/manual-core.html#manual-core.started
+          CMAKE_BUILD_TYPE: Debug
+        run: |
+          .build/build \
+            -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
+            -DCMAKE_CXX_STANDARD="$CPP_STANDARD" -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF \
+            -DCMAKE_CXX_INCLUDE_WHAT_YOU_USE='include-what-you-use;-Xiwyu;--verbose=3'
+      - name: Run tests
+        run: .build/run-unittest --valgrind
+  macos:
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        cpp-standard:
+          - '98'
+          - '11'
+          - '20'
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install GoogleTest
+        env:
+          CPP_STANDARD: ${{ matrix.cpp-standard }}
+        run: .build/install-gtest "$CPP_STANDARD"
+      - name: Build
+        env:
+          CPP_STANDARD: ${{ matrix.cpp-standard }}
+          # This tells the C++ compiler to produce debugging info that Valgrind needs to report line numbers.
+          # See also https://valgrind.org/docs/manual/manual-core.html#manual-core.started
+          CMAKE_BUILD_TYPE: Debug
+        run: |
+          .build/build \
+            -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
+            -DCMAKE_CXX_STANDARD="$CPP_STANDARD" -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF
+      - name: Run tests
+        run: .build/run-unittest
+
+  # Builds and runs tests on Ubuntu 7.10.
+  # It ships with:
+  #
+  # gcc (GCC) 4.1.3 20070929 (prerelease) (Ubuntu 4.1.2-16ubuntu2)
+  # Copyright (C) 2006 Free Software Foundation, Inc.
+  #
+  # cmake version 2.4-patch 7
+  #
+  # This one is challenging:
+  #
+  # * It's impossible to run git clone inside this container (as old git will use ancient protocols not supported anymore
+  #   by GitHub, and also standard `actions/checkout@v5` will depend on Node.js/npm, which are not available in this container).
+  #   To work around this, we start/stop container manually and use targeted execution of specific build/run commands only
+  #   inside the container, keeping git and networking stuff out.
+  #
+  # * For gcc, the vast majority of C++11 features are missing from this release (many were added around GCC 4.3 and 4.4).
+  #   Some C99 features are also missing. C++98 support seems to be full-featured.
+  #
+  # * Modern GTest doesn't work in this environment, as GTest v1.12.x requires C++11 and modern GTest v1.13+ requires C++14.
+  #   To work around this, we supply nano substitute of GTest (tests/gtest-nano.h), partially compatible with API.
+  #
+  # * CMake is way too old to be usable without major rewrite of all the CMakeLists.txt to use ancient/deprecated syntax.
+  #   To work around this, we use plain GNU make(1) and supply custom gcc4.mk.
+  linux_ubuntu_7_10:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: docker pull
+        run: |
+          docker pull icomputer7/ancient-ubuntu-docker:gutsy
+      - name: docker create start
+        run: |
+          docker create --name u710 --label u710 --workdir /w -v "$GITHUB_WORKSPACE":"/w" --entrypoint "tail" icomputer7/ancient-ubuntu-docker:gutsy "-f" "/dev/null"
+          docker start u710
+      - name: restore
+        run: |
+          docker exec u710 sh -c 'pwd && ls -al && apt-get update && apt-get -y --no-install-recommends install make g++ zlib1g-dev'
+      - name: build
+        run: |
+          docker exec u710 sh -c 'make -f gcc4.mk'
+      - name: unittest
+        run: |
+          docker exec u710 sh -c 'build/unittest'
+      - name: docker shutdown
+        run: |
+          docker stop u710
+          docker rm u710
+  windows:
+    runs-on: windows-latest
+    # NB: see https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md for what's available in this image
+    steps:
+      - uses: actions/checkout@v5
+      - name: restore
+        run: |
+          C:\vcpkg\bootstrap-vcpkg.bat
+          C:\vcpkg\vcpkg install gtest:x64-windows zlib:x64-windows
+      - name: build
+        run: |
+          .build\build.ps1 -GTestPath C:\vcpkg\installed\x64-windows -- `
+            -DCMAKE_CXX_STANDARD=11 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF
+      - name: unittest
+        run: .build\run-unittest.ps1
+  freebsd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run in FreeBSD
+        uses: vmactions/freebsd-vm@v1
+        with:
+          release: "14.3"
+          usesh: true
+          prepare: |
+            pkg install -y git cmake
+
+          run: |
+            echo '#### System information'
+            whoami
+            env
+            freebsd-version
+            c++ --version || :
+            gcc --version || :
+            clang++ --version || :
+            pkg info
+
+            echo '#### Installing GoogleTest'
+            .build/install-gtest 11
+
+            echo '#### Building'
+            .build/build -DCMAKE_CXX_STANDARD=11 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF
+
+            echo '#### Testing'
+            .build/run-unittest
+  netbsd:
+    runs-on: ubuntu-latest
+    # Doesn't use clang, has gcc:
+    # c++ (nb3 20231008) 10.5.0
+    # Copyright (C) 2020 Free Software Foundation, Inc.
+    steps:
+      - uses: actions/checkout@v5
+      - name: Run in NetBSD
+        uses: cross-platform-actions/action@v0.29.0
+        with:
+          operating_system: netbsd
+          version: '10.1'
+          run: |
+            set -x
+            echo '#### System information'
+            uname -a
+            echo "$SHELL"
+            pwd
+            ls -la
+            whoami
+            env | sort
+            c++ --version
+            gcc --version
+
+            sudo pkgin update
+            sudo pkgin -y install cmake
+            sudo pkgin -y install googletest
+
+            echo '#### Building'
+            .build/build -DCMAKE_CXX_STANDARD=11 -DCMAKE_CXX_STANDARD_REQUIRED=ON -DCMAKE_CXX_EXTENSIONS=OFF
+
+            echo '#### Testing'
+            .build/run-unittest

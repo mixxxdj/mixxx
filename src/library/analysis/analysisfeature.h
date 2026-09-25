@@ -18,14 +18,14 @@ class AnalysisFeature : public LibraryFeature {
   public:
     AnalysisFeature(Library* pLibrary,
                     UserSettingsPointer pConfig);
-    ~AnalysisFeature() override = default;
+    ~AnalysisFeature() override;
 
     QVariant title() override {
         return m_title;
     }
 
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
-    bool dragMoveAccept(const QUrl& url) override;
+    bool dragMoveAccept(const QList<QUrl>& urls) override;
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 

@@ -1,0 +1,16 @@
+name: fdk-aac-free
+buildsystem: autotools
+sources:
+  - type: archive
+    url: https://wtaymans.fedorapeople.org/fdk-aac-free-2.0.3.tar.gz
+    sha256: 2dc6952b70283888994ae6e551a79039781f0a64c67fb637bffd5a8f483c34c5
+    x-checker-data:
+      type: anitya
+      project-id: 16208
+      stable-only: true
+      url-template: https://wtaymans.fedorapeople.org/fdk-aac-free-$version.tar.gz
+cleanup:
+  - /include
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/fdk-aac-free NOTICE

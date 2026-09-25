@@ -1,0 +1,57 @@
+#!/bin/sh -ef
+
+usage()
+{
+	echo "Usage: $0 [-h | --help] [--valgrind] [-- <gtest_args>...]"
+	echo
+	echo 'Options:'
+	echo '  -h, --help      Show this help message and exit.'
+	echo '  --valgrind      Run tests under Valgrind.'
+	echo '  --              Pass remaining arguments to the test runner.'
+	echo
+	echo 'Examples:'
+	echo '  * Basic usage:'
+	echo "        $0"
+	echo
+	echo "  * Run all tests (including disabled tests) under Valgrind:"
+	echo "        $0 --valgrind -- --gtest_also_run_disabled_tests"
+	echo
+}
+
+die()
+{
+	printf '%s\n' "$1" >&2
+	printf '\n%s\n' "$(usage)" >&2
+	exit 1
+}
+
+use_valgrind=
+
+while [ "$#" -gt 0 ]; do
+	case $1 in
+		-h|--help)
+			usage
+			exit
+			;;
+		--valgrind)
+			use_valgrind=1
+			;;
+		--)
+			shift
+			break
+			;;
+		*)
+			die "Error: unexpected argument '$1'"
+			;;
+	esac
+	shift
+done
+
+cd "$(dirname "$0")"/..
+
+cd build/tests
+if [ -n "$use_valgrind" ]; then
+	valgrind -s --leak-check=full --show-leak-kinds=all ./unittest ${@:+"$@"}
+else
+	./unittest ${@:+"$@"}
+fi

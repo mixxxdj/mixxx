@@ -6,6 +6,10 @@
 #include "widget/wcuemenupopup.h"
 #include "widget/wpushbutton.h"
 
+/// Pushbutton with hotcue controls and cue menu popup on right-click.
+/// This button can be dropped onto other WHotcueButtons to swap their hotcues.
+/// Can also be dropped onto WPlayButton in order to easily switch from hotcue
+/// previewing to regular play.
 class WHotcueButton : public WPushButton {
     Q_OBJECT
   public:
@@ -23,6 +27,10 @@ class WHotcueButton : public WPushButton {
     Q_PROPERTY(bool light MEMBER m_bCueColorIsLight);
     Q_PROPERTY(bool dark MEMBER m_bCueColorIsDark);
     Q_PROPERTY(QString type MEMBER m_type);
+    Q_PROPERTY(QString direction MEMBER m_direction);
+    Q_PROPERTY(bool active READ isActive);
+
+    bool isActive() const;
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;
@@ -35,21 +43,35 @@ class WHotcueButton : public WPushButton {
   private slots:
     void slotColorChanged(double color);
     void slotTypeChanged(double type);
+    void slotUpdateDirection(double = 0);
 
   private:
     ConfigKey createConfigKey(const QString& name);
     void updateStyleSheet();
+
+    /// getCueMenuPopup lazy-loads the popup menu to speed up skin load time.
+    /// On skins with many hotcue buttons, popup menu creation time is a
+    /// significant source of load latency.
+    WCueMenuPopup* getCueMenuPopup();
 
     const QString m_group;
     int m_hotcue;
     bool m_hoverCueColor;
     parented_ptr<ControlProxy> m_pCoColor;
     parented_ptr<ControlProxy> m_pCoType;
+    parented_ptr<ControlProxy> m_pCoPosition;
+    parented_ptr<ControlProxy> m_pCoEndPosition;
+    parented_ptr<ControlProxy> m_pCoActive;
+    /// Callers should not use m_pCueMenuPopup directly because it is lazy-loaded.
+    /// Use getCueMenuPopup() instead to ensure the menu is populated.
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     int m_cueColorDimThreshold;
     bool m_bCueColorDimmed;
     bool m_bCueColorIsLight;
     bool m_bCueColorIsDark;
     QString m_type;
+    QString m_direction;
     QMargins m_dndRectMargins;
+
+    UserSettingsPointer m_pConfig;
 };

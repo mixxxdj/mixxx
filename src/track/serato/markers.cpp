@@ -238,7 +238,9 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
                     color,
                     type,
                     isLocked));
-    kLogger.trace() << "SeratoMarkersEntry (ID3)" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkersEntry (ID3)" << *pEntry;
+    }
     return pEntry;
 }
 
@@ -317,7 +319,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
                     color,
                     type,
                     isLocked));
-    kLogger.trace() << "SeratoMarkersEntry (MP4)" << *pEntry;
+
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkersEntry (MP4)" << *pEntry;
+    }
     return pEntry;
 }
 

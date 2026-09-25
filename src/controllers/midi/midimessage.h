@@ -105,11 +105,14 @@ QDebug operator<<(QDebug debug, MidiOpCode midiOpCode);
 qhash_seed_t qHash(MidiOpCode key, qhash_seed_t seed);
 
 enum class MidiOption : uint16_t {
+    /// Normal: return input value
     None = 0x0000,
+    /// Return 127 - input value
     Invert = 0x0001,
     Rot64 = 0x0002,
     Rot64Invert = 0x0004,
     Rot64Fast = 0x0008,
+    /// Returns difference to previous value
     Diff = 0x0010,
     /// Button Down (!=00) and Button Up (00) events happen together
     Button = 0x0020,
@@ -125,9 +128,9 @@ enum class MidiOption : uint16_t {
     SoftTakeover = 0x0400,
     /// Maps a MIDI control to a custom JavaScript function
     Script = 0x0800,
-    /// Nessage supplies the LSB of a 14-bit message
+    /// Message supplies the LSB of a 14-bit message
     FourteenBitLSB = 0x1000,
-    /// Nessage supplies the MSB of a 14-bit message
+    /// Message supplies the MSB of a 14-bit message
     FourteenBitMSB = 0x2000,
     /// Generic Hercules Range Correction (0x01 -> +5; 0x7f -> -5)
     HercJogFast = 0x4000,
@@ -135,6 +138,22 @@ enum class MidiOption : uint16_t {
 Q_DECLARE_FLAGS(MidiOptions, MidiOption);
 Q_DECLARE_OPERATORS_FOR_FLAGS(MidiOptions);
 Q_DECLARE_METATYPE(MidiOptions);
+
+inline bool midiOptionIsModifier(MidiOption option) {
+    // Actually the same as !midiOptionIsExclusive() but kept separate
+    // for now to allow extension
+    return option == MidiOption::Invert || option == MidiOption::SoftTakeover;
+}
+
+inline bool midiOptionIsExclusive(MidiOption option) {
+    switch (option) {
+    case MidiOption::Invert:
+    case MidiOption::SoftTakeover:
+        return false;
+    default:
+        return true;
+    }
+}
 
 struct MidiOutput {
     MidiOutput()

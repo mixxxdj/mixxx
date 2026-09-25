@@ -1,0 +1,13 @@
+name: Git Checks
+
+on:
+  workflow_call:
+
+jobs:
+  block-fixup:
+    runs-on: ubuntu-slim
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Block Fixup Commit Merge
+        uses: acolombier/block-fixup-merge-action@master

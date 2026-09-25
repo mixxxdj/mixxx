@@ -64,13 +64,13 @@ void VSyncThread::run() {
         runTimer();
         break;
     default:
-        assert(false);
+        DEBUG_ASSERT(!"unsupported sync mode");
         break;
     }
 }
 
 void VSyncThread::runFree() {
-    assert(m_vSyncMode == ST_FREE);
+    DEBUG_ASSERT(m_vSyncMode == ST_FREE);
     while (m_bDoRendering) {
         // for benchmark only!
 
@@ -87,7 +87,7 @@ void VSyncThread::runFree() {
 }
 
 void VSyncThread::runPLL() {
-    assert(m_vSyncMode == ST_PLL);
+    DEBUG_ASSERT(m_vSyncMode == ST_PLL);
     qint64 offsetAdjustedAt = 0;
     qint64 offset = 0;
     qint64 nextSwapMicros = 0;
@@ -180,7 +180,7 @@ void VSyncThread::runPLL() {
 }
 
 void VSyncThread::runTimer() {
-    assert(m_vSyncMode == ST_TIMER);
+    DEBUG_ASSERT(m_vSyncMode == ST_TIMER);
 
     while (m_bDoRendering) {
         emit vsyncRender(); // renders the new waveform.
@@ -311,15 +311,15 @@ void VSyncThread::updatePLL() {
         m_pllPhaseOut = pllPhaseIn;
         m_pllInitSum += delta;
         m_pllInitCnt++;
-        m_pllInitAvg = m_pllInitSum / static_cast<double>(m_pllInitCnt);
-        if (std::abs(delta - m_pllInitAvg) > 2000.0) {
+        double pllInitAvg = m_pllInitSum / static_cast<double>(m_pllInitCnt);
+        if (std::abs(delta - pllInitAvg) > 2000.0) {
             // The current delta is too different from the current
             // average so we reset the init process.
             m_pllInitSum = 0.0;
             m_pllInitCnt = 0;
         }
         if (m_pllInitCnt == kNumStableDeltasRequired) {
-            m_pllDeltaOut = m_pllInitAvg;
+            m_pllDeltaOut = pllInitAvg;
         }
         return;
     }

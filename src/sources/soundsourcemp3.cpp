@@ -105,15 +105,14 @@ void logFrameHeader(QDebug logger, const mad_header& madHeader) {
            << "flags:" << formatHeaderFlags(madHeader.flags);
 }
 
-inline bool isUnrecoverableError(mad_error error) {
+bool isUnrecoverableError(mad_error error) {
     return (MAD_ERROR_NONE != error) && !MAD_RECOVERABLE(error);
 }
 
 #ifndef MIXXX_DEBUG_ASSERTIONS_ENABLED
 [[maybe_unused]]
 #endif
-inline bool
-hasUnrecoverableError(const mad_stream* pMadStream) {
+bool hasUnrecoverableError(const mad_stream* pMadStream) {
     if (pMadStream) {
         return isUnrecoverableError(pMadStream->error);
     }
@@ -506,9 +505,9 @@ void SoundSourceMp3::close() {
 
 void SoundSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
-    if (kLogger.debugEnabled()) {
-        kLogger.info() << "restartDecoding for frame" << seekFrame.frameIndex << "@"
-                       << (seekFrame.pInputData - m_pFileData);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "restartDecoding for frame" << seekFrame.frameIndex << "@"
+                        << (seekFrame.pInputData - m_pFileData);
     }
 
     // Discard decoded output
@@ -696,16 +695,16 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                         // Don't bother the user with warnings from recoverable
                         // errors while skipping decoded samples or that even
                         // might occur for files that are perfectly ok.
-                        if (kLogger.debugEnabled()) {
-                            kLogger.debug()
+                        if (kLogger.traceEnabled()) {
+                            kLogger.trace()
                                     << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         }
                     } else if (m_madStream.error == MAD_ERROR_BADDATAPTR &&
                             m_curFrameIndex == firstFrameIndex) {
                         // This is expected after starting decoding with an offset
-                        if (kLogger.debugEnabled()) {
-                            kLogger.debug()
+                        if (kLogger.traceEnabled()) {
+                            kLogger.trace()
                                     << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         }

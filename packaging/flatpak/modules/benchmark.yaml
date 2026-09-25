@@ -1,0 +1,22 @@
+name: benchmark
+buildsystem: cmake-ninja
+config-opts:
+  - -DCMAKE_BUILD_TYPE=RelWithDebInfo
+  - -DBENCHMARK_ENABLE_TESTING=OFF
+  - -DBENCHMARK_ENABLE_GTEST_TESTS=OFF
+  - -DBENCHMARK_INSTALL_DOCS=OFF
+sources:
+  - type: archive
+    url: https://github.com/google/benchmark/archive/refs/tags/v1.9.4.tar.gz
+    sha256: b334658edd35efcf06a99d9be21e4e93e092bd5f95074c1673d5c8705d95c104
+    x-checker-data:
+      type: anitya
+      project-id: 229361
+      stable-only: true
+      url-template: https://github.com/google/benchmark/archive/refs/tags/v$version.tar.gz
+cleanup:
+  - /include
+  - /lib/cmake
+  - /lib/pkgconfig
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/benchmark LICENSE

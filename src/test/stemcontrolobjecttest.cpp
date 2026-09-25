@@ -5,11 +5,21 @@
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
+#include "gtest/gtest.h"
 #include "mixxxtest.h"
 #include "test/signalpathtest.h"
 
-class StemControlTest : public BaseSignalPathTest {
-  protected:
+#define STEM_FILE QStringLiteral("stems/sin_%1.stem.mp4").arg(QString::fromStdString(GetParam()))
+
+namespace {
+const std::vector<std::string> supportedCodecs = {
+        "AAC_256kbps_VBR",
+        "ALAC_24bit"};
+} // namespace
+
+class StemControlFixture : public BaseSignalPathTest,
+                           public ::testing::WithParamInterface<std::string> {
+  public:
     QString getGroupForStem(QStringView deckGroup, int stemNr) {
         DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemNr <= 4);
         return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('0' + stemNr) + QChar(']');
@@ -41,11 +51,11 @@ class StemControlTest : public BaseSignalPathTest {
             m_pEffectsManager->addStem(stemHandleGroup);
         }
 
-        const QString kStemFileLocationTest = getTestDir().filePath("stems/test.stem.mp4");
+        const QString kStemFileLocationTest = getTestDir().filePath(STEM_FILE);
         TrackPointer pStemFile(Track::newTemporary(kStemFileLocationTest));
 
-        loadTrack(m_pMixerDeck1, pStemFile);
-        loadTrack(m_pMixerDeck3, pStemFile);
+        loadTrack(m_pMixerDeck1.get(), pStemFile);
+        loadTrack(m_pMixerDeck3.get(), pStemFile);
 
         m_pPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
 
@@ -82,6 +92,15 @@ class StemControlTest : public BaseSignalPathTest {
         m_pStem2FXEnabled->set(0.0);
         m_pStem3FXEnabled->set(0.0);
         m_pStem4FXEnabled->set(0.0);
+
+        m_pStem1VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 1), "vu_meter");
+        m_pStem2VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 2), "vu_meter");
+        m_pStem3VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 3), "vu_meter");
+        m_pStem4VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 4), "vu_meter");
 
         m_pStemCount = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_count");
     }
@@ -139,26 +158,30 @@ class StemControlTest : public BaseSignalPathTest {
     std::unique_ptr<PollingControlProxy> m_pStem2FXEnabled;
     std::unique_ptr<PollingControlProxy> m_pStem3FXEnabled;
     std::unique_ptr<PollingControlProxy> m_pStem4FXEnabled;
+    std::unique_ptr<PollingControlProxy> m_pStem1VuMeter;
+    std::unique_ptr<PollingControlProxy> m_pStem2VuMeter;
+    std::unique_ptr<PollingControlProxy> m_pStem3VuMeter;
+    std::unique_ptr<PollingControlProxy> m_pStem4VuMeter;
     std::unique_ptr<PollingControlProxy> m_pStemCount;
 };
 
-TEST_F(StemControlTest, StemCount) {
+TEST_P(StemControlFixture, StemCount) {
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStemCount->get(), 0.0);
 
-    kTrackLocationTest = getTestDir().filePath("stems/test.stem.mp4");
+    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 }
 
-TEST_F(StemControlTest, StemColor) {
+TEST_P(StemControlFixture, StemColor) {
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
     EXPECT_EQ(m_pStem3Color->get(), 0x00 << 16 | 0xe8 << 8 | 0xe8);
@@ -166,16 +189,16 @@ TEST_F(StemControlTest, StemColor) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Color->get(), -1.0);
     EXPECT_EQ(m_pStem2Color->get(), -1.0);
     EXPECT_EQ(m_pStem3Color->get(), -1.0);
     EXPECT_EQ(m_pStem4Color->get(), -1.0);
 
-    kTrackLocationTest = getTestDir().filePath("stems/test.stem.mp4");
+    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
@@ -183,7 +206,7 @@ TEST_F(StemControlTest, StemColor) {
     EXPECT_EQ(m_pStem4Color->get(), 0xad << 16 | 0x65 << 8 | 0xff);
 }
 
-TEST_F(StemControlTest, Volume) {
+TEST_P(StemControlFixture, Volume) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
@@ -231,7 +254,7 @@ TEST_F(StemControlTest, Volume) {
             QStringLiteral("StemVolumeControlFull"));
 }
 
-TEST_F(StemControlTest, VolumeResetOnLoad) {
+TEST_P(StemControlFixture, VolumeResetOnLoad) {
     m_pStem1Volume->set(0.1);
     m_pStem2Volume->set(0.2);
     m_pStem3Volume->set(0.3);
@@ -245,7 +268,7 @@ TEST_F(StemControlTest, VolumeResetOnLoad) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Volume->get(), 0.1);
     EXPECT_EQ(m_pStem2Volume->get(), 0.2);
@@ -258,7 +281,7 @@ TEST_F(StemControlTest, VolumeResetOnLoad) {
 
     m_pConfig->setValue(
             ConfigKey("[Mixer Profile]", "stem_auto_reset"), true);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Volume->get(), 1.0);
     EXPECT_EQ(m_pStem2Volume->get(), 1.0);
@@ -270,7 +293,7 @@ TEST_F(StemControlTest, VolumeResetOnLoad) {
     EXPECT_EQ(m_pStem4Mute->get(), 0.0);
 }
 
-TEST_F(StemControlTest, Mute) {
+TEST_P(StemControlFixture, Mute) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
     m_pPlay->set(1.0);
@@ -310,9 +333,56 @@ TEST_F(StemControlTest, Mute) {
     m_pStem3Mute->set(0.0);
     m_pStem4Mute->set(0.0);
 
+    // We need to allow a bigger bigger delta than the 0.0001 default
+    // to cover the difference of different AAC decoder.
+    // aac and libfdk_aac have a difference of 0.00017 in tests with FFmpeg 4.4.2
+    double acceptableDelta = 0.0002; // -74 dB
     // Proceed the buffer a first time to proceed the ramping gain
     m_pEngineMixer->process(kProcessBufferSize);
     m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            QStringLiteral("StemMuteControlFull"));
+            QStringLiteral("StemMuteControlFull"),
+            acceptableDelta);
 }
+
+TEST_P(StemControlFixture, VuMeter) {
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pPlay->set(1.0);
+
+    // Initial check: silence
+    EXPECT_EQ(m_pStem1VuMeter->get(), 0.0);
+
+    // Process buffer to play sound
+    // Run enough cycles to trigger VU meter update (30Hz update rate vs ~44kHz/buffer)
+    for (int i = 0; i < 50; ++i) {
+        m_pEngineMixer->process(kProcessBufferSize);
+    }
+
+    // Check if VU meters picked up the signal
+    EXPECT_GT(m_pStem1VuMeter->get(), 0.0);
+    EXPECT_GT(m_pStem2VuMeter->get(), 0.0);
+
+    // Mute Stem 1
+    m_pStem1Mute->set(1.0);
+
+    // Process enough buffers to allow VU meter to decay to 0
+    // Decay is exponential, so it takes time.
+    for (int i = 0; i < 600; ++i) {
+        m_pEngineMixer->process(kProcessBufferSize);
+    }
+
+    // VU Meter should be near zero (allow small epsilon for imperfect decay)
+    EXPECT_NEAR(m_pStem1VuMeter->get(), 0.0, 0.001);
+
+    // Stem 2 should still be playing
+    EXPECT_GT(m_pStem2VuMeter->get(), 0.0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+        DISABLED_StemControlTest,
+        StemControlFixture,
+        ::testing::ValuesIn(supportedCodecs),
+        [](const testing::TestParamInfo<StemControlFixture::ParamType>& info) {
+            return info.param;
+        });

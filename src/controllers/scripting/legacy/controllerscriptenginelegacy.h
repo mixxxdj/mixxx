@@ -73,7 +73,9 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     /// Emitted when a screen has been rendered.
     // TODO (XXX) Move this signal in ControllerScriptEngineBase when ScreenInfo
     // isn't tight to LegacyControllerMapping anymore.
-    void previewRenderedScreen(const LegacyControllerMapping::ScreenInfo& screen, QImage frame);
+    void previewRenderedScreen(
+            const LegacyControllerMapping::ScreenInfo& screen,
+            const QImage& frame);
 #endif
 
   private:

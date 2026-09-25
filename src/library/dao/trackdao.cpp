@@ -361,7 +361,7 @@ bool TrackDAO::saveTrack(Track* pTrack) const {
 
     const TrackId trackId = pTrack->getId();
     DEBUG_ASSERT(trackId.isValid());
-    kLogger.debug() << "TrackDAO: Saving track"
+    kLogger.debug() << "Saving track"
                     << trackId
                     << pTrack->getLocation();
     if (!updateTrack(*pTrack)) {
@@ -456,6 +456,7 @@ void TrackDAO::addTracksPrepare() {
             "rating,"
             "key,"
             "key_id,"
+            "tuning_frequency_hz,"
             "cuepoint,"
             "bpm,"
             "replaygain,"
@@ -504,6 +505,7 @@ void TrackDAO::addTracksPrepare() {
             ":rating,"
             ":key,"
             ":key_id,"
+            ":tuning_frequency_hz,"
             ":cuepoint,"
             ":bpm,"
             ":replaygain,"
@@ -609,6 +611,8 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":cuepoint",
             track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
+    pTrackLibraryQuery->bindValue(":tuning_frequency_hz",
+            track.getKeys().getGlobalTuningFrequencyHz());
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 
@@ -740,7 +744,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         return TrackId();
     }
 
-    kLogger.debug() << "TrackDAO: Adding track"
+    kLogger.debug() << "Adding track"
                     << fileInfo.location();
 
     TrackId trackId;
@@ -1044,7 +1048,7 @@ QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
     }
 
     QList<TrackRef> trackRefs;
-    const int idColumn = query.record().indexOf(LIBRARYTABLE_MIXXXDELETED);
+    const int idColumn = query.record().indexOf(LIBRARYTABLE_ID);
     const int locationColumn = query.record().indexOf(LIBRARYTABLE_LOCATION);
     while (query.next()) {
         const auto trackId = TrackId(query.value(idColumn));
@@ -1142,9 +1146,9 @@ void TrackDAO::afterPurgingTracks(
 #else
     QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
 #endif
+    // Notify BaseTrackCache it should remove tracks and track models
+    // that they should update their cache as well.
     emit tracksRemoved(tracksRemovedSet);
-    // notify trackmodels that they should update their cache as well.
-    emit forceModelUpdate();
 }
 
 namespace {
@@ -1303,15 +1307,10 @@ void setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
         DEBUG_ASSERT(beatsBlob.isEmpty());
         return;
     }
-    bool bpmLocked = record.value(column + 4).toBool();
     const mixxx::BeatsPointer pBeats = mixxx::Beats::fromByteArray(
             pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
-        if (bpmLocked) {
-            pTrack->trySetAndLockBeats(pBeats);
-        } else {
-            pTrack->trySetBeats(pBeats);
-        }
+        pTrack->trySetBeats(pBeats);
     } else if (bpm.isValid()) {
         // Load a temporary beat grid without offset that will be replaced by the analyzer.
         const auto pBeats = mixxx::Beats::fromConstTempo(
@@ -1320,6 +1319,10 @@ void setTrackBeats(const QSqlRecord& record, const int column, Track* pTrack) {
     } else {
         pTrack->trySetBeats(nullptr);
     }
+}
+
+void setTrackBpmLock(const QSqlRecord& record, const int column, Track* pTrack) {
+    pTrack->setBpmLocked(record.value(column).toBool());
 }
 
 void setTrackKey(const QSqlRecord& record, const int column, Track* pTrack) {
@@ -1422,7 +1425,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             {"beats_version", nullptr},
             {"beats_sub_version", nullptr},
             {"beats", nullptr},
-            {"bpm_lock", nullptr},
+            {"bpm_lock", setTrackBpmLock},
 
             // Key detection columns are handled by setTrackKey. Do not change the
             // ordering of these columns or put other columns in between them!
@@ -1634,6 +1637,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
                 // Adapt and forward signal
                 emit mixxx::thisAsNonConst(this)->tracksChanged(QSet<TrackId>{trackId});
             });
+    connect(pTrack.get(),
+            &Track::waveformSummaryUpdated,
+            this,
+            [this, trackId]() {
+                emit mixxx::thisAsNonConst(this)->waveformSummaryUpdated(trackId);
+            });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
@@ -1673,8 +1682,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
     const TrackId trackId = track.getId();
     DEBUG_ASSERT(trackId.isValid());
 
-    kLogger.debug() << "TrackDAO:"
-                    << "Updating track in database"
+    kLogger.debug() << "Updating track in database"
                     << trackId
                     << track.getLocation();
 
@@ -1704,6 +1712,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
             "rating=:rating,"
             "key=:key,"
             "key_id=:key_id,"
+            "tuning_frequency_hz=:tuning_frequency_hz,"
             "cuepoint=:cuepoint,"
             "bpm=:bpm,"
             "replaygain=:replaygain,"
@@ -1818,23 +1827,6 @@ void TrackDAO::markTrackLocationsAsVerified(const QStringList& locations) const 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark track locations as verified.";
-        DEBUG_ASSERT(!"Failed query");
-    }
-}
-
-void TrackDAO::markTracksInDirectoriesAsVerified(const QStringList& directories) const {
-    // kLogger.debug()<< "markTracksInDirectoryAsVerified" <<
-    // QThread::currentThread() << m_database.connectionName();
-
-    QSqlQuery query(m_database);
-    query.prepare(
-        QString("UPDATE track_locations "
-                "SET needs_verification=0 "
-                "WHERE directory IN (%1)").arg(
-                        SqlStringFormatter::formatList(m_database, directories)));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
         DEBUG_ASSERT(!"Failed query");
     }
 }
@@ -1955,6 +1947,8 @@ bool TrackDAO::detectMovedTracks(
         kLogger.info()
                 << "Looking for substitute of missing track location"
                 << oldTrackLocation;
+
+        emit mixxx::thisAsNonConst(this)->progressLookingForSubstituteTracks(oldTrackLocation);
 
         newTrackQuery.bindValue(":filename", filename);
         newTrackQuery.bindValue(":duration", duration);
@@ -2118,9 +2112,10 @@ bool TrackDAO::verifyRemainingTracks(
     // check if it exists.
     // TODO(kain88) check if all others are marked with 0 again
     query.setForwardOnly(true);
-    query.prepare("SELECT location "
-                  "FROM track_locations "
-                  "WHERE needs_verification = 1");
+    query.prepare(
+            "SELECT location, fs_deleted "
+            "FROM track_locations "
+            "WHERE needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");
@@ -2416,8 +2411,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 m_database,
                 QStringLiteral(
                         "UPDATE library SET "
-                        "timesplayed=0,"
-                        "last_played_at=NULL "
+                        "timesplayed=0 "
                         "WHERE id NOT IN("
                         "SELECT PlaylistTracks.track_id "
                         "FROM PlaylistTracks "
@@ -2482,6 +2476,12 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 // Never played and timesplayed should not be NULL
                 DEBUG_ASSERT(last_played_at.isNull());
                 timesplayed = 0;
+
+                // Fetch the actual last played date from older history sessions
+                QString lastTimeAdded = findLastTimeAddedToHistory(trackId);
+                if (!lastTimeAdded.isEmpty()) {
+                    last_played_at = lastTimeAdded;
+                }
             }
             trackUpdateQuery.bindValue(
                     QStringLiteral(":trackId"),
@@ -2525,4 +2525,39 @@ void TrackDAO::setTrackHeaderParsedInternal(Track* pTrack, bool headerParsed) {
 //static
 bool TrackDAO::getTrackHeaderParsedInternal(const mixxx::TrackRecord& trackRecord) {
     return trackRecord.m_headerParsed;
+}
+
+QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
+    // A track ID might be invalid if the track was just added and hasn't been
+    // saved to the database yet, or if it represents a missing or deleted track.
+    if (!trackId.isValid()) {
+        return QString();
+    }
+
+    // Lazy Prepare: Only prepare the query if it has not been prepared yet
+    if (m_lastAddedToHistoryQuery.lastQuery().isEmpty()) {
+        m_lastAddedToHistoryQuery = QSqlQuery(m_database);
+        m_lastAddedToHistoryQuery.prepare(
+                "SELECT MAX(PlaylistTracks.pl_datetime_added) "
+                "FROM PlaylistTracks "
+                "JOIN Playlists ON PlaylistTracks.playlist_id = Playlists.id "
+                "WHERE PlaylistTracks.track_id = :id "
+                "AND Playlists.hidden = " +
+                QString::number(PlaylistDAO::PLHT_SET_LOG));
+    }
+
+    m_lastAddedToHistoryQuery.bindValue(":id", trackId.toVariant());
+
+    if (!m_lastAddedToHistoryQuery.exec()) {
+        LOG_FAILED_QUERY(m_lastAddedToHistoryQuery)
+                << "Failed to find last time added to history for track"
+                << trackId;
+        return QString();
+    }
+
+    if (m_lastAddedToHistoryQuery.next()) {
+        return m_lastAddedToHistoryQuery.value(0).toString();
+    }
+
+    return QString();
 }

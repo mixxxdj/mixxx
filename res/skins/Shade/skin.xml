@@ -273,6 +273,17 @@
   <Layout>vertical</Layout>
 
     <Children>
+
+    <!-- Signal color for waveform overview in preview deck, samplers and library -->
+    <SetVariable name="SignalColor">#191F24</SetVariable>
+    <SetVariable name="PassthroughLabelColor">#55F764</SetVariable>
+    <!-- Shade has overview and waveform very close, so it would be redundant and distracting
+        to paint the 'Passthrough' labels on both with an alarming color.
+        This is the regular background color, so the label will be invisible: -->
+    <SetVariable name="PassthroughLabelColorWaveform">#8d98a3</SetVariable>
+    <!-- This is slightly brighter that the background: -->
+    <!-- <SetVariable name="PassthroughLabelColorWaveform">#9fabb7</SetVariable> -->
+
     <!--
     ############################################################################################
     ############################################################################################
@@ -284,13 +295,6 @@
     ############################################################################################
     ############################################################################################
     -->
-    <SetVariable name="PassthroughLabelColor">#55F764</SetVariable>
-    <!-- Shade has overview and waveform very close, so it would be redundant and distracting
-        to paint the 'Passthrough' labels on both with an alarming color.
-        This is the regular background color, so the label will be invisible: -->
-    <SetVariable name="PassthroughLabelColorWaveform">#8d98a3</SetVariable>
-    <!-- This is slightly brighter that the background: -->
-    <!-- <SetVariable name="PassthroughLabelColorWaveform">#9fabb7</SetVariable> -->
 
     <SingletonDefinition>
       <ObjectName>Overview1</ObjectName>

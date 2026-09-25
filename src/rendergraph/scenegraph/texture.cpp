@@ -10,6 +10,8 @@ Texture::Texture(Context* pContext, const QImage& image)
     VERIFY_OR_DEBUG_ASSERT(pContext->window() != nullptr) {
         return;
     }
+    m_pTexture->setFiltering(QSGTexture::Linear);
+    m_pTexture->setMipmapFiltering(QSGTexture::None);
     DEBUG_ASSERT(!m_pTexture->textureSize().isNull());
 }
 

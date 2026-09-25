@@ -9,9 +9,19 @@
 #include "library/trackmodel.h"
 #include "track/track_decl.h"
 #include "util/color/colorpalette.h"
+#include "util/datetime.h"
 
 class TrackCollectionManager;
 
+/// Base class for tabular track list views.
+///
+/// The abstract model behind `WTrackTableView`.
+///
+/// Closely coupled with `BaseSqlTableModel` from which it has been extracted once.
+///
+/// Serves as an extension point for integrating external track data into Mixxx.
+/// It allows to view track lists provided by external libraries using `WTrackTableView`
+/// without importing redundant data into the Mixxx database.
 class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     Q_OBJECT
     DISALLOW_COPY_AND_ASSIGN(BaseTrackTableModel);
@@ -23,6 +33,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const char* settingsNamespace);
     ~BaseTrackTableModel() override = default;
 
+    QVariant getFieldVariant(const QModelIndex& index, ColumnCache::Column column) const;
+    QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
+    QString getFieldString(const QModelIndex& index, ColumnCache::Column column) const;
+
     ///////////////////////////////////////////////////////
     //  Overridable functions
     ///////////////////////////////////////////////////////
@@ -30,6 +44,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual int fieldIndex(
             ColumnCache::Column column) const {
         return m_columnCache.fieldIndex(column);
+    }
+
+    virtual int endFieldIndex() const {
+        return m_columnCache.endFieldIndex();
     }
 
     ///////////////////////////////////////////////////////
@@ -115,28 +133,29 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr bool kApplyPlayedTrackColorDefault = true;
     static void setApplyPlayedTrackColor(bool apply);
 
-  protected:
-    static constexpr int defaultColumnWidth() {
-        return 50;
-    }
-    static QStringList defaultTableColumns();
+    enum class DateFormat {
+        Native = 0,        // System Default
+        ISO8601 = 1,       // yyyy-MM-dd
+        RegionalShort = 2, // d/M/yy
+        RegionalLong = 3,  // dd.MM.yyyy
+        Custom = 4,
+    };
+    Q_ENUM(DateFormat)
 
+    static const QString kDateFormatDefault;
+    static void setDateFormat(const QString& format);
+
+  protected:
     // Build a map from the column names to their indices
-    // used by fieldIndex(). This function has to be called
+    // used by fieldIndex().
     void initTableColumnsAndHeaderProperties(
-            const QStringList& tableColumns = defaultTableColumns());
+            const QStringList& tableColumns);
 
     QString columnNameForFieldIndex(int index) const {
         return m_columnCache.columnNameForFieldIndex(index);
     }
 
-    // A simple helper function for initializing header title and width.
-    // Note that the ideal width of a column is based on the width of
-    // its data, not the title string itself.
-    void setHeaderProperties(
-            ColumnCache::Column column,
-            const QString& title,
-            int defaultWidth = 0);
+    void setHeaderProperties(ColumnCache::Column column);
 
     ColumnCache::Column mapColumn(int column) const {
         if (column >= 0 && column < m_columnHeaders.size()) {
@@ -166,8 +185,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     ///////////////////////////////////////////////////////
     //  Overridable functions
     ///////////////////////////////////////////////////////
-
-    virtual void initHeaderProperties();
 
     // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(
@@ -249,7 +266,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     void slotRefreshCoverRows(
             const QList<int>& rows);
 
+    void slotRefreshOverviewRows(const QList<int>& rows);
+
     void slotRefreshAllRows();
+
+    void slotTracksRemoved(const QSet<TrackId>& trackIds);
 
     void slotCoverFound(
             const QObject* pRequester,
@@ -290,8 +311,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     };
     QVector<ColumnHeader> m_columnHeaders;
 
-    int countValidColumnHeaders() const;
-
     TrackId m_previewDeckTrackId;
 
     mutable QModelIndex m_toolTipIndex;
@@ -303,4 +322,5 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static std::optional<ColorPalette> s_keyColorPalette;
 
     static bool s_bApplyPlayedTrackColor;
+    static QString s_dateFormat;
 };

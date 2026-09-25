@@ -306,6 +306,9 @@ mixxx::Bpm BeatUtils::makeConstBpm(
     //qDebug() << "minRoundBpm" << minRoundBpm;
     //qDebug() << "maxRoundBpm" << maxRoundBpm;
     const mixxx::Bpm roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
+    if (!roundBpm.isValid()) {
+        return {};
+    }
 
     if (pFirstBeat) {
         // Move the first beat as close to the start of the track as we can. This is
@@ -322,45 +325,67 @@ mixxx::Bpm BeatUtils::makeConstBpm(
 }
 
 // static
-mixxx::Bpm BeatUtils::roundBpmWithinRange(
-        mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
-    // First try to snap to a full integer BPM
-    // FIXME: calling bpm.value() without checking bpm.isValid()
-    auto snapBpm = mixxx::Bpm(round(centerBpm.value()));
+std::optional<mixxx::Bpm> BeatUtils::trySnap(mixxx::Bpm minBpm,
+        mixxx::Bpm centerBpm,
+        mixxx::Bpm maxBpm,
+        double fraction) {
+    mixxx::Bpm snapBpm = mixxx::Bpm(round(centerBpm.value() * fraction) / fraction);
     if (snapBpm > minBpm && snapBpm < maxBpm) {
-        // Success
         return snapBpm;
     }
+    return std::nullopt;
+};
 
-    // Probe the reasonable multipliers for 0.5
-    const double roundBpmWidth = maxBpm - minBpm;
-    if (roundBpmWidth > 0.5) {
-        // 0.5 BPM are only reasonable if the double value is not insane
-        // or the 2/3 value is not too small.
-        if (centerBpm < mixxx::Bpm(85.0)) {
-            // this cane be actually up to 175 BPM
-            // allow halve BPM values
-            return mixxx::Bpm(round(centerBpm.value() * 2) / 2);
-        } else if (centerBpm > mixxx::Bpm(127.0)) {
-            // optimize for 2/3 going down to 85
-            return mixxx::Bpm(round(centerBpm.value() / 3 * 2) * 3 / 2);
+// static
+mixxx::Bpm BeatUtils::roundBpmWithinRange(
+        mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
+    // If any BPM is invalid, return the centerBpm as-is to avoid
+    // unexpected results in the following calculations
+    if (!minBpm.isValid() || !centerBpm.isValid() || !maxBpm.isValid()) {
+        return centerBpm;
+    }
+
+    // First try to snap to a full integer BPM
+    std::optional<mixxx::Bpm> snapBpm = trySnap(minBpm, centerBpm, maxBpm, 1.0);
+    if (snapBpm) {
+        return *snapBpm;
+    }
+
+    // 0.5 BPM are only reasonable if the double value is not insane
+    // else other factors below are more typical
+    if (centerBpm < mixxx::Bpm(85.0)) {
+        // this can be actually up to 175 BPM
+        // allow halve BPM values
+        snapBpm = trySnap(minBpm, centerBpm, maxBpm, 2.0);
+        if (snapBpm) {
+            return *snapBpm;
         }
     }
 
-    if (roundBpmWidth > 1.0 / 12) {
-        // this covers all sorts of 1/2 2/3 and 3/4 multiplier
-        return mixxx::Bpm(round(centerBpm.value() * 12) / 12);
-    } else {
-        // We are here if we have more that ~75 beats and ~30 s
-        // try to snap to a 1/12 Bpm
-        snapBpm = mixxx::Bpm(round(centerBpm.value() * 12) / 12);
-        if (snapBpm > minBpm && snapBpm < maxBpm) {
-            // Success
-            return snapBpm;
+    if (centerBpm > mixxx::Bpm(127.0)) {
+        // optimize for 2/3 going down to 85
+        // else other factors below are more typical
+        snapBpm = trySnap(minBpm, centerBpm, maxBpm, 2.0 / 3.0);
+        if (snapBpm) {
+            return *snapBpm;
         }
-        // else give up and use the original BPM value.
     }
 
+    // try to snap to a 1/3 Bpm
+    // This covers all sorts of 3/2 and 3/4 multipliers
+    snapBpm = trySnap(minBpm, centerBpm, maxBpm, 3.0);
+    if (snapBpm) {
+        return *snapBpm;
+    }
+
+    // try to snap to a 1/12 Bpm
+    // This covers all other sorts of typical multipliers
+    snapBpm = trySnap(minBpm, centerBpm, maxBpm, 12.0);
+    if (snapBpm) {
+        return *snapBpm;
+    }
+
+    // else give up and use the original BPM value.
     return centerBpm;
 }
 
@@ -388,7 +413,10 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
-    // FIXME: calling bpm.value() without checking bpm.isValid()
+    if (!bpm.isValid()) {
+        return firstBeat;
+    }
+
     const double beatLength = 60 * sampleRate / bpm.value();
     const mixxx::audio::FramePos startOffset =
             mixxx::audio::FramePos(fmod(firstBeat.value(), beatLength));

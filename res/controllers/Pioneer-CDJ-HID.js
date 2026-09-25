@@ -143,7 +143,7 @@ function PioneerCDJController() {
         // bytes to get it working. Need to add a response packet
         // to input packets as well, if we receive acknowledgement
         packet = new HIDPacket("request_hid_mode", 0x1);
-        packet.addOutput("hid", "mode", 0, "B", 1);
+        packet.addOutput("hid", "mode", 1, "B", 1);
         this.controller.registerOutputPacket(packet);
 
         // Control packet for screen text control

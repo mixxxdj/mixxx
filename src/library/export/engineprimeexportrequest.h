@@ -20,11 +20,17 @@ struct EnginePrimeExportRequest {
     /// Version of Engine Prime database schema to use when exporting.
     djinterop::engine::engine_schema exportSchemaVersion;
 
-    /// Set of crates to export, if `exportSelectedCrates` is set to true.
+    /// Set of crates to export.
     ///
-    /// An empty set here implies that the whole music library is to be
-    /// exported.
+    /// An empty set of crates AND playlists to export implies that the whole
+    /// music library is to be exported.
     QSet<CrateId> crateIdsToExport;
+
+    /// Set of playlists to export,
+    ///
+    /// An empty set of crates AND playlists to export implies that the whole
+    /// music library is to be exported.
+    QSet<int> playlistIdsToExport;
 };
 
 } // namespace mixxx

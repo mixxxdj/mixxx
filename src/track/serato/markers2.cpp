@@ -76,7 +76,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2BpmLockEntry::parse(const QByteArray& d
 
     const bool locked = data.at(0);
     SeratoMarkers2BpmLockEntry* pEntry = new SeratoMarkers2BpmLockEntry(locked);
-    kLogger.trace() << "SeratoMarkers2BpmLockEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2BpmLockEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -116,7 +118,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2ColorEntry::parse(const QByteArray& dat
             static_cast<quint8>(data.at(3))));
 
     SeratoMarkers2ColorEntry* pEntry = new SeratoMarkers2ColorEntry(color);
-    kLogger.trace() << "SeratoMarkers2ColorEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2ColorEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -205,7 +209,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2CueEntry::parse(const QByteArray& data)
     }
 
     SeratoMarkers2CueEntry* pEntry = new SeratoMarkers2CueEntry(index, position, color, label);
-    kLogger.trace() << "SeratoMarkers2CueEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2CueEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -316,7 +322,9 @@ SeratoMarkers2EntryPointer SeratoMarkers2LoopEntry::parse(const QByteArray& data
 
     SeratoMarkers2LoopEntry* pEntry = new SeratoMarkers2LoopEntry(
             index, startPosition, endPosition, color, locked, label);
-    kLogger.trace() << "SeratoMarkers2LoopEntry" << *pEntry;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SeratoMarkers2LoopEntry" << *pEntry;
+    }
     return SeratoMarkers2EntryPointer(pEntry);
 }
 
@@ -439,7 +447,9 @@ bool SeratoMarkers2::parseCommon(
             pEntry = SeratoMarkers2LoopEntry::parse(entryData);
         } else {
             pEntry = SeratoMarkers2EntryPointer(new SeratoMarkers2UnknownEntry(entryType, entryData));
-            kLogger.trace() << "SeratoMarkers2UnknownEntry" << *pEntry;
+            if (kLogger.traceEnabled()) {
+                kLogger.trace() << "SeratoMarkers2UnknownEntry" << *pEntry;
+            }
         }
 
         if (!pEntry) {

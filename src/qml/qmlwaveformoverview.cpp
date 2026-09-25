@@ -1,7 +1,14 @@
 #include "qml/qmlwaveformoverview.h"
 
-#include "mixer/basetrackplayer.h"
+#include <algorithm>
+
+#include "control/controlproxy.h"
 #include "moc_qmlwaveformoverview.cpp"
+#include "qmlconfigproxy.h"
+#include "qmltrackproxy.h"
+#include "track/track.h"
+#include "util/math.h"
+#include "waveform/waveformwidgetfactory.h"
 
 namespace {
 constexpr double kDesiredChannelHeight = 255;
@@ -12,47 +19,87 @@ namespace qml {
 
 QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
         : QQuickPaintedItem(parent),
-          m_pPlayer(nullptr),
+          m_group(),
+          m_pTrack(nullptr),
           m_channels(ChannelFlag::BothChannels),
           m_renderer(Renderer::RGB),
+          m_stereo(true),
+          m_normalized(false),
+          m_minuteMarkers(true),
           m_colorHigh(0xFF0000),
           m_colorMid(0x00FF00),
           m_colorLow(0x0000FF) {
 }
 
-QmlPlayerProxy* QmlWaveformOverview::getPlayer() const {
-    return m_pPlayer;
+void QmlWaveformOverview::componentComplete() {
+    // Overview gain is shared with the scrolling waveform settings. The
+    // legacy preferences page updates the QML config proxy explicitly, so
+    // subscribe here to invalidate the painted item when that value changes.
+    if (auto* pConfig = qobject_cast<QmlConfigProxy*>(QmlConfigProxyBase::s_pInstance)) {
+        connect(pConfig,
+                &QmlConfigProxy::waveformVisualGainAllChanged,
+                this,
+                &QmlWaveformOverview::slotWaveformUpdated,
+                Qt::UniqueConnection);
+    }
+    QQuickPaintedItem::componentComplete();
 }
 
-void QmlWaveformOverview::setPlayer(QmlPlayerProxy* pPlayer) {
-    if (m_pPlayer == pPlayer) {
+void QmlWaveformOverview::setGroup(const QString& group) {
+    if (m_group == group) {
         return;
     }
 
-    if (m_pPlayer != nullptr) {
-        m_pPlayer->internalTrackPlayer()->disconnect(this);
+    m_group = group;
+    m_pReplayGain.reset();
+    m_pReplayGainEnabled.reset();
+    m_pReplayGainBoost.reset();
+    m_pReplayGainDefaultBoost.reset();
+
+    if (!m_group.isEmpty()) {
+        m_pReplayGain = std::make_unique<ControlProxy>(
+                m_group, QStringLiteral("replaygain"), this);
+        m_pReplayGainEnabled = std::make_unique<ControlProxy>(
+                QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainEnabled"), this);
+        m_pReplayGainBoost = std::make_unique<ControlProxy>(
+                QStringLiteral("[ReplayGain]"), QStringLiteral("ReplayGainBoost"), this);
+        m_pReplayGainDefaultBoost = std::make_unique<ControlProxy>(
+                QStringLiteral("[ReplayGain]"), QStringLiteral("DefaultBoost"), this);
+
+        m_pReplayGain->connectValueChanged(this, &QmlWaveformOverview::slotWaveformUpdated);
+        m_pReplayGainEnabled->connectValueChanged(this, &QmlWaveformOverview::slotWaveformUpdated);
+        m_pReplayGainBoost->connectValueChanged(this, &QmlWaveformOverview::slotWaveformUpdated);
+        m_pReplayGainDefaultBoost->connectValueChanged(
+                this, &QmlWaveformOverview::slotWaveformUpdated);
     }
 
-    m_pPlayer = pPlayer;
-
-    if (m_pPlayer != nullptr) {
-        setCurrentTrack(m_pPlayer->internalTrackPlayer()->getLoadedTrack());
-        connect(m_pPlayer->internalTrackPlayer(),
-                &BaseTrackPlayer::newTrackLoaded,
-                this,
-                &QmlWaveformOverview::slotTrackLoaded);
-        connect(m_pPlayer->internalTrackPlayer(),
-                &BaseTrackPlayer::loadingTrack,
-                this,
-                &QmlWaveformOverview::slotTrackLoading);
-        connect(m_pPlayer->internalTrackPlayer(),
-                &BaseTrackPlayer::playerEmpty,
-                this,
-                &QmlWaveformOverview::slotTrackUnloaded);
-    }
-
-    emit playerChanged();
+    emit groupChanged();
     update();
+}
+
+QmlTrackProxy* QmlWaveformOverview::getTrack() const {
+    return m_pTrack;
+}
+
+void QmlWaveformOverview::setTrack(QmlTrackProxy* pTrack) {
+    if (m_pTrack == pTrack) {
+        return;
+    }
+
+    if (m_pTrack != nullptr && m_pTrack->internal() != nullptr) {
+        m_pTrack->internal()->disconnect(this);
+    }
+
+    m_pTrack = pTrack;
+
+    if (m_pTrack != nullptr && pTrack->internal() != nullptr) {
+        connect(pTrack->internal().get(),
+                &Track::waveformSummaryUpdated,
+                this,
+                &QmlWaveformOverview::slotWaveformUpdated);
+    }
+    emit trackChanged();
+    slotWaveformUpdated();
 }
 
 QmlWaveformOverview::Channels QmlWaveformOverview::getChannels() const {
@@ -66,43 +113,53 @@ void QmlWaveformOverview::setChannels(QmlWaveformOverview::Channels channels) {
 
     m_channels = channels;
     emit channelsChanged(channels);
+    update();
 }
 
-void QmlWaveformOverview::slotTrackLoaded(TrackPointer pTrack) {
-    // TODO: Investigate if it's a bug that this debug assertion fails when
-    // passing tracks on the command line
-    // DEBUG_ASSERT(m_pCurrentTrack == pTrack);
-    setCurrentTrack(pTrack);
+void QmlWaveformOverview::setRenderer(Renderer renderer) {
+    if (m_renderer == renderer) {
+        return;
+    }
+    m_renderer = renderer;
+    emit rendererChanged(renderer);
+    update();
 }
 
-void QmlWaveformOverview::slotTrackLoading(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
-    DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
-    setCurrentTrack(pNewTrack);
+void QmlWaveformOverview::setStereo(bool stereo) {
+    if (m_stereo == stereo) {
+        return;
+    }
+    m_stereo = stereo;
+    emit stereoChanged();
+    update();
 }
 
-void QmlWaveformOverview::slotTrackUnloaded() {
-    setCurrentTrack(nullptr);
+void QmlWaveformOverview::setNormalized(bool normalized) {
+    if (m_normalized == normalized) {
+        return;
+    }
+    m_normalized = normalized;
+    emit normalizedChanged();
+    update();
 }
 
-void QmlWaveformOverview::setCurrentTrack(TrackPointer pTrack) {
-    // TODO: Check if this is actually possible
-    if (m_pCurrentTrack == pTrack) {
+void QmlWaveformOverview::setMinuteMarkers(bool minuteMarkers) {
+    if (m_minuteMarkers == minuteMarkers) {
+        return;
+    }
+    m_minuteMarkers = minuteMarkers;
+    emit minuteMarkersChanged();
+    update();
+}
+
+void QmlWaveformOverview::setAnalyzerProgress(double analyzerProgress) {
+    if (m_analyzerProgress == analyzerProgress) {
         return;
     }
 
-    if (m_pCurrentTrack != nullptr) {
-        disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
-    }
-
-    m_pCurrentTrack = pTrack;
-    if (pTrack != nullptr) {
-        connect(pTrack.get(),
-                &Track::waveformSummaryUpdated,
-                this,
-                &QmlWaveformOverview::slotWaveformUpdated);
-    }
-    slotWaveformUpdated();
+    m_analyzerProgress = analyzerProgress;
+    emit analyzerProgressChanged();
+    update();
 }
 
 void QmlWaveformOverview::slotWaveformUpdated() {
@@ -110,7 +167,10 @@ void QmlWaveformOverview::slotWaveformUpdated() {
 }
 
 void QmlWaveformOverview::paint(QPainter* pPainter) {
-    TrackPointer pTrack = m_pCurrentTrack;
+    if (!m_pTrack) {
+        return;
+    }
+    TrackPointer pTrack = m_pTrack->internal();
     if (!pTrack) {
         return;
     }
@@ -121,61 +181,87 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
     }
 
     const int dataSize = pWaveform->getDataSize();
-    if (dataSize == 0) {
+    if (dataSize <= 0) {
         return;
     }
 
-    constexpr int actualCompletion = 0;
-    // Always multiple of 2
-    const int waveformCompletion = pWaveform->getCompletion();
-    // Test if there is some new to draw (at least of pixel width)
-    const int completionIncrement = waveformCompletion - actualCompletion;
-
-    const qreal desiredWidth = static_cast<qreal>(dataSize) / 2;
-    const double visiblePixelIncrement = completionIncrement * desiredWidth / dataSize;
-    if (waveformCompletion < (dataSize - 2) &&
-            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
+    const int waveformCompletion =
+            std::clamp(pWaveform->getCompletion(), 0, dataSize) & ~1;
+    if (waveformCompletion <= 0) {
         return;
     }
 
-    const int nextCompletion = actualCompletion + completionIncrement;
+    const double desiredWidth = static_cast<double>(dataSize) / 2.0;
+    double amplitudeScale = 1.0;
+    if (m_normalized) {
+        unsigned char peak = 0;
+        for (int i = 0; i < waveformCompletion; ++i) {
+            peak = std::max(peak, pWaveform->getAll(i));
+        }
+        if (peak > 0) {
+            amplitudeScale = 255.0 / peak;
+        }
+    } else if (m_pReplayGainEnabled && m_pReplayGainBoost &&
+            m_pReplayGainDefaultBoost && m_pReplayGain) {
+        // Match the legacy overview's non-normalized scaling: apply the
+        // track's ReplayGain (or its default boost before analysis) together
+        // with the global visual gain used by scrolling waveforms.
+        double trackGainRatio = 1.0;
+        if (m_pReplayGainEnabled->toBool()) {
+            const double replayGain = m_pReplayGain->get();
+            trackGainRatio = replayGain == 0.0
+                    ? m_pReplayGainDefaultBoost->get()
+                    : replayGain * m_pReplayGainBoost->get();
+        }
+        const double visualGain = WaveformWidgetFactory::isCreated()
+                ? WaveformWidgetFactory::instance()->getVisualGain(BandIndex::AllBand)
+                : 1.0;
+        amplitudeScale = std::max(0.0, trackGainRatio * visualGain);
+    }
 
-    const Channels channels = m_channels;
     pPainter->save();
-
-    switch (channels) {
-    case static_cast<int>(ChannelFlag::LeftChannel):
-        // Draw both channels.
-        // Set the y axis to half the height of the item
+    if (!m_stereo) {
         pPainter->translate(0.0, height());
-        // Set the x axis to half the height of the item
-        pPainter->scale(width() / desiredWidth, height() / kDesiredChannelHeight);
-        break;
-    case static_cast<int>(ChannelFlag::RightChannel):
-        // Set the x axis to half the height of the item
-        pPainter->scale(width() / desiredWidth, height() / kDesiredChannelHeight);
-        break;
-    default:
-        // Draw both channels.
-        // Set the y axis to half the height of the item
-        pPainter->translate(0.0, height() / 2);
-        // Set the x axis to half the height of the item
-        pPainter->scale(width() / desiredWidth, height() / (2 * kDesiredChannelHeight));
-    }
-
-    Renderer renderer = m_renderer;
-    for (int currentCompletion = actualCompletion;
-            currentCompletion < nextCompletion;
-            currentCompletion += 2) {
-        switch (renderer) {
-        case Renderer::Filtered:
-            drawFiltered(pPainter, channels, pWaveform, currentCompletion);
+        pPainter->scale(width() / desiredWidth,
+                -height() / (2.0 * kDesiredChannelHeight) * amplitudeScale);
+    } else {
+        switch (static_cast<int>(m_channels)) {
+        case static_cast<int>(ChannelFlag::LeftChannel):
+            pPainter->translate(0.0, height());
+            pPainter->scale(width() / desiredWidth,
+                    height() / kDesiredChannelHeight * amplitudeScale);
+            break;
+        case static_cast<int>(ChannelFlag::RightChannel):
+            pPainter->scale(width() / desiredWidth,
+                    height() / kDesiredChannelHeight * amplitudeScale);
             break;
         default:
-            drawRgb(pPainter, channels, pWaveform, currentCompletion);
+            pPainter->translate(0.0, height() / 2.0);
+            pPainter->scale(width() / desiredWidth,
+                    height() / (2.0 * kDesiredChannelHeight) * amplitudeScale);
+            break;
+        }
+    }
+
+    for (int currentCompletion = 0;
+            currentCompletion < waveformCompletion;
+            currentCompletion += 2) {
+        switch (m_renderer) {
+        case Renderer::Filtered:
+            drawFiltered(pPainter, m_channels, pWaveform, currentCompletion);
+            break;
+        case Renderer::HSV:
+            drawHsv(pPainter, m_channels, pWaveform, currentCompletion);
+            break;
+        default:
+            drawRgb(pPainter, m_channels, pWaveform, currentCompletion);
         }
     }
     pPainter->restore();
+
+    if (m_minuteMarkers) {
+        drawMinuteMarkers(pPainter, m_pTrack->getDuration());
+    }
 }
 
 void QmlWaveformOverview::drawRgb(QPainter* pPainter,
@@ -183,6 +269,24 @@ void QmlWaveformOverview::drawRgb(QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         int completion) const {
     const double offsetX = completion / 2.0;
+
+    if (!m_stereo) {
+        const uint8_t leftValue = pWaveform->getAll(completion);
+        const uint8_t rightValue = pWaveform->getAll(completion + 1);
+        const QColor color = getRgbPenColor(
+                static_cast<qreal>(pWaveform->getLow(completion)) +
+                        pWaveform->getLow(completion + 1),
+                static_cast<qreal>(pWaveform->getMid(completion)) +
+                        pWaveform->getMid(completion + 1),
+                static_cast<qreal>(pWaveform->getHigh(completion)) +
+                        pWaveform->getHigh(completion + 1));
+        if (color.isValid()) {
+            pPainter->setPen(color);
+            pPainter->drawLine(QPointF(offsetX, 0),
+                    QPointF(offsetX, leftValue + rightValue));
+        }
+        return;
+    }
 
     if (channels.testFlag(ChannelFlag::LeftChannel)) {
         // Draw left channel
@@ -210,6 +314,25 @@ void QmlWaveformOverview::drawFiltered(QPainter* pPainter,
         ConstWaveformPointer pWaveform,
         int completion) const {
     const double offsetX = completion / 2.0;
+
+    if (!m_stereo) {
+        const uint8_t leftHigh = pWaveform->getHigh(completion);
+        const uint8_t rightHigh = pWaveform->getHigh(completion + 1);
+        const uint8_t leftMid = pWaveform->getMid(completion);
+        const uint8_t rightMid = pWaveform->getMid(completion + 1);
+        const uint8_t leftLow = pWaveform->getLow(completion);
+        const uint8_t rightLow = pWaveform->getLow(completion + 1);
+        pPainter->setPen(m_colorHigh);
+        pPainter->drawLine(QPointF(offsetX, 0),
+                QPointF(offsetX, 2 * (leftHigh + rightHigh)));
+        pPainter->setPen(m_colorMid);
+        pPainter->drawLine(QPointF(offsetX, 0),
+                QPointF(offsetX, 1.5 * (leftMid + rightMid)));
+        pPainter->setPen(m_colorLow);
+        pPainter->drawLine(QPointF(offsetX, 0),
+                QPointF(offsetX, leftLow + rightLow));
+        return;
+    }
 
     if (channels.testFlag(ChannelFlag::LeftChannel)) {
         const uint8_t leftHigh = pWaveform->getHigh(completion);
@@ -240,12 +363,73 @@ void QmlWaveformOverview::drawFiltered(QPainter* pPainter,
     }
 }
 
-QColor QmlWaveformOverview::getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const {
-    // Retrieve "raw" LMH values from waveform
-    qreal low = static_cast<qreal>(pWaveform->getLow(completion));
-    qreal mid = static_cast<qreal>(pWaveform->getMid(completion));
-    qreal high = static_cast<qreal>(pWaveform->getHigh(completion));
+void QmlWaveformOverview::drawHsv(QPainter* pPainter,
+        Channels channels,
+        ConstWaveformPointer pWaveform,
+        int completion) const {
+    const double offsetX = completion / 2.0;
+    float hue = 0;
+    float saturation = 0;
+    float value = 0;
+    m_colorLow.getHsvF(&hue, &saturation, &value);
+    const int leftAll = pWaveform->getAll(completion);
+    const int rightAll = pWaveform->getAll(completion + 1);
+    const int leftLow = pWaveform->getLow(completion);
+    const int rightLow = pWaveform->getLow(completion + 1);
+    const int leftHigh = pWaveform->getHigh(completion);
+    const int rightHigh = pWaveform->getHigh(completion + 1);
+    const int total = leftLow + rightLow + pWaveform->getMid(completion) +
+            pWaveform->getMid(completion + 1) + leftHigh + rightHigh;
+    if (total == 0) {
+        return;
+    }
+    QColor color;
+    color.setHsvF(hue,
+            1.0f - static_cast<float>(leftHigh + rightHigh) / (1.2f * total),
+            1.0f - static_cast<float>(leftLow + rightLow) / (1.2f * total));
 
+    pPainter->setPen(color);
+    if (!m_stereo) {
+        pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, leftAll + rightAll));
+    } else {
+        if (channels.testFlag(ChannelFlag::LeftChannel)) {
+            pPainter->drawLine(QPointF(offsetX, -leftAll), QPointF(offsetX, 0));
+        }
+        if (channels.testFlag(ChannelFlag::RightChannel)) {
+            pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, rightAll));
+        }
+    }
+}
+
+void QmlWaveformOverview::drawMinuteMarkers(QPainter* pPainter, double duration) const {
+    if (duration <= 60.0 || width() <= 0) {
+        return;
+    }
+    pPainter->save();
+    pPainter->setPen(QPen(QColor(245, 245, 245, 180), 1));
+    const double markerHeight = height() * 0.08;
+    for (double seconds = 60.0; seconds < duration; seconds += 60.0) {
+        const double x = width() * seconds / duration;
+        pPainter->drawLine(QPointF(x, 0), QPointF(x, markerHeight));
+        if (m_stereo) {
+            pPainter->drawLine(QPointF(x, height() - markerHeight),
+                    QPointF(x, height()));
+        }
+    }
+    pPainter->restore();
+}
+
+QColor QmlWaveformOverview::getRgbPenColor(
+        ConstWaveformPointer pWaveform, int completion) const {
+    // Retrieve "raw" LMH values from waveform
+    return getRgbPenColor(
+            pWaveform->getLow(completion),
+            pWaveform->getMid(completion),
+            pWaveform->getHigh(completion));
+}
+
+QColor QmlWaveformOverview::getRgbPenColor(
+        qreal low, qreal mid, qreal high) const {
     // Do matrix multiplication
     qreal red = low * m_colorLow.redF() + mid * m_colorMid.redF() + high * m_colorHigh.redF();
     qreal green = low * m_colorLow.greenF() + mid * m_colorMid.greenF() +

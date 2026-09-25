@@ -86,6 +86,17 @@ Variables:
                 <SetVariable name="ConfigKey"><Variable name="group"/>,loop_out</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,loop_out_goto</SetVariable>
               </Template>
+
+              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state.xml">
+                <SetVariable name="TooltipId">loop_anchor</SetVariable>
+                <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
+                <SetVariable name="Size">22f,22f</SetVariable>
+                <SetVariable name="state_0_icon">loop_anchor_start.svg</SetVariable>
+                <SetVariable name="state_1_icon">loop_anchor_end.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,loop_anchor</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
 
