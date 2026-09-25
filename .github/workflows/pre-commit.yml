@@ -38,7 +38,7 @@ jobs:
           git config --global --list
 
       - name: "Detect code style issues"
-        uses: pre-commit/action@v3.0.1
+        uses: j178/prek-action@v3.0.0
         env:
           # There are too many files in the repo that have formatting issues. We'll
           # disable these checks for now when pushing directly (but still run these
@@ -49,7 +49,7 @@ jobs:
         with:
           # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
           # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
-          extra_args: ${{ inputs.pull_request && '--from-ref HEAD^1 --to-ref HEAD' || '' }}
+          extra-args: ${{ inputs.pull_request && '--from-ref HEAD^1 --to-ref HEAD' || '' }}
 
       - name: "Generate patch file"
         if: failure()
@@ -67,12 +67,12 @@ jobs:
           archive: "false"
           path: ${{ env.UPLOAD_PATCH_FILE }}
 
-      - name: "Upload pre-commit.log"
+      - name: "Upload prek.log"
         if: failure() && env.UPLOAD_PATCH_FILE == null
         uses: actions/upload-artifact@v7.0.1
         with:
           archive: "false"
-          path: /github/home/.cache/pre-commit/pre-commit.log
+          path: ~/.cache/prek/prek.log
 
       # AppStream metadata has been generated/updated by a pre-commit hook
       - name: "Validate AppStream metadata"
