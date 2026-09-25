@@ -151,7 +151,7 @@ foreach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
       COMMAND_ERROR_IS_FATAL ANY
     )
     # don't upload the source tar ball for other distros
-    UNSET(CPACK_DEBIAN_DEBUILD_SOURCE_ALWAYS)
+    set(CPACK_DEBIAN_DEBUILD_SOURCE_ALWAYS -sd)
   endif()
   if(BUILD_MACHINE_RELEASE STREQUAL RELEASE AND DEB_BUILD)
     execute_process(
