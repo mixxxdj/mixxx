@@ -367,13 +367,13 @@ jobs:
             cpack -G ${{ matrix.cpack_generator }} -V
 
       - name: "[Ubuntu] Import DEB package maintainer GPG key"
-        if: matrix.name == 'Ubuntu 24.04' && env.GPG_PRIVATE_KEY != null
+        if: matrix.name == 'Ubuntu 22.04' && env.GPG_PRIVATE_KEY != null
         env:
           GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
         run: gpg --import <(echo "$GPG_PRIVATE_KEY")
 
       - name: "[Ubuntu] Set up for Launchpad PPA SSH upload"
-        if: matrix.name == 'Ubuntu 24.04' && env.PPA_SSH_KEY != null
+        if: matrix.name == 'Ubuntu 22.04' && env.PPA_SSH_KEY != null
         env:
           PPA_SSH_KEY: ${{ secrets.PPA_SSH_PRIVATE_KEY }}
         run: |
