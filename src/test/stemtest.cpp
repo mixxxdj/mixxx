@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <tuple>
 
 #include "sources/soundsourceffmpeg.h"
 #include "sources/soundsourceproxy.cpp"
@@ -9,8 +10,6 @@
 #include "util/samplebuffer.h"
 
 using namespace mixxx;
-
-#define STEM_FILE QStringLiteral("stems/sin_%1.stem.mp4").arg(QString::fromStdString(GetParam()))
 
 namespace {
 
@@ -27,16 +26,35 @@ const QList<QString> kStemFiles = {
         "04-vocal.wav",
 };
 
-class StemFixture : public MixxxTest, public ::testing::WithParamInterface<std::string> {
+// This could probably also be done with test Params like supportedCodecs
+struct StemFileInfo {
+    QString dir;
+    QString title;
+};
+
+static const std::array<StemFileInfo, 2> kStemFileInfos = {
+        StemFileInfo{QStringLiteral("stem01"), QStringLiteral("sin")},
+        StemFileInfo{QStringLiteral("stem02"), QStringLiteral("trance")}};
+
+// must be a std::tuple for std::combine in INSTANTIATE_TEST_SUITE_P
+using StemParam = std::tuple<std::string, StemFileInfo>;
+
+class StemFixture : public MixxxTest, public ::testing::WithParamInterface<StemParam> {
   protected:
     void SetUp() override {
         ASSERT_TRUE(SoundSourceProxy::isFileTypeSupported("stem.mp4") ||
                 SoundSourceProxy::registerProviders());
     }
+
+    QString GetStemFilePath() {
+        const auto& [codec, info] = GetParam();
+        return getTestDir().filePath(getTestDir().filePath("stems/%1/%2_%3.stem.mp4").arg(info.dir, info.title, QString::fromStdString(codec)));
+    }
 };
 
 TEST_P(StemFixture, FetchStemInfo) {
-    TrackPointer pTrack(Track::newTemporary(getTestDir().filePath(STEM_FILE)));
+    auto sourceStemPath = GetStemFilePath();
+    TrackPointer pTrack(Track::newTemporary(sourceStemPath));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -53,7 +71,7 @@ TEST_P(StemFixture, FetchStemInfo) {
 
 TEST_P(StemFixture, FetchStemEmptyInfo) {
     TrackPointer pTrack(Track::newTemporary(
-            getTestDir().filePath("stems/test_missing_stem_details.stem.mp4")));
+            getTestDir().filePath("stems/stem01/test_missing_stem_details.stem.mp4")));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -69,9 +87,11 @@ TEST_P(StemFixture, FetchStemEmptyInfo) {
 }
 
 TEST_P(StemFixture, ReadMainMix) {
+    const auto& [codec, info] = GetParam();
     SoundSourceFFmpeg sourceMainMix(
-            QUrl::fromLocalFile(getTestDir().filePath("stems/mainmix.wav")));
-    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath(STEM_FILE)));
+            QUrl::fromLocalFile(getTestDir().filePath("stems/%1/%2_mainmix.wav").arg(info.dir, info.title)));
+    auto sourceStemPath = GetStemFilePath();
+    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(sourceStemPath));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -107,11 +127,13 @@ TEST_P(StemFixture, ReadMainMix) {
 
 TEST_P(StemFixture, ReadEachStem) {
     int stemIdx = 0;
+    const auto& [codec, info] = GetParam();
     for (auto& stem : kStemFiles) {
         SoundSourceFFmpeg sourceStandaloneStem(
-                QUrl::fromLocalFile(getTestDir().filePath("stems/" + stem)));
-        SoundSourceFFmpeg sourceStem(
-                QUrl::fromLocalFile(getTestDir().filePath(STEM_FILE)), stemIdx++);
+                QUrl::fromLocalFile(getTestDir().filePath("stems/%1/" + stem).arg(info.dir)));
+
+        auto sourceStemPath = GetStemFilePath();
+        SoundSourceFFmpeg sourceStem(QUrl::fromLocalFile(sourceStemPath), stemIdx++);
 
         mixxx::AudioSource::OpenParams config;
         config.setChannelCount(mixxx::audio::ChannelCount(2));
@@ -147,7 +169,8 @@ TEST_P(StemFixture, ReadEachStem) {
 }
 
 TEST_P(StemFixture, OpenStem) {
-    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(getTestDir().filePath(STEM_FILE)));
+    auto sourceStemPath = GetStemFilePath();
+    SoundSourceSTEM sourceStem(QUrl::fromLocalFile(sourceStemPath));
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(mixxx::audio::ChannelCount(8));
@@ -162,9 +185,12 @@ TEST_P(StemFixture, OpenStem) {
 INSTANTIATE_TEST_SUITE_P(
         StemTest,
         StemFixture,
-        ::testing::ValuesIn(supportedCodecs),
+        ::testing::Combine(
+                ::testing::ValuesIn(supportedCodecs),
+                ::testing::ValuesIn(kStemFileInfos)),
         [](const testing::TestParamInfo<StemFixture::ParamType>& info) {
-            return info.param;
+            return std::get<0>(info.param) + "_" +
+                    std::get<1>(info.param).title.toStdString();
         });
 
 } // namespace
