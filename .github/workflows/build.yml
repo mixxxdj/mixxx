@@ -829,8 +829,10 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           build-bundle: false
           upload-artifact: false
-          # Only push builds save the cache, see "Restore ccache cache"
-          save-cache: ${{ github.event_name == 'push' && github.ref_type == 'branch' }}
+          # The Flatpak caches (~1.4 GB per arch) are only saved on main to stay
+          # within the 10 GB quota. Other branches and pull requests can still
+          # restore the main cache.
+          save-cache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - name: "Create Flatpak bundle"
         run: |
