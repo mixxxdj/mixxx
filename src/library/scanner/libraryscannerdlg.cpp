@@ -123,7 +123,7 @@ void LibraryScannerDlg::slotUpdate(const QString& path) {
 void LibraryScannerDlg::slotUpdateCover(const QString& path) {
     // qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
     if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
-       setVisible(true);
+        setVisible(true);
     }
 
     m_tasksDone++;
@@ -131,6 +131,18 @@ void LibraryScannerDlg::slotUpdateCover(const QString& path) {
         updateProgressBar();
         const QString status = QStringLiteral("%1: %2").arg(
                 tr("Scanning cover art (safe to cancel)"), path);
+        m_pLabelCurrent->setText(status);
+    }
+}
+
+void LibraryScannerDlg::slotUpdateSubstitute(const QString& path) {
+    // qDebug() << "LibraryScannerDlg slotUpdateSubstitute" << m_timer.elapsed() << path;
+    if (!m_bCancelled && m_timer.elapsed() > mixxx::Duration::fromSeconds(2)) {
+        setVisible(true);
+    }
+
+    if (isVisible()) {
+        const QString status = QString("%1: %2").arg(tr("Looking for substitute for"), path);
         m_pLabelCurrent->setText(status);
     }
 }

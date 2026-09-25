@@ -299,6 +299,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
         comboBox_dateFormat->setCurrentIndex(0);
     }
 
+    spinBox_sidebar_hover_expand_delay->setValue(kSidebarHoverExpandDelayDefault);
+
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
     checkBox_show_itunes->setChecked(true);
@@ -341,39 +343,39 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_show_serato->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
 
-    QString dateFormat = m_pConfig->getValue(
+    m_dateFormat = m_pConfig->getValue(
             kDateFormatConfigKey,
             BaseTrackTableModel::kDateFormatDefault);
+    qWarning() << "slotUpdate, dateformat:" << m_dateFormat;
 
     // Determine the matching preset or custom
     BaseTrackTableModel::DateFormat preset = BaseTrackTableModel::DateFormat::Custom;
-    if (dateFormat.isEmpty()) {
+    if (m_dateFormat.isEmpty()) {
         preset = BaseTrackTableModel::DateFormat::Native;
-    } else if (dateFormat == QStringLiteral("yyyy-MM-dd")) {
+    } else if (m_dateFormat == QStringLiteral("yyyy-MM-dd")) {
         preset = BaseTrackTableModel::DateFormat::ISO8601;
-    } else if (dateFormat == QStringLiteral("d/M/yy")) {
+    } else if (m_dateFormat == QStringLiteral("d/M/yy")) {
         preset = BaseTrackTableModel::DateFormat::RegionalShort;
-    } else if (dateFormat == QStringLiteral("dd.MM.yyyy")) {
+    } else if (m_dateFormat == QStringLiteral("dd.MM.yyyy")) {
         preset = BaseTrackTableModel::DateFormat::RegionalLong;
+    } else {
+        m_lastCustomDateFormat = m_dateFormat;
+        qWarning() << "-> type: Custom";
+        qWarning() << "-> store last custom format:" << m_lastCustomDateFormat;
     }
 
     int dateIndex = comboBox_dateFormat->findData(QVariant::fromValue(preset));
+    qWarning() << "-> idx:" << dateIndex;
     if (dateIndex != -1) {
+        qWarning() << "-> setCurrIdx";
+        const QSignalBlocker signalBlocker(comboBox_dateFormat);
         comboBox_dateFormat->setCurrentIndex(dateIndex);
+        slotDateFormatIndexChanged(dateIndex);
     }
 
-    if (preset == BaseTrackTableModel::DateFormat::Custom) {
-        comboBox_dateFormat->setEditable(true);
-        comboBox_dateFormat->setEditText(dateFormat);
-        m_lastCustomDateFormat = dateFormat;
-    } else {
-        comboBox_dateFormat->setEditable(false);
-    }
-
-    updateDateFormatPreview(dateFormat);
-
-    // Ensure the static member is updated on startup/load
-    BaseTrackTableModel::setDateFormat(dateFormat);
+    // Ensure the format is applied to the library view on startup/load
+    BaseTrackTableModel::setDateFormat(m_dateFormat);
+    updateDateFormatPreview();
 
     switch (m_pConfig->getValue<int>(
             kTrackDoubleClickActionConfigKey,
@@ -453,9 +455,15 @@ void DlgPrefLibrary::slotUpdate() {
 
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
-                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    kApplyPlayedTrackColorConfigKey,
                     BaseTrackTableModel::kApplyPlayedTrackColorDefault);
     checkbox_played_track_color->setChecked(applyPlayedTrackColor);
+
+    const auto sidebarHoverExpandDelay =
+            m_pConfig->getValue(
+                    kSidebarHoverExpandDelayConfigKey,
+                    kSidebarHoverExpandDelayDefault);
+    spinBox_sidebar_hover_expand_delay->setValue(sidebarHoverExpandDelay);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -469,9 +477,11 @@ void DlgPrefLibrary::resetLibraryFont() {
 }
 
 void DlgPrefLibrary::slotAddDir() {
-    QString fd = QFileDialog::getExistingDirectory(this,
+    QString fd = QFileDialog::getExistingDirectory(
+            this,
             tr("Choose a music directory"),
-            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation),
+            QFileDialog::ShowDirsOnly);
     if (!fd.isEmpty()) {
         if (m_pLibrary->requestAddDir(fd)) {
             populateDirList();
@@ -553,7 +563,10 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Relink music directory to new location"), startDir);
+            this,
+            tr("Relink music directory to new location"),
+            startDir,
+            QFileDialog::ShowDirsOnly);
 
     if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
         populateDirList();
@@ -664,11 +677,18 @@ void DlgPrefLibrary::slotApply() {
         m_iOriginalTrackTableRowHeight = rowHeight;
     }
 
+    m_pConfig->setValue(kDateFormatConfigKey, m_dateFormat);
+    BaseTrackTableModel::setDateFormat(m_dateFormat);
+
     BaseTrackTableModel::setApplyPlayedTrackColor(
             checkbox_played_track_color->isChecked());
     m_pConfig->set(
-            mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+            kApplyPlayedTrackColorConfigKey,
             ConfigValue(checkbox_played_track_color->isChecked()));
+
+    int sidebarHoverExpandDelay = spinBox_sidebar_hover_expand_delay->value();
+    m_pConfig->setValue(kSidebarHoverExpandDelayConfigKey, sidebarHoverExpandDelay);
+    emit m_pLibrary->setSidebarHoverExpandDelay(sidebarHoverExpandDelay);
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();
@@ -782,20 +802,21 @@ void DlgPrefLibrary::setSeratoMetadataEnabled(bool shouldSyncTrackMetadata) {
 }
 
 void DlgPrefLibrary::slotDateFormatIndexChanged(int index) {
+    qWarning() << "    slotDateFormatIndexChanged" << index;
     auto type = comboBox_dateFormat->itemData(index)
                         .value<BaseTrackTableModel::DateFormat>();
-
+    QString format;
     if (type == BaseTrackTableModel::DateFormat::Custom) {
-        // Enable editing for Custom
-        if (!comboBox_dateFormat->isEditable()) {
-            comboBox_dateFormat->setEditable(true);
-            comboBox_dateFormat->setEditText(m_lastCustomDateFormat);
-        }
+        qWarning() << "    -> Custom, format:" << m_lastCustomDateFormat;
+        // Enable editing for Custom and set the custom format string
+        comboBox_dateFormat->setEditable(true);
+        comboBox_dateFormat->setEditText(m_lastCustomDateFormat);
+        format = m_lastCustomDateFormat;
+        qWarning() << "    -> box text:      " << comboBox_dateFormat->currentText();
     } else {
         // Disable editing for Presets
         comboBox_dateFormat->setEditable(false);
 
-        QString format;
         switch (type) {
         case BaseTrackTableModel::DateFormat::Native:
             format = QString();
@@ -813,12 +834,13 @@ void DlgPrefLibrary::slotDateFormatIndexChanged(int index) {
             // Should not happen here given the if/else above
             break;
         }
-        slotDateFormatChanged(format);
     }
+    slotDateFormatChanged(format);
 }
 
 void DlgPrefLibrary::slotDateFormatChanged(const QString& text) {
-    QString format = text;
+    qWarning() << "    slotDateFormatChanged, text:" << text;
+    m_dateFormat = text;
     // If not editable, we are in a Preset mode, but 'text' might be the Item
     // Label (e.g. "Native ...") depending on how this was called. However, our
     // slotDateFormatIndexChanged calls this explicitly with the correct format
@@ -831,16 +853,14 @@ void DlgPrefLibrary::slotDateFormatChanged(const QString& text) {
             auto type = comboBox_dateFormat->itemData(index)
                                 .value<BaseTrackTableModel::DateFormat>();
             if (type == BaseTrackTableModel::DateFormat::Custom) {
-                m_lastCustomDateFormat = format;
+                m_lastCustomDateFormat = m_dateFormat;
             }
         }
     }
+    updateDateFormatPreview();
 }
 
-void DlgPrefLibrary::updateDateFormatPreview(const QString& format) {
-    const QString previewStr = mixxx::formatDate(QDate::currentDate(), format);
+void DlgPrefLibrary::updateDateFormatPreview() {
+    const QString previewStr = mixxx::formatDate(QDate::currentDate(), m_dateFormat);
     label_dateFormatPreview->setText(previewStr);
-
-    m_pConfig->setValue(kDateFormatConfigKey, format);
-    BaseTrackTableModel::setDateFormat(format);
 }

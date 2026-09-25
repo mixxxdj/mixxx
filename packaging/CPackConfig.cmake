@@ -11,7 +11,10 @@ if(NOT GIT_DESCRIBE)
 else()
   set(PACKAGE_VERSION "${GIT_DESCRIBE}")
 endif()
-set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}")
+set(
+  CPACK_PACKAGE_FILE_NAME
+  "mixxx-${PACKAGE_VERSION}-${CPACK_SYSTEM_PROCESSOR}"
+)
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
 
 # The upstream version must not contain hyphen
@@ -48,4 +51,13 @@ if(CPACK_GENERATOR STREQUAL "External")
     set(CPACK_INSTALL_CMAKE_PROJECTS "")
     set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${CPACK_DEBIAN_UPLOAD_PPA_SCRIPT}")
   endif()
+endif()
+
+if(CPACK_GENERATOR STREQUAL "AppImage")
+  # The AppImage desktop file regenerates Exec= to "mixxx" (it must refer to the
+  # binary by basename only, as CPack matches it against an installed file).
+  set(CPACK_APPIMAGE_DESKTOP_FILE "mixxx-appimage.desktop")
+  # CPACK_PACKAGE_ICON must be the bare file name of an installed icon matching
+  # the Icon= key in the desktop file (which is "mixxx").
+  set(CPACK_PACKAGE_ICON "mixxx.png")
 endif()

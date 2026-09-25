@@ -11,15 +11,15 @@
 <context>
     <name>AllTrackLibraryFeature</name>
     <message>
-        <location filename="../../src/qml/qmllibrarysource.h" line="34"/>
+        <location filename="../../src/qml/qmllibrarysource.h" line="32"/>
         <source>All...</source>
-        <translation type="unfinished"/>
+        <translation>Vše...</translation>
     </message>
 </context>
 <context>
     <name>AnalysisFeature</name>
     <message>
-        <location filename="../../src/library/analysis/analysisfeature.cpp" line="51"/>
+        <location filename="../../src/library/analysis/analysisfeature.cpp" line="52"/>
         <source>Analyze</source>
         <translation>Analýza</translation>
     </message>
@@ -59,20 +59,20 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="201"/>
         <source>Confirmation Clear</source>
-        <translation type="unfinished"/>
+        <translation>Potvrzení vymazání</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="202"/>
         <source>Do you really want to remove all tracks from the Auto DJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Opravdu chcete odstranit všechny skladby z fronty Auto DJ?</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="203"/>
         <source>This can not be undone.</source>
-        <translation type="unfinished"/>
+        <translation>To nelze vrátit zpět.</translation>
     </message>
     <message>
-        <location filename="../../src/library/autodj/autodjfeature.cpp" line="385"/>
+        <location filename="../../src/library/autodj/autodjfeature.cpp" line="387"/>
         <source>Add Crate as Track Source</source>
         <translation>Přidat přepravku na desky jako zdroj skladeb</translation>
     </message>
@@ -109,47 +109,47 @@
 <context>
     <name>BaseExternalLibraryFeature</name>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="26"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="27"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Přidat do řady automatického diskžokeje (dolů)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="32"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="33"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Přidat do řady automatického diskžokeje (nahoru)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="38"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="39"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Přidat do řady skladeb automatického diskžokeje (nahradit)</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="44"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="45"/>
         <source>Import as Playlist</source>
         <translation>Nahrát jako seznam skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="50"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="51"/>
         <source>Import as Crate</source>
         <translation>Nahrát jako přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="155"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="156"/>
         <source>Crate Creation Failed</source>
         <translation>Vytvoření přepravky se nezdařilo</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="156"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="157"/>
         <source>Could not create crate, it most likely already exists: </source>
         <translation>Nelze vytvořit přepravku, s největší pravděpodobností již existuje: </translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="131"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="132"/>
         <source>Playlist Creation Failed</source>
         <translation>Seznam skladeb se nepodařilo vytvořit</translation>
     </message>
     <message>
-        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="132"/>
+        <location filename="../../src/library/baseexternallibraryfeature.cpp" line="133"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Při vytváření seznamu skladeb došlo k neznámé chybě: </translation>
     </message>
@@ -231,7 +231,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="578"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="613"/>
         <source>Export Playlist</source>
         <translation>Uložit seznam skladeb</translation>
     </message>
@@ -245,7 +245,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="155"/>
         <source>Export to Engine DJ</source>
         <extracomment>&quot;Engine DJ&quot; is a product name and must not be translated.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Exportovat do stroje DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="279"/>
@@ -285,13 +285,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="387"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="391"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="402"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="550"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="585"/>
         <source>Playlist Creation Failed</source>
         <translation>Seznam skladeb se nepodařilo vytvořit</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="403"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="586"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Při vytváření seznamu skladeb došlo k neznámé chybě: </translation>
     </message>
@@ -306,12 +306,12 @@
         <translation>Opravdu chcete seznam skladeb &lt;b&gt;%1&lt;/b&gt; smazat?</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="582"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="617"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Seznam skladeb M3U (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="580"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="615"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Seznam skladeb M3U (*.m3u);;Seznam skladeb M3U8 (*.m3u8);;Seznam skladeb PLS (*.pls);;Text CSV (*.csv);;Prostý text (*.txt)</translation>
     </message>
@@ -319,12 +319,12 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="173"/>
+        <location filename="../../src/library/columncache.cpp" line="180"/>
         <source>#</source>
         <translation>Č.</translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="180"/>
+        <location filename="../../src/library/columncache.cpp" line="187"/>
         <source>Timestamp</source>
         <translation>Časové razítko</translation>
     </message>
@@ -332,7 +332,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="631"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="685"/>
         <source>Couldn&apos;t load track.</source>
         <translation>Nepodařilo se nahrát skladbu.</translation>
     </message>
@@ -370,7 +370,12 @@
         <translation>Kanály</translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="137"/>
+        <location filename="../../src/library/columncache.cpp" line="129"/>
+        <source>A4 Pitch (Hz)</source>
+        <translation>Rozteč A4 (Hz)</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/columncache.cpp" line="141"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
@@ -385,7 +390,7 @@
         <translation>Skladatel</translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="140"/>
+        <location filename="../../src/library/columncache.cpp" line="144"/>
         <source>Cover Art</source>
         <translation>Obrázek obalu</translation>
     </message>
@@ -395,7 +400,7 @@
         <translation>Datum přidání</translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="161"/>
+        <location filename="../../src/library/columncache.cpp" line="165"/>
         <source>Last Played</source>
         <translation>Naposledy hráno</translation>
     </message>
@@ -425,17 +430,17 @@
         <translation>Tónina</translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="164"/>
+        <location filename="../../src/library/columncache.cpp" line="168"/>
         <source>Location</source>
         <translation>Umístění</translation>
     </message>
     <message>
         <location filename="../../src/library/columncache.cpp" line="98"/>
         <source>Overview</source>
-        <translation type="unfinished"/>
+        <translation>Přehled</translation>
     </message>
     <message>
-        <location filename="../../src/library/columncache.cpp" line="134"/>
+        <location filename="../../src/library/columncache.cpp" line="138"/>
         <source>Preview</source>
         <translation>Náhled</translation>
     </message>
@@ -475,7 +480,8 @@
         <translation>Rok</translation>
     </message>
     <message>
-        <location filename="../../src/library/basetracktablemodel.cpp" line="569"/>
+        <location filename="../../src/library/basetracktablemodel.cpp" line="588"/>
+        <location filename="../../src/qml/qmllegacylibraryitem.cpp" line="686"/>
         <source>Fetching image ...</source>
         <extracomment>Tooltip text on the cover art column shown when the cover is read from disk</extracomment>
         <translation>Načítání obrázku ...</translation>
@@ -563,192 +569,192 @@
 <context>
     <name>BrowseFeature</name>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="68"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="76"/>
         <source>Add to Quick Links</source>
         <translation>Přidat k rychlým odkazům</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="74"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="82"/>
         <source>Remove from Quick Links</source>
         <translation>Odstranit z rychlých odkazů</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="80"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="88"/>
         <source>Add to Library</source>
         <translation>Přidat do knihovny skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="86"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="94"/>
         <source>Refresh directory tree</source>
-        <translation type="unfinished"/>
+        <translation>Obnovit strom adresářů</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="103"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="111"/>
         <source>Quick Links</source>
         <translation>Rychlé odkazy</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="107"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="132"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="115"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="140"/>
         <source>Devices</source>
         <translation>Zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="135"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="143"/>
         <source>Removable Devices</source>
         <translation>Přenosná zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="169"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="509"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="177"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="517"/>
         <source>Computer</source>
         <translation>Počítač</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="206"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="214"/>
         <source>Music Directory Added</source>
         <translation>Adresář s hudbou přidán</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="207"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="215"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation>Přidal jste jeden nebo více adresářů s hudbou. Skladby v těchto adresářích nebudou dostupné, dokud nenecháte znovu prohledat knihovnu. Chcete ji nechat prohledat nyní?</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="211"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="219"/>
         <source>Scan</source>
         <translation>Prohledat</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="510"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="518"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
         <translation>Počítač vám umožní pohyb ve skladbách, jejich zobrazení a nahrávání ze složek na pevném disku a vnějších zařízeních.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="513"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="521"/>
         <source>It shows the data from the file tags, not track data from your Mixxx library like other track views.</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazuje data z tagů souborů, nikoli data stop z vaší knihovny Mixxx jako jiné zobrazení stop.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="517"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="525"/>
         <source>If you load a track file from here, it will be added to your library.</source>
-        <translation type="unfinished"/>
+        <translation>Pokud odtud načtete soubor se skladbou, bude přidán do vaší knihovny.</translation>
     </message>
 </context>
 <context>
     <name>BrowseTableModel</name>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="56"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="57"/>
         <source>Preview</source>
         <translation>Náhled</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="57"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="58"/>
         <source>Filename</source>
         <translation>Název souboru</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="58"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="59"/>
         <source>Artist</source>
         <translation>Interpret</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="59"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="61"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="61"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="62"/>
         <source>Track #</source>
         <translation>Číslo skladby</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="62"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="63"/>
         <source>Year</source>
         <translation>Rok</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="63"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="64"/>
         <source>Genre</source>
         <translation>Žánr</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="64"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="65"/>
         <source>Composer</source>
         <translation>Skladatel</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="65"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="66"/>
         <source>Comment</source>
         <translation>Poznámka</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="66"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>
         <source>Duration</source>
         <translation>Doba trvání</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="68"/>
         <source>BPM</source>
         <translation>MM</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="68"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="69"/>
         <source>Key</source>
         <translation>Tónina</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="69"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="70"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="70"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="71"/>
         <source>Bitrate</source>
         <translation>Datový tok</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="76"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="77"/>
         <source>ReplayGain</source>
         <translation>Vyrovnání hlasitosti</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="71"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="72"/>
         <source>Location</source>
         <translation>Umístění</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="72"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="73"/>
         <source>Album Artist</source>
         <translation>Umělec alba</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="73"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="74"/>
         <source>Grouping</source>
         <translation>Skupina</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="74"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="75"/>
         <source>File Modified</source>
         <translation>Soubor změněn</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="75"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="76"/>
         <source>File Created</source>
         <translation>Soubor vytvořen</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="226"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="228"/>
         <source>Mixxx Library</source>
         <translation>Knihovna Mixxxu</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="227"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="229"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Nepodařilo se nahrát následující soubor. Je používán Mixxxem nebo jinou aplikací.</translation>
     </message>
@@ -756,22 +762,22 @@
 <context>
     <name>CachingReaderWorker</name>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="210"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="212"/>
         <source>The file &apos;%1&apos; could not be found.</source>
         <translation>Soubor &apos;%1&apos; se nepodařilo najít.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="229"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="231"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
         <translation>Soubor &apos;%1&apos; se nepodařilo nahrát.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="244"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="246"/>
         <source>The file &apos;%1&apos; could not be loaded because it contains %2 channels, and only 1 to %3 are supported.</source>
-        <translation type="unfinished"/>
+        <translation>Soubor &apos;%1&apos; se nepodařilo načíst, protože obsahuje %2 kanálů a podporovány jsou pouze 1 až %3.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="265"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="267"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
         <translation>Soubor &apos;%1&apos; je prázdný a nelze jej nahrát.</translation>
     </message>
@@ -828,12 +834,12 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="191"/>
         <source>Starts Auto DJ when Mixxx is launched.</source>
-        <translation type="unfinished"/>
+        <translation>Spustí Auto DJ při spuštění Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="197"/>
         <source>Rescans the library when Mixxx is launched.</source>
-        <translation type="unfinished"/>
+        <translation>Znovu prohledá knihovnu při spuštění Mixxxu.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="244"/>
@@ -848,12 +854,12 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="288"/>
         <source>Loads the highly unstable 3.0 Mixxx interface, based on QML. You need to use a new setting profile, or run with &apos;allow-dangerous-data-corruption-risk&apos; to use with the current one. We highly recommend backing up your data if you do so.</source>
-        <translation type="unfinished"/>
+        <translation>Načte vysoce nestabilní rozhraní Mixxx 3.0, založené na QML. Pro použití se stávajícím profilem je nutné použít nový profil nastavení nebo spustit program s parametrem „allow-dangerous-data-corruption-risk“. Pokud tak učiníte, důrazně doporučujeme zálohovat data.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="304"/>
         <source>Force Mixxx to load an unstable version with an existing user profile from a stable version</source>
-        <translation type="unfinished"/>
+        <translation>Vynutit načtení nestabilní verze s existujícím uživatelským profilem ze stabilní verze v Mixxxu</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="311"/>
@@ -888,7 +894,7 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="360"/>
         <source>Sets the maximum file size of the mixxx.log file in bytes. Use -1 for unlimited. The default is 100 MB as 1e5 or 100000000.</source>
-        <translation type="unfinished"/>
+        <translation>Nastavuje maximální velikost souboru mixxx.log v bajtech. Pro neomezenou velikost použijte -1. Výchozí hodnota je 100 MB, například 1e5 nebo 100000000.</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="372"/>
@@ -898,7 +904,7 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="384"/>
         <source>Overrides the default application GUI style. Possible values: %1</source>
-        <translation type="unfinished"/>
+        <translation>Přepíše výchozí styl grafického rozhraní aplikace. Možné hodnoty: %1</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="395"/>
@@ -908,7 +914,7 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="401"/>
         <source>Preview rendered controller screens in the Setting windows.</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazte si náhled vykreslených obrazovek ovladače v oknech nastavení.</translation>
     </message>
 </context>
 <context>
@@ -1090,13 +1096,13 @@ trace    - Výše + Profilování zpráv</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="176"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1384"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1392"/>
         <source>Set to full volume</source>
         <translation>Nastavit na plnou hlasitost</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="181"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1390"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1398"/>
         <source>Set to zero volume</source>
         <translation>Nastavit hlasitost na nulu</translation>
     </message>
@@ -1121,13 +1127,13 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>Tlačítko pro obrácené přehrávání (cenzor)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1402"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1410"/>
         <source>Headphone listen button</source>
         <translation>Tlačítko pro sluchátka</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="194"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1396"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1404"/>
         <source>Mute button</source>
         <translation>Tlačítko pro ztlumení</translation>
     </message>
@@ -1138,25 +1144,25 @@ trace    - Výše + Profilování zpráv</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="64"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1409"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1417"/>
         <source>Mix orientation (e.g. left, right, center)</source>
         <translation>Nasměrování míchání (např. vlevo, vpravo, na střed)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1415"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1423"/>
         <source>Set mix orientation to left</source>
         <translation>Nastavit nasměrování míchání vlevo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1421"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1429"/>
         <source>Set mix orientation to center</source>
         <translation>Nastavit nasměrování míchání na střed</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="76"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1427"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1435"/>
         <source>Set mix orientation to right</source>
         <translation>Nastavit nasměrování míchání vpravo</translation>
     </message>
@@ -1192,27 +1198,27 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>Snížit MM o 0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="310"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
         <source>BPM tap button</source>
         <translation>Tlačítko pro klepání MM</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="367"/>
         <source>Toggle quantize mode</source>
         <translation>Přepnout režim kvantizace</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="373"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="381"/>
         <source>One-time beat sync (tempo only)</source>
         <translation>Jednorázové seřízení rytmu (pouze tempo)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="377"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="385"/>
         <source>One-time beat sync (phase only)</source>
         <translation>Jednorázové seřízení rytmu (pouze fáze)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="495"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="503"/>
         <source>Toggle keylock mode</source>
         <translation>Přepnout režim uzamčení tóniny</translation>
     </message>
@@ -1222,193 +1228,193 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>Ekvalizéry</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="506"/>
         <source>Vinyl Control</source>
         <translation>Ovládání vinylem</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="509"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="517"/>
         <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
         <translation>Přepnout režim značení za použití ovládání vinylovou gramodeskou (VYPNUTO/JEDEN/HORKÝ)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="505"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="513"/>
         <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
-        <translation>Přepnout režim ovládání vinylem (VYPNUTO/JEDEN/HORKÝ)</translation>
+        <translation>Přepnout režim ovládání vinylem (ABS/REL/KONST)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="513"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="521"/>
         <source>Pass through external audio into the internal mixer</source>
         <translation>Posílat vnější zvukové signály do vnitřního směšovače</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="522"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="530"/>
         <source>Cues</source>
         <translation>Značky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="523"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="531"/>
         <source>Cue button</source>
         <translation>Tlačítko značky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="524"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="532"/>
         <source>Set cue point</source>
         <translation>Nastavit bod značky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="526"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="534"/>
         <source>Go to cue point</source>
         <translation>Jít na bod značky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="529"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
         <source>Go to cue point and play</source>
         <translation>Jít na bod značky a přehrát</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="533"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
         <source>Go to cue point and stop</source>
         <translation>Jít na bod značky a zastavit</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="537"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="545"/>
         <source>Preview from cue point</source>
         <translation>Předposlech od bodu značky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="549"/>
         <source>Cue button (CDJ mode)</source>
         <translation>Tlačítko značky (režim CDJ)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="544"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="552"/>
         <source>Stutter cue</source>
         <translation>Značka trhnutí</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="551"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
         <source>Hotcues</source>
         <translation>Rychlé značky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="584"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="592"/>
         <source>Set, preview from or jump to hotcue %1</source>
         <translation>Nastavit, náhled od nebo skočit na rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="585"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="593"/>
         <source>Clear hotcue %1</source>
         <translation>Smazat rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="586"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="594"/>
         <source>Set hotcue %1</source>
         <translation>Nastavit rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="587"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="595"/>
         <source>Jump to hotcue %1</source>
         <translation>Skočit na rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="588"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="596"/>
         <source>Jump to hotcue %1 and stop</source>
         <translation>Skočit na rychlou značku %1 a zastavit</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="589"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="597"/>
         <source>Jump to hotcue %1 and play</source>
         <translation>Skočit na rychlou značku %1 a přehrát</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="590"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="598"/>
         <source>Preview from hotcue %1</source>
         <translation>Náhled od rychlé značky %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="577"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="585"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="617"/>
         <source>Hotcue %1</source>
         <translation>Rychlá značka %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="682"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="690"/>
         <source>Looping</source>
         <translation>Smyčkování</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="766"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="774"/>
         <source>Loop In button</source>
         <translation>Tlačítko pro začátek smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="768"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="776"/>
         <source>Loop Out button</source>
         <translation>Tlačítko pro konec smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="770"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="778"/>
         <source>Loop Exit button</source>
         <translation>Tlačítko pro ukončení smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="714"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="722"/>
         <source>1/2</source>
         <translation>1/2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="715"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="723"/>
         <source>1</source>
         <translation>1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="716"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="724"/>
         <source>2</source>
         <translation>2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="717"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="725"/>
         <source>4</source>
         <translation>4</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="718"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="726"/>
         <source>8</source>
         <translation>8</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="719"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="727"/>
         <source>16</source>
         <translation>16</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="720"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="728"/>
         <source>32</source>
         <translation>32</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="721"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="729"/>
         <source>64</source>
         <translation>64</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="835"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="843"/>
         <source>Move loop forward by %1 beats</source>
         <translation>Posunout smyčku o %1 dob dopředu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="837"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="845"/>
         <source>Move loop backward by %1 beats</source>
         <translation>Posunout smyčku o %1 dob dozadu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="697"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="705"/>
         <source>Create %1-beat loop</source>
         <translation>Vytvořit smyčku na %1 dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="701"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="709"/>
         <source>Create temporary %1-beat loop roll</source>
         <translation>Vytvořit dočasnou průběžnou smyčku na %1 dob</translation>
     </message>
@@ -1524,20 +1530,20 @@ trace    - Výše + Profilování zpráv</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="168"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1376"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1377"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1384"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1385"/>
         <source>Volume Fader</source>
         <translation>Polohový ukazatel hlasitosti</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="175"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1383"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1391"/>
         <source>Full Volume</source>
         <translation>Plná hlasitost</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="180"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1389"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1397"/>
         <source>Zero Volume</source>
         <translation>Nulová hlasitost</translation>
     </message>
@@ -1553,7 +1559,7 @@ trace    - Výše + Profilování zpráv</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="193"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1395"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1403"/>
         <source>Mute</source>
         <translation>Ztlumit</translation>
     </message>
@@ -1564,7 +1570,7 @@ trace    - Výše + Profilování zpráv</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1401"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1409"/>
         <source>Headphone Listen</source>
         <translation>Poslech ze sluchátek</translation>
     </message>
@@ -1585,25 +1591,25 @@ trace    - Výše + Profilování zpráv</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="63"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1408"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1416"/>
         <source>Orientation</source>
         <translation>Natočení</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1414"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1422"/>
         <source>Orient Left</source>
         <translation>Natočit vlevo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="71"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1420"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1428"/>
         <source>Orient Center</source>
         <translation>Natočit na střed</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="75"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1426"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1434"/>
         <source>Orient Right</source>
         <translation>Natočit vpravo</translation>
     </message>
@@ -1628,127 +1634,127 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>MM -0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="309"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="317"/>
         <source>BPM Tap</source>
         <translation>Klepání tempa (MM, rázů za minutu)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="326"/>
         <source>Adjust Beatgrid Faster +.01</source>
         <translation>Upravit rytmickou mřížku: ÚZM rychlejší o +.01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="319"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="327"/>
         <source>Increase track&apos;s average BPM by 0.01</source>
         <translation>Zvýšit průměrný počet MM skladby o 0,01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="322"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="330"/>
         <source>Adjust Beatgrid Slower -.01</source>
         <translation>Upravit rytmickou mřížku: ÚZM pomalejší o -.01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="323"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="331"/>
         <source>Decrease track&apos;s average BPM by 0.01</source>
         <translation>Snížit průměrný počet MM skladby o 0,01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="326"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="334"/>
         <source>Move Beatgrid Earlier</source>
         <translation>Umístit rytmickou mřížku dříve</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="327"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="335"/>
         <source>Adjust the beatgrid to the left</source>
         <translation>Posunout rytmickou mřížku doleva</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="330"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="338"/>
         <source>Move Beatgrid Later</source>
         <translation>Umístit rytmickou mřížku později</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="331"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="339"/>
         <source>Adjust the beatgrid to the right</source>
         <translation>Posunout rytmickou mřížku doprava</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="343"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Adjust Beatgrid</source>
         <translation>Upravit rytmickou mřížku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="344"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Align beatgrid to current position</source>
         <translation>Zarovnat rytmickou mřížku na nynější polohu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="355"/>
         <source>Adjust Beatgrid - Match Alignment</source>
         <translation>Upravit rytmickou mřížku - přizpůsobení zarovnání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="348"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="356"/>
         <source>Adjust beatgrid to match another playing deck.</source>
         <translation>Upravit rytmickou mřížku tak, aby byla zarovnána s jiným hrajícím přehrávačem.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="367"/>
         <source>Quantize Mode</source>
         <translation>Režim kvantizace</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="361"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="369"/>
         <source>Sync</source>
         <translation>Seřízení</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="368"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
         <source>Beat Sync One-Shot</source>
         <translation>Jednorázové seřízení rytmu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="372"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="380"/>
         <source>Sync Tempo One-Shot</source>
         <translation>Jednorázové seřízení tempa</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="384"/>
         <source>Sync Phase One-Shot</source>
         <translation>Jednorázové seřízení fáze</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="464"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="472"/>
         <source>Pitch control (does not affect tempo), center is original pitch</source>
         <translation>Ovládání výšky tónu (neovlivní tempo), střed je původní výška tónu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="485"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="493"/>
         <source>Pitch Adjust</source>
         <translation>Upravení výšky tónu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="486"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="494"/>
         <source>Adjust pitch from speed slider pitch</source>
         <translation>Změní výšku tónu vycházeje z výšky tónu ukazatele rychlosti</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="490"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
         <source>Match musical key</source>
         <translation>Seřídit tóninu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="490"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
         <source>Match Key</source>
         <translation>Přizpůsobit tóninu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="500"/>
         <source>Reset Key</source>
         <translation>Nastavit tóninu znovu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="493"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="501"/>
         <source>Resets key to original</source>
         <translation>Nastavit tóninu znovu na původní</translation>
     </message>
@@ -1789,449 +1795,449 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>Ekvalizér hloubek</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="500"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="508"/>
         <source>Toggle Vinyl Control</source>
         <translation>Přepnout ovládání vinylovou gramodeskou</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="501"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="509"/>
         <source>Toggle Vinyl Control (ON/OFF)</source>
         <translation>Přepnout ovládání vinylovou gramodeskou (ZAPNUTO/VYPNUTO)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="504"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="512"/>
         <source>Vinyl Control Mode</source>
         <translation>Režim ovládání vinylovou gramodeskou</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="508"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="516"/>
         <source>Vinyl Control Cueing Mode</source>
         <translation>Režim ovládání značení vinylem</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="512"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="520"/>
         <source>Vinyl Control Passthrough</source>
         <translation>Předání dál ovládání vinylem</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="517"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="525"/>
         <source>Vinyl Control Next Deck</source>
         <translation>Další přehrávač ovládání vinylem</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="518"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="526"/>
         <source>Single deck mode - Switch vinyl control to next deck</source>
         <translation>Režim jednoho přehrávače - Přepnout ovládání vinylovou gramodeskou na další přehrávač</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="523"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="531"/>
         <source>Cue</source>
         <translation>Značka</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="524"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="532"/>
         <source>Set Cue</source>
         <translation>Umístit značku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="526"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="534"/>
         <source>Go-To Cue</source>
         <translation>Jít na značku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="528"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="536"/>
         <source>Go-To Cue And Play</source>
         <translation>Jít na značku a přehrát</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="532"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="540"/>
         <source>Go-To Cue And Stop</source>
         <translation>Jít na značku a zastavit</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="536"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="544"/>
         <source>Preview Cue</source>
         <translation>Náhled na značku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="540"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="548"/>
         <source>Cue (CDJ Mode)</source>
         <translation>Značka (režim CDJ)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="544"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="552"/>
         <source>Stutter Cue</source>
         <translation>Značka trhnutí</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="547"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="555"/>
         <source>Go to cue point and play after release</source>
         <translation>Jít na bod značky a po uvolnění přehrát</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="578"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="586"/>
         <source>Clear Hotcue %1</source>
         <translation>Smazat rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="579"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="587"/>
         <source>Set Hotcue %1</source>
         <translation>Nastavit rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="580"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="588"/>
         <source>Jump To Hotcue %1</source>
         <translation>Skočit na rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="581"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="589"/>
         <source>Jump To Hotcue %1 And Stop</source>
         <translation>Skočit na rychlou značku %1 a zastavit</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="582"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="590"/>
         <source>Jump To Hotcue %1 And Play</source>
         <translation>Skočit na rychlou značku %1 a přehrát</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="583"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="591"/>
         <source>Preview Hotcue %1</source>
         <translation>Náhled na rychlou značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="766"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="774"/>
         <source>Loop In</source>
         <translation>Začátek smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="768"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="776"/>
         <source>Loop Out</source>
         <translation>Konec smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="770"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="778"/>
         <source>Loop Exit</source>
         <translation>Ukončit smyčku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="772"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
         <source>Reloop/Exit Loop</source>
         <translation>Smyčkovat znovu/Ukončit smyčku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="788"/>
         <source>Loop Halve</source>
         <translation>Zkrácení smyčky na polovinu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="781"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="789"/>
         <source>Loop Double</source>
         <translation>Zdvojení smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="710"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="718"/>
         <source>1/32</source>
         <translation>1/32</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="711"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="719"/>
         <source>1/16</source>
         <translation>1/16</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="712"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="720"/>
         <source>1/8</source>
         <translation>1/8</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="713"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="721"/>
         <source>1/4</source>
         <translation>1/4</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="833"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="841"/>
         <source>Move Loop +%1 Beats</source>
         <translation>Posunout smyčku o +%1 dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="834"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="842"/>
         <source>Move Loop -%1 Beats</source>
         <translation>Posunout smyčku o -%1 dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="693"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="701"/>
         <source>Loop %1 Beats</source>
         <translation>Smyčka %1 dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="695"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="703"/>
         <source>Loop Roll %1 Beats</source>
         <translation>Průběžná smyčka %1 dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="945"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="953"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Přidat do řady automatického diskžokeje (dolů)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="946"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="954"/>
         <source>Append the selected track to the Auto DJ Queue</source>
         <translation>Přidat vybranou skladbu na konec řady automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="949"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="957"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Přidat do řady automatického diskžokeje (nahoru)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="950"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="958"/>
         <source>Prepend selected track to the Auto DJ Queue</source>
         <translation>Přidat vybranou skladbu na začátek řady automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="935"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="943"/>
         <source>Load Track</source>
         <translation>Nahrát skladbu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="936"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="944"/>
         <source>Load selected track</source>
         <translation>Nahrát vybranou skladbu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="940"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="948"/>
         <source>Load selected track and play</source>
         <translation>Nahrát vybranou skladbu a přehrát</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="991"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1593"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="999"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1626"/>
         <source>Record Mix</source>
         <translation>Nahrát míchání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="992"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1000"/>
         <source>Toggle mix recording</source>
         <translation>Přepnout nahrávání míchání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="998"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1006"/>
         <source>Effects</source>
         <translation>Efekty</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1006"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1014"/>
         <source>Deck %1 Quick Effect Super Knob</source>
         <translation>Superpotenciometr rychlého efektu pro přehrávač %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1007"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1030"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1015"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1038"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
         <translation>Superpotenciometr rychlého efektu (řízení propojených parametrů efektů)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1011"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1018"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1034"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1019"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1026"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1042"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1050"/>
         <source>Quick Effect</source>
         <translation>Rychlý efekt</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1060"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1068"/>
         <source>Clear Unit</source>
         <translation>Vyprázdnit jednotku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1061"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1069"/>
         <source>Clear effect unit</source>
         <translation>Vyprázdnit efektovou jednotku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1067"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1075"/>
         <source>Toggle Unit</source>
         <translation>Přepnout jednotku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1074"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1082"/>
         <source>Dry/Wet</source>
         <translation>Na zkoušku/Naostro</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1075"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1083"/>
         <source>Adjust the balance between the original (dry) and processed (wet) signal.</source>
         <translation>Upravit vyvážení mezi původním a zpracovaným signálem.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1082"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1090"/>
         <source>Super Knob</source>
         <translation>Superknoflík</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1096"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1104"/>
         <source>Next Chain</source>
         <translation>Další řetězec</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1124"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1132"/>
         <source>Assign </source>
         <translation>Přiřadit </translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1221"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1229"/>
         <source>Clear</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1222"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1230"/>
         <source>Clear the current effect</source>
         <translation>Smazat nynější efekt</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1235"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1243"/>
         <source>Toggle</source>
         <translation>Přepnout</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1236"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1244"/>
         <source>Toggle the current effect</source>
         <translation>Přepnout nynější efekt</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1242"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1250"/>
         <source>Next</source>
         <translation>Další</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1243"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1251"/>
         <source>Switch to next effect</source>
         <translation>Přepnout na další efekt</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1249"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1257"/>
         <source>Previous</source>
         <translation>Předchozí</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1250"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1258"/>
         <source>Switch to the previous effect</source>
         <translation>Přepnout na předchozí efekt</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1256"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1264"/>
         <source>Next or Previous</source>
         <translation>Další nebo předchozí</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1257"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1265"/>
         <source>Switch to either next or previous effect</source>
         <translation>Přepnout na další nebo předchozí efekt</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1285"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1286"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1293"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1294"/>
         <source>Parameter Value</source>
         <translation>Hodnota parametru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1352"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1353"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1360"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1361"/>
         <source>Microphone Ducking Strength</source>
         <translation>Síla tlumení mikrofonu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1358"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1366"/>
         <source>Microphone Ducking Mode</source>
         <translation>Režim tlumení mikrofonu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1369"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1377"/>
         <source>Gain</source>
         <translation>Zesílení</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1370"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1378"/>
         <source>Gain knob</source>
         <translation>Regulátor zesílení</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1437"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1445"/>
         <source>Shuffle the content of the Auto DJ queue</source>
         <translation>Zamíchat pořadím v řadě skladeb automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1442"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1450"/>
         <source>Skip the next track in the Auto DJ queue</source>
         <translation>Přeskočit další skladbu v řadě skladeb automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1456"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1464"/>
         <source>Auto DJ Toggle</source>
         <translation>Zapínač/Vypínač automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1457"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1465"/>
         <source>Toggle Auto DJ On/Off</source>
         <translation>Zapnout/Vypnout automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1473"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1481"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
         <translation>Ukázat/Skrýt oblast s mikrofonem a pomocným zařízením</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1487"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1495"/>
         <source>4 Effect Units Show/Hide</source>
         <translation>Ukázat/Skrýt 4 efektové jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1488"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1496"/>
         <source>Switches between showing 2 and 4 effect units</source>
         <translation>Přepíná mezi ukázáním 2 a 4 efektových jednotek.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1492"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1500"/>
         <source>Mixer Show/Hide</source>
         <translation>Ukázat/Skrýt směšovač</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1493"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1501"/>
         <source>Show or hide the mixer.</source>
         <translation>Ukázat nebo skrýt směšovač.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1497"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1505"/>
         <source>Cover Art Show/Hide (Library)</source>
         <translation>Ukázat/Skrýt obrázek obalu (knihovna)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1498"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1506"/>
         <source>Show/hide cover art in the library</source>
         <translation>Ukázat/Skrýt obrázky obalů v knihovně</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1502"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1510"/>
         <source>Library Maximize/Restore</source>
         <translation>Zvětšin/Obnovit knihovnu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1503"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1511"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation>Zvětšit knihovnu skladeb tak, aby zabírala veškerý na obrazovce dostupný prostor.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1482"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1490"/>
         <source>Effect Rack Show/Hide</source>
         <translation>Ukázat/Skrýt přihrádku s efekty</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1483"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1491"/>
         <source>Show/hide the effect rack</source>
         <translation>Ukázat/Skrýt přihrádku s efekty</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1552"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1560"/>
         <source>Waveform Zoom Out</source>
         <translation>Oddálit průběhovou křivku</translation>
     </message>
@@ -2246,102 +2252,102 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>Zesílení sluchátek</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="364"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="372"/>
         <source>Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</source>
         <translation>Zaťukejte pro seřízení tempa (a fáze při zapnuté kvantizaci), podržte pro trvalé seřízení</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="369"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="377"/>
         <source>One-time beat sync tempo (and phase with quantize enabled)</source>
         <translation>Jednorázové seřízení rytmu tempa (a fáze při zapnuté kvantizaci)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="422"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="430"/>
         <source>Playback Speed</source>
         <translation>Rychlost přehrávání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="431"/>
         <source>Playback speed control (Vinyl &quot;Pitch&quot; slider)</source>
         <translation>Ovládání rychlosti přehrávání (regulátor &quot;výšky tónu&quot; vinylu)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="463"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="471"/>
         <source>Pitch (Musical key)</source>
         <translation>Výška tónu (tónina)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="436"/>
         <source>Increase Speed</source>
         <translation>Zvýšit rychlost</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="429"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="437"/>
         <source>Adjust speed faster (coarse)</source>
         <translation>Zvýšit rychlost (hrubé)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="432"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
         <source>Increase Speed (Fine)</source>
         <translation>Zvýšit rychlost (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="433"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
         <source>Adjust speed faster (fine)</source>
         <translation>Zvýšit rychlost (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="436"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="444"/>
         <source>Decrease Speed</source>
         <translation>Snížit rychlost</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="437"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="445"/>
         <source>Adjust speed slower (coarse)</source>
         <translation>Snížit rychlost (hrubé)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="449"/>
         <source>Adjust speed slower (fine)</source>
         <translation>Snížit rychlost (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="445"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="453"/>
         <source>Temporarily Increase Speed</source>
         <translation>Zvýšit přechodně rychlost</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="446"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="454"/>
         <source>Temporarily increase speed (coarse)</source>
         <translation>Zvýšit přechodně rychlost (hrubé)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="449"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="457"/>
         <source>Temporarily Increase Speed (Fine)</source>
         <translation>Zvýšit přechodně rychlost (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="450"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="458"/>
         <source>Temporarily increase speed (fine)</source>
         <translation>Zvýšit přechodně rychlost (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="453"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="461"/>
         <source>Temporarily Decrease Speed</source>
         <translation>Snížit dočasně rychlost</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="454"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="462"/>
         <source>Temporarily decrease speed (coarse)</source>
         <translation>Snížit dočasně rychlost (hrubé)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="457"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="465"/>
         <source>Temporarily Decrease Speed (Fine)</source>
         <translation>Snížit dočasně rychlost (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="458"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="466"/>
         <source>Temporarily decrease speed (fine)</source>
         <translation>Snížit dočasně rychlost (jemné)</translation>
     </message>
@@ -2354,7 +2360,7 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="26"/>
         <source>Deck %1 Stem %2</source>
-        <translation type="unfinished"/>
+        <translation>Paluba %1 Stonek %2</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="33"/>
@@ -2426,7 +2432,7 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="285"/>
         <source>Multiply current BPM by 0.5</source>
-        <translation type="unfinished"/>
+        <translation>Vynásobit aktuální MM číslem 0,5</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="288"/>
@@ -2436,7 +2442,7 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="289"/>
         <source>Multiply current BPM by 0.666</source>
-        <translation type="unfinished"/>
+        <translation>Vynásobit aktuální MM číslem 0,666</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="292"/>
@@ -2446,1138 +2452,1208 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="293"/>
         <source>Multiply current BPM by 0.75</source>
-        <translation type="unfinished"/>
+        <translation>Vynásobit aktuální MM číslem 0,75</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="296"/>
+        <source>4/5 BPM</source>
+        <translation>4/5 MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="297"/>
+        <source>Multiply current BPM by 0.8</source>
+        <translation>Vynásobit aktuální MM číslem 0,8</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="300"/>
+        <source>5/4 BPM</source>
+        <translation>5/4 MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="301"/>
+        <source>Multiply current BPM by 1.25</source>
+        <translation>Vynásobit aktuální MM číslem 1,25</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="304"/>
         <source>4/3 BPM</source>
         <translation>4/3 MM</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="297"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="305"/>
         <source>Multiply current BPM by 1.333</source>
-        <translation type="unfinished"/>
+        <translation>Vynásobit aktuální MM číslem 1,333</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="300"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="308"/>
         <source>3/2 BPM</source>
         <translation>3/2 MM</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="301"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="309"/>
         <source>Multiply current BPM by 1.5</source>
-        <translation type="unfinished"/>
+        <translation>Vynásobit aktuální MM číslem 1,5</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="304"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="312"/>
         <source>Double BPM</source>
         <translation>Zdvojit MM</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="305"/>
-        <source>Multiply current BPM by 2</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="313"/>
+        <source>Multiply current BPM by 2</source>
+        <translation>Vynásobit aktuální MM číslem 2</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="321"/>
         <source>Tempo Tap</source>
-        <translation type="unfinished"/>
+        <translation>Tempo klepání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="314"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="322"/>
         <source>Tempo tap button</source>
-        <translation type="unfinished"/>
+        <translation>Tlačítko pro tempo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="334"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
         <source>Move Beatgrid</source>
         <translation>Přesunout rytmickou mřížku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="335"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="343"/>
         <source>Adjust the beatgrid to the left or right</source>
         <translation>Posunout rytmickou mřížku zleva doprava</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="338"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="346"/>
         <source>Move Beatgrid Half a Beat</source>
-        <translation type="unfinished"/>
+        <translation>Pohyb mřížky rytmů o půl doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="339"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
         <source>Adjust the beatgrid by exactly one half beat. Usable only for tracks with constant tempo.</source>
-        <translation type="unfinished"/>
+        <translation>Upravte mřížku rytmu přesně o půl doby. Použitelné pouze pro stopy s konstantním tempem.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="360"/>
         <source>Toggle the BPM/beatgrid lock</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="355"/>
-        <source>Revert last BPM/Beatgrid Change</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="356"/>
-        <source>Revert last BPM/Beatgrid Change of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout zámek MM/rytmické mřížky</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
+        <source>Revert last BPM/Beatgrid Change</source>
+        <translation>Vrátit poslední změnu MM/rytmické mřížky</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="364"/>
+        <source>Revert last BPM/Beatgrid Change of the loaded track.</source>
+        <translation>Vrátit poslední změnu MM/rytmické mřížky načtené skladby.</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="371"/>
         <source>Sync / Sync Lock</source>
         <translation>Seřízení/Zámek seřizení</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="382"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="390"/>
         <source>Internal Sync Leader</source>
         <translation>Vnitřní vedoucí seřizování</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="383"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="391"/>
         <source>Toggle Internal Sync Leader</source>
         <translation>Přepnout vnitřní vedoucí seřizování</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="387"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="388"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="395"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="396"/>
         <source>Internal Leader BPM</source>
         <translation>Vnitřní vedoucí MM</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="392"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="400"/>
         <source>Internal Leader BPM +1</source>
         <translation>Vnitřní vedoucí MM +1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="393"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="401"/>
         <source>Increase internal Leader BPM by 1</source>
         <translation>Zvýšit vnitřní vedoucí MM o 1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="398"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="406"/>
         <source>Internal Leader BPM -1</source>
         <translation>Vnitřní vedoucí MM -1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="399"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="407"/>
         <source>Decrease internal Leader BPM by 1</source>
         <translation>Snížit vnitřní vedoucí MM o 1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="404"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="412"/>
         <source>Internal Leader BPM +0.1</source>
         <translation>Vnitřní vedoucí MM +0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="405"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="413"/>
         <source>Increase internal Leader BPM by 0.1</source>
         <translation>Zvýšit vnitřní vedoucí MM o 0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="409"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="417"/>
         <source>Internal Leader BPM -0.1</source>
         <translation>Vnitřní vedoucí MM -0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="410"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="418"/>
         <source>Decrease internal Leader BPM by 0.1</source>
         <translation>Snížit vnitřní vedoucí MM o 0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="414"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="422"/>
         <source>Sync Leader</source>
         <translation>Vedoucí seřizování</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="415"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
         <source>Sync mode 3-state toggle / indicator (Off, Soft Leader, Explicit Leader)</source>
         <translation>Režim seřizování třístavový přepínač / ukazatel (vypnuto, plynulé vedoucí, explicitní vedoucí)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
         <source>Speed</source>
         <translation>Rychlost</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="448"/>
         <source>Decrease Speed (Fine)</source>
         <translation>Snížit rychlost (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="461"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="469"/>
         <source>Pitch (Musical Key)</source>
         <translation>Výška tónu (tónina)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="469"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="477"/>
         <source>Increase Pitch</source>
         <translation>Zvýšit výšku tónu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="470"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="478"/>
         <source>Increases the pitch by one semitone</source>
         <translation>Zvýší výšku tónu o jeden půltón.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="473"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="481"/>
         <source>Increase Pitch (Fine)</source>
         <translation>Zvýšit výšku tónu (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="474"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="482"/>
         <source>Increases the pitch by 10 cents</source>
         <translation>Zvýší výšku tónu o 10 centů.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="477"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="485"/>
         <source>Decrease Pitch</source>
         <translation>Snížit výšku tónu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="478"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="486"/>
         <source>Decreases the pitch by one semitone</source>
         <translation>Sníží výšku tónu o jeden půltón.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="481"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="489"/>
         <source>Decrease Pitch (Fine)</source>
         <translation>Snížit výšku tónu (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="482"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="490"/>
         <source>Decreases the pitch by 10 cents</source>
         <translation>Sníží výšku tónu o 10 centů.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="495"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="503"/>
         <source>Keylock</source>
         <translation>Uzamčení tóniny</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="546"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="554"/>
         <source>CUP (Cue + Play)</source>
         <translation>BZP (značka a přehrát)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="553"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="561"/>
         <source>Shift cue points earlier</source>
         <translation>Posunout body značek dříve</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="554"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="562"/>
         <source>Shift cue points 10 milliseconds earlier</source>
         <translation>Posunout body značek o 10 milisekund dříve</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="557"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="565"/>
         <source>Shift cue points earlier (fine)</source>
         <translation>Posunout body značek dříve (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="558"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="566"/>
         <source>Shift cue points 1 millisecond earlier</source>
         <translation>Posunout body značek o 1 milisekundu dříve</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="561"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="569"/>
         <source>Shift cue points later</source>
         <translation>Posunout body značek později</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="562"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="570"/>
         <source>Shift cue points 10 milliseconds later</source>
         <translation>Posunout body značek o 10 milisekund později</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="565"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="573"/>
         <source>Shift cue points later (fine)</source>
         <translation>Posunout body značek později (jemné)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="566"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="574"/>
         <source>Shift cue points 1 millisecond later</source>
         <translation>Posunout body značek o 1 milisekundu později</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="569"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="570"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="577"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="578"/>
         <source>Sort hotcues by position</source>
-        <translation type="unfinished"/>
+        <translation>Řadit rychlé podněty podle pozice</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="573"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="574"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="581"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="582"/>
         <source>Sort hotcues by position (remove offsets)</source>
-        <translation type="unfinished"/>
+        <translation>Seřadit rychlé podněty podle pozice (odstranit ofsety)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="602"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="610"/>
         <source>Hotcues %1-%2</source>
         <translation>Rychlé značky %1-%2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="645"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="653"/>
         <source>Intro / Outro Markers</source>
         <translation>Značky úvodu/závěru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="647"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="655"/>
         <source>Intro Start Marker</source>
         <translation>Značka začátku úvodu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="648"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="656"/>
         <source>Intro End Marker</source>
         <translation>Značka konce úvodu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="649"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="657"/>
         <source>Outro Start Marker</source>
         <translation>Značka začátku závěru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="650"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="658"/>
         <source>Outro End Marker</source>
         <translation>Značka konce závěru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="652"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="660"/>
         <source>intro start marker</source>
         <translation>Značka začátku úvodu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="653"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="661"/>
         <source>intro end marker</source>
         <translation>Značka konce úvodu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="654"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="662"/>
         <source>outro start marker</source>
         <translation>Značka začátku závěru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="655"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="663"/>
         <source>outro end marker</source>
         <translation>Značka konce úvodu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="666"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="674"/>
         <source>Activate %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Zapnout značku %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="667"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="675"/>
         <source>Jump to or set the %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Skočit nebo nastavit %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="671"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="679"/>
         <source>Set %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Nastavit %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="680"/>
         <source>Set or jump to the %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Nastavit nebo skočit na %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="676"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="684"/>
         <source>Clear %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Vyprázdnit %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="677"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="685"/>
         <source>Clear the %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Vyprázdnit %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="686"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="694"/>
         <source>if the track has no beats the unit is seconds</source>
-        <translation type="unfinished"/>
+        <translation>Pokud skladba nemá žádné doby, jednotka je sekundy</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="687"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="695"/>
         <source>Loop Selected Beats</source>
         <translation>Smyčkovat vybrané doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="689"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="697"/>
         <source>Create a beat loop of selected beat size</source>
         <translation>Vytvořit smyčku z dob o vybrané velikosti doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="690"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="698"/>
         <source>Loop Roll Selected Beats</source>
         <translation>Průběžná smyčka z vybraných dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="692"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="700"/>
         <source>Create a rolling beat loop of selected beat size</source>
         <translation>Vytvořit průběžnou smyčku z dob o vybrané velikosti doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="694"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="702"/>
         <source>Loop %1 Beats set from its end point</source>
-        <translation type="unfinished"/>
+        <translation>Smyčka %1 Počet rytmů nastavených od koncového bodu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="696"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="704"/>
         <source>Loop Roll %1 Beats set from its end point</source>
-        <translation type="unfinished"/>
+        <translation>Smyčka rytmů %1 Počet dob ​​nastavených od koncového bodu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="698"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="706"/>
         <source>Create %1-beat loop with the current play position as loop end</source>
-        <translation type="unfinished"/>
+        <translation>Vytvořit smyčku o délce %1 doby s aktuální pozicí přehrávání jako koncem smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="703"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="711"/>
         <source>Create temporary %1-beat loop roll with the current play position as loop end</source>
-        <translation type="unfinished"/>
+        <translation>Vytvořit dočasnou smyčku o délce %1 doby s aktuální pozicí přehrávání jako koncem smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="728"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="736"/>
         <source>Loop Beats</source>
         <translation>Smyčkovat doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="749"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="757"/>
         <source>Loop Roll Beats</source>
         <translation>Průběžně smyčkovat doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="767"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="775"/>
         <source>Go To Loop In</source>
         <translation>Přejít na smyčku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="767"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="775"/>
         <source>Go to Loop In button</source>
         <translation>Přejít na tlačítko smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="769"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="777"/>
         <source>Go To Loop Out</source>
         <translation>Odejít ze smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="769"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="777"/>
         <source>Go to Loop Out button</source>
         <translation>Odejít z tlačítka smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="773"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="781"/>
         <source>Toggle loop on/off and jump to Loop In point if loop is behind play position</source>
         <translation>Přepnout zapnutí/zastavení smyčkování a skočit na bod začátku smyčky, pokud je smyčka za polohou přehrávání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="777"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="785"/>
         <source>Reloop And Stop</source>
         <translation>Přesmyčkovat a zastavit</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="778"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="786"/>
         <source>Enable loop, jump to Loop In point, and stop</source>
         <translation>Povolit smyčku, skočit na bod začátku smyčky a zastavit</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="788"/>
         <source>Halve the loop length</source>
         <translation>Zkrátit délku smyčky na polovinu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="781"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="789"/>
         <source>Double the loop length</source>
         <translation>Zdvojit délku smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="784"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="792"/>
         <source>Beat Jump / Loop Move</source>
         <translation>Dobový skok/Přesun smyčky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="785"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="793"/>
         <source>Jump / Move Loop Forward %1 Beats</source>
         <translation>Skočit/Přesunout smyčku o %1 dob dopředu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="786"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="794"/>
         <source>Jump / Move Loop Backward %1 Beats</source>
         <translation>Skočit/Přesunout smyčku o %1 dob dozadu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="788"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="796"/>
         <source>Jump forward by %1 beats, or if a loop is enabled, move the loop forward %1 beats</source>
         <translation>Skočit dopředu o %1 dob, nebo pokud je povolena smyčka, přesunout smyčku dopředu o %1 dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="792"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="800"/>
         <source>Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats</source>
         <translation>Skočit dozadu o %1 dob, nebo pokud je povolena smyčka, přesunout smyčku dozadu o %1 dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="796"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="804"/>
         <source>Beat Jump / Loop Move Forward Selected Beats</source>
         <translation>Dobový skok/Přesun smyčky dopředu o vybrané doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="797"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="805"/>
         <source>Jump forward by the selected number of beats, or if a loop is enabled, move the loop forward by the selected number of beats</source>
         <translation>Skočit dopředu o vybraný počet dob, nebo pokud je povolena smyčka, přesunout smyčku dopředu o vybraný počet dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="802"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="810"/>
         <source>Beat Jump / Loop Move Backward Selected Beats</source>
         <translation>Dobový skok/Přesun smyčky dozadu o vybrané doby</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="803"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="811"/>
         <source>Jump backward by the selected number of beats, or if a loop is enabled, move the loop backward by the selected number of beats</source>
         <translation>Skočit dozadu o vybraný počet dob, nebo pokud je povolena smyčka, přesunout smyčku dozadu o vybraný počet dob</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="808"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="816"/>
         <source>Beat Jump</source>
-        <translation type="unfinished"/>
+        <translation>Skok na dobu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="809"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="817"/>
         <source>Indicate which loop marker remain static when adjusting the size or is inherited from the current position</source>
-        <translation type="unfinished"/>
+        <translation>Označuje, která značka smyčky zůstává statická při úpravě velikosti nebo je zděděna z aktuální pozice</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="814"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="822"/>
         <source>Beat Jump / Loop Move Forward</source>
         <translation>Skok na dobu/Přesun smyčky dopředu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="823"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="831"/>
         <source>Beat Jump / Loop Move Backward</source>
         <translation>Skok na dobu/Přesun smyčky dozadu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="840"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="848"/>
         <source>Loop Move Forward</source>
         <translation>Přesun smyčky dopředu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="849"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="857"/>
         <source>Loop Move Backward</source>
         <translation>Přesun smyčky dozadu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="859"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="867"/>
         <source>Remove Temporary Loop</source>
         <translation>Odebrat dočasnou smyčku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="860"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="868"/>
         <source>Remove the temporary loop</source>
         <translation>Odebrat dočasnou smyčku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="867"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="875"/>
         <source>Navigation</source>
         <translation>Cesta</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="869"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="877"/>
         <source>Move up</source>
         <translation>Posunout nahoru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="870"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="878"/>
         <source>Equivalent to pressing the UP key on the keyboard</source>
         <translation>Stejné jako klávesa šipka nahoru na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="873"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="881"/>
         <source>Move down</source>
         <translation>Posunout dolů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="874"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="882"/>
         <source>Equivalent to pressing the DOWN key on the keyboard</source>
         <translation>Stejné jako klávesa šipka dolů na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="877"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="885"/>
         <source>Move up/down</source>
         <translation>Posunout nahoru/dolů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="878"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="886"/>
         <source>Move vertically in either direction using a knob, as if pressing UP/DOWN keys</source>
         <translation>Pohybovat se svisle v obou směrech pomocí otočného knoflíku se stejným výsledkem, jako při stisknutí kláves nahoru/dolů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="882"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="890"/>
         <source>Scroll Up</source>
         <translation>Projíždět nahoru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="883"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="891"/>
         <source>Equivalent to pressing the PAGE UP key on the keyboard</source>
         <translation>Stejné jako klávesa PgUp na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="886"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="894"/>
         <source>Scroll Down</source>
         <translation>Projíždět dolů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="887"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="895"/>
         <source>Equivalent to pressing the PAGE DOWN key on the keyboard</source>
         <translation>Stejné jako klávesa PgD(ow)n na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="890"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="898"/>
         <source>Scroll up/down</source>
         <translation>Projíždět nahoru/dolů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="891"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="899"/>
         <source>Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys</source>
         <translation>Pohybovat se svisle v obou směrech pomocí otočného knoflíku se stejným výsledkem, jako při stisknutí kláves PgUp/PgDown (PgDn)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="895"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="903"/>
         <source>Move left</source>
         <translation>Posunout vlevo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="896"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="904"/>
         <source>Equivalent to pressing the LEFT key on the keyboard</source>
         <translation>Stejné jako klávesa šipka vlevo na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="899"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="907"/>
         <source>Move right</source>
         <translation>Posunout vpravo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="900"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="908"/>
         <source>Equivalent to pressing the RIGHT key on the keyboard</source>
         <translation>Stejné jako klávesa šipka vpravo na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="903"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="911"/>
         <source>Move left/right</source>
         <translation>Posunout vlevo/vpravo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="904"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="912"/>
         <source>Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys</source>
         <translation>Pohybovat se vodorovně v obou směrech pomocí otočného knoflíku se stejným výsledkem, jako při stisknutí kláves vlevo/vpravo</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="909"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="917"/>
         <source>Move focus to right pane</source>
         <translation>Přesunout zaměření do pravé tabulky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="910"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="918"/>
         <source>Equivalent to pressing the TAB key on the keyboard</source>
         <translation>Stejné jako klávesa tabulátoru (TAB) na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="913"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="921"/>
         <source>Move focus to left pane</source>
         <translation>Přesunout zaměření do levé tabulky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="914"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="922"/>
         <source>Equivalent to pressing the SHIFT+TAB key on the keyboard</source>
         <translation>Stejné jako stisknutí kláves Shift+tabulátor (TAB) na klávesnici</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="917"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="925"/>
         <source>Move focus to right/left pane</source>
         <translation>Přesunout zaměření do pravé/levé tabulky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="918"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="926"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
         <translation>Přesunout zaměření tabulky napravo nebo nalevo pomocí otočného knoflíku se stejným výsledkem, jako při stisknutí kláves TAB/Shift+TAB</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="922"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="930"/>
         <source>Sort focused column</source>
         <translation>Řadit zaměřený sloupec</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="923"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="931"/>
         <source>Sort the column of the cell that is currently focused, equivalent to clicking on its header</source>
         <translation>Řadit sloupec buňky, která je aktuálně zaměřena, což odpovídá klepnutí na záhlaví</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="929"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="937"/>
         <source>Go to the currently selected item</source>
         <translation>Jít na nyní vybranou položku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="930"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="938"/>
         <source>Choose the currently selected item and advance forward one pane if appropriate</source>
         <translation>Zvolte nyní vybranou položku a jděte dopředu o jeden výřez okna</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="939"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="947"/>
         <source>Load Track and Play</source>
         <translation>Nahrát skladbu a přehrát</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="953"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="961"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Přidat do řady skladeb automatického diskžokeje (nahradit)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="954"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="962"/>
         <source>Replace Auto DJ Queue with selected tracks</source>
         <translation>Nahradit řadu skladeb automatického diskžokeje vybranými skladbami</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="959"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="967"/>
         <source>Select next search history</source>
         <translation>Vybrat další historii hledání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="960"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="968"/>
         <source>Selects the next search history entry</source>
         <translation>Vybere další položku historie hledání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="963"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="971"/>
         <source>Select previous search history</source>
         <translation>Vybrat předchozí historii hledání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="964"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="972"/>
         <source>Selects the previous search history entry</source>
         <translation>Vybere předchozí položku historie hledání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="967"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="975"/>
         <source>Move selected search entry</source>
         <translation>Přesunout vybranou historii hledání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="968"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="976"/>
         <source>Moves the selected search history item into given direction and steps</source>
         <translation>Přesune vybranou položku historie hledání do daného směru a kroků</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="972"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="980"/>
         <source>Clear search</source>
         <translation>Smazat hledání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="973"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="981"/>
         <source>Clears the search query</source>
         <translation>Smaže vyhledávací dotaz</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="978"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1573"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="986"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1606"/>
         <source>Select Next Color Available</source>
-        <translation type="unfinished"/>
+        <translation>Vybrat další dostupnou barvu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="979"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="987"/>
         <source>Select the next color in the color palette for the first selected track</source>
-        <translation type="unfinished"/>
+        <translation>Vyberte další barvu v paletě barev pro první vybranou stopu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="983"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1577"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="991"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1610"/>
         <source>Select Previous Color Available</source>
-        <translation type="unfinished"/>
+        <translation>Vybrat předchozí dostupnou barvu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="984"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="992"/>
         <source>Select the previous color in the color palette for the first selected track</source>
-        <translation type="unfinished"/>
+        <translation>Vyberte předchozí barvu v paletě barev pro první vybranou stopu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1003"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1011"/>
         <source>Quick Effects Deck %1</source>
-        <translation type="unfinished"/>
+        <translation>Balíček rychlých efektů %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1014"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1022"/>
         <source>Deck %1 Quick Effect Enable Button</source>
         <translation>Přehrávač %1 Tlačítko pro povolení rychlého efektu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1015"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1039"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1023"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1047"/>
         <source>Quick Effect Enable Button</source>
         <translation>Tlačítko pro povolení rychlého efektu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1028"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1036"/>
         <source>Deck %1 Stem %2 Quick Effect Super Knob</source>
-        <translation type="unfinished"/>
+        <translation>Superknoflík rychlého efektu pro přehrávač %1 představec %2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1037"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1045"/>
         <source>Deck %1 Stem %2 Quick Effect Enable Button</source>
-        <translation type="unfinished"/>
+        <translation>Přehrávač %1 Představec %2 Tlačítko pro aktivaci rychlých efektů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1068"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1076"/>
         <source>Enable or disable effect processing</source>
         <translation>Zapnout nebo vypnout zpracování efektu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1083"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1091"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
         <translation>Superknoflík (řízení metaknoflíků efektů)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1089"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1097"/>
         <source>Mix Mode Toggle</source>
         <translation>Přepnout režim míchání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1090"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1098"/>
         <source>Toggle effect unit between D/W and D+W modes</source>
         <translation>Přepnout efektovou jednotku mezi režimy D/W a D+W</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1097"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1105"/>
         <source>Next chain preset</source>
         <translation>Další přednastavení řetězce efektu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1103"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1111"/>
         <source>Previous Chain</source>
         <translation>Předchozí řetězec</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1104"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1112"/>
         <source>Previous chain preset</source>
         <translation>Předchozí přednastavení řetězce efektu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1110"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1118"/>
         <source>Next/Previous Chain</source>
         <translation>Další/Předchozí řetězec</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1111"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1119"/>
         <source>Next or previous chain preset</source>
         <translation>Další nebo předchozí přednastavení řetězce efektu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1117"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1118"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1125"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1126"/>
         <source>Show Effect Parameters</source>
         <translation>Ukázat parametry efektů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1123"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1131"/>
         <source>Effect Unit Assignment</source>
         <translation>Přiřazení efektové jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1228"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1236"/>
         <source>Meta Knob</source>
         <translation>Metaknoflík</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1229"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1237"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
         <translation>Metaknoflík efektu (řízení parametrů propojených efektů)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1292"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1300"/>
         <source>Meta Knob Mode</source>
         <translation>Režim metaknoflíku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1293"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1301"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
         <translation>Nastavit, jak se parametry propojených efektů budou měnit, když se otáčí metaknoflíkem.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1300"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1308"/>
         <source>Meta Knob Mode Invert</source>
         <translation>Obrácení režimu metaknoflíku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1301"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1309"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
         <translation>Obrátit, jak se parametry propojených efektů budou měnit, když se otáčí metaknoflíkem.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1332"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1333"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1340"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1341"/>
         <source>Button Parameter Value</source>
         <translation>Hodnota parametru tlačítka</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1342"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1350"/>
         <source>Microphone / Auxiliary</source>
         <translation>Mikrofon/Aux</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1345"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1353"/>
         <source>Microphone On/Off</source>
         <translation>Mikrofon zapnuto/vypnuto</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1346"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1354"/>
         <source>Microphone on/off</source>
         <translation>Mikrofon zapnuto/vypnuto</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1359"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1367"/>
         <source>Toggle microphone ducking mode (OFF, AUTO, MANUAL)</source>
         <translation>Přepnout režim tlumení mikrofonu (ZAPNUTO, AUTOMATICKY, RUČNĚ)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1362"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1370"/>
         <source>Auxiliary On/Off</source>
         <translation>Aux zapnuto/vypnuto</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1363"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1371"/>
         <source>Auxiliary on/off</source>
         <translation>Aux zapnuto/vypnuto</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1433"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1441"/>
         <source>Auto DJ</source>
         <translation>Diskžokej</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1436"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1444"/>
         <source>Auto DJ Shuffle</source>
         <translation>Automatický diskžokej Zamíchat</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1441"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1449"/>
         <source>Auto DJ Skip Next</source>
         <translation>Automatický diskžokej Přeskočit další</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1446"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1454"/>
         <source>Auto DJ Add Random Track</source>
         <translation>Automatický diskžokej Přidat náhodnou skladbu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1447"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1455"/>
         <source>Add a random track to the Auto DJ queue</source>
         <translation>Přidat náhodnou skladbu do řady automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1451"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1459"/>
         <source>Auto DJ Fade To Next</source>
         <translation>Automatický diskžokej Prolínat k další skladbě</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1452"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1460"/>
         <source>Trigger the transition to the next track</source>
         <translation>Spustit přechod k další skladbě</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1461"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1469"/>
         <source>User Interface</source>
         <translation>Uživatelské rozhraní</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1464"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1472"/>
         <source>Samplers Show/Hide</source>
         <translation>Ukázat/Skrýt vzorkovače</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1465"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1473"/>
         <source>Show/hide the sampler section</source>
         <translation>Ukázat/Skrýt oblast vzorkovače</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1472"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1480"/>
         <source>Microphone &amp;&amp; Auxiliary Show/Hide</source>
         <extracomment>keep double &amp; to prevent creation of keyboard accelerator</extracomment>
         <translation>Ukázat/Skrýt mikrofon a pomocné zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1554"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1562"/>
         <source>Waveform Zoom Reset To Default</source>
         <translation>Zvětšení průběhové křivky resetováno na výchozí</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1555"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1563"/>
         <source>Reset the waveform zoom level to the default value selected in Preferences -&gt; Waveforms</source>
         <translation>Resetujte úroveň zvětšení průběhové křivky na výchozí hodnotu vybranou v Nastavení -&gt; Křivky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1574"/>
-        <source>Select the next color in the color palette for the loaded track.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1578"/>
-        <source>Select previous color in the color palette for the loaded track.</source>
-        <translation type="unfinished"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1580"/>
+        <source>Star Rating 1</source>
+        <translation>Hodnocení hvězdičkou 1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1581"/>
+        <source>Gives the track a 1 star rating</source>
+        <translation>Dává skladbě 1 hvězdičku</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1585"/>
+        <source>Star Rating 2</source>
+        <translation>Hodnocení hvězdičkou 2</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1586"/>
+        <source>Gives the track a 2 star rating</source>
+        <translation>Dává skladbě 2 hvězdičky</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1590"/>
+        <source>Star Rating 3</source>
+        <translation>Hodnocení hvězdičkou 3</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1591"/>
+        <source>Gives the track a 3 star rating</source>
+        <translation>Dává skladbě 3 hvězdičky</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1595"/>
+        <source>Star Rating 4</source>
+        <translation>Hodnocení hvězdičkou 4</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1596"/>
+        <source>Gives the track a 4 star rating</source>
+        <translation>Dává skladbě 4 hvězdičky</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1600"/>
+        <source>Star Rating 5</source>
+        <translation>Hodnocení hvězdičkou 5</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1601"/>
+        <source>Gives the track a 5 star rating</source>
+        <translation>Dává skladbě 5 hvězdiček</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1607"/>
+        <source>Select the next color in the color palette for the loaded track.</source>
+        <translation>Vyberte další barvu v paletě barev pro načtenou stopu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1611"/>
+        <source>Select previous color in the color palette for the loaded track.</source>
+        <translation>Vyberte předchozí barvu v paletě barev pro načtenou stopu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1614"/>
         <source>Navigate Through Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Procházení barev stop</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1582"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1615"/>
         <source>Select either next or previous color in the palette for the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Vyberte v paletě buď další, nebo předchozí barvu pro načtenou stopu.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1588"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1621"/>
         <source>Start/Stop Live Broadcasting</source>
         <translation>Zahájit/Zastavit živé vysílání</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1589"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1622"/>
         <source>Stream your mix over the Internet.</source>
         <translation>Vysílejte svoje míchání přes internet.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1594"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1627"/>
         <source>Start/stop recording your mix.</source>
         <translation>Začněte/Zastavte nahrávání směsi (mixování).</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1685"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1713"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1718"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1746"/>
         <source>Deck %1 Stems</source>
-        <translation type="unfinished"/>
+        <translation>Paluba %1 Stonky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1762"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1767"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1795"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1800"/>
         <source>Samplers</source>
         <translation>Vzorkovače</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1521"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1529"/>
         <source>Vinyl Control Show/Hide</source>
         <translation>Ukázat/Skrýt ovládání vinylovou gramodeskou</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1522"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1530"/>
         <source>Show/hide the vinyl control section</source>
         <translation>Ukázat/Skrýt oblast ovládání vinylovou gramodeskou</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1477"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1485"/>
         <source>Preview Deck Show/Hide</source>
         <translation>Ukázat/Skrýt náhled přehrávačů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1478"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1486"/>
         <source>Show/hide the preview deck</source>
         <translation>Ukázat/Skrýt přehrávač náhledu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1511"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1519"/>
         <source>Toggle 4 Decks</source>
         <translation>Přepnout 4 přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1512"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1520"/>
         <source>Switches between showing 2 decks and 4 decks.</source>
         <translation>Přepíná mezi ukázáním 2 a 4 přehrávačů.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1516"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1524"/>
         <source>Cover Art Show/Hide (Decks)</source>
         <translation>Ukázat/Skrýt obrázek obalu (přehrávače)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1517"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1525"/>
         <source>Show/hide cover art in the main decks</source>
         <translation>Ukázat/Skrýt obrázky obalů v hlavních přehrávačích</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1525"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1533"/>
         <source>Vinyl Spinner Show/Hide</source>
         <translation>Ukázat/Skrýt otáčející se vinylovou gramodesku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1526"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1534"/>
         <source>Show/hide spinning vinyl widget</source>
         <translation>Ukázat/Skrýt otáčející se vinylovou gramodesku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1531"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1539"/>
         <source>Vinyl Spinners Show/Hide (All Decks)</source>
         <translation>Ukázat/Skrýt otáčející se vinylovou gramodesku (všechny přehrávače)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1532"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1540"/>
         <source>Show/Hide all spinnies</source>
         <translation>Ukázat/Skrýt všechny talíře</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1547"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1555"/>
         <source>Toggle Waveforms</source>
         <translation>Přepnout tvar křivek</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1548"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1556"/>
         <source>Show/hide the scrolling waveforms.</source>
         <translation>Ukázat/Skrýt posuvné průběhy</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1550"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1558"/>
         <source>Waveform zoom</source>
         <translation>Zvětšení průběhové křivky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1550"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1558"/>
         <source>Waveform Zoom</source>
         <translation>Zvětšení průběhové křivky</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1551"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1559"/>
         <source>Zoom waveform in</source>
         <translation>Přiblížit průběhovou křivku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1551"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1559"/>
         <source>Waveform Zoom In</source>
         <translation>Přiblížit průběhovou křivku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1552"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1560"/>
         <source>Zoom waveform out</source>
         <translation>Oddálit průběhovou křivku</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1563"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1571"/>
         <source>Star Rating Up</source>
         <translation>Hodnocení hvězdičkami nahoru</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1564"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1572"/>
         <source>Increase the track rating by one star</source>
         <translation>Zvýšit hodnocení skladby o jednu hvězdu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1567"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1575"/>
         <source>Star Rating Down</source>
         <translation>Hodnocení hvězdičkami dolů</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1568"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1576"/>
         <source>Decrease the track rating by one star</source>
         <translation>Snížit hodnocení skladby o jednu hvězdu</translation>
     </message>
@@ -3587,7 +3663,7 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/controllers/controller.cpp" line="55"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Neznámý</translation>
     </message>
 </context>
 <context>
@@ -3595,152 +3671,152 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="98"/>
         <source>Read</source>
-        <translation type="unfinished"/>
+        <translation>Číst</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="99"/>
         <source>Send</source>
-        <translation type="unfinished"/>
+        <translation>Poslat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="123"/>
         <source>Payload Size</source>
-        <translation type="unfinished"/>
+        <translation>Velikost užitečného zatížení</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="125"/>
         <source>bytes</source>
-        <translation type="unfinished"/>
+        <translation>bajtů</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="357"/>
         <source>Byte Position</source>
-        <translation type="unfinished"/>
+        <translation>Pozice bajtu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="358"/>
         <source>Bit Position</source>
-        <translation type="unfinished"/>
+        <translation>Pozice bitu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="359"/>
         <source>Bit Size</source>
-        <translation type="unfinished"/>
+        <translation>Velikost bitu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="360"/>
         <source>Logical Min</source>
-        <translation type="unfinished"/>
+        <translation>Logické minimum</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="361"/>
         <source>Logical Max</source>
-        <translation type="unfinished"/>
+        <translation>Logické maximum</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="362"/>
         <source>Value</source>
-        <translation type="unfinished"/>
+        <translation>Hodnota</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="363"/>
         <source>Physical Min</source>
-        <translation type="unfinished"/>
+        <translation>Fyzické minimum</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="364"/>
         <source>Physical Max</source>
-        <translation type="unfinished"/>
+        <translation>Fyzické maximum</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="365"/>
         <source>Unit Scaling</source>
-        <translation type="unfinished"/>
+        <translation>Měřítko jednotky</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="366"/>
         <source>Unit</source>
-        <translation type="unfinished"/>
+        <translation>Jednotka</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="367"/>
         <source>Abs/Rel</source>
-        <translation type="unfinished"/>
+        <translation>Abs/Rel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="368"/>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="446"/>
         <source>Wrap</source>
-        <translation type="unfinished"/>
+        <translation>Zabalit</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="369"/>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="453"/>
         <source>Linear</source>
-        <translation type="unfinished"/>
+        <translation>Lineární</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="370"/>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="459"/>
         <source>Preferred</source>
-        <translation type="unfinished"/>
+        <translation>Preferované</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="371"/>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="464"/>
         <source>Null</source>
-        <translation type="unfinished"/>
+        <translation>Nula</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="373"/>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="473"/>
         <source>Volatile</source>
-        <translation type="unfinished"/>
+        <translation>Těkavý</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="375"/>
         <source>Usage Page</source>
-        <translation type="unfinished"/>
+        <translation>Stránka použití</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="375"/>
         <source>Usage</source>
-        <translation type="unfinished"/>
+        <translation>Použití</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="440"/>
         <source>Relative</source>
-        <translation type="unfinished"/>
+        <translation>Relativní</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="441"/>
         <source>Absolute</source>
-        <translation type="unfinished"/>
+        <translation>Absolutní</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="447"/>
         <source>No Wrap</source>
-        <translation type="unfinished"/>
+        <translation>Bez obalu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="452"/>
         <source>Non Linear</source>
-        <translation type="unfinished"/>
+        <translation>Nelineární</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="458"/>
         <source>No Preferred</source>
-        <translation type="unfinished"/>
+        <translation>Nepreferováno</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="465"/>
         <source>No Null</source>
-        <translation type="unfinished"/>
+        <translation>Žádná nula</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerhidreporttabsmanager.cpp" line="474"/>
         <source>Non Volatile</source>
-        <translation type="unfinished"/>
+        <translation>Neprchavé</translation>
     </message>
 </context>
 <context>
@@ -3829,17 +3905,17 @@ trace    - Výše + Profilování zpráv</translation>
     <message>
         <location filename="../../src/controllers/controllerscreenpreview.cpp" line="21"/>
         <source>FPS: n/a</source>
-        <translation type="unfinished"/>
+        <translation>FPS: n/a</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerscreenpreview.cpp" line="32"/>
         <source>Unnamed</source>
-        <translation type="unfinished"/>
+        <translation>Nepojmenované</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerscreenpreview.cpp" line="66"/>
         <source>&lt;i&gt;FPS: %0/%1&lt;/i&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;i&gt;FPS: %0/%1&lt;/i&gt;</translation>
     </message>
 </context>
 <context>
@@ -3914,148 +3990,148 @@ trace    - Výše + Profilování zpráv</translation>
 <context>
     <name>CrateFeature</name>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="81"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="82"/>
         <source>Remove</source>
         <translation>Odstranit</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="65"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="202"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="66"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="203"/>
         <source>Create New Crate</source>
         <translation>Vytvořit novou přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="71"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="72"/>
         <source>Rename</source>
         <translation>Přejmenovat</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="91"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="392"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="92"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="395"/>
         <source>Lock</source>
         <translation>Zamknout</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="120"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="121"/>
         <source>Export Crate as Playlist</source>
         <translation>Uložit přepravku jako seznam skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="125"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="126"/>
         <source>Export Track Files</source>
         <translation>Uložit soubory skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="76"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="77"/>
         <source>Duplicate</source>
         <translation>Zdvojit</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="104"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="105"/>
         <source>Analyze entire Crate</source>
         <translation>Rozebrat celou přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="97"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="98"/>
         <source>Auto DJ Track Source</source>
         <translation>Zdroj skladeb pro automatického diskžokeje</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="478"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="481"/>
         <source>Enter new name for crate:</source>
         <translation>Zadat nový název pro přepravku:</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="187"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="191"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="188"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="192"/>
         <source>Crates</source>
         <translation>Přepravky</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="110"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="115"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="111"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="116"/>
         <source>Import Crate</source>
         <translation>Nahrát přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="788"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="791"/>
         <source>Export Crate</source>
         <translation>Uložit přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="392"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="395"/>
         <source>Unlock</source>
         <translation>Odemknout</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="740"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="743"/>
         <source>An unknown error occurred while creating crate: </source>
         <translation>Při vytváření přepravky na desky nastala neznámá chyba: </translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="477"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="480"/>
         <source>Rename Crate</source>
         <translation>Přejmenovat přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="196"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="197"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested tracks.</source>
         <translation>Vytvořte si přepravku na desky pro své další vystoupení, pro své oblíbené skladby ve stylu elektrického domu (electrohouse), a nebo třeba pro nejžádanější skladby.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="446"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="449"/>
         <source>Confirm Deletion</source>
         <translation>Potvrdit smazání</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="488"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="494"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="491"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="497"/>
         <source>Renaming Crate Failed</source>
         <translation>Přejmenování přepravky se nezdařilo</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="739"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="742"/>
         <source>Crate Creation Failed</source>
         <translation>Vytvoření přepravky se nezdařilo</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="790"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="793"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>Seznam skladeb M3U (*.m3u);;Seznam skladeb M3U8 (*.m3u8);;Seznam skladeb PLS (*.pls);;Text CSV (*.csv);;Prostý text (*.txt)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="792"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="795"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>Seznam skladeb M3U (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="193"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="194"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
         <translation>Přepravky na desky jsou skvělým způsobem, jak uspořádat hudbu, se kterou chcete míchat.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="131"/>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="136"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="132"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="137"/>
         <source>Export to Engine DJ</source>
-        <translation type="unfinished"/>
+        <translation>Exportovat do stroje DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="199"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="200"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
         <translation>Přepravky na desky vám umožní uspořádat si svou sbírku skladeb po svém!</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="447"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="450"/>
         <source>Do you really want to delete crate &lt;b&gt;%1&lt;/b&gt;?</source>
         <translation>Opravdu chcete přepravku &lt;b&gt;%1&lt;/b&gt; smazat?</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="489"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="492"/>
         <source>A crate cannot have a blank name.</source>
         <translation>Název přepravky nemůže být prázdný.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="495"/>
+        <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="498"/>
         <source>A crate by that name already exists.</source>
         <translation>Přepravka s tímto názvem již existuje.</translation>
     </message>
@@ -4150,12 +4226,12 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>Přispěvatelé v minulosti</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="456"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="505"/>
         <source>Official Website</source>
         <translation>Internetová stránka</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="466"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="515"/>
         <source>Donate</source>
         <translation>Přispět</translation>
     </message>
@@ -4210,15 +4286,10 @@ trace    - Výše + Profilování zpráv</translation>
     <name>DlgAnalysis</name>
     <message>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="14"/>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="98"/>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="161"/>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="145"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="198"/>
         <source>Analyze</source>
         <translation>Analýza</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="56"/>
-        <source>Shows tracks added to the library within the last 7 days.</source>
-        <translation>Ukáže skladby přidané do knihovny v posledních 7 dnech.</translation>
     </message>
     <message>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="59"/>
@@ -4226,47 +4297,62 @@ trace    - Výše + Profilování zpráv</translation>
         <translation>Nový</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="69"/>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="78"/>
+        <source>Number of days to filter recently added tracks.</source>
+        <translation>Počet dní pro filtrování nedávno přidaných skladeb.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="103"/>
+        <source>days</source>
+        <translation>dny</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="106"/>
+        <source>Days</source>
+        <translation>Dny</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="116"/>
         <source>Shows all tracks in the library.</source>
         <translation>Ukáže všechny skladby v knihovně.</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="72"/>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="119"/>
         <source>All</source>
         <translation>Vše</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="108"/>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="155"/>
         <source>Progress</source>
         <translation>Postup</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="82"/>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="129"/>
         <source>Selects all tracks in the table below.</source>
         <translation>Vybere všechny skladby v tabulce níže.</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="85"/>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="56"/>
+        <source>Shows tracks added to the library recently.</source>
+        <translation>Zobrazuje skladby, které byly nedávno přidané do knihovny.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="132"/>
         <source>Select All</source>
         <translation>Vybrat vše</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.ui" line="95"/>
+        <location filename="../../src/library/analysis/dlganalysis.ui" line="142"/>
         <source>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Does not generate waveforms for the selected tracks to save disk space.</source>
         <translation>Spustí rozpoznávání rytmické mřížky, tóniny a vyrovnání hlasitosti skladeb u vybraných skladeb. Nevytvoří  pro vybrané skladby průběhové křivky kvůli ušetření místa na disku.</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="156"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="193"/>
         <source>Stop Analysis</source>
         <translation>Zastavit rozbor</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="175"/>
-        <source>Analyzing %1% %2/%3</source>
-        <translation>Provádí se rozbor %1% %2/%3</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="181"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="217"/>
         <source>Analyzing %1/%2</source>
         <translation>Provádí se rozbor %1/%2</translation>
     </message>
@@ -4377,7 +4463,33 @@ Skip Silence Start Full Volume:
 The same as Skip Silence, but starting transitions with a centered
 crossfader, so that the intro starts at full volume.
 </source>
-        <translation type="unfinished"/>
+        <translation>Režimy automatického diskžokeje prolínání
+
+Celý úvod + závěr:
+Přehrát celý úvod a závěr. Jako počáteční nebo koncovou délku použijte
+dobu prolínání, podle toho, která je kratší. Pokud žádný úvod nebo závěr není označen,
+použijte vybranou dobu prolínání.
+
+Slábnout na začátku závěru:
+Začít prolínání na úplném začátku závěru. Pokud je závěr delší než
+úvod, odříznout konec závěru. Použijte počáteční nebo koncovou délku jako
+dobu prolínání, podle toho, která je kratší. Pokud žádný úvod nebo záběr není
+označen, použijte vybranou dobu prolínání.
+
+Celá skladba:
+Přehrát celou skladbu. Začít prolínat od zvoleného počtu
+sekund před koncem skladby. Přidá se negativní čas prolínání
+ticha mezi skladbami.
+
+Přeskočit ticho:
+Přehrát celou skladbu kromě ticha na začátku a na konci.
+Začít prolínat od zvoleného počtu sekund před
+posledním zvukem.
+
+Přeskočit ticho Spustit plnou hlasitost:
+Stejné jako Přeskočit ticho, ale přechody se spouštějí středovým
+crossfaderem, takže intro začíná na plné hlasitosti.
+</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="177"/>
@@ -4402,7 +4514,7 @@ crossfader, so that the intro starts at full volume.
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="185"/>
         <source>Skip Silence Start Full Volume</source>
-        <translation type="unfinished"/>
+        <translation>Přeskočit Ticho Spustit Plná hlasitost</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="296"/>
@@ -4514,17 +4626,17 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="94"/>
         <source>Use rhythmic channel when analysing stem file</source>
-        <translation type="unfinished"/>
+        <translation>Použijte rytmický kanál při analýze kmenového souboru</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="108"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>Zakázáno</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="113"/>
         <source>Enforced</source>
-        <translation type="unfinished"/>
+        <translation>Vynuceno</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="126"/>
@@ -4709,7 +4821,7 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="499"/>
         <source>The selected control does not exist.&lt;br&gt;This likely a bug. Please report it on the Mixxx bug tracker.&lt;br&gt;&lt;a href=&apos;https://github.com/mixxxdj/mixxx/issues&apos;&gt;https://github.com/mixxxdj/mixxx/issues&lt;/a&gt;&lt;br&gt;&lt;br&gt;You tried to learn: %1,%2</source>
-        <translation type="unfinished"/>
+        <translation>Vybraný ovládací prvek neexistuje.&lt;br&gt;Pravděpodobně se jedná o chybu. Nahlaste ji prosím na systému sledování chyb Mixxx.&lt;br&gt;&lt;a href=&apos;https://github.com/mixxxdj/mixxx/issues&apos;&gt;https://github.com/mixxxdj/mixxx/issues&lt;/a&gt;&lt;br&gt;&lt;br&gt;Pokusili jste se naučit: %1,%2</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="525"/>
@@ -4944,17 +5056,17 @@ Pokusili jste se naučit: %1,%2</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="263"/>
         <source>Crossfader Behaviour</source>
-        <translation type="unfinished"/>
+        <translation>Chování prolínače</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="279"/>
         <source>Reset the Crossfader back to center after disabling AutoDJ</source>
-        <translation type="unfinished"/>
+        <translation>Resetovat crossfader zpět do středu po vypnutí AutoDJ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="317"/>
         <source>Hint: Resetting the crossfader to center will cause a drop of the main output&apos;s volume if you&apos;ve selected &quot;Constant Power&quot; crossfader curve in the Mixer preferences.</source>
-        <translation type="unfinished"/>
+        <translation>Tip: Resetování crossfaderu do střední polohy způsobí pokles hlasitosti hlavního výstupu, pokud jste v nastavení mixéru vybrali křivku crossfaderu „Konstantní výkon“.</translation>
     </message>
 </context>
 <context>
@@ -5022,78 +5134,80 @@ Pokusili jste se naučit: %1,%2</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="220"/>
         <source>Saving settings failed</source>
-        <translation type="unfinished"/>
+        <translation>Uložení nastavení se nezdařilo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="230"/>
         <source>The password for '%1' contains invalid characters. Please enter it again.
 
 Note: This can for example be invisible linebreaks when using copy/paste.</source>
-        <translation type="unfinished"/>
+        <translation>Heslo pro &apos;%1&apos; obsahuje neplatné znaky. Zadejte jej prosím znovu.
+
+Poznámka: Může se jednat například o neviditelné zalomení řádků při kopírování a vkládání.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="341"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="617"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="652"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="340"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="616"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="651"/>
         <source>Action failed</source>
         <translation>Činnost se nezdařila</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="342"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="341"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation>Nemůžete vytvořit připojení více než %1 zdrojů.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="355"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="354"/>
         <source>Source connection %1</source>
         <translation>Připojení zdroje %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="437"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="436"/>
         <source>Settings for %1</source>
         <extracomment>Settings for broadcast profile, %1 is the profile name placeholder</extracomment>
-        <translation type="unfinished"/>
+        <translation>Nastavení pro %1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="618"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="617"/>
         <source>At least one source connection is required.</source>
         <translation>Je požadováno připojení alespoň jednoho zdroje.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="663"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="662"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation>Opravdu chcete odpojit všechna činná připojení zdrojů?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="624"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="662"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="623"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="661"/>
         <source>Confirmation required</source>
         <translation>Požadováno potvrzení</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="261"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="260"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
         <translation>&apos;%1&apos; má týž přípojný bod Icecast jako &apos;%2&apos;.
 Dvě zdrojová připojení ke stejnému serveru, které mají týž přípojný bod, nemohou být povolena zároveň.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="625"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="624"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation>Opravdu chcete smazat &apos;%1&apos;?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="640"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="639"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation>Přejmenovává se &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="641"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="640"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation>Nový název pro &apos;%1&apos;:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="653"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="652"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation>Nelze přejmenovat &apos;%1&apos; na &apos;%2&apos;: název se již používá</translation>
     </message>
@@ -5168,7 +5282,7 @@ Dvě zdrojová připojení ke stejnému serveru, které mají týž přípojný 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="380"/>
         <source>Available fields: $artist, $title, $year, $album, $genre, $bpm</source>
-        <translation type="unfinished"/>
+        <translation>Dostupná pole: $artist, $title, $year, $album, $genre, $bpm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="443"/>
@@ -5424,23 +5538,23 @@ Dvě zdrojová připojení ke stejnému serveru, které mají týž přípojný 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="106"/>
         <source>Jump default color</source>
-        <translation type="unfinished"/>
+        <translation>Výchozí barva skoku</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="117"/>
         <source>When key colors are enabled, Mixxx will display a color hint
 associated with each key.</source>
-        <translation type="unfinished"/>
+        <translation>Pokud jsou povoleny barvy kláves, Mixxx zobrazí barevnou nápovědu spojenou s každou klávesou.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="121"/>
         <source>Enable Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Povolit barvy kláves</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="129"/>
         <source>Key palette</source>
-        <translation type="unfinished"/>
+        <translation>Paleta kláves</translation>
     </message>
 </context>
 <context>
@@ -5538,22 +5652,22 @@ Použít nastavení a pokračovat?</translation>
         <translation>&lt;b&gt;%1&lt;/b&gt; již existuje v uživatelské složce přiřazení.&lt;br&gt;Přepsat nebo uložit pod novým názvem? </translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1309"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1315"/>
         <source>Clear Input Mappings</source>
         <translation>Smazat přiřazení vstupu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1310"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1316"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>Jste si jistý, že chcete smazat všechna přiřazení vstupu?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1348"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1354"/>
         <source>Clear Output Mappings</source>
         <translation>Smazat přiřazení výstupu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1349"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1355"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>Jste si jistý, že chcete smazat všechna přiřazení výstupu?</translation>
     </message>
@@ -5573,67 +5687,67 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="118"/>
         <source>Refresh mapping list</source>
-        <translation type="unfinished"/>
+        <translation>Obnovit seznam mapování</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="155"/>
         <source>Device Info</source>
-        <translation type="unfinished"/>
+        <translation>Informace o zařízení</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="176"/>
         <source>Physical Interface:</source>
-        <translation type="unfinished"/>
+        <translation>Fyzické rozhraní:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="246"/>
         <source>Vendor name:</source>
-        <translation type="unfinished"/>
+        <translation>Jméno dodavatele:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="281"/>
         <source>Product name:</source>
-        <translation type="unfinished"/>
+        <translation>Název produktu:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="316"/>
         <source>Vendor ID</source>
-        <translation type="unfinished"/>
+        <translation>ID dodavatele</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="319"/>
         <source>VID:</source>
-        <translation type="unfinished"/>
+        <translation>VID:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="354"/>
         <source>Product ID</source>
-        <translation type="unfinished"/>
+        <translation>ID produktu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="357"/>
         <source>PID:</source>
-        <translation type="unfinished"/>
+        <translation>PID:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="392"/>
         <source>Serial number:</source>
-        <translation type="unfinished"/>
+        <translation>Sériové číslo:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="427"/>
         <source>USB interface number:</source>
-        <translation type="unfinished"/>
+        <translation>Číslo USB rozhraní:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="462"/>
         <source>HID Usage-Page:</source>
-        <translation type="unfinished"/>
+        <translation>Stránka s využitím HID:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="497"/>
         <source>HID Usage:</source>
-        <translation type="unfinished"/>
+        <translation>Využití HID:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="695"/>
@@ -5648,7 +5762,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="980"/>
         <source>Screens preview</source>
-        <translation type="unfinished"/>
+        <translation>Náhled obrazovky</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="992"/>
@@ -5711,7 +5825,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="211"/>
         <source>Data protocol:</source>
-        <translation type="unfinished"/>
+        <translation>Datový protokol:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="786"/>
@@ -5721,7 +5835,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="968"/>
         <source>Mapping Settings</source>
-        <translation type="unfinished"/>
+        <translation>Nastavení mapování</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="1070"/>
@@ -5741,12 +5855,12 @@ Použít nastavení a pokračovat?</translation>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="60"/>
         <source>%1 is a virtual controller that allows to use e.g. the &apos;MIDI for light&apos; mapping.&lt;br/&gt;You need to restart Mixxx in order to enable it.&lt;br/&gt;&lt;b&gt;Note:&lt;/b&gt; mappings meant for physical controllers can cause issues and even render the Mixxx GUI unresponsive when being loaded to %1.</source>
         <extracomment>text enclosed in &lt;b&gt; is bold, &lt;br/&gt; is a linebreak %1 is the placehodler for 'MIDI Through Port'</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1 je virtuální kontroler, který umožňuje použít např. mapování „MIDI pro osvětlení“.&lt;br/&gt;Pro jeho povolení je nutné restartovat Mixxx.&lt;br/&gt;&lt;b&gt;Poznámka:&lt;/b&gt; mapování určená pro fyzické kontroléry může způsobovat problémy a dokonce způsobit, že grafické uživatelské rozhraní Mixxx při načítání do %1 nereaguje.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="75"/>
         <source>Mixxx uses &quot;mappings&quot; to connect messages from your controller to controls in Mixxx. If you do not see a mapping for your controller in the &quot;Load Mapping&quot; menu when you click on your controller on the left sidebar, you may be able to download one online from the %1. Place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Mapping Folder&quot; then click the Reload button next to the mapping selector to reload all available mappings. If you download a mapping in a ZIP file, extract the XML and Javascript file(s) from the ZIP file to your &quot;User Mapping Folder&quot; then click the Reload button.</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx používá „mapování“ k propojení zpráv z vašeho ovladače s ovládacími prvky v Mixxx. Pokud po kliknutí na ovladač v levém postranním panelu nevidíte mapování pro váš ovladač v nabídce „Načíst mapování“, můžete si ho stáhnout online z %1. Umístěte soubor(y) XML (.xml) a Javascript (.js) do „Složky mapování uživatelů“ a poté klikněte na tlačítko Znovu načíst vedle selektoru mapování, čímž znovu načtete všechna dostupná mapování. Pokud stahujete mapování v souboru ZIP, extrahujte soubor(y) XML a Javascript ze souboru ZIP do „Složky mapování uživatelů“ a poté klikněte na tlačítko Znovu načíst.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollers.cpp" line="92"/>
@@ -5784,7 +5898,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="90"/>
         <source>Enable MIDI Through Port</source>
-        <translation type="unfinished"/>
+        <translation>Povolit MIDI přes port</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
@@ -5872,32 +5986,37 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="211"/>
         <source>Menu bar</source>
-        <translation type="unfinished"/>
+        <translation>Panel nabídek</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="221"/>
         <source>Auto-hide the menu bar, toggle it with a single Alt key press</source>
-        <translation type="unfinished"/>
+        <translation>Automaticky skrýt panel nabídek, přepnout ho jedním stisknutím klávesy Alt</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="283"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="280"/>
+        <source>Only Keyboard Shortcuts</source>
+        <translation>Pouze klávesové zkratky</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="293"/>
         <source>Screen saver</source>
         <translation>Spořič obrazovky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="293"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="303"/>
         <source>Multi-Sampling</source>
         <translation>Vícenásobné vzorkování</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="303"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="313"/>
         <source>Force 3D acceleration</source>
-        <translation type="unfinished"/>
+        <translation>Vynucení 3D zrychlení</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="306"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="316"/>
         <source>If checked, Mixxx will always assume 3D acceleration is available. This may lead to pour performance if only CP-backed rendering is available..</source>
-        <translation type="unfinished"/>
+        <translation>Pokud je zaškrtnuto, Mixxx bude vždy předpokládat, že je k dispozici 3D akcelerace. To může vést k problémům s výkonem při lití, pokud je k dispozici pouze renderování s podporou CP.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="203"/>
@@ -5995,7 +6114,7 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="155"/>
         <source>First hotcue</source>
-        <translation type="unfinished"/>
+        <translation>První rychlá značka</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="156"/>
@@ -6457,12 +6576,12 @@ Vždy můžete přetažením skladeb na obrazovce naklonovat přehrávač.</tran
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="317"/>
         <source>❯</source>
-        <translation type="unfinished"/>
+        <translation>❯</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="337"/>
         <source>❮</source>
-        <translation type="unfinished"/>
+        <translation>❮</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="560"/>
@@ -6513,64 +6632,70 @@ Vždy můžete přetažením skladeb na obrazovce naklonovat přehrávač.</tran
 <context>
     <name>DlgPrefInterface</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="140"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="131"/>
         <source>The minimum size of the selected skin is bigger than your screen resolution.</source>
         <translation>Nejmenší velikost vybraného vzhledu je větší než rozlišení vaší obrazovky.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="169"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="160"/>
         <source>Allow screensaver to run</source>
         <translation>Povolit běh spořiče obrazovky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="171"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="162"/>
         <source>Prevent screensaver from running</source>
         <translation>Zabránit spořiči obrazovky v běhu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="173"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="164"/>
         <source>Prevent screensaver while playing</source>
         <translation>Zabránit spořiči obrazovky v běhu během přehrávání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="183"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="174"/>
         <source>Disabled</source>
         <translation>Zakázáno</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="185"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="176"/>
         <source>2x MSAA</source>
         <translation>2x MSAA</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="178"/>
         <source>4x MSAA</source>
         <translation>4x MSAA</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="189"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="180"/>
         <source>8x MSAA</source>
         <translation>8x MSAA</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="191"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="182"/>
         <source>16x MSAA</source>
         <translation>16x MSAA</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="314"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="326"/>
         <source>This skin does not support color schemes</source>
         <translation>Tento vzhled nepodporuje barevná schémata</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="434"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="450"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="457"/>
         <source>Information</source>
         <translation>Informace</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="435"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="451"/>
         <source>Mixxx must be restarted before the new locale, scaling or multi-sampling settings will take effect.</source>
         <translation>Předtím než se změny, škálování nebo vícenásobné vzorkování projeví, bude se muset Mixxx spustit znovu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="458"/>
+        <source>Mixxx must be restarted with the --developer command line option to use the experimental LateNight QML skin.</source>
+        <translation>Pro použití experimentálního vzhledu LateNight QML je nutné Mixxx restartovat s volbou --developer z příkazového řádku.</translation>
     </message>
 </context>
 <context>
@@ -6620,17 +6745,17 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="87"/>
         <source>Exclude rhythmic channel when analysing stem file</source>
-        <translation type="unfinished"/>
+        <translation>Při analýze kmenového souboru vyloučit rytmický kanál</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="101"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>Zakázáno</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="106"/>
         <source>Enforced</source>
-        <translation type="unfinished"/>
+        <translation>Vynuceno</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="125"/>
@@ -6791,102 +6916,127 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
 <context>
     <name>DlgPrefLibrary</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="140"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="114"/>
+        <source>Native (System Default)</source>
+        <translation>Nativní (výchozí nastavení systému)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="116"/>
+        <source>ISO 8601 (yyyy-MM-dd)</source>
+        <translation>ISO 8601 (rrrr-MM-dd)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="118"/>
+        <source>Regional Short (d/M/yy)</source>
+        <translation>Regionální krátké (d/M/rr)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="120"/>
+        <source>Regional Long (dd.MM.yyyy)</source>
+        <translation>Regionální dlouhé (dd.MM.rrrr)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="122"/>
+        <source>Custom</source>
+        <translation>Vlastní</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="161"/>
         <source>See the manual for details</source>
         <translation>Na podrobnosti se podívejte v příručce</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="207"/>
         <source>Music Directory Added</source>
         <translation>Adresář s hudbou přidán</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="208"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation>Přidal jste jeden nebo více adresářů s hudbou. Skladby v těchto adresářích nebudou dostupné, dokud nenecháte znovu prohledat knihovnu. Chcete ji nechat prohledat nyní?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="191"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="213"/>
         <source>Scan</source>
         <translation>Prohledat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="227"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="249"/>
         <source>Item is not a directory or directory is missing</source>
         <translation>Přestaň</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="407"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="482"/>
         <source>Choose a music directory</source>
         <translation>Vybrat adresář pro hudbu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="423"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="499"/>
         <source>Confirm Directory Removal</source>
         <translation>Potvrdit odstranění adresáře</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="425"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="501"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx už v tomto adresáři nové skladby nebude hledat. Co chcete dělat se skladbami z tohoto adresáře a jeho podadresářů?&lt;ul&gt;&lt;li&gt;Skrýt všechny skladby z tohoto adresáře a jeho podadresářů.&lt;/li&gt;&lt;li&gt;Smazat trvale všechna popisná data pro tyto skladby z Mixxxu.&lt;/li&gt;&lt;li&gt;Nechat tyto skladby v knihovně nezměněny.&lt;/li&gt;&lt;/ul&gt;Skrytí skladeb uloží jejich popisná data pro případ, že je v budoucnu znovu přidáte.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="436"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="512"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>Popisná data obsahují všechny podrobnosti o skladbě (umělec, název, počet přehrání atd.), stejně tak jako rytmické mřížky, rychlé značky a smyčky. Toto rozhodnutí ovlivní jen knihovnu Mixxxu. Žádné soubory na pevném disku nebudou změněny nebo smazány.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="444"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="520"/>
         <source>Hide Tracks</source>
         <translation>Skrýt skladby</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="446"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="522"/>
         <source>Delete Track Metadata</source>
         <translation>Smazat popisná data</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="448"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="524"/>
         <source>Leave Tracks Unchanged</source>
         <translation>Ponechat skladby nezměněny</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="490"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="567"/>
         <source>Relink music directory to new location</source>
         <translation>Propojit adresář s hudbou znovu s novým umístěním</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="629"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="712"/>
         <source>Black</source>
-        <translation type="unfinished"/>
+        <translation>Černý</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="631"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="714"/>
         <source>ExtraBold</source>
-        <translation type="unfinished"/>
+        <translation>Extra tučný</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="633"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="716"/>
         <source>Bold</source>
-        <translation type="unfinished"/>
+        <translation>Tučný</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="636"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="719"/>
         <source>SemiBold</source>
-        <translation type="unfinished"/>
+        <translation>Polotučný</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="638"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="721"/>
         <source>Medium</source>
-        <translation type="unfinished"/>
+        <translation>Střední</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="642"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="725"/>
         <source>Light</source>
-        <translation type="unfinished"/>
+        <translation>Jemný</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="664"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="749"/>
         <source>Select Library Font</source>
         <translation>Vybrat písmo knihovny</translation>
     </message>
@@ -6955,27 +7105,27 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
         <translation>Přesnost zobrazení MM:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="380"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="468"/>
         <source>Session History</source>
         <translation>Historie sezení</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="387"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="475"/>
         <source>Track duplicate distance</source>
         <translation>Zdvojit vzdálenost skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="400"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="488"/>
         <source>When playing a track again log it to the session history only if more than N other tracks have been played in the meantime</source>
         <translation>Při opětovném přehrávání skladby ji zapište do historie sezení, pouze pokud bylo mezitím přehráno více než N jiných skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="417"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="505"/>
         <source>History playlist with less than N tracks will be deleted&lt;br/&gt;&lt;br/&gt;Note: the cleanup will be performed during startup and shutdown of Mixxx.</source>
         <translation>Seznam skladeb historie s méně než N stopami bude smazán&lt;br/&gt;&lt;br/&gt;Poznámka: vyčištění bude provedeno během spouštění a vypínání Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="420"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="508"/>
         <source>Delete history playlist with less than N tracks</source>
         <translation>Smazat historii seznamu skladeb</translation>
     </message>
@@ -6987,90 +7137,115 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="95"/>
         <source>Show scan summary dialog</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazit dialogové okno se souhrnem skenování</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="296"/>
         <source>Grey out played tracks</source>
-        <translation type="unfinished"/>
+        <translation>Šedé přehrávané skladby</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="308"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="304"/>
+        <source>Date Format:</source>
+        <translation>Formát data:</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="338"/>
+        <source>Preview</source>
+        <translation>Náhled</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="352"/>
         <source>Track Search</source>
-        <translation type="unfinished"/>
+        <translation>Vyhledávání stopy</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="333"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="377"/>
         <source>Enable search completions</source>
         <translation>Povolit našeptávač</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="341"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="385"/>
         <source>Enable search history keyboard shortcuts</source>
         <translation>Povolit klávesové zkratky historie hledání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="349"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="393"/>
         <source>Percentage of pitch slider range for &apos;fuzzy&apos; BPM search:</source>
-        <translation type="unfinished"/>
+        <translation>Procentuální rozsah posuvníku výšky tónu pro „fuzzy“ vyhledávání MM:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="365"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="409"/>
         <source>This range will be used for the &apos;fuzzy&apos; BPM search (~bpm:) via the search box, as well as for BPM search in Track context menu &gt; Search related Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Tento rozsah bude použit pro „fuzzy“ vyhledávání MM (~bpm:) pomocí vyhledávacího pole a také pro vyhledávání MM v kontextové nabídce Stopa &gt; Hledat související stopy</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="541"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="424"/>
+        <source>Sidebar</source>
+        <translation>Boční panel</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="431"/>
+        <source>Hover expand delay:</source>
+        <translation>Zpoždění rozbalení při najetí myší:</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="447"/>
+        <source>The delay until sidebar items are expanded or collapsed hovered during drag&apos;n&apos;drop. -1 disables auto-expand.</source>
+        <translation>Zpoždění, než se položky postranního panelu rozbalí nebo sbalí při najetí myší během přetahování. -1 vypne automatické rozbalení.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="629"/>
         <source>Preferred Cover Art Fetcher Resolution</source>
         <translation>Upřednostňované rozlišení přinašeče obrázků obalů</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="547"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="635"/>
         <source>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</source>
         <translation>Natáhněte (získejte) obaly ze stránek coverartarchive.com pomocí funkce Nahrát popisná data z Musicbrainz.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="557"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="645"/>
         <source>Note: &quot;&gt;1200 px&quot; can fetch up to very large cover arts.</source>
         <translation>Poznámka: &quot;&gt;1200 px&quot; může natáhnout až velmi velké obaly.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="567"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="655"/>
         <source>&gt;1200 px (if available)</source>
         <translation>&gt;1200 px (je-li dostupné)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="577"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="665"/>
         <source>1200 px (if available)</source>
         <translation>1200 px (je-li dostupné)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="587"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="675"/>
         <source>500 px</source>
         <translation>500 px</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="597"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="685"/>
         <source>250 px</source>
         <translation>250 px</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="611"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="699"/>
         <source>Settings Directory</source>
         <translation>Nastavení adresáře</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="617"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="705"/>
         <source>The Mixxx settings directory contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</source>
         <translation>Adresář nastavení Mixxx obsahuje databázi knihovny, různé soubory s nastavením, soubory s protokoly, data analýzy skladeb a také vlastní přiřazování ovladačů.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="640"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="728"/>
         <source>Edit those files only if you know what you are doing and only while Mixxx is not running.</source>
         <translation>Upravit tyto soubory pokud víte, co s nimi děláte, a pouze pokud Mixxx není spuštěný.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="656"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="744"/>
         <source>Open Mixxx Settings Folder</source>
         <translation>Otevřít složku Nastavení Mixxx</translation>
     </message>
@@ -7120,12 +7295,13 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
         <translation>Upravit popisná data po klepnutí na vybranou stopu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="315"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="359"/>
         <source>Search-as-you-type timeout:</source>
         <translation>Prodleva pro okamžité hledání:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="325"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="369"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="444"/>
         <source> ms</source>
         <translation> ms</translation>
     </message>
@@ -7135,24 +7311,24 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
         <translation>Nahrát skladbu do dalšího dostupného přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="448"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="536"/>
         <source>External Libraries</source>
         <translation>Vnější knihovny</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="527"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="615"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
         <translation>Aby se změny projevily, budete muset Mixxx spustit znovu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="454"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="542"/>
         <source>Show Rhythmbox Library</source>
         <translation>Ukázat knihovnu Rhythmboxu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="133"/>
         <source>Track Metadata Synchronization / Playlists</source>
-        <translation type="unfinished"/>
+        <translation>Seřízení popisných dat skladby / seznamů skladeb</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="208"/>
@@ -7170,32 +7346,32 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
         <translation>Přehlížet</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="464"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="552"/>
         <source>Show Banshee Library</source>
         <translation>Ukázat knihovnu Banshee</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="474"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="562"/>
         <source>Show iTunes Library</source>
         <translation>Ukázat knihovnu iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="484"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="572"/>
         <source>Show Traktor Library</source>
         <translation>Ukázat knihovnu Traktoru</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="494"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="582"/>
         <source>Show Rekordbox Library</source>
         <translation>Ukázat knihovnu Rekordboxu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="504"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="592"/>
         <source>Show Serato Library</source>
         <translation>Zobrazit knihovnu Serato</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="514"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="602"/>
         <source>All external libraries shown are write protected.</source>
         <translation>Všechny zobrazené vnější knihovny jsou chráněny proti zápisu.</translation>
     </message>
@@ -7315,7 +7491,7 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="316"/>
         <source>Reset stem controls on track load</source>
-        <translation type="unfinished"/>
+        <translation>Obnovení ovládacích prvků stonku při načtení skladby</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmixerdlg.ui" line="327"/>
@@ -7540,33 +7716,93 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
 <context>
     <name>DlgPrefRecord</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="231"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="27"/>
+        <source>Stereo</source>
+        <translation>Stereo</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="28"/>
+        <source>Mono</source>
+        <translation>Mono</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="96"/>
+        <source>650 MB</source>
+        <translation>650 MB</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="97"/>
+        <source>700 MB (CD)</source>
+        <translation>700 MB (CD)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="98"/>
+        <source>1 GB</source>
+        <translation>1 GB</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="99"/>
+        <source>2 GB</source>
+        <translation>2 GB</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="100"/>
+        <source>4 GB</source>
+        <translation>4 GB</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="101"/>
+        <source>60 Minutes (CD)</source>
+        <translation>60 Minut (CD)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="102"/>
+        <source>74 Minutes (CD)</source>
+        <translation>74 Minut (CD)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="103"/>
+        <source>80 Minutes (CD)</source>
+        <translation>80 Minut (CD)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="104"/>
+        <source>120 Minutes</source>
+        <translation>120 Minut</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="105"/>
+        <source>No Splitting</source>
+        <translation>Žádné dělení</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="260"/>
         <source>Choose recordings directory</source>
         <translation>Vybrat adresář pro nahrávání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="394"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="401"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="476"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="483"/>
         <source>Recordings directory invalid</source>
         <translation>Neplatný adresář pro nahrávání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="395"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="477"/>
         <source>Recordings directory must be set to an existing directory.</source>
         <translation>Adresář pro nahrávání musí být nastaven na existující adresář.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="402"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="484"/>
         <source>Recordings directory must be set to a directory.</source>
         <translation>Adresář pro nahrávání musí být nastaven na adresář.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="407"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="489"/>
         <source>Recordings directory not writable</source>
         <translation>Adresář pro nahrávání není zapisovatelný</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="408"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="490"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
         <translation>Nemáte přístup pro zápis souboru %1. Vyberte adresář pro nahrávání, ke kterému máte přístup pro zápis.</translation>
     </message>
@@ -7588,51 +7824,73 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
         <source>This will include the filepath for each track in the CUE file.
 This option makes the CUE file less portable and can reveal personal
 information from filepaths (i.e. username)</source>
-        <translation type="unfinished"/>
+        <translation>Toto zahrne cestu k souboru pro každou stopu v souboru CUE.
+Tato možnost snižuje přenositelnost souboru CUE a může odhalit osobní
+informace z cest k souborům (např. uživatelské jméno)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="131"/>
         <source>Enable File Annotation in CUE file</source>
-        <translation type="unfinished"/>
+        <translation>Povolit anotaci souborů v souboru CUE</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="204"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="242"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="143"/>
+        <source>Audio</source>
+        <translation>Zvuk</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="149"/>
+        <source>Channels</source>
+        <translation>Kanály</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="239"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="277"/>
         <source>Quality</source>
         <translation>Kvalita</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="306"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="341"/>
         <source>Tags</source>
         <translation>Značky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="318"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="353"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="341"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="376"/>
         <source>Author</source>
         <translation>Autor</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="364"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="399"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="143"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="415"/>
+        <source>Only supported for MP3 and WAV</source>
+        <translation>Podporováno pouze pro MP3 a WAV</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="418"/>
+        <source>Store the tracklist as comment</source>
+        <translation>Uložit seznam skladeb jako komentář</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="166"/>
         <source>Output File Format</source>
         <translation>Formát výstupního souboru</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="285"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="320"/>
         <source>Compression</source>
         <translation>Komprese</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="165"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="200"/>
         <source>Lossy</source>
         <translation>Ztrátová</translation>
     </message>
@@ -7647,12 +7905,12 @@ information from filepaths (i.e. username)</source>
         <translation>Adresář:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="265"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="300"/>
         <source>Compression Level</source>
         <translation>Úroveň komprese</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="150"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="185"/>
         <source>Lossless</source>
         <translation>Bezztrátová</translation>
     </message>
@@ -7785,179 +8043,190 @@ Cílová hlasitost zvuku je přibližná a předpokládá se, že předzesílen�
 <context>
     <name>DlgPrefSound</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="117"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1232"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="148"/>
         <source>Default (long delay)</source>
         <translation>Výchozí (dlouhé zpoždění)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="132"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="149"/>
         <source>Experimental (no delay)</source>
         <translation>Pokusné (žádné zpoždění)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="133"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="150"/>
         <source>Disabled (short delay)</source>
         <translation>Zakázáno (krátké zpoždění)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="141"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="158"/>
         <source>Soundcard Clock</source>
         <translation>Hodiny zvukové karty</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="142"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="159"/>
         <source>Network Clock</source>
         <translation>Hodiny sítě</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="204"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation>Přímý dohled (pouze nahrávání a vysílání)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="270"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="218"/>
+        <source>Use PipeWire API</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="235"/>
+        <source>Mixxx must be restarted for the PipeWire API selection to take effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="319"/>
         <source>Disabled</source>
         <translation>Zakázáno</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="271"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="320"/>
         <source>Enabled</source>
         <translation>Povoleno</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="281"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="330"/>
         <source>Stereo</source>
         <translation>Stereo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="282"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="331"/>
         <source>Mono</source>
         <translation>Mono</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="298"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="347"/>
         <source>To enable Realtime scheduling (currently disabled), see the %1.</source>
         <translation>Povolit zařazování do rozvrhu (nyní vypnuto), podívejte se na %1.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="324"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="373"/>
         <source>The %1 lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation>%1 uvádí zvukové karty a ovladače, které byste měli zvážit při používání Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="328"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="377"/>
         <source>Mixxx DJ Hardware Guide</source>
         <translation>Průvodce technickým vybavením pro DJ Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="334"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="383"/>
         <source>Find details in the Mixxx user manual</source>
-        <translation type="unfinished"/>
+        <translation>Podrobnosti naleznete v uživatelské příručce Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="384"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="234"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="438"/>
         <source>Information</source>
-        <translation type="unfinished"/>
+        <translation>Informace</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="385"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="439"/>
         <source>Mixxx must be restarted before the multi-threaded RubberBand setting change will take effect.</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx je nutné restartovat, než se změna nastavení vícevláknového RubberBand projeví.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="730"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="807"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation>automaticky (&lt;= 1024 snímků/periodu)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="733"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="810"/>
         <source>2048 frames/period</source>
         <translation>2048 snímků/periodu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="736"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="813"/>
         <source>4096 frames/period</source>
         <translation>4096 snímků/periodu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="821"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="954"/>
         <source>Are you sure?</source>
-        <translation type="unfinished"/>
+        <translation>Opravdu?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="824"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="957"/>
         <source>Distribute stereo channels into mono channels for parallel processing will result in a loss of mono compatibility and a diffuse stereo image. It is not recommended during broadcasting or recording.</source>
-        <translation type="unfinished"/>
+        <translation>Rozdělení stereo kanálů do mono kanálů pro paralelní zpracování povede ke ztrátě mono kompatibility a rozptýlenému stereo obrazu. Nedoporučuje se to během vysílání nebo nahrávání.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="829"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="962"/>
         <source>Are you sure you wish to proceed?</source>
-        <translation type="unfinished"/>
+        <translation>Jste si jisti, že chcete pokračovat?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="830"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="963"/>
         <source>No</source>
-        <translation type="unfinished"/>
+        <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="832"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="965"/>
         <source>Yes, I know what I am doing</source>
-        <translation type="unfinished"/>
+        <translation>Ano, vím, co dělám</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1045"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1182"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation>Mikrofonní vstupy jsou při nahrávání a vysílaní zpožděny v porovnání s tím, co slyšíte.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1048"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1185"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Změřte prodlevu zpoždění a zadejte ji výše pro prodlevu mikrofonu.
 Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1041"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1178"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>Nahlédněte do uživatelské příručky k Mixxxu, kde jsou podrobnosti.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1060"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1197"/>
         <source>Configured latency has changed.</source>
         <translation>Nastavená prodleva se změnila.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1061"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1198"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>Opakujte nastavení zpoždění a zadejte ji výše pro latenci mikrofonu
 Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="295"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="344"/>
         <source>Realtime scheduling is enabled.</source>
         <translation>Je povoleno zařazování do rozvrhu ve skutečném čase.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="183"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="200"/>
         <source>Main output only</source>
         <translation>Pouze hlavní výstup</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="185"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="202"/>
         <source>Main and booth outputs</source>
         <translation>Hlavní výstup a výstup kukaně</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="756"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="833"/>
         <source>%1 ms</source>
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="394"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="448"/>
         <source>Configuration error</source>
         <translation>Chyba nastavení</translation>
     </message>
@@ -7975,152 +8244,147 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
         <translation>Zvukové API</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="38"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="42"/>
         <source>Sample Rate</source>
         <translation>Vzorkovací kmitočet</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="51"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="55"/>
         <source>Audio Buffer</source>
         <translation>Vyrovnávací paměť zvuku</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="74"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="78"/>
         <source>Engine Clock</source>
         <translation>Hodiny stroje</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="81"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="85"/>
         <source>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</source>
         <translation>Použijte hodiny zvukové karty pro nachystání pro živé obecenstvo a nejnižší časy prodlevy.&lt;br&gt;Použijte síťové hodiny pro vysílání bez živého obecenstva.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="98"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="102"/>
         <source>Main Mix</source>
         <translation>Hlavní míchání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="111"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="115"/>
         <source>Main Output Mode</source>
         <translation>Režim hlavního výstupu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="125"/>
         <source>Microphone Monitor Mode</source>
         <translation>Režim sledování mikrofonu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="135"/>
         <source>Microphone Latency Compensation</source>
         <translation>Náhrada za prodlevu mikrofonu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="141"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="164"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="187"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="210"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="145"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="168"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="191"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="214"/>
         <source> ms</source>
         <extracomment>milliseconds</extracomment>
         <translation> ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="351"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="355"/>
         <source>Deck and Bus outputs are for external mixers. They are post-fader and include effects and crossfader (for Auto DJ). For external mixing, make sure all Mixxx faders and EQ knobs are set to their default position (right- or double-click). </source>
-        <translation type="unfinished"/>
+        <translation>Výstupy Deck a Bus jsou určeny pro externí mixážní pulty. Jsou umístěny za faderem a zahrnují efekty a crossfader (pro Auto DJ). Pro externí mixáž se ujistěte, že všechny fadery a knoflíky EQ na Mixxx jsou nastaveny do výchozí polohy (pravé tlačítko myši nebo dvojité kliknutí).</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="421"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="425"/>
         <source>20 ms</source>
         <translation>20 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="428"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="432"/>
         <source>Buffer Underflow Count</source>
         <translation>Počítadlo podtečení vyrovnávací paměti</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="438"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="442"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="88"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="449"/>
+        <source>Reset</source>
+        <translation>Resetovat</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="92"/>
         <source>Keylock/Pitch-Bending Engine</source>
         <translation>Stroj na uzamčení tóniny/měnění výšek tónů</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="64"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="68"/>
         <source>Multi-Soundcard Synchronization</source>
         <translation>Seřízení více karet</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="296"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="300"/>
         <source>Output</source>
         <translation>Výstup</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="323"/>
         <source>Input</source>
         <translation>Vstup</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="411"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="415"/>
         <source>System Reported Latency</source>
         <translation>Systémem hlášená prodleva</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="364"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="368"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
         <translation>Zvětšete vyrovnávací paměť zvuku, když se zvýší počítadlo podtečení nebo během přehrávání slyšíte výpadky.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="157"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="161"/>
         <source>Main Output Delay</source>
         <translation>Zpoždění hlavního výstupu</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="180"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="184"/>
         <source>Headphone Output Delay</source>
         <translation>Zpoždění výstupu sluchátek</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="203"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="207"/>
         <source>Booth Output Delay</source>
         <translation>Zpoždění hlavní kukaně</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="244"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="248"/>
         <source>Dual-threaded Stereo</source>
-        <translation type="unfinished"/>
+        <translation>Dvouvláknové stereo</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="345"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="349"/>
         <source>Hints and Diagnostics</source>
         <translation>Rady a diagnostika</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="374"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="378"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
         <translation>Zmenšete vyrovnávací paměť zvuku, abyste zlepšili reakční schopnost Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="264"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="268"/>
         <source>Query Devices</source>
         <translation>Oslovit zařízení</translation>
     </message>
 </context>
 <context>
     <name>DlgPrefSoundItem</name>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="106"/>
-        <source>Channel %1</source>
-        <translation>Kanál %1</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="108"/>
-        <source>Channels %1 - %2</source>
-        <translation>Kanály %1 - %2</translation>
-    </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.ui" line="14"/>
         <source>Sound Item Preferences</source>
@@ -8183,7 +8447,7 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="205"/>
         <source>Pitch estimator</source>
-        <translation type="unfinished"/>
+        <translation>Odhad výšky tónu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="229"/>
@@ -8234,60 +8498,70 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
 <context>
     <name>DlgPrefWaveform</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="39"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="40"/>
         <source>Filtered</source>
         <translation>Filtrováno</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="40"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="41"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="41"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="42"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="88"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="94"/>
         <source>Top</source>
-        <translation type="unfinished"/>
+        <translation>Nahoře</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="89"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="95"/>
         <source>Center</source>
-        <translation type="unfinished"/>
+        <translation>Uprostřed</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="90"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="96"/>
         <source>Bottom</source>
-        <translation type="unfinished"/>
+        <translation>Dole</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="93"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="99"/>
         <source>1/3 of waveform viewer</source>
         <extracomment>options for &quot;Text height limit&quot;</extracomment>
-        <translation type="unfinished"/>
+        <translation>1/3 prohlížeče křivek</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="94"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="100"/>
         <source>Entire waveform viewer</source>
+        <translation>Prohlížeč celého průběhu</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="102"/>
+        <source>Overlapping</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="282"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="103"/>
+        <source>Stacked</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="310"/>
         <source>OpenGL not available</source>
         <translation>OpenGL není dostupné</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="702"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="747"/>
         <source>dropped frames</source>
         <translation>upuštěné snímky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="773"/>
-        <source>Cached waveforms occupy %1 MiB on disk.</source>
-        <translation>Průběhové křivky uložené do vyrovnávací paměti zabírají %1 MiB místa na disku.</translation>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="819"/>
+        <source>Cached waveforms occupy %1 on disk.</source>
+        <translation>Průběhové křivky uložené do vyrovnávací paměti zabírají %1 místa na disku.</translation>
     </message>
 </context>
 <context>
@@ -8303,17 +8577,17 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
         <translation>Rychlost snímkování</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="823"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="851"/>
         <source>OpenGL Status</source>
-        <translation type="unfinished"/>
+        <translation>Stav OpenGL</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="835"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="863"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>Ukáže, která verze OpenGL je podporována nynější platformou.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="854"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="882"/>
         <source>Average frame rate</source>
         <translation>Průměrná rychlost snímkování</translation>
     </message>
@@ -8329,7 +8603,7 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
         <translation>Výchozí zvětšení</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="864"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="892"/>
         <source>Displays the actual frame rate.</source>
         <translation>Ukáže skutečnou rychlost snímkování.</translation>
     </message>
@@ -8346,7 +8620,7 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="584"/>
         <source>This functionality requires waveform acceleration.</source>
-        <translation type="unfinished"/>
+        <translation>Tato funkce vyžaduje zrychlení průběhu.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="195"/>
@@ -8364,19 +8638,19 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
         <translation>Hloubky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="723"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="751"/>
         <source>Show minute markers on waveform overview</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazit minutové značky v přehledu křivky</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="69"/>
         <source>Use acceleration</source>
-        <translation type="unfinished"/>
+        <translation>Použít zrychlení</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="83"/>
         <source>High details</source>
-        <translation type="unfinished"/>
+        <translation>Vysoké detaily</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="369"/>
@@ -8409,7 +8683,7 @@ Kompenzace pro přizpůsobení načasování mikrofonu.</translation>
         <translation>Celkov viditelné zesílení</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="714"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="734"/>
         <source>The waveform overview shows the waveform envelope of the entire track.
 Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</source>
         <translation>Zobrazení průběhové křivky ukazuje obálku průběhové křivky celé skladby.
@@ -8418,7 +8692,7 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="28"/>
         <source>Enabled</source>
-        <translation type="unfinished"/>
+        <translation>Povoleno</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="58"/>
@@ -8445,55 +8719,55 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="475"/>
         <source>Play marker hints</source>
-        <translation type="unfinished"/>
+        <translation>Nápověda značky přehrávání</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="485"/>
         <source>Beats until next marker</source>
-        <translation type="unfinished"/>
+        <translation>Období do další značky</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="525"/>
         <source>Preferred font size</source>
-        <translation type="unfinished"/>
+        <translation>Preferovaná velikost písma</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="562"/>
         <source>Text height limit</source>
-        <translation type="unfinished"/>
+        <translation>Omezení výšky textu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="492"/>
         <source>Time until next marker</source>
-        <translation type="unfinished"/>
+        <translation>Čas do dalšího ukazatele</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="504"/>
         <source>Placement</source>
-        <translation type="unfinished"/>
+        <translation>Umístění</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="541"/>
         <source> pt</source>
-        <translation type="unfinished"/>
+        <translation> bodů</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="766"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="794"/>
         <source>Caching</source>
         <translation>Ukládání do vyrovnávací paměti</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="786"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="814"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation>Mixxx ukládá průběhové křivky skladeb na disku do vyrovnávací paměti, když poprvé skladbu nahrajete. Tím zmenšuje využití procesoru, když přehráváte naživo, ale potřebuje k tomu prostor na disku navíc.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="772"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="800"/>
         <source>Enable waveform caching</source>
         <translation>Povolit ukládání průběhových křivek do vyrovnávací paměti</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="779"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="807"/>
         <source>Generate waveforms when analyzing library</source>
         <translation>Vytvářet při rozboru knihovny průběhové křivky</translation>
     </message>
@@ -8505,18 +8779,18 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="21"/>
         <source>Scrolling Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Posouvací křivky</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="45"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="707"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="727"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Typ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="76"/>
         <source>Stereo coloration</source>
-        <translation type="unfinished"/>
+        <translation>Stereo zbarvení</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="244"/>
@@ -8541,56 +8815,71 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="595"/>
         <source>Stem</source>
-        <translation type="unfinished"/>
+        <translation>Stem</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="610"/>
         <source>Channel opacity</source>
-        <translation type="unfinished"/>
+        <translation>Neprůhlednost kanálu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="623"/>
         <source>Channel opacity (outline)</source>
+        <translation>Neprůhlednost kanálu (obrys)</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="636"/>
+        <source>Display mode</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="637"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="650"/>
         <source>Main stem opacity</source>
-        <translation type="unfinished"/>
+        <translation>Neprůhlednost hlavního stonku</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="656"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="669"/>
         <source>Outline stem opacity</source>
+        <translation>Neprůhlednost obrysu stonku</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="688"/>
+        <source>Select the display layout for stem waveforms</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="675"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="695"/>
         <source>Move channel to foreground when volume is adjusted</source>
-        <translation type="unfinished"/>
+        <translation>Přesunout kanál do popředí při úpravě hlasitosti</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="697"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="717"/>
         <source>Overview Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Přehled křivek</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="734"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="743"/>
+        <source>Stereo mode</source>
+        <translation>Režim sterea</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="762"/>
         <source>Gain</source>
-        <translation type="unfinished"/>
+        <translation>Zesílení</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="741"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="769"/>
         <source>Normalize to peak</source>
-        <translation type="unfinished"/>
+        <translation>Normalizovat na vrchol</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="751"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="779"/>
         <source>Use Waveform &quot;Global&quot; gain and ReplayGain (if enabled)</source>
         <extracomment>'Global' refers to the 'Global' visual gain in the scrolling waveform settings</extracomment>
-        <translation type="unfinished"/>
+        <translation>Použijte zesílení tvaru vlny „Globální“ a zesílení přehrávání (pokud je povoleno)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="812"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="840"/>
         <source>Clear Cached Waveforms</source>
         <translation>Smazat průběhové křivky uložené do vyrovnávací paměti</translation>
     </message>
@@ -8598,122 +8887,122 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="106"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="112"/>
         <source>Sound Hardware</source>
         <translation>Zvuk</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="125"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="131"/>
         <source>Controllers</source>
         <translation>Ovladače</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="116"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="122"/>
         <source>Library</source>
         <translation>Knihovna</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="159"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="169"/>
         <source>Interface</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="167"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="178"/>
         <source>Waveforms</source>
         <translation>Křivky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="197"/>
         <source>Mixer</source>
         <translation>Směšovač</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="198"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="209"/>
         <source>Auto DJ</source>
         <translation>Diskžokej</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="180"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="191"/>
         <source>Decks</source>
         <translation>Přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="174"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="185"/>
         <source>Colors</source>
         <translation>Barvy</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="69"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
         <source>&amp;Help</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
         <source>&amp;Restore Defaults</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Obnovit výchozí hodnoty</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="73"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="79"/>
         <source>&amp;Apply</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Použít</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="81"/>
         <source>&amp;Cancel</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Zrušit</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="83"/>
         <source>&amp;Ok</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="192"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="203"/>
         <source>Effects</source>
         <translation>Efekty</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="212"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="223"/>
         <source>Recording</source>
         <translation>Nahrávání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="218"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="229"/>
         <source>Beat Detection</source>
         <translation>Rytmus</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="224"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="235"/>
         <source>Key Detection</source>
         <translation>Tónina</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="240"/>
         <source>Normalization</source>
         <translation>Normalizace</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="253"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="264"/>
         <source>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Some preferences pages have errors. To apply the changes please first fix the issues.&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Některé stránky s nastavením mají chyby. Chcete-li použít změny, nejprve opravte problémy.&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="134"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="140"/>
         <source>Vinyl Control</source>
         <translation>Vinyl</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="205"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="216"/>
         <source>Live Broadcasting</source>
         <translation>Živé vysílání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="247"/>
         <source>Modplug Decoder</source>
         <translation>Dekodér</translation>
     </message>
@@ -8746,24 +9035,24 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="56"/>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="140"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="146"/>
         <source>Start Recording</source>
         <translation>Začít nahrávání</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="95"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="96"/>
         <source>Recording to file:</source>
         <translation>Záznam do souboru:</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="134"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="140"/>
         <source>Stop Recording</source>
         <translation>Zastavit nahrávaní</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="165"/>
-        <source>%1 MiB written in %2</source>
-        <translation>%1 MiB zapsáno v %2</translation>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="171"/>
+        <source>%1 written in %2</source>
+        <translation>%1 zapsáno v %2</translation>
     </message>
 </context>
 <context>
@@ -9072,199 +9361,230 @@ Tento krok nelze vrátit zpět!</translation>
         <translation>Shrnutí</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="497"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="589"/>
         <source>Filetype:</source>
         <translation>Typ souboru:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="521"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="613"/>
         <source>BPM:</source>
         <translation>MM:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="662"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="757"/>
         <source>Location:</source>
         <translation>Umístění:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="545"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="637"/>
         <source>Bitrate:</source>
         <translation>Datový tok:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="389"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="479"/>
         <source>Comments</source>
         <translation>Poznámky</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="732"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="811"/>
         <source>BPM</source>
         <translation>MM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="834"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
         <source>Sets the BPM to 75% of the current value.</source>
         <translation>Nastaví rázy za minutu (MM) na 75 % nynější hodnoty.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="837"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="916"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="744"/>
         <source>3/4 BPM</source>
         <translation>3/4 MM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="802"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="873"/>
         <source>Sets the BPM to 50% of the current value.</source>
         <translation>Nastaví rázy za minutu (MM) na 50 % nynější hodnoty.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="749"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="835"/>
         <source>Displays the BPM of the selected track.</source>
         <translation>Zobrazí rázy za minutu (MM) vybrané skladby.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="362"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="307"/>
         <source>Track #</source>
         <translation>Číslo skladby</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="187"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="186"/>
         <source>Album Artist</source>
         <translation>Umělec alba</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="233"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="232"/>
         <source>Composer</source>
         <translation>Skladatel</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="69"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="68"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="335"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="334"/>
         <source>Grouping</source>
         <translation>Skupina</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="308"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="361"/>
         <source>Key</source>
         <translation>Tónina</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="260"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="259"/>
         <source>Year</source>
         <translation>Rok</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="121"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="120"/>
         <source>Artist</source>
         <translation>Umělec</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="154"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="153"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="281"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="280"/>
         <source>Genre</source>
         <translation>Žánr</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="569"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="661"/>
         <source>ReplayGain:</source>
         <translation>Vyrovnání hlasitosti:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="786"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="883"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation>Nastaví rázy za minutu (MM) na 200 % nynější hodnoty.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="789"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="886"/>
         <source>Double BPM</source>
         <translation>Zdvojit MM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="805"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="876"/>
         <source>Halve BPM</source>
         <translation>Snížit MM na polovinu</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="909"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>Smazat MM a rytmickou mřížku</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="954"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1025"/>
         <source>Move to the previous item.</source>
         <extracomment>&quot;Previous&quot; button</extracomment>
         <translation>Přesunout na předchozí položku.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="957"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1028"/>
         <source>&amp;Previous</source>
         <translation>&amp;Předchozí</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="970"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1041"/>
         <source>Move to the next item.</source>
         <extracomment>&quot;Next&quot; button</extracomment>
         <translation>Přesunout na další položku.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="973"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1044"/>
         <source>&amp;Next</source>
         <translation>&amp;Další</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="473"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="565"/>
         <source>Duration:</source>
         <translation>Doba trvání:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="442"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="534"/>
         <source>Import Metadata from MusicBrainz</source>
         <translation>Nahrát popisná data z MusicBrainz</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="449"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="541"/>
         <source>Re-Import Metadata from file</source>
         <translation>Nahrát popisná data znovu ze souboru</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="407"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="497"/>
         <source>Color</source>
         <translation>Barva</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="614"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="709"/>
         <source>Date added:</source>
         <translation>Datum přidání:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="688"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="783"/>
         <source>Open in File Browser</source>
         <translation>Otevřít v prohlížeči souborů</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="593"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="685"/>
         <source>Samplerate:</source>
         <translation>Vzorkovací kmitočet:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="638"/>
-        <source>Filesize:</source>
-        <translation type="unfinished"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="401"/>
+        <source>Tuning</source>
+        <translation>Ladění</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="742"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="418"/>
+        <source>A4 tuning frequency in Hz. Standard tuning is 440 Hz.</source>
+        <translation>Ladicí frekvence A4 v Hz. Standardní ladění je 440 Hz.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="421"/>
+        <source> Hz</source>
+        <translation> Hz</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="451"/>
+        <source>Offset:</source>
+        <translation>Posun:</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="470"/>
+        <source>Offset from A440 standard tuning in cents.</source>
+        <translation>Offset od standardního ladění A440 v centech.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="733"/>
+        <source>Filesize:</source>
+        <translation>Velikost souboru:</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="817"/>
+        <source>Lock or unlock the BPM and beatgrid for this track.</source>
+        <translation>Zamknout nebo odemknout MM a rytmickou mřížku pro tuto skladbu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="828"/>
         <source>Track BPM: </source>
         <translation>MM skladby: </translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="765"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="851"/>
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
@@ -9273,92 +9593,142 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 Často jsou výsledkem vysoce kvalitní rytmické mřížky, ale nevede si dobře u skladeb, které mají posuny tempa.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="773"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="856"/>
         <source>Assume constant tempo</source>
         <translation>Předpokládat neměnné tempo</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="818"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="863"/>
+        <source>Scale BPM:</source>
+        <translation>Stupnice MM:</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="893"/>
         <source>Sets the BPM to 66% of the current value.</source>
         <translation>Nastaví rázy za minutu (MM) na 66 % nynější hodnoty.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="821"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="896"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="743"/>
         <source>2/3 BPM</source>
         <translation>2/3 MM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="850"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="903"/>
         <source>Sets the BPM to 150% of the current value.</source>
         <translation>Nastaví rázy za minutu (MM) na 150 % nynější hodnoty.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="853"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="906"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="748"/>
         <source>3/2 BPM</source>
         <translation>3/2 MM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="866"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="923"/>
         <source>Sets the BPM to 133% of the current value.</source>
         <translation>Nastaví rázy za minutu (MM) na 133 % nynější hodnoty.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="869"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="926"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="747"/>
         <source>4/3 BPM</source>
         <translation>4/3 MM</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="888"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="933"/>
+        <source>Sets the BPM to 80% of the current value.</source>
+        <translation>Nastaví rázy za minutu (MM) na 80 % nynější hodnoty.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="936"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="745"/>
+        <source>4/5 BPM</source>
+        <translation>4/5 MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="943"/>
+        <source>Sets the BPM to 125% of the current value.</source>
+        <translation>Nastaví rázy za minutu (MM) na 125 % nynější hodnoty.</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="946"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="746"/>
+        <source>5/4 BPM</source>
+        <translation>5/4 MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="959"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
         <translation>Klepejte (ťukejte) do taktu (rytmus) pro nastavení rázů (úderů) za minutu (RZM - „M.M.“: Mälzelův metronom) na rychlost, kterou ťukáte.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="891"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="962"/>
         <source>Tap to Beat</source>
         <translation>Klepat rytmus</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="916"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="987"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
         <translation>Rada: Rozbor knihovny použijte ke zjištění počtu úderů za minutu - rázů za minutu (RZM - „M.M.“: Mälzelův metronom).</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1037"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1108"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
         <translation>Uložit změny a zavřít okno.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1040"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1111"/>
         <source>&amp;OK</source>
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="999"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1070"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>Zahodit změny a zavřít okno.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1018"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1089"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>Uložit změny a ponechat okno otevřené.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1021"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1092"/>
         <source>&amp;Apply</source>
         <translation>&amp;Použít</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1002"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1073"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Zrušit</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="602"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="486"/>
+        <source>Unlock BPM</source>
+        <translation>Odemknout MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="486"/>
+        <source>Lock BPM</source>
+        <translation>Zamknout MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="635"/>
         <source>(no color)</source>
         <translation>(žádná barva)</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="742"/>
+        <source>1/2 BPM</source>
+        <translation>1/2 MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="749"/>
+        <source>2x BPM</source>
+        <translation>2x MM</translation>
     </message>
 </context>
 <context>
@@ -9366,156 +9736,156 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="20"/>
         <source>Track Editor</source>
-        <translation type="unfinished"/>
+        <translation>Editor skladeb</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="54"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Název</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="106"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Umělec</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="139"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="172"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Umělec alba</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="218"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Skladatel</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="245"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Rok</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="266"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Žánr</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="293"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Tónina</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="320"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Skupina</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="347"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>Číslo skladby</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="374"/>
         <source>Comments</source>
-        <translation type="unfinished"/>
+        <translation>Poznámky</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="449"/>
         <source>Re-Import Metadata from files</source>
-        <translation type="unfinished"/>
+        <translation>Nahrát popisná data znovu ze souborů</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="414"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Barva</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="470"/>
         <source>Duration:</source>
-        <translation type="unfinished"/>
+        <translation>Doba trvání:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="494"/>
         <source>Filetype:</source>
-        <translation type="unfinished"/>
+        <translation>Typ souboru:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="518"/>
         <source>BPM:</source>
-        <translation type="unfinished"/>
+        <translation>MM:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="542"/>
         <source>Bitrate:</source>
-        <translation type="unfinished"/>
+        <translation>Datový tok:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="566"/>
         <source>Samplerate:</source>
-        <translation type="unfinished"/>
+        <translation>Vzorkovací kmitočet:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="587"/>
         <source>Location:</source>
-        <translation type="unfinished"/>
+        <translation>Umístění:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.ui" line="613"/>
         <source>Open in File Browser</source>
-        <translation type="unfinished"/>
+        <translation>Otevřít v prohlížeči souborů</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="655"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="641"/>
         <source>Discard changes and reload saved values.</source>
         <extracomment>&quot;Reset&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Zahodit změny a znovu načíst uložené hodnoty.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="658"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="644"/>
         <source>&amp;Reset</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Resetovat</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="684"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="670"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Zahodit změny a zavřít okno.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="687"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="673"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Zrušit</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="703"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="689"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Uložit změny a ponechat okno otevřené.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="706"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="692"/>
         <source>&amp;Apply</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Použít</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="722"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="708"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>Uložit změny a zavřít okno.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="725"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="711"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"/>
+        <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1038"/>
+        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1063"/>
         <source>(no color)</source>
-        <translation type="unfinished"/>
+        <translation>(žádná barva)</translation>
     </message>
 </context>
 <context>
@@ -9679,12 +10049,12 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 <context>
     <name>EffectManifestTableModel</name>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="49"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="48"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="51"/>
         <source>Name</source>
         <translation>Název</translation>
     </message>
@@ -9715,83 +10085,97 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 <context>
     <name>EngineBuffer</name>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="178"/>
-        <source>Soundtouch (faster)</source>
-        <translation>Soundtouch (rychlejší)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="180"/>
+        <source>Soundtouch (fastest, low quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="181"/>
-        <source>Rubberband (better)</source>
-        <translation>Rubberband (lepší)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="183"/>
+        <source>Rubberband (fast, medium quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="184"/>
-        <source>Rubberband R3 (near-hi-fi quality)</source>
-        <translation>Rubberband R3 (kvalita poblíž hi-fi)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="186"/>
+        <source>Rubberband R3 MW (slow, highest quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="190"/>
-        <source>Unknown, using Rubberband (better)</source>
-        <translation>Neznámé zařízení používající Rubberband (lepší)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="191"/>
+        <source>Rubberband R3 SW (fast, high quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="192"/>
-        <source>Unknown, using Soundtouch</source>
-        <translation>Neznámý, používám Soundtouch</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="197"/>
+        <source>Unknown, using Rubberband (fast, medium quality)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/enginebuffer.h" line="199"/>
+        <source>Unknown, using Soundtouch (fastest, low quality)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>ErrorDialogHandler</name>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="104"/>
+        <location filename="../../src/errordialoghandler.cpp" line="105"/>
         <source>Fatal error</source>
         <translation>Vážná chyba</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="105"/>
+        <location filename="../../src/errordialoghandler.cpp" line="106"/>
         <source>Critical error</source>
         <translation>Zásadní chyba</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="106"/>
+        <location filename="../../src/errordialoghandler.cpp" line="107"/>
         <source>Warning</source>
         <translation>Varování</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="107"/>
+        <location filename="../../src/errordialoghandler.cpp" line="108"/>
         <source>Information</source>
         <translation>Informace</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="108"/>
+        <location filename="../../src/errordialoghandler.cpp" line="109"/>
         <source>Question</source>
         <translation>Otázka</translation>
     </message>
 </context>
 <context>
+    <name>FindOnWebLast</name>
+    <message>
+        <location filename="../../src/widget/findonweblast.cpp" line="60"/>
+        <source>Find %1 on %2</source>
+        <extracomment>Menu entry like &quot;Find Artist on Wikipedia&quot;</extracomment>
+        <translation>Najít %1 na %2</translation>
+    </message>
+</context>
+<context>
     <name>FindOnWebMenuDiscogs</name>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="43"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="65"/>
         <source>Artist</source>
         <translation>Umělec</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="53"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="49"/>
         <source>Artist + Title</source>
         <translation>Umělec + Název</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="59"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="80"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="68"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="58"/>
         <source>Artist + Album</source>
         <translation>Umělec + Album</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="73"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp" line="72"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
@@ -9799,27 +10183,22 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 <context>
     <name>FindOnWebMenuLastfm</name>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="41"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="54"/>
         <source>Artist</source>
         <translation>Umělec</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="51"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="47"/>
         <source>Artist + Title</source>
         <translation>Umělec + Název</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="56"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="69"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="65"/>
-        <source>Artist + Album</source>
-        <translation>Umělec + Album</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="70"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenulastfm.cpp" line="62"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
@@ -9827,27 +10206,27 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 <context>
     <name>FindOnWebMenuSoundcloud</name>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="41"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="61"/>
         <source>Artist</source>
         <translation>Umělec</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="51"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="47"/>
         <source>Artist + Title</source>
         <translation>Umělec + Název</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="56"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="75"/>
         <source>Title</source>
         <translation>Název</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="65"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="55"/>
         <source>Artist + Album</source>
         <translation>Umělec + Album</translation>
     </message>
     <message>
-        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="70"/>
+        <location filename="../../src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp" line="68"/>
         <source>Album</source>
         <translation>Album</translation>
     </message>
@@ -9880,85 +10259,93 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="108"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="386"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="391"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="254"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="259"/>
         <source>Select your iTunes library</source>
         <translation>Vyberte svou knihovnu skladeb iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="228"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="233"/>
         <source>(loading) iTunes</source>
         <translation>(nahrává se) iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="266"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="271"/>
         <source>Use Default Library</source>
         <translation>Použít standardní knihovnu</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="267"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="272"/>
         <source>Choose Library...</source>
         <translation>Vybrat knihovnu...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="382"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="387"/>
         <source>Error Loading iTunes Library</source>
         <translation>Chyba při nahrávání knihovny skladeb iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="383"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="388"/>
         <source>There was an error loading your iTunes library. Check the logs for details.</source>
-        <translation type="unfinished"/>
+        <translation>Při načítání knihovny iTunes došlo k chybě. Podrobnosti naleznete v protokolech.</translation>
+    </message>
+</context>
+<context>
+    <name>KeyboardEventFilter</name>
+    <message>
+        <location filename="../../src/controllers/keyboard/keyboardeventfilter.cpp" line="377"/>
+        <source>Shortcut</source>
+        <translation>Klávesová zkratka</translation>
     </message>
 </context>
 <context>
     <name>LegacyControllerColorSetting</name>
     <message>
-        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="341"/>
+        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="428"/>
         <source>Change color</source>
-        <translation type="unfinished"/>
+        <translation>Změnit barvu</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="362"/>
+        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="449"/>
         <source>Choose a new color</source>
-        <translation type="unfinished"/>
+        <translation>Vybrat novou barvu</translation>
     </message>
 </context>
 <context>
     <name>LegacyControllerFileSetting</name>
     <message>
-        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="405"/>
+        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="499"/>
         <source>Browse...</source>
-        <translation type="unfinished"/>
+        <translation>Procházet...</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="417"/>
-        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="439"/>
+        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="511"/>
+        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="533"/>
         <source>No file selected</source>
-        <translation type="unfinished"/>
+        <translation>Není vybrán žádný soubor</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="426"/>
+        <location filename="../../src/controllers/legacycontrollersettings.cpp" line="520"/>
         <source>Select a file</source>
-        <translation type="unfinished"/>
+        <translation>Vybrat soubor</translation>
     </message>
 </context>
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1412"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1502"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1422"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1512"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Bezpečný režim povolen</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1422"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1510"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1432"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1520"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -9970,124 +10357,145 @@ Shown when VuMeter can not be displayed. Please keep
 pro OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2593"/>
-        <source>activate</source>
-        <translation>Zapnout</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2598"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2635"/>
         <source>toggle</source>
         <translation>Přepnout</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2609"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2602"/>
         <source>right</source>
         <translation>Vpravo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2614"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2596"/>
         <source>left</source>
         <translation>Vlevo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2619"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2605"/>
         <source>right small</source>
         <translation>Trochu doprava</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2624"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2623"/>
+        <source>set default</source>
+        <translation>nastavit výchozí</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2626"/>
+        <source>set -1</source>
+        <translation>nastavit -1</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2629"/>
+        <source>set 0</source>
+        <translation>nastavit 0</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2632"/>
+        <source>set 1</source>
+        <translation>nastavit 1</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2638"/>
+        <source>minus toggle</source>
+        <translation>přepínač mínus</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2599"/>
         <source>left small</source>
         <translation>Trochu doleva</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2629"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2615"/>
         <source>up</source>
         <translation>Nahoru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2634"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2609"/>
         <source>down</source>
         <translation>Dolů</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2639"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2618"/>
         <source>up small</source>
         <translation>Trochu nahoru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2644"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2612"/>
         <source>down small</source>
         <translation>Trochu dolů</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2661"/>
-        <source>Shortcut</source>
-        <translation>Klávesová zkratka</translation>
     </message>
 </context>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="625"/>
+        <location filename="../../src/library/library.cpp" line="636"/>
         <source>This or a parent directory is already in your library.</source>
-        <translation type="unfinished"/>
+        <translation>Tento nebo nadřazený adresář se již ve vaší knihovně nachází.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="628"/>
+        <location filename="../../src/library/library.cpp" line="639"/>
         <source>This or a listed directory does not exist or is inaccessible.
 Aborting the operation to avoid library inconsistencies</source>
-        <translation type="unfinished"/>
+        <translation>Tento nebo uvedený adresář neexistuje nebo je nepřístupný.
+Přerušení operace, aby se předešlo nekonzistencím v knihovnách</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="633"/>
-        <location filename="../../src/library/library.cpp" line="706"/>
+        <location filename="../../src/library/library.cpp" line="644"/>
+        <location filename="../../src/library/library.cpp" line="717"/>
         <source>This directory can not be read.</source>
-        <translation type="unfinished"/>
+        <translation>Tento adresář nelze číst.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="637"/>
+        <location filename="../../src/library/library.cpp" line="648"/>
         <source>An unknown error occurred.
 Aborting the operation to avoid library inconsistencies</source>
-        <translation type="unfinished"/>
+        <translation>Došlo k neznámé chybě.
+Přerušení operace z důvodu zamezení nekonzistencí v knihovně.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="646"/>
+        <location filename="../../src/library/library.cpp" line="657"/>
         <source>Can&apos;t add Directory to Library</source>
-        <translation type="unfinished"/>
+        <translation>Nelze přidat adresář do knihovny</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="647"/>
+        <location filename="../../src/library/library.cpp" line="658"/>
         <source>Could not add &lt;b&gt;%1&lt;/b&gt; to your library.
 
 %2</source>
-        <translation type="unfinished"/>
+        <translation>Nepodařilo se přidat &lt;b&gt;%1&lt;/b&gt; do vaší knihovny.
+
+%2</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="664"/>
+        <location filename="../../src/library/library.cpp" line="675"/>
         <source>Can&apos;t remove Directory from Library</source>
-        <translation type="unfinished"/>
+        <translation>Nelze odstranit adresář z knihovny</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="665"/>
+        <location filename="../../src/library/library.cpp" line="676"/>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"/>
+        <translation>Došlo k neznámé chybě.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="702"/>
+        <location filename="../../src/library/library.cpp" line="713"/>
         <source>This directory does not exist or is inaccessible.</source>
-        <translation type="unfinished"/>
+        <translation>Tento adresář neexistuje nebo je nepřístupný.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="714"/>
+        <location filename="../../src/library/library.cpp" line="725"/>
         <source>Relink Directory</source>
-        <translation type="unfinished"/>
+        <translation>Znovu propojit adresář</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="715"/>
+        <location filename="../../src/library/library.cpp" line="726"/>
         <source>Could not relink &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.
 
 %3</source>
-        <translation type="unfinished"/>
+        <translation>Nelze znovu propojit &lt;b&gt;%1&lt;/b&gt; s &lt;b&gt;%2&lt;/b&gt;.
+
+%3</translation>
     </message>
 </context>
 <context>
@@ -10127,30 +10535,35 @@ Opravdu chcete přepsat soubor?</translation>
         <translation>Prohledávač knihovny</translation>
     </message>
     <message>
-        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="19"/>
+        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="22"/>
         <source>It&apos;s taking Mixxx a minute to scan your music library, please wait...</source>
         <translation>Bude chvíli trvat, než Mixxx prohlédne vaši hudební sbírku, čekejte, prosím....</translation>
     </message>
     <message>
-        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="22"/>
+        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="45"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="49"/>
+        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="119"/>
         <source>Scanning: </source>
         <translation>Prohledávání: </translation>
     </message>
     <message>
-        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="61"/>
+        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="133"/>
         <source>Scanning cover art (safe to cancel)</source>
         <translation>Hledají se obaly alb (lze bezpečně zrušit)</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="145"/>
+        <source>Looking for substitute for</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>LibraryTableModel</name>
     <message>
-        <location filename="../../src/library/librarytablemodel.cpp" line="55"/>
+        <location filename="../../src/library/librarytablemodel.cpp" line="56"/>
         <source>Sort items randomly</source>
         <translation>Řadit položky náhodně</translation>
     </message>
@@ -10158,27 +10571,27 @@ Opravdu chcete přepsat soubor?</translation>
 <context>
     <name>MidiController</name>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="188"/>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="189"/>
         <source>MixxxControl(s) not found</source>
         <translation>MixxxControl(s) nebyl nalezen</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="189"/>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="190"/>
         <source>One or more MixxxControls specified in the outputs section of the loaded mapping were invalid.</source>
         <translation>Jeden nebo více MixxxControl zadaných ve výstupní části nahraných přiřazení byl neplatný.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="196"/>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="197"/>
         <source>* Make sure the MixxxControls in question actually exist. Visit the manual for a complete list: </source>
         <translation>* Ověřte, že nejisté MixxxControls skutečně existují. Navštivte následující příručku pro úplný seznam: </translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="192"/>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="193"/>
         <source>Some LEDs or other feedback may not work correctly.</source>
         <translation>Některé LED nebo jiné ukazatele nemusí pracovat správně.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="193"/>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="194"/>
         <source>* Check to see that the MixxxControl names are spelled correctly in the mapping file (.xml)
 </source>
         <translation>* Ověřte, že jsou názvy MixxxControl v souboru s přiřazením (.xml) napsány správně
@@ -10190,48 +10603,48 @@ Opravdu chcete přepsat soubor?</translation>
     <message>
         <location filename="../../src/controllers/delegates/midioptionsdelegate.cpp" line="65"/>
         <source>Unset all</source>
-        <translation type="unfinished"/>
+        <translation>Zrušit vše</translation>
     </message>
 </context>
 <context>
     <name>MixxxDb</name>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="76"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="78"/>
         <source>Click OK to exit.</source>
         <translation>Klepněte na tlačítko OK pro ukončení.</translation>
     </message>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="77"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="79"/>
         <source>Cannot upgrade database schema</source>
         <translation>Nelze povýšit databázové schéma</translation>
     </message>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="79"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="81"/>
         <source>Unable to upgrade your database schema to version %1</source>
         <translation>Nepodařilo se povýšit schéma databáze na verzi %1</translation>
     </message>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="81"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="83"/>
         <source>For help with database issues consult:</source>
         <translation>Kvůli pomoci týkající se potížím s databázi se poraďte s:</translation>
     </message>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="93"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="95"/>
         <source>Your mixxxdb.sqlite file may be corrupt.</source>
         <translation>Soubor Mixxxdb.sqlite může být poškozen.</translation>
     </message>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="94"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="96"/>
         <source>Try renaming it and restarting Mixxx.</source>
         <translation>Zkuste přejmenování a opětovné spuštění Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="102"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="104"/>
         <source>Your mixxxdb.sqlite file was created by a newer version of Mixxx and is incompatible.</source>
         <translation>Soubor mixxxdb.sqlite byl vytvořen novější verzí Mixxxu a je neslučitelný.</translation>
     </message>
     <message>
-        <location filename="../../src/database/mixxxdb.cpp" line="111"/>
+        <location filename="../../src/database/mixxxdb.cpp" line="113"/>
         <source>The database schema file is invalid.</source>
         <translation>Soubor s databázovým schématem je neplatný.</translation>
     </message>
@@ -10239,22 +10652,22 @@ Opravdu chcete přepsat soubor?</translation>
 <context>
     <name>MixxxLibraryFeature</name>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="29"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="30"/>
         <source>Missing Tracks</source>
         <translation>Chybějící skladby</translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="30"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="31"/>
         <source>Hidden Tracks</source>
         <translation>Skryté skladby</translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="131"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="134"/>
         <source>Export to Engine DJ</source>
-        <translation type="unfinished"/>
+        <translation>Exportovat do stroje DJ</translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="159"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="176"/>
         <source>Tracks</source>
         <translation>Skladby</translation>
     </message>
@@ -10262,253 +10675,263 @@ Opravdu chcete přepsat soubor?</translation>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="674"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="695"/>
         <source>Sound Device Busy</source>
         <translation>Zvukové zařízení je zaneprázdněné</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="683"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="704"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>&lt;b&gt;Zopakovat&lt;/b&gt; pokus o připojení po zavření jiného programu nebo po opětovném připojení zvukového zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="687"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="714"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="738"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="708"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="735"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="759"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>&lt;b&gt;Nastavit znovu&lt;/b&gt; nastavení zvukových zařízení programu Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="690"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="717"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="711"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="738"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Získejte &lt;b&gt;nápovědu&lt;/b&gt; z Mixxx Wiki.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="693"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="720"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="714"/>
         <location filename="../../src/mixxxmainwindow.cpp" line="741"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="762"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;Ukončit&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="634"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="655"/>
         <source>Retry</source>
         <translation>Opakovat</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="228"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="243"/>
         <source>skin</source>
         <translation>vzhled</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="587"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="608"/>
         <source>Allow Mixxx to hide the menu bar?</source>
-        <translation type="unfinished"/>
+        <translation>Povolit Mixxxu skrýt lištu nabídek?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="589"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="610"/>
         <source>Hide</source>
         <extracomment>Always show the menu bar?</extracomment>
-        <translation type="unfinished"/>
+        <translation>Skrýt</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="590"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="611"/>
         <source>Always show</source>
-        <translation type="unfinished"/>
+        <translation>Vždy zobrazovat</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="593"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="614"/>
         <source>The Mixxx menu bar is hidden and can be toggled with a single press of the &lt;b&gt;Alt&lt;/b&gt; key.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; to agree.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; to disable that, for example if you don&apos;t use Mixxx with a keyboard.&lt;br&gt;&lt;br&gt;You can change this setting any time in Preferences -&gt; Interface.&lt;br&gt;</source>
         <extracomment>Keep formatting tags &lt;b&gt; (bold text) and &lt;br&gt; (linebreak). %1 is the placeholder for the 'Always show' button label</extracomment>
-        <translation type="unfinished"/>
+        <translation>Panel s nabídkami Mixxx je skrytý a lze jej přepínat jediným stisknutím klávesy &lt;b&gt;Alt&lt;/b&gt;.&lt;br&gt;&lt;br&gt;Kliknutím na &lt;b&gt;%1&lt;/b&gt; souhlasíte.&lt;br&gt;&lt;br&gt;Kliknutím na &lt;b&gt;%2&lt;/b&gt; jej deaktivujete, například pokud Mixxx nepoužíváte s klávesnicí.&lt;br&gt;&lt;br&gt;Toto nastavení můžete kdykoli změnit v Nastavení -&gt; Rozhraní.&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="608"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="629"/>
         <source>Ask me again</source>
-        <translation type="unfinished"/>
+        <translation>Zeptat se mě znovu</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="636"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="749"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="657"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="770"/>
         <source>Reconfigure</source>
         <translation>Nastavit znovu</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="638"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="659"/>
         <source>Help</source>
         <translation>Nápověda</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="640"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="751"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="661"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="772"/>
         <source>Exit</source>
         <translation>Ukončit</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="677"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="703"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="698"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="724"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx nebyl schopen otevřít všechna nastavená zvuková zařízení.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="701"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="722"/>
         <source>Sound Device Error</source>
         <translation>Chyba zvukového zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="711"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="732"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>Po spravení této záležitosti &lt;b&gt;Zkusit znovu&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="729"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="750"/>
         <source>No Output Devices</source>
         <translation>Žádná výstupní zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="731"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="752"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx byl nastaven bez zařízení pro výstup zvuku. Zpracování zvuku bude bez nastaveného výstupního zařízení vypnuto.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="735"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="756"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>&lt;b&gt;Pokračovat&lt;/b&gt; bez jakéhokoli výstupu.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="747"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="768"/>
         <source>Continue</source>
         <translation>Pokračovat</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1034"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1048"/>
         <source>Load track to Deck %1</source>
         <translation>Nahrát skladbu do přehrávací mechaniky %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1035"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1049"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Přehrávací mechanika %1 nyní přehrává skladbu.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1037"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1051"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>Jste si jistý, že chcete nahrát novou skladbu?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1135"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1149"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Není vybráno žádné vstupní zařízení pro toto ovládání vinylovou gramodeskou.
 Nejprve, prosím, vyberte nějaké vstupní zařízení v nastavení zvukového technického vybavení.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1162"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1176"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>Není vybráno žádné vstupní zařízení pro toto ovládání předání dál.
 Nejprve, prosím, vyberte nějaké vstupní zařízení v nastavení zvukového technického vybavení.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1189"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1203"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation>Pro tento mikrofon nebylo zjištěno žádné vstupní zařízení.
 Chcete vybrat vstupní zařízení?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1216"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1230"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation>Pro tuto pomocnou jednotku nebylo zjištěno žádné vstupní zařízení.
 Chcete vybrat vstupní zařízení?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1252"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1271"/>
+        <source>No music directories configured for scanning.</source>
+        <translation>Nejsou nakonfigurovány žádné hudební adresáře pro skenování.</translation>
+    </message>
+    <message>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1273"/>
+        <source>Add directories in the library preferences.</source>
+        <translation>Přidejte adresáře v předvolbách knihovny.</translation>
+    </message>
+    <message>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1279"/>
         <source>Scan took %1</source>
-        <translation type="unfinished"/>
+        <translation>Skenování trvalo %1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1254"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1284"/>
         <source>No changes detected.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1256"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1278"/>
-        <source>%1 tracks in total</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1260"/>
-        <source>%1 new tracks found</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1264"/>
-        <source>%1 moved tracks detected</source>
-        <translation type="unfinished"/>
+        <translation>Nebyly zjištěny žádné změny.</translation>
     </message>
     <message>
         <location filename="../../src/mixxxmainwindow.cpp" line="1268"/>
-        <source>%1 tracks are missing (%2 total)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1274"/>
-        <source>%1 tracks have been rediscovered</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1283"/>
         <source>Library scan finished</source>
-        <translation type="unfinished"/>
+        <translation>Skenování knihovny dokončeno</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/mixxxmainwindow.cpp" line="1286"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1310"/>
+        <source>%n track(s) in total</source>
+        <translation><numerusform>Celkem %n stopa</numerusform><numerusform>Celkem %n stopy</numerusform><numerusform>Celkem %n stop</numerusform><numerusform>Celkem %n stop</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/mixxxmainwindow.cpp" line="1290"/>
+        <source>%n new track(s) found</source>
+        <translation><numerusform>Nalezeno %n nová skladba</numerusform><numerusform>Nalezeno %n nové skladby</numerusform><numerusform>Nalezeno %n nových skladeb</numerusform><numerusform>Nalezeno %n nových skladeb</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/mixxxmainwindow.cpp" line="1294"/>
+        <source>%n moved track(s) detected</source>
+        <translation><numerusform>Detekována %n přesunutá stopa</numerusform><numerusform>Detekováno %n přesunuté stopy</numerusform><numerusform>Detekováno %n přesunutých stop</numerusform><numerusform>Detekováno %n přesunutých stop</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/mixxxmainwindow.cpp" line="1298"/>
+        <source>%n track(s) missing (%1 total)</source>
+        <translation><numerusform>Chybí %n stopa (celkem %1)</numerusform><numerusform>Chybí %n stopy (celkem %1)</numerusform><numerusform>Chybí %n stop (celkem %1)</numerusform><numerusform>Chybí %n stop (celkem %1)</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/mixxxmainwindow.cpp" line="1305"/>
+        <source>%n track(s) rediscovered</source>
+        <translation><numerusform>%n znovuobjevená skladba</numerusform><numerusform>%n znovuobjevené skladby</numerusform><numerusform>%n znovuobjevených skladeb</numerusform><numerusform>%n znovuobjevených skladeb</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1347"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1384"/>
         <source>Error in skin file</source>
         <translation>Chyba v souboru se vzhledem</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1348"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1385"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>Nelze nahrát vybraný vzhled.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1532"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1575"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Přímé vykreslování OpenGL</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1533"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1576"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation>Přímé vykreslování není na vašem stroji povoleno.&lt;br&gt;&lt;br&gt;Znamená to, že zobrazování průběhové křivky bude velmi&lt;br&gt;&lt;b&gt;pomalé a může hodně zatěžovat procesor&lt;/b&gt;. Buď aktualizujte své&lt;br&gt;nastavení a povolte přímé vykreslování, nebo zakažte&lt;br&gt;zobrazování průběhové křivky v nastavení Mixxxu volbou&lt;br&gt;&quot;Prázdný&quot; jako zobrazování průběhové křivky v části &apos;Rozhraní&apos;.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1568"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1576"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1585"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1611"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1619"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1628"/>
         <source>Confirm Exit</source>
         <translation>Potvrdit ukončení</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1569"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1612"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Některá z přehrávacích mechanik hraje. Ukončit Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1577"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1620"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Vzorkovač nyní hraje. Ukončit Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1586"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1629"/>
         <source>The preferences window is still open.</source>
         <translation>Okno s nastavením je stále otevřené.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1587"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1630"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Zahodit všechny změny a ukončit Mixxx?</translation>
     </message>
@@ -10522,83 +10945,139 @@ Chcete vybrat vstupní zařízení?</translation>
     </message>
 </context>
 <context>
+    <name>PipewireEnumerator</name>
+    <message>
+        <location filename="../../src/soundio/pipewireenumerator.cpp" line="840"/>
+        <source>Information</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/pipewireenumerator.cpp" line="841"/>
+        <source>PipeWire server disconnected, query devices to reconnect.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>PlaylistFeature</name>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="97"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="98"/>
         <source>Lock</source>
         <translation>Zamknout</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="64"/>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="434"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="65"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="444"/>
         <source>Playlists</source>
         <translation>Seznamy skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="36"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="37"/>
         <source>Shuffle Playlist</source>
         <translation>Zamíchat seznam skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="42"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="43"/>
         <source>Adopt current order</source>
-        <translation type="unfinished"/>
+        <translation>Přijmout aktuální pořadí</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="49"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="50"/>
         <source>Unlock all playlists</source>
-        <translation type="unfinished"/>
+        <translation>Odemknout všechny playlisty</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="56"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="57"/>
         <source>Delete all unlocked playlists</source>
-        <translation type="unfinished"/>
+        <translation>Smazat všechny odemčené seznamy skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="97"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="98"/>
         <source>Unlock</source>
         <translation>Odemknout</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="303"/>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="312"/>
-        <source>Confirm Deletion</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="304"/>
-        <source>Do you really want to delete all unlocked playlists?</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/library/trackset/playlistfeature.cpp" line="313"/>
-        <source>Deleting %1 unlocked playlists.&lt;br&gt;This operation can not be undone!</source>
-        <translation type="unfinished"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="322"/>
+        <source>Confirm Deletion</source>
+        <translation>Potvrdit smazání</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="436"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="314"/>
+        <source>Do you really want to delete all unlocked playlists?</source>
+        <translation>Opravdu chcete smazat všechny odemčené playlisty?</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="323"/>
+        <source>Deleting %1 unlocked playlists.&lt;br&gt;This operation can not be undone!</source>
+        <translation>Mazání %1 odemčených seznamů skladeb.&lt;br&gt;Tuto operaci nelze vrátit zpět!</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="446"/>
         <source>Playlists are ordered lists of tracks that allow you to plan your DJ sets.</source>
         <translation>Seznamy skladeb jsou uspořádané seznamy skladeb, které vám umožňují plánovat vaše seznamy skladeb při míchání.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="446"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="456"/>
         <source>It may be necessary to skip some tracks in your prepared playlist or add some different tracks in order to maintain the energy of your audience.</source>
         <translation>Může být nezbytné přeskočit některé skladby v předpřipraveném seznamu skladeb nebo přidat několik nových skladeb pro udržení posluchačů při síle.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="439"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="449"/>
         <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
         <translation>Někteří diskžokejové sestavují seznamy skladeb, předtím než vystoupí živě, ale jiní upřednostňují jejich tvoření bez rozmýšlení.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="442"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="452"/>
         <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you&apos;ve chosen to play.</source>
         <translation>Když používáte seznam skladeb během míchání, dávejte vždy obzvláštní pozor na to, jak hudba, kterou hrajete, účinkuje na posluchačstvo.</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/playlistfeature.cpp" line="449"/>
+        <location filename="../../src/library/trackset/playlistfeature.cpp" line="459"/>
         <source>Create New Playlist</source>
         <translation>Vytvořit nový seznam skladeb</translation>
+    </message>
+</context>
+<context>
+    <name>PortAudioEnumerator</name>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="81"/>
+        <source>Earpiece</source>
+        <translation>Sluchátko</translation>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="83"/>
+        <source>Speaker</source>
+        <translation>Reproduktor</translation>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="85"/>
+        <source>Wired headphones</source>
+        <translation>Drátová sluchátka</translation>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="87"/>
+        <source>Wired headset</source>
+        <translation>Drátový sluchátkový set</translation>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="89"/>
+        <source>HDMI</source>
+        <translation>HDMI</translation>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="91"/>
+        <source>HDMI audio return channel</source>
+        <translation>HDMI audio zpětný kanál</translation>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="93"/>
+        <source>Microphone</source>
+        <translation>Mikrofon</translation>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="95"/>
+        <source>Mixed</source>
+        <translation>Smíšený</translation>
     </message>
 </context>
 <context>
@@ -10606,7 +11085,7 @@ Chcete vybrat vstupní zařízení?</translation>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="254"/>
         <source>Mixxx Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy rychlé značky Mixxx</translation>
     </message>
 </context>
 <context>
@@ -10614,140 +11093,140 @@ Chcete vybrat vstupní zařízení?</translation>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="274"/>
         <source>Serato DJ Track Metadata Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy metadat stop Serato DJ rychlá zkratka</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="299"/>
         <source>Serato DJ Pro Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy Serato DJ Pro rychlá zkratka</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="351"/>
         <source>Rekordbox COLD1 Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy pro rychlou zkratku Rekordbox COLD1</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="357"/>
         <source>Rekordbox COLD2 Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy pro rychlou zkratku Rekordbox COLD2</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="364"/>
         <source>Rekordbox COLORFUL Hotcue Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy pro rychlou zkratku Rekordbox COLORFUL</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="372"/>
         <source>Mixxx Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy stop Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="396"/>
         <source>Rekordbox Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy stop Rekordboxu</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="410"/>
         <source>Serato DJ Pro Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy stop Serato DJ Pro</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="436"/>
         <source>Traktor Pro Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy tratí Traktor Pro</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="449"/>
         <source>VirtualDJ Track Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy stop VirtualDJ</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="463"/>
         <source>Mixxx Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy kláves Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="481"/>
         <source>Traktor Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Barvy kláves traktoru</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="498"/>
         <source>Mixed In Key - Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Smíšená tónina - barvy tónin</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="516"/>
         <source>Protanopia / Protanomaly Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Klíčové barvy protanopie / protanomálie</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="535"/>
         <source>Deuteranopia / Deuteranomaly Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Klíčové barvy deuteranopie / deuteranomálie</translation>
     </message>
     <message>
         <location filename="../../src/util/color/predefinedcolorpalettes.cpp" line="553"/>
         <source>Tritanopia / Tritanomaly Key Colors</source>
-        <translation type="unfinished"/>
+        <translation>Klíčové barvy tritanopie / tritanomálie</translation>
     </message>
 </context>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="654"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="660"/>
         <source>Upgrading Mixxx</source>
         <translation>Aktualizuje se Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="655"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="661"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>Mixxx nyní podporuje zobrazení obrázků obalů.
 Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="658"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="664"/>
         <source>Scan</source>
         <translation>Prohledat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="659"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="665"/>
         <source>Later</source>
         <translation>Později</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="668"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="674"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>Aktualizuje se Mixxx z verze 1.9.x/1.10.x.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="670"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="676"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>Mixxx má nové a vylepšené rozpoznávání rytmu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="671"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="677"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation>Když nahrajete skladby, Mixxx je může znovu rozebrat a vytvoři novou, přesnější rytmickou mřížku. Tím bude automatické seřízení rytmu a smyčkování pracovat spolehlivěji.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="675"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="681"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>Toto neovlivní značky, rychlé značky, seznamy skladeb nebo přepravky.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="677"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="683"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation>Pokud nechcete, aby Mixxx znovu rozebral vaše skladby, vyberte Zachovat nynější rytmické mřížky. Toto nastavení můžete kdykoliv změnit v nastavení v části Rozpoznávání rytmu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="681"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="687"/>
         <source>Keep Current Beatgrids</source>
         <translation>Zachovat nynější rytmické mřížky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="682"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="688"/>
         <source>Generate New Beatgrids</source>
         <translation>Vytvořit nové rytmické mřížky</translation>
     </message>
@@ -10940,22 +11419,22 @@ Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
         <translation>Neznámý typ cesty %1</translation>
     </message>
     <message>
-        <location filename="../../src/encoder/encoderopus.cpp" line="81"/>
+        <location filename="../../src/encoder/encoderopus.cpp" line="83"/>
         <source>Using Opus at samplerates other than 48 kHz is not supported by the Opus encoder. Please use 48000 Hz in &quot;Sound Hardware&quot; preferences or switch to a different encoding.</source>
         <translation>Používání formátu Opus při vzorkovacích kmitočtech jiných než 48 kHz není kodérem Opus podporováno. Použijte, prosím, v nastavení pro zvukové zařízení počítače 48000 Hz nebo přepněte na jiné kódování.</translation>
     </message>
     <message>
-        <location filename="../../src/encoder/encoderopus.cpp" line="149"/>
+        <location filename="../../src/encoder/encoderopus.cpp" line="152"/>
         <source>Encoder</source>
         <translation>Kodér</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="122"/>
+        <location filename="../../src/util/sandbox.cpp" line="124"/>
         <source>Mixxx Needs Access to: %1</source>
         <translation>Mixxx potřebuje přístup k: %1</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="125"/>
+        <location filename="../../src/util/sandbox.cpp" line="127"/>
         <source>Your permission is required to access the following location:
 
 %1
@@ -10968,17 +11447,17 @@ After clicking OK, you will see a file picker. Please select &apos;%2&apos; to p
 Po stisknutí tlačítka OK uvidíte výběr souborů. Pokračujte prosím výběrem &apos;%2&apos; nebo klepněte na tlačítko Zrušit, pokud nechcete udělit Mixxxu přístup a zrušte akci.</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="163"/>
+        <location filename="../../src/util/sandbox.cpp" line="169"/>
         <source>You selected the wrong file. To grant Mixxx access, please select the file &apos;%1&apos;. If you do not want to continue, press Cancel.</source>
         <translation>Vybral jste nesprávný soubor. Pro poskytnutí přístupového oprávnění Mixxxu, vyberte soubor &apos;%1&apos;. Pokud nechcete pokračovat, klepněte na Zrušit.</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="465"/>
+        <location filename="../../src/util/sandbox.cpp" line="470"/>
         <source>Upgrading old Mixxx settings</source>
         <translation>Aktualizuje se staré nastavení Mixxxu</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="468"/>
+        <location filename="../../src/util/sandbox.cpp" line="473"/>
         <source>Due to macOS sandboxing, Mixxx needs your permission to access your music library and settings from Mixxx versions before 2.3.0. After clicking OK, you will see a file selection dialog. 
 
 To allow Mixxx to use your old library and settings, click the Open button in the file selection dialog. Mixxx will then move your old settings into the sandbox. This only needs to be done once.
@@ -10989,6 +11468,11 @@ If you do not want to grant Mixxx access, click Cancel on the file picker. Mixxx
 Chcete-li povolit Mixxx používat vaši starou knihovnu a nastavení, klepněte na tlačítko Otevřít v dialogovém okně pro výběr souboru. Mixxx poté přesune vaše stará nastavení do karantény. Toto je potřeba provést pouze jednou.
 
 Pokud nechcete udělit Mixxx přístup, klepněte na Zrušit ve výběru souboru. Mixxx vytvoří novou hudební knihovnu a použije výchozí nastavení.</translation>
+    </message>
+    <message>
+        <location filename="../../src/util/sandbox.cpp" line="583"/>
+        <source>Mixxx needs access to the settings folder</source>
+        <translation>Mixxx potřebuje přístup ke složce s nastavením</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/bitcrushereffect.cpp" line="26"/>
@@ -11285,9 +11769,10 @@ Se šířkou na nule může být celá oblast zpoždění pokryta ručně.</tran
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="30"/>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="158"/>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="89"/>
         <source>The Mixxx Team</source>
-        <translation type="unfinished"/>
+        <translation>Tým Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="91"/>
@@ -11295,9 +11780,98 @@ Se šířkou na nule může být celá oblast zpoždění pokryta ručně.</tran
         <translation>Přidá zvuk klepnutí metronomu do proudu</translation>
     </message>
     <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="157"/>
+        <source>Key Comparison</source>
+        <translation>Porovnání tóniny</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="160"/>
+        <source>Plays a piano note at a configurable beat interval so you can match it by ear to identify or verify the musical key.</source>
+        <translation>Hraje klavírní notu v konfigurovatelném intervalu doby, takže ji můžete porovnat podle sluchu a identifikovat nebo ověřit hudební tóninu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="168"/>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="169"/>
+        <source>Key</source>
+        <translation>Tónina</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="170"/>
+        <source>Musical key of the piano note (C to C, 13 chromatic steps).
+0=C  1=C♯/D♭  2=D  3=D♯/E♭  4=E  5=F
+6=F♯/G♭  7=G  8=G♯/A♭  9=A  10=A♯/B♭  11=B  12=C</source>
+        <translation>Hudební tónina klavírní noty (C až C, 13 chromatických kroků).
+0=C 1=C♯/D♭ 2=D 3=D♯/E♭ 4=E 5=F
+6=F♯/G♭ 7=G 8=G♯/A♭ 9=A 10=A♯/H♭ 11=H 12=C</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="183"/>
+        <source>Tuning</source>
+        <translation>Ladění</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="184"/>
+        <source>Tune</source>
+        <translation>Ladit</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="185"/>
+        <source>Reference pitch of A4 in Hz. Adjust this when the track was
+recorded to a non-standard tuning such as 432 Hz, 442 Hz,
+or 415 Hz (Baroque pitch).</source>
+        <translation>Referenční výška tónu A4 v Hz. Upravte tuto hodnotu, pokud byla skladba nahrána v nestandardním ladění, například 432 Hz, 442 Hz nebo 415 Hz (barokní výška tónu).</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="197"/>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="198"/>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="99"/>
         <source>BPM</source>
         <translation>MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="199"/>
+        <source>Note repeat rate when Sync is off.</source>
+        <translation>Všimněte si frekvence opakování, když je synchronizace vypnutá.</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="208"/>
+        <source>Measure</source>
+        <translation>Změřit</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="209"/>
+        <source>Meas</source>
+        <translation>Měření</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="210"/>
+        <source>How many beats between each note.
+1 = every beat  |  3 = 3/4 time  |  4 = 4/4 time  |  5 = 5/4 time</source>
+        <translation>Kolik dob mezi jednotlivými notami.
+1 = každá doba | 3 = 3/4 takt | 4 = 4/4 takt | 5 = 5/4 takt</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="223"/>
+        <source>Lock note timing to the detected beat grid (recommended).
+Disable to set a manual rate with the BPM knob.</source>
+        <translation>Uzamknout načasování not podle detekované mřížky rytmu (doporučeno).
+Zakázat pro ruční nastavení tempa pomocí knoflíku MM.</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="234"/>
+        <source>Volume of the piano note.</source>
+        <translation>Hlasitost klavírního tónu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="245"/>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="246"/>
+        <source>Chord</source>
+        <translation>Akord</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="247"/>
+        <source>0 = single note  1 = major chord  2 = minor chord</source>
+        <translation>0 = jednotlivá nota 1 = durový akord 2 = mollový akord</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="100"/>
@@ -11305,6 +11879,8 @@ Se šířkou na nule může být celá oblast zpoždění pokryta ručně.</tran
         <translation>Nastaví hodnotu pro počet dob za minutu zvuku klepnutí metronomu</translation>
     </message>
     <message>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="221"/>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="222"/>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="108"/>
         <source>Sync</source>
         <translation>Seřízení</translation>
@@ -11316,14 +11892,20 @@ Se šířkou na nule může být celá oblast zpoždění pokryta ručně.</tran
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="64"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="23"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="24"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="32"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="33"/>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="232"/>
+        <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="233"/>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="117"/>
         <source>Gain</source>
-        <translation type="unfinished"/>
+        <translation>Zesílení</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="118"/>
         <source>Set the gain of metronome click sound</source>
-        <translation type="unfinished"/>
+        <translation>Nastavení zesílení zvuku metronomu</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autopaneffect.cpp" line="28"/>
@@ -11569,7 +12151,7 @@ Vyšší hodnoty vedou k menšímu zeslabení vysokých kmitočtů.</translation
         <translation>Zesílení pro filtr hloubek  (neutrální při 1,0)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/sounddevicenetwork.cpp" line="49"/>
+        <location filename="../../src/soundio/sounddevicenetwork.cpp" line="53"/>
         <source>Network stream</source>
         <translation>Síťový proud</translation>
     </message>
@@ -11642,46 +12224,6 @@ Vyšší hodnoty vedou k menšímu zeslabení vysokých kmitočtů.</translation
         <location filename="../../src/widget/wbattery.cpp" line="81"/>
         <source>%1:%2</source>
         <translation>%1:%2</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="34"/>
-        <source>Ctrl+t</source>
-        <translation>Ctrl+T</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="35"/>
-        <source>Ctrl+y</source>
-        <translation>Ctrl+Y</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="36"/>
-        <source>Ctrl+u</source>
-        <translation>CTRL+U</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="37"/>
-        <source>Ctrl+i</source>
-        <translation>Ctrl+I</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="45"/>
-        <source>Ctrl+o</source>
-        <translation>Ctrl+O</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="46"/>
-        <source>Ctrl+Shift+O</source>
-        <translation>Ctrl+Shift+O</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="53"/>
-        <source>Ctrl+,</source>
-        <translation>Ctrl+,</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="55"/>
-        <source>Ctrl+P</source>
-        <translation>Ctrl+P</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/bessel8lvmixeqeffect.cpp" line="17"/>
@@ -12105,34 +12647,34 @@ Fully right: end of the effect period</source>
         <translation>Prolnout bílý šum s nezpracovaným signálem</translation>
     </message>
     <message>
-        <location filename="../../src/encoder/encoderfdkaac.cpp" line="258"/>
+        <location filename="../../src/encoder/encoderfdkaac.cpp" line="259"/>
         <source>&lt;html&gt;Mixxx cannot record or stream in AAC or HE-AAC without the FDK-AAC encoder. In order to record or stream in AAC or AAC+, you need to download &lt;b&gt;libfdk-aac&lt;/b&gt; and install it on your system.</source>
         <translation>&lt;html&gt;Mixxx nemůže vysílat nebo přenášet v AAC nebo HE-AAC bez kodeku FDK-AAC. Abyste mohli nahrávat nebo přenášet v AAC nebo AAC+, musíte si stáhnout &lt;b&gt;libfdk-aac&lt;/b&gt; a nainstalovat jej do vašeho systému.</translation>
     </message>
     <message>
-        <location filename="../../src/encoder/encoderfdkaac.cpp" line="271"/>
+        <location filename="../../src/encoder/encoderfdkaac.cpp" line="272"/>
         <source>The installed AAC encoding library does not support HE-AAC, only plain AAC. Configure a different encoding format in the preferences.</source>
         <translation>Nainstalovaná knihovna kodeku AAC nepodporuje HE-ACC, pouze prosté AAC. Nastavte v předvolbách jiný formát kódování.</translation>
     </message>
     <message>
-        <location filename="../../src/encoder/encodermp3.cpp" line="191"/>
+        <location filename="../../src/encoder/encodermp3.cpp" line="245"/>
         <source>MP3 encoding is not supported. Lame could not be initialized</source>
         <translation>Kódování MP3 není podporováno. Lame se nepodařilo inicializovat.</translation>
     </message>
     <message>
-        <location filename="../../src/encoder/encodervorbis.cpp" line="216"/>
+        <location filename="../../src/encoder/encodervorbis.cpp" line="227"/>
         <source>OGG recording is not supported. OGG/Vorbis library could not be initialized.</source>
         <translation>Nahrávání OGG není podporováno. Knihovnu OGG/Vorbis se nepodařilo inicializovat.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="64"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="470"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="80"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="485"/>
         <source> encoder failure</source>
         <translation> selhání kodéru</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="66"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="472"/>
+        <location filename="../../src/engine/sidechain/enginerecord.cpp" line="82"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="487"/>
         <source>Failed to apply the selected settings.</source>
         <translation>Nepodařilo se použít vybraná nastavení.</translation>
     </message>
@@ -12272,7 +12814,7 @@ Nápověda: vyvažuje „čipmánčí“ nebo „vrčící“ hlasy</translation
         <translation>Míra zesílení použitého na zvukový signál. Ve vyšších úrovních bude zvuk více zkreslený.</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="372"/>
+        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="380"/>
         <source>Passthrough</source>
         <translation>Propustit skrz</translation>
     </message>
@@ -12303,7 +12845,7 @@ Nápověda: vyvažuje „čipmánčí“ nebo „vrčící“ hlasy</translation
         <translation>(prázdné)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="64"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="65"/>
         <source>Sampler %1</source>
         <translation>Vzorkovač %1</translation>
     </message>
@@ -12311,285 +12853,356 @@ Nápověda: vyvažuje „čipmánčí“ nebo „vrčící“ hlasy</translation
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="33"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="34"/>
         <source>Compressor</source>
-        <translation type="unfinished"/>
+        <translation>Kompresor</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="43"/>
         <source>Auto Makeup Gain</source>
-        <translation type="unfinished"/>
+        <translation>Automatické zvýraznění</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="44"/>
         <source>Makeup</source>
-        <translation type="unfinished"/>
+        <translation>Make-up</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="45"/>
         <source>The Auto Makeup button enables automatic gain adjustment to keep the input signal 
 and the processed output signal as close as possible in perceived loudness</source>
-        <translation type="unfinished"/>
+        <translation>Tlačítko Auto Makeup umožňuje automatické nastavení zesílení, aby vstupní signál
+a zpracovaný výstupní signál byly co nejblíže vnímané hlasitosti.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="52"/>
         <source>Off</source>
-        <translation type="unfinished"/>
+        <translation>Vypnuto</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="54"/>
         <source>On</source>
-        <translation type="unfinished"/>
+        <translation>Zapnuto</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="28"/>
         <source>Auto Gain Control</source>
-        <translation type="unfinished"/>
+        <translation>Automatické řízení zisku</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="29"/>
         <source>AGC</source>
-        <translation type="unfinished"/>
+        <translation>AGC</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="32"/>
         <source>Auto Gain Control (AGC) automatically adjusts the gain of an audio signal to maintain a consistent output level.</source>
-        <translation type="unfinished"/>
+        <translation>Automatické řízení zisku (AGC) automaticky upravuje zisk audio signálu tak, aby byla udržována konzistentní výstupní úroveň.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="40"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="58"/>
         <source>Threshold (dBFS)</source>
-        <translation type="unfinished"/>
+        <translation>Rozsah (dBFS)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="41"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="59"/>
         <source>Threshold</source>
-        <translation type="unfinished"/>
+        <translation>Rozsah</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="43"/>
         <source>The Threshold knob adjusts the level above which the effect starts enhancing the input signal</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Threshold nastavuje úroveň, nad kterou efekt začne zesilovat vstupní signál</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="52"/>
         <source>Target (dBFS)</source>
-        <translation type="unfinished"/>
+        <translation>Cíl (dBFS)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="53"/>
         <source>Target</source>
-        <translation type="unfinished"/>
+        <translation>Cíl</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="55"/>
         <source>The Target knob adjusts the desired target level of the output signal</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Target upravuje požadovanou cílovou úroveň výstupního signálu</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="63"/>
         <source>Gain (dB)</source>
-        <translation type="unfinished"/>
+        <translation>Zesílení (dB)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="66"/>
         <source>The Gain knob adjusts the maximum amount of gain that the effect will apply</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Gain upravuje maximální hodnotu gainu, kterou efekt aplikuje.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="74"/>
         <source>Knee (dB)</source>
-        <translation type="unfinished"/>
+        <translation>Koleno (dB)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="76"/>
         <source>The Knee knob defines the range around the Threshold where gain changes are applied gradually,
 ensuring smooth transitions and avoiding abrupt level shifts.</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Knee definuje rozsah kolem prahové hodnoty, kde se změny zesílení aplikují postupně,
+čímž se zajišťují plynulé přechody a zabraňuje se náhlým změnám úrovně.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="89"/>
         <source>The Attack knob sets the time that determines how fast the auto gain 
 will set in once the signal exceeds the threshold</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Attack nastavuje čas, který určuje, jak rychle se automatické
+zesílení aktivuje, jakmile signál překročí prahovou hodnotu</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="101"/>
         <source>The Release knob sets the time that determines how fast the auto gain will recover from the gain
 adjustment once the signal falls under the threshold. Depending on the input signal, short release times
 may introduce a &apos;pumping&apos; effect and/or distortion.</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Release (Uvolnění) nastavuje čas, který určuje, jak rychle se automatické zesílení obnoví po
+nastavení zesílení, jakmile signál klesne pod prahovou hodnotu. V závislosti na vstupním signálu mohou krátké
+doby uvolnění způsobit efekt „pumpování“ a/nebo zkreslení.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="61"/>
         <source>The Threshold knob adjusts the level above which the compressor starts attenuating the input signal</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Threshold nastavuje úroveň, nad kterou kompresor začne zeslabovat vstupní signál</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="70"/>
         <source>Ratio (:1)</source>
-        <translation type="unfinished"/>
+        <translation>Poměr (:1)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="71"/>
         <source>Ratio</source>
-        <translation type="unfinished"/>
+        <translation>Poměr</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="73"/>
         <source>The Ratio knob determines how much the signal is attenuated above the chosen threshold.
 For a ratio of 4:1, one dB remains for every four dB of input signal above the threshold.
 At a ratio of 1:1 no compression is happening, as the input is exactly the output.</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Ratio určuje, o kolik je signál utlumen nad zvolenou prahovou hodnotou.
+Pro poměr 4:1 zbývá jeden dB na každé čtyři dB vstupního signálu nad prahovou hodnotou.
+Při poměru 1:1 nedochází ke kompresi, protože vstup je přesně stejný jako výstup.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="86"/>
         <source>Knee (dBFS)</source>
-        <translation type="unfinished"/>
+        <translation>Koleno (dBFS)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="75"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="87"/>
         <source>Knee</source>
-        <translation type="unfinished"/>
+        <translation>Koleno</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="88"/>
         <source>The Knee knob is used to achieve a rounder compression curve</source>
-        <translation type="unfinished"/>
+        <translation>Kolenní knoflík se používá k dosažení kulatější kompresní křivky</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="87"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="97"/>
         <source>Attack (ms)</source>
-        <translation type="unfinished"/>
+        <translation>Útok (ms)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="88"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="98"/>
         <source>Attack</source>
-        <translation type="unfinished"/>
+        <translation>Útok</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="99"/>
         <source>The Attack knob sets the time that determines how fast the compression 
 will set in once the signal exceeds the threshold</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Attack nastavuje čas, který určuje, jak rychle se komprese
+projeví, jakmile signál překročí prahovou hodnotu</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="98"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="108"/>
         <source>Release (ms)</source>
-        <translation type="unfinished"/>
+        <translation>Uvolnění (ms)</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="99"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="109"/>
         <source>Release</source>
-        <translation type="unfinished"/>
+        <translation>Vydání</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="111"/>
         <source>The Release knob sets the time that determines how fast the compressor will recover from the gain
 reduction once the signal falls under the threshold. Depending on the input signal, short release times
 may introduce a &apos;pumping&apos; effect and/or distortion.</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Release nastavuje čas, který určuje, jak rychle se kompresor zotaví ze snížení gainu,
+jakmile signál klesne pod prahovou hodnotu. V závislosti na vstupním signálu mohou krátké doby
+uvolnění způsobit „pumpovací“ efekt a/nebo zkreslení.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="122"/>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="123"/>
         <source>Level</source>
-        <translation type="unfinished"/>
+        <translation>Úroveň</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/compressoreffect.cpp" line="125"/>
         <source>The Level knob adjusts the level of the output signal after the compression was applied</source>
-        <translation type="unfinished"/>
+        <translation>Knoflík Level upravuje úroveň výstupního signálu po aplikaci komprese</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfomulti.cpp" line="29"/>
         <source>various</source>
-        <translation type="unfinished"/>
+        <translation>různé</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="50"/>
         <source>built-in</source>
-        <translation type="unfinished"/>
+        <translation>vestavěno</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="65"/>
         <source>missing</source>
-        <translation type="unfinished"/>
+        <translation>chybí</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="46"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="56"/>
         <source>Distribute stereo channels into mono channels processed in parallel.</source>
-        <translation type="unfinished"/>
+        <translation>Rozdělte stereo kanály do mono kanálů zpracovávaných paralelně.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="50"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="60"/>
         <source>Warning!</source>
-        <translation type="unfinished"/>
+        <translation>Varování!</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="51"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="61"/>
         <source>Processing stereo signal as mono channel may result in pitch and tone imperfection, and this is mono-incompatible, due to third party limitations.</source>
-        <translation type="unfinished"/>
+        <translation>Zpracování stereo signálu jako mono kanálu může vést k nedokonalostem výšky tónu a tónu, což je kvůli omezením třetích stran nekompatibilní s mono.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="58"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="68"/>
         <source>Dual threading mode is incompatible with mono main mix.</source>
-        <translation type="unfinished"/>
+        <translation>Režim dvojitého navlékání není kompatibilní s mono hlavním mixem.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="63"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="73"/>
         <source>Dual threading mode is only available with RubberBand.</source>
-        <translation type="unfinished"/>
+        <translation>Režim dvojitého navlékání je k dispozici pouze s RubberBand.</translation>
     </message>
     <message>
-        <location filename="../../src/track/steminfoimporter.cpp" line="192"/>
+        <location filename="../../src/track/steminfoimporter.cpp" line="199"/>
         <source>Stem #%1</source>
-        <translation type="unfinished"/>
+        <translation>Kmen č. %1</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1337"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1378"/>
         <source>Empty</source>
-        <translation type="unfinished"/>
+        <translation>Prázdný</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1339"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1380"/>
         <source>Simple</source>
-        <translation type="unfinished"/>
+        <translation>Jednoduchý</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1341"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1382"/>
         <source>Filtered</source>
-        <translation type="unfinished"/>
+        <translation>Filtrováno</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1343"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1384"/>
         <source>HSV</source>
-        <translation type="unfinished"/>
+        <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1345"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1386"/>
         <source>VSyncTest</source>
-        <translation type="unfinished"/>
+        <translation>VSyncTest</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1347"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1388"/>
         <source>RGB</source>
-        <translation type="unfinished"/>
+        <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1349"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1390"/>
         <source>Stacked</source>
-        <translation type="unfinished"/>
+        <translation>Naskladněno</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1351"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1392"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Neznámý</translation>
+    </message>
+    <message>
+        <location filename="../../src/encoder/encoder.cpp" line="171"/>
+        <source>(Unknown Artist)</source>
+        <translation>(Neznámý umělec)</translation>
+    </message>
+    <message>
+        <location filename="../../src/encoder/encoder.cpp" line="174"/>
+        <source>(Unknown Title)</source>
+        <translation>(Neznámý název)</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="27"/>
+        <source>Amplifies audio by gain amount</source>
+        <translation>Zesiluje zvuk o úroveň zisku</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="34"/>
+        <source>The gain of the samples</source>
+        <translation>Zisk vzorků</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="43"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="44"/>
+        <source>Clip</source>
+        <translation>Oříznout</translation>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="45"/>
+        <source>Clip samples to within -1 to 1</source>
+        <translation>Oříznout vzorky s přesností na -1 až 1</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="35"/>
+        <source>Invalid marker: </source>
+        <translation>Neplatná značka: </translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="39"/>
+        <source>unexpected number of arguments in endIcon: %1</source>
+        <translation>neočekávaný počet argumentů v endIcon: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="43"/>
+        <source>path %1 for pixmap cannot be found</source>
+        <translation>cesta %1 pro pixmapu nebyla nalezena</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="47"/>
+        <source>path %1 for end pixmap cannot be found</source>
+        <translation>cesta %1 pro koncovou pixelovou mapu nebyla nalezena</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="51"/>
+        <source>path %1 for icon cannot be found</source>
+        <translation>cesta %1 pro ikonu nebyla nalezena</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="54"/>
+        <source>path %1 for end icon cannot be found</source>
+        <translation>cesta %1 pro koncovou ikonu nenalezena</translation>
     </message>
 </context>
 <context>
@@ -12603,32 +13216,32 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>RecordingManager</name>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="264"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="268"/>
         <source>Low Disk Space Warning</source>
         <translation>Upozornění na nízký stav místa na disku</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="265"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="269"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
         <translation>Ve složce nahrávání je méně jež 1 GiB nevyužitého místa</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="286"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="290"/>
         <source>Recording</source>
         <translation>Nahrávání</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="287"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="291"/>
         <source>Could not create audio file for recording!</source>
         <translation>Nepodařilo se vytvořit zvukový soubor pro nahrávání!</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="288"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="292"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>Ujistěte se, že na disku máte dost volného místa a že máte oprávnění pro zápis do složky s nahrávkami.</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="289"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="293"/>
         <source>You can change the location of the Recordings folder in Preferences -&gt; Recording.</source>
         <translation>Můžete změnit umístění složky s nahrávkami v Nastavení → Nahrávání.</translation>
     </message>
@@ -12646,53 +13259,53 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <name>RekordboxFeature</name>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1355"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1434"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1608"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1441"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1615"/>
         <source>Rekordbox</source>
         <translation>Rekordbox</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1452"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1459"/>
         <source>Playlists</source>
         <translation>Seznamy skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1451"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1458"/>
         <source>Folders</source>
         <translation>Složky</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1435"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1442"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation>Čte databáze vyvedené pro přehrávače Pioneer CDJ / XDJ pomocí režimu Rekordbox Export.&lt;br/&gt;Rekordbox může ukládat pouze na zařízení USB nebo SD se systémem souborů FAT nebo HFS.&lt;br/&gt;Mixxx dokáže číst databázi z jakéhokoli zařízení, které obsahuje složky databáze (&lt;tt&gt;PIONEER&lt;/tt&gt; a &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Podporovány nejsou databáze Rekordbox, které byly přesunuty na vnější zařízení přes&lt;br/&gt;&lt;i&gt; Nastavení → Pokročilé → Správa databáze&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Čtou se následující data:</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1454"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1461"/>
         <source>Hot cues</source>
         <translation>Rychlé značky</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1456"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1463"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation>Smyčky (pouze první smyčka je v Mixxxu aktuálně nepoužitelná)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1459"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1466"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation>Zkontrolovat připojená zařízení Rekordbox USB / SD (obnovit)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1453"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1460"/>
         <source>Beatgrids</source>
         <translation>Rytmické mřížky</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1455"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1462"/>
         <source>Memory cues</source>
         <translation>Paměťové klíče</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1485"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1492"/>
         <source>(loading) Rekordbox</source>
         <translation>(nahrává se) Rekordbox</translation>
     </message>
@@ -12701,7 +13314,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="68"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="458"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="465"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -12748,33 +13361,33 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <name>SeratoFeature</name>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="887"/>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="969"/>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="1112"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="976"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="1119"/>
         <source>Serato</source>
         <translation>Serato</translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="970"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="977"/>
         <source>Reads the following from the Serato Music directory and removable devices:</source>
         <translation>Přečte následující z adresáře hudby Serato a vyměnitelných zařízení:</translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="973"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="980"/>
         <source>Tracks</source>
         <translation>Skladby</translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="974"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="981"/>
         <source>Crates</source>
         <translation>Přepravky</translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="977"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="984"/>
         <source>Check for Serato databases (refresh)</source>
         <translation>Zkontrolovat databáze Serato (obnovit)</translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="1003"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="1010"/>
         <source>(loading) Serato</source>
         <translation>(nahrává se) Serato</translation>
     </message>
@@ -12827,19 +13440,19 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <translation>Zamknout</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="547"/>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="571"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="550"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="574"/>
         <source>Confirm Deletion</source>
         <translation>Potvrdit smazání</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="554"/>
         <source>Do you really want to delete all unlocked playlist from &lt;b&gt;%1&lt;/b&gt;?&lt;br&gt;&lt;br&gt;</source>
         <extracomment>%1 is the year &lt;b&gt; + &lt;/b&gt; are used to make the text in between bold in the popup &lt;br&gt; is a linebreak</extracomment>
         <translation>Opravdu chcete smazat všechny odemčené seznamy skladeb z &lt;b&gt;%1&lt;/b&gt;?&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/setlogfeature.cpp" line="576"/>
+        <location filename="../../src/library/trackset/setlogfeature.cpp" line="579"/>
         <source>Deleting %1 playlists from &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;</source>
         <extracomment>%1 is the number of playlists to be deleted %2 is the year &lt;b&gt; + &lt;/b&gt; are used to make the text in between bold in the popup &lt;br&gt; is a linebreak</extracomment>
         <translation>Maže se %1 seznamů skladeb z &lt;b&gt;%2&lt;/b&gt;.&lt;br&gt;&lt;br&gt;</translation>
@@ -12848,194 +13461,194 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>ShoutConnection</name>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="77"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="82"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="84"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="89"/>
         <source>Mixxx encountered a problem</source>
         <translation>Mixxx narazil na problém</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="78"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="85"/>
         <source>Could not allocate shout_t</source>
         <translation>Nepodařilo se přidělit shout_t</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="83"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="90"/>
         <source>Could not allocate shout_metadata_t</source>
         <translation>Nepodařilo se přidělit shout_metadata_t</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="88"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="95"/>
         <source>Error setting non-blocking mode:</source>
         <translation>Chyba při nastavování neblokujícího režimu:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="97"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="104"/>
         <source>Error setting tls mode:</source>
         <translation>Chyba při nastavování režimu TLS:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
         <source>Error setting hostname!</source>
         <translation>Chyba při nastavování jména hostitele!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="299"/>
         <source>Error setting port!</source>
         <translation>Chyba při nastavování přípojky (port)!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="298"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="305"/>
         <source>Error setting password!</source>
         <translation>Chyba při nastavování hesla!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="304"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="311"/>
         <source>Error setting mount!</source>
         <translation>Chyba při nastavování bodu připojení!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="310"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="317"/>
         <source>Error setting username!</source>
         <translation>Chyba při nastavování uživatelského jména!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="315"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="322"/>
         <source>Error setting stream name!</source>
         <translation>Chyba při nastavování názvu proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="320"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="329"/>
         <source>Error setting stream description!</source>
         <translation>Chyba při nastavování popisu proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="325"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="334"/>
         <source>Error setting stream genre!</source>
         <translation>Chyba při nastavování žánru proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="330"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="339"/>
         <source>Error setting stream url!</source>
         <translation>Chyba při nastavování adresy (URL) proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="336"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="345"/>
         <source>Error setting stream IRC!</source>
         <translation>Chyba při nastavování IRC proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="352"/>
         <source>Error setting stream AIM!</source>
         <translation>Chyba při nastavování AIM proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="350"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="359"/>
         <source>Error setting stream ICQ!</source>
         <translation>Chyba při nastavování ICQ proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="365"/>
         <source>Error setting stream public!</source>
         <translation>Chyba při nastavování jako veřejného proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="376"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="385"/>
         <source>Unknown stream encoding format!</source>
         <translation>Neznámý formát kódování proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="377"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="386"/>
         <source>Use a libshout version with %1 enabled</source>
         <translation>Použít verzi libshout s %1 povoleným</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="383"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="398"/>
         <source>Error setting stream encoding format!</source>
         <translation>Chyba nastavení formátu kódování proudu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="398"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="413"/>
         <source>Broadcasting at 96 kHz with Ogg Vorbis is not currently supported. Please try a different sample rate or switch to a different encoding.</source>
         <translation>Vysílání na 96 kHz s Ogg Vorbis není nyní podporováno. Zkuste jiný vzorkovací kmitočet, nebo přepněte do jiného kódování.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="401"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="416"/>
         <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
         <translation>Podívejte se na https://github.com/mixxxdj/mixxx/issues/5701 pro více informací.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="410"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="425"/>
         <source>Unsupported sample rate</source>
         <translation>Nepodporovaný vzorkovací kmitočet</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="419"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="434"/>
         <source>Error setting bitrate</source>
         <translation>Chyba při nastavování datového toku</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="434"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="449"/>
         <source>Error: unknown server protocol!</source>
         <translation>Chyba: Neznámý serverový protokol!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="439"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="454"/>
         <source>Error: Shoutcast only supports MP3 and AAC encoders</source>
         <translation>Chyba: Shoutcast podporuje pouze kodéry MP3 a AAC</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="445"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="460"/>
         <source>Error setting protocol!</source>
         <translation>Chyba při nastavování protokolu!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="677"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="692"/>
         <source>Network cache overflow</source>
         <translation>Přetečení vyrovnávací paměti sítě</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="878"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="904"/>
         <source>Connection error</source>
         <translation>Chyba spojení</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="879"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>Jedno z připojení živého vysílání vrátilo tuto chybu:
 &lt;br&gt;&lt;b&gt;Chyba s připojením &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="893"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="919"/>
         <source>Connection message</source>
         <translation>Zpráva o spojení</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="894"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="920"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;Zpráva připojení živého vysílání&apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="944"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>Ztraceno spojení s vysílacím serverem a %1 pokus o opětovné připojení se nezdařil</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="947"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="973"/>
         <source>Lost connection to streaming server.</source>
         <translation>Ztraceno spojení s vysílacím serverem.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="952"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="978"/>
         <source>Please check your connection to the Internet.</source>
         <translation>Zkontrolujte, prosím, vaše připojení k internetu.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="987"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1013"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Nelze vytvořit spojení s vysílacím serverem</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="989"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1015"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Zkontrolujte, prosím, vaše připojení k internetu a ověřte, jestli je správně zadáno uživatelské jméno a heslo.</translation>
     </message>
@@ -13051,23 +13664,23 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>SoundManager</name>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="677"/>
-        <location filename="../../src/soundio/soundmanager.cpp" line="682"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="492"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="497"/>
         <source>a device</source>
         <translation>zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="683"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="498"/>
         <source>An unknown error occurred</source>
         <translation>Došlo k neznámé chybě</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="691"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="506"/>
         <source>Two outputs cannot share channels on &quot;%1&quot;</source>
         <translation>Dva výstupy nemohou sdílet kanály na &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="694"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="509"/>
         <source>Error opening &quot;%1&quot;</source>
         <translation>Chyba při otevírání &quot;%1&quot;</translation>
     </message>
@@ -13135,22 +13748,22 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="120"/>
         <source>Reading track for fingerprinting failed.</source>
-        <translation type="unfinished"/>
+        <translation>Čtení stopy pro otisky prstů selhalo.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="124"/>
         <source>Identifying track through AcoustID</source>
-        <translation type="unfinished"/>
+        <translation>Identifikace skladby pomocí AcoustID</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="170"/>
         <source>Could not identify track through AcoustID.</source>
-        <translation type="unfinished"/>
+        <translation>Nepodařilo se identifikovat stopu pomocí AcoustID.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="308"/>
         <source>Could not find this track in the MusicBrainz database.</source>
-        <translation type="unfinished"/>
+        <translation>Nepodařilo se najít tuto skladbu v databázi MusicBrainz.</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="174"/>
@@ -13434,7 +14047,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="257"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="261"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1004"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1008"/>
         <source>Cover Art</source>
         <translation>Obrázek obalu</translation>
     </message>
@@ -13830,32 +14443,32 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <translation>Vybráno smazání rychlého klíče.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="971"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="975"/>
         <source>Track Comment</source>
         <translation>Poznámka ke skladbě</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="972"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="976"/>
         <source>Displays the comment tag of the loaded track.</source>
         <translation>Ukáže značku poznámky nahrané skladby.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1007"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1011"/>
         <source>Opens separate artwork viewer.</source>
         <translation>Otevře samostatný prohlížeč obalů.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1088"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1092"/>
         <source>Effect Chain Preset Settings</source>
         <translation>Nastavení přednastavení řetězce efektu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1089"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1093"/>
         <source>Show the effect chain settings menu for this unit.</source>
         <translation>Zobrazit nabídku nastavení řetězce efektu pro tuto jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1257"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1261"/>
         <source>Select and configure a hardware device for this input</source>
         <translation>Vybrat a nakonfigurovat hardware zařízení pro tento vstup</translation>
     </message>
@@ -13867,12 +14480,12 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="38"/>
         <source>Select and click: Show inline value editor</source>
-        <translation type="unfinished"/>
+        <translation>Vyberte a klikněte: Zobrazit vložený editor hodnot</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="51"/>
         <source>Left click and hold allows to preview the position where the play head will jump to on release. Dragging can be aborted with right click.</source>
-        <translation type="unfinished"/>
+        <translation>Kliknutím levým tlačítkem myši a podržením zobrazíte náhled pozice, kam se přehrávací hlava po uvolnění přesune. Přetahování lze přerušit kliknutím pravým tlačítkem myši.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="85"/>
@@ -13979,7 +14592,7 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="275"/>
         <source>Show/hide the stem mixing controls section</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazit/skrýt sekci s ovládacími prvky mixování Stem</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="287"/>
@@ -14020,139 +14633,139 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="333"/>
         <source>If keylock is disabled, pitch is also affected.</source>
-        <translation type="unfinished"/>
+        <translation>Pokud je zámek klávesnice vypnutý, ovlivní se tím i výška tónu.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="336"/>
         <source>Speed Up</source>
-        <translation type="unfinished"/>
+        <translation>Zrychlení</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="338"/>
         <source>Raises the track playback speed (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Zvyšuje rychlost přehrávání skladby (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="341"/>
         <source>Raises playback speed in small steps.</source>
-        <translation type="unfinished"/>
+        <translation>Zvyšuje rychlost přehrávání po malých krocích.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="345"/>
         <source>Slow Down</source>
-        <translation type="unfinished"/>
+        <translation>Zpomalení</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="347"/>
         <source>Lowers the track playback speed (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Snižuje rychlost přehrávání skladby (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="350"/>
         <source>Lowers playback speed in small steps.</source>
-        <translation type="unfinished"/>
+        <translation>Snižuje rychlost přehrávání po malých krocích.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="354"/>
         <source>Speed Up Temporarily (Nudge)</source>
-        <translation type="unfinished"/>
+        <translation>Dočasné zrychlení (Postrčení)</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="356"/>
         <source>Holds playback speed higher while active (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Udržuje rychlost přehrávání vyšší, když je aktivní (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="359"/>
         <source>Holds playback speed higher (small amount) while active.</source>
-        <translation type="unfinished"/>
+        <translation>Udržuje rychlost přehrávání (o trochu) vyšší, když je aktivní.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="364"/>
         <source>Slow Down Temporarily (Nudge)</source>
-        <translation type="unfinished"/>
+        <translation>Dočasné zpomalení (Postrčení)</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="366"/>
         <source>Holds playback speed lower while active (tempo).</source>
-        <translation type="unfinished"/>
+        <translation>Udržuje rychlost přehrávání nižší, když je funkce aktivní (tempo).</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="369"/>
         <source>Holds playback speed lower (small amount) while active.</source>
-        <translation type="unfinished"/>
+        <translation>Udržuje rychlost přehrávání (o trochu) nižší, když je aktivní.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="411"/>
         <source>When tapped repeatedly, adjusts the tempo to match the tapped BPM.</source>
-        <translation type="unfinished"/>
+        <translation>Při opakovaném klepnutí upraví tempo tak, aby odpovídalo poklepaným MM.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="413"/>
         <source>Click to open the tempo/BPM editor</source>
-        <translation type="unfinished"/>
+        <translation>Kliknutím otevřete editor tempa/MM</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="422"/>
         <source>It also shows a colored bar if Key colors are enabled in the Preferences.</source>
-        <translation type="unfinished"/>
+        <translation>Také se zobrazí barevný pruh, pokud jsou v Předvolbách povoleny barvy kláves.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="423"/>
         <source>The bar will be split vertically if the track&apos;s key is in between full keys.</source>
-        <translation type="unfinished"/>
+        <translation>Pokud se tónina skladby nachází mezi plnými tóninami, takt se svisle rozdělí.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="432"/>
         <source>Tempo Tap</source>
-        <translation type="unfinished"/>
+        <translation>Tempo klepání</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="435"/>
         <source>Rate Tap and BPM Tap</source>
-        <translation type="unfinished"/>
+        <translation>Rychlost klepnutí a MM klepnutí</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="439"/>
         <source>Set Tempo</source>
-        <translation type="unfinished"/>
+        <translation>Nastavit tempo</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="440"/>
         <source>Set the desired tempo in BPM. If the track currently has no BPM detected, set the desired tempo in percent.</source>
-        <translation type="unfinished"/>
+        <translation>Nastavte požadované tempo v MM. Pokud skladba aktuálně nemá detekované žádné MM, nastavte požadované tempo v procentech.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="458"/>
         <source>Adjust beatgrid by exactly one half beat. Usable only on
 tracks with constant tempo.</source>
-        <translation type="unfinished"/>
+        <translation>Upravte mřížku rytmu přesně o půl doby. Použitelné pouze na stopách s konstantním tempem.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="489"/>
         <source>Revert last BPM/Beatgrid Change</source>
-        <translation type="unfinished"/>
+        <translation>Vrátit poslední změnu MM/rytmické mřížky</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="490"/>
         <source>Revert last BPM/Beatgrid Change of the loaded track.</source>
-        <translation type="unfinished"/>
+        <translation>Vrátit poslední změnu MM/rytmické mřížky načtené skladby.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="493"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="494"/>
         <source>Toggle the BPM/beatgrid lock</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout zámek MM/rytmické mřížky</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="504"/>
         <source>Tempo and Rate Tap</source>
-        <translation type="unfinished"/>
+        <translation>Klepání tempa a rychlosti</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="508"/>
         <source>Tempo, Rate Tap and BPM Tap</source>
-        <translation type="unfinished"/>
+        <translation>Tempo, rychlost klepnutí a MM klepnutí</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="514"/>
@@ -14195,12 +14808,12 @@ tracks with constant tempo.</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="595"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="607"/>
         <source>Drag a Hotcue button here to continue playing after releasing the Hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Přetáhněte tlačítko Rychlá značka sem pro pokračování v přehrávání po uvolnění tlačítka Rychlá značka.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="585"/>
         <source>Hint: Change the default cue mode in Preferences -&gt; Decks.</source>
-        <translation type="unfinished"/>
+        <translation>Tip: Změňte výchozí režim značky v Nastavení -&gt; Přehrávače.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="632"/>
@@ -14220,32 +14833,32 @@ tracks with constant tempo.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="726"/>
         <source>Reloads the last replaced track. If no track is loaded reloads the second-last ejected track.</source>
-        <translation type="unfinished"/>
+        <translation>Znovu načte poslední nahrazenou stopu. Pokud není načtena žádná stopa, znovu načte předposlední vysunutou stopu.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="732"/>
         <source>If hotcue is a loop cue, toggles the loop and jumps to if the loop is behind the play position.</source>
-        <translation type="unfinished"/>
+        <translation>Pokud je rychlá značka smyčkovou scénou, přepne smyčku a přeskočí na, pokud je smyčka za pozicí přehrávání.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="737"/>
         <source>If the play position is inside an active loop, stores the loop as loop cue.</source>
-        <translation type="unfinished"/>
+        <translation>Pokud se pozice přehrávání nachází uvnitř aktivní smyčky, uloží smyčku jako cue (záznam) smyčky.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="747"/>
         <source>Drag this button onto another Hotcue button to move it there (change its index). If the other hotcue is set, the two are swapped.</source>
-        <translation type="unfinished"/>
+        <translation>Přetáhněte toto tlačítko na jiné tlačítko Rychlá značka, chcete-li ho tam přesunout (změnit jeho index). Pokud je nastavena druhá rychlá značka, obě se prohodí.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="761"/>
         <source>Expand/Collapse Samplers</source>
-        <translation type="unfinished"/>
+        <translation>Rozbalit/Sbalit vzorkovače</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="762"/>
         <source>Toggle expanded samplers view.</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout zobrazení rozšířených samplerů.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="767"/>
@@ -14260,7 +14873,7 @@ tracks with constant tempo.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="791"/>
         <source>Red for when needle skip has been detected.</source>
-        <translation type="unfinished"/>
+        <translation>Červená signalizuje, že bylo detekováno přeskakování jehly.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="820"/>
@@ -14300,7 +14913,7 @@ tracks with constant tempo.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="849"/>
         <source>If the track has no beats the unit is seconds.</source>
-        <translation type="unfinished"/>
+        <translation>Pokud skladba nemá žádné doby, jednotka je sekundy.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="852"/>
@@ -14340,12 +14953,12 @@ tracks with constant tempo.</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="873"/>
         <source>Beatloop Anchor</source>
-        <translation type="unfinished"/>
+        <translation>Kotva smyčkování</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="874"/>
         <source>Define whether the loop is created and adjusted from its staring point or ending point.</source>
-        <translation type="unfinished"/>
+        <translation>Definujte, zda se smyčka vytváří a upravuje od svého počátečního nebo koncového bodu.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="878"/>
@@ -14443,485 +15056,505 @@ tracks with constant tempo.</source>
         <translation>Rada: Změňte časový formát v Nastavení → Přehrávače.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1019"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="969"/>
+        <source>Tuning indicators (if detected):</source>
+        <translation>Indikátory ladění (pokud jsou detekovány):</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="970"/>
+        <source>✧ (sparkle) = 432Hz tuning</source>
+        <translation>✧ (jiskra) = ladění 432 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="971"/>
+        <source>↓ (arrow down) = tuning below 440Hz</source>
+        <translation>↓ (šipka dolů) = ladění pod 440 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="972"/>
+        <source>↑ (arrow up) = tuning above 440Hz</source>
+        <translation>↑ (šipka nahoru) = ladění nad 440 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1023"/>
         <source>Show/hide intro &amp; outro markers and associated buttons.</source>
         <translation>Ukázat/Skrýt značky úvodu a závěru a přidružená tlačítka.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1021"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1025"/>
         <source>Ensure all waveforms to have the same height across all channels. By default, when displaying the stem controls, waveform for channel that have no stem may render with a shorter height in order to honor the waveform container size you have requested..</source>
-        <translation type="unfinished"/>
+        <translation>Zajistěte, aby všechny průběhy měly stejnou výšku ve všech kanálech. Ve výchozím nastavení se při zobrazení ovládacích prvků stemu mohou průběhy pro kanály bez stemu vykreslovat s kratší výškou, aby byla respektována požadovaná velikost kontejneru průběhů.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1028"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1032"/>
         <source>Intro Start Marker</source>
         <translation>Značka začátku úvofu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1029"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1036"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1043"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1050"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1033"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1040"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1047"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1054"/>
         <source>If marker is set, jumps to the marker.</source>
         <translation>Pokud je bod značky nastaven, skočí na značku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1030"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1037"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1044"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1051"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1034"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1041"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1048"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1055"/>
         <source>If marker is not set, sets the marker to the current play position.</source>
         <translation>Pokud bod značky stanoven není, nastaví bod značky v nynější poloze přehrávání.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1032"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1039"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1046"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1053"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1036"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1043"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1050"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1057"/>
         <source>If marker is set, clears the marker.</source>
         <translation>Pokud je bod značky nastaven, vymaže značku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1035"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1039"/>
         <source>Intro End Marker</source>
         <translation>Značka konce úvodu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1042"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1046"/>
         <source>Outro Start Marker</source>
         <translation>Značka začátku závěru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1049"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1053"/>
         <source>Outro End Marker</source>
         <translation>Značka konce závěru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1068"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1072"/>
         <source>Mix</source>
         <translation>Míchat</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1069"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1073"/>
         <source>Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit</source>
         <translation>Upravit smíchání nezpracovaného (vstupního) signálu se zpracovaným (výstupním) signálem efektové jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1070"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1074"/>
         <source>D/W mode: Crossfade between dry and wet</source>
         <translation>Režim D/W: Prolínání mezi nezpracovaným a zpracovaným</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1071"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1075"/>
         <source>D+W mode: Add wet to dry</source>
         <translation>Režim D+W: Přidat nezpracovaný a zpracovaný</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1075"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1079"/>
         <source>Mix Mode</source>
         <translation>Režim míchání</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1076"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1080"/>
         <source>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</source>
         <translation>Upravit, jak je nezpracovaný (vstupní) signál smíchán se zpracovaným (výstupním) signálem efektové jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1077"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1081"/>
         <source>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
 Use this to change the sound of the track with EQ and filter effects.</source>
         <translation>Režim Na zkoušku/naostro (křížené čáry): Knoflík Mix mezi nezpracovaným a zpracovaným
 Použijte toto ke změně zvuku stopy pomocí EQ a filtrových efektů.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1079"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1083"/>
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
         <translation>Režim Na zkoušku/naostro (ploché nezpracované čáry): Knoflík Mix přidá zpracovaný do nezpracovaného
 Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filtrových efektů.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1115"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1119"/>
         <source>Route the main mix through this effect unit.</source>
         <translation>Vést hlavní míchání skrze tuto efektovou jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1120"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1124"/>
         <source>Route the left crossfader bus through this effect unit.</source>
         <translation>Vést sběrnici levého prolínače skrze tuto efektovou jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1125"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1129"/>
         <source>Route the right crossfader bus through this effect unit.</source>
         <translation>Vést sběrnici pravého prolínače skrze tuto efektovou jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1191"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1195"/>
         <source>Right side active: parameter moves with right half of Meta Knob turn</source>
         <translation>Pravá strana činná: parametr se pohybuje pomocí pravé poloviny otočení otočného řízení.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1217"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1221"/>
         <source>Stem Label</source>
-        <translation type="unfinished"/>
+        <translation>Štítek stonku</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1218"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1222"/>
         <source>Name of the stem stored in the stem file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1219"/>
-        <source>Text is displayed in the stem color stored in the stem file</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1220"/>
-        <source>this stem color is also used for the waveform of this stem</source>
-        <translation type="unfinished"/>
+        <translation>Název kmene uloženého v souboru kmene</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1223"/>
-        <source>Stem Mute</source>
-        <translation type="unfinished"/>
+        <source>Text is displayed in the stem color stored in the stem file</source>
+        <translation>Text se zobrazuje v barvě kmene uložené v souboru kmene</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1224"/>
-        <source>Toggle the stem mute/unmuted</source>
-        <translation type="unfinished"/>
+        <source>this stem color is also used for the waveform of this stem</source>
+        <translation>Tato barva stonku se používá také pro tvar vlny tohoto stonku</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1227"/>
-        <source>Stem Volume Knob</source>
-        <translation type="unfinished"/>
+        <source>Stem Mute</source>
+        <translation>Ztlumení kmene</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1228"/>
-        <source>Adjusts the volume of the stem</source>
-        <translation type="unfinished"/>
+        <source>Toggle the stem mute/unmuted</source>
+        <translation>Ztlumení/zapnutí zvuku stemu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1244"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1231"/>
+        <source>Stem Volume Knob</source>
+        <translation>Knoflík pro regulaci hlasitosti</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1232"/>
+        <source>Adjusts the volume of the stem</source>
+        <translation>Upravuje hlasitost stopky</translation>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1248"/>
         <source>Skin Settings Menu</source>
         <translation>Nabídka nastavení vzhledu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1245"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1249"/>
         <source>Show/hide skin settings menu</source>
         <translation>Ukázat/Skrýt nabídku pro nastavení vzhledu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1249"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1253"/>
         <source>Save Sampler Bank</source>
         <translation>Uložit banku vzorkovače</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1250"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1254"/>
         <source>Save the collection of samples loaded in the samplers.</source>
         <translation>Uložit sbírku vzorků nahranou do vzorkovačů.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1253"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1257"/>
         <source>Load Sampler Bank</source>
         <translation>Nahrát banku vzorkovače</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1254"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1258"/>
         <source>Load a previously saved collection of samples into the samplers.</source>
         <translation>Nahrát předtím uloženou sbírku vzorků do vzorkovačů.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1061"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1065"/>
         <source>Show Effect Parameters</source>
         <translation>Ukázat parametry efektů</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1154"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1158"/>
         <source>Enable Effect</source>
         <translation>Povolit efekt</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1186"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1190"/>
         <source>Meta Knob Link</source>
         <translation>Spojení metaknoflíku</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1187"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1191"/>
         <source>Set how this parameter is linked to the effect&apos;s Meta Knob.</source>
         <translation>Nastavit, jak je tento parametr spojen s metaknoflíkem efektu.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1195"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1199"/>
         <source>Meta Knob Link Inversion</source>
         <translation>Obrácení spojení metaknoflíku</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1196"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1200"/>
         <source>Inverts the direction this parameter moves when turning the effect&apos;s Meta Knob.</source>
         <translation>Obrátí směr, kterým se tento parametr pohybuje, když se točí metaknoflíkem efektu.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1083"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1087"/>
         <source>Super Knob</source>
         <translation>Superknoflík</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1092"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1096"/>
         <source>Next Chain</source>
         <translation>Další řetězec</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1096"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1100"/>
         <source>Previous Chain</source>
         <translation>Předchozí řetězec</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1100"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1104"/>
         <source>Next/Previous Chain</source>
         <translation>Další/Předchozí řetězec</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1150"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1154"/>
         <source>Clear</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1151"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1155"/>
         <source>Clear the current effect.</source>
         <translation>Vyprázdnit nynější efekt.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1211"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1215"/>
         <source>Toggle</source>
         <translation>Přepnout</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1212"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1216"/>
         <source>Toggle the current effect.</source>
         <translation>Přepnout nynější efekt.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1158"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1162"/>
         <source>Next</source>
         <translation>Další</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1057"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1061"/>
         <source>Clear Unit</source>
         <translation>Vyprázdnit jednotku</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1058"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1062"/>
         <source>Clear effect unit.</source>
         <translation>Vyprázdnit efektovou jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1062"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1066"/>
         <source>Show/hide parameters for effects in this unit.</source>
         <translation>Ukázat/Skrýt parametry pro efekty v této jednotce.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1065"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1069"/>
         <source>Toggle Unit</source>
         <translation>Přepnout jednotku</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1066"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1070"/>
         <source>Enable or disable this whole effect unit.</source>
         <translation>Zapnout nebo vypnout celou tuto efektovou jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1084"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1088"/>
         <source>Controls the Meta Knob of all effects in this unit together.</source>
         <translation>Ovládá otočné řízení všech efektů v této jednotce společně.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1093"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1097"/>
         <source>Load next effect chain preset into this effect unit.</source>
         <translation>Nahrát další přednastavení efektového řetězce do této efektové jednotky.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1097"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1101"/>
         <source>Load previous effect chain preset into this effect unit.</source>
         <translation>Nahrát předchozí přednastavení efektového řetězce do této efektové jednotky.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1101"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1105"/>
         <source>Load next or previous effect chain preset into this effect unit.</source>
         <translation>Nahrát další nebo předchozí přednastavení efektového řetězce do této efektové jednotky.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1104"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1109"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1114"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1119"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1124"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1129"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1134"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1139"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1144"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1108"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1113"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1118"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1123"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1128"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1133"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1138"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1143"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1148"/>
         <source>Assign Effect Unit</source>
         <translation>Přiřadit efektovou jednotku</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1105"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1109"/>
         <source>Assign this effect unit to the channel output.</source>
         <translation>Přiřadit tuto efektovou jednotku výstupu kanálu.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1110"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1114"/>
         <source>Route the headphone channel through this effect unit.</source>
         <translation>Vést kanál sluchátek skrze tuto efektovou jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1130"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1134"/>
         <source>Route this deck through the indicated effect unit.</source>
         <translation>Vést tento přehrávač skrze označenou efektovou jednotku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1135"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1139"/>
         <source>Route this sampler through the indicated effect unit.</source>
         <translation>Vést tento vzorkovač skrze označenou efektovou jednotku. </translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1140"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1144"/>
         <source>Route this microphone through the indicated effect unit.</source>
         <translation>Vést tento mikrofon skrze označenou efektovou jednotku. </translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1145"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1149"/>
         <source>Route this auxiliary input through the indicated effect unit.</source>
         <translation>Vést tento pomocný vstup skrze označenou efektovou jednotku. </translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1155"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1159"/>
         <source>The effect unit must also be assigned to a deck or other sound source to hear the effect.</source>
         <translation>Efektová jednotka také musí být přiřazena přehrávači nebo jinému zdroji zvuku, aby byl efekt slyšitelný.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1159"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1163"/>
         <source>Switch to the next effect.</source>
         <translation>Přepnout na další efekt.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1162"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1166"/>
         <source>Previous</source>
         <translation>Předchozí</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1163"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1167"/>
         <source>Switch to the previous effect.</source>
         <translation>Přepnout na předchozí efekt.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1166"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1170"/>
         <source>Next or Previous</source>
         <translation>Další nebo předchozí</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1167"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1171"/>
         <source>Switch to either the next or previous effect.</source>
         <translation>Přepnout na další nebo předchozí efekt.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1170"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1174"/>
         <source>Meta Knob</source>
         <translation>Metaknoflík</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1171"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1175"/>
         <source>Controls linked parameters of this effect</source>
         <translation>Řídí spojené parametry tohoto efektu.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1175"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1179"/>
         <source>Effect Focus Button</source>
         <translation>Tlačítko pro zaměření efektu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1176"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1180"/>
         <source>Focuses this effect.</source>
         <translation>Zaměří tento efekt.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1177"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1181"/>
         <source>Unfocuses this effect.</source>
         <translation>Zruší zaměření efektu.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1178"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1182"/>
         <source>Refer to the web page on the Mixxx wiki for your controller for more information.</source>
         <translation>Podrobnější informace k ovladači najdete na internetové stránce Mixxxu (wikipedie).</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1181"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1185"/>
         <source>Effect Parameter</source>
         <translation>Parametr efektu</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1182"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1186"/>
         <source>Adjusts a parameter of the effect.</source>
         <translation>Upraví parametr efektu.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1188"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1192"/>
         <source>Inactive: parameter not linked</source>
         <translation>Nečinné: parametr není spojen</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1189"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1193"/>
         <source>Active: parameter moves with Meta Knob</source>
         <translation>Činné: parametr se pohybuje pomocí otočného řízení</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1190"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1194"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
         <translation>Levá strana činná: parametr se pohybuje po polovině otočení otočného řízení vlevo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1192"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1196"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
         <translation>Levá a pravá strana činná: parametr se pohybuje v celé šířce pásma pomocí jedné poloviny otočení otočného řízení a zpět pomocí druhé</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1199"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1239"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1203"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1243"/>
         <source>Equalizer Parameter Kill</source>
         <translation>Potlačení parametru ekvalizéru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1200"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1240"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1204"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1244"/>
         <source>Holds the gain of the EQ to zero while active.</source>
         <translation>Když je zapnuto, drží zesílení ekvalizéru na nule.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1205"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1209"/>
         <source>Quick Effect Super Knob</source>
         <translation>Superknoflík pro rychlý efekt</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1206"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1210"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
         <translation>Superknoflík (řízení propojených parametrů efektů).</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1208"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1212"/>
         <source>Hint: Change the default Quick Effect mode in Preferences -&gt; Equalizers.</source>
         <translation>Rada: Změňte výchozí režim rychlého efektu v Nastavení → Ekvalizéry.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1233"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1237"/>
         <source>Equalizer Parameter</source>
         <translation>Parametr ekvalizéru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1234"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1238"/>
         <source>Adjusts the gain of the EQ filter.</source>
         <translation>Upraví zesílení filtru ekvalizéru.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1236"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1240"/>
         <source>Hint: Change the default EQ mode in Preferences -&gt; Equalizers.</source>
         <translation>Rada: Změňte výchozí režim ekvalizéru v Nastavení → Ekvalizéry.</translation>
     </message>
@@ -15040,27 +15673,27 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
         <translation>Povolit předání dál</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1001"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1005"/>
         <source>Indicates that the audio buffer is too small to do all audio processing.</source>
         <translation>Ukazuje, že vyrovnávací paměť je na zpracování všeho zvukového signálu příliš malá.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1005"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1009"/>
         <source>Displays cover artwork of the loaded track.</source>
         <translation>Ukáže obrázek obalu nahrané skladby.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1009"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1013"/>
         <source>Displays options for editing cover artwork.</source>
         <translation>Ukáže volby pro upravování obrázků obalů.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1014"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1018"/>
         <source>Star Rating</source>
         <translation>Hodnocení hvězdičkami</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1015"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1019"/>
         <source>Assign ratings to individual tracks by clicking the stars.</source>
         <translation>Přiřaďte hodnocení jednotlivým skladbám klepnutím na hvězdičky.</translation>
     </message>
@@ -15335,12 +15968,12 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="750"/>
         <source>Drag this button onto a Play button while previewing to continue playback after release.</source>
-        <translation type="unfinished"/>
+        <translation>Přetáhněte toto tlačítko na tlačítko Přehrát během náhledu, chcete-li pokračovat v přehrávání po uvolnění.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="752"/>
         <source>Dragging with Shift key pressed will not start previewing the hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Tažením se stisknutou klávesou Shift se nespustí náhled rychlé značky.</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="757"/>
@@ -15419,37 +16052,37 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
         <translation>Ukáže tóninu nahrané skladby.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="990"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="994"/>
         <source>Clock</source>
         <translation>Hodiny</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="991"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="995"/>
         <source>Displays the current time.</source>
         <translation>Zobrazí aktuální čas.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="994"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="998"/>
         <source>Audio Latency Usage Meter</source>
         <translation>Měřič užití prodlevy zvuku</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="995"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="999"/>
         <source>Displays the fraction of latency used for audio processing.</source>
         <translation>Ukáže kousek prodlevy používaný pro zpracování zvuku.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="996"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1000"/>
         <source>A high value indicates that audible glitches are likely.</source>
         <translation>Vysoká hodnota znamená, že jsou pravděpodobné slyšitelné poruchy.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="997"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1001"/>
         <source>Do not enable keylock, effects or additional decks in this situation.</source>
         <translation>Za této situace nepovolujte uzamčení tóniny, efekty nebo dodatečné přehrávače.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1000"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1004"/>
         <source>Audio Latency Overload Indicator</source>
         <translation>Ukazatel přetížení prodlevy zvuku</translation>
     </message>
@@ -15736,12 +16369,12 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
         <translation>Ukáže název alba nahrané skladby.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="980"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="984"/>
         <source>Track Artist/Title</source>
         <translation>Umělec/Skladba</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="981"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="985"/>
         <source>Displays the artist and title of the loaded track.</source>
         <translation>Ukáže umělce a název nahrané skladby.</translation>
     </message>
@@ -15749,12 +16382,12 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="298"/>
+        <location filename="../../src/library/trackcollection.cpp" line="318"/>
         <source>Hiding tracks</source>
         <translation>Skrytí skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="299"/>
+        <location filename="../../src/library/trackcollection.cpp" line="319"/>
         <source>The selected tracks are in the following playlists:%1Hiding them will remove them from these playlists. Continue?</source>
         <translation>Vybrané skladby jsou v následujících seznamech skladeb: %1 Jejich skrytí je odstraní z těchto seznamů skladeb. Pokračovat?</translation>
     </message>
@@ -15774,22 +16407,22 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="70"/>
         <source>Replace Existing File?</source>
-        <translation type="unfinished"/>
+        <translation>Nahradit existující soubor?</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="71"/>
         <source>&quot;%1&quot; already exists, replace?</source>
-        <translation type="unfinished"/>
+        <translation>„%1“ již existuje, nahradit?</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="78"/>
         <source>&amp;Replace</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Nahradit</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="81"/>
         <source>Apply to all files</source>
-        <translation type="unfinished"/>
+        <translation>Použít na všechny soubory</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="76"/>
@@ -15805,7 +16438,7 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
 <context>
     <name>TrackExportWizard</name>
     <message>
-        <location filename="../../src/library/export/trackexportwizard.cpp" line="27"/>
+        <location filename="../../src/library/export/trackexportwizard.cpp" line="28"/>
         <source>Export Track Files To</source>
         <translation>Uložit soubory skladeb do</translation>
     </message>
@@ -15837,23 +16470,28 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
 <context>
     <name>TraktorFeature</name>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="110"/>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="658"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="111"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="728"/>
         <source>Traktor</source>
         <translation>Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="177"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="204"/>
+        <source>Select your Traktor collection</source>
+        <translation>Vyberte si svou kolekci Traktor</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="230"/>
         <source>(loading) Traktor</source>
         <translation>(nahrává se) Traktor</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="652"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="722"/>
         <source>Error Loading Traktor Library</source>
         <translation>Chyba při nahrávání knihovny skladeb Traktoru</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="653"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="723"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
         <translation>Při nahrávání vaší knihovny skladeb Traktoru nastala chyba. Některé z vašich skladeb Traktoru se nemusely načíst.</translation>
     </message>
@@ -15926,39 +16564,39 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
     <name>WCoverArtMenu</name>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="23"/>
-        <source>Choose new cover</source>
+        <source>Choose file</source>
         <comment>change cover art location</comment>
-        <translation>Vybrat nový obal</translation>
+        <translation>Vybrat soubor</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="28"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="27"/>
         <source>Clear cover</source>
         <comment>clears the set cover art -- does not touch files on disk</comment>
         <translation>Smazat obal</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="33"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="32"/>
         <source>Reload from file/folder</source>
         <comment>reload cover art from file metadata or folder</comment>
         <translation>Nahrát znovu ze souboru/složky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="64"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="63"/>
         <source>Image Files</source>
         <translation>Obrázkové soubory</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="68"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="67"/>
         <source>Change Cover Art</source>
         <translation>Změnit obrázek obalu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="137"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="136"/>
         <source>Cover Art File Already Exists</source>
         <translation>Soubor s obalem alba již existuje</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wcoverartmenu.cpp" line="138"/>
+        <location filename="../../src/widget/wcoverartmenu.cpp" line="137"/>
         <source>File: %1
 Folder: %2
 Override existing file?
@@ -15999,45 +16637,46 @@ Tento krok nelze vrátit zpět!</translation>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="115"/>
         <source>Turn this cue into a regular hotcue</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout tuto značku na rychlou značku</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="124"/>
         <source>Turn this cue into a saved loop</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout tuto značku na uloženou smyčku</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="125"/>
         <source>Left-click: Use the old size if known or the current beatloop size as the loop size</source>
-        <translation type="unfinished"/>
+        <translation>Kliknutí levým tlačítkem: Použít starou velikost, pokud je známa, nebo aktuální velikost rytmické mřížky jako velikost smyčky</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="128"/>
         <source>Right-click: Use the current play position as new loop end if it is after the cue</source>
-        <translation type="unfinished"/>
+        <translation>Kliknutí pravým tlačítkem: Použít aktuální pozici přehrávání jako nový konec smyčky, pokud je za cue</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="283"/>
         <source>Turn this cue into a saved forward jump.</source>
         <extracomment>
  is a linebreak. Try to not to extend the translation beyond the length of the longest source line so the tooltip remains compact.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Proměňte tuto podnět v uložený skok vpřed.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="284"/>
         <source>Turn this cue into a saved backward jump (one shot loop).</source>
-        <translation type="unfinished"/>
+        <translation>Z tohoto signálu udělejte uložený skok zpět (jednorázovou smyčku).</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="287"/>
         <source>Left-click: Use the old size if known or the current play position as jump start position
 If this is already a jump cue, swap the jump position and the cue/target position.</source>
-        <translation type="unfinished"/>
+        <translation>Levé tlačítko myši: Použít starou velikost, pokud je známa, nebo aktuální pozici přehrávání jako počáteční pozici skoku
+Pokud se již jedná o signál skoku, prohodit pozici skoku a pozici signálu/cíle.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="292"/>
         <source>Right-click: use current play position as new jump start position</source>
-        <translation type="unfinished"/>
+        <translation>Kliknutí pravým tlačítkem myši: použití aktuální pozice přehrávání jako nové startovní pozice</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="215"/>
@@ -16093,519 +16732,472 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WEffectSelector</name>
     <message>
-        <location filename="../../src/widget/weffectselector.cpp" line="62"/>
+        <location filename="../../src/widget/weffectselector.cpp" line="72"/>
         <source>No effect loaded.</source>
         <translation>Nenahrán žádný efekt.</translation>
     </message>
 </context>
 <context>
-    <name>WFindOnWebMenu</name>
+    <name>WHotcueButton</name>
     <message>
-        <location filename="../../src/widget/wfindonwebmenu.cpp" line="11"/>
-        <source>Find on Web</source>
-        <translation>Najít na internetu</translation>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="141"/>
+        <source>activate</source>
+        <translation>zapnout</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="142"/>
+        <source>clear</source>
+        <translation>smazat</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="145"/>
+        <source>set</source>
+        <translation>nastavit</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="147"/>
+        <source>set cue</source>
+        <translation>nastavit značku</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="149"/>
+        <source>set loop</source>
+        <translation>nastavit smyčku</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="151"/>
+        <source>go to</source>
+        <translation>přejít na</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="153"/>
+        <source>go to and play</source>
+        <translation>přejít a přehrát</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="155"/>
+        <source>go to and stop</source>
+        <translation>jít a zastavit</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="157"/>
+        <source>go to and loop</source>
+        <translation>přejít na a smyčka</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="159"/>
+        <source>cue loop</source>
+        <translation>značka smyčky</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="161"/>
+        <source>activat cue</source>
+        <translation>zapnout značku</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="163"/>
+        <source>activate loop</source>
+        <translation>aktivovat smyčku</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="165"/>
+        <source>activate preview</source>
+        <translation>aktivovat náhled</translation>
     </message>
 </context>
 <context>
     <name>WMainMenuBar</name>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="88"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="103"/>
         <source>&amp;File</source>
         <translation>&amp;Soubor</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="93"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="108"/>
         <source>Load Track to Deck &amp;%1</source>
         <translation>Nahrát skladbu do přehrávače &amp;%1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="94"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="109"/>
         <source>Loads a track in deck %1</source>
         <translation>Nahraje skladbu do přehrávače %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="95"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="110"/>
         <source>Open</source>
         <translation>Otevřít</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="123"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="134"/>
         <source>&amp;Exit</source>
         <translation>&amp;Ukončit</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="124"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="135"/>
         <source>Quits Mixxx</source>
         <translation>Ukončí Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="128"/>
-        <source>Ctrl+q</source>
-        <translation>Ctrl+Q</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="139"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="150"/>
         <source>&amp;Library</source>
         <translation>&amp;Knihovna</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="144"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="155"/>
         <source>&amp;Rescan Library</source>
         <translation>Prohledat knihovnu &amp;znovu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="145"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="156"/>
         <source>Rescans library folders for changes to tracks.</source>
         <translation>Prohledá znovu složky s knihovnou kvůli změnám skladeb.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
-        <source>Ctrl+Shift+L</source>
-        <translation>Ctrl+Shift+L</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
-        <source>Search in Current View...</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="173"/>
-        <source>Search for tracks in the current library view</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="177"/>
-        <source>Ctrl+f</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="184"/>
+        <source>Search in Current View...</source>
+        <translation>Hledat v aktuálním zobrazení...</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="185"/>
+        <source>Search for tracks in the current library view</source>
+        <translation>Hledat skladby v aktuálním zobrazení knihovny</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="196"/>
         <source>Search in Tracks Library...</source>
-        <translation type="unfinished"/>
+        <translation>Hledat v knihovně skladeb...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="186"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="198"/>
         <source>Search in the internal track collection under &quot;Tracks&quot; in the library</source>
-        <translation type="unfinished"/>
+        <translation>Vyhledejte v interní kolekci skladeb v knihovně v sekci „Skladby“</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
-        <source>Ctrl+Shift+F</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="200"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="212"/>
         <source>Create &amp;New Playlist</source>
         <translation>Vytvořit &amp;nový seznam skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="201"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
         <source>Create a new playlist</source>
         <translation>Vytvořit nový seznam skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="206"/>
-        <source>Ctrl+n</source>
-        <translation>Ctrl+N</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="224"/>
         <source>Create New &amp;Crate</source>
         <translation>Vytvořit novou &amp;přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="214"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="225"/>
         <source>Create a new crate</source>
         <translation>Vytvořit novou přepravku</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="219"/>
-        <source>Ctrl+Shift+N</source>
-        <translation>Ctrl+Shift+N</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="234"/>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="236"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="244"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="246"/>
         <source>&amp;View</source>
         <translation>&amp;Pohled</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="242"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="252"/>
         <source>Auto-hide menu bar</source>
-        <translation type="unfinished"/>
+        <translation>Automaticky skrýt panel nabídek</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="243"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="253"/>
         <source>Auto-hide the main menu bar when it&apos;s not used.</source>
-        <translation type="unfinished"/>
+        <translation>Automaticky skrýt hlavní panel nabídky, když se nepoužívá.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="267"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="276"/>
         <source>May not be supported on all skins.</source>
         <translation>Nebude pravděpodobně podporován všemi vzhledy.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="268"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="277"/>
         <source>Show Skin Settings Menu</source>
         <translation>Ukázat nabídku nastavení vzhledu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="269"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="278"/>
         <source>Show the Skin Settings Menu of the currently selected Skin</source>
         <translation>Ukázat nabídku nastavení vzhledu nyní vybraného vzhledu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="276"/>
-        <source>Ctrl+1</source>
-        <comment>Menubar|View|Show Skin Settings</comment>
-        <translation>Ctrl+1</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="284"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="293"/>
         <source>Show Microphone Section</source>
         <translation>Ukázat mikrofony</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="285"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="294"/>
         <source>Show the microphone section of the Mixxx interface.</source>
         <translation>Ukázat oblast s mikrofonem rozhraní Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="292"/>
-        <source>Ctrl+2</source>
-        <comment>Menubar|View|Show Microphone Section</comment>
-        <translation>Ctrl+2</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="300"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="309"/>
         <source>Show Vinyl Control Section</source>
         <translation>Ukázat ovládání vinylem</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="301"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="310"/>
         <source>Show the vinyl control section of the Mixxx interface.</source>
         <translation>Ukázat oblast ovládání vinylovou gramodeskou v  rozhraní Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="308"/>
-        <source>Ctrl+3</source>
-        <comment>Menubar|View|Show Vinyl Control Section</comment>
-        <translation>Ctrl+3</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="316"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="325"/>
         <source>Show Preview Deck</source>
         <translation>Ukázat přehrávač náhledu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="317"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="326"/>
         <source>Show the preview deck in the Mixxx interface.</source>
         <translation>Ukázat oblast s přehrávač náhledu v rozhraní Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="324"/>
-        <source>Ctrl+4</source>
-        <comment>Menubar|View|Show Preview Deck</comment>
-        <translation>Ctrl+4</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="332"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="341"/>
         <source>Show Cover Art</source>
         <translation>Ukázat obal</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="333"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="342"/>
         <source>Show cover art in the Mixxx interface.</source>
         <translation>Ukázat obal v rozhraní Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="340"/>
-        <source>Ctrl+6</source>
-        <comment>Menubar|View|Show Cover Art</comment>
-        <translation>Ctrl+6</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="363"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="372"/>
         <source>Maximize Library</source>
         <translation>Zvětšit okno knihovny</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="364"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="373"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation>Zvětšit knihovnu skladeb tak, aby zabírala veškerý na obrazovce dostupný prostor.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="371"/>
-        <source>Space</source>
-        <comment>Menubar|View|Maximize Library</comment>
-        <translation>Mezerník</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="380"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="389"/>
         <source>Show Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazit Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="381"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="390"/>
         <source>Switch to the Auto DJ view.</source>
-        <translation type="unfinished"/>
+        <translation>Přepnout do zobrazení Auto DJ.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="394"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="404"/>
         <source>&amp;Full Screen</source>
         <translation>Na &amp;celou obrazovku</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="395"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="405"/>
         <source>Display Mixxx using the full screen</source>
         <translation>Zobrazit Mixxx v režimu celé obrazovky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="431"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="440"/>
         <source>&amp;Options</source>
         <translation>&amp;Volby</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="437"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="446"/>
         <source>&amp;Vinyl Control</source>
         <translation>Ovládání &amp;vinylem</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="438"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="447"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
         <translation>Použít vinylové gramodesky s časovým kódem k ovládání programu Mixxx vnějšími přehrávači (gramofony)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="442"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="451"/>
         <source>Enable Vinyl Control &amp;%1</source>
         <translation>Povolit ovládání vinylem &amp;%1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="473"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="478"/>
         <source>&amp;Record Mix</source>
         <translation>Nah&amp;rát míchání</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="474"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="479"/>
         <source>Record your mix to a file</source>
         <translation>Nahrát míchání do souboru</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="479"/>
-        <source>Ctrl+R</source>
-        <translation>Ctrl+R</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="492"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="496"/>
         <source>Enable Live &amp;Broadcasting</source>
         <translation>&amp;Povolit živé vysílání</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="493"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="497"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
         <translation>Vysílat vaše míchání na server shoutcast nebo icecast</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="499"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="503"/>
         <source>Ctrl+L</source>
         <translation>Ctrl+L</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="515"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="518"/>
         <source>Enable &amp;Keyboard Shortcuts</source>
         <translation>Povolit &amp;klávesové zkratky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="516"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="519"/>
         <source>Toggles keyboard shortcuts on or off</source>
         <translation>Zapnout/Vypnout klávesové zkratky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="523"/>
-        <source>Ctrl+`</source>
-        <translation>Ctrl+`</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="535"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="544"/>
         <source>&amp;Preferences</source>
         <translation>&amp;Nastavení</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="536"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="545"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
         <translation>Změnit nastavení Mixxxu (např. přehrávání, MIDI, ovládací prvky)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="553"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="561"/>
         <source>&amp;Developer</source>
         <translation>&amp;Vývojář</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="558"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="566"/>
         <source>&amp;Reload Skin</source>
         <translation>Nahrát vzhled &amp;znovu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="559"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="567"/>
         <source>Reload the skin</source>
         <translation>Nahrát vzhled znovu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="564"/>
-        <source>Ctrl+Shift+R</source>
-        <translation>Ctrl+Shift+R</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="571"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="579"/>
         <source>Developer &amp;Tools</source>
         <translation>Vývojářské &amp;nástroje</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="572"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="580"/>
         <source>Opens the developer tools dialog</source>
         <translation>Otevře dialog vývojářských nástrojů</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="577"/>
-        <source>Ctrl+Shift+T</source>
-        <translation>Ctrl+Shift+T</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="590"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="598"/>
         <source>Stats: &amp;Experiment Bucket</source>
         <translation>Statistiky: &amp;Pokusný kýbl</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="591"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="599"/>
         <source>Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.</source>
         <translation>Zapne pokusný režim. Sbírá statistiky do POKUSNÉHO sledovacího kýblu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="597"/>
-        <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Shift+E</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="610"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="618"/>
         <source>Stats: &amp;Base Bucket</source>
         <translation>Statistiky: &amp;Základní kýbl</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="611"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="619"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation>Zapne základní režim. Sbírá statistiky do ZÁKLADNÍHO sledovacího kýblu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="617"/>
-        <source>Ctrl+Shift+B</source>
-        <translation>Ctrl+Shift+B</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="631"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="639"/>
         <source>Deb&amp;ugger Enabled</source>
         <translation>&amp;Ladění povoleno</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="632"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="640"/>
         <source>Enables the debugger during skin parsing</source>
         <translation>Zapne ladiče během zpracování vzhledu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="639"/>
-        <source>Ctrl+Shift+D</source>
-        <translation>Ctrl+Shift+D</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="657"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="666"/>
         <source>&amp;Help</source>
         <translation>&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="348"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="357"/>
         <source>Show Keywheel</source>
         <extracomment>menu title</extracomment>
         <translation>Zobrazit kolo klíčů</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="160"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
         <source>E&amp;xport Library to Engine DJ</source>
         <extracomment>&quot;Engine DJ&quot; must not be translated</extracomment>
-        <translation type="unfinished"/>
+        <translation>U&amp;ložit knihovnu do DJ stroje</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="161"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="173"/>
         <source>Export the library to the Engine DJ format</source>
-        <translation type="unfinished"/>
+        <translation>Uložit knihovny do formátu DJ stroje</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="350"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="359"/>
         <source>Show keywheel</source>
         <extracomment>tooltip text</extracomment>
         <translation>Zobrazit kolo klíčů</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="356"/>
-        <source>F12</source>
-        <comment>Menubar|View|Show Keywheel</comment>
-        <translation>F12</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="671"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="680"/>
         <source>&amp;Community Support</source>
         <translation>Podpora &amp;společenství</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="672"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="681"/>
         <source>Get help with Mixxx</source>
         <translation>Dostat nápovědu k Mixxxu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="687"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="696"/>
         <source>&amp;User Manual</source>
         <translation>&amp;Uživatelská příručka</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="688"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="697"/>
         <source>Read the Mixxx user manual.</source>
         <translation>Číst uživatelskou příručku k Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="704"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="713"/>
         <source>&amp;Keyboard Shortcuts</source>
         <translation>&amp;Klávesové zkratky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="705"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="714"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
         <translation>Zrychlit pracovní postup s klávesovými zkratkami</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="719"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="728"/>
         <source>&amp;Settings directory</source>
         <translation>Adresář &amp;nastavení</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="720"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="729"/>
         <source>Open the Mixxx user settings directory.</source>
         <translation>Otevřít adresář uživatelských nastavení Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="731"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="740"/>
         <source>&amp;Translate This Application</source>
         <translation>&amp;Překlad</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="732"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="741"/>
         <source>Help translate this application into your language.</source>
         <translation>Pomozte přeložit tento program do svého jazyka.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="743"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="752"/>
         <source>&amp;About</source>
         <translation>&amp;O programu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="744"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="753"/>
         <source>About the application</source>
         <translation>O tomto programu</translation>
     </message>
@@ -16613,25 +17205,25 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="230"/>
+        <location filename="../../src/widget/woverview.cpp" line="237"/>
         <source>Passthrough</source>
         <translation>Propustit skrz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="915"/>
+        <location filename="../../src/widget/woverview.cpp" line="959"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Připraven k přehrávání, provádí se rozbor...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="918"/>
-        <location filename="../../src/widget/woverview.cpp" line="928"/>
+        <location filename="../../src/widget/woverview.cpp" line="962"/>
+        <location filename="../../src/widget/woverview.cpp" line="972"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Nahrává se skladba...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="922"/>
+        <location filename="../../src/widget/woverview.cpp" line="966"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Dokončuje se...</translation>
@@ -16669,49 +17261,49 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="220"/>
         <source>Enter a string to search for.</source>
-        <translation type="unfinished"/>
+        <translation>Zadejte řetězec k vyhledání.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="221"/>
         <source>Use operators like bpm:115-128, artist:BooFar, -year:1990.</source>
-        <translation type="unfinished"/>
+        <translation>Použít operátory jako je MM:115-128, artist:BooFar, -year:1990.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="222"/>
         <source>See User Manual &gt; Mixxx Library for more information.</source>
-        <translation type="unfinished"/>
+        <translation>Více informací naleznete v Uživatelské příručce &gt; Knihovna Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="224"/>
         <source>Focus/Select All (Search in current view)</source>
         <comment>Give search bar input focus</comment>
-        <translation type="unfinished"/>
+        <translation>Fokus/Vybrat vše (Hledat v aktuálním zobrazení)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="227"/>
         <source>Focus/Select All (Search in &apos;Tracks&apos; library view)</source>
-        <translation type="unfinished"/>
+        <translation>Fokus/Vybrat vše (Hledat v zobrazení knihovny „Stopy“)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="228"/>
         <source>Additional Shortcuts When Focused:</source>
-        <translation type="unfinished"/>
+        <translation>Další zkratky při zaostření:</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="230"/>
         <source>Trigger search before search-as-you-type timeout or focus tracks view afterwards</source>
-        <translation type="unfinished"/>
+        <translation>Spustit vyhledávání před časovým limitem vyhledávání při psaní nebo následným zobrazením stopy fokusu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="233"/>
         <source>Esc or Ctrl+Return</source>
-        <translation type="unfinished"/>
+        <translation>Esc nebo Ctrl+Enter</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="234"/>
         <source>Immediately trigger search and focus tracks view</source>
         <comment>Exit search bar and leave focus</comment>
-        <translation type="unfinished"/>
+        <translation>Okamžitě spustit vyhledávání a zaostřit na zobrazení stop</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="236"/>
@@ -16732,7 +17324,7 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="241"/>
         <source>in search history</source>
-        <translation type="unfinished"/>
+        <translation>v historii vyhledávání</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchlineedit.cpp" line="242"/>
@@ -16764,8 +17356,8 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="177"/>
-        <source>between %1 and %2</source>
-        <translation>mezi %1 a %2</translation>
+        <source>%1 - %2</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="207"/>
@@ -16815,646 +17407,671 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="365"/>
         <source>&amp;Search selected</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Hledat vybrané</translation>
     </message>
 </context>
 <context>
     <name>WTrackMenu</name>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="173"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="176"/>
         <source>Load to</source>
         <translation>Nahrát do</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="175"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="178"/>
         <source>Deck</source>
         <translation>Přehrávač</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="177"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="180"/>
         <source>Sampler</source>
         <translation>Vzorkovač</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="182"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="185"/>
         <source>Add to Playlist</source>
         <translation>Přidat do seznamu skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="188"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="191"/>
         <source>Crates</source>
         <translation>Přepravky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="195"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="198"/>
         <source>Metadata</source>
         <translation>Popisná data</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="198"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="201"/>
         <source>Update external collections</source>
         <translation>Aktualizovat vnější sbírky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="201"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="204"/>
         <source>Cover Art</source>
         <translation>Obrázek obalu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="214"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="217"/>
         <source>Adjust BPM</source>
         <translation>Upravit MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="219"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="222"/>
         <source>Select Color</source>
         <translation>Vybrat barvu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="233"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="559"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="236"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="578"/>
         <source>Analyze</source>
         <translation>Analýza</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="294"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2544"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="303"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2586"/>
         <source>Delete Track Files</source>
         <translation>Smazat soubory skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="306"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="315"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Přidat do řady automatického diskžokeje (dolů)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="309"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="318"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Přidat do řady automatického diskžokeje (nahoru)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="312"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="321"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Přidat do řady skladeb automatického diskžokeje (nahradit)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1080"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1101"/>
         <source>Preview Deck</source>
         <translation>Náhled přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="319"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="328"/>
         <source>Remove</source>
         <translation>Odstranit</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="323"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="332"/>
         <source>Remove from Playlist</source>
         <translation>Odstranit ze seznamu skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="327"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="336"/>
         <source>Remove from Crate</source>
         <translation>Odstranit z přepravky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="333"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="342"/>
         <source>Hide from Library</source>
         <translation>Skrýt z knihovny</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="342"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="351"/>
         <source>Unhide from Library</source>
         <translation>Ukázat v knihovně</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="345"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="354"/>
         <source>Purge from Library</source>
         <translation>Odstranit z knihovny</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="351"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="360"/>
         <source>Move Track File(s) to Trash</source>
         <translation>Přesunout soubory skladeb do koše</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="354"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="363"/>
         <source>Delete Files from Disk</source>
         <translation>Smazat soubory z disku</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="372"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="381"/>
         <source>Properties</source>
         <translation>Vlastnosti</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="387"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="396"/>
         <source>Open in File Browser</source>
         <translation>Otevřít v prohlížeči souborů</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="392"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="401"/>
         <source>Select in Library</source>
         <translation>Vybrat v knihovně</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="398"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="407"/>
         <source>Import From File Tags</source>
         <translation>Nahrát ze značek souboru</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="405"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="414"/>
         <source>Import From MusicBrainz</source>
         <translation>Nahrát z MusicBrainz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="412"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="421"/>
         <source>Export To File Tags</source>
         <translation>Uložit do značek souboru</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="440"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="449"/>
         <source>BPM and Beatgrid</source>
         <translation>MM a rytmická mřížka</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="443"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="452"/>
         <source>Play Count</source>
         <translation>Počet přehrání</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="446"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="455"/>
         <source>Rating</source>
         <translation>Hodnocení</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="449"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="458"/>
         <source>Cue Point</source>
         <translation>Nastavit bod označení</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="223"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="452"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="226"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="461"/>
         <source>Hotcues</source>
         <translation>Rychlé značky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="455"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="464"/>
         <source>Intro</source>
         <translation>Otevírající skladba</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="458"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="467"/>
         <source>Outro</source>
         <translation>Uzavírající skladba</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="464"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
         <source>Key</source>
         <translation>Tónina</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="467"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="476"/>
         <source>ReplayGain</source>
         <translation>Vyrovnání hlasitosti</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="470"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="479"/>
         <source>Waveform</source>
         <translation>Průběhová křivka</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="482"/>
         <source>Comment</source>
         <translation>Poznámka</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="476"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="485"/>
         <source>All</source>
         <translation>Vše</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="480"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="489"/>
         <source>Sort hotcues by position (remove offsets)</source>
-        <translation type="unfinished"/>
+        <translation>Seřadit rychlé podněty podle pozice (odstranit ofsety)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="488"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="497"/>
         <source>Sort hotcues by position</source>
-        <translation type="unfinished"/>
+        <translation>Řadit rychlé podněty podle pozice</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="498"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="507"/>
         <source>Lock BPM</source>
         <translation>Zamknout MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="499"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="508"/>
         <source>Unlock BPM</source>
         <translation>Odemknout MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="504"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="527"/>
         <source>Double BPM</source>
         <translation>Zdvojit MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="506"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="513"/>
         <source>Halve BPM</source>
         <translation>Snížit MM na polovinu</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="508"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="274"/>
+        <source>Find on Web</source>
+        <translation>Najít na internetu</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="515"/>
         <source>2/3 BPM</source>
         <translation>2/3 MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="510"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="517"/>
         <source>3/4 BPM</source>
         <translation>3/4 MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="512"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="519"/>
+        <source>4/5 BPM</source>
+        <translation>4/5 MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="521"/>
+        <source>5/4 BPM</source>
+        <translation>5/4 MM</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="523"/>
         <source>4/3 BPM</source>
         <translation>4/3 MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="514"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="525"/>
         <source>3/2 BPM</source>
         <translation>3/2 MM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="550"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="569"/>
         <source>Shift Beatgrid Half Beat</source>
-        <translation type="unfinished"/>
+        <translation>Posunout poloviční rytmus rytmické mřížky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="562"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="581"/>
         <source>Reanalyze</source>
         <translation>Znovu analyzovat</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="565"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="584"/>
         <source>Reanalyze (constant BPM)</source>
         <translation>Znovu analyzovat (konstantu BPM)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="571"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="590"/>
         <source>Reanalyze (variable BPM)</source>
         <translation>Znovu analyzovat (proměnnou BPM)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="583"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="602"/>
         <source>Update ReplayGain from Deck Gain</source>
         <translation>Aktualizovat vyrovnávání hlasitosti ze zesílení přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1035"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1057"/>
         <source>Deck %1</source>
         <translation>Přehrávač %1</translation>
     </message>
+    <message>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1429"/>
+        <source>Open Many Files in File Browser</source>
+        <translation>Otevřít více souborů v prohlížeči souborů</translation>
+    </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1473"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1430"/>
+        <source>You are about to open %n files in the file browser. This may slow down or hang your system. Are you sure you want to continue?</source>
+        <translation><numerusform>Chystáte se otevřít %n soubor v prohlížeči souborů. To může zpomalit nebo zablokovat váš systém. Jste si jisti, že chcete pokračovat?</numerusform><numerusform>Chystáte se otevřít %n soubory v prohlížeči souborů. To může zpomalit nebo zablokovat váš systém. Jste si jisti, že chcete pokračovat?</numerusform><numerusform>Chystáte se otevřít %n souborů v prohlížeči souborů. To může zpomalit nebo zablokovat váš systém. Jste si jisti, že chcete pokračovat?</numerusform><numerusform>Chystáte se otevřít %n souborů v prohlížeči souborů. To může zpomalit nebo zablokovat váš systém. Jste si jisti, že chcete pokračovat?</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1515"/>
         <source>Importing metadata of %n track(s) from file tags</source>
         <translation><numerusform>Zavádí se popisná data %n skladby ze značek souborů</numerusform><numerusform>Zavádí se popisná data %n skladeb ze značek souborů</numerusform><numerusform>Zavádí se popisná data %n skladeb ze značek souborů</numerusform><numerusform>Zavádí se popisná data %n skladeb ze značek souborů</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1505"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1547"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
         <translation><numerusform>Označují se popisná data %n skladby k uložení k exportu do značek souborů</numerusform><numerusform>Označují se popisná data %n skladeb k uložení do značek souborů</numerusform><numerusform>Označují se popisná data %n skladeb k uložení do značek souborů</numerusform><numerusform>Označují se popisná data %n skladeb k uložení do značek souborů</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1556"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1580"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1598"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1622"/>
         <source>Create New Playlist</source>
         <translation>Vytvořit nový seznam skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1581"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1623"/>
         <source>Enter name for new playlist:</source>
         <translation>Zadat název pro nový seznam skladeb:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1583"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1625"/>
         <source>New Playlist</source>
         <translation>Nový seznam skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1591"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1595"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1604"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1633"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1637"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1646"/>
         <source>Playlist Creation Failed</source>
         <translation>Seznam skladeb se nepodařilo vytvořit</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1592"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1634"/>
         <source>A playlist by that name already exists.</source>
         <translation>Seznam skladeb s tímto názvem již existuje.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1596"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1638"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Seznam skladeb musí mít název.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1605"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1647"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Při vytváření seznamu skladeb došlo k neznámé chybě: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1682"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1724"/>
         <source>Add to New Crate</source>
         <translation>Přidat do nové přepravky</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1825"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1867"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation><numerusform>Změna velikosti BPM %n skladby</numerusform><numerusform>Změna velikosti BPM %n skladeb</numerusform><numerusform>Změna velikosti BPM %n skladeb</numerusform><numerusform>Změna velikosti MM %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1854"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1896"/>
         <source>Undo BPM/beats change of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Vrátit zpět změnu MM/dob u %n stopu</numerusform><numerusform>Vrátit zpět změnu MM/dob u %n stopy</numerusform><numerusform>Vrátit zpět změnu MM/dob u %n stop</numerusform><numerusform>Vrátit zpět změnu MM/dob u %n stop</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1898"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1940"/>
         <source>Locking BPM of %n track(s)</source>
         <translation><numerusform>Zamknout BPM %n skladby</numerusform><numerusform>Zamknout BPM %n skladeb</numerusform><numerusform>Zamknout BPM %n skladeb</numerusform><numerusform>Zamknout MM %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1899"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1941"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation><numerusform>Odemknout BPM %n skladby</numerusform><numerusform>Odemknout BPM %n skladeb</numerusform><numerusform>Odemknout BPM %n skladeb</numerusform><numerusform>Odemknout MM %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1932"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1974"/>
         <source>Setting rating of %n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Nastavení hodnocení %n skladby</numerusform><numerusform>Nastavení hodnocení %n skladeb</numerusform><numerusform>Nastavení hodnocení %n skladeb</numerusform><numerusform>Nastavení hodnocení %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1963"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2005"/>
         <source>Setting color of %n track(s)</source>
         <translation><numerusform>Nastavení barvy %n skladby</numerusform><numerusform>Nastavení barvy %n skladeb</numerusform><numerusform>Nastavení barvy %n skladeb</numerusform><numerusform>Nastavení barvy %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2022"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2064"/>
         <source>Resetting play count of %n track(s)</source>
         <translation><numerusform>Vynulování počtu přehrání %n skladby</numerusform><numerusform>Vynulování počtu přehrání %n skladeb</numerusform><numerusform>Vynulování počtu přehrání %n skladeb</numerusform><numerusform>Vynulování počtu přehrání %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2044"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2086"/>
         <source>Resetting beats of %n track(s)</source>
         <translation><numerusform>Vynulování dob %n skladby</numerusform><numerusform>Vynulování dob %n skladeb</numerusform><numerusform>Vynulování dob %n skladeb</numerusform><numerusform>Vynulování dob %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2071"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2113"/>
         <source>Clearing rating of %n track(s)</source>
         <translation><numerusform>Vymazání hodnocení %n skladby</numerusform><numerusform>Vymazání hodnocení %n skladeb</numerusform><numerusform>Vymazání hodnocení %n skladeb</numerusform><numerusform>Vymazání hodnocení %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2094"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2136"/>
         <source>Clearing comment of %n track(s)</source>
         <translation><numerusform>Vymazání poznámky %n skladby</numerusform><numerusform>Vymazání poznámky %n skladeb</numerusform><numerusform>Vymazání poznámky %n skladeb</numerusform><numerusform>Vymazání poznámky %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2199"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2241"/>
         <source>Removing main cue from %n track(s)</source>
         <translation><numerusform>Odstraňování hlavní značky %n skladby</numerusform><numerusform>Odstraňování hlavní značky %n skladeb</numerusform><numerusform>Odstraňování hlavní značky %n skladeb</numerusform><numerusform>Odstraňování hlavní značky %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2209"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2251"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation><numerusform>Odstraňování značky závěru %n skladby</numerusform><numerusform>Odstraňování značky závěru %n skladeb</numerusform><numerusform>Odstraňování značky závěru %n skladeb</numerusform><numerusform>Odstraňování značky závěru %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2219"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2261"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation><numerusform>Odstraňování značky úvodu %n skladby</numerusform><numerusform>Odstraňování značky úvodu %n skladeb</numerusform><numerusform>Odstraňování značky úvodu %n skladeb</numerusform><numerusform>Odstraňování značky úvodu %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2229"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2271"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation><numerusform>Odstraňování značky smyčky %n skladby</numerusform><numerusform>Odstraňování značky smyčky %n skladeb</numerusform><numerusform>Odstraňování značky smyčky %n skladeb</numerusform><numerusform>Odstraňování značky smyčky %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2239"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2281"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation><numerusform>Odstraňování rychlé značky %n skladby</numerusform><numerusform>Odstraňování rychlé značky %n skladeb</numerusform><numerusform>Odstraňování rychlé značky %n skladeb</numerusform><numerusform>Odstraňování rychlé značky %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2251"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2293"/>
         <source>Sorting hotcues of %n track(s) by position (remove offsets)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Řazení rychlých značek %n stopy podle pozice (odstranění offsetů)</numerusform><numerusform>Řazení rychlých značek %n stop podle pozice (odstranění offsetů)</numerusform><numerusform>Řazení rychlých značek %n stop podle pozice (odstranění offsetů)</numerusform><numerusform>Řazení rychlých značek %n stop podle pozice (odstranění offsetů)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2258"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2300"/>
         <source>Sorting hotcues of %n track(s) by position</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Řazení rychlých zkratek %n stopy podle pozice</numerusform><numerusform>Řazení rychlých zkratek %n stop podle pozice</numerusform><numerusform>Řazení rychlých zkratek %n stop podle pozice</numerusform><numerusform>Řazení rychlých zkratek %n stop podle pozice</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2282"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2324"/>
         <source>Resetting keys of %n track(s)</source>
         <translation><numerusform>Vynulování značek %n skladby</numerusform><numerusform>Vynulování značek %n skladeb</numerusform><numerusform>Vynulování značek %n skladeb</numerusform><numerusform>Vynulování značek %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2304"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2346"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation><numerusform>Vynulování vyrovnání hlasitosti %n skladby</numerusform><numerusform>Vynulování vyrovnání hlasitosti %n skladeb</numerusform><numerusform>Vynulování vyrovnání hlasitosti %n skladeb</numerusform><numerusform>Vynulování vyrovnání hlasitosti %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2339"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2381"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation><numerusform>Vynulování průběhové křivky %n skladby</numerusform><numerusform>Vynulování průběhové křivky %n skladeb</numerusform><numerusform>Vynulování průběhové křivky %n skladeb</numerusform><numerusform>Vynulování průběhové křivky %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2395"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2437"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation><numerusform>Vynulování všech popisných dat výkonu %n skladby</numerusform><numerusform>Vynulování všech popisných dat výkonu %n skladeb</numerusform><numerusform>Vynulování všech popisných dat výkonu %n skladeb</numerusform><numerusform>Vynulování všech popisných dat výkonu %n skladeb</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2493"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2535"/>
         <source>Move these files to the trash bin?</source>
-        <translation type="unfinished"/>
+        <translation>Přesunout tyto soubory do koše?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2489"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2531"/>
         <source>Permanently delete these files from disk?</source>
         <translation>Odstranit trvale tyto soubory z disku?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2491"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2500"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2533"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2542"/>
         <source>This can not be undone!</source>
         <translation>To nelze vrátit zpět!</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2525"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2567"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2529"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2571"/>
         <source>Delete Files</source>
         <translation>Smazat soubory</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2531"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2573"/>
         <source>Okay</source>
         <translation>Dobře</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2546"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2588"/>
         <source>Move Track File(s) to Trash?</source>
         <translation>Přesunout soubory skladeb do koše?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2604"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2646"/>
         <source>Track Files Deleted</source>
         <translation>Smazány soubory skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2606"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2648"/>
         <source>Track Files Moved To Trash</source>
         <translation>Soubory skladeb přesunuty do koše</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2613"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2655"/>
         <source>%1 track files were moved to trash and purged from the Mixxx database.</source>
         <translation>%1 souborů skladeb bylo přesunuto do koše a vyčištěno z databáze Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2610"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2652"/>
         <source>%1 track files were deleted from disk and purged from the Mixxx database.</source>
         <translation>%1 souborů skladeb bylo smazáno z disku a vyčištěno z databáze Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2622"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2664"/>
         <source>Track File Deleted</source>
         <translation>Smazán soubor skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2623"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2665"/>
         <source>Track file was deleted from disk and purged from the Mixxx database.</source>
         <translation>%1 soubor skladeb byl smazán z disku a vyčištěn z databáze Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2665"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2707"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
         <translation>Následující %1 soubor(y) nemohl(y) být smazán(y) z disku</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2673"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2715"/>
         <source>This track file could not be deleted from disk</source>
         <translation>Tento soubor skladby nemohl být smazán z disku</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2697"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2739"/>
         <source>Remaining Track File(s)</source>
         <translation>Zbývající soubor(y) skladeb</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2688"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2730"/>
         <source>Close</source>
         <translation>Zavřít</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="228"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="231"/>
         <source>Clear</source>
         <extracomment>Reset metadata in right click track context menu in library</extracomment>
-        <translation type="unfinished"/>
+        <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="461"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="470"/>
         <source>Loops</source>
         <translation>Skoky</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="536"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="555"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>Smazat MM a rytmickou mřížku</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="542"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="561"/>
         <source>Undo last BPM/beats change</source>
-        <translation type="unfinished"/>
+        <translation>Vrátit zpět poslední změnu MM/dob</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2502"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2544"/>
         <source>Move this track file to the trash bin?</source>
-        <translation type="unfinished"/>
+        <translation>Přesunout tento soubor skladby do koše?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2498"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2540"/>
         <source>Permanently delete this track file from disk?</source>
-        <translation type="unfinished"/>
+        <translation>Trvale smazat tento soubor skladby z disku?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2507"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2549"/>
         <source>All decks where these tracks are loaded will be stopped and the tracks will be ejected.</source>
-        <translation type="unfinished"/>
+        <translation>Všechny přehrávače, kde jsou tyto stopy načteny, budou zastaveny a stopy budou vysunuty.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2511"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2553"/>
         <source>All decks where this track is loaded will be stopped and the track will be ejected.</source>
-        <translation type="unfinished"/>
+        <translation>Všechny přehrávače, kde je tato skladba načtena, budou zastaveny a skladba bude vysunuta.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2578"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2620"/>
         <source>Removing %n track file(s) from disk...</source>
         <translation>Odstraňování %n souborů skladeb z disku...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2618"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2660"/>
         <source>Note: if you are in the Computer or Recording view you need to click the current view again to see changes.</source>
         <translation>Poznámka: Jste-li v zobrazení Počítač či Nahrávání, musíte pro zobrazení změn znovu klepnout na nynější zobrazení.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2627"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2669"/>
         <source>Track File Moved To Trash</source>
         <translation>Soubor skladby přesunut do koše</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2628"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2670"/>
         <source>Track file was moved to trash and purged from the Mixxx database.</source>
         <translation>Soubor skladeb byl přesunut do koše a vyčištěn z databáze Mixxxu.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2633"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2675"/>
         <source>Don&apos;t show again during this session</source>
-        <translation type="unfinished"/>
+        <translation>Během této relace znovu nezobrazovat</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2667"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2709"/>
         <source>The following %1 file(s) could not be moved to trash</source>
         <translation>Následující %1 soubor(y) nemohl(y) být přesunut(y) do koše</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2675"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2717"/>
         <source>This track file could not be moved to trash</source>
         <translation>Tento soubor skladby nemohl být přesunut do koše</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2822"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2864"/>
         <source>Replace current Auto DJ queue?</source>
-        <translation type="unfinished"/>
+        <translation>Nahradit aktuální frontu Auto DJ?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2824"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2866"/>
         <source>Do you want to replace the entire Auto DJ queue with the selected tracks?</source>
-        <translation type="unfinished"/>
+        <translation>Chcete nahradit celou frontu Auto DJ vybranými skladbami?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2827"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2869"/>
         <source>Don&apos;t ask again during this session</source>
-        <translation type="unfinished"/>
+        <translation>Příště se během tohoto sezení neptat</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2868"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2910"/>
         <source>Setting cover art of %n track(s)</source>
         <translation><numerusform>Nastavení obrázku obalu %n skladby</numerusform><numerusform>Nastavení obrázku obalu %n skladeb</numerusform><numerusform>Nastavení obrázku obalu %n skladeb</numerusform><numerusform>Nastavení obrázku obalu %n skladeb</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2892"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2934"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation><numerusform>Nahrání obrázku obalu %n skladby znovu</numerusform><numerusform>Nahrání obrázku obalu %n skladeb znovu</numerusform><numerusform>Nahrání obrázku obalu %n skladeb znovu</numerusform><numerusform>Nahrání obrázku obalu %n skladeb znovu</numerusform></translation>
     </message>
@@ -17464,7 +18081,7 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     <message>
         <location filename="../../src/widget/wtrackproperty.cpp" line="167"/>
         <source>title</source>
-        <translation type="unfinished"/>
+        <translation>název</translation>
     </message>
 </context>
 <context>
@@ -17472,73 +18089,73 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="27"/>
         <source>Load for stem mixing</source>
-        <translation type="unfinished"/>
+        <translation>Zatížení pro míchání stonků</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="34"/>
         <source>Load pre-mixed stereo track</source>
-        <translation type="unfinished"/>
+        <translation>Načíst předem smíchanou stereo stopu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="45"/>
         <source>Load the &quot;%1&quot; stem</source>
-        <translation type="unfinished"/>
+        <translation>Vložte stem „%1“</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="61"/>
         <source>Load multiple stem into a stereo deck</source>
-        <translation type="unfinished"/>
+        <translation>Vložení více stonků do stereo magnetofonu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="92"/>
         <source>Select stems to load</source>
-        <translation type="unfinished"/>
+        <translation>Vybrat stonky k načtení</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="93"/>
         <source>Release &quot;CTRL&quot; to load the current selection</source>
-        <translation type="unfinished"/>
+        <translation>Uvolněte klávesu „CTRL“ pro načtení aktuálního výběru</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackstemmenu.cpp" line="95"/>
         <source>Use &quot;CTRL&quot; to select multiple stems</source>
-        <translation type="unfinished"/>
+        <translation>Pro výběr více kmenů použijte klávesu „CTRL“</translation>
     </message>
 </context>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1389"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1434"/>
         <source>Confirm track hide</source>
         <translation>Potvrdit skrytí skladby</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1390"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1435"/>
         <source>Are you sure you want to hide the selected tracks?</source>
         <translation>Opravdu chcete skrýt vybrané skladby?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1396"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1441"/>
         <source>Are you sure you want to remove the selected tracks from AutoDJ queue?</source>
         <translation>Opravdu chcete odstranit vybrané skladby z řady automatického diskžokeje?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1400"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1445"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
         <translation>Opravdu chcete odstranit vybrané skladby z této přepravky?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1404"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1449"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
         <translation>Opravdu chcete odstranit vybrané skladby z tohoto seznamu skladeb?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1413"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1458"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>Příště se během tohoto sezení neptat</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1392"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1437"/>
         <source>Confirm track removal</source>
         <translation>Potvrdit odstranění skladby</translation>
     </message>
@@ -17546,73 +18163,138 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WTrackTableViewHeader</name>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="149"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="160"/>
         <source>Show or hide columns.</source>
         <translation>Ukázat nebo skrýt sloupce.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="254"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="265"/>
         <source>Shuffle Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Náhodné přehrávání skladeb</translation>
+    </message>
+</context>
+<context>
+    <name>WaveformWidgetFactory</name>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="213"/>
+        <source>None</source>
+        <extracomment>This refers to a missing openGL version</extracomment>
+        <translation>Žádný</translation>
     </message>
 </context>
 <context>
     <name>mixxx::CoreServices</name>
     <message>
-        <location filename="../../src/coreservices.cpp" line="489"/>
+        <location filename="../../src/coreservices.cpp" line="454"/>
+        <source>Cannot access settings folder</source>
+        <translation>Nelze přistupovat ke složce nastavení</translation>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="455"/>
+        <source>Mixxx cannot access the settings folder:
+
+%1
+
+You can either:
+
+• Remove the --settings-path argument to use the default location
+• Re-run Mixxx and select a valid folder when prompted
+
+Click OK to exit.</source>
+        <translation>Mixxx nemá přístup ke složce nastavení:
+
+%1
+
+Můžete provést jednu z těchto akcí:
+
+• Odebrat argument --settings-path a použít výchozí umístění
+
+• Znovu spustit Mixxx a po zobrazení výzvy vybrat platnou složku
+
+Kliknutím na OK ukončíte program.</translation>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="514"/>
         <source>fonts</source>
         <translation>písma</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="493"/>
+        <location filename="../../src/coreservices.cpp" line="518"/>
         <source>database</source>
         <translation>databáze</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="508"/>
+        <location filename="../../src/coreservices.cpp" line="533"/>
         <source>effects</source>
         <translation>efekty</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="521"/>
+        <location filename="../../src/coreservices.cpp" line="546"/>
         <source>audio interface</source>
         <translation>rozhraní zvuku</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="541"/>
+        <location filename="../../src/coreservices.cpp" line="566"/>
         <source>decks</source>
         <translation>Přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="587"/>
+        <location filename="../../src/coreservices.cpp" line="612"/>
         <source>library</source>
         <translation>knihovna</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="679"/>
+        <location filename="../../src/coreservices.cpp" line="704"/>
         <source>Choose music library directory</source>
         <translation>Vybrat adresář s hudební knihovnou</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="689"/>
+        <location filename="../../src/coreservices.cpp" line="715"/>
         <source>controllers</source>
         <translation>ovladače</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="865"/>
+        <location filename="../../src/coreservices.cpp" line="849"/>
+        <source>The settings directory does not exist:
+%1
+
+Please verify the --settings-path argument.</source>
+        <translation>Adresář nastavení neexistuje:
+%1
+
+Ověřte prosím argument --settings-path.</translation>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="854"/>
+        <source>The settings directory is not writable:
+%1
+
+This may be caused by macOS sandbox restrictions if you are using a custom --settings-path outside the app container.
+
+Try running Mixxx without --settings-path, or grant Mixxx access to the folder when prompted.</source>
+        <translation>Do adresáře s nastavením nelze zapisovat:
+%1
+
+To může být způsobeno omezeními sandboxu macOS, pokud používáte vlastní --settings-path mimo kontejner aplikace.
+
+Zkuste spustit Mixxx bez --settings-path nebo po zobrazení výzvy udělte Mixxx přístup ke složce.</translation>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="863"/>
+        <source>Unable to establish a database connection.
+Mixxx requires Qt with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.</source>
+        <translation>Nelze se spojit s databází.
+Mixxx vyžaduje Qt s podporou SQLite. Prosím, přečtěte si dokumentaci o ovladači QT SQLite, kde najdete informace o sestavování.</translation>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="871"/>
         <source>Cannot open database</source>
         <translation>Nelze otevřít databázi</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="866"/>
-        <source>Unable to establish a database connection.
-Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
-
-Click OK to exit.</source>
-        <translation>Nelze se spojit s databází.
-Mixxx vyžaduje QT s podporou SQLite. Prosím, přečtěte si dokumentaci QT SQLite řadiče pro informace o sestavování.
-
-Stiskněte OK pro ukončení.</translation>
+        <location filename="../../src/coreservices.cpp" line="872"/>
+        <source>Click OK to exit.</source>
+        <translation>Klepněte na tlačítko OK pro ukončení.</translation>
     </message>
 </context>
 <context>
@@ -17625,17 +18307,17 @@ Stiskněte OK pro ukončení.</translation>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="64"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>Přepravky</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="69"/>
         <source>Playlists</source>
-        <translation type="unfinished"/>
+        <translation>Seznamy skladeb</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="104"/>
         <source>Selected crates/playlists</source>
-        <translation type="unfinished"/>
+        <translation>Vybrané bedny/playlisty</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="111"/>
@@ -17666,30 +18348,30 @@ Stiskněte OK pro ukončení.</translation>
         <location filename="../../src/library/export/dlglibraryexport.cpp" line="168"/>
         <source>Export Library to Engine DJ</source>
         <extracomment>&quot;Engine DJ&quot; must not be translated</extracomment>
-        <translation type="unfinished"/>
+        <translation>Uložit knihovnu do DJ stroje</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="225"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="226"/>
         <source>Export Library To</source>
         <translation>Uložit knihovnu do</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="242"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="245"/>
         <source>No Export Directory Chosen</source>
         <translation>Nebyl vybrán žádný ukládací adresář</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="243"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="246"/>
         <source>No export directory was chosen. Please choose a directory in order to export the music library.</source>
         <translation>Nebyl vybrán žádný ukládací adresář. Vyberte adresář, do kterého chcete uložit knihovnu s hudbou.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="318"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="321"/>
         <source>A database already exists in the chosen directory. Exported tracks will be added into this database.</source>
         <translation>Databáze ve vybraném adresáři již existuje. Uložené skladby budou přidány do této databáze.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="328"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="331"/>
         <source>A database already exists in the chosen directory, but there was a problem loading it. Export is not guaranteed to succeed in this situation.</source>
         <translation>Databáze ve zvoleném adresáři již existuje, ale nastal problém s načítáním. Uložení v této situaci nezaručuje úspěch.</translation>
     </message>
@@ -17710,11 +18392,12 @@ Stiskněte OK pro ukončení.</translation>
 <context>
     <name>mixxx::EnginePrimeExportJob</name>
     <message>
-        <location filename="../../src/library/export/engineprimeexportjob.cpp" line="672"/>
+        <location filename="../../src/library/export/engineprimeexportjob.cpp" line="686"/>
         <source>Failed to export track %1 - %2:
 %3</source>
         <extracomment>%1 is the artist %2 is the title and %3 is the original error message</extracomment>
-        <translation type="unfinished"/>
+        <translation>Nepodařilo se exportovat stopu %1 - %2:
+%3</translation>
     </message>
 </context>
 <context>
@@ -17727,7 +18410,7 @@ Stiskněte OK pro ukončení.</translation>
     <message>
         <location filename="../../src/library/export/libraryexporter.cpp" line="60"/>
         <source>Exported %1 track(s), %2 crate(s), and %3 playlist(s).</source>
-        <translation type="unfinished"/>
+        <translation>Exportováno %1 stop, %2 balíčků a %3 seznamů skladeb.</translation>
     </message>
     <message>
         <location filename="../../src/library/export/libraryexporter.cpp" line="69"/>
@@ -17737,7 +18420,7 @@ Stiskněte OK pro ukončení.</translation>
     <message>
         <location filename="../../src/library/export/libraryexporter.cpp" line="74"/>
         <source>Exporting to Engine DJ...</source>
-        <translation type="unfinished"/>
+        <translation>Exportovat do stroje DJ...</translation>
     </message>
 </context>
 <context>
@@ -17764,19 +18447,48 @@ Stiskněte OK pro ukončení.</translation>
 <context>
     <name>mixxx::qml::QmlApplication</name>
     <message>
-        <location filename="../../src/qml/qmlapplication.cpp" line="62"/>
+        <location filename="../../src/qml/qmlapplication.cpp" line="102"/>
         <source>Existing user profile detected</source>
-        <translation type="unfinished"/>
+        <translation>Detekován existující uživatelský profil</translation>
     </message>
     <message>
-        <location filename="../../src/qml/qmlapplication.cpp" line="64"/>
+        <location filename="../../src/qml/qmlapplication.cpp" line="104"/>
         <source>Trying to run Mixxx 3.0 with an existing %0 user profile! &lt;br&gt;&lt;br&gt;There is &lt;b&gt;serious risks&lt;/b&gt; of data loss and corruption.&lt;br&gt;We recommend using a test profile folder with the &apos;--settings-path&apos; argument. &lt;br&gt;&lt;br&gt;If you want to continue at your own risk, run Mixxx with the argument &apos;--allow-dangerous-data-corruption-risk&apos;.</source>
-        <translation type="unfinished"/>
+        <translation>Pokouším se spustit Mixxx 3.0 s existujícím uživatelským profilem %0! &lt;br&gt;&lt;br&gt;Existuje &lt;b&gt;vážné riziko&lt;/b&gt; ztráty a poškození dat.&lt;br&gt;Doporučujeme použít testovací složku profilu s argumentem &apos;--settings-path&apos;. &lt;br&gt;&lt;br&gt;Pokud chcete pokračovat na vlastní nebezpečí, spusťte Mixxx s argumentem &apos;--allow-dangerous-data-corruption-risk&apos;.</translation>
     </message>
     <message>
-        <location filename="../../src/qml/qmlapplication.cpp" line="73"/>
+        <location filename="../../src/qml/qmlapplication.cpp" line="113"/>
         <source>Ok</source>
-        <translation type="unfinished"/>
+        <translation>Ok</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlapplication.cpp" line="162"/>
+        <source>There is no input device selected for this passthrough control.
+Please select an input device in the sound hardware preferences first.</source>
+        <translation>Není vybráno žádné vstupní zařízení pro toto ovládání předání dál.
+Nejprve, prosím, vyberte nějaké vstupní zařízení v nastavení zvukového technického vybavení.</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlapplication.cpp" line="172"/>
+        <source>There is no input device selected for this vinyl control.
+Please select an input device in the sound hardware preferences first.</source>
+        <translation>Není vybráno žádné vstupní zařízení pro toto ovládání vinylovou gramodeskou.
+Nejprve, prosím, vyberte nějaké vstupní zařízení v nastavení zvukového technického vybavení.</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlapplication.cpp" line="186"/>
+        <source>&amp;Preferences</source>
+        <translation>&amp;Nastavení</translation>
+    </message>
+</context>
+<context>
+    <name>mixxx::qml::QmlControllerDeviceProxy</name>
+    <message>
+        <location filename="../../src/qml/qmlpreferencesproxy.cpp" line="400"/>
+        <location filename="../../src/qml/qmlpreferencesproxy.cpp" line="410"/>
+        <location filename="../../src/qml/qmlpreferencesproxy.cpp" line="422"/>
+        <source>N/A</source>
+        <translation>N/A</translation>
     </message>
 </context>
 <context>
@@ -17785,29 +18497,6 @@ Stiskněte OK pro ukončení.</translation>
         <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="44"/>
         <source>No effect loaded.</source>
         <translation>Nenahrán žádný efekt.</translation>
-    </message>
-</context>
-<context>
-    <name>mixxx::qml::QmlWaveformRendererMark</name>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="342"/>
-        <source>Cannot find the marker pixmap</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="346"/>
-        <source>Cannot find the marker endPixmap</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="351"/>
-        <source>Cannot find the marker icon</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="355"/>
-        <source>Cannot find the marker endIcon</source>
-        <translation type="unfinished"/>
     </message>
 </context>
 </TS>

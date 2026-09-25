@@ -624,7 +624,106 @@
 * README: add link to OS-specific build instructions [#14779](https://github.com/mixxxdj/mixxx/pull/14779)
 * Improve debug output for missing WWidget pixmaps [#14473](https://github.com/mixxxdj/mixxx/pull/14473)
 
-## [2.5.5](https://github.com/mixxxdj/mixxx/milestone/53) (Unreleased)
+## 2.5.7 (unreleased)
+
+### Controller Mappings
+
+* Allen & Heath Xone K3: Update midi mappings (backport [#16453](https://github.com/mixxxdj/mixxx/pull/16453)) [#16496](https://github.com/mixxxdj/mixxx/pull/16496)
+* Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
+* Vestax VCI-400: fix VU meters, midi.sendShortMsg() [#16180](https://github.com/mixxxdj/mixxx/pull/16180)
+
+### Library
+
+* Fix color column sorting for dirty tracks
+  [#16662](https://github.com/mixxxdj/mixxx/pull/16662)
+* Fix relocate directory: remove old dir if new is child of a root dir [#16203](https://github.com/mixxxdj/mixxx/pull/16203)
+* Fix library scanner: allow resuming canceled scan by clearing hashes of unfinished dirs
+  [#16300](https://github.com/mixxxdj/mixxx/pull/16300)
+  [#16198](https://github.com/mixxxdj/mixxx/issues/16198)
+* Fix missing tracks showing up in Hidden, Missing empty [#16419](https://github.com/mixxxdj/mixxx/pull/16419)
+* Adjust FocusWidget: GoToItem emulates Space key in WSearchRelatedTracksMenu [#13282](https://github.com/mixxxdj/mixxx/pull/13282)
+* Fixing last played time being wiped on history deletion
+  [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
+  [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+  [#16911](https://github.com/mixxxdj/mixxx/pull/16911)
+* Fix false-positive missing tracks
+  [#16685](https://github.com/mixxxdj/mixxx/pull/16685)
+  [#13533](https://github.com/mixxxdj/mixxx/issues/13533)
+* Rekordbox: detect databases in hidden .PIONEER directory
+  [#16895](https://github.com/mixxxdj/mixxx/pull/16895)
+  [#16894](https://github.com/mixxxdj/mixxx/issues/16894)
+
+### Target support
+
+* Support Ubuntu Stonking 26.10
+  [#16507](https://github.com/mixxxdj/mixxx/pull/16507)
+  [#16619](https://github.com/mixxxdj/mixxx/pull/16619)
+  [#16614](https://github.com/mixxxdj/mixxx/issues/16614)
+* Retire Ubuntu Questing 25.10 [#16780](https://github.com/mixxxdj/mixxx/pull/16780)
+* Support Windows 11 25H2
+  [#16401](https://github.com/mixxxdj/mixxx/pull/16401)
+* Add Arch Linux build environment script [#16594](https://github.com/mixxxdj/mixxx/pull/16594)
+* Fix race condition in fonts-ubuntu check in Debian environment script [#16575](https://github.com/mixxxdj/mixxx/pull/16575)
+* Fix various warnings when using recent build environments
+  [#16537](https://github.com/mixxxdj/mixxx/pull/16537)
+  [#16514](https://github.com/mixxxdj/mixxx/pull/16514)
+  [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
+  [#16368](https://github.com/mixxxdj/mixxx/pull/16368)
+* Flatpak: fix building with Soundtouch, update to 2.4.1
+  [#16720](https://github.com/mixxxdj/mixxx/pull/16720)
+* Flatpack: prevent branches to delete each other
+  [#16779](https://github.com/mixxxdj/mixxx/pull/16779)
+  [#16810](https://github.com/mixxxdj/mixxx/pull/16810)
+
+### Miscellaneous
+
+* macOS: fix system theme in preferences after switch rendering and icons
+  [#16661](https://github.com/mixxxdj/mixxx/pull/16661)
+  [#13643](https://github.com/mixxxdj/mixxx/issues/13643)
+* macOS: request security scoped bookmark for files in imported playlists
+  [#16369](https://github.com/mixxxdj/mixxx/pull/16369)
+* macOS: Discover both Effect and MusicEffect AudioUnits in one pass [#16287](https://github.com/mixxxdj/mixxx/pull/16287)
+* Fix killing Analysis worker threads during shutdown, possible data loss. [#16064](https://github.com/mixxxdj/mixxx/pull/16064)
+* MIDI: guard against null script engine in makeInputHandler [#16003](https://github.com/mixxxdj/mixxx/pull/16003)
+* EngineBuffer: Reset sample counter after indicator update [#16245](https://github.com/mixxxdj/mixxx/pull/16245)
+* libfdk_aac: SoundSourceProxyTest.seekBoundaries fix
+  [#16440](https://github.com/mixxxdj/mixxx/pull/16440)
+  [#16440](https://github.com/mixxxdj/mixxx/issues/14624)
+* FFmpeg: fix of gap bug fix
+  [#16439](https://github.com/mixxxdj/mixxx/pull/16439)
+  [#10464](https://github.com/mixxxdj/mixxx/issues/10464)
+* Fix flaky unittests test
+  [#16275](https://github.com/mixxxdj/mixxx/pull/16275)
+  [#12554](https://github.com/mixxxdj/mixxx/issues/12554)
+  [#16332](https://github.com/mixxxdj/mixxx/pull/16332)
+  [#16290](https://github.com/mixxxdj/mixxx/pull/16290)
+  [#16162](https://github.com/mixxxdj/mixxx/issues/16162)
+  [#16693](https://github.com/mixxxdj/mixxx/pull/16693)
+* Fix warning/violated debug assertion when opening Preferences (backport [#16257](https://github.com/mixxxdj/mixxx/pull/16257)) [#16274](https://github.com/mixxxdj/mixxx/pull/16274)
+* Don't reset `beatloop_size` to 1/32 when loop doesn't match any of the pre-defined sizes
+  [#16881](https://github.com/mixxxdj/mixxx/pull/16881)
+  [#16880](https://github.com/mixxxdj/mixxx/issues/16880)
+* Fix last played time being wiped on history deletion
+  [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
+  [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+* Fix Hotcue 350 hours before song start, caused by a race condition with quantize control
+  [#16743](https://github.com/mixxxdj/mixxx/pull/16743)
+  [#16320](https://github.com/mixxxdj/mixxx/issues/16320)
+* Skins: Fix tiny battery icons [#16801](https://github.com/mixxxdj/mixxx/pull/16801)
+* Fix broadcasting using libshout-idjc >= 2.4.6, by using the correct usage flag
+  [#16816](https://github.com/mixxxdj/mixxx/pull/16816)
+  [#16783](https://github.com/mixxxdj/mixxx/issues/16783)
+  [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
+* Avoid spurious play control update
+  [#16912](https://github.com/mixxxdj/mixxx/pull/16912)
+  [#16910](https://github.com/mixxxdj/mixxx/issues/16910)
+* Respect `repeat` in slip mode when enabled before slip, like looping
+  [#16982](https://github.com/mixxxdj/mixxx/pull/16982)
+* Mixdown headphone and booth outputs in mono mode
+  [#17013](https://github.com/mixxxdj/mixxx/pull/17013)
+  [#16942](https://github.com/mixxxdj/mixxx/issues/16942)
+
+## [2.5.6](https://github.com/mixxxdj/mixxx/milestone/53) (2026-03-25)
 
 ### Library
 
@@ -640,15 +739,23 @@
 * Fix "dataChanged() called with an invalid index range" warning
   [#15937](https://github.com/mixxxdj/mixxx/pull/15937)
   [#14610](https://github.com/mixxxdj/mixxx/issues/14610)
+* History: allow track file export [#16074](https://github.com/mixxxdj/mixxx/pull/16074)
+* History: prevent deletion of current history after purging tracks [#15991](https://github.com/mixxxdj/mixxx/pull/15991)
+* Tracks: improve performance when restoring large track selections [#15973](https://github.com/mixxxdj/mixxx/pull/15973)
 
 ### Effects
 
 * White Noise: remove DC offset  [#15979](https://github.com/mixxxdj/mixxx/pull/15979)
 * White Noise: improve gain responds [#15949](https://github.com/mixxxdj/mixxx/pull/15949)
-* Echo: fix out of bounds read [#15985](https://github.com/mixxxdj/mixxx/pull/15985)
+* Echo: fix distortion bug
+  [#15985](https://github.com/mixxxdj/mixxx/pull/15985)
+  [#15835](https://github.com/mixxxdj/mixxx/issues/15835)
+* Echo: fix ramping of the send and feedback parameters [#16006](https://github.com/mixxxdj/mixxx/pull/16006)
 * QuickEffect: fix crackling noise when switching
   [#15796](https://github.com/mixxxdj/mixxx/pull/15796)
   [#15794](https://github.com/mixxxdj/mixxx/issues/15794)
+* Glitch: remove unnecessary cast to integer [#16068](https://github.com/mixxxdj/mixxx/pull/16068)
+* Reverb: fix ramping of the send parameter [#16001](https://github.com/mixxxdj/mixxx/pull/16001)
 
 ### Controller Mappings
 
@@ -663,16 +770,18 @@
   [#15945](https://github.com/mixxxdj/mixxx/pull/15945)
 * Traktor S4Mk2: check for deck undefined [#14445](https://github.com/mixxxdj/mixxx/pull/14445)
 
-### Controller Backend
-
-* Restore common-hid-packet-parser global symbol exceptions for eslint [#15961](https://github.com/mixxxdj/mixxx/pull/15961)
-
 ### Engine
 
-* Fix scratching with keylock enabled and mapping using scracht2 [#15845](https://github.com/mixxxdj/mixxx/pull/15845)
+* Fix scratching with keylock enabled and mapping using scratch2 [#15845](https://github.com/mixxxdj/mixxx/pull/15845)
 * AudioUnit: fix crash due to off-by-one error in parameter syncing [#15919](https://github.com/mixxxdj/mixxx/pull/15919)
-* FX units: resolve issue preventing use on all samplers [#15971](https://github.com/mixxxdj/mixxx/pull/15971)
-* AutoDJ: fix wrong use of [Auto DJ] -> [AutoDJ] [#16009](https://github.com/mixxxdj/mixxx/pull/16009)
+* AudioUnit: fix startup crash by loading out-of-process [#16106](https://github.com/mixxxdj/mixxx/pull/16106)
+* FX units: resolve issue preventing use on all samplers
+  [#15971](https://github.com/mixxxdj/mixxx/pull/15971)
+  [#15799](https://github.com/mixxxdj/mixxx/issues/15799)
+* Fix false positive "First sound has been moved!" warnings log message [#16054](https://github.com/mixxxdj/mixxx/pull/16054)
+* Beats: fix rare off-by-one beat issue with quantize and sync
+  [#13262](https://github.com/mixxxdj/mixxx/pull/13262)
+  [#16086](https://github.com/mixxxdj/mixxx/pull/16086)
 
 ### Preferences
 
@@ -693,23 +802,22 @@
 * Add Flatpak packaging files
   [#15695](https://github.com/mixxxdj/mixxx/pull/15695)
   [#15922](https://github.com/mixxxdj/mixxx/pull/15922)
+  [#15935](https://github.com/mixxxdj/mixxx/pull/15935)
 * Fail early if not running from Visual Studio environment [#14623](https://github.com/mixxxdj/mixxx/pull/14623)
 * Make Debian non-free optional [#15895](https://github.com/mixxxdj/mixxx/pull/15895)
 * Debian: remove 'qml6-module-qtquick-nativestyle [#15771](https://github.com/mixxxdj/mixxx/pull/15771)
+* Ubuntu: retire Plucky Puffin 25.04 [#15926](https://github.com/mixxxdj/mixxx/pull/15926)
 
 ### Miscellaneous
 
-* Bump actions/cache from 4 to 5 [#15756](https://github.com/mixxxdj/mixxx/pull/15756)
-* Bump actions/upload-artifact from 5.0.0 to 6.0.0 [#15755](https://github.com/mixxxdj/mixxx/pull/15755)
-* Bump azure/trusted-signing-action from 0.5.10 to 1.0.0 [#15884](https://github.com/mixxxdj/mixxx/pull/15884)
-* Bump jwlawson/actions-setup-cmake from 2.0 to 2.1 [#15907](https://github.com/mixxxdj/mixxx/pull/15907)
 * Fix `mixxx-test` build to find `mad.h` [#15803](https://github.com/mixxxdj/mixxx/pull/15803)
-* Disable GitHub cache for VCPKG buildenv to save buildtime [#15981](https://github.com/mixxxdj/mixxx/pull/15981)
-* CI: fix issues related to workflow refactor into modular actions [#15750](https://github.com/mixxxdj/mixxx/pull/15750)
-* (Belated) Happy New Year 2026! [#15852](https://github.com/mixxxdj/mixxx/pull/15852)
-* Retire Ubuntu Plucky Puffin 25.04 [#15926](https://github.com/mixxxdj/mixxx/pull/15926)
-* chore(deps): bump azure/trusted-signing-action from 1.0.0 to 1.1.0 [#15990](https://github.com/mixxxdj/mixxx/pull/15990)
-* Num deck streamline [#14112](https://github.com/mixxxdj/mixxx/pull/14112)
+* Num deck streamline
+  [#14112](https://github.com/mixxxdj/mixxx/pull/14112)
+  [#16009](https://github.com/mixxxdj/mixxx/pull/16009)
+
+## [2.5.5](https://github.com/mixxxdj/mixxx/milestone/53) (skipped)
+
+Note: Version 2.5.5 has been skipped following an issue in the release workflow.
 
 ## [2.5.4](https://github.com/mixxxdj/mixxx/milestone/51) (2025-12-14)
 
@@ -882,7 +990,7 @@
 * Fix handling of "vinylcontrol_enabled" causes a frozen vinyl spinny mouse control
   [#15168](https://github.com/mixxxdj/mixxx/pull/15168)
   [#15165](https://github.com/mixxxdj/mixxx/issues/15165)
-* Pitch filter improvements [#15230](https15054://github.com/mixxxdj/mixxx/pull/15230)
+* Pitch filter improvements [#15230](https://github.com/mixxxdj/mixxx/pull/15230)
 * Add a quadrature phase tracker
   [#15217](https://github.com/mixxxdj/mixxx/pull/15217)
   [#15283](https://github.com/mixxxdj/mixxx/pull/15283)
@@ -2633,4 +2741,4 @@
 
 ## Older Changelog
 
-Find older changelog entries [here](https://github.com/mixxxdj/mixxx/blob/2.5.0/CHANGELOG.md).
+Find older changelog entries in the [2.5.0 Changelog](https://github.com/mixxxdj/mixxx/blob/2.5.0/CHANGELOG.md).

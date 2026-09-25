@@ -40,9 +40,11 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
   public slots:
     void setPlayMarkerForegroundColor(const QColor& fgPlayColor) {
         m_playMarkerForegroundColor = fgPlayColor;
+        m_playPosColorsDirty = true;
     }
     void setPlayMarkerBackgroundColor(const QColor& bgPlayColor) {
         m_playMarkerBackgroundColor = bgPlayColor;
+        m_playPosColorsDirty = true;
     }
     void setUntilMarkShowBeats(bool untilMarkShowBeats) {
         m_untilMarkShowBeats = untilMarkShowBeats;
@@ -59,6 +61,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     void setUntilMarkTextHeightLimit(float untilMarkTextHeightLimit) {
         m_untilMarkTextHeightLimit = untilMarkTextHeightLimit;
     }
+    void setDefaultNextMarkPosition(double nextMarkPosition);
 
   private:
     void updateMarkImage(WaveformMarkPointer pMark) override;
@@ -98,12 +101,15 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     QColor m_playMarkerForegroundColor;
     QColor m_playMarkerBackgroundColor;
+    bool m_playPosColorsDirty{true};
 
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;
     Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextSize;
     float m_untilMarkTextHeightLimit;
+
+    double m_defaultNextMarkPosition;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

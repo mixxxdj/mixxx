@@ -117,8 +117,8 @@ jobs:
             artifacts_name: macOS ARM DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
-          - name: Windows 2022 x64
-            os: windows-2022
+          - name: Windows Server 2025 VS2026 x64
+            os: windows-2025-vs2026
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -144,8 +144,8 @@ jobs:
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
             arch: x64
-          - name: Windows 11 ARM64
-            os: windows-11-arm
+          - name: Windows 11 VS2026 ARM64
+            os: windows-11-vs2026-arm
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -194,6 +194,40 @@ jobs:
             compiler_cache_path: /home/runner/.cache/ccache
             crosscompile: true
             arch: arm64
+          # Ubuntu 22.04 (glibc 2.35) is the lowest viable glibc baseline: the
+          # AppImage must run on as many distributions as possible. Qt 6.11
+          # requires glibc >= 2.34, and the buildenv itself is built on 22.04.
+          # CMake >= 4.2 is provided by the "[AppImage] Set up cmake" step below.
+          - name: AppImage Linux x86_64
+            os: ubuntu-22.04
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/usr
+              -DCMAKE_INSTALL_LIBDIR=lib
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
+            ctest_args: []
+            cpack_generator: AppImage
+            # Not a cross-compile: this is a native x86_64 build, so the
+            # shared Test step must run.  The PPA steps are excluded for the
+            # AppImage separately below.
+            crosscompile: false
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            # The AppImage build is fully static and produces far more ccache
+            # data than the default 2G; give it the actions/cache per-entry
+            # maximum so repeated runs can reuse the compiled objects.
+            compiler_cache_max_size: 10G
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/appimage_release_buildenv.sh
+            artifacts_name: AppImage Linux x86_64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage
+            arch: x86_64
 
     env:
       # macOS codesigning
@@ -213,7 +247,7 @@ jobs:
       artifact-windows-winarm: ${{ steps.prepare_deploy.outputs.artifact-windows-winarm }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -230,24 +264,23 @@ jobs:
         run: git fetch origin --force --tags
 
       - name: "[macOS] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.1
+        uses: jwlawson/actions-setup-cmake@v2.2
         # Ubuntu 24.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.21.x"
+          cmake-version: "3.22.x"
 
       - name: "[Windows] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.1
+        uses: jwlawson/actions-setup-cmake@v2.2
         # Ubuntu 24.04 should use the CMake version from the repos.
-        # On windows-11-arm this action installs the x64 version which has unwanted side effects
-        if: matrix.os == 'windows-2022'
+        # On Windows ARM64 this action installs the x64 version which has unwanted side effects
+        if: runner.os == 'Windows' && runner.arch != 'ARM64'
         with:
-          # This is a workaround for a SSL false positive in cmake 3.26.4
-          # When downloading the manual. 3.21 is required for installing the
-          # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
-          cmake-version: "3.21.x"
+          # This version of CMake is needed for Wix Toolset >= v4 support,
+          # see: https://cmake.org/cmake/help/latest/cpack_gen/wix.html#variable:CPACK_WIX_VERSION
+          cmake-version: "3.30.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
@@ -256,14 +289,13 @@ jobs:
           arch: ${{ matrix.arch }}
 
       - name: "[Windows 11 ARM64] Install ARM64 CMake"
-        if: matrix.os == 'windows-11-arm'
+        if: runner.os == 'Windows' && runner.arch == 'ARM64'
         run: |
           Invoke-WebRequest -Uri https://github.com/Kitware/CMake/releases/download/v3.30.1/cmake-3.30.1-windows-arm64.zip -OutFile cmake-arm64.zip
           Expand-Archive cmake-arm64.zip -DestinationPath $env:USERPROFILE\cmake
           $cmakePath = "$env:USERPROFILE\cmake\cmake-3.30.1-windows-arm64\bin"
           $cmakePath | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
           $env:Path += ";$cmakePath"
-          cmake --version
 
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
@@ -323,11 +355,33 @@ jobs:
             echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
           fi
 
+      - name: "[AppImage] Set up cmake"
+        # The CPack AppImage generator requires CMake >= 4.2, which is not
+        # available from apt on the ubuntu-22.04 runner (kept for the glibc
+        # baseline).  Use the same action as the macOS/Windows builds.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        uses: jwlawson/actions-setup-cmake@v2.2
+        with:
+          cmake-version: "4.2.x"
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+
+      - name: "[AppImage] Cache buildenv"
+        # The buildenv is downloaded and extracted during the configure step
+        # (several GB).  Cache the extracted tree so re-runs of the AppImage
+        # job do not re-download it every time.  Keyed by BUILDENV_NAME, so a
+        # new buildenv (new hash suffix) naturally invalidates the entry.
+        # This step must come after "Set up build environment", which exports
+        # BUILDENV_NAME; the restore happens before "Configure" below.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        uses: actions/cache@v6
+        with:
+          path: ${{ env.BUILDENV_BASEPATH }}/${{ env.BUILDENV_NAME }}
+          key: buildenv-${{ env.BUILDENV_NAME }}
 
       - name: "[Windows] Set up build environment"
         if: matrix.buildenv_script != null && runner.os == 'Windows'
@@ -340,20 +394,23 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          # Key by source state (not run number) so runs that only change the
+          # workflow — or repeat the same source — reuse the compiled objects
+          # instead of creating a fresh cache entry every time.
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ env.BUILDENV_NAME || 'system' }}-${{ hashFiles('src/**', 'CMakeLists.txt', 'cmake/**') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
-        # GitHub Actions gives us 10 GB of cache.
-        # 4 runs * 2 GB = 8 GB
+        # Default to 2G; larger builds (e.g. the static AppImage build) can
+        # override via compiler_cache_max_size in the matrix.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=2G
+          ${{ matrix.compiler_cache }} --max-size=${{ matrix.compiler_cache_max_size || '2G' }}
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -443,13 +500,13 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.1.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           endpoint: https://weu.codesigning.azure.net/
-          trusted-signing-account-name: mixxx
+          signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
           files-folder-filter: exe
@@ -458,13 +515,30 @@ jobs:
           timestamp-digest: SHA256
           timeout: 600
 
-      - name: "[Windows 11 ARM64] Install WiX Toolset3"
-        if: matrix.os == 'windows-11-arm'
+      - name: "[Windows] Sign WiX custom action DLL"
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+        uses: azure/trusted-signing-action@v1.1.0
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://weu.codesigning.azure.net/
+          trusted-signing-account-name: mixxx
+          certificate-profile-name: mixxx
+          files: ${{ github.workspace }}/build/packaging/wix/mixxxupgradecustomaction.dll
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          timeout: 600
+
+      - name: "[Windows] Install WiX Toolset"
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          choco install wixtoolset
-          Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
-          refreshenv
-          echo "WIX=$env:WIX" >> $env:GITHUB_ENV
+          dotnet.exe tool install --global wix --version 6.0.2
+          wix extension add --global WixToolset.UI.wixext/6.0.2
 
       - name: "Package"
         id: package
@@ -472,7 +546,7 @@ jobs:
         # Use retry loop to work around a race condition on macOS causing
         # 'Resource busy' errors with 'hdiutil'. See
         # https://github.com/actions/runner-images/issues/7522
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 30
           max_attempts: ${{ runner.os == 'macOS' && 12 || 1 }}
@@ -481,15 +555,56 @@ jobs:
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
 
+      - name: "[AppImage] Upload AppImage"
+        if: matrix.cpack_generator == 'AppImage'
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ matrix.artifacts_path }}
+          if-no-files-found: error
+          # Match the other artifacts and upload uncompressed.  With
+          # archive=false the AppImage is uploaded as-is and the artifact
+          # name becomes the file name (the AppImage already is compressed,
+          # so re-zipping it is wasted work).
+          archive: "false"
+
+      - name: "[AppImage] Smoke test"
+        # Run the packaged AppImage once.  This catches loader-level failures
+        # (e.g. the ld.so assertion a broken linker produces, or missing
+        # bundled libraries) that a build-only pipeline cannot see.  The
+        # runner has no display, so --version may exit non-zero after
+        # initializing Qt — reaching Mixxx startup is what matters.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          # The AppImage does not bundle libpipewire (it is excluded), so the
+          # host must provide it; the bare runner image lacks it.
+          sudo apt-get install -y --no-install-recommends libpipewire-0.3-0
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Smoke-testing ${APPIMAGE}"
+          set +e
+          APPIMAGE_EXTRACT_AND_RUN=1 timeout 60 "${APPIMAGE}" --version >/tmp/smoke.log 2>&1
+          rc=$?
+          set -e
+          if grep -qE "Inconsistency detected by ld.so|error while loading shared libraries|cannot open shared object file" /tmp/smoke.log; then
+            echo "FAIL: AppImage failed at loader level (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          if ! grep -qE "Mixxx [0-9]|Using preferences|Selected Qt style|ConfigObject:" /tmp/smoke.log; then
+            echo "FAIL: AppImage did not reach Mixxx startup (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          echo "SMOKE OK"
+
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.os }}-logs-packages-wix
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
       - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        if: matrix.cpack_generator != 'AppImage' && startsWith(matrix.os, 'ubuntu') && matrix.crosscompile != true && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
         run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
         env:
           RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
@@ -525,7 +640,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.1.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -544,8 +659,9 @@ jobs:
         # Copy the desired directory structure to the deploy/ directory. This
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
+        # The AppImage publishes via appimage.yml, not via the generic path.
         id: prepare_deploy
-        if: inputs.publish && matrix.artifacts_path != null
+        if: inputs.publish && matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         shell: bash
         run: >
           if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
@@ -624,8 +740,9 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: "[Android/macOS/Windows] Upload build to downloads.mixxx.org"
-        # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
+        # Skip deploying Ubuntu builds to downloads.mixxx.org (these are
+        # deployed to the PPA) and the AppImage (published via appimage.yml).
+        if: matrix.cpack_generator != 'AppImage' && startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
@@ -641,10 +758,12 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v6.0.0
+        # The AppImage is uploaded by the dedicated "[AppImage] Upload AppImage"
+        # step with a stable name used by the publish workflow.
+        if: matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
+        uses: actions/upload-artifact@v7.0.1
         with:
-          name: ${{ matrix.artifacts_name }}
+          archive: "false"
           path: ${{ matrix.artifacts_path }}
 
   build-flatpak:
@@ -675,7 +794,7 @@ jobs:
           rm -rf /host/usr/share/dotnet
 
       - name: "Check out repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -700,6 +819,7 @@ jobs:
         run: |
           flatpak build-bundle repo \
             --arch=${{ matrix.variant.arch }} \
+            --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo \
             Mixxx-${GIT_DESC}-${{ matrix.variant.arch }}.flatpak org.mixxx.Mixxx
 
       - name: "Create Debug extension"
@@ -709,15 +829,15 @@ jobs:
             --runtime Mixxx-${GIT_DESC}-${{ matrix.variant.arch }}.Debug.flatpak org.mixxx.Mixxx.Debug
 
       - name: "Upload Flatpak bundle"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7.0.1
         with:
-          name: Flatpak ${{ matrix.variant.arch }}
+          archive: "false"
           path: Mixxx-${{ env.GIT_DESC }}-${{ matrix.variant.arch }}.flatpak
 
       - name: "Upload Debug extension"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7.0.1
         with:
-          name: Flatpak Debug Extension ${{ matrix.variant.arch }}
+          archive: "false"
           path: Mixxx-${{ env.GIT_DESC }}-${{ matrix.variant.arch }}.Debug.flatpak
 
   update_manifest:
@@ -731,7 +851,7 @@ jobs:
     if: always() && github.repository == 'mixxxdj/mixxx'
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 

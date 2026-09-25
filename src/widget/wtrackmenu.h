@@ -341,12 +341,14 @@ class WTrackMenu : public QMenu {
     // BPM feature
     parented_ptr<QAction> m_pBpmLockAction;
     parented_ptr<QAction> m_pBpmUnlockAction;
-    parented_ptr<QAction> m_pBpmDoubleAction;
     parented_ptr<QAction> m_pBpmHalveAction;
     parented_ptr<QAction> m_pBpmTwoThirdsAction;
-    parented_ptr<QAction> m_pBpmThreeFourthsAction;
     parented_ptr<QAction> m_pBpmFourThirdsAction;
+    parented_ptr<QAction> m_pBpmThreeFourthsAction;
+    parented_ptr<QAction> m_pBpmFourFifthsAction;
+    parented_ptr<QAction> m_pBpmFiveFourthsAction;
     parented_ptr<QAction> m_pBpmThreeHalvesAction;
+    parented_ptr<QAction> m_pBpmDoubleAction;
     parented_ptr<QAction> m_pBpmResetAction;
     parented_ptr<QAction> m_pBpmUndoAction;
     parented_ptr<QAction> m_pTranslateBeatsHalf;
@@ -396,6 +398,8 @@ class WTrackMenu : public QMenu {
 
     QList<UpdateExternalTrackCollection> m_updateInExternalTrackCollections;
 
+    bool m_bSearchRelatedMenuLoaded;
+    bool m_bFindOnWebMenuLoaded;
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
 

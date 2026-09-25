@@ -10,6 +10,7 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#include "library/dateformatbroadcaster.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -75,8 +76,10 @@ Library::Library(
           m_pLibraryWidget(nullptr),
           m_pLibraryPreparationWindowWidget(nullptr),
           m_pKeyNotation(std::make_unique<ControlObject>(
-                  mixxx::library::prefs::kKeyNotationConfigKey)) {
+                  mixxx::library::prefs::kKeyNotationConfigKey, false)) {
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
+
+    DateFormatChangedBroadcaster::createInstance();
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
@@ -272,7 +275,9 @@ Library::Library(
             kEditMetadataSelectedClickDefault);
 }
 
-Library::~Library() = default;
+Library::~Library() {
+    DateFormatChangedBroadcaster::destroy();
+}
 
 TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
@@ -342,6 +347,12 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    const auto sidebarHoverExpandDelay =
+            m_pConfig->getValue(
+                    kSidebarHoverExpandDelayConfigKey,
+                    kSidebarHoverExpandDelayDefault);
+    pSidebarWidget->slotSetExpandOnHoverDelay(sidebarHoverExpandDelay);
+
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
     // Setup the sources view
@@ -387,6 +398,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &Library::setTrackTableFont,
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
+
+    connect(this,
+            &Library::setSidebarHoverExpandDelay,
+            pSidebarWidget,
+            &WLibrarySidebar::slotSetExpandOnHoverDelay);
 
     for (const auto& feature : std::as_const(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);

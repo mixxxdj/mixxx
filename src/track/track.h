@@ -339,6 +339,7 @@ class Track : public QObject {
     CuePointer findHotcueByIndex(int idx) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
+    void removeTempLoopCue();
     QList<CuePointer> getCuePoints() const {
         const QMutexLocker lock(&m_qMutex);
         // lock thread-unsafe copy constructors of QList
@@ -382,7 +383,6 @@ class Track : public QObject {
 
     // Set the track's Beats if not locked
     bool trySetBeats(mixxx::BeatsPointer pBeats);
-    bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
 
     void undoBeatsChange();
     bool canUndoBeatsChange() const {

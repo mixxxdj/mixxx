@@ -26,6 +26,7 @@
 #define SPLIT_74MIN "74 Minutes (CD)"
 #define SPLIT_80MIN "80 Minutes (CD)"
 #define SPLIT_120MIN "120 Minutes"
+#define SPLIT_NONE "No Splitting"
 
 // Byte conversions. Slightly rounded to leave enough room to add
 // closing frames by the encoder. All sizes are in bytes.

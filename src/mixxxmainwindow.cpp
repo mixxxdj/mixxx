@@ -17,6 +17,8 @@
 #endif
 
 #ifdef MIXXX_USE_QOPENGL
+#include <QGuiApplication>
+
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
 #endif
@@ -51,6 +53,7 @@
 #include "track/track.h"
 #include "util/debug.h"
 #include "util/desktophelper.h"
+#include "util/menubarhelper.h"
 #include "util/sandbox.h"
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
@@ -67,25 +70,6 @@
 #endif
 
 namespace {
-#ifdef __LINUX__
-// Detect if the desktop supports a global menu to decide whether we need to rebuild
-// and reconnect the menu bar when switching to/from fullscreen mode.
-// Compared to QMenuBar::isNativeMenuBar() (requires a set menu bar) and
-// Qt::AA_DontUseNativeMenuBar, which may both change, this is way more reliable
-// since it's rather unlikely that the Appmenu.Registrar service is unloaded/stopped
-// while Mixxx is running.
-// This is a reimplementation of QGenericUnixTheme > checkDBusGlobalMenuAvailable()
-inline bool supportsGlobalMenu() {
-#ifndef QT_NO_DBUS
-    QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto* pIface = conn.interface()) {
-        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
-    }
-#endif
-    return false;
-}
-#endif
-
 const ConfigKey kHideMenuBarConfigKey = ConfigKey("[Config]", "hide_menubar");
 const ConfigKey kMenuBarHintConfigKey = ConfigKey("[Config]", "show_menubar_hint");
 } // namespace
@@ -103,7 +87,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_noAuxInputDialog(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
-          m_supportsGlobalMenuBar(supportsGlobalMenu()),
+          m_supportsGlobalMenuBar(mixxx::desktopSupportsGlobalMenuBar()),
 #endif
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
@@ -156,22 +140,35 @@ void MixxxMainWindow::initializeQOpenGL() {
     // QGLFormat::hasOpenGL() has been removed.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
 #else
-    if (!CmdlineArgs::Instance().getSafeMode()) {
+    // With EGLFS there is always exactly one native window and one EGL window surface
+    // OpenGL windows cannot be embedded into our QWidgets main window we already have.
+    // https://doc.qt.io/qt-6/embedded-linux.html
+    bool isEglfs = QGuiApplication::platformName() == "eglfs";
+
+    if (!CmdlineArgs::Instance().getSafeMode() && !isEglfs) {
 #endif
         QOpenGLContext context;
         context.setFormat(WaveformWidgetFactory::getSurfaceFormat(m_pCoreServices->getSettings()));
         if (context.create()) {
+            std::pair version = context.format().version();
+            qDebug().noquote()
+                    << "QOpenGLContext created:"
+                    << QGuiApplication::platformName()
+                    << context.format().renderableType()
+                    << QString("V%1.%2").arg(QString::number(version.first),
+                               QString::number(version.second))
+                    << context.format().profile();
             // This widget and its QOpenGLWindow will be used to query QOpenGL
             // information (version, driver, etc) in WaveformWidgetFactory.
             // The "SharedGLContext" terminology here doesn't really apply,
             // but allows us to take advantage of the existing classes.
-            WInitialGLWidget* widget = new WInitialGLWidget(this);
-            widget->setGeometry(QRect(0, 0, 3, 3));
-            SharedGLContext::setWidget(widget);
+            auto pWidget = make_parented<WInitialGLWidget>(this);
+            pWidget->setGeometry(QRect(0, 0, 3, 3));
+            SharedGLContext::setWidget(pWidget);
             // When the widget's QOpenGLWindow has been initialized, we continue
             // with the actual initialization
-            connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
-            widget->show();
+            connect(pWidget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
+            pWidget->show();
             return;
         }
         qDebug() << "QOpenGLContext::create() failed";
@@ -376,7 +373,11 @@ void MixxxMainWindow::initialize() {
     // that says "mixxx will barely work with no outs".
     // In case of persisting errors, the user has already received a message
     // above. So we can just check the output count here.
-    while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().count() == 0) {
+    while (m_pCoreServices->getSoundManager()
+                    ->getConfig()
+                    .getOutputs()
+                    .isEmpty() &&
+            !m_pCoreServices->getSoundManager()->pipewireSkipConfig()) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
         bool continueClicked = false;
@@ -486,6 +487,10 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    // Clear widget pointer list and destroy all update connections before we
+    // delete the main widget (ie. all WBaseWidgets) to prevent KeyboardEventFilter
+    // accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
     m_pCentralWidget = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);
@@ -509,7 +514,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     // outside of MixxxMainWindow the parent relationship will directly destroy
     // the WMainMenuBar and this will no longer be a problem.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
-
+    // Clear action pointer list before we delete the menubar
+    // to prevent KeyboardEventFilter accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearMenuBarActions();
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
     // We need to reset the parented pointer here that it does not become a
@@ -800,9 +807,9 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
-    DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
+    DEBUG_ASSERT(m_pCoreServices->getKeyboardEventFilter());
     m_pMenuBar = make_parented<WMainMenuBar>(
-            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
+            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardEventFilter());
     if (m_pCentralWidget) {
         m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
@@ -864,13 +871,6 @@ void MixxxMainWindow::connectMenuBar() {
             Qt::UniqueConnection);
     // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
     m_pMenuBar->onFullScreenStateChange(isFullScreen());
-
-    // Keyboard shortcuts
-    connect(m_pMenuBar,
-            &WMainMenuBar::toggleKeyboardShortcuts,
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::slotOptionsKeyboard,
-            Qt::UniqueConnection);
 
     // Help
     connect(m_pMenuBar,
@@ -1249,6 +1249,7 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
     }
 
     QMessageBox* pMsg = new QMessageBox();
+    pMsg->setAttribute(Qt::WA_DeleteOnClose);
     pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
     pMsg->setWindowTitle(tr("Library scan finished"));
 
@@ -1282,7 +1283,8 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         if (result.numNewMissingTracks != 0) {
             summary += tr("%n track(s) missing (%1 total)",
                     nullptr,
-                    result.numNewMissingTracks);
+                    result.numNewMissingTracks)
+                               .arg(result.numMissingTracks);
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
@@ -1318,6 +1320,8 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
     m_toolTipsCfg = tt;
+    m_pCoreServices->getKeyboardEventFilter()->setShowOnlyKbdShortcuts(
+            tt == mixxx::preferences::Tooltips::OnlyKbdShortcuts);
 #ifdef MIXXX_USE_QOPENGL
     ToolTipQOpenGL::singleton().setActive(
             m_toolTipsCfg == mixxx::preferences::Tooltips::On);
@@ -1339,6 +1343,11 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pMenuBar->onNewSkinAboutToLoad();
 
     if (m_pCentralWidget) {
+        // Clear widget pointer list and destroy all update connections before
+        // we delete the main widget (ie. all WBaseWidgets) to prevent
+        // KeyboardEventFilter accessing dangling pointers, just in case a
+        // shortcuts/tooltip update is triggered while we re/load a skin.
+        m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
         m_pCentralWidget->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pCentralWidget;
@@ -1441,7 +1450,13 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         // Return true for no tool tips
         switch (m_toolTipsCfg) {
         case mixxx::preferences::Tooltips::OnlyInLibrary:
+            // WLibrary's stacked widgets are not derived from WBaseWidget
             if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
+                return true;
+            }
+            break;
+        case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+            if (dynamic_cast<WBaseWidget*>(obj) == nullptr) {
                 return true;
             }
             break;

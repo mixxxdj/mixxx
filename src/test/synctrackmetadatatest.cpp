@@ -13,7 +13,7 @@
 
 namespace {
 
-const QString kTestFileWithMetadata = QStringLiteral("id3-test-data/cover-test-jpg.mp3");
+const QString kTestFileWithMetadata = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-jpg.mp3");
 const QString kTestFileWithoutMetadata = QStringLiteral("id3-test-data/empty.mp3");
 
 enum class AdjustFileTime {

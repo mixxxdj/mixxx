@@ -551,12 +551,6 @@ void CueControl::attachCue(const CuePointer& pCue, HotcueControl* pControl) {
         return;
     }
     detachCue(pControl);
-    connect(pCue.get(),
-            &Cue::updated,
-            this,
-            &CueControl::cueUpdated,
-            Qt::DirectConnection);
-
     pControl->setCue(pCue);
 }
 
@@ -570,7 +564,6 @@ void CueControl::detachCue(HotcueControl* pControl) {
         return;
     }
 
-    disconnect(pCue.get(), nullptr, this, nullptr);
     m_pCurrentSavedLoopControl.testAndSetRelease(pControl, nullptr);
     pControl->resetCue();
 }
@@ -616,6 +609,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             &CueControl::trackAnalyzed,
             Qt::DirectConnection);
 
+    // Note: this has to be a direct connection so we can synchronously update
+    // cue position COs. WOverview and WaveformRenderMarkBase for example are
+    // also listening to cuesUpdated() (queued connections) and need the new
+    // positions when they iterate over the cues to update the marks and ranges.
     connect(m_pLoadedTrack.get(),
             &Track::cuesUpdated,
             this,
@@ -717,11 +714,6 @@ void CueControl::slotCueModeChanged(double) {
     if (m_pPlay && !m_pPlay->toBool()) {
         getEngineBuffer()->verifyPlay();
     }
-}
-
-void CueControl::cueUpdated() {
-    //auto lock = lockMutex(&m_mutex);
-    // We should get a trackCuesUpdated call anyway, so do nothing.
 }
 
 void CueControl::loadCuesFromTrack() {
@@ -1069,15 +1061,15 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
         }
     }
 
-    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
+    m_pLoadedTrack->createAndAddCue(
             cueType,
             hotcueIndex,
             cueStartPosition,
             cueEndPosition,
             color);
 
-    // TODO(XXX) deal with spurious signals
-    attachCue(pCue, pControl);
+    // Note: createAndAddCue() emits cuesUpdated() connected to loadCuesFromTrack()
+    // updating pControl with the created Cue.
 
     if (cueType == mixxx::CueType::Loop) {
         setCurrentSavedLoopControlAndActivate(pControl);
@@ -1296,12 +1288,15 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
             if (type != mixxx::CueType::Invalid && position.isValid()) {
                 updateCurrentlyPreviewingIndex(index);
                 m_bypassCueSetByPlay = true;
+                // Seek before activating the saved loop, else quantize might
+                // cause an undesired seek, potentially to/past loop end
+                // which would throw us out of the loop.
+                seekAbs(position);
                 if (type == mixxx::CueType::Loop) {
                     setCurrentSavedLoopControlAndActivate(pControl);
                 } else if (pControl->getStatus() == HotcueControl::Status::Set) {
                     pControl->setStatus(HotcueControl::Status::Active);
                 }
-                seekAbs(position);
                 m_pPlay->set(1.0);
             }
         }

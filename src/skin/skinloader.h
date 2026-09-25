@@ -44,6 +44,7 @@ class SkinLoader : public QObject {
     QList<SkinPointer> getSkinsFromDir(const QDir& dir) const;
     QString pickResizableSkin(const QString& oldSkin) const;
     SkinPointer skinFromDirectory(const QDir& dir) const;
+    bool isDeveloperOnlyQmlSkin(const QString& skinName) const;
 
     UserSettingsPointer m_pConfig;
 

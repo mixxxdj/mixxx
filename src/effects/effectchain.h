@@ -81,9 +81,11 @@ class EffectChain : public QObject {
 
   public slots:
     void slotControlClear(double value);
+    void slotPresetListVisibleChanged(bool visible);
 
   signals:
     void chainPresetChanged(const QString& name);
+    void presetListShowRequest(bool show);
 
   protected slots:
     void sendParameterUpdate();
@@ -153,6 +155,7 @@ class EffectChain : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlChainShowFocus;
     std::unique_ptr<ControlPushButton> m_pControlChainHasControllerFocus;
     std::unique_ptr<ControlPushButton> m_pControlChainShowParameters;
+    std::unique_ptr<ControlPushButton> m_pControlShowPresetList;
     std::unique_ptr<ControlPushButton> m_pControlChainFocusedEffect;
 
     SignalProcessingStage m_signalProcessingStage;

@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "test/librarytest.h"
+#include "track/globaltrackcache.h"
 #include "track/track.h"
 
 using ::testing::UnorderedElementsAre;
@@ -55,4 +56,106 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QSet<QString> trackLocations = trackDAO.getAllTrackLocations();
     EXPECT_THAT(trackLocations, UnorderedElementsAre(newFile.location(), otherFile.location()));
+}
+
+// Regression test for the bug where a BPM-locked track without a beatgrid
+// loses its lock when reloaded from the database.
+// https://github.com/mixxxdj/mixxx/issues/15196
+TEST_F(TrackDAOTest, bpmLockPreservedForTrackWithoutBeats) {
+    const mixxx::FileInfo fileInfo(
+            QDir(QDir::tempPath()), QStringLiteral("bpmlocked-no-beats.mp3"));
+    TrackPointer pTrack = Track::newTemporary(mixxx::FileAccess(fileInfo));
+    pTrack->setDuration(135);
+    // Lock the BPM although the track has no beatgrid at all.
+    pTrack->setBpmLocked(true);
+    ASSERT_FALSE(pTrack->getBeats());
+    ASSERT_TRUE(pTrack->isBpmLocked());
+
+    const TrackId trackId = internalCollection()->addTrack(pTrack, false);
+    ASSERT_TRUE(trackId.isValid());
+
+    // Dropping the last reference evicts the track from the cache
+    // synchronously (eviction runs as a direct call on this thread), so the
+    // lookup below reloads it from the database instead of returning the
+    // cached in-memory object whose lock flag was never lost.
+    pTrack.reset();
+    ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
+
+    const TrackPointer pReloaded = internalCollection()->getTrackById(trackId);
+    ASSERT_TRUE(pReloaded);
+    EXPECT_FALSE(pReloaded->getBeats());
+    EXPECT_TRUE(pReloaded->isBpmLocked());
+}
+
+TEST_F(TrackDAOTest, markTrackLocationsAsVerifiedRecoversPresentFilesOnly) {
+    // Regression cover for both directions of mixxxdj/mixxx#13533:
+    //   1. A track erroneously flagged fs_deleted=1 must be revived when the
+    //      file is still present in an unchanged-hash directory (the original
+    //      bug).
+    //   2. A track legitimately flagged fs_deleted=1 because the file was
+    //      removed before the saved directory hash was last updated must NOT
+    //      be revived on a subsequent unchanged-hash rescan.
+    //
+    // markTrackLocationsAsVerified is the cleanup-phase entry point that the
+    // scanner uses for every verified location, including those collected
+    // from unchanged-hash directories. It should clear fs_deleted /
+    // needs_verification for exactly the locations passed in, and leave
+    // unrelated rows untouched.
+    TrackDAO& trackDAO = internalCollection()->getTrackDAO();
+
+    QDir dir(QDir::tempPath() + QStringLiteral("/verified_dir"));
+    mixxx::FileInfo presentFile(dir, QStringLiteral("present.mp3"));
+    mixxx::FileInfo deletedFile(dir, QStringLiteral("deleted.mp3"));
+
+    TrackPointer pPresent = Track::newTemporary(mixxx::FileAccess(presentFile));
+    TrackPointer pDeleted = Track::newTemporary(mixxx::FileAccess(deletedFile));
+    pPresent->setDuration(180);
+    pDeleted->setDuration(180);
+
+    TrackId presentId = internalCollection()->addTrack(pPresent, false);
+    TrackId deletedId = internalCollection()->addTrack(pDeleted, false);
+    ASSERT_TRUE(presentId.isValid());
+    ASSERT_TRUE(deletedId.isValid());
+
+    // Both rows simulate the post-`invalidateTrackLocationsInLibrary` state at
+    // the start of a scan. The "deleted" row additionally carries the
+    // fs_deleted=1 that the previous scan's verifyRemainingTracks set when
+    // the file disappeared from disk between scans.
+    QSqlQuery setQuery(dbConnection());
+    setQuery.prepare(
+            "UPDATE track_locations "
+            "SET fs_deleted=:fs_deleted, needs_verification=1 "
+            "WHERE location=:location");
+    setQuery.bindValue(":fs_deleted", 1);
+    setQuery.bindValue(":location", presentFile.location());
+    ASSERT_TRUE(setQuery.exec());
+    setQuery.bindValue(":fs_deleted", 1);
+    setQuery.bindValue(":location", deletedFile.location());
+    ASSERT_TRUE(setQuery.exec());
+
+    // The recursive scanner only feeds locations whose file is currently
+    // present in the directory into markTrackLocationsAsVerified. Simulate
+    // that for a delete-then-rescan: only `presentFile` is in the list.
+    trackDAO.markTrackLocationsAsVerified(QStringList{presentFile.location()});
+
+    QSqlQuery readQuery(dbConnection());
+    readQuery.prepare(
+            "SELECT fs_deleted, needs_verification FROM track_locations "
+            "WHERE location=:location");
+
+    readQuery.bindValue(":location", presentFile.location());
+    ASSERT_TRUE(readQuery.exec());
+    ASSERT_TRUE(readQuery.next());
+    EXPECT_EQ(0, readQuery.value(0).toInt())
+            << "fs_deleted should be cleared for a still-present file";
+    EXPECT_EQ(0, readQuery.value(1).toInt())
+            << "needs_verification should be cleared for a still-present file";
+
+    readQuery.bindValue(":location", deletedFile.location());
+    ASSERT_TRUE(readQuery.exec());
+    ASSERT_TRUE(readQuery.next());
+    EXPECT_EQ(1, readQuery.value(0).toInt())
+            << "fs_deleted must be preserved for a file no longer in the directory";
+    EXPECT_EQ(1, readQuery.value(1).toInt())
+            << "needs_verification must remain set so verifyRemainingTracks can confirm deletion";
 }
