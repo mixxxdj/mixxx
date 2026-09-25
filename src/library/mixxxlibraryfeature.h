@@ -29,7 +29,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     QVariant title() override;
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
-    bool dragMoveAccept(const QUrl& url) override;
+    bool dragMoveAccept(const QList<QUrl>& urls) override;
     TreeItemModel* sidebarModel() const override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
@@ -50,6 +50,7 @@ class MixxxLibraryFeature final : public LibraryFeature {
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+    void slotUpdateTrackCount();
 #ifdef __ENGINEPRIME__
     void onRightClick(const QPoint& globalPos) override;
 #endif
@@ -73,6 +74,8 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
+
+    int m_trackCount;
 
 #ifdef __ENGINEPRIME__
     parented_ptr<QAction> m_pExportLibraryAction;

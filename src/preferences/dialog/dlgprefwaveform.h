@@ -45,15 +45,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
         slotSetWaveformOptions(WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
-    void slotSetWaveformOverviewType();
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
     void slotSetVisualGainLow(double gain);
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
-    void slotSetNormalizeOverview(bool normalize);
-    void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotWaveformMeasured(float frameRate, int droppedFrames);
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
@@ -63,9 +60,15 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
     void slotSetUntilMarkTextHeightLimit(int index);
-    void slotStemOpacity(float value);
+    void slotStemOpacity(double value);
     void slotStemReorderOnChange(bool value);
-    void slotStemOutlineOpacity(float value);
+    void slotStemOutlineOpacity(double value);
+    void slotStemDisplayMode(int index);
+    // overview options
+    void slotSetWaveformOverviewType();
+    void slotSetOverviewStereoMode(bool mono);
+    void slotSetOverviewMinuteMarkers(bool minuteMarkers);
+    void slotSetOverviewScaling();
 
   private:
     void initWaveformControl();
@@ -79,9 +82,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
             WaveformWidgetType::Type type, WaveformWidgetBackend backend);
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
+    void updateStemOptionsEnabled();
+    void notifyQmlWaveformSettingsChanged();
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
+    std::unique_ptr<ControlObject> m_pOverviewStereoControl;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

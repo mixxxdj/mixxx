@@ -1,7 +1,6 @@
-#version 120
 //// GENERATED - EDITS WILL BE OVERWRITTEN
 
-varying vec3 vColor;
+varying highp vec3 vColor;
 
 void main()
 {

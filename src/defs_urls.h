@@ -15,7 +15,7 @@
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_WEBSITE_SHORT_URL "www.mixxx.org"
 #define MIXXX_SUPPORT_URL       "https://www.mixxx.org/support/"
-#define MIXXX_TRANSLATION_URL   "https://www.transifex.com/projects/p/mixxxdj/"
+#define MIXXX_TRANSLATION_URL "https://explore.transifex.com/mixxx-dj-software/"
 #define MIXXX_DONATE_URL "https://mixxx.org/donate"
 
 #define MIXXX_CONTROLLER_FORUMS_URL \
@@ -77,5 +77,7 @@
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#troubleshooting"
 #define MIXXX_MANUAL_SETTINGS_DIRECTORY_URL \
     MIXXX_MANUAL_URL "/chapters/appendix.html#settings-directory"
+#define MIXXX_MANUAL_OUTPUT_AND_INPUT_DEVICES \
+    MIXXX_MANUAL_URL "/chapters/preferences/sound_hardware#output-and-input-devices"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
 #define MIXXX_KBD_SHORTCUTS_FILENAME "Mixxx-Keyboard-Shortcuts.pdf"

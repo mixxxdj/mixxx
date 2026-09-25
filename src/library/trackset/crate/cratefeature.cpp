@@ -22,6 +22,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/defs.h"
+#include "util/dnd.h"
 #include "util/file.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
@@ -246,8 +247,11 @@ bool CrateFeature::dropAcceptChild(
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds =
-            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls, !pSource);
+    const QList<mixxx::FileInfo> fileInfos =
+            // collect all tracks, accept playlist files
+            DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollectionManager()->resolveTrackIds(fileInfos, pSource);
     if (trackIds.isEmpty()) {
         return false;
     }
@@ -256,7 +260,7 @@ bool CrateFeature::dropAcceptChild(
     return true;
 }
 
-bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
         return false;
@@ -266,8 +270,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url
             crate.isLocked()) {
         return false;
     }
-    return SoundSourceProxy::isUrlSupported(url) ||
-            Parser::isPlaylistFilenameSupported(url.toLocalFile());
+    return DragAndDropHelper::urlsContainSupportedTrackFiles(urls, true);
 }
 
 void CrateFeature::bindLibraryWidget(
@@ -385,6 +388,7 @@ void CrateFeature::onRightClickChild(
 
     m_pDeleteCrateAction->setEnabled(!crate.isLocked());
     m_pRenameCrateAction->setEnabled(!crate.isLocked());
+    m_pImportPlaylistAction->setEnabled(!crate.isLocked());
 
     m_pAutoDjTrackSourceAction->setChecked(crate.isAutoDjSource());
 
@@ -402,9 +406,7 @@ void CrateFeature::onRightClickChild(
     menu.addSeparator();
     menu.addAction(m_pAnalyzeCrateAction.get());
     menu.addSeparator();
-    if (!crate.isLocked()) {
-        menu.addAction(m_pImportPlaylistAction.get());
-    }
+    menu.addAction(m_pImportPlaylistAction.get());
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
 #ifdef __ENGINEPRIME__
@@ -665,12 +667,17 @@ void CrateFeature::slotImportPlaylist() {
 }
 
 void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId crateId) {
+    Crate crate;
+    if (!m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
+        return;
+    }
+    if (crate.isLocked()) {
+        return;
+    }
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
-    // TODO(XXX): Parsing a list of track locations from a playlist file
-    // is a general task and should be implemented separately.
     QList<QString> locations = Parser().parse(playlistFile);
     if (locations.empty()) {
         return;
@@ -940,6 +947,8 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
                         CrateId(pTreeItem->getData()));
         pTreeItem->setBold(crateContainsSelectedTrack);
     }
+
+    pRootItem->setBold(m_selectedTrackId.isValid() && sortedTrackCrates.size() > 0);
 
     m_pSidebarModel->triggerRepaint();
 }

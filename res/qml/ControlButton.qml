@@ -1,5 +1,4 @@
 import "." as Skin
-import Mixxx 1.0 as Mixxx
 
 Skin.Button {
     id: root
@@ -9,25 +8,23 @@ Skin.Button {
     property bool toggleable: false
 
     function toggle() {
-        control.value = !control.value;
+        controlBehavior.toggleControl();
     }
 
-    highlight: control.value
+    highlight: controlBehavior.isActive
     onPressed: {
-        if (toggleable)
-            toggle();
-        else
-            control.value = 1;
+        controlBehavior.pressPrimary();
     }
     onReleased: {
-        if (!toggleable)
-            control.value = 0;
+        controlBehavior.releasePrimary();
     }
 
-    Mixxx.ControlProxy {
-        id: control
+    ControlProxyButtonBehavior {
+        id: controlBehavior
 
         group: root.group
         key: root.key
+        toggleable: root.toggleable
+        handlePointerInput: false
     }
 }

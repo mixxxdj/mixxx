@@ -3,11 +3,13 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <QApplication>
+#include <QRegularExpression>
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
-#include "track/track.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/enginemixer.h"
@@ -15,11 +17,16 @@
 #include "library/library.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
 #ifdef MIXXX_USE_QML
 #include "qml/qmlplayermanagerproxy.h"
 #endif
 #include "moc_controller_mapping_validation_test.cpp"
 #include "soundio/soundmanager.h"
+
+namespace {
+const QRegularExpression kNonWordPattern(QStringLiteral("[^\\w]+"));
+}
 
 FakeMidiControllerJSProxy::FakeMidiControllerJSProxy()
         : ControllerJSProxy(nullptr) {
@@ -104,8 +111,12 @@ void FakeBulkControllerJSProxy::send(const QList<int>& data, unsigned int length
 
 FakeController::FakeController()
         : Controller("Test Controller"),
-          m_bMidiMapping(false),
-          m_bHidMapping(false) {
+          m_bMidiMapping(false)
+#ifdef __HID__
+          ,
+          m_bHidMapping(false)
+#endif
+{
     startEngine();
     getScriptEngine()->setTesting(true);
 }
@@ -116,16 +127,25 @@ FakeController::~FakeController() {
 bool FakeController::isMappable() const {
     if (m_bMidiMapping) {
         return m_pMidiMapping->isMappable();
-    } else if (m_bHidMapping) {
+    }
+#ifdef __HID__
+    else if (m_bHidMapping) {
         return m_pHidMapping->isMappable();
     }
+#endif
     return false;
 }
 
-void LegacyControllerMappingValidationTest::SetUp() {
-    m_mappingPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
-    m_pEnumerator.reset(new MappingInfoEnumerator(QList<QString>{m_mappingPath.absolutePath()}));
+#ifdef MIXXX_USE_QML
+void deleteTrack(Track* pTrack) {
+    // Delete track objects directly in unit tests with
+    // no main event loop
+    delete pTrack;
+};
+#endif
 
+void MappingTestFixture::SetUp() {
+#ifdef MIXXX_USE_QML
     // This setup mirrors coreservices -- it would be nice if we could use coreservices instead
     // but it does a lot of local disk / settings setup.
     auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
@@ -157,7 +177,7 @@ void LegacyControllerMappingValidationTest::SetUp() {
             nullptr,
             m_pConfig,
             dbConnectionPooler(),
-            [](Track* pTrack) { delete pTrack; });
+            deleteTrack);
 
     m_pRecordingManager = std::make_shared<RecordingManager>(m_pConfig, m_pEngine.get());
     CoverArtCache::createInstance();
@@ -170,34 +190,34 @@ void LegacyControllerMappingValidationTest::SetUp() {
             m_pRecordingManager.get());
 
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
-#ifdef MIXXX_USE_QML
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(m_pPlayerManager);
-#endif
     ControllerScriptEngineBase::registerPlayerManager(m_pPlayerManager);
     ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
+#endif
 }
 
-void LegacyControllerMappingValidationTest::TearDown() {
+void MappingTestFixture::TearDown() {
+#ifdef MIXXX_USE_QML
+    // Clean up in reverse order of initialization
     PlayerInfo::destroy();
     CoverArtCache::destroy();
-#ifdef MIXXX_USE_QML
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
-#endif
     ControllerScriptEngineBase::registerPlayerManager(nullptr);
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+#endif
 }
 
-bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& mapping) {
+bool MappingTestFixture::testLoadMapping(const QString& mappingPath) {
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo(mapping.getPath()), m_mappingPath);
+                    QFileInfo(mappingPath), QDir(RESOURCE_FOLDER "/controllers"));
     if (!pMapping) {
         return false;
     }
 
     FakeController controller;
     controller.setMapping(pMapping);
-    bool result = controller.applyMapping(getTestDir().filePath(QStringLiteral("../../res")));
+    bool result = controller.applyMapping(getTestDir().filePath(RESOURCE_FOLDER));
     controller.stopEngine();
     return result;
 }
@@ -237,39 +257,42 @@ bool lintMappingInfo(const MappingInfo& mapping) {
     return result;
 }
 
-TEST_F(LegacyControllerMappingValidationTest, MidiMappingsValid) {
-    foreach (const MappingInfo& mapping,
-            m_pEnumerator->getMappingsByExtension(MIDI_MAPPING_EXTENSION)) {
-        qDebug() << "Validating " << mapping.getPath();
-        std::string errorDescription = "Error while validating " + mapping.getPath().toStdString();
-        EXPECT_TRUE(mapping.isValid()) << errorDescription;
-        EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
-        EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
-    }
+std::string PrintMappingName(const ::testing::TestParamInfo<std::string>& info) {
+    auto name = QFileInfo(QString::fromStdString(info.param));
+    return name.fileName().replace(kNonWordPattern, "_").toStdString();
 }
 
-#ifdef __HID__
-TEST_F(LegacyControllerMappingValidationTest, HidMappingsValid) {
-    foreach (const MappingInfo& mapping,
-            m_pEnumerator->getMappingsByExtension(HID_MAPPING_EXTENSION)) {
-        qDebug() << "Validating" << mapping.getPath();
-        std::string errorDescription = "Error while validating " + mapping.getPath().toStdString();
-        EXPECT_TRUE(mapping.isValid()) << errorDescription;
-        EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
-        EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
-    }
+TEST_P(MappingTestFixture, ValidateMappingXML) {
+    QFileInfo mappingPath = QFileInfo(QString::fromStdString(GetParam()));
+    qDebug() << "ValidateMappingXML" << mappingPath;
+
+    MappingInfo mapping(mappingPath);
+    EXPECT_TRUE(mapping.isValid()) << "Error while validating XML file " << GetParam();
+    EXPECT_TRUE(lintMappingInfo(mapping)) << "Error while validating XML file " << GetParam();
 }
-#endif
+
+TEST_P(MappingTestFixture, LoadMapping) {
+    QString mappingPath = QString::fromStdString(GetParam());
+    qDebug() << "LoadMapping" << mappingPath;
+
+    EXPECT_TRUE(testLoadMapping(mappingPath)) << "Error while loading " << GetParam();
+}
 
 #ifdef __BULK__
-TEST_F(LegacyControllerMappingValidationTest, BulkMappingsValid) {
-    foreach (const MappingInfo& mapping,
-            m_pEnumerator->getMappingsByExtension(BULK_MAPPING_EXTENSION)) {
-        qDebug() << "Validating" << mapping.getPath();
-        std::string errorDescription = "Error while validating " + mapping.getPath().toStdString();
-        EXPECT_TRUE(mapping.isValid()) << errorDescription;
-        EXPECT_TRUE(lintMappingInfo(mapping)) << errorDescription;
-        EXPECT_TRUE(testLoadMapping(mapping)) << errorDescription;
-    }
-}
+INSTANTIATE_TEST_SUITE_P(BulkMappings,
+        MappingTestFixture,
+        ::testing::Values(CONTROLLER_BULK_MAPPINGS),
+        PrintMappingName);
 #endif
+
+#ifdef __HID__
+INSTANTIATE_TEST_SUITE_P(HidMappings,
+        MappingTestFixture,
+        ::testing::Values(CONTROLLER_HID_MAPPINGS),
+        PrintMappingName);
+#endif
+
+INSTANTIATE_TEST_SUITE_P(MidiMappings,
+        MappingTestFixture,
+        ::testing::Values(CONTROLLER_MIDI_MAPPINGS),
+        PrintMappingName);

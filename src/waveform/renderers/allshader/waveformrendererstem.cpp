@@ -50,6 +50,13 @@ void WaveformRendererStem::onSetup(const QDomNode&) {
 bool WaveformRendererStem::init() {
     m_pStemGain.clear();
     m_pStemMute.clear();
+
+    // Keep a valid drawing order even for displays that provide a static track
+    // without a channel group. The stem data itself is independent of the
+    // per-stem volume/mute controls, so those controls are optional.
+    m_stackOrder.resize(mixxx::kMaxSupportedStems);
+    std::iota(m_stackOrder.begin(), m_stackOrder.end(), 0);
+
     if (m_waveformRenderer->getGroup().isEmpty()) {
         return true;
     }
@@ -72,11 +79,13 @@ bool WaveformRendererStem::init() {
         m_pStemMute.back()->connectValueChanged(this, bringToForeground);
     }
 
-    m_stackOrder.resize(mixxx::kMaxSupportedStems);
-    std::iota(m_stackOrder.begin(), m_stackOrder.end(), 0);
-
 #ifndef __SCENEGRAPH__
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+    setSplitStemTracks(pWaveformWidgetFactory->isStemSplitTracks());
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::stemSplitTracksChanged,
+            this,
+            &WaveformRendererStem::setSplitStemTracks);
     setReorderOnChange(pWaveformWidgetFactory->isStemReorderOnChange());
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::stemReorderOnChangeChanged,
@@ -161,8 +170,7 @@ bool WaveformRendererStem::preprocessInner() {
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0);
-    // applyCompensation = false, as we scale to match filtered.all
-    getGains(&allGain, false, nullptr, nullptr, nullptr);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float stemBreadth = m_splitStemTracks ? breadth / 4.0f : 0;
@@ -195,6 +203,9 @@ bool WaveformRendererStem::preprocessInner() {
     for (int visualIdx = 0; visualIdx < stripLength; visualIdx++) {
         int stemLayer = 0;
         for (int stemIdx : std::as_const(m_stackOrder)) {
+            if (stemIdx >= stemInfo.size()) {
+                continue;
+            }
             // Stem is drawn twice with different opacity level, this allow to
             // see the maximum signal by transparency
             for (int layerIdx = 0; layerIdx < 2; layerIdx++) {
@@ -225,32 +236,38 @@ bool WaveformRendererStem::preprocessInner() {
                 }
 
                 // Cast to float
-                float max = static_cast<float>(u8max);
+                float max = static_cast<float>(u8max) * allGain;
 
                 // Apply the gains
                 if (layerIdx) {
-                    bool isMuted = m_pStemMute.empty() ? false : m_pStemMute[stemIdx]->toBool();
-                    float volume = m_pStemGain.empty()
-                            ? 1.f
-                            : static_cast<float>(m_pStemGain[stemIdx]->get());
-                    max *= isMuted ||
-                                    (selectedStems &&
-                                            !(selectedStems & 1 << stemIdx))
-                            ? 0.f
-                            : volume;
+                    if (selectedStems) {
+                        max *= !(selectedStems & 1 << stemIdx)
+                                ? 0.f
+                                : 1.f;
+                    } else if (!m_pStemMute.empty() && m_pStemMute[stemIdx]->toBool()) {
+                        max = 0;
+                    } else {
+                        float volume = m_pStemGain.empty()
+                                ? 1.f
+                                : static_cast<float>(m_pStemGain[stemIdx]->get());
+                        max *= volume;
+                    }
                 }
 
                 // Lines are thin rectangles
                 // shadow
+                float height = heightFactor * max;
+                if (m_splitStemTracks) {
+                    height = std::min(height, halfBreadth);
+                }
+                const int yIndex = m_splitStemTracks ? stemIdx : stemLayer;
                 vertexUpdater.addRectangle(
                         {fVisualIdx - halfStripSize,
-                                stemLayer * stemBreadth + halfBreadth -
-                                        heightFactor * max},
+                                yIndex * stemBreadth + halfBreadth - height},
                         {fVisualIdx + halfStripSize,
                                 m_isSlipRenderer
-                                        ? stemLayer * stemBreadth + halfBreadth
-                                        : stemLayer * stemBreadth + halfBreadth +
-                                                heightFactor * max},
+                                        ? yIndex * stemBreadth + halfBreadth
+                                        : yIndex * stemBreadth + halfBreadth + height},
                         {color_r, color_g, color_b, color_a});
             }
             stemLayer++;

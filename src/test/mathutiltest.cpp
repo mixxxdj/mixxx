@@ -42,11 +42,11 @@ TEST_F(MathUtilTest, MathClampUnsafe) {
 TEST_F(MathUtilTest, IsNaN) {
     // Test floats can be recognized as nan.
     EXPECT_FALSE(util_isnan(0.0f));
-    EXPECT_TRUE(util_isnan(std::numeric_limits<float>::quiet_NaN()));
+    EXPECT_TRUE(util_isnan(util_float_nan()));
 
     // Test doubles can be recognized as nan.
     EXPECT_FALSE(util_isnan(0.0));
-    EXPECT_TRUE(util_isnan(std::numeric_limits<double>::quiet_NaN()));
+    EXPECT_TRUE(util_isnan(util_double_nan()));
 }
 
 TEST_F(MathUtilTest, IsInf) {

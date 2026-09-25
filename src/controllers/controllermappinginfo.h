@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QDomElement>
-#include <QList>
-#include <QMap>
-#include <QString>
+#include <QUrl>
+#include <QVersionNumber>
 
-#include "controllers/legacycontrollermapping.h"
-#include "controllers/legacycontrollermappingfilehandler.h"
-#include "preferences/usersettings.h"
+class QXmlStreamAttributes;
+class QFileInfo;
 
 struct ProductInfo {
+    QString friendlyName;
+    QUrl visualUrl;
+
     QString protocol;
     QString vendor_id;
     QString product_id;
@@ -24,6 +24,12 @@ struct ProductInfo {
     QString out_epaddr;
 };
 
+bool operator==(const ProductInfo& a, const ProductInfo& b);
+
+size_t qHash(const ProductInfo& product);
+
+QDebug operator<<(QDebug dbg, const ProductInfo& product);
+
 /// Base class handling enumeration and parsing of mapping info headers
 ///
 /// This class handles enumeration and parsing of controller XML description file
@@ -31,32 +37,35 @@ struct ProductInfo {
 /// show details for a mapping.
 class MappingInfo {
   public:
-    MappingInfo();
-    MappingInfo(const QString& path);
+    MappingInfo() = default;
+    explicit MappingInfo(const QFileInfo& fileInfo);
 
     inline bool isValid() const {
         return m_valid;
     }
 
-    inline const QString getPath() const {
+    inline const QString& getPath() const {
         return m_path;
     }
-    inline const QString getDirPath() const {
+    inline const QString& getDirPath() const {
         return m_dirPath;
     }
-    inline const QString getName() const {
+    inline const QString& getName() const {
         return m_name;
     }
-    inline const QString getDescription() const {
+    inline const QVersionNumber& getMixxxVersion() const {
+        return m_mixxxVersion;
+    }
+    inline const QString& getDescription() const {
         return m_description;
     }
-    inline const QString getForumLink() const {
+    inline const QString& getForumLink() const {
         return m_forumlink;
     }
-    inline const QString getWikiLink() const {
+    inline const QString& getWikiLink() const {
         return m_wikilink;
     }
-    inline const QString getAuthor() const {
+    inline const QString& getAuthor() const {
         return m_author;
     }
 
@@ -64,13 +73,26 @@ class MappingInfo {
         return m_products;
     }
 
-  private:
-    ProductInfo parseBulkProduct(const QDomElement& element) const;
-    ProductInfo parseHIDProduct(const QDomElement& element) const;
+    bool operator==(const MappingInfo& b) const {
+        return m_valid == b.m_valid &&
+                m_path == b.m_path &&
+                m_dirPath == b.m_dirPath &&
+                m_name == b.m_name &&
+                m_author == b.m_author &&
+                m_description == b.m_description &&
+                m_forumlink == b.m_forumlink &&
+                m_wikilink == b.m_wikilink &&
+                m_products == b.m_products;
+    }
 
-    bool m_valid;
+  private:
+    static ProductInfo parseBulkProduct(const QXmlStreamAttributes& xmlElementAttributes);
+    static ProductInfo parseHIDProduct(const QXmlStreamAttributes& xmlElementAttributes);
+
+    bool m_valid = false;
     QString m_path;
     QString m_dirPath;
+    QVersionNumber m_mixxxVersion;
     QString m_name;
     QString m_author;
     QString m_description;

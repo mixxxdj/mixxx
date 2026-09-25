@@ -176,7 +176,10 @@ void TreeItemModel::insertTreeItemRows(
     }
 
     TreeItem* pParentItem = getItem(parent);
-    DEBUG_ASSERT(pParentItem != nullptr);
+    VERIFY_OR_DEBUG_ASSERT(pParentItem != nullptr) {
+        qWarning() << "TreeItemModel::insertTreeItemRows: parent item invalid, abort.";
+        return;
+    }
 
     beginInsertRows(parent, position, position + static_cast<int>(rows.size()) - 1);
     pParentItem->insertChildren(position, std::move(rows));
@@ -214,4 +217,9 @@ void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
     emit dataChanged(left, right);
+
+    // Also include the root item in case this has been called in order to
+    // enforce FontRole updates via TreeItem::isBold()
+    QModelIndex rootIdx = getRootIndex();
+    emit dataChanged(rootIdx, rootIdx);
 }

@@ -5,7 +5,6 @@
 #include <type_traits>
 
 #include "util/assert.h"
-#include "util/fpclassify.h"
 
 #if __has_include(<bit>)
 #include <bit>

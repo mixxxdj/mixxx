@@ -14,7 +14,7 @@ class DefaultDelegate : public QStyledItemDelegate {
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const override;
 
-    void setHighlightedTextColor(
+    void setTextColor(
             QStyleOptionViewItem& option,
             const QModelIndex& index) const;
 };

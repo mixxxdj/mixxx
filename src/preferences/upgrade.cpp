@@ -357,9 +357,20 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         else {
 #endif
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to"
-                     << VersionStore::version();
-            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+#ifdef MIXXX_USE_QML
+            if (CmdlineArgs::Instance().isQml()) {
+                // If running the QML version (aka 3.0 unstable), we set a dummy
+                // unstable version in the settings. This is used to detect if
+                // the current user profile is being used for testing purpose
+                // and if it is safe for the user to potentially lose their data
+                config->setValue(ConfigKey("[Config]", "Version"), VersionStore::FUTURE_UNSTABLE);
+            } else
+#endif
+            {
+                qDebug() << "No version number in configuration file. Setting to"
+                         << VersionStore::version();
+                config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+            }
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__
@@ -607,6 +618,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                 correctedWaveformBacked);
         config->setValue<int>(ConfigKey("[Waveform]", "waveform_options"),
                 correctedWaveformOption);
+        // Schedule fix for an inconsistency in the database (it will be run in
+        // TrackCollectionManager ctor):
+        // in `track_locations` table the `directory` column may be incorrect,
+        // see https://github.com/mixxxdj/mixxx/pull/16578
+        config->setValue(mixxx::library::prefs::kRepairDatabaseOnNextRestartConfigKey, true);
+
         // mark the configuration as updated
         configVersion = "2.6.0";
         config->set(ConfigKey("[Config]", "Version"),
@@ -617,7 +634,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     // If additional upgrades are added for later versions, they should go before
     // this block and cleanVersion should be bumped to the latest version.
     const QVersionNumber cleanVersion(2, 6, 0);
-    if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
+    if (QVersionNumber::fromString(configVersion) >= cleanVersion &&
+            configVersion != VersionStore::FUTURE_UNSTABLE) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
@@ -625,6 +643,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion == VersionStore::version()) {
         qDebug() << "Configuration file is now at the current version" << VersionStore::version();
+    } else if (configVersion == VersionStore::FUTURE_UNSTABLE) {
+        qDebug() << "Configuration file is now at the unstable version"
+                 << VersionStore::FUTURE_UNSTABLE;
     } else {
         qWarning() << "Configuration file is at version" << configVersion
                    << "instead of the current" << VersionStore::version();

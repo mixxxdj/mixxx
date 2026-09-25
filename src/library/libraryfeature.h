@@ -61,13 +61,13 @@ class LibraryFeature : public QObject {
         Q_UNUSED(pSource);
         return false;
     }
-    virtual bool dragMoveAccept(const QUrl& url) {
-        Q_UNUSED(url);
+    virtual bool dragMoveAccept(const QList<QUrl>& urls) {
+        Q_UNUSED(urls);
         return false;
     }
-    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
+    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
         Q_UNUSED(index);
-        Q_UNUSED(url);
+        Q_UNUSED(urls);
         return false;
     }
 
@@ -165,7 +165,7 @@ class LibraryFeature : public QObject {
     // emit this signal if the foreign music collection has been imported/parsed.
     void featureLoadingFinished(LibraryFeature*s);
     // emit this signal to select pFeature
-    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
+    void featureSelect(LibraryFeature* pFeature, const QModelIndex& index, bool scrollTo = true);
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);

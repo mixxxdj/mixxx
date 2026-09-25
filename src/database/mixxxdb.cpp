@@ -1,6 +1,8 @@
 #include "database/mixxxdb.h"
 
 #include <QDir>
+#include <QSqlQuery>
+#include <QVariant>
 
 #include "database/schemamanager.h"
 #include "moc_mixxxdb.cpp"

@@ -102,6 +102,15 @@ class Track : public QObject {
         return fileInfo.location();
     }
 
+    // Returns absolute path to the file, including the filename.
+    QString getDirectory() const {
+        const auto fileInfo = getFileInfo();
+        if (!fileInfo.hasLocation()) {
+            return {};
+        }
+        return fileInfo.locationPath();
+    }
+
     /// Set the file type
     ///
     /// Returns the old type to allow the caller to report if it has changed.
@@ -342,6 +351,7 @@ class Track : public QObject {
     CuePointer findHotcueByIndex(int idx) const;
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(mixxx::CueType);
+    void removeTempLoopCue();
     QList<CuePointer> getCuePoints() const {
         const QMutexLocker lock(&m_qMutex);
         // lock thread-unsafe copy constructors of QList
@@ -385,7 +395,6 @@ class Track : public QObject {
 
     // Set the track's Beats if not locked
     bool trySetBeats(mixxx::BeatsPointer pBeats);
-    bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
 
     void undoBeatsChange();
     bool canUndoBeatsChange() const {
@@ -411,6 +420,8 @@ class Track : public QObject {
             mixxx::track::io::key::Source keySource = mixxx::track::io::key::USER);
     mixxx::track::io::key::ChromaticKey getKey() const;
     QString getKeyText() const;
+    void setTuningFrequencyHz(double tuningFrequencyHz);
+    double getTuningFrequencyHz() const;
 
     void setCoverInfo(const CoverInfoRelative& coverInfo);
     CoverInfoRelative getCoverInfo() const;

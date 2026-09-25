@@ -2,8 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////
 //
-// Traktor Kontrol S3 HID controller script v2.00
-// Last modification: January 2023
+// Traktor Kontrol S3 HID controller script
 // Authors: Owen Williams, Robbert van der Helm
 // https://manual.mixxx.org/latest/en/hardware/controllers/native_instruments_traktor_kontrol_s3.html
 //
@@ -92,9 +91,11 @@ TraktorS3.ChannelColors = {
     "[Channel4]": engine.getSetting("chan4Color")
 };
 
+TraktorS3.HotcueUnsetColor = engine.getSetting("unsetHotcueColor");
+
 // Each color has four brightnesses, so these values can be between 0 and 3.
-TraktorS3.LEDDimValue = 0x00;
-TraktorS3.LEDBrightValue = 0x02;
+TraktorS3.LEDDimValue = parseInt(engine.getSetting("ledDimValue"), 10) || 0x01;
+TraktorS3.LEDBrightValue = parseInt(engine.getSetting("ledBrightValue"), 10) || 0x03;
 
 // By default the jog wheel's behavior when rotating it matches 33 1/3 rpm
 // vinyl. Changing this value to 2.0 causes a single rotation of the platter to
@@ -909,6 +910,7 @@ TraktorS3.Deck = class {
         // There is no control object to mark / unmark a track as played.
         // this.defineButton(messageShort, "!SetPlayed", 0x01, 0x10, 0x04, 0x20,
         // deckFn.SetPlayedHandler);
+        this.defineButton(messageShort, "!StarTrack", 0x01, 0x10, 0x04, 0x20, deckFn.StarTrackHandler);
         this.defineButton(messageShort, "!LibraryFocus", 0x01, 0x20, 0x04, 0x40, deckFn.LibraryFocusHandler);
         this.defineButton(messageShort, "!MaximizeLibrary", 0x01, 0x40, 0x04, 0x80, deckFn.MaximizeLibraryHandler);
 
@@ -1140,6 +1142,15 @@ TraktorS3.Deck = class {
             this.previewPressed = false;
             engine.setValue("[PreviewDeck1]", "play", 0);
         }
+    }
+
+    StarTrackHandler(field) {
+        this.colorOutput(field.value, "!StarTrack");
+        if (field.value === 0) {
+            return;
+        }
+
+        engine.setValue("[Library]", "sort_focused_column", 1);
     }
 
     LibraryFocusHandler(field) {
@@ -1429,6 +1440,7 @@ TraktorS3.Deck = class {
         this.defineOutput(outputA, "slip_enabled", 0x02, 0x1B);
         this.defineOutput(outputA, "reverse", 0x03, 0x1C);
         this.defineOutput(outputA, "!PreviewTrack", 0x04, 0x1D);
+        this.defineOutput(outputA, "!StarTrack", 0x05, 0x1E);
         this.defineOutput(outputA, "!LibraryFocus", 0x06, 0x1F);
         this.defineOutput(outputA, "!MaximizeLibrary", 0x07, 0x20);
         this.defineOutput(outputA, "quantize", 0x08, 0x21);
@@ -1527,14 +1539,14 @@ TraktorS3.Deck = class {
     }
 
     lightHotcue(number) {
-        const loaded = engine.getValue(this.activeChannel, "hotcue_" + number + "_status");
-        const active = engine.getValue(this.activeChannel, "hotcue_" + number + "_activate");
-        let ledValue = this.controller.hid.LEDColors.WHITE;
-        if (loaded) {
+        const hotCueStatus = engine.getValue(this.activeChannel, `hotcue_${  number  }_status`);
+        let ledValue = this.controller.hid.LEDColors[TraktorS3.HotcueUnsetColor];
+        // If hotcue is set, change the color.
+        if (hotCueStatus) {
             ledValue = this.colorForHotcue(number);
-            ledValue += TraktorS3.LEDDimValue;
         }
-        if (active) {
+        // If hotcue is active, make it brighter.
+        if (hotCueStatus === 2) {
             ledValue += TraktorS3.LEDBrightValue;
         } else {
             ledValue += TraktorS3.LEDDimValue;

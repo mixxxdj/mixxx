@@ -1,5 +1,7 @@
 #include "util/dnd.h"
 
+#include <QDirIterator>
+
 #include "control/controlobject.h"
 #include "library/parser.h"
 #include "mixer/playermanager.h"
@@ -49,7 +51,7 @@ bool addFileToList(
 QList<mixxx::FileInfo> dropEventFiles(
         const QMimeData& mimeData,
         const QString& sourceIdentifier,
-        bool firstOnly,
+        bool stopOnFirstMatch,
         bool acceptPlaylists) {
     qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
     qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
@@ -61,7 +63,7 @@ QList<mixxx::FileInfo> dropEventFiles(
 
     return DragAndDropHelper::supportedTracksFromUrls(
             mimeData.urls(),
-            firstOnly,
+            stopOnFirstMatch,
             acceptPlaylists);
 }
 
@@ -136,10 +138,17 @@ bool mouseMoveInitiatesDragHelper(QMouseEvent* pEvent, bool isPress) {
 
 } // anonymous namespace
 
+// static
+bool DragAndDropHelper::urlsContainSupportedTrackFiles(
+        const QList<QUrl>& urls,
+        bool acceptPlaylists) {
+    return !supportedTracksFromUrls(urls, true, acceptPlaylists).isEmpty();
+}
+
 //static
 QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
         const QList<QUrl>& urls,
-        bool firstOnly,
+        bool stopOnFirstMatch,
         bool acceptPlaylists) {
     QList<mixxx::FileInfo> fileInfos;
     for (const QUrl& url : urls) {
@@ -164,15 +173,35 @@ QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
         }
 
         if (acceptPlaylists && Parser::isPlaylistFilenameSupported(file)) {
+            // Url is a playlist file
             const QList<QString> track_list = Parser::parse(file);
             for (const auto& playlistFile : track_list) {
                 addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
             }
         } else {
-            addFileToList(mixxx::FileInfo::fromQUrl(url), &fileInfos);
+            // Url is a file or a directory
+            mixxx::FileInfo fileInfo = mixxx::FileInfo::fromQUrl(url);
+            if (fileInfo.isFile()) {
+                addFileToList(fileInfo, &fileInfos);
+            } else if (fileInfo.isDir()) {
+                // Collect supported files recursively
+                const QStringList nameFilters = SoundSourceProxy::getSupportedFileNamePatterns();
+
+                QDirIterator fileIt(fileInfo.location(),
+                        nameFilters,
+                        QDir::Files | QDir::NoDotAndDotDot,
+                        QDirIterator::Subdirectories);
+
+                while (fileIt.hasNext()) {
+                    addFileToList(mixxx::FileInfo(fileIt.next()), &fileInfos);
+                    if (stopOnFirstMatch && !fileInfos.isEmpty()) {
+                        break;
+                    }
+                }
+            }
         }
 
-        if (firstOnly && !fileInfos.isEmpty()) {
+        if (stopOnFirstMatch && !fileInfos.isEmpty()) {
             break;
         }
     }
@@ -224,11 +253,12 @@ bool DragAndDropHelper::mouseMoveInitiatesDrag(QMouseEvent* pEvent) {
 bool DragAndDropHelper::dragEnterAccept(
         const QMimeData& mimeData,
         const QString& sourceIdentifier,
-        bool firstOnly,
+        bool stopOnFirstMatch,
         bool acceptPlaylists) {
     // TODO(XXX): This operation blocks the UI when many
     // files are selected!
-    const auto files = dropEventFiles(mimeData, sourceIdentifier, firstOnly, acceptPlaylists);
+    const auto files = dropEventFiles(
+            mimeData, sourceIdentifier, stopOnFirstMatch, acceptPlaylists);
     return !files.isEmpty();
 }
 

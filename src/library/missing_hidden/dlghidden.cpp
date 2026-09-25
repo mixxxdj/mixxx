@@ -64,6 +64,20 @@ DlgHidden::DlgHidden(
             &WTrackTableView::trackSelected,
             this,
             &DlgHidden::trackSelected);
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrack,
+            this,
+            &DlgHidden::loadTrack);
+    connect(m_pTrackTableView,
+            &WTrackTableView::loadTrackToPlayer,
+            this,
+            [=, this](TrackPointer track, const QString& group) {
+                emit loadTrackToPlayer(track, group,
+#ifdef __STEM__
+                        mixxx::StemChannelSelection(),
+#endif
+                        false);
+            });
 
     connect(pLibrary,
             &Library::setTrackTableFont,

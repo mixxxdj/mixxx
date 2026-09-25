@@ -3925,7 +3925,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>NS6II.decks[2].shiftButton.input</key>
-                <status>0x82</status>
+                <status>0x80</status>
                 <midino>0x20</midino>
                 <options>
                     <script-binding/>
@@ -3934,7 +3934,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>NS6II.decks[3].shiftButton.input</key>
-                <status>0x83</status>
+                <status>0x81</status>
                 <midino>0x20</midino>
                 <options>
                     <script-binding/>
@@ -4015,7 +4015,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>NS6II.decks[2].shiftButton.input</key>
-                <status>0x92</status>
+                <status>0x90</status>
                 <midino>0x20</midino>
                 <options>
                     <script-binding/>
@@ -4024,7 +4024,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>NS6II.decks[3].shiftButton.input</key>
-                <status>0x93</status>
+                <status>0x91</status>
                 <midino>0x20</midino>
                 <options>
                     <script-binding/>

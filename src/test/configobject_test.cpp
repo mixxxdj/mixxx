@@ -1,7 +1,8 @@
+#include "preferences/configobject.h"
+
 #include <QString>
 
 #include "test/mixxxtest.h"
-#include "preferences/configobject.h"
 
 namespace {
 
@@ -107,6 +108,35 @@ TEST_F(ConfigObjectTest, GetValue_Bool) {
     EXPECT_TRUE(config()->getValue(ck, false));
 }
 
+TEST_F(ConfigObjectTest, SetValue_UnsignedInteger) {
+    auto ck = ConfigKey("[Test]", "test");
+    config()->setValue(ck, 5u);
+    EXPECT_QSTRING_EQ("5", config()->getValue<QString>(ck));
+}
+
+TEST_F(ConfigObjectTest, GetValue_UnsignedInteger) {
+    auto ck = ConfigKey("[Test]", "test");
+
+    // Not present.
+    EXPECT_EQ(5u, config()->getValue(ck, 5u));
+
+    // Empty
+    config()->setValue(ck, QString(""));
+    EXPECT_EQ(5u, config()->getValue(ck, 5u));
+
+    // Malformatted.
+    config()->setValue(ck, QString("asdf"));
+    EXPECT_EQ(5u, config()->getValue(ck, 5u));
+
+    // Negative string (should fallback to default)
+    config()->setValue(ck, QString("-1"));
+    EXPECT_EQ(5u, config()->getValue(ck, 5u));
+
+    // Ok.
+    config()->setValue(ck, QString("4"));
+    EXPECT_EQ(4u, config()->getValue(ck, 5u));
+}
+
 TEST_F(ConfigObjectTest, Exists) {
     auto ck = ConfigKey("[Test]", "test");
     EXPECT_FALSE(config()->exists(ck));
@@ -125,7 +155,8 @@ TEST_F(ConfigObjectTest, GetValueString) {
 TEST_F(ConfigObjectTest, Save) {
     for (int i = 0; i < 10; ++i) {
         config()->setValue(ConfigKey(QString("[Test%1]").arg(i),
-                                     QString("control%1").arg(i)), i);
+                                   QString("control%1").arg(i)),
+                i);
     }
 
     m_pConfig->save();
@@ -133,10 +164,11 @@ TEST_F(ConfigObjectTest, Save) {
             new UserSettings(getTestDataDir().filePath("test.cfg")));
 
     for (int i = 0; i < 10; ++i) {
-        EXPECT_EQ(i, config()->getValue<int>(
-            ConfigKey(QString("[Test%1]").arg(i),
-                      QString("control%1").arg(i)), -1));
+        EXPECT_EQ(i,
+                config()->getValue<int>(ConfigKey(QString("[Test%1]").arg(i),
+                                                QString("control%1").arg(i)),
+                        -1));
     }
 }
 
-}  // namespace
+} // namespace

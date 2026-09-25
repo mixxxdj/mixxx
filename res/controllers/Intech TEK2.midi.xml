@@ -2,6 +2,7 @@
 <MixxxControllerPreset mixxxVersion="2.3.0" schemaVersion="1">
     <info>
         <name>Intech TEK2</name>
+        <manual>intech_TEK2</manual>
     </info>
     <controller id="TEK2">
         <scriptfiles>

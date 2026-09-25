@@ -25,6 +25,10 @@ class Singleton {
         return m_instance;
     }
 
+    static bool isCreated() {
+        return m_instance != nullptr;
+    }
+
     static void destroy() {
         VERIFY_OR_DEBUG_ASSERT(m_instance) {
             qWarning() << "Singleton class has already been destroyed!";

@@ -1640,6 +1640,9 @@ TraktorS4MK2.onLoopEnabledChanged = function(value, group, key) {
 
 TraktorS4MK2.onLoopSizeChanged = function(value, group, key) {
     var deck = TraktorS4MK2.resolveDeckIfActive(group);
+    if (deck === undefined) {
+        return;
+    }
     //deal with single digit values
     if (value.toString().length === 1) {
         TraktorS4MK2.sendLoopSizeMessage(deck, "", value, false, false);
@@ -1750,6 +1753,9 @@ TraktorS4MK2.pregainResetHandler = function(field) {
 
 TraktorS4MK2.lightSlipAuto = function(group) {
     var decknum = TraktorS4MK2.resolveDeckIfActive(group);
+    if (decknum === undefined) {
+        return;
+    }
     if (TraktorS4MK2.controller.autoSlipMode[group] === 1) {
         print(decknum);
         TraktorS4MK2.controller.setOutput(decknum, "!remix", 0x7F, !TraktorS4MK2.controller.freeze_lights);

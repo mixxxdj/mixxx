@@ -1,14 +1,14 @@
-<svg width="17" height="11" version="1.1" xmlns="http://www.w3.org/2000/svg">
-		<defs>
-				<linearGradient id="a" x1="2" x2="24" y1="12" y2="12" gradientTransform="matrix(1,0,0,1.6956521,-1.50003,-38.152173)" gradientUnits="userSpaceOnUse">
-						<stop stop-opacity=".0047619" offset="0"/>
-						<stop stop-opacity="0" offset=".5"/>
-						<stop stop-opacity=".47451" offset="1"/>
-				</linearGradient>
-		</defs>
-		<rect x="-3.4557376" width="20.455738" height="16.573771" rx="1.5" ry="1.5" fill="#db0000" style="paint-order:fill markers stroke"/>
-		<rect transform="rotate(90)" x="1.0817554e-18" y="-39" width="23" height="39" color="#000001" fill="url(#a)"/>
-		<path d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z" fill="none" stroke="#000001" stroke-width="1.6"/>
-		<path d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z" fill="#bfbfbe" stroke-width=".85714287"/>
-		<rect y="-13.007122" width="1" height="24.007122" fill="#333334" style="paint-order:fill markers stroke"/>
+<svg version="1.1" viewBox="0 0 17 11" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="a" x1="2" x2="24" y1="12" y2="12" gradientTransform="matrix(1,0,0,1.6956521,-18.50003,-38.152173)" gradientUnits="userSpaceOnUse">
+      <stop stop-opacity=".0047619" offset="0"/>
+      <stop stop-opacity="0" offset=".5"/>
+      <stop stop-opacity=".47451" offset="1"/>
+    </linearGradient>
+  </defs>
+  <rect x="-3.4557376" width="20.455738" height="16.573771" rx="1.5" ry="1.5" fill="#db0000" style="paint-order:fill markers stroke"/>
+  <path d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z" fill="none" stroke="#000001" stroke-width="1.6"/>
+  <path d="M 9.0050588,2.9999997 5.5409159,9 h 6.9282001 z" fill="#bfbfbe" stroke-width=".85714287"/>
+  <rect y="-13.007122" width="1" height="24.007122" fill="#333334" style="paint-order:fill markers stroke"/>
+  <rect transform="matrix(0,-1,-1,0,0,0)" x="-17" y="-39" width="23" height="39" color="#000001" fill="url(#a)"/>
 </svg>

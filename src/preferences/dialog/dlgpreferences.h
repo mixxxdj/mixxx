@@ -36,11 +36,13 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
         PreferencesPage() {
         }
         PreferencesPage(DlgPreferencePage* pDlg, QTreeWidgetItem* pTreeItem)
-                : pDlg(pDlg), pTreeItem(pTreeItem) {
+                : pDlg(pDlg),
+                  pTreeItem(pTreeItem) {
         }
 
         DlgPreferencePage* pDlg;
         QTreeWidgetItem* pTreeItem;
+        QString iconFile;
     };
 
     DlgPreferences(
@@ -51,10 +53,11 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<VinylControlManager> pVCManager,
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
-            std::shared_ptr<Library> pLibrary);
+            std::shared_ptr<Library> pLibrary,
+            bool includeWaveformPreferences = true);
     virtual ~DlgPreferences();
 
-    void addPageWidget(PreferencesPage page,
+    void addPageWidget(const PreferencesPage& page,
             const QString& pageTitle,
             const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
@@ -66,6 +69,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void showSoundHardwarePage(
             std::optional<mixxx::preferences::SoundHardwareTab> tab =
                     std::nullopt);
+    void showSoundHardwareInputPage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();
@@ -83,9 +87,10 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void menuBarAutoHideChanged();
 
   protected:
-    bool eventFilter(QObject*, QEvent*);
-    void moveEvent(QMoveEvent* e);
-    void resizeEvent(QResizeEvent* e);
+    bool eventFilter(QObject*, QEvent*) override;
+    void changeEvent(QEvent* pEvent) override;
+    void moveEvent(QMoveEvent* e) override;
+    void resizeEvent(QResizeEvent* e) override;
 
   private:
     DlgPreferencePage* currentPage();
@@ -107,4 +112,5 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QSize m_pageSizeHint;
 
     QDir m_iconsPath;
+    bool pendingConfigValidOnAllPages();
 };

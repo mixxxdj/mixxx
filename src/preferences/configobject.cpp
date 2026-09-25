@@ -65,7 +65,7 @@ QString computeResourcePathImpl() {
                         "'--resource-path <path>'.");
             }
         }
-#if defined(__UNIX__)
+#if defined(__UNIX__) && !defined(__ANDROID__)
         else if (mixxxDir.cd(QStringLiteral("../share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
@@ -74,6 +74,11 @@ QString computeResourcePathImpl() {
         // of the above fail.
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
+        }
+#elif defined(__ANDROID__)
+        // On Android, use the QRC.
+        else {
+            qResourcePath = "assets:/";
         }
 #elif defined(Q_OS_IOS)
         // On iOS the bundle contains the resources directly.
@@ -90,7 +95,8 @@ QString computeResourcePathImpl() {
 #endif
 #endif // !defined(__EMSCRIPTEN__)
     } else {
-        //qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
+        // qDebug() << "Setting qResourcePath from location in resourcePath
+        // commandline arg:" << qResourcePath;
     }
 
     if (qResourcePath.isEmpty()) {
@@ -117,7 +123,7 @@ QString computeSettingsPath(const QString& configFilename) {
     return QString();
 }
 
-}  // namespace
+} // namespace
 // static
 ConfigKey ConfigKey::parseCommaSeparated(const QString& key) {
     int comma = key.indexOf(",");
@@ -126,11 +132,11 @@ ConfigKey ConfigKey::parseCommaSeparated(const QString& key) {
 }
 
 ConfigValue::ConfigValue(int iValue)
-    : value(QString::number(iValue)) {
+        : value(QString::number(iValue)) {
 }
 
 ConfigValue::ConfigValue(double dValue)
-    : value(QString::number(dValue)) {
+        : value(QString::number(dValue)) {
 }
 
 ConfigValueKbd::ConfigValueKbd(const QKeySequence& keys)
@@ -154,48 +160,50 @@ ConfigObject<ValueType>::ConfigObject(
     reopen(file);
 }
 
-template <class ValueType> ConfigObject<ValueType>::~ConfigObject() {
+template<class ValueType>
+ConfigObject<ValueType>::~ConfigObject() {
 }
 
-template <class ValueType>
+template<class ValueType>
 void ConfigObject<ValueType>::set(const ConfigKey& k, const ValueType& v) {
     QWriteLocker lock(&m_valuesLock);
     m_values.insert(k, v);
 }
 
-template <class ValueType>
+template<class ValueType>
 ValueType ConfigObject<ValueType>::get(const ConfigKey& k) const {
     QReadLocker lock(&m_valuesLock);
     return m_values.value(k);
 }
 
-template <class ValueType>
+template<class ValueType>
 bool ConfigObject<ValueType>::exists(const ConfigKey& k) const {
     QReadLocker lock(&m_valuesLock);
     return m_values.contains(k);
 }
 
-template <class ValueType>
+template<class ValueType>
 bool ConfigObject<ValueType>::remove(const ConfigKey& k) {
     QWriteLocker lock(&m_valuesLock);
     return m_values.remove(k) > 0;
 }
 
-template <class ValueType>
+template<class ValueType>
 QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) const {
     ValueType v = get(k);
     return v.value;
 }
 
-template <class ValueType> bool ConfigObject<ValueType>::parse() {
+template<class ValueType>
+bool ConfigObject<ValueType>::parse() {
     // Open file for reading
     QFile configfile(m_filename);
     if (m_filename.length() < 1 || !configfile.open(QIODevice::ReadOnly)) {
         qDebug() << "ConfigObject: Could not read" << m_filename;
         return false;
     } else {
-        //qDebug() << "ConfigObject: Parse" << m_filename;
-        // Parse the file
+        // qDebug() << "ConfigObject: Parse" << m_filename;
+        //  Parse the file
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
@@ -211,13 +219,13 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
                 if (line.startsWith("[") && line.endsWith("]")) {
                     group++;
                     groupStr = line;
-                    //qDebug() << "Group :" << groupStr;
+                    // qDebug() << "Group :" << groupStr;
                 } else if (group > 0) {
                     QString key;
                     QTextStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
                     val = val.trimmed();
-                    //qDebug() << "control:" << key << "value:" << val;
+                    // qDebug() << "control:" << key << "value:" << val;
                     ConfigKey k(groupStr, key);
                     ValueType m(val);
                     set(k, m);
@@ -229,7 +237,8 @@ template <class ValueType> bool ConfigObject<ValueType>::parse() {
     return true;
 }
 
-template <class ValueType> void ConfigObject<ValueType>::reopen(const QString& file) {
+template<class ValueType>
+void ConfigObject<ValueType>::reopen(const QString& file) {
     m_filename = file;
     if (!m_filename.isEmpty()) {
         parse();
@@ -264,7 +273,8 @@ bool ConfigObject<ValueType>::save() {
     // a minimum length as an additional safety check.
     qint64 minLength = 0;
     for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
-        //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
+        // qDebug() << "group:" << it.key().group << "item" << it.key().item <<
+        // "val" << it.value()->value;
         if (i.key().group != group) {
             group = i.key().group;
             stream << "\n"
@@ -284,7 +294,7 @@ bool ConfigObject<ValueType>::save() {
 
     tmpFile.close();
     if (tmpFile.error() !=
-            QFile::NoError) { //could be better... should actually say what the error was..
+            QFile::NoError) { // could be better... should actually say what the error was..
         qWarning().nospace() << "Error while writing configuration file: "
                              << tmpFile.fileName() << ": " << tmpFile.errorString();
         return false;
@@ -330,7 +340,8 @@ QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(const QString& group)
     return filteredList;
 }
 
-template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode& node) {
+template<class ValueType>
+ConfigObject<ValueType>::ConfigObject(const QDomNode& node) {
     if (!node.isNull() && node.isElement()) {
         QDomNode ctrl = node.firstChild();
 
@@ -347,7 +358,7 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode&
     }
 }
 
-template <class ValueType>
+template<class ValueType>
 QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
     QReadLocker lock(&m_valuesLock);
 
@@ -361,27 +372,38 @@ QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;
 
-template <> template <>
+template<>
+template<>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const QString& value) {
     set(key, ConfigValue(value));
 }
 
-template <> template <>
+template<>
+template<>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const bool& value) {
     set(key, value ? ConfigValue("1") : ConfigValue("0"));
 }
 
-template <> template <>
+template<>
+template<>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const int& value) {
     set(key, ConfigValue(QString::number(value)));
 }
 
-template <> template <>
+template<>
+template<>
 void ConfigObject<ConfigValue>::setValue(
         const ConfigKey& key, const double& value) {
+    set(key, ConfigValue(QString::number(value)));
+}
+
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const unsigned int& value) {
     set(key, ConfigValue(QString::number(value)));
 }
 
@@ -403,7 +425,8 @@ void ConfigObject<ConfigValue>::setValue(
     set(key, ConfigValue(mixxx::RgbColor::toQString(value)));
 }
 
-template <> template <>
+template<>
+template<>
 bool ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const bool& default_value) const {
     const ConfigValue value = get(key);
@@ -415,7 +438,8 @@ bool ConfigObject<ConfigValue>::getValue(
     return ok ? result != 0 : default_value;
 }
 
-template <> template <>
+template<>
+template<>
 int ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const int& default_value) const {
     const ConfigValue value = get(key);
@@ -427,7 +451,8 @@ int ConfigObject<ConfigValue>::getValue(
     return ok ? result : default_value;
 }
 
-template <> template <>
+template<>
+template<>
 double ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const double& default_value) const {
     const ConfigValue value = get(key);
@@ -436,6 +461,19 @@ double ConfigObject<ConfigValue>::getValue(
     }
     bool ok;
     auto result = value.value.toDouble(&ok);
+    return ok ? result : default_value;
+}
+
+template<>
+template<>
+unsigned int ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const unsigned int& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    bool ok;
+    auto result = value.value.toUInt(&ok);
     return ok ? result : default_value;
 }
 
@@ -474,7 +512,7 @@ mixxx::RgbColor ConfigObject<ConfigValue>::getValue(const ConfigKey& key) const 
 }
 
 // For string literal default
-template <>
+template<>
 QString ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const char* default_value) const {
     const ConfigValue value = get(key);
@@ -484,7 +522,7 @@ QString ConfigObject<ConfigValue>::getValue(
     return value.value;
 }
 
-template <>
+template<>
 QString ConfigObject<ConfigValueKbd>::getValue(
         const ConfigKey& key, const char* default_value) const {
     const ConfigValueKbd value = get(key);
@@ -494,7 +532,8 @@ QString ConfigObject<ConfigValueKbd>::getValue(
     return value.value;
 }
 
-template <> template <>
+template<>
+template<>
 QString ConfigObject<ConfigValue>::getValue(
         const ConfigKey& key, const QString& default_value) const {
     const ConfigValue value = get(key);
@@ -504,7 +543,8 @@ QString ConfigObject<ConfigValue>::getValue(
     return value.value;
 }
 
-template <> template <>
+template<>
+template<>
 QString ConfigObject<ConfigValueKbd>::getValue(
         const ConfigKey& key, const QString& default_value) const {
     const ConfigValueKbd value = get(key);

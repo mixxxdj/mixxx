@@ -14,6 +14,14 @@ Variables:
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
+      <Template src="skins:Tango/controls/button_2state_persist.xml">
+        <SetVariable name="ObjectName">StemButtonToggler</SetVariable>
+        <SetVariable name="TooltipId">show_stem_controls</SetVariable>
+        <SetVariable name="Size">14f,22me</SetVariable>
+        <SetVariable name="ConfigKey">[Skin],show_stem_controls</SetVariable>
+      </Template>
+
+      <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
       <WidgetGroup><!-- Waveforms -->
         <Layout>vertical</Layout>

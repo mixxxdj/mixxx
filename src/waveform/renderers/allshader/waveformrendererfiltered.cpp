@@ -82,7 +82,7 @@ bool WaveformRendererFiltered::preprocessInner() {
     // Per-band gain from the EQ knobs.
     float allGain(1.0);
     float bandGain[3] = {1.0, 1.0, 1.0};
-    getGains(&allGain, true, &bandGain[0], &bandGain[1], &bandGain[2]);
+    getGains(&allGain, &bandGain[0], &bandGain[1], &bandGain[2]);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;

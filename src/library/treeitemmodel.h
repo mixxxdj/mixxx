@@ -13,7 +13,7 @@ class TreeItemModel : public QAbstractItemModel {
     static const int kDataRole = Qt::UserRole;
     static const int kBoldRole = Qt::UserRole + 1;
 
-    explicit TreeItemModel(QObject *parent = 0);
+    explicit TreeItemModel(QObject* parent = nullptr);
     ~TreeItemModel() override;
 
     QVariant data(const QModelIndex &index, int role) const override;

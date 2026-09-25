@@ -586,9 +586,12 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
         error = "STREAM_DECODER_ERROR_STATUS_BAD_METADATA";
         break;
 #endif
-#if FLAC_API_VERSION_CURRENT >= 15
+#if FLAC_API_VERSION_CURRENT >= 14
     case FLAC__STREAM_DECODER_ERROR_STATUS_MISSING_FRAME:
         error = "STREAM_DECODER_ERROR_STATUS_MISSING_FRAME";
+        break;
+    case FLAC__STREAM_DECODER_ERROR_STATUS_OUT_OF_BOUNDS:
+        error = "FLAC__STREAM_DECODER_ERROR_STATUS_OUT_OF_BOUNDS";
         break;
 #endif
     }

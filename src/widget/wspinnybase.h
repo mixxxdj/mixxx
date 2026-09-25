@@ -1,7 +1,9 @@
 #pragma once
 
+#include "control/pollingcontrolproxy.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/parented_ptr.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
@@ -106,17 +108,18 @@ class WSpinnyBase : public WGLWidget,
     QImage m_fgImageScaled;
     std::shared_ptr<QImage> m_pGhostImage;
     QImage m_ghostImageScaled;
-    ControlProxy* m_pPlayPos;
+
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
-    ControlProxy* m_pTrackSamples;
-    ControlProxy* m_pTrackSampleRate;
-    ControlProxy* m_pScratchToggle;
-    ControlProxy* m_pScratchPos;
-    ControlProxy* m_pVinylControlSpeedType;
-    ControlProxy* m_pVinylControlEnabled;
-    ControlProxy* m_pSignalEnabled;
-    ControlProxy* m_pSlipEnabled;
-    ControlProxy* m_pShowCoverProxy;
+    PollingControlProxy m_pPlayPos;
+    PollingControlProxy m_pTrackSamples;
+    PollingControlProxy m_pTrackSampleRate;
+    PollingControlProxy m_pScratchToggle;
+    PollingControlProxy m_pScratchPos;
+    parented_ptr<ControlProxy> m_pVinylControlSpeedType;
+    parented_ptr<ControlProxy> m_pVinylControlEnabled;
+    parented_ptr<ControlProxy> m_pSignalEnabled;
+    parented_ptr<ControlProxy> m_pSlipEnabled;
+    parented_ptr<ControlProxy> m_pShowCoverProxy;
 
     TrackPointer m_pLoadedTrack;
     QPixmap m_loadedCover;
@@ -149,6 +152,6 @@ class WSpinnyBase : public WGLWidget,
     bool m_bGhostPlayback;
 
     BaseTrackPlayer* m_pPlayer;
-    WCoverArtMenu* m_pCoverMenu;
-    DlgCoverArtFullSize* m_pDlgCoverArt;
+    parented_ptr<WCoverArtMenu> m_pCoverMenu;
+    parented_ptr<DlgCoverArtFullSize> m_pDlgCoverArt;
 };

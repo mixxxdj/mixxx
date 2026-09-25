@@ -764,6 +764,7 @@ class EffectUnit {
         engine.makeConnection(this.group, "focused_effect", this.onFocusedEffectChange.bind(this)).trigger();
         engine.makeConnection(this.group, "group_[Channel1]_enable", this.outputCallback.bind(this)).trigger();
         engine.makeConnection(this.group, "group_[Channel2]_enable", this.outputCallback.bind(this)).trigger();
+        this.connectEffectButtonLedsNormal();
     }
     calibrate(calibration) {
         this.calibration = calibration.mix;
@@ -1558,6 +1559,7 @@ const setKnobParameter = function(group, key, value, calibration) {
     }
     engine.setParameter(group, key, calibratedValue);
 };
+
 const setFaderParameter = function(group, key, value, calibration) {
     const calibratedValue = script.absoluteLin(value, 0, 1, calibration.min, calibration.max);
     engine.setParameter(group, key, calibratedValue);

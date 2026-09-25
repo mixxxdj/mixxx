@@ -4,8 +4,7 @@
     <name>Traktor Kontrol S3</name>
     <author>Owen Williams</author>
     <description>HID Mapping for Traktor Kontrol S3</description>
-    <wiki>https://github.com/mixxxdj/mixxx/wiki/Native-Instruments-Traktor-Kontrol-S3</wiki>
-    <forums>https://mixxx.discourse.group/t/native-instruments-traktor-s3-mapping/18502/4</forums>
+    <forums>https://mixxx.discourse.group/t/native-instruments-traktor-s3-mapping/18502</forums>
     <manual>native_instruments_traktor_kontrol_s3</manual>
     <devices>
       <product protocol="hid" vendor_id="0x17cc" product_id="0x1900" usage_page="0xff01" usage="0x1" interface_number="0x3" />
@@ -18,6 +17,52 @@
     </scriptfiles>
   </controller>
   <settings>
+    <option variable="ledDimValue" type="enum"
+      label="Dim LED Level">
+      <value label="Off">0</value>
+      <value label="Low" default="true">1</value>
+      <value label="Mid">2</value>
+      <value label="High">3</value>
+      <description>
+        Sets the brightness of the LEDs when they are on in a dim mode.
+        High does not work when using bus power and will appear the same as mid.
+      </description>
+    </option>
+    <option variable="ledBrightValue" type="enum"
+      label="Bright LED Level">
+      <value label="Off">0</value>
+      <value label="Low">1</value>
+      <value label="Mid" default="true">2</value>
+      <value label="High">3</value>
+      <description>
+        Sets the brightness of the LEDs when they are set to bright mode.
+        High does not work when using bus power and will appear the same as mid.
+      </description>
+    </option>
+    <option variable="unsetHotcueColor" type="enum"
+      label="Color of unset Hotcues">
+      <value label="Black (Off)" default="true">OFF</value>
+      <value label="Red">RED</value>
+      <value label="Carrot">CARROT</value>
+      <value label="Orange">ORANGE</value>
+      <value label="Honey">HONEY</value>
+      <value label="Yellow">YELLOW</value>
+      <value label="Lime">LIME</value>
+      <value label="Green">GREEN</value>
+      <value label="Aqua">AQUA</value>
+      <value label="Celeste">CELESTE</value>
+      <value label="Sky">SKY</value>
+      <value label="Blue">BLUE</value>
+      <value label="Purple">PURPLE</value>
+      <value label="Fuchsia">FUCHSIA</value>
+      <value label="Magenta">MAGENTA</value>
+      <value label="Azalea">AZALEA</value>
+      <value label="Salmon">SALMON</value>
+      <value label="White">WHITE</value>
+      <description>
+        Set the default color for Hotcue buttons who have not yet been assigned a position.
+      </description>
+    </option>
     <option variable="fxMode" type="enum"
       label="Effect section layout">
       <value label="Quick Effect" default="true">QUICK_EFFECT</value>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.3.3">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3.3">
   <info>
     <name>Numark Party Mix</name>
     <!-- inspired by https://github.com/mixxxdj/mixxx/blob/main/res/controllers/Numark%20Mixtrack%20Pro%20FX.midi.xml -->
@@ -10,7 +10,6 @@
   </info>
   <controller id="Numark Party Mix">
     <scriptfiles>
-      <file functionprefix="" filename="lodash.mixxx.js" />
       <file functionprefix="" filename="midi-components-0.0.js" />
       <file filename="Numark-Party-Mix.scripts.js" functionprefix="NumarkPartyMix" />
     </scriptfiles>
@@ -22,7 +21,7 @@
         <status>0xBF</status>
         <midino>0x0A</midino>
         <options>
-          <Normal />
+          <normal />
         </options>
       </control>
       <control>
@@ -31,7 +30,7 @@
         <status>0xBF</status>
         <midino>0x0D</midino>
         <options>
-          <Normal />
+          <normal />
         </options>
       </control>
       <control>
@@ -40,7 +39,7 @@
         <status>0xBF</status>
         <midino>0x0C</midino>
         <options>
-          <Normal />
+          <normal />
         </options>
       </control>
       <control>
@@ -49,7 +48,7 @@
         <status>0xBF</status>
         <midino>0x08</midino>
         <options>
-          <Normal />
+          <normal />
         </options>
       </control>
       <!-- PFL buttons (press) -->
@@ -566,7 +565,7 @@
         <status>0xBF</status>
         <midino>0x00</midino>
         <options>
-          <Script-Binding />
+          <script-binding />
         </options>
       </control>
       <control>
@@ -608,4 +607,4 @@
       </control>
     </controls>
   </controller>
-</MixxxMIDIPreset>
+</MixxxControllerPreset>

@@ -47,10 +47,11 @@ class WaveformRendererSignalBase : public QObject, public WaveformRendererAbstra
     void setHighVisualGain(double gain) {
         m_highVisualGain = static_cast<CSAMPLE_GAIN>(gain);
     }
+    virtual void setOptions(WaveformRendererSignalBase::Options) {
+    }
 
   protected:
     void getGains(float* pAllGain,
-            bool applyCompensation,
             float* pLowGain,
             float* pMidGain,
             float* highGain);

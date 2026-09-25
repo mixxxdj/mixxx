@@ -132,6 +132,34 @@
       <value color="#ff00ff" label="Fuscia">100</value>
       <value color="#a400c0" label="Purple">108</value>
     </option>
+    <option variable="stemFxOffColor" type="enum" label="Stem FX Kill Switch Off Color">
+      <description>The color of the activated stem FX kill switch.</description>
+      <value label="Firmware Default">0</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red" default="true">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
+    <option variable="stemFxOnColor" type="enum" label="Stem FX Kill Switch On Color">
+      <description>The color of the active stem FX kill switch.</description>
+      <value label="Firmware Default">127</value>
+      <value color="#0040f0" label="Blue">1</value>
+      <value color="#3ec8e6" label="Celeste">32</value>
+      <value color="#008080" label="Teal">40</value>
+      <value color="#2fb340" label="Green" default="true">50</value>
+      <value color="#3fff58" label="Lime">60</value>
+      <value color="#e9c600" label="Yellow">66</value>
+      <value color="#f07800" label="Orange">74</value>
+      <value color="#b90908" label="Red">85</value>
+      <value color="#ff00ff" label="Fuscia">100</value>
+      <value color="#a400c0" label="Purple">108</value>
+    </option>
   </settings>
   <controller id="DJ TechTools MIDI Fighter Twister">
     <scriptfiles>
@@ -481,6 +509,26 @@
           <script-binding/>
         </options>
       </control>
+      <control>
+        <group>[Channel1_Stem]</group>
+        <key>MidiFighterTwister.controller.toggleDeck</key>
+        <description>Toggle the left side of the controller between decks 1 and 3.</description>
+        <status>0xB3</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2_Stem]</group>
+        <key>MidiFighterTwister.controller.toggleDeck</key>
+        <description>Toggle the right side of the controller between decks 2 and 4.</description>
+        <status>0xB3</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
 
       <!-- Layer 2: Effects -->
       <control>
@@ -756,6 +804,349 @@
         <description>Shift button for layer 2.</description>
         <status>0xB3</status>
         <midino>0x13</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 3.</description>
+        <status>0xB3</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.toggleShift</key>
+        <description>Shift button for layer 3.</description>
+        <status>0xB3</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <!-- Layer 3: Stems -->
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.volume[0].input</key>
+        <description>Stem 1 volume.</description>
+        <status>0xB0</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.volume[1].input</key>
+        <description>Stem 2 volume.</description>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.volume[2].input</key>
+        <description>Stem 3 volume.</description>
+        <status>0xB0</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.volume[3].input</key>
+        <description>Stem 4 volume.</description>
+        <status>0xB0</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.mute[0].input</key>
+        <description>Stem 1 mute.</description>
+        <status>0xB1</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.mute[1].input</key>
+        <description>Stem 2 mute.</description>
+        <status>0xB1</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.mute[2].input</key>
+        <description>Stem 3 mute.</description>
+        <status>0xB1</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.mute[3].input</key>
+        <description>Stem 4 mute.</description>
+        <status>0xB1</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effect[0].input</key>
+        <description>Stem 1 FX.</description>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effect[1].input</key>
+        <description>Stem 2 FX.</description>
+        <status>0xB0</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effect[2].input</key>
+        <description>Stem 3 FX.</description>
+        <status>0xB0</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effect[3].input</key>
+        <description>Stem 4 FX.</description>
+        <status>0xB0</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effectReset[0].input</key>
+        <description>Stem 1 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effectReset[1].input</key>
+        <description>Stem 2 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effectReset[2].input</key>
+        <description>Stem 3 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>MidiFighterTwister.controller.leftStemDeck.effectReset[3].input</key>
+        <description>Stem 4 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.volume[0].input</key>
+        <description>Stem 1 volume.</description>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.volume[1].input</key>
+        <description>Stem 2 volume.</description>
+        <status>0xB0</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.volume[2].input</key>
+        <description>Stem 3 volume.</description>
+        <status>0xB0</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.volume[3].input</key>
+        <description>Stem 4 volume.</description>
+        <status>0xB0</status>
+        <midino>0x2F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.mute[0].input</key>
+        <description>Stem 1 mute.</description>
+        <status>0xB1</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.mute[1].input</key>
+        <description>Stem 2 mute.</description>
+        <status>0xB1</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.mute[2].input</key>
+        <description>Stem 3 mute.</description>
+        <status>0xB1</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.mute[3].input</key>
+        <description>Stem 4 mute.</description>
+        <status>0xB1</status>
+        <midino>0x2F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effect[0].input</key>
+        <description>Stem 1 FX.</description>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effect[1].input</key>
+        <description>Stem 2 FX.</description>
+        <status>0xB0</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effect[2].input</key>
+        <description>Stem 3 FX.</description>
+        <status>0xB0</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effect[3].input</key>
+        <description>Stem 4 FX.</description>
+        <status>0xB0</status>
+        <midino>0x2E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effectReset[0].input</key>
+        <description>Stem 1 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effectReset[1].input</key>
+        <description>Stem 2 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x26</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effectReset[2].input</key>
+        <description>Stem 3 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>MidiFighterTwister.controller.rightStemDeck.effectReset[3].input</key>
+        <description>Stem 4 FX reset.</description>
+        <status>0xB1</status>
+        <midino>0x2E</midino>
         <options>
           <script-binding/>
         </options>

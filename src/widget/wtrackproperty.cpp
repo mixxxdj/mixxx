@@ -208,6 +208,7 @@ void WTrackProperty::contextMenuEvent(QContextMenuEvent* pEvent) {
     if (m_pCurrentTrack) {
         ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
+        m_pTrackMenu->updateMenus();
         // Show the right-click menu
         m_pTrackMenu->setTrackPropertyName(m_displayProperty);
         m_pTrackMenu->popup(pEvent->globalPos());

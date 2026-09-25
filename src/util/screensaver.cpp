@@ -26,6 +26,10 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #  include "util/mac.h"
 #elif defined(Q_OS_IOS)
 #include "util/screensaverios.h"
+#elif defined(Q_OS_ANDROID)
+#include <android/api-level.h>
+#include <android/log.h>
+#define HAS_XWINDOW_SCREENSAVER 0
 #elif defined(_WIN32)
 #  include <windows.h>
 #elif defined(__LINUX__)
@@ -284,7 +288,7 @@ void ScreenSaverHelper::uninhibitInternal()
     }
 }
 
-#elif HAS_XWINDOW_SCREENSAVER
+#elif defined(HAS_XWINDOW_SCREENSAVER) && HAS_XWINDOW_SCREENSAVER
 // This is untested.
 struct LibXtst : public library {
   function<int (Display*, unsigned int, Bool, unsigned long)> XTestFakeKeyEvent;
@@ -346,6 +350,52 @@ void ScreenSaverHelper::triggerUserActivity() {
 void ScreenSaverHelper::inhibitInternal() {
 }
 void ScreenSaverHelper::uninhibitInternal() {
+}
+#elif defined(Q_OS_ANDROID)
+
+QJniObject ScreenSaverHelper::s_wakeLock = {};
+// Screensavers are not supported
+void ScreenSaverHelper::triggerUserActivity() {
+}
+void ScreenSaverHelper::inhibitInternal() {
+    if (!ScreenSaverHelper::s_wakeLock.isValid()) {
+        QJniObject context = QNativeInterface::QAndroidApplication::context();
+        QJniObject POWER_SERVICE =
+                QJniObject::getStaticObjectField(
+                        "android/content/Context",
+                        "POWER_SERVICE",
+                        "Ljava/lang/String;");
+        auto powerService = context.callObjectMethod("getSystemService",
+                "(Ljava/lang/String;)Ljava/lang/Object;",
+                POWER_SERVICE.object());
+        if (!powerService.isValid()) {
+            qDebug() << "powerService invalid";
+            return;
+        }
+
+        jint FULL_WAKE_LOCK =
+                QJniObject::getStaticField<jint>(
+                        "android/os/PowerManager",
+                        "FULL_WAKE_LOCK");
+        ScreenSaverHelper::s_wakeLock =
+                powerService.callObjectMethod("newWakeLock",
+                        "(ILjava/lang/String;)Landroid/os/PowerManager$WakeLock;",
+                        FULL_WAKE_LOCK,
+                        QJniObject::fromString("Mixxx").object<jstring>());
+        if (!ScreenSaverHelper::s_wakeLock.isValid()) {
+            __android_log_print(ANDROID_LOG_WARN, "mixxx", "powerService wakeLock invalid");
+            qWarning() << "ScreenSaverHelper::inhibitInternal - wakeLock invalid";
+            return;
+        }
+    }
+    ScreenSaverHelper::s_wakeLock.callMethod<void>("acquire");
+}
+void ScreenSaverHelper::uninhibitInternal() {
+    // QNativeInterface::QAndroidApplication::runOnAndroidMainThread([]() {
+    if (ScreenSaverHelper::s_wakeLock.isValid()) {
+        ScreenSaverHelper::s_wakeLock.callMethod<void>("release");
+    }
+    // }).waitForFinished();
 }
 #else
 void ScreenSaverHelper::triggerUserActivity()

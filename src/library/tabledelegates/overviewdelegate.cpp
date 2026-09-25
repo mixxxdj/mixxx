@@ -169,4 +169,9 @@ void OverviewDelegate::paintItem(QPainter* painter,
         pixmap.setDevicePixelRatio(scaleFactor);
         painter->drawPixmap(option.rect, pixmap);
     }
+
+    // Draw a border if the cover art cell has focus
+    if (option.state & QStyle::State_HasFocus) {
+        drawBorder(painter, m_focusBorderColor, option.rect);
+    }
 }

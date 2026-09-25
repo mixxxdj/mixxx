@@ -51,7 +51,7 @@ def parse_shader(input_filepath: pathlib.Path) -> typing.Iterator[str]:
             [
                 QSB_EXECUTABLE,
                 "--glsl",
-                "120",
+                "100",
                 "--output",
                 fp.name,
                 input_filepath,
@@ -87,7 +87,7 @@ def parse_shader(input_filepath: pathlib.Path) -> typing.Iterator[str]:
                 in_shader_block = 2
         else:
             if line.startswith("Shader") and line.rstrip().endswith(
-                ": GLSL 120 [Standard]"
+                ": GLSL 100 [Standard]"
             ):
                 in_shader_block = 1
     if not ok:

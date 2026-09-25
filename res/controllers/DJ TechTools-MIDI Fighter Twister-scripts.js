@@ -54,6 +54,154 @@ var MidiFighterTwister;
     components.Button.prototype.on = engine.getSetting("defColor");
     components.Button.prototype.off = engine.getSetting("relColor");
 
+    class StemDeck extends components.Deck {
+        midiModifier(value) {
+            // All midi values are for the left deck, we only modify them if
+            // we're constructing the right hand deck.
+            if (this.deckNumbers[0] === 1) {
+                return value;
+            }
+
+            // Even controls (ie. the first row) are mirrored to the far right
+            // row, three rows over.
+            if (value % 2 === 0) {
+                return value + 3;
+            }
+            // Odd controls (ie. the second row) are mirrored to the other inner
+            // row, one row over.
+            return value + 1;
+        }
+
+        constructor(deckNums) {
+            super(deckNums);
+
+            this.volume = [];
+            this.mute = [];
+            this.effect = [];
+            this.effectEnabled = [];
+            this.effectVolume = [];
+            this.effectReset = [];
+            for (let i = 0; i < 4; i++) {
+                this.volume[i] = new components.Encoder({
+                    group: `[Channel${deckNums[0]}_Stem${i + 1}]`,
+                    midi: [0xB0, this.midiModifier(0x20 + (4 * i))],
+                    key: "volume",
+                });
+                // TODO: change these into mute or reset buttons based on a
+                // setting?
+                this.mute[i] = new components.Button({
+                    group: `[Channel${deckNums[0]}_Stem${i + 1}]`,
+                    midi: [0xB1, this.midiModifier(0x20 + (4 * i))],
+                    key: "mute",
+                    colorKey: "color",
+                    colorMapper: new ColorMapper({
+                        0x0040f0: 1,   // Blue
+                        0x3ec8e6: 32,  // Celeste
+                        0x008080: 40,  // Teal
+                        0x2fb340: 50,  // Green
+                        0x3fff58: 60,  // Lime
+                        0xe9c600: 66,  // Yellow
+                        0xf07800: 74,  // Orange
+                        0xfd4a4a: 85,  // Red (was being mapped to orange, perceptually closer to red)
+                        0xb90908: 85,  // Red
+                        0xff00ff: 100, // Fuscia
+                        0xa400c0: 108, // Purple
+                    }),
+                    type: components.Button.prototype.types.toggle,
+                    shift: function() {
+                        this.inKey = "volume_set_default";
+                        this.outKey = "volume_set_default";
+                        this.type = components.Button.prototype.types.push;
+                        this.disconnect();
+                        this.connect();
+                        this.trigger();
+                    },
+                    unshift: function() {
+                        this.inKey = this.key;
+                        this.outKey = this.key;
+                        this.type = components.Button.prototype.types.toggle;
+                        this.disconnect();
+                        this.connect();
+                        this.trigger();
+                    },
+                    output: function(value, _group, _control) {
+                        if (value) {
+                            // Dim the LED
+                            midi.sendShortMsg(0xB2, this.midi[1], 35);
+                        } else {
+                            // Brighten the LED
+                            midi.sendShortMsg(0xB2, this.midi[1], 47);
+                        }
+                    },
+                    outputColor: function(colorCode) {
+                        const nearestColorValue = this.colorMapper.getValueForNearestColor(colorCode);
+                        this.send(nearestColorValue);
+                    },
+                    connect: function() {
+                        components.Button.prototype.connect.call(this);
+                        if (undefined !== this.group && this.colorKey !== undefined) {
+                            this.connections[1] = engine.makeConnection(this.group, this.colorKey, this.outputColor.bind(this));
+                        }
+                    },
+                });
+                this.effect[i] = new components.Encoder({
+                    group: `[QuickEffectRack1_[Channel${deckNums[0]}_Stem${i + 1}]]`,
+                    midi: [0xB0, this.midiModifier(0x21 + (4 * i))],
+                    key: "super1",
+                    shift: function() {
+                        this.inKey = "loaded_chain_preset";
+                        this.outKey = "loaded_chain_preset";
+                        this.on = engine.getSetting("stemFxOnColor");
+                        this.off = engine.getSetting("stemFxOffColor");
+                        this.inValueScale = function(value) {
+                            const val = (value/this.max) * engine.getParameter(this.group, "num_chain_presets");
+                            return Math.trunc(val);
+                        };
+                        this.disconnect();
+                        this.connect();
+                        this.trigger();
+                    },
+                    unshift: function() {
+                        this.inKey = this.key;
+                        this.outKey = this.key;
+                        this.on = components.Button.prototype.on;
+                        this.off = components.Button.prototype.off;
+                        this.inValueScale = function(value) {
+                            return components.Encoder.prototype.inValueScale(value);
+                        };
+                        this.disconnect();
+                        this.connect();
+                        this.trigger();
+                    },
+                });
+                this.effectReset[i] = new components.Button({
+                    group: `[QuickEffectRack1_[Channel${deckNums[0]}_Stem${i + 1}]]`,
+                    midi: [0xB1, this.midiModifier(0x21 + (4 * i))],
+                    key: "super1_set_default",
+                    type: components.Button.prototype.types.toggle,
+                    shift: function() {
+                        this.inKey = "enabled";
+                        this.outKey = "enabled";
+                        this.on = engine.getSetting("stemFxOnColor");
+                        this.off = engine.getSetting("stemFxOffColor");
+                        this.disconnect();
+                        this.connect();
+                        this.trigger();
+                    },
+                    unshift: function() {
+                        this.inKey = this.key;
+                        this.outKey = this.key;
+                        this.on = components.Button.prototype.on;
+                        this.off = components.Button.prototype.off;
+                        this.disconnect();
+                        this.connect();
+                        this.trigger();
+                    },
+                });
+            }
+        }
+    }
+
     class Deck extends components.Deck {
         midiModifier(value) {
             // All midi values are for the left deck, we only modify them if
@@ -197,10 +345,14 @@ var MidiFighterTwister;
         constructor() {
             super({});
 
+            // Layer 3 Controls (stems)
+            this.leftStemDeck = new StemDeck([1, 3]);
+            this.rightStemDeck = new StemDeck([2, 4]);
+
             this.leftDeck = new Deck([1, 3]);
             this.rightDeck = new Deck([2, 4]);
 
-            // Layer 1 Controls
+            // Layer 1 Controls (mixer)
 
             this.crossfaderKnob = new components.Encoder({
                 group: "[Master]",
@@ -267,7 +419,8 @@ var MidiFighterTwister;
                 },
             });
 
-            // Layer 2 Controls
+            // Layer 2 Controls (effects)
+
             this.fx = [];
             this.fx[0] = new components.EffectUnit([1, 3]);
             this.fx[0].enableButtons[1].midi = [0xB1, 0x11];
@@ -384,6 +537,12 @@ var MidiFighterTwister;
                 break;
             case "[Channel2]":
                 this.rightDeck.toggle();
+                break;
+            case "[Channel1_Stem]":
+                this.leftStemDeck.toggle();
+                break;
+            case "[Channel2_Stem]":
+                this.rightStemDeck.toggle();
                 break;
             default:
                 console.log(`invalid group: ${group}`);
