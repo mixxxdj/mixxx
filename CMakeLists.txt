@@ -428,6 +428,7 @@ cmake_dependent_option(
   "Build with QML"
   ON
   "QT6"
+  OFF
 )
 
 option(
