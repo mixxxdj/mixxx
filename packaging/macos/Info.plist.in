@@ -32,6 +32,9 @@
     <key>NSMicrophoneUsageDescription</key>
     <string>Mixxx requires microphone access for microphone and vinyl input.</string>
 
+    <key>NSLocalNetworkUsageDescription </key>
+    <string>Mixxx needs to access the Local Network information in order to communicate via OSC.</string>
+
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 
