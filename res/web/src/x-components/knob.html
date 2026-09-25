@@ -1,0 +1,33 @@
+<!doctype html>
+<div
+  x-ref="knobContainer"
+  :class="containerClass"
+  class="relative inline-flex items-center justify-center select-none"
+  @mousedown.prevent="startDrag($event)"
+  @touchstart.prevent="startDrag($event)"
+>
+  <span
+    x-text="name"
+    class="absolute inset-0 flex items-center justify-center pointer-events-none select-none text-sm z-0"
+
+  ></span>
+  <svg :width="size" :height="size" viewBox="0 0 100 100">
+    <!-- Base-->
+    <path
+      style="fill: none; stroke-width: 8; stroke-linecap: round"
+      d="M 82,82 C 91,74 95,62 95,50 95,25 75,5 50,5 25,5 5,25 5,50 5,62 9,74 18,82"
+      stroke="var(--color-neutral)"
+    />
+
+    <!-- Indicator -->
+    <g
+      :style="{ transform: `rotate(${normalizedAngle}deg)`, transformOrigin: '50px 50px' }"
+    >
+      <path
+        style="fill: none; stroke-width: 8; stroke-linecap: round"
+        d="M 50,32 V 5"
+        stroke="var(--color-primary)"
+      />
+    </g>
+  </svg>
+</div>

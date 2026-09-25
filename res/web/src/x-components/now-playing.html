@@ -1,0 +1,54 @@
+<!--
+  now-playing.html — "Now Playing" section for AutoDJ tab.
+  Shows currently playing decks with progress bar.
+
+  Expected context (Alpine scope):
+    playingDecks: array of Deck objects
+    settings.selectedColor: string
+    cycleTimeDisplay(deckId): function
+    formatDeckTime(deckId): function
+-->
+<template id="now-playing">
+  <div x-show="playingDecks.length > 0" class="px-4 pb-2">
+    <ul class="list">
+      <template x-for="deck in playingDecks" :key="deck.id">
+        <li class="gap-2 rounded-none list-row bg-base-100/75">
+          <!-- Deck number badge -->
+          <div class="flex items-center self-stretch my-auto">
+            <span class="flex flex-col justify-center items-center px-1 h-full font-bold rounded badge badge-primary">
+              <i class="w-5 h-5 iconify mdi--record-player"></i>
+              <span class="text-xs" x-text="deck.id"></span>
+            </span>
+          </div>
+          <!-- Key + BPM column -->
+          <div class="w-8">
+            <div class="text-xs font-semibold text-center uppercase opacity-75" x-text="deck.key || '–'"></div>
+            <div class="text-xs opacity-75" title="BPM" x-text="deck.bpm ? deck.bpm.toFixed(1) : '–'"></div>
+          </div>
+          <!-- Track info + progress bar -->
+          <div class="flex-1 min-w-0 list-col-grow">
+            <div class="font-semibold" x-text="deck.title || '–'" title="deck.title"></div>
+            <div class="text-xs opacity-75" x-text="deck.artist || 'Unknown Artist'" title="deck.artist"></div>
+            <!-- Progress bar + time -->
+            <div class="flex gap-2 items-center mt-1 w-full">
+              <div class="flex-1 h-1.5 rounded-full bg-base-300">
+                <div
+                  class="h-full rounded-full transition-all duration-700 ease-linear"
+                  :class="'bg-' + settings.selectedColor"
+                  :style="'width: ' + (deck.duration > 0 ? (deck.elapsed / deck.duration) * 100 : 0) + '%'"
+                ></div>
+              </div>
+              <!-- Clickable time display -->
+              <span
+                class="text-xs tabular-nums whitespace-nowrap cursor-pointer select-none hover:opacity-80"
+                title="Click to cycle time display"
+                @click="cycleTimeDisplay(deck.id)"
+                x-text="formatDeckTime(deck.id)"
+              ></span>
+            </div>
+          </div>
+        </li>
+      </template>
+    </ul>
+  </div>
+</template>
