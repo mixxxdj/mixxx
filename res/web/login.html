@@ -1,33 +1,67 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en" class="bg-base-100 h-dvh">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta name="theme-color" content="#121216">
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="favicon-32.png" sizes="32x32">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Mixxx">
-    <link rel="stylesheet" href="main.css">
-    <script type="text/javascript" src="mixxx.js"></script>
-    <title>mixxx</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mixxx — Login</title>
+    <style>
+      [x-cloak] { display: none !important; }
+    </style>
+    <script>
+      const base_path = document.location.pathname.substring(
+        0,
+        document.location.pathname.lastIndexOf("/"),
+      );
+      fetch("dist/.vite/manifest.json", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((m) => {
+          const css = m["src/styles.css"].file;
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = base_path + "/dist/" + css;
+          document.head.appendChild(link);
+
+          const js = m["src/main.js"].file;
+          const script = document.createElement("script");
+          script.type = "module";
+          script.src = base_path + "/dist/" + js;
+          document.head.appendChild(script);
+        });
+    </script>
   </head>
-  <body>
-    <header><img alt="Mixxx" src="mixxx_logo.svg" /></header>
-    <main class="centered">
-      <div class="card login-card">
-        <h2>Login</h2>
-        <form action="#" onsubmit="login(document.getElementById('pwinput').value); return false;">
-          <label for="pwinput">Password</label>
-          <input id="pwinput" type="password" placeholder="Enter password"
-                 onkeydown="if(event.key==='Enter'){event.preventDefault();login(this.value);}">
-          <br><br>
-          <button type="submit" class="accent full-width">Login</button>
-        </form>
+  <body
+    x-cloak
+    x-data="app"
+    x-bind:data-theme="$store.theme.current"
+    class="flex flex-col gap-8 justify-center items-center p-8 min-h-dvh bg-base-100"
+  >
+    <img alt="Mixxx" src="mixxx_logo.svg" class="h-16" />
+
+    <div class="p-6 w-full max-w-sm card card-border bg-base-200">
+      <h1 class="mb-4 text-xl font-bold text-center card-title">Login</h1>
+
+      <div class="flex flex-col gap-4">
+        <label class="flex flex-col gap-1">
+          <span class="text-sm font-medium">Password</span>
+          <input
+            type="password"
+            class="input input-bordered w-full"
+            x-model="passwordInput"
+            @keyup.enter="doLogin"
+            placeholder="Enter password..."
+            autofocus
+          />
+        </label>
+
+        <button class="btn btn-primary w-full" @click="doLogin">
+          <i class="iconify mdi--login"></i>
+          Login
+        </button>
       </div>
-    </main>
+    </div>
+
+    <p class="text-xs opacity-40">
+      Mixxx Remote Control
+    </p>
   </body>
 </html>
