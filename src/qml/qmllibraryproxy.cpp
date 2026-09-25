@@ -4,14 +4,33 @@
 
 #include "library/library.h"
 #include "moc_qmllibraryproxy.cpp"
+#include "track/track.h"
 
 namespace mixxx {
 namespace qml {
 
 QmlLibraryProxy::QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent)
         : QObject(parent),
-          m_pLibrary(pLibrary),
-          m_pModelProperty(new QmlLibraryTrackListModel(m_pLibrary->trackTableModel(), this)) {
+          m_pLibrary(pLibrary) {
+    connect(m_pLibrary.get(),
+            &Library::trackSelected,
+            this,
+            &QmlLibraryProxy::slotTrackSelected);
+}
+
+QmlLibraryTrackListModel* QmlLibraryProxy::model() {
+    if (!m_pModelProperty) {
+        m_pModelProperty = new QmlLibraryTrackListModel(
+                m_pLibrary->trackTableModel(), this);
+    }
+    return m_pModelProperty;
+}
+
+void QmlLibraryProxy::slotTrackSelected(TrackPointer pTrack) {
+    m_selectedTitle = pTrack ? pTrack->getTitle() : QString{};
+    m_selectedArtist = pTrack ? pTrack->getArtist() : QString{};
+    m_selectedAlbum = pTrack ? pTrack->getAlbum() : QString{};
+    emit selectedTrackChanged();
 }
 
 // static

@@ -227,6 +227,8 @@ void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContex
 bool allshader::WaveformRenderMark::init() {
     m_pTimeRemainingControl = std::make_unique<ControlProxy>(
             m_waveformRenderer->getGroup(), "time_remaining");
+    m_pPlayPositionControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), "playposition");
     ::WaveformRenderMarkBase::init();
     return true;
 }
@@ -304,7 +306,20 @@ void allshader::WaveformRenderMark::update() {
     // (Will create textures so requires OpenGL context)
     updateMarkImages();
 
-    const double playPosition = m_waveformRenderer->getTruePosSample(positionType);
+    double playPosition = m_waveformRenderer->getTruePosSample(positionType);
+    if (!m_isSlipRenderer) {
+        // Controller screens have their own VSync provider. Its interpolated
+        // transport snapshot may occasionally be unavailable or stale, which
+        // used to freeze the beats-until-next-cue counter. The audio engine's
+        // normalized playposition is updated independently and is reliable
+        // enough for an integer beat count.
+        const double normalizedPlayPosition = m_pPlayPositionControl->get();
+        const double trackSamples = m_waveformRenderer->getTrackSamples();
+        if (normalizedPlayPosition >= 0.0 && normalizedPlayPosition <= 1.0 &&
+                trackSamples > 0.0) {
+            playPosition = normalizedPlayPosition * trackSamples;
+        }
+    }
     double nextMarkPosition = std::numeric_limits<double>::max();
 
     GeometryNode* pRangeChild = static_cast<GeometryNode*>(m_pRangeNodesParent->firstChild());
