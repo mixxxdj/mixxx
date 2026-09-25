@@ -488,12 +488,13 @@ jobs:
 
       - name: "Test"
         if: matrix.crosscompile != true
-        run: ctest --timeout 45 ${{ matrix.ctest_args }}
+        # Some SoundSourceProxy tests take ~20s on the macOS Intel runner and
+        # 2-3x longer when tests run in parallel.
+        run: ctest --timeout 90 ${{ matrix.ctest_args }}
         working-directory: build
         env:
           GTEST_COLOR: 1
-          # Windows tests fail randomly if run in parallel
-          CTEST_PARALLEL_LEVEL: 1
+          CTEST_PARALLEL_LEVEL: 3
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: "[Windows] Sign executables"

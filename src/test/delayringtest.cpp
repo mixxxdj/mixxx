@@ -2,6 +2,7 @@
 
 #include <QtConcurrentRun>
 #include <QtDebug>
+#include <atomic>
 
 #include "mixxxtest.h"
 #include "util/delayring.h"
@@ -74,34 +75,36 @@ TEST_F(DelayRingTest, ConcurrentWraparound) {
         ring.push(data);
     }
 
+    // Number of pushed values, updated after each push. The ring's write
+    // index is always pushed or pushed + 1.
+    std::atomic<uint64_t> pushed{kRingSize};
+
     // produce slowly new values.
-    auto producer = QtConcurrent::run([&ring]() {
+    auto producer = QtConcurrent::run([&ring, &pushed]() {
         for (size_t i = kRingSize; i < 100; ++i) {
             TestDataStuct data = {static_cast<uint64_t>(i), static_cast<double>(i) * 1.5};
             ring.push(data);
+            pushed.store(i + 1, std::memory_order_release);
             QThread::usleep(3);
         }
     });
 
     // read all values in a tight loop
-    auto consumer = QtConcurrent::run([&ring]() {
+    auto consumer = QtConcurrent::run([&ring, &pushed]() {
         for (int iteration = 0; iteration < 200; ++iteration) {
-            TestDataStuct prev = {0, 0.0};
-
             // Read all available indices
             for (size_t at = 0; at < kRingSize; ++at) {
                 TestDataStuct data;
+                const uint64_t pushedBefore = pushed.load(std::memory_order_acquire);
                 if (ring.getAt(at, &data)) {
+                    const uint64_t pushedAfter = pushed.load(std::memory_order_acquire);
                     EXPECT_DOUBLE_EQ(data.value, static_cast<double>(data.sequence) * 1.5);
-                    if (at > 0) {
-                        // Older indices should have lower sequence numbers
-                        // They are expected equal if a concurrent write happened
-                        EXPECT_LE(data.sequence, prev.sequence);
-                        // if (data.sequence == prev.sequence) {
-                        //     qWarning() << "expected concurrent write happened";
-                        // }
-                    }
-                    prev = data;
+                    // getAt() counts back from the write index at the time of
+                    // the call. The producer may push any number of values
+                    // between two calls, so an older index can return a newer
+                    // value than the previous call did.
+                    EXPECT_GE(data.sequence + 1 + at, pushedBefore);
+                    EXPECT_LE(data.sequence + at, pushedAfter);
                 }
             }
 
