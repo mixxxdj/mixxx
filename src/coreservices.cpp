@@ -911,8 +911,11 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences(
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
-            getLibrary()
-            includeWaveformPreferences
+            getLibrary(),
+#ifdef HTTP_REMOTE
+            getRemoteControl(),
+#endif
+            includeWaveformPreferences 
     );
     return pDlgPreferences;
 }
