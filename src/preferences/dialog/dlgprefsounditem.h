@@ -1,8 +1,10 @@
 #pragma once
 
+#include "control/controlproxy.h"
 #include "preferences/dialog/ui_dlgprefsounditem.h"
-#include "soundio/soundmanagerutil.h"
 #include "soundio/sounddevice.h"
+#include "soundio/soundmanagerutil.h"
+#include "util/parented_ptr.h"
 
 class SoundManagerConfig;
 
@@ -33,6 +35,10 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     }
     void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
     void setDevice(const SoundDeviceId& device);
+    bool isMonoApplicable() const;
+    bool isMonoChecked() const;
+    void resetMonoToDefault();
+    void applyMonoSetting();
 
   signals:
     void selectedDeviceChanged();
@@ -51,10 +57,16 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
 
+  private slots:
+    void monoToggled(bool checked);
+    void monoMixdownValueChanged(double value);
+
   private:
     SoundDevicePointer getDevice() const; // if this returns NULL, we don't have a valid AudioPath
     void setChannel(unsigned int channelBase, unsigned int channels);
     int hasSufficientChannels(const SoundDevice& device) const;
+    int currentChannelCount() const;
+    void updateMonoCheckboxState();
 
     AudioPathType m_type;
     unsigned int m_index;
@@ -64,5 +76,12 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     // Because QVariant supports QPoint natively we use a QPoint to store the
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
+    // Mirrors the live engine ControlObject value at all times (kept in
+    // sync via loadPath() and monoMixdownValueChanged()); serves as the
+    // rollback target for Cancel/reload().
+    bool m_savedMono;
+    // User's preferred mono mixdown setting when in 2-channel stereo mode (preserved through 1-channel temporary locks).
+    bool m_userStereoMonoPreference;
     bool m_emitSettingChanged;
+    parented_ptr<ControlProxy> m_pMonoMixdown;
 };
