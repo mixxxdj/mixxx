@@ -2413,8 +2413,8 @@ if(QT6)
       src/remote/remote.cpp
     )
     target_link_libraries(mixxx-lib PRIVATE Qt6::HttpServer)
-  )
-  
+  endif()
+
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
