@@ -775,9 +775,6 @@ void SetlogFeature::activateChild(const QModelIndex& index) {
 
 void SetlogFeature::activatePlaylist(int playlistId) {
     // qDebug() << "SetlogFeature::activatePlaylist()" << playlistId;
-    if (playlistId == kInvalidPlaylistId) {
-        return;
-    }
     QModelIndex index = indexFromPlaylistId(playlistId);
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;

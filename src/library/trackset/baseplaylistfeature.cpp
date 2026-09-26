@@ -190,9 +190,6 @@ void BasePlaylistFeature::selectPlaylistInSidebar(int playlistId, bool select) {
     if (!m_pSidebarWidget) {
         return;
     }
-    if (playlistId == kInvalidPlaylistId) {
-        return;
-    }
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (index.isValid()) {
         m_pSidebarWidget->selectChildIndex(index, select);
@@ -216,9 +213,6 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
     // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
-    VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
-        return;
-    }
     QModelIndex index = indexFromPlaylistId(playlistId);
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
@@ -849,6 +843,9 @@ void BasePlaylistFeature::clearChildModel() {
 }
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
+    if (playlistId == kInvalidPlaylistId) {
+        return QModelIndex();
+    }
     QVariant variantId = QVariant(playlistId);
     QModelIndexList results = m_pSidebarModel->match(
             m_pSidebarModel->getRootIndex(),
