@@ -33,7 +33,9 @@ on:
         required: false
       NETLIFY_BUILD_HOOK:
         required: false
-      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+        required: false
+      PPA_SSH_PRIVATE_KEY:
         required: false
 
 permissions:
@@ -80,7 +82,7 @@ jobs:
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
-            ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
+            ctest_args: []
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
@@ -132,7 +134,7 @@ jobs:
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            ctest_args: []
             cpack_generator: WIX
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
@@ -280,19 +282,28 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
-      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
+      - name: "[Ubuntu/macOS] Restore ccache cache"
+        # Caches are only saved by push builds (see "Save ccache cache").
+        # Pull requests can read caches of their base branch, but caches they
+        # save are only visible to themselves and evict the base branch caches
+        # from the 10 GB repository quota.
+        id: ccache_cache
         if: runner.os != 'windows'
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          # Key by source state (not run number) so runs that only change the
+          # workflow — or repeat the same source — reuse the compiled objects
+          # instead of creating a fresh cache entry every time.
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ env.BUILDENV_NAME || 'system' }}-${{ hashFiles('src/**', 'CMakeLists.txt', 'cmake/**') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.base_ref }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
-        # GitHub Actions gives us 10 GB of cache.
-        # 4 runs * 2 GB = 8 GB
+        # The limit applies to the compressed size. Uncompressed, the Ubuntu
+        # build with debug info exceeds 2G and evicts its own objects.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
           ${{ matrix.compiler_cache }} --max-size=2G
@@ -334,19 +345,25 @@ jobs:
         uses: ammaraskar/msvc-problem-matcher@0.3.0
 
       - name: "Build"
-        run: cmake --build . --config RelWithDebInfo
+        # Ninja (macOS/Windows) uses all cores by default, make (Linux) only one
+        run: cmake --build . --config RelWithDebInfo ${{ runner.os == 'Linux' && '--parallel "$(nproc)"' || '' }}
         working-directory: build
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          # GitHub Actions automatically zstd compresses caches
-          CCACHE_NOCOMPRESS: true
 
       - name: "[Ubuntu/macOS] Print compiler cache stats"
         if: runner.os != 'windows'
         run: |
           ${{ matrix.compiler_cache }} --show-stats
           ${{ matrix.compiler_cache }} --cleanup
+
+      - name: "[Ubuntu/macOS] Save ccache cache"
+        if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ matrix.compiler_cache_path }}
+          key: ${{ steps.ccache_cache.outputs.cache-primary-key }}
 
       - name: "Test"
         if: matrix.crosscompile != true
@@ -355,7 +372,7 @@ jobs:
         env:
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel
-          CTEST_PARALLEL_LEVEL: 1
+          CTEST_PARALLEL_LEVEL: ${{ runner.os == 'Windows' && 1 || 3 }}
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: "[Windows] Sign executables"
@@ -376,6 +393,11 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # The x64 and ARM64 runners share the cache keys, but their workspaces
+          # are on different drives (D: vs C:), so a cache saved by ARM64
+          # restores the module to the wrong drive on x64 and signing fails.
+          # https://github.com/Azure/artifact-signing-action/issues/146
+          cache-dependencies: false
 
       - name: "[Windows] Sign WiX custom action DLL"
         env:
@@ -424,24 +446,45 @@ jobs:
           name: ${{ matrix.os }}-logs-packages-wix
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
-      - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
-        run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+      - name: "[Ubuntu] Import DEB package maintainer GPG key"
+        if: matrix.name == 'Ubuntu 24.04' && env.GPG_PRIVATE_KEY != null
         env:
-          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+        run: gpg --import <(echo "$GPG_PRIVATE_KEY")
+
+      - name: "[Ubuntu] Set up for Launchpad PPA SSH upload"
+        if: matrix.name == 'Ubuntu 24.04' && env.PPA_SSH_KEY != null
+        env:
+          PPA_SSH_KEY: ${{ secrets.PPA_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "$PPA_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "# ppa.launchpad.net:22 SSH-2.0-Twisted_20.3.0+lp11" >> ~/.ssh/known_hosts
+          echo "|1|vctA7tDErFfMmg90fV0D4We8BB8=|DuVjz6Bom2lTeHQT8CxbXMZh2U0= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0aKz5UTUndYgIGG7dQBV+HaeuEZJ2xPHo2DS2iSKvUL4xNMSAY4UguNW+pX56nAQmZKIZZ8MaEvSj6zMEDiq6HFfn5JcTlM80UwlnyKe8B8p7Nk06PPQLrnmQt5fh0HmEcZx+JU9TZsfCHPnX7MNz4ELfZE6cFsclClrKim3BHUIGq//t93DllB+h4O9LHjEUsQ1Sr63irDLSutkLJD6RXchjROXkNirlcNVHH/jwLWR5RcYilNX7S5bIkK8NlWPjsn/8Ua5O7I9/YoE97PpO6i73DTGLh5H9JN/SITwCKBkgSDWUt61uPK3Y11Gty7o2lWsBjhBUm2Y38CBsoGmBw==" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          sudo tee /etc/dput.cf > /dev/null <<'EOF'
+          [ssh-ppa]
+          fqdn            = ppa.launchpad.net
+          method          = sftp
+          incoming        = ~%(ssh-ppa)s
+          login           = daschuer
+          EOF
+          sudo chmod 644 /etc/dput.cf
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
         if: matrix.name == 'Ubuntu 24.04'
         run: |
           if [[ "${{ inputs.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/nightlies"
           elif [[ "${{ inputs.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxxbetas"
           elif [[ "${{ inputs.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxx"
           elif [[ "${{ inputs.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxpatches"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxxpatches"
           else
             # only build the source DEB, do not upload
             CPACK_ARGS="-D DEB_SOURCEPKG=ON"
@@ -475,6 +518,8 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # See "Sign executables"
+          cache-dependencies: false
 
       - name: "Prepare for deployment"
         # Copy the desired directory structure to the deploy/ directory. This
@@ -622,6 +667,10 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           build-bundle: false
           upload-artifact: false
+          # The Flatpak caches (~1.4 GB per arch) are only saved on main to stay
+          # within the 10 GB quota. Other branches and pull requests can still
+          # restore the main cache.
+          save-cache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
       - name: "Create Flatpak bundle"
         run: |

@@ -5047,7 +5047,10 @@ configure_file(
 # Packaging
 set(CPACK_PACKAGE_NAME "Mixxx")
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
-set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
+# TODO: Split this into Maintainer field: core-team@mixxx.org for package issues
+# and Uploaders field for personal signing email per Debian Policy.
+# https://www.debian.org/doc/debian-policy/ch-binary.html#the-maintainer-of-a-package
+set(CPACK_PACKAGE_CONTACT "Daniel Schürmann <daschuer@mixxx.org>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Digital DJ Application")
 set(
   CPACK_PACKAGE_DESCRIPTION_FILE

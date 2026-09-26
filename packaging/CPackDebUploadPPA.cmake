@@ -8,7 +8,7 @@ find_program(CPACK_DEBIAN_DEBUILD debuild)
 if(NOT CPACK_DEBIAN_DEBUILD)
   message(
     FATAL_ERROR
-    "debuild not found, required for cpack -G External -D DEB_UPLOAD_PPA=true"
+    "debuild not found, required for cpack -G External -D DEB_..."
   )
 endif()
 
@@ -17,7 +17,7 @@ if(DEB_UPLOAD_PPA)
   if(NOT CPACK_DEBIAN_DPUT)
     message(
       FATAL_ERROR
-      "dput not found, required for cpack -G External -D DEB_UPLOAD_PPA=true"
+      "dput not found, required for cpack -G External -D DEB_UPLOAD_PPA=${DEB_UPLOAD_PPA}"
     )
   endif()
 endif()
@@ -26,7 +26,7 @@ find_program(CPACK_DEBIAN_DEBCHANGE debchange)
 if(NOT CPACK_DEBIAN_DEBCHANGE)
   message(
     FATAL_ERROR
-    "debchange not found, required for cpack -G External -D DEB_UPLOAD_PPA=true"
+    "debchange not found, required for cpack -G External -D DEB_..."
   )
 endif()
 
@@ -34,7 +34,7 @@ find_program(CPACK_DEBIAN_MARKDOWN markdown)
 if(NOT CPACK_DEBIAN_MARKDOWN)
   message(
     FATAL_ERROR
-    "markdown not found, required for cpack -G External -D DEB_UPLOAD_PPA=true"
+    "markdown not found, required for cpack -G External -D DEB_..."
   )
 endif()
 
@@ -42,7 +42,7 @@ find_program(CPACK_DEBIAN_DOCBOOK_TO_MAN docbook-to-man)
 if(NOT CPACK_DEBIAN_DOCBOOK_TO_MAN)
   message(
     FATAL_ERROR
-    "docbook-to-man not found, required for cpack -G External -D DEB_UPLOAD_PPA=true"
+    "docbook-to-man not found, required for cpack -G External -D DEB_..."
   )
 endif()
 
@@ -125,6 +125,11 @@ if(DEB_BUILD)
   )
 endif()
 
+set(DPUT_FAILED FALSE)
+
+# upload the source tar ball in case of the first distro
+set(CPACK_DEBIAN_DEBUILD_SOURCE_ALWAYS "-sa")
+
 foreach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
   if(release STREQUAL "jammy")
     set(
@@ -155,25 +160,32 @@ foreach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
       "${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}~${release}"
       -M "Build of ${CPACK_DEBIAN_PACKAGE_VERSION}"
     WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
+    COMMAND_ERROR_IS_FATAL ANY
   )
   execute_process(
     COMMAND
       ${CPACK_DEBIAN_DEBCHANGE} -r -D ${release} -M
       "Build of ${CPACK_DEBIAN_PACKAGE_VERSION}"
     WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
+    COMMAND_ERROR_IS_FATAL ANY
   )
 
   if(DEB_UPLOAD_PPA OR DEB_SOURCEPKG)
     execute_process(
-      COMMAND ${CPACK_DEBIAN_DEBUILD} -S -sa -d ${CPACK_DEBIAN_DEBUILD_NOSIGN}
+      COMMAND
+        ${CPACK_DEBIAN_DEBUILD} -S ${CPACK_DEBIAN_DEBUILD_SOURCE_ALWAYS} -d
+        ${CPACK_DEBIAN_DEBUILD_NOSIGN}
       WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
       COMMAND_ERROR_IS_FATAL ANY
     )
+    # don't upload the source tar ball for other distros
+    set(CPACK_DEBIAN_DEBUILD_SOURCE_ALWAYS -sd)
   endif()
   if(BUILD_MACHINE_RELEASE STREQUAL release AND DEB_BUILD)
     execute_process(
       COMMAND ${CPACK_DEBIAN_DEBUILD} -b ${CPACK_DEBIAN_DEBUILD_NOSIGN}
       WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
+      COMMAND_ERROR_IS_FATAL ANY
     )
   endif()
   if(DEB_UPLOAD_PPA)
@@ -182,8 +194,15 @@ foreach(release ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
         ${CPACK_DEBIAN_DPUT} ${DEB_UPLOAD_PPA}
         "mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}~${release}_source.changes"
       WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}
-      COMMAND_ERROR_IS_FATAL ANY
+      RESULT_VARIABLE DPUT_EXIT_CODE
     )
+    if(NOT DPUT_EXIT_CODE EQUAL 0)
+      set(DPUT_FAILED TRUE)
+      message(
+        STATUS
+        "Upload failed for release: ${release} (Exit code: ${DPUT_EXIT_CODE})"
+      )
+    endif()
   endif()
 endforeach()
 
@@ -194,4 +213,11 @@ if(DEB_SOURCEPKG OR DEB_BUILD)
     "${CPACK_TOPLEVEL_DIRECTORY}/mixxx-dbgsym_${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}*"
   )
   file(COPY ${ARTIFACTS} DESTINATION ${CPACK_PACKAGE_DIRECTORY})
+endif()
+
+if(DPUT_FAILED)
+  message(
+    FATAL_ERROR
+    "One or more PPA package uploads failed. Review the log above."
+  )
 endif()
