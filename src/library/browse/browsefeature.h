@@ -38,14 +38,14 @@ class BrowseFeature : public LibraryFeature {
     TreeItemModel* sidebarModel() const override;
 
     void releaseBrowseThread();
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
     void slotRefreshDirectoryTree();
-    void activate() override;
-    void activateChild(const QModelIndex& index) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();

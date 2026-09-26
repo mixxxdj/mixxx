@@ -20,12 +20,9 @@ class RecordingFeature final : public LibraryFeature {
                     KeyboardEventFilter* keyboard) override;
 
     TreeItemModel* sidebarModel() const override;
-
-  public slots:
     void activate() override;
 
   signals:
-    void setRootIndex(const QModelIndex&);
     void requestRestoreSearch();
     void refreshBrowseModel();
 

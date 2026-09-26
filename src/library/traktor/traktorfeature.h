@@ -33,16 +33,16 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
     TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~TraktorFeature();
+    ~TraktorFeature() override;
 
     QVariant title() override;
-    static bool isSupported();
-
     TreeItemModel* sidebarModel() const override;
+    void activate() override;
     void activateChild(const QModelIndex& index) override;
 
+    static bool isSupported();
+
   public slots:
-    void activate() override;
     void refreshLibraryModels();
     void onTrackCollectionLoaded();
 

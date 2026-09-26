@@ -40,10 +40,10 @@ class CrateFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+    void activate() override;
     void activateChild(const QModelIndex& index) override;
 
   public slots:
-    void activate() override;
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();

@@ -46,10 +46,10 @@ class MixxxLibraryFeature final : public LibraryFeature {
     }
 
     void searchAndActivate(const QString& query);
+    void activate() override;
     void activateChild(const QModelIndex& index) override;
 
   public slots:
-    void activate() override;
 #ifdef __ENGINEPRIME__
     void onRightClick(const QPoint& globalPos) override;
 #endif

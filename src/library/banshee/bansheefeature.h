@@ -20,7 +20,6 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     TreeItemModel* sidebarModel() const override;
 
-  public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
 

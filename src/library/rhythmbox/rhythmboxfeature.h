@@ -25,10 +25,10 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     TreeItem* importMusicCollection();
     // processes the playlist entries
     TreeItem* importPlaylists();
-
-  public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+
+  public slots:
     void onTrackCollectionLoaded();
 
   protected:
