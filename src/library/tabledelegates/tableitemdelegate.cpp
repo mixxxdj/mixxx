@@ -76,25 +76,6 @@ int TableItemDelegate::columnWidth(const QModelIndex &index) const {
     return m_pTableView->columnWidth(index.column());
 }
 
-void TableItemDelegate::paintItemBackground(
-        QPainter* painter,
-        const QStyleOptionViewItem& option,
-        const QModelIndex& index) {
-    // If the row is not selected, paint the desired background color before
-    // painting the delegate item
-    if (option.showDecorationSelected &&
-            (option.state & QStyle::State_Selected)) {
-        return;
-    }
-    QVariant bgValue = index.data(Qt::BackgroundRole);
-    if (!bgValue.isValid()) {
-        return;
-    }
-    DEBUG_ASSERT(bgValue.canConvert<QBrush>());
-    const auto bgBrush = qvariant_cast<QBrush>(bgValue);
-    painter->fillRect(option.rect, bgBrush);
-}
-
 // static
 void TableItemDelegate::drawBorder(
         QPainter* painter,

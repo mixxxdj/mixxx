@@ -47,7 +47,7 @@ class ScopedTimer {
             int i,
             Stat::ComputeFlags compute = kDefaultComputeFlags)
             : ScopedTimer(key,
-                      CmdlineArgs::Instance().getDeveloper()
+                      CmdlineArgs::Instance().getStats()
                               ? QString::number(i)
                               : QStringView(),
                       compute) {
@@ -55,7 +55,7 @@ class ScopedTimer {
 
     ScopedTimer(QStringView key, QStringView arg, Stat::ComputeFlags compute = kDefaultComputeFlags)
             : m_maybeTimer(std::nullopt) {
-        if (!CmdlineArgs::Instance().getDeveloper()) {
+        if (!CmdlineArgs::Instance().getStats()) {
             return;
         }
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
