@@ -161,6 +161,8 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        pDeck->slotEjectTrack(1.0);
+        DEBUG_ASSERT(!pEngineDeck->getEngineBuffer()->isTrackLoaded());
         pDeck->slotLoadTrack(pTrack,
 #ifdef __STEM__
                 mixxx::StemChannelSelection(),

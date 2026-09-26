@@ -1,3 +1,4 @@
+#include <QFileInfo>
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QtDebug>
@@ -245,7 +246,7 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 
         // Retrieving the file's name after opening it is required to actually
         // create a named file on Linux.
-        const auto tmpFileName = tmpFile.fileName();
+        const auto tmpFileName = QFileInfo(tmpFile).canonicalFilePath();
         ASSERT_TRUE(!tmpFileName.isEmpty());
 
         tmpFile.close();
