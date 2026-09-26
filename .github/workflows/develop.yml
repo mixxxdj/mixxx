@@ -6,6 +6,7 @@ on:
       - opened
       - synchronize
       - reopened
+      # Only to rerun CI when the base branch is changed, title/body edits are skipped
       - edited
   push:
     branches:
@@ -21,6 +22,8 @@ permissions:
 jobs:
   stop-build:
     name: Check if build should be stopped
+    # Skipping this job skips all others
+    if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-slim
     outputs:
       result: ${{ github.event_name == 'push' && steps.stop-build.outputs.result || 'false' }}
@@ -65,6 +68,8 @@ jobs:
 
   git:
     if: github.event_name == 'pull_request'
+    needs:
+      - stop-build
     uses: ./.github/workflows/git.yml
 
   build:
@@ -79,7 +84,9 @@ jobs:
   # This task is used as a probe for auto merge
   # In the future, it could also be used to perform a status update (e.g once the whole CI is passing + is ready for review, add a specific label such as `need review`)
   ready:
-    name: Ready to merge
+    # Skipped jobs count as passed required checks, so rename it when skipped
+    # to keep the result of the previous run
+    name: ${{ (github.event.action != 'edited' || github.event.changes.base) && 'Ready to merge' || 'Skipped (PR edited)' }}
     needs:
       - pre-commit
       - checks
