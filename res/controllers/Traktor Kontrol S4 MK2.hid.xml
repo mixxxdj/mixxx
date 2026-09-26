@@ -20,6 +20,7 @@
               label="Action to trigger with remix slot buttons">
         <value label="Samplers" default="true">SAMPLES</value>
         <value label="Loop Rolls">LOOPROLLS</value>
+        <value label="Hot Cues">HOTCUES</value>
       </option>
       <option variable="shiftCueButtonAction" type="enum"
               label="The action to trigger when Shift+Cue is pressed">
