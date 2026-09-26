@@ -38,16 +38,13 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
 
-  public slots:
-    void activateChild(const QModelIndex& index) override;
     virtual void activatePlaylist(int playlistId);
+    void activateChild(const QModelIndex& index) override;
+
+  public slots:
     virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
-    void slotPlaylistTableChangedAndSelect(int playlistId) {
-        slotPlaylistTableChanged(playlistId);
-        selectPlaylistInSidebar(playlistId);
-    };
     void slotPlaylistTableChangedAndScrollTo(int playlistId) {
         slotPlaylistTableChanged(playlistId);
         selectPlaylistInSidebar(playlistId, false);
@@ -67,7 +64,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
@@ -75,6 +71,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotAnalyzePlaylist();
 
   protected:
+    void importPlaylistFile(const QString& playlistFile, int playlistId);
     struct IdAndLabel {
         int id;
         QString label;

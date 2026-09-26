@@ -39,10 +39,10 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
 
     TreeItemModel* sidebarModel() const override;
+    void activateChild(const QModelIndex& index) override;
 
   public slots:
     void activate() override;
-    void activateChild(const QModelIndex& index) override;
     void refreshLibraryModels();
     void onTrackCollectionLoaded();
 

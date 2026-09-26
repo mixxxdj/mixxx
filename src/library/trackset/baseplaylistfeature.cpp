@@ -459,10 +459,10 @@ void BasePlaylistFeature::slotImportPlaylist() {
     m_pConfig->set(kConfigKeyLastImportExportPlaylistDirectory,
             ConfigValue(fileDirectory.absoluteDir().canonicalPath()));
 
-    slotImportPlaylistFile(playlistFile, playlistId);
+    importPlaylistFile(playlistFile, playlistId);
 }
 
-void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
+void BasePlaylistFeature::importPlaylistFile(const QString& playlistFile,
         int playlistId) {
     if (playlistFile.isEmpty()) {
         return;
@@ -568,7 +568,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
             return;
         }
 
-        slotImportPlaylistFile(playlistFile, lastPlaylistId);
+        importPlaylistFile(playlistFile, lastPlaylistId);
     }
     activatePlaylist(lastPlaylistId);
 }

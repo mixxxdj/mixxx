@@ -21,6 +21,7 @@ class SetlogFeature : public BasePlaylistFeature {
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void activatePlaylist(int playlistId) override;
+    void activateChild(const QModelIndex& index) override;
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
@@ -32,7 +33,6 @@ class SetlogFeature : public BasePlaylistFeature {
     void slotDeletePlaylist() override;
     void slotGetNewPlaylist();
     void activate() override;
-    void activateChild(const QModelIndex& index) override;
 
   protected:
     QModelIndex constructChildModel(int selectedId);
