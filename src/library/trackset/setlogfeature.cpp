@@ -512,11 +512,11 @@ void SetlogFeature::lockOrUnlockAllChildPlaylists(bool lock) {
     } else {
         qWarning() << "unlock all child playlists of" << m_lastRightClickedIndex.data().toString();
     }
-    TreeItem* item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
-    if (!item) {
+    TreeItem* pItem = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
+    if (!pItem) {
         return;
     }
-    const QList<TreeItem*> yearChildren = item->children();
+    const QList<TreeItem*> yearChildren = pItem->children();
     if (yearChildren.isEmpty()) {
         return;
     }
