@@ -5,9 +5,14 @@
 
 #include <QFile>
 #include <memory>
+#include <optional>
 
 #include "track/taglib/trackmetadata.h"
+#include "track/taglib/trackmetadata_ape.h"
 #include "track/taglib/trackmetadata_common.h"
+#include "track/taglib/trackmetadata_id3v2.h"
+#include "track/taglib/trackmetadata_mp4.h"
+#include "track/taglib/trackmetadata_xiph.h"
 #include "util/logger.h"
 #include "util/safelywritablefile.h"
 
@@ -695,6 +700,232 @@ MetadataSourceTagLib::exportTrackMetadata(
         kLogger.warning() << "Failed to modify tags of file" << m_fileName;
     }
     return afterExport(ExportResult::Failed);
+}
+
+std::optional<int> MetadataSourceTagLib::importRating() const {
+    switch (m_fileType) {
+    case taglib::FileType::MPEG: {
+        TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen()) {
+            return std::nullopt;
+        }
+        // Try ID3v2 first, then APE
+        if (file.hasID3v2Tag()) {
+            auto rating = taglib::id3v2::importRatingFromTag(*file.ID3v2Tag());
+            if (rating.has_value()) {
+                return rating;
+            }
+        }
+        if (taglib::hasAPETag(file) && file.APETag()) {
+            return taglib::ape::importRatingFromTag(*file.APETag());
+        }
+        return std::nullopt;
+    }
+    case taglib::FileType::MP4: {
+        TagLib::MP4::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::mp4::importRatingFromTag(*file.tag());
+    }
+    case taglib::FileType::FLAC: {
+        TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen()) {
+            return std::nullopt;
+        }
+        // Try ID3v2 first, then Xiph comment
+        if (file.hasID3v2Tag()) {
+            auto rating = taglib::id3v2::importRatingFromTag(*file.ID3v2Tag());
+            if (rating.has_value()) {
+                return rating;
+            }
+        }
+        if (taglib::hasXiphComment(file) && file.xiphComment()) {
+            return taglib::xiph::importRatingFromTag(*file.xiphComment());
+        }
+        return std::nullopt;
+    }
+    case taglib::FileType::OggVorbis: {
+        TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::xiph::importRatingFromTag(*file.tag());
+    }
+    case taglib::FileType::Opus: {
+        TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::xiph::importRatingFromTag(*file.tag());
+    }
+    case taglib::FileType::WavPack: {
+        TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.APETag()) {
+            return std::nullopt;
+        }
+        return taglib::ape::importRatingFromTag(*file.APETag());
+    }
+    case taglib::FileType::WAV: {
+        TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen()) {
+            return std::nullopt;
+        }
+        if (file.hasID3v2Tag()) {
+            return taglib::id3v2::importRatingFromTag(*file.ID3v2Tag());
+        }
+        return std::nullopt;
+    }
+    case taglib::FileType::AIFF: {
+        TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::id3v2::importRatingFromTag(*file.tag());
+    }
+    default:
+        return std::nullopt;
+    }
+}
+
+bool MetadataSourceTagLib::exportRating(int rating) const {
+    SafelyWritableFile safelyWritableFile(m_fileName,
+            SafelyWritableFile::SafetyMode::Edit);
+    if (!safelyWritableFile.isReady()) {
+        kLogger.warning()
+                << "Unable to export rating into file"
+                << m_fileName
+                << "- Please check file permissions and storage space";
+        return false;
+    }
+
+    bool success = false;
+    switch (m_fileType) {
+    case taglib::FileType::MPEG: {
+        TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            // Export into ID3v2 (preferred)
+            int modifiedTags = TagLib::MPEG::File::ID3v2;
+            TagLib::ID3v2::Tag* pTag = file.ID3v2Tag(true);
+            if (pTag && taglib::id3v2::exportRatingIntoTag(pTag, rating)) {
+                // Keep the FMPS_RATING item of an existing APE tag in
+                // sync, because the import falls back to the APE tag.
+                // No APE tag is created if none exists.
+                if (taglib::hasAPETag(file)) {
+                    TagLib::APE::Tag* pApeTag = file.APETag();
+                    if (pApeTag &&
+                            taglib::ape::exportRatingIntoTag(pApeTag, rating)) {
+                        modifiedTags |= TagLib::MPEG::File::APE;
+                    }
+                }
+                // Keep an ID3v1 tag synchronized if it already exists
+                // and never strip any of the other tags from the file
+                // (see MpegTagSaver::saveModifiedTags() above)
+                const auto duplicateTags = file.hasID3v1Tag()
+                        ? TagLib::File::DuplicateTags::Duplicate
+                        : TagLib::File::DuplicateTags::DoNotDuplicate;
+                success = file.save(
+                        modifiedTags,
+                        TagLib::File::StripTags::StripNone,
+                        TagLib::ID3v2::Version::v4,
+                        duplicateTags);
+            }
+        }
+        break;
+    }
+    case taglib::FileType::MP4: {
+        TagLib::MP4::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::mp4::exportRatingIntoTag(file.tag(), rating)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::FLAC: {
+        TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            TagLib::Ogg::XiphComment* pTag = file.xiphComment(true);
+            if (pTag && taglib::xiph::exportRatingIntoTag(pTag, rating)) {
+                // Keep the FMPS_Rating frame of an existing ID3v2 tag
+                // in sync, because the import prefers the ID3v2 tag.
+                // No ID3v2 tag is created if none exists.
+                if (file.hasID3v2Tag()) {
+                    TagLib::ID3v2::Tag* pId3v2Tag = file.ID3v2Tag();
+                    if (pId3v2Tag) {
+                        taglib::id3v2::exportRatingIntoTag(pId3v2Tag, rating);
+                    }
+                }
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::OggVorbis: {
+        TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::xiph::exportRatingIntoTag(file.tag(), rating)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::Opus: {
+        TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::xiph::exportRatingIntoTag(file.tag(), rating)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::WavPack: {
+        TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            TagLib::APE::Tag* pTag = file.APETag(true);
+            if (pTag && taglib::ape::exportRatingIntoTag(pTag, rating)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::WAV: {
+        TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
+            if (pTag && taglib::id3v2::exportRatingIntoTag(pTag, rating)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::AIFF: {
+        TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::id3v2::exportRatingIntoTag(file.tag(), rating)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    default:
+        kLogger.warning()
+                << "Rating export not supported for file type"
+                << static_cast<int>(m_fileType);
+        return false;
+    }
+
+    if (success) {
+        if (!safelyWritableFile.commit()) {
+            kLogger.warning() << "Failed to commit rating changes to file" << m_fileName;
+            return false;
+        }
+        kLogger.debug() << "Exported rating" << rating << "to file" << m_fileName;
+        return true;
+    }
+
+    kLogger.warning() << "Failed to export rating to file" << m_fileName;
+    return false;
 }
 
 } // namespace mixxx

@@ -84,6 +84,12 @@ SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
                             mixxx::library::prefs::kResetMissingTagMetadataOnImportConfigKey),
             .syncSeratoMetadata = userSettings.getValue<bool>(
                     mixxx::library::prefs::kSyncSeratoMetadataConfigKey),
+            .syncTrackMetadata = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kSyncTrackMetadataConfigKey),
+            .exportRatingToFile = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kExportRatingToFileTagsConfigKey),
+            .importRatingFromFile = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kImportRatingFromFileTagsConfigKey),
     };
 }
 
@@ -1761,6 +1767,36 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Failed;
     }
 
+    // The rating is not part of TrackMetadata. Compare it separately
+    // with the value stored in the file tags to decide whether it needs
+    // to be exported. This also covers clearing a rating: an unrated
+    // track with a rating still present in the file requires an export
+    // to remove the stale tag, which would otherwise be re-imported
+    // during the next library scan.
+    const bool ratingNeedsExport = syncParams.exportRatingToFile &&
+            metadataSource.importRating().value_or(
+                    mixxx::TrackRecord::kNoRating) != m_record.getRating();
+
+    // Export only the rating into the file tags, leaving all other tags
+    // untouched. The synchronization time stamp is refreshed afterwards,
+    // because the write updates the file's modification time and the
+    // file would otherwise be considered externally modified.
+    const auto exportRatingOnly = [this, &metadataSource]() {
+        if (!metadataSource.exportRating(m_record.getRating())) {
+            kLogger.warning()
+                    << "Failed to export rating to file:"
+                    << getLocation();
+            return ExportTrackMetadataResult::Failed;
+        }
+        const auto fileSynchronizedAt =
+                mixxx::MetadataSource::getFileSynchronizedAt(
+                        m_fileAccess.info().toQFile());
+        if (fileSynchronizedAt.isValid()) {
+            m_record.updateSourceSynchronizedAt(fileSynchronizedAt);
+        }
+        return ExportTrackMetadataResult::Succeeded;
+    };
+
     // Check if the metadata has actually been modified. Otherwise
     // we don't need to write it back. Exporting unmodified metadata
     // would needlessly update the file's time stamp and should be
@@ -1835,13 +1871,26 @@ ExportTrackMetadataResult Track::exportMetadata(
                         importedFromFile,
                         mixxx::Bpm::Comparison::Integer)) {
             // The file tags are in-sync with the track's metadata and don't need
-            // to be updated.
+            // to be updated. Only the rating might need to be written.
+            if (ratingNeedsExport) {
+                return exportRatingOnly();
+            }
             if (kLogger.debugEnabled()) {
                 kLogger.debug()
                             << "Skip exporting of unmodified track metadata into file:"
                             << getLocation();
             }
             // abort
+            return ExportTrackMetadataResult::Skipped;
+        }
+        if (!syncParams.syncTrackMetadata && !m_bMarkedForMetadataExport) {
+            // The track only became eligible for export because rating
+            // export is enabled. A full synchronization of metadata into
+            // file tags has neither been enabled nor requested explicitly,
+            // so no other file tags must be written.
+            if (ratingNeedsExport) {
+                return exportRatingOnly();
+            }
             return ExportTrackMetadataResult::Skipped;
         }
     } else {
@@ -1855,6 +1904,11 @@ ExportTrackMetadataResult Track::exportMetadata(
             normalizedFromRecord = m_record.getMetadata();
             normalizedFromRecord.normalizeBeforeExport();
         } else {
+            // The rating can still be exported into a file without any
+            // tags: a new tag containing only the rating is created.
+            if (ratingNeedsExport) {
+                return exportRatingOnly();
+            }
             kLogger.warning()
                     << "Skip exporting of track metadata after failure to import tags from file:"
                     << getLocation();
@@ -1885,6 +1939,20 @@ ExportTrackMetadataResult Track::exportMetadata(
             kLogger.debug()
                     << "Exported track metadata:"
                     << getLocation();
+        }
+        // Export the rating if it differs from the value in the file
+        // tags. This includes removing the tag when the rating has
+        // been cleared, i.e. equals TrackRecord::kNoRating. The rating
+        // export writes the file again after the metadata export, so
+        // the synchronization time stamp is refreshed afterwards.
+        if (ratingNeedsExport) {
+            if (exportRatingOnly() == ExportTrackMetadataResult::Failed) {
+                // The metadata export succeeded, only the rating could
+                // not be written. Do not fail the whole operation.
+                kLogger.warning()
+                        << "Track metadata has been exported without the rating:"
+                        << getLocation();
+            }
         }
         return ExportTrackMetadataResult::Succeeded;
     case mixxx::MetadataSource::ExportResult::Unsupported:
