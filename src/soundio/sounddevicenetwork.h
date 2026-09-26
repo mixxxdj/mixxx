@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QString>
 #include <QSharedPointer>
+#include <QString>
 #include <QThread>
 
 #ifdef __LINUX__
@@ -14,6 +14,7 @@
 #include "engine/sidechain/networkoutputstreamworker.h"
 #include "soundio/sounddevice.h"
 #include "util/fifo.h"
+#include "util/hosttimefilter.h"
 #include "util/performancetimer.h"
 
 #define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
@@ -68,6 +69,8 @@ class SoundDeviceNetwork : public SoundDevice {
     /// The deadline for the next buffer, in microseconds since the Unix epoch.
     qint64 m_targetTime;
     PerformanceTimer m_clkRefTimer;
+
+    HostTimeFilter m_hostTimeFilter;
 };
 
 class SoundDeviceNetworkThread : public QThread {
