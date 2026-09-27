@@ -62,4 +62,5 @@ class SetlogFeature : public BasePlaylistFeature {
     int m_yearNodeId;
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
+    bool m_inhibitConstructChildModel;
 };

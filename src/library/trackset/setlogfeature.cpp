@@ -43,7 +43,8 @@ SetlogFeature::SetlogFeature(
           m_currentPlaylistId(kInvalidPlaylistId),
           m_yearNodeId(kInvalidPlaylistId),
           m_pLibrary(pLibrary),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_inhibitConstructChildModel(true) {
     // remove unneeded entries
     deleteAllUnlockedPlaylistsWithFewerTracks();
 
@@ -64,10 +65,6 @@ SetlogFeature::SetlogFeature(
     DEBUG_ASSERT(m_yearNodeId != kInvalidPlaylistId);
     // just to be safe
     m_playlistDao.setPlaylistLocked(m_yearNodeId, true);
-
-    //construct child model
-    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
-    constructChildModel(kInvalidPlaylistId);
 
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous (below)"), this);
     connect(m_pJoinWithPreviousAction,
@@ -107,9 +104,15 @@ SetlogFeature::SetlogFeature(
 
     // initialized in a new generic slot(get new history playlist purpose)
     slotGetNewPlaylist();
+
+    // construct child model
+    m_inhibitConstructChildModel = false;
+    m_pSidebarModel->setRootItem(TreeItem::newRoot(this));
+    constructChildModel(m_currentPlaylistId);
 }
 
 SetlogFeature::~SetlogFeature() {
+    m_inhibitConstructChildModel = true;
     // Clean up history when shutting down in case the track threshold changed,
     // incl. potentially empty current playlist
     deleteAllUnlockedPlaylistsWithFewerTracks();
@@ -232,6 +235,10 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // qDebug() << "SetlogFeature::constructChildModel() selected:" << selectedId;
     // Setup the sidebar playlist model
+    if (m_inhibitConstructChildModel) {
+        // skip update incomplete updates
+        return QModelIndex();
+    }
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
