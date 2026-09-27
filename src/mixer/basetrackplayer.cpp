@@ -77,6 +77,12 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &EngineBuffer::trackLoadFailed,
             this,
             &BaseTrackPlayerImpl::slotLoadFailed);
+#ifdef __STEM__
+    connect(m_pChannel,
+            &EngineDeck::aiStemFileReady,
+            this,
+            &BaseTrackPlayerImpl::slotLoadAiStemFile);
+#endif
     connect(pEngineBuffer,
             &EngineBuffer::noVinylControlInputConfigured,
             this,
@@ -635,6 +641,34 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
     QMessageBox::warning(nullptr, tr("Couldn't load track."), reason);
     m_pPrevFailedTrackId = TrackId();
 }
+
+#ifdef __STEM__
+void BaseTrackPlayerImpl::slotLoadAiStemFile(const QString& stemFilePath) {
+    //qDebug() << "BaseTrackPlayerImpl::slotLoadAiStemFile" << stemFilePath;
+    auto pStemTrack = Track::newTemporary(stemFilePath);
+    if (!pStemTrack) {
+        qDebug() << "Failed to create temporary track for" << stemFilePath;
+        return;
+    }
+    // Keep the metadata of the original track (title, artist, BPM, key, ...)
+    // so the deck/library view shows the same track, even though the audio now
+    // comes from the generated .stem.mp4 file.
+    if (m_pLoadedTrack) {
+        auto metadata = m_pLoadedTrack->getMetadata();
+        pStemTrack->replaceMetadataFromSource(
+                std::move(metadata), QDateTime::currentDateTimeUtc());
+        pStemTrack->trySetBpm(m_pLoadedTrack->getBpm());
+        pStemTrack->setKey(
+                m_pLoadedTrack->getKey(), mixxx::track::io::key::USER);
+        pStemTrack->setKeyText(m_pLoadedTrack->getKeyText());
+        pStemTrack->setColor(m_pLoadedTrack->getColor());
+        pStemTrack->setRating(m_pLoadedTrack->getRating());
+    }
+    // Load all 4 stems through the native stem system. An empty stem mask
+    // selects every stem (see SoundSourceSTEM::open).
+    slotLoadTrack(std::move(pStemTrack), mixxx::StemChannelSelection(), true);
+}
+#endif
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
