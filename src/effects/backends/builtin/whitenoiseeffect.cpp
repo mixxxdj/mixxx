@@ -21,7 +21,9 @@ EffectManifestPointer WhiteNoiseEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr("Mix white noise with the input signal"));
-    pManifest->setEffectRampsFromDry(true);
+    // Allow the EngineEffect crossfader to smoothly ramp white noise in and out
+    // when enabling or disabling to prevent audio pop artifacts.
+    pManifest->setEffectRampsFromDry(false);
 
     // This is dry/wet parameter
     EffectManifestParameterPointer drywet = pManifest->addParameter();
