@@ -108,6 +108,7 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
 
     bool foundPremixedStream = false;
     AVStream* firstStem = nullptr;
+    int mainMixSampleRate = 0;
     int stemCount = 0;
     uint selectedStemMask = params.stemMask();
     VERIFY_OR_DEBUG_ASSERT(selectedStemMask <= 2 << mixxx::kMaxSupportedStems) {
@@ -149,6 +150,13 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
             // SoundSourceFFmpeg::resampleDecodedAVFrame will take care to
             // resample the main stream, in order to use the same time scale and
             // keep a working grid/cue definition
+            //
+            // The premixed stream has already passed the stereo
+            // (nb_channels == 2) check above. Its sample rate must still
+            // match the stems: a mixed-rate file cannot be decoded to a
+            // single time scale, so fail cleanly instead.
+            mainMixSampleRate = pavInputFormatContext->streams[streamIdx]
+                                        ->codecpar->sample_rate;
             foundPremixedStream = true;
             continue;
         }
@@ -158,6 +166,13 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         if (!firstStem) {
             // We always keep track of the stem to verify that stem stream properties are matching
             firstStem = pavInputFormatContext->streams[streamIdx];
+            if (mainMixSampleRate != 0 &&
+                    firstStem->codecpar->sample_rate != mainMixSampleRate) {
+                kLogger.warning().noquote()
+                        << "First stem at position" << streamIdx
+                        << "has a different sample rate than the main mix";
+                return OpenResult::Failed;
+            }
         } else {
             if (pavInputFormatContext->streams[streamIdx]->codecpar->codec_id !=
                     firstStem->codecpar->codec_id) {
@@ -183,7 +198,30 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         m_pStereoStreams.emplace_back(std::make_unique<SoundSourceFFmpeg>(getUrl(), streamIdx));
         if (m_pStereoStreams.back()->open(OpenMode::Strict /*Unused*/,
                     stemParam) != OpenResult::Succeeded) {
+            kLogger.warning().noquote()
+                    << "Failed to open stem at stream position" << streamIdx;
             return OpenResult::Failed;
+        }
+        if (m_pStereoStreams.size() > 1) {
+            // All decoded stems must share one time scale and length so the
+            // 8-channel interleave [VL VR DL DR BL BR OL OR] stays
+            // sample-aligned. Fail cleanly (AudioSource::open rolls back
+            // via close()) instead of producing skewed output.
+            const auto& firstInfo = m_pStereoStreams.front()->getSignalInfo();
+            const auto& curInfo = m_pStereoStreams.back()->getSignalInfo();
+            if (curInfo.getSampleRate() != firstInfo.getSampleRate()) {
+                kLogger.warning().noquote()
+                        << "Stem at stream position" << streamIdx
+                        << "decoded to a different sample rate";
+                return OpenResult::Failed;
+            }
+            if (m_pStereoStreams.back()->frameIndexRange() !=
+                    m_pStereoStreams.front()->frameIndexRange()) {
+                kLogger.warning().noquote()
+                        << "Stem at stream position" << streamIdx
+                        << "has a different length than the first stem";
+                return OpenResult::Failed;
+            }
         }
     }
 
@@ -209,11 +247,18 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
         m_requestedChannelCount = mixxx::audio::ChannelCount::stereo();
         initChannelCountOnce(mixxx::audio::ChannelCount::stereo());
     } else {
-        // No special channel format request
+        // No special channel format request: full 8-channel stem mode
+        // [VL VR DL DR BL BR OL OR]. This requires all 4 stems (no mask
+        // filtering); anything else is a caller error -> fail cleanly.
+        VERIFY_OR_DEBUG_ASSERT(m_pStereoStreams.size() ==
+                static_cast<std::size_t>(kRequiredStreamCount)) {
+            kLogger.warning().noquote()
+                    << "stem mode requires" << kRequiredStreamCount
+                    << "decoded stems but got" << m_pStereoStreams.size();
+            return OpenResult::Failed;
+        }
         m_requestedChannelCount = mixxx::audio::ChannelCount::stem();
-        initChannelCountOnce(
-                static_cast<int>(mixxx::audio::ChannelCount::stereo() *
-                        m_pStereoStreams.size()));
+        initChannelCountOnce(mixxx::audio::ChannelCount::stem());
     }
 
     initSampleRateOnce(m_pStereoStreams.front()->getSignalInfo().getSampleRate());
@@ -224,14 +269,25 @@ SoundSource::OpenResult SoundSourceSTEM::tryOpen(
 }
 
 void SoundSourceSTEM::close() {
+    // AudioSource::open() calls close() before tryOpen() and on every
+    // failure (rollback), so close() must leave the object in a pristine,
+    // re-openable state: release decoders, drop the stream list, reset the
+    // requested channel count and free the scratch buffer. Without this,
+    // a failed open would leave partial state behind and poison retries.
     for (auto& stream : m_pStereoStreams) {
         stream->close();
     }
+    m_pStereoStreams.clear();
+    m_requestedChannelCount = mixxx::audio::ChannelCount();
+    m_buffer = SampleBuffer();
 }
 
 ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
         const WritableSampleFrames& globalSampleFrames) {
     VERIFY_OR_DEBUG_ASSERT(m_requestedChannelCount.isValid()) {
+        return ReadableSampleFrames();
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_pStereoStreams.empty()) {
         return ReadableSampleFrames();
     }
 
@@ -280,7 +336,10 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
 
         // Each m_pStereoStreams[streamIdx] provides a standard stereo signal (L/R).
         // in stem mode we need to transform the data to an interleaved layout:
-        // 1L1R2L2R3L3R4L4R, 1L1R2L2R3L3R4L4R ...
+        // [VL VR DL DR BL BR OL OR], [VL VR DL DR BL BR OL OR] ...
+        // (stream order = file order streams 1..4; for writer-generated
+        // files this is vocals, drums, bass, other, matching
+        // StemMp4Writer::Config.stems order).
         if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
             // Change the sample layout to interleave all channels together
             for (SINT i = 0; i < stemSampleLength / 2; i++) {
