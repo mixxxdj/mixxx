@@ -366,4 +366,48 @@ TEST_F(AnalyzerStemSeparationTest, CacheRoundtrip48000HzSecondLoadHitsWithoutInf
     StemCacheManager::instance().markFailed(key);
 }
 
+// N9 Step5.5 verdict: NO-APLICA documentado.
+// track_locations.location must keep pointing at the ORIGINAL audio file
+// (TrackDAO::addTracksPrepare INSERTs the library location; library.location
+// is an FK into track_locations.id). Rewriting it to the derived
+// {hash}.stem.mp4 cache file would orphan the original, make the next
+// library re-scan re-add it as a duplicate, and break DirectoryDAO
+// relocate/verify + missing-track detection. The canonical S5/2.6 lookup is
+// the JSON index (StemCacheManager::markComplete/getStemFiles) resolved at
+// load time by EngineDeck -> aiStemFileReady -> BaseTrackPlayerImpl::
+// slotLoadAiStemFile, which loads the stem file as a TEMPORARY track while
+// the library row is untouched. This test pins that contract: markComplete
+// with a hash-named cache path leaves Track::getLocation() unchanged and
+// the cache resolves to {hash}.stem.mp4.
+TEST_F(AnalyzerStemSeparationTest, StemCacheDoesNotRewriteTrackLocation) {
+    QTemporaryDir tmp;
+    ASSERT_TRUE(tmp.isValid());
+    const QString wavPath = tmp.filePath("orig.wav");
+    ASSERT_TRUE(writeFloatWav(wavPath, makeSineMix(), kSampleRate));
+
+    TrackPointer pTrack(Track::newTemporary(wavPath));
+    ASSERT_TRUE(pTrack);
+    const auto key = StemCacheManager::generateKey(wavPath);
+    const QString cachePath = StemCacheManager::stemFilePath(key);
+
+    // Invariant 1: cache artifact is hash-named and distinct from the
+    // library location stored in track_locations.
+    EXPECT_TRUE(cachePath.endsWith(QString::fromUtf8(key) + ".stem.mp4"));
+    EXPECT_NE(pTrack->getLocation(), cachePath);
+    EXPECT_EQ(pTrack->getLocation(), wavPath);
+
+    // Invariant 2: markComplete (JSON index write) does not touch the Track.
+    // Use an isolated scratch key so no real cache entry is polluted.
+    const StemCacheManager::CacheKey docKey = QByteArray("n9-step55-noaplica-doc");
+    StemCacheManager::instance().markFailed(docKey);
+    StemCacheManager::StemFiles files;
+    files.complete = true;
+    files.created = QDateTime::currentDateTime();
+    files.stemFile = cachePath;
+    StemCacheManager::instance().markComplete(docKey, files);
+    EXPECT_EQ(pTrack->getLocation(), wavPath);
+    EXPECT_EQ(StemCacheManager::instance().getStemFiles(docKey).stemFile, cachePath);
+    EXPECT_TRUE(StemCacheManager::instance().hasStems(docKey));
+}
+
 } // namespace
