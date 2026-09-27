@@ -50,7 +50,9 @@ PioneerDDJ1000.config = {
     samplerBanks: 8,
     beatValues: [1 / 16, 1 / 8, 1 / 4, 1 / 2, 3 / 4, 1, 2, 4, 8, 16, 32],
     defaultBeatIndex: 5,
-    displayIntervalMs: 40,
+    // Mixxx's shortest timer. The display predicts the position between
+    // Mixxx's 15-per-second position updates, so the bar turns smoothly.
+    displayIntervalMs: 20,
     blinkMs: 250,
 };
 
@@ -433,6 +435,9 @@ PioneerDDJ1000.connectDeck = function(deck) {
     PioneerDDJ1000.connect(group, "slip_enabled", (value) => {
         PioneerDDJ1000.send(0x9F, 0x23 + deck, value > 0 ? 0x7F : 0x00);
     });
+    PioneerDDJ1000.connect(group, "playposition", (value) => {
+        PioneerDDJ1000.deck[deck].position = {value: value, at: Date.now()};
+    });
     PioneerDDJ1000.connect(group, "vu_meter", (value) => {
         PioneerDDJ1000.send(0xB0 + deck - 1, 0x02, Math.round(value * 127));
     });
@@ -499,6 +504,19 @@ PioneerDDJ1000.platterAngle = function(seconds) {
     return Math.floor((turns - Math.floor(turns)) * 360) % 360;
 };
 
+// Mixxx updates playposition only 15 times a second. Between updates,
+// advance it by the time passed at the current playing speed.
+PioneerDDJ1000.estimateElapsed = function(deck, group, duration) {
+    const sample = PioneerDDJ1000.deck[deck].position;
+    const reported = PioneerDDJ1000.clamp(engine.getValue(group, "playposition"), 0, 1) * duration;
+    if (!sample || !engine.getValue(group, "play") || engine.isScratching(deck) || duration <= 0) {
+        return reported;
+    }
+    const speed = (engine.getValue(group, "rate_ratio") || 1) * (engine.getValue(group, "reverse") ? -1 : 1);
+    const seconds = Math.min(0.1, (Date.now() - sample.at) / 1000);
+    return PioneerDDJ1000.clamp(PioneerDDJ1000.clamp(sample.value, 0, 1) * duration + seconds * speed, 0, duration);
+};
+
 PioneerDDJ1000.updateDisplay = function(deck) {
     const group = PioneerDDJ1000.group(deck);
     const note = 0x90 + deck - 1;
@@ -519,7 +537,7 @@ PioneerDDJ1000.updateDisplay = function(deck) {
     }
 
     const duration = engine.getValue(group, "duration");
-    const elapsed = PioneerDDJ1000.clamp(engine.getValue(group, "playposition"), 0, 1) * duration;
+    const elapsed = PioneerDDJ1000.estimateElapsed(deck, group, duration);
     const remaining = engine.getValue("[Controls]", "ShowDurationRemaining") !== 0;
     const shown = remaining ? Math.max(0, duration - elapsed) : elapsed;
     PioneerDDJ1000.send(note, d.timeMode, remaining ? 0x7F : 0);
@@ -1167,7 +1185,12 @@ PioneerDDJ1000.browsePress = function(_channel, control, value) {
     const state = PioneerDDJ1000.deck[deck];
     const now = Date.now();
     if (engine.getValue("[Library]", "focused_widget") === 2) {
+        // On the tree: open the item and go to its track list. Mixxx never
+        // opens Tracks or Auto DJ from a controller, so move focus as well.
         engine.setValue("[Library]", "GoToItem", 1);
+        if (engine.getValue("[Library]", "focused_widget") === 2) {
+            engine.setValue("[Library]", "focused_widget", 3);
+        }
     } else if (now - state.lastLoad < PioneerDDJ1000.config.doublePressMs) {
         state.lastLoad = 0;
         engine.setValue(group, "CloneFromDeck", deck <= 2 ? deck + 2 : deck - 2);
@@ -1495,18 +1518,12 @@ PioneerDDJ1000.updateModeLeds = function(deck) {
     if (!state) {
         return;
     }
+    // Lighting a mode button tells the unit to switch to that mode, so only
+    // the active mode is lit, never blinked; PAGE lights are left to the unit.
     const status = 0x90 + deck - 1;
     PioneerDDJ1000.modeButtons.forEach((note, mode) => {
-        // A SHIFT mode lights its own note and blinks its base button.
-        const on = mode === state.mode || (mode === state.mode - 4 && PioneerDDJ1000.blink);
-        PioneerDDJ1000.led(status, note, on);
+        PioneerDDJ1000.led(status, note, mode === state.mode);
     });
-    for (let mode = 0; mode < 8; mode++) {
-        const paged = mode !== PioneerDDJ1000.mode.beatJump && mode !== PioneerDDJ1000.mode.sampler;
-        const active = mode === state.mode;
-        PioneerDDJ1000.led(status, PioneerDDJ1000.pagePrevNotes[mode], active && (!paged || state.page[mode] === 2));
-        PioneerDDJ1000.led(status, PioneerDDJ1000.pageNextNotes[mode], active && (!paged || state.page[mode] === 1));
-    }
 };
 
 // Pads: note = mode * 16 + (page - 1) * 8 + pad; SHIFT uses the next channel.
