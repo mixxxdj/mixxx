@@ -60,6 +60,19 @@ StemCacheManager::CacheKey StemCacheManager::generateKey(const QString& trackLoc
     return QCryptographicHash::hash(data, QCryptographicHash::Sha256).toHex();
 }
 
+StemCacheManager::CacheKey StemCacheManager::generateKeyForMode(
+        const QString& trackLocation, int stemMode) {
+    if (stemMode == 3) {
+        QFileInfo fi(trackLocation);
+        QByteArray data = trackLocation.toUtf8();
+        data.append(fi.lastModified().toString(Qt::ISODate).toUtf8());
+        data.append(QByteArray::number(fi.size()));
+        data.append("|mode=3");
+        return QCryptographicHash::hash(data, QCryptographicHash::Sha256).toHex();
+    }
+    return generateKey(trackLocation);
+}
+
 void StemCacheManager::loadIndex() {
     QFile file(indexPath());
     if (!file.exists()) {

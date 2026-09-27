@@ -120,7 +120,10 @@ void OfflineSeparator::run() {
             : m_config.modelPath;
 
     kLogger.info() << "Loading ONNX model:" << modelPath;
-    if (onnx.loadModel(modelPath.toStdString(), 4, /*enableQuantization=*/false)) {
+    // N18: intraOp=0 lets ONNX Runtime pick the thread count automatically
+    // (== nproc, 16 here); interOp stays 1 inside the engine
+    // (OnnxInferenceEngine::loadModel: SetInterOpNumThreads(1)). No model change.
+    if (onnx.loadModel(modelPath.toStdString(), 0, /*enableQuantization=*/false)) {
         const auto& info = onnx.modelInfo();
         if (info.mode == StemEngine::ModelMode::WAVEFORM) {
             onnxReady = true;
@@ -172,13 +175,25 @@ void OfflineSeparator::run() {
 
     if (onnxReady) {
         const int kChunkSize = onnx.modelInfo().waveformInputSamples; // e.g. 343980
-        const int kHopSize = kChunkSize / 2;                          // 50% overlap
+        // N18: optional 25% overlap (hop = 3N/4) for speed; default 50%
+        // keeps the legacy COLA path bit-identical. Clamp to even so stereo
+        // L/R pairs stay aligned.
+        const double overlapCfg = (m_config.overlap == 0.25) ? 0.25 : 0.5;
+        int kHopSize = kChunkSize / 2;                          // 50% overlap
+        if (overlapCfg == 0.25) {
+            kHopSize = (kChunkSize * 3) / 4;
+            kHopSize -= kHopSize % 2;
+        }
+        const bool needWola = (kHopSize != kChunkSize / 2);
 
-        // Hann window for overlap-add (Hann at 50% overlap sums to ~1)
+        // Hann window for overlap-add (Hann at 50% overlap sums to ~1;
+        // at 25% overlap the windows do NOT sum to 1 — see WOLA below)
         QVector<float> hannWindow(kChunkSize);
         for (int i = 0; i < kChunkSize; ++i) {
             hannWindow[i] = 0.5f * (1.0f - std::cos(2.0 * M_PI * i / (kChunkSize - 1)));
         }
+        QVector<float> wolaWeight; // filled after paddedFrames is known
+        // (WOLA renormalization weights for 25% overlap; empty at 50%)
 
         // Pad input by kHopSize at each end so every output sample has full
         // double-window coverage from the overlap-add (no fade-in/out at the
@@ -188,6 +203,9 @@ void OfflineSeparator::run() {
         const int paddedFrames = inferFrames + leftPad + rightPad;
         const int paddedSamples = paddedFrames * 2;
         const int numChunks = (paddedFrames + kHopSize - 1) / kHopSize;
+        if (needWola) {
+            wolaWeight.fill(0.0f, paddedFrames);
+        }
 
         QVector<float> paddedInput(paddedSamples, 0.0f);
         std::copy_n(inferBuffer.constData(), inferSamples,
@@ -248,12 +266,20 @@ void OfflineSeparator::run() {
             }
 
             // Overlap-add: each output sample receives win[i] from each
-            // overlapping window that covers it (Hann ⇒ sum ≈ 1).
+            // overlapping window that covers it (Hann at 50% ⇒ sum ≈ 1;
+            // at 25% the sum ripples and is renormalized below via WOLA).
             // Routes ONNX Demucs order [drums, bass, other, vocals] to
             // Mixxx slots [vocals, drums, bass, other] (shared helper, same
             // as AnalyzerStemSeparation::runSeparationAndCache).
             AnalyzerStemSeparation::accumulateChunk(result.stems, outFrames,
                     hannWindow, startFrame, paddedSamples, outStems);
+            if (needWola) {
+                const int wFrames = std::min(outFrames,
+                        paddedFrames - startFrame);
+                for (int i = 0; i < wFrames; ++i) {
+                    wolaWeight[startFrame + i] += hannWindow[i];
+                }
+            }
 
             const float progress = static_cast<float>(chunk + 1) / numChunks;
             if (m_config.onProgress) m_config.onProgress(progress);
@@ -262,6 +288,9 @@ void OfflineSeparator::run() {
 
         // Trim the padding, keep only the inference signal length, then
         // resample back to the native rate (exact native length).
+        if (needWola) {
+            AnalyzerStemSeparation::normalizeWola(outStems, wolaWeight);
+        }
         outVocals = outVocals.mid(leftPad * 2, inferSamples);
         outDrums = outDrums.mid(leftPad * 2, inferSamples);
         outBass = outBass.mid(leftPad * 2, inferSamples);
@@ -306,6 +335,16 @@ void OfflineSeparator::run() {
     outVocals = fullBuffer;
     kLogger.warning() << "stem-engine not compiled in - using passthrough stems";
 #endif
+
+    // N18: optional 3-stem fold (default off). Slot 3 (other) becomes
+    // bass+other ("Instruments"), slot 2 (bass) becomes silence. The
+    // 8-channel reader layout is untouched (still 4 slots in the file);
+    // the UI should hide the bass slot in mode 3 (documented, not enforced).
+    const int stemModeCfg = (m_config.stemMode == 3) ? 3 : 4;
+    if (stemModeCfg == 3) {
+        QVector<float>* foldStems[4] = {&outVocals, &outDrums, &outBass, &outOther};
+        AnalyzerStemSeparation::foldTo3StemMode(foldStems);
+    }
 
     // 4. Write stems to WAV files
     StemCacheManager::StemFiles files;
@@ -362,14 +401,18 @@ void OfflineSeparator::run() {
     // volume/mute controls and stem UI). The file is hash-named
     // ({hash}.stem.mp4) so it survives renames of the source track.
     // Key derivation is SHA256(path + mtime + size), never the fragile
-    // output-dir basename used before S5.
+    // output-dir basename used before S5. N18: versioned with the stem
+    // mode ("|mode=3") so 3-stem artifacts never poison 4-stem lookups.
     const StemCacheManager::CacheKey key =
-            StemCacheManager::generateKey(m_config.inputPath);
+            StemCacheManager::generateKeyForMode(m_config.inputPath, stemModeCfg);
     StemMp4Writer::Config stemMp4Config;
     stemMp4Config.outputPath = StemCacheManager::stemFilePath(key);
     QDir().mkpath(QFileInfo(stemMp4Config.outputPath).absolutePath());
     stemMp4Config.sampleRate = decodedSampleRate;
     stemMp4Config.numFrames = totalFrames;
+    if (stemModeCfg == 3) {
+        stemMp4Config.stemNames[3] = QStringLiteral("Instruments");
+    }
     stemMp4Config.stems[0] = outVocals.constData();
     stemMp4Config.stems[1] = outDrums.constData();
     stemMp4Config.stems[2] = outBass.constData();

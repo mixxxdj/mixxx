@@ -71,6 +71,82 @@ bool AnalyzerStemSeparation::isEnabled(const UserSettingsPointer& pConfig) {
 }
 
 // static
+double AnalyzerStemSeparation::overlapRatio(const UserSettingsPointer& pConfig) {
+    if (!pConfig) {
+        return kDefaultOverlap;
+    }
+    const double v = pConfig->getValue(
+            ConfigKey(kConfigGroup, "overlap"), kDefaultOverlap);
+    // Only 0.25 is accepted as an alternative; anything else falls back to
+    // the default 0.5 so quality never silently degrades.
+    if (std::abs(v - 0.25) < 1e-9) {
+        return 0.25;
+    }
+    return kDefaultOverlap;
+}
+
+// static
+int AnalyzerStemSeparation::hopSizeFor(int chunkSize, double overlap) {
+    if (chunkSize <= 0) {
+        return 0;
+    }
+    if (std::abs(overlap - 0.25) < 1e-9) {
+        // 25% overlap: hop = 3N/4, must be even (stereo frames are pairs
+        // of floats; odd hops would misalign L/R).
+        int hop = (chunkSize * 3) / 4;
+        return hop - (hop % 2);
+    }
+    return chunkSize / 2; // 50% overlap (default, COLA with Hann)
+}
+
+// static
+int AnalyzerStemSeparation::stemMode(const UserSettingsPointer& pConfig) {
+    if (!pConfig) {
+        return kDefaultStemMode;
+    }
+    const int v = pConfig->getValue(
+            ConfigKey(kConfigGroup, "stem_mode"), kDefaultStemMode);
+    return (v == 3) ? 3 : kDefaultStemMode;
+}
+
+// static
+void AnalyzerStemSeparation::foldTo3StemMode(QVector<float>* outStems[4]) {
+    if (!outStems[2] || !outStems[3] ||
+            outStems[2]->size() != outStems[3]->size()) {
+        return;
+    }
+    float* instruments = outStems[3]->data();
+    const float* bass = outStems[2]->constData();
+    const int n = outStems[3]->size();
+    for (int i = 0; i < n; ++i) {
+        instruments[i] += bass[i];
+    }
+    outStems[2]->fill(0.0f);
+}
+
+// static
+void AnalyzerStemSeparation::normalizeWola(
+        QVector<float>* outStems[4], const QVector<float>& weight) {
+    constexpr float kEps = 1e-8f;
+    for (int s = 0; s < kNumStems; ++s) {
+        if (!outStems[s] ||
+                outStems[s]->size() != weight.size() * 2) {
+            return;
+        }
+    }
+    for (int s = 0; s < kNumStems; ++s) {
+        float* dst = outStems[s]->data();
+        const int n = outStems[s]->size();
+        for (int i = 0; i < n; ++i) {
+            const float w = weight[i / 2];
+            if (w > kEps) {
+                dst[i] /= w;
+            }
+        }
+    }
+}
+
+// static
 QVector<float> AnalyzerStemSeparation::makeHannWindow(int size) {
     QVector<float> window(size);
     if (size <= 1) {
@@ -219,7 +295,12 @@ bool AnalyzerStemSeparation::initialize(const AnalyzerTrack& track,
         return false;
     }
     m_location = pTrack->getLocation();
-    m_key = StemCacheManager::generateKey(m_location);
+    m_stemMode = stemMode(m_pConfig);
+    m_overlap = overlapRatio(m_pConfig);
+    // N18: versioned cache key — mode 3 appends "|mode=3" so 3-stem
+    // artifacts never poison 4-stem entries (mode 4 keys are unchanged,
+    // keeping all existing cache entries valid).
+    m_key = StemCacheManager::generateKeyForMode(m_location, m_stemMode);
     // Cache hit: nothing to do, no inference on second load.
     if (StemCacheManager::instance().hasStems(m_key)) {
         kLogger.debug() << "Stem cache hit, skipping analysis for" << m_location;
@@ -309,16 +390,30 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
     if (QFile::exists(modelPath)) {
         StemEngine::OnnxInferenceEngine onnx;
         kLogger.info() << "Loading ONNX stem model:" << modelPath;
-        if (onnx.loadModel(modelPath.toStdString(), 4, false) &&
+        // N18: intraOp=0 lets ONNX Runtime pick the thread count
+        // automatically (== nproc, 16 here); interOp stays 1 inside the
+        // engine (see OnnxInferenceEngine::loadModel: SetInterOpNumThreads(1)).
+        // No model change, offline thread only.
+        if (onnx.loadModel(modelPath.toStdString(), 0, false) &&
                 onnx.modelInfo().mode == StemEngine::ModelMode::WAVEFORM) {
             const int kChunkSize = onnx.modelInfo().waveformInputSamples;
             if (kChunkSize > 0 && kChunkSize % 2 == 0) {
-                const int kHopSize = kChunkSize / 2;
+                const double overlap = overlapRatio(m_pConfig);
+                const int kHopSize = hopSizeFor(kChunkSize, overlap);
                 const QVector<float> hannWindow = makeHannWindow(kChunkSize);
                 const int leftPad = kHopSize;
                 const int paddedFrames = inferFrames + 2 * kHopSize;
                 const int paddedSamples = paddedFrames * 2;
                 const int numChunks = (paddedFrames + kHopSize - 1) / kHopSize;
+                // N18: at 25% overlap the Hann windows do NOT sum to 1
+                // (ripple ~= +/-15%), so accumulate per-frame window weights
+                // and renormalize (WOLA) afterwards. The default 50% path
+                // skips this to stay bit-identical (COLA ~= 1).
+                const bool needWola = (kHopSize != kChunkSize / 2);
+                QVector<float> wolaWeight;
+                if (needWola) {
+                    wolaWeight.fill(0.0f, paddedFrames);
+                }
                 QVector<float> paddedInput(paddedSamples, 0.0f);
                 std::copy_n(inferBuffer.constData(), inferSamples,
                         paddedInput.begin() + leftPad * 2);
@@ -352,8 +447,18 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
                     const int outFrames = result.numSamples;
                     accumulateChunk(result.stems, outFrames, hannWindow,
                             startFrame, paddedSamples, outStems);
+                    if (needWola) {
+                        const int wFrames = std::min(outFrames,
+                                paddedFrames - startFrame);
+                        for (int i = 0; i < wFrames; ++i) {
+                            wolaWeight[startFrame + i] += hannWindow[i];
+                        }
+                    }
                 }
                 if (ok) {
+                    if (needWola) {
+                        normalizeWola(outStems, wolaWeight);
+                    }
                     outVocals = outVocals.mid(leftPad * 2, inferSamples);
                     outDrums = outDrums.mid(leftPad * 2, inferSamples);
                     outBass = outBass.mid(leftPad * 2, inferSamples);
@@ -394,6 +499,14 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
         passthrough(m_buffer, outStems);
     }
 
+    // N18: optional 3-stem fold (default off). Slot 3 (other) becomes
+    // bass+other ("Instruments"), slot 2 (bass) becomes silence. The
+    // 8-channel reader layout is untouched (still 4 slots in the file).
+    const int stemModeCfg = stemMode(m_pConfig);
+    if (stemModeCfg == 3) {
+        foldTo3StemMode(outStems);
+    }
+
     // Write native .stem.mp4 named {hash}.stem.mp4 into the per-track dir.
     const QString dir = StemCacheManager::stemDir(m_key);
     QDir().mkpath(dir);
@@ -402,6 +515,11 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
     cfg.outputPath = stemPath;
     cfg.sampleRate = sampleRate > 0 ? sampleRate : kModelSampleRate;
     cfg.numFrames = totalFrames;
+    if (stemModeCfg == 3) {
+        // Manifest: slot 3 carries bass+other, so label it "Instruments".
+        // Slot 2 stays "Bass" (silent); the UI should hide it in 3s mode.
+        cfg.stemNames[3] = QStringLiteral("Instruments");
+    }
     cfg.stems[0] = outVocals.constData();
     cfg.stems[1] = outDrums.constData();
     cfg.stems[2] = outBass.constData();

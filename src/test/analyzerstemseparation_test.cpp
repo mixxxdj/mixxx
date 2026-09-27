@@ -474,4 +474,58 @@ TEST_F(AnalyzerStemSeparationTest, StemCacheDoesNotRewriteTrackLocation) {
     EXPECT_TRUE(StemCacheManager::instance().hasStems(docKey));
 }
 
+// N18: optional overlap + 3-stem mode helpers (pure, no ONNX needed).
+TEST_F(AnalyzerStemSeparationTest, HopSizeDefaultsToHalfChunk) {
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(1024, 0.5), 512);
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(1024, 0.0), 512);
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(1024, 0.9), 512);
+    // 25% overlap: hop = 3N/4, even.
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(1024, 0.25), 768);
+    // htdemucs window 343980: 3N/4 = 257985 -> clamped to even 257984.
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(343980, 0.25), 257984);
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(343980, 0.5), 171990);
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(0, 0.5), 0);
+}
+
+TEST_F(AnalyzerStemSeparationTest, OverlapAndStemModeDefaultWithoutConfig) {
+    EXPECT_DOUBLE_EQ(AnalyzerStemSeparation::overlapRatio(UserSettingsPointer()), 0.5);
+    EXPECT_EQ(AnalyzerStemSeparation::stemMode(UserSettingsPointer()), 4);
+}
+
+TEST_F(AnalyzerStemSeparationTest, FoldTo3StemModeSumsBassIntoOther) {
+    QVector<float> v(8, 1.0f), d(8, 2.0f), b(8, 3.0f), o(8, 4.0f);
+    QVector<float>* outs[4] = {&v, &d, &b, &o};
+    AnalyzerStemSeparation::foldTo3StemMode(outs);
+    EXPECT_EQ(v, QVector<float>(8, 1.0f));
+    EXPECT_EQ(d, QVector<float>(8, 2.0f));
+    for (float x : b) {
+        EXPECT_EQ(x, 0.0f);
+    }
+    EXPECT_EQ(o, QVector<float>(8, 7.0f)); // bass + other
+}
+
+TEST_F(AnalyzerStemSeparationTest, NormalizeWolaRestoresUnity) {
+    // Identity-model simulation at 25% overlap: accumulated = input * weight.
+    QVector<float> weight(4, 2.0f);
+    QVector<float> s0(8, 2.0f), s1(8, 0.0f), s2(8, 0.0f), s3(8, 0.0f);
+    QVector<float>* outs[4] = {&s0, &s1, &s2, &s3};
+    AnalyzerStemSeparation::normalizeWola(outs, weight);
+    EXPECT_EQ(s0, QVector<float>(8, 1.0f));
+}
+
+TEST_F(AnalyzerStemSeparationTest, VersionedKeyIsolatesMode3FromMode4) {
+    QTemporaryDir tmp;
+    ASSERT_TRUE(tmp.isValid());
+    const QString p = tmp.filePath("m.wav");
+    ASSERT_TRUE(writeFloatWav(p, makeSineMix(), kSampleRate));
+    // Mode 4 versioned key == legacy key (existing entries stay valid).
+    EXPECT_EQ(StemCacheManager::generateKeyForMode(p, 4),
+            StemCacheManager::generateKey(p));
+    // Mode 3 key differs (no cache poisoning across modes).
+    EXPECT_NE(StemCacheManager::generateKeyForMode(p, 3),
+            StemCacheManager::generateKey(p));
+    EXPECT_NE(StemCacheManager::generateKeyForMode(p, 3),
+            StemCacheManager::generateKeyForMode(p, 4));
+}
+
 } // namespace

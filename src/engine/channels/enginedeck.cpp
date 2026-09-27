@@ -1,6 +1,7 @@
 #include "engine/channels/enginedeck.h"
 
 #include <QStringView>
+#include <cmath>
 
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
@@ -492,6 +493,26 @@ void EngineDeck::checkAndLoadAIStems(TrackPointer pTrack) {
     }
 
     StemCacheManager::CacheKey key = StemCacheManager::generateKey(pTrack->getLocation());
+    // N18: version the lookup key with the configured stem mode so mode-3
+    // artifacts never poison mode-4 lookups (mode 4 keys are unchanged).
+    // NOTE: changing stem_mode requires a re-separation; stale entries of
+    // the other mode stay in the cache dir and are pruned by size, never
+    // served.
+    int aiStemMode = 4;
+    double aiOverlap = 0.5;
+    if (m_pConfig) {
+        aiStemMode = m_pConfig->getValue(
+                ConfigKey("[StemSeparation]", "stem_mode"), 4) == 3
+                ? 3
+                : 4;
+        const double ov = m_pConfig->getValue(
+                ConfigKey("[StemSeparation]", "overlap"), 0.5);
+        aiOverlap = (std::abs(ov - 0.25) < 1e-9) ? 0.25 : 0.5;
+        if (aiStemMode == 3) {
+            key = StemCacheManager::generateKeyForMode(
+                    pTrack->getLocation(), aiStemMode);
+        }
+    }
 
     if (StemCacheManager::instance().hasStems(key)) {
         // Already cached - load the native stem file if we have one, else
@@ -558,6 +579,8 @@ void EngineDeck::checkAndLoadAIStems(TrackPointer pTrack) {
     sepConfig.modelPath = qEnvironmentVariable("MIXXX_STEM_MODEL");
     sepConfig.outputDir = StemCacheManager::stemDir(key);
     sepConfig.sampleRate = 44100;
+    sepConfig.overlap = aiOverlap;
+    sepConfig.stemMode = aiStemMode;
 
     auto* separator = new mixxx::OfflineSeparator(sepConfig);
 

@@ -74,6 +74,35 @@ class AnalyzerStemSeparation : public Analyzer {
     /// Default true; set [StemSeparation],offline_enabled=0 to disable.
     static bool isEnabled(const UserSettingsPointer& pConfig);
 
+    /// N18: optional overlap ratio for the Hann overlap-add in both offline
+    /// paths. Reads [StemSeparation],overlap (0.5 or 0.25, default 0.5).
+    /// Default 0.5 keeps the legacy COLA path bit-identical (existing COLA
+    /// test stays green); 0.25 halves the chunk count (faster) and requires
+    /// WOLA weight renormalization (see run paths), with small ripple at
+    /// the track edges where coverage is partial.
+    static constexpr double kDefaultOverlap = 0.5;
+    static double overlapRatio(const UserSettingsPointer& pConfig);
+    static int hopSizeFor(int chunkSize, double overlap);
+
+    /// N18: optional 3-stem mode. Reads [StemSeparation],stem_mode (4 or 3,
+    /// default 4). Mode 3 folds bass+other into slot 3 ("Instruments") and
+    /// silences slot 2 (bass); the 8-channel reader layout is untouched and
+    /// the UI should hide the bass slot in mode 3 (documented, not enforced).
+    static constexpr int kDefaultStemMode = 4;
+    static int stemMode(const UserSettingsPointer& pConfig);
+
+    /// N18: folds 4 Mixxx-slot buffers into 3-stem mode in place:
+    /// slot3 (other) += slot2 (bass), slot2 = silence. Slots 0 (vocals)
+    /// and 1 (drums) untouched.
+    static void foldTo3StemMode(QVector<float>* outStems[4]);
+
+    /// N18: WOLA renormalization for non-COLA hops (overlap 0.25):
+    /// divides each stem sample by the accumulated window weight, guarding
+    /// with `eps` where coverage is zero. No-op when weights are ~1 (the
+    /// default 0.5 path skips this to stay bit-identical).
+    static void normalizeWola(
+            QVector<float>* outStems[4], const QVector<float>& weight);
+
     /// Model-native sample rate (Hz). htdemucs was trained at 44100 Hz;
     /// inputs at any other rate must be resampled before inference and
     /// stems resampled back to the track-native rate before caching.
@@ -122,4 +151,6 @@ class AnalyzerStemSeparation : public Analyzer {
     StemCacheManager::CacheKey m_key;
     QVector<float> m_buffer; // interleaved stereo mix
     bool m_initialized = false;
+    int m_stemMode = kDefaultStemMode;
+    double m_overlap = kDefaultOverlap;
 };

@@ -42,6 +42,12 @@ public:
     // Generate cache key from track
     static CacheKey generateKey(const QString& trackLocation);
 
+    // N18: mode-versioned cache key. Mode 4 (default) is identical to
+    // generateKey() so all existing entries stay valid; mode 3 appends
+    // "|mode=3" to the hashed material so 3-stem artifacts live in a
+    // different dir and never poison 4-stem lookups.
+    static CacheKey generateKeyForMode(const QString& trackLocation, int stemMode);
+
     // Prune cache to max size (default 2GB)
     void pruneCache(qint64 maxSizeBytes = 2LL * 1024 * 1024 * 1024);
 
