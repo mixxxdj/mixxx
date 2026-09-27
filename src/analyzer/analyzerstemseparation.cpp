@@ -88,6 +88,47 @@ QVector<float> AnalyzerStemSeparation::makeHannWindow(int size) {
 }
 
 // static
+QVector<float> AnalyzerStemSeparation::resampleStereo(
+        const QVector<float>& in, int srcRate, int dstRate) {
+    if (in.isEmpty() || srcRate <= 0 || dstRate <= 0 || srcRate == dstRate) {
+        return in;
+    }
+    const int inFrames = static_cast<int>(in.size() / 2);
+    if (inFrames <= 0) {
+        return in;
+    }
+    const long long outFramesLL =
+            (static_cast<long long>(inFrames) * dstRate + srcRate / 2) / srcRate;
+    const int outFrames = static_cast<int>(outFramesLL);
+    if (outFrames <= 0) {
+        return QVector<float>();
+    }
+    QVector<float> out(outFrames * 2);
+    const double step = static_cast<double>(srcRate) / dstRate;
+    const float* src = in.constData();
+    float* dst = out.data();
+    for (int i = 0; i < outFrames; ++i) {
+        const double pos = i * step;
+        int idx = static_cast<int>(pos);
+        double frac = pos - idx;
+        if (idx < 0) {
+            idx = 0;
+            frac = 0.0;
+        }
+        if (idx + 1 >= inFrames) {
+            dst[i * 2] = src[(inFrames - 1) * 2];
+            dst[i * 2 + 1] = src[(inFrames - 1) * 2 + 1];
+        } else {
+            const float f = static_cast<float>(frac);
+            dst[i * 2] = src[idx * 2] + (src[(idx + 1) * 2] - src[idx * 2]) * f;
+            dst[i * 2 + 1] = src[idx * 2 + 1] +
+                    (src[(idx + 1) * 2 + 1] - src[idx * 2 + 1]) * f;
+        }
+    }
+    return out;
+}
+
+// static
 void AnalyzerStemSeparation::overlapAdd(
         const QVector<QVector<QVector<float>>>& srcChunks,
         int chunkSize,
@@ -218,6 +259,22 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
     const int totalFrames = totalSamples / 2;
     const int sampleRate = static_cast<int>(m_sampleRate);
 
+    // The ONNX model is trained at kModelSampleRate. Resample a copy for
+    // inference; outputs are resampled back to the native rate below so
+    // the cached .stem.mp4 keeps native length/rate. Offline context only.
+    const bool needResample =
+            sampleRate > 0 && sampleRate != kModelSampleRate;
+    QVector<float> inferBuffer = needResample
+            ? resampleStereo(m_buffer, sampleRate, kModelSampleRate)
+            : m_buffer;
+    if (needResample && inferBuffer.isEmpty() && totalSamples > 0) {
+        kLogger.warning() << "Stem resample to" << kModelSampleRate
+                          << "Hz failed - passthrough stems";
+        inferBuffer = m_buffer;
+    }
+    const int inferSamples = inferBuffer.size();
+    const int inferFrames = inferSamples / 2;
+
     QVector<float> outVocals(totalSamples, 0.0f);
     QVector<float> outDrums(totalSamples, 0.0f);
     QVector<float> outBass(totalSamples, 0.0f);
@@ -237,11 +294,11 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
                 const int kHopSize = kChunkSize / 2;
                 const QVector<float> hannWindow = makeHannWindow(kChunkSize);
                 const int leftPad = kHopSize;
-                const int paddedFrames = totalFrames + 2 * kHopSize;
+                const int paddedFrames = inferFrames + 2 * kHopSize;
                 const int paddedSamples = paddedFrames * 2;
                 const int numChunks = (paddedFrames + kHopSize - 1) / kHopSize;
                 QVector<float> paddedInput(paddedSamples, 0.0f);
-                std::copy_n(m_buffer.constData(), totalSamples,
+                std::copy_n(inferBuffer.constData(), inferSamples,
                         paddedInput.begin() + leftPad * 2);
                 for (int s = 0; s < kNumStems; ++s) {
                     outStems[s]->resize(paddedSamples, 0.0f);
@@ -284,10 +341,26 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
                     }
                 }
                 if (ok) {
-                    outVocals = outVocals.mid(leftPad * 2, totalSamples);
-                    outDrums = outDrums.mid(leftPad * 2, totalSamples);
-                    outBass = outBass.mid(leftPad * 2, totalSamples);
-                    outOther = outOther.mid(leftPad * 2, totalSamples);
+                    outVocals = outVocals.mid(leftPad * 2, inferSamples);
+                    outDrums = outDrums.mid(leftPad * 2, inferSamples);
+                    outBass = outBass.mid(leftPad * 2, inferSamples);
+                    outOther = outOther.mid(leftPad * 2, inferSamples);
+                    if (needResample) {
+                        // Back to the track-native rate; force the exact
+                        // native length (roundtrip rounding may be off by ~1).
+                        outVocals = resampleStereo(
+                                outVocals, kModelSampleRate, sampleRate);
+                        outDrums = resampleStereo(
+                                outDrums, kModelSampleRate, sampleRate);
+                        outBass = resampleStereo(
+                                outBass, kModelSampleRate, sampleRate);
+                        outOther = resampleStereo(
+                                outOther, kModelSampleRate, sampleRate);
+                        outVocals.resize(totalSamples);
+                        outDrums.resize(totalSamples);
+                        outBass.resize(totalSamples);
+                        outOther.resize(totalSamples);
+                    }
                     separated = true;
                     kLogger.info() << "ONNX stem separation finished for" << m_location;
                 }
@@ -314,7 +387,7 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
     const QString stemPath = StemCacheManager::stemFilePath(m_key);
     mixxx::StemMp4Writer::Config cfg;
     cfg.outputPath = stemPath;
-    cfg.sampleRate = sampleRate > 0 ? sampleRate : 44100;
+    cfg.sampleRate = sampleRate > 0 ? sampleRate : kModelSampleRate;
     cfg.numFrames = totalFrames;
     cfg.stems[0] = outVocals.constData();
     cfg.stems[1] = outDrums.constData();

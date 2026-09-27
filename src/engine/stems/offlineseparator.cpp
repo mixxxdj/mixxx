@@ -8,6 +8,7 @@
 
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
+#include "analyzer/analyzerstemseparation.h"
 #include "stemmp4writer.h"
 #include "track/track.h"
 #include "util/logger.h"
@@ -134,15 +135,39 @@ void OfflineSeparator::run() {
     }
 
     constexpr int kNumStems = 4;       // vocals, drums, bass, other
+    constexpr int kModelRate = AnalyzerStemSeparation::kModelSampleRate;
 
-    const int totalSamples = fullBuffer.size();      // interleaved floats
+    // The ONNX model is trained at kModelRate. Resample a copy for
+    // inference; stems are resampled back to the native rate before
+    // writing so WAV/.stem.mp4 keep native length/rate. Worker thread.
+    const bool needResample =
+            decodedSampleRate > 0 && decodedSampleRate != kModelRate;
+    QVector<float> inferBuffer = needResample
+            ? AnalyzerStemSeparation::resampleStereo(
+                      fullBuffer, decodedSampleRate, kModelRate)
+            : fullBuffer;
+    if (needResample) {
+        if (inferBuffer.isEmpty() && !fullBuffer.isEmpty()) {
+            kLogger.warning() << "Stem resample to" << kModelRate
+                              << "Hz failed - falling back to passthrough stems";
+            onnxReady = false;
+        } else {
+            kLogger.info() << "Resampled" << fullBuffer.size() / 2 << "frames @"
+                           << decodedSampleRate << "Hz to" << inferBuffer.size() / 2
+                           << "frames @" << kModelRate << "Hz for inference";
+        }
+    }
+
+    const int totalSamples = fullBuffer.size();      // interleaved floats, native rate
     const int totalFrames = totalSamples / 2;
+    const int inferSamples = inferBuffer.size();     // model rate
+    const int inferFrames = inferSamples / 2;
 
-    // Output buffers for 4 stems (interleaved)
-    QVector<float> outVocals(totalSamples, 0.0f);
-    QVector<float> outDrums(totalSamples, 0.0f);
-    QVector<float> outBass(totalSamples, 0.0f);
-    QVector<float> outOther(totalSamples, 0.0f);
+    // Output buffers for 4 stems (interleaved, at inference rate)
+    QVector<float> outVocals(inferSamples, 0.0f);
+    QVector<float> outDrums(inferSamples, 0.0f);
+    QVector<float> outBass(inferSamples, 0.0f);
+    QVector<float> outOther(inferSamples, 0.0f);
     QVector<float>* outStems[kNumStems] = {&outVocals, &outDrums, &outBass, &outOther};
 
     if (onnxReady) {
@@ -160,12 +185,12 @@ void OfflineSeparator::run() {
         // track boundaries). The model sees silence in the padded regions.
         const int leftPad = kHopSize;
         const int rightPad = kHopSize;
-        const int paddedFrames = totalFrames + leftPad + rightPad;
+        const int paddedFrames = inferFrames + leftPad + rightPad;
         const int paddedSamples = paddedFrames * 2;
         const int numChunks = (paddedFrames + kHopSize - 1) / kHopSize;
 
         QVector<float> paddedInput(paddedSamples, 0.0f);
-        std::copy_n(fullBuffer.constData(), totalSamples,
+        std::copy_n(inferBuffer.constData(), inferSamples,
                 paddedInput.begin() + leftPad * 2);
 
         // Output buffers, padded to match
@@ -174,8 +199,8 @@ void OfflineSeparator::run() {
         outBass.resize(paddedSamples, 0.0f);
         outOther.resize(paddedSamples, 0.0f);
 
-        kLogger.info() << "Running real ONNX separation on" << totalFrames
-                       << "frames in" << numChunks
+        kLogger.info() << "Running real ONNX separation on" << inferFrames
+                       << "frames @" << kModelRate << "Hz in" << numChunks
                        << "chunks (window=" << kChunkSize << ", hop=" << kHopSize
                        << "); this can take a while on CPU...";
 
@@ -243,11 +268,26 @@ void OfflineSeparator::run() {
             emit progressChanged(progress);
         }
 
-        // Trim the padding, keep only the original signal length
-        outVocals = outVocals.mid(leftPad * 2, totalSamples);
-        outDrums = outDrums.mid(leftPad * 2, totalSamples);
-        outBass = outBass.mid(leftPad * 2, totalSamples);
-        outOther = outOther.mid(leftPad * 2, totalSamples);
+        // Trim the padding, keep only the inference signal length, then
+        // resample back to the native rate (exact native length).
+        outVocals = outVocals.mid(leftPad * 2, inferSamples);
+        outDrums = outDrums.mid(leftPad * 2, inferSamples);
+        outBass = outBass.mid(leftPad * 2, inferSamples);
+        outOther = outOther.mid(leftPad * 2, inferSamples);
+        if (needResample && !inferBuffer.isEmpty()) {
+            outVocals = AnalyzerStemSeparation::resampleStereo(
+                    outVocals, kModelRate, decodedSampleRate);
+            outDrums = AnalyzerStemSeparation::resampleStereo(
+                    outDrums, kModelRate, decodedSampleRate);
+            outBass = AnalyzerStemSeparation::resampleStereo(
+                    outBass, kModelRate, decodedSampleRate);
+            outOther = AnalyzerStemSeparation::resampleStereo(
+                    outOther, kModelRate, decodedSampleRate);
+            outVocals.resize(totalSamples);
+            outDrums.resize(totalSamples);
+            outBass.resize(totalSamples);
+            outOther.resize(totalSamples);
+        }
 
         kLogger.info() << "ONNX separation finished";
     }
@@ -337,7 +377,7 @@ void OfflineSeparator::run() {
     stemMp4Config.outputPath = StemCacheManager::stemFilePath(key);
     QDir().mkpath(QFileInfo(stemMp4Config.outputPath).absolutePath());
     stemMp4Config.sampleRate = decodedSampleRate;
-    stemMp4Config.numFrames = fullBuffer.size() / 2;
+    stemMp4Config.numFrames = totalFrames;
     stemMp4Config.stems[0] = outVocals.constData();
     stemMp4Config.stems[1] = outDrums.constData();
     stemMp4Config.stems[2] = outBass.constData();

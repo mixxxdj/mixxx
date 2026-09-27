@@ -74,6 +74,18 @@ class AnalyzerStemSeparation : public Analyzer {
     /// Default true; set [StemSeparation],offline_enabled=0 to disable.
     static bool isEnabled(const UserSettingsPointer& pConfig);
 
+    /// Model-native sample rate (Hz). htdemucs was trained at 44100 Hz;
+    /// inputs at any other rate must be resampled before inference and
+    /// stems resampled back to the track-native rate before caching.
+    /// Runs offline (AnalyzerThread / worker thread), never RT.
+    static constexpr int kModelSampleRate = 44100;
+
+    /// Linear-interpolated stereo resampler (interleaved L,R floats).
+    /// No-op (returns `in`) when rates are equal/invalid or input empty.
+    /// Pure helper so tests can verify 48000 <-> 44100 roundtrips.
+    static QVector<float> resampleStereo(
+            const QVector<float>& in, int srcRate, int dstRate);
+
   private:
     void runSeparationAndCache();
 

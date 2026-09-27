@@ -28,6 +28,16 @@ QVector<float> makeSineMix() {
     return buf;
 }
 
+QVector<float> makeSineMixAt(int sampleRate, int numFrames) {
+    QVector<float> buf(numFrames * 2);
+    for (int i = 0; i < numFrames; ++i) {
+        const float s = 0.4f * std::sin(2.0 * M_PI * 440.0 * i / sampleRate);
+        buf[i * 2] = s;
+        buf[i * 2 + 1] = s;
+    }
+    return buf;
+}
+
 bool writeFloatWav(const QString& path, const QVector<float>& data, int sampleRate) {
     QFile f(path);
     if (!f.open(QIODevice::WriteOnly)) {
@@ -237,6 +247,123 @@ TEST_F(AnalyzerStemSeparationTest, CacheRoundtripSecondLoadHitsWithoutInference)
     d.removeRecursively();
     StemCacheManager::instance().markFailed(key);
     Q_UNUSED(firstCreated);
+}
+
+TEST_F(AnalyzerStemSeparationTest, ResampleStereoNoOpOnSameOrInvalidRate) {
+    const QVector<float> mix = makeSineMix();
+    EXPECT_EQ(AnalyzerStemSeparation::resampleStereo(mix, kSampleRate, kSampleRate), mix);
+    EXPECT_EQ(AnalyzerStemSeparation::resampleStereo(mix, 0, 44100), mix);
+    EXPECT_EQ(AnalyzerStemSeparation::resampleStereo(mix, 48000, 0), mix);
+    EXPECT_TRUE(AnalyzerStemSeparation::resampleStereo(QVector<float>(), 48000, 44100)
+            .isEmpty());
+}
+
+// 48000 -> 44100 must produce exactly round(48000 * 44100/48000) frames and
+// preserve a 440 Hz sine (linear interpolation error is small at this ratio).
+TEST_F(AnalyzerStemSeparationTest, ResampleStereo48000To44100) {
+    constexpr int kRate48 = 48000;
+    constexpr int kFrames48 = 48000; // 1 s stereo @ 48 kHz
+    const QVector<float> mix48 = makeSineMixAt(kRate48, kFrames48);
+    const QVector<float> mix44 =
+            AnalyzerStemSeparation::resampleStereo(mix48, kRate48, 44100);
+    EXPECT_EQ(mix44.size(), 44100 * 2);
+    const QVector<float> ref44 = makeSineMixAt(44100, 44100);
+    double maxErr = 0.0;
+    for (int i = 0; i < mix44.size(); ++i) {
+        maxErr = std::max(maxErr,
+                static_cast<double>(std::abs(mix44[i] - ref44[i])));
+    }
+    EXPECT_LT(maxErr, 0.05) << "linear resample must track the sine closely";
+}
+
+// 48000 -> 44100 -> 48000 roundtrip must restore the native frame count
+// with small error (documents the quality of the offline linear resampler).
+TEST_F(AnalyzerStemSeparationTest, ResampleStereoRoundtrip48000) {
+    constexpr int kRate48 = 48000;
+    constexpr int kFrames48 = 48000;
+    const QVector<float> mix48 = makeSineMixAt(kRate48, kFrames48);
+    const QVector<float> down =
+            AnalyzerStemSeparation::resampleStereo(mix48, kRate48, 44100);
+    const QVector<float> up =
+            AnalyzerStemSeparation::resampleStereo(down, 44100, kRate48);
+    ASSERT_EQ(up.size(), mix48.size());
+    double maxErr = 0.0;
+    for (int i = 0; i < mix48.size(); ++i) {
+        maxErr = std::max(
+                maxErr, static_cast<double>(std::abs(up[i] - mix48[i])));
+    }
+    EXPECT_LT(maxErr, 0.05) << "roundtrip must preserve the sine closely";
+}
+
+// Full Analyzer roundtrip with a 48000 Hz track: inference runs at 44100 Hz
+// internally, the cached .stem.mp4 keeps the native rate/length, and the
+// second load is a cache hit performing no inference.
+TEST_F(AnalyzerStemSeparationTest, CacheRoundtrip48000HzSecondLoadHitsWithoutInference) {
+    constexpr int kRate48 = 48000;
+    constexpr int kFrames48 = 48000; // 1 s stereo @ 48 kHz
+    QTemporaryDir tmp;
+    ASSERT_TRUE(tmp.isValid());
+    const QString wavPath = tmp.filePath("synth48.wav");
+    ASSERT_TRUE(writeFloatWav(wavPath, makeSineMixAt(kRate48, kFrames48), kRate48));
+
+    TrackPointer pTrack(Track::newTemporary(wavPath));
+    ASSERT_TRUE(pTrack);
+    const auto key = StemCacheManager::generateKey(wavPath);
+    {
+        QDir d(StemCacheManager::stemDir(key));
+        if (d.exists()) {
+            d.removeRecursively();
+        }
+        StemCacheManager::instance().markFailed(key);
+    }
+
+    AnalyzerStemSeparation analyzer(config());
+    ASSERT_TRUE(analyzer.initialize(AnalyzerTrack(pTrack),
+            mixxx::audio::SampleRate(kRate48),
+            mixxx::audio::ChannelCount::stereo(),
+            kFrames48));
+    const QVector<float> mix = makeSineMixAt(kRate48, kFrames48);
+    constexpr int kFeed = 4096 * 2;
+    for (int off = 0; off < mix.size(); off += kFeed) {
+        const int n = qMin(kFeed, static_cast<int>(mix.size() - off));
+        ASSERT_TRUE(analyzer.processSamples(mix.constData() + off, n));
+    }
+    analyzer.storeResults(pTrack);
+    analyzer.cleanup();
+
+    EXPECT_TRUE(StemCacheManager::instance().hasStems(key));
+    const auto files = StemCacheManager::instance().getStemFiles(key);
+    ASSERT_FALSE(files.stemFile.isEmpty());
+    EXPECT_TRUE(QFile::exists(files.stemFile));
+    EXPECT_TRUE(files.stemFile.endsWith(QString::fromUtf8(key) + ".stem.mp4"));
+    EXPECT_TRUE(mixxx::StemInfoImporter::hasStemAtom(files.stemFile));
+
+    // The cached stem must decode at the native rate with native length.
+    {
+        TrackPointer pStemTrack(Track::newTemporary(files.stemFile));
+        ASSERT_TRUE(pStemTrack);
+        SoundSourceProxy proxy(pStemTrack);
+        mixxx::AudioSource::OpenParams params;
+        params.setChannelCount(mixxx::audio::ChannelCount::stereo());
+        mixxx::AudioSourcePointer audioSource = proxy.openAudioSource(params);
+        ASSERT_TRUE(audioSource);
+        EXPECT_EQ(audioSource->getSignalInfo().getSampleRate(),
+                mixxx::audio::SampleRate(kRate48));
+        EXPECT_EQ(audioSource->frameLength(), kFrames48);
+    }
+
+    // Second load: initialize() must decline (cache hit, no inference).
+    AnalyzerStemSeparation analyzer2(config());
+    EXPECT_FALSE(analyzer2.initialize(AnalyzerTrack(pTrack),
+            mixxx::audio::SampleRate(kRate48),
+            mixxx::audio::ChannelCount::stereo(),
+            kFrames48));
+    analyzer2.cleanup();
+    EXPECT_TRUE(StemCacheManager::instance().hasStems(key));
+
+    QDir d(StemCacheManager::stemDir(key));
+    d.removeRecursively();
+    StemCacheManager::instance().markFailed(key);
 }
 
 } // namespace
