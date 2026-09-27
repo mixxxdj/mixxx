@@ -80,6 +80,32 @@ class AnalyzerStemSeparation : public Analyzer {
     /// Runs offline (AnalyzerThread / worker thread), never RT.
     static constexpr int kModelSampleRate = 44100;
 
+    /// htdemucs ONNX emits stems in Demucs source order
+    /// [drums, bass, other, vocals], while Mixxx slots
+    /// (StemMp4Writer::Config::stems, SoundSourceSTEM 8-channel interleave
+    /// [VL VR DL DR BL BR OL OR]) are [vocals, drums, bass, other].
+    /// kOnnxStemForMixxxSlot[s] is the ONNX output index feeding Mixxx
+    /// slot s; kMixxxSlotForOnnxStem[o] is the Mixxx slot fed by ONNX
+    /// output o. The realtime path (EngineStemSeparator::readStem) already
+    /// uses this order (vocals <- 3, percussion <- 0); both offline paths
+    /// must route through it.
+    static constexpr int kOnnxStemForMixxxSlot[4] = {3, 0, 1, 2};
+    static constexpr int kMixxxSlotForOnnxStem[4] = {1, 2, 3, 0};
+
+    /// Overlap-adds one inference chunk (`outFrames` stereo frames per stem,
+    /// interleaved L,R) into the padded Mixxx-slot buffers, routing ONNX
+    /// Demucs order [drums, bass, other, vocals] to Mixxx slots
+    /// [vocals, drums, bass, other] via kMixxxSlotForOnnxStem. Shared by
+    /// AnalyzerStemSeparation::runSeparationAndCache and
+    /// OfflineSeparator::run so both offline paths route identically.
+    /// Pure helper so tests can pin the routing without ONNX.
+    static void accumulateChunk(float* srcStems[4],
+            int outFrames,
+            const QVector<float>& hannWindow,
+            int startFrame,
+            int paddedSamples,
+            QVector<float>* outStems[4]);
+
     /// Linear-interpolated stereo resampler (interleaved L,R floats).
     /// No-op (returns `in`) when rates are equal/invalid or input empty.
     /// Pure helper so tests can verify 48000 <-> 44100 roundtrips.

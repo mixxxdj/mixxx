@@ -167,6 +167,28 @@ void AnalyzerStemSeparation::overlapAdd(
 }
 
 // static
+void AnalyzerStemSeparation::accumulateChunk(float* srcStems[4],
+        int outFrames,
+        const QVector<float>& hannWindow,
+        int startFrame,
+        int paddedSamples,
+        QVector<float>* outStems[4]) {
+    for (int s = 0; s < kNumStems; ++s) {
+        const float* src = srcStems[s];
+        // ONNX emits Demucs order [drums, bass, other, vocals]; Mixxx
+        // slots are [vocals, drums, bass, other].
+        float* dst = outStems[kMixxxSlotForOnnxStem[s]]->data();
+        for (int i = 0; i < outFrames * 2; ++i) {
+            const float win = hannWindow[i / 2];
+            const int outIdx = startFrame * 2 + i;
+            if (outIdx < paddedSamples) {
+                dst[outIdx] += src[i] * win;
+            }
+        }
+    }
+}
+
+// static
 void AnalyzerStemSeparation::passthrough(
         const QVector<float>& mix, QVector<float>* outStems[4]) {
     *outStems[0] = mix;
@@ -328,17 +350,8 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
                         break;
                     }
                     const int outFrames = result.numSamples;
-                    for (int s = 0; s < kNumStems; ++s) {
-                        const float* src = result.stems[s];
-                        float* dst = outStems[s]->data();
-                        for (int i = 0; i < outFrames * 2; ++i) {
-                            const float win = hannWindow[i / 2];
-                            const int outIdx = startFrame * 2 + i;
-                            if (outIdx < paddedSamples) {
-                                dst[outIdx] += src[i] * win;
-                            }
-                        }
-                    }
+                    accumulateChunk(result.stems, outFrames, hannWindow,
+                            startFrame, paddedSamples, outStems);
                 }
                 if (ok) {
                     outVocals = outVocals.mid(leftPad * 2, inferSamples);

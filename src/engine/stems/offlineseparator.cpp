@@ -249,19 +249,11 @@ void OfflineSeparator::run() {
 
             // Overlap-add: each output sample receives win[i] from each
             // overlapping window that covers it (Hann ⇒ sum ≈ 1).
-            for (int s = 0; s < kNumStems; ++s) {
-                const float* src = result.stems[s];
-                float* dst = outStems[s]->data();
-
-                for (int i = 0; i < outFrames * 2; ++i) {
-                    const int frameIdx = i / 2;
-                    const float win = hannWindow[frameIdx];
-                    const int outIdx = startFrame * 2 + i;
-                    if (outIdx < paddedSamples) {
-                        dst[outIdx] += src[i] * win;
-                    }
-                }
-            }
+            // Routes ONNX Demucs order [drums, bass, other, vocals] to
+            // Mixxx slots [vocals, drums, bass, other] (shared helper, same
+            // as AnalyzerStemSeparation::runSeparationAndCache).
+            AnalyzerStemSeparation::accumulateChunk(result.stems, outFrames,
+                    hannWindow, startFrame, paddedSamples, outStems);
 
             const float progress = static_cast<float>(chunk + 1) / numChunks;
             if (m_config.onProgress) m_config.onProgress(progress);

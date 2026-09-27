@@ -38,6 +38,17 @@ QVector<float> makeSineMixAt(int sampleRate, int numFrames) {
     return buf;
 }
 
+QVector<float> makeTone(double freq, int sampleRate = kSampleRate,
+        int numFrames = kNumFrames, float amp = 0.4f) {
+    QVector<float> buf(numFrames * 2);
+    for (int i = 0; i < numFrames; ++i) {
+        const float s = amp * std::sin(2.0 * M_PI * freq * i / sampleRate);
+        buf[i * 2] = s;
+        buf[i * 2 + 1] = s;
+    }
+    return buf;
+}
+
 bool writeFloatWav(const QString& path, const QVector<float>& data, int sampleRate) {
     QFile f(path);
     if (!f.open(QIODevice::WriteOnly)) {
@@ -144,6 +155,59 @@ TEST_F(AnalyzerStemSeparationTest, PassthroughFallback) {
     for (float v : o1) {
         EXPECT_EQ(v, 0.0f);
     }
+}
+
+// htdemucs ONNX emits Demucs order [drums, bass, other, vocals] while
+// Mixxx slots (StemMp4Writer::Config::stems, SoundSourceSTEM interleave
+// [VL VR DL DR BL BR OL OR]) are [vocals, drums, bass, other]. Without the
+// permutation the vocals slot gets drums and the other slot gets vocals.
+// Pins the routing with one tone per stem (same tones as StemMp4WriterTest:
+// 440 vocals, 880 drums, 110 bass, 220 other).
+TEST_F(AnalyzerStemSeparationTest, OnnxDemucsOrderMapsToMixxxSlots) {
+    // Both tables must be mutually inverse bijections over {0..3}.
+    for (int s = 0; s < 4; ++s) {
+        EXPECT_EQ(AnalyzerStemSeparation::kMixxxSlotForOnnxStem
+                          [AnalyzerStemSeparation::kOnnxStemForMixxxSlot[s]],
+                s);
+        EXPECT_EQ(AnalyzerStemSeparation::kOnnxStemForMixxxSlot
+                          [AnalyzerStemSeparation::kMixxxSlotForOnnxStem[s]],
+                s);
+    }
+    // Mixxx slot s reads ONNX output kOnnxStemForMixxxSlot[s]:
+    // slots must be [440 vocals, 880 drums, 110 bass, 220 other].
+    EXPECT_EQ((AnalyzerStemSeparation::kOnnxStemForMixxxSlot[0]), 3); // vocals
+    EXPECT_EQ((AnalyzerStemSeparation::kOnnxStemForMixxxSlot[1]), 0); // drums
+    EXPECT_EQ((AnalyzerStemSeparation::kOnnxStemForMixxxSlot[2]), 1); // bass
+    EXPECT_EQ((AnalyzerStemSeparation::kOnnxStemForMixxxSlot[3]), 2); // other
+
+    // Simulate one OLA routing step through the real shared helper used
+    // by both offline paths: ONNX-ordered chunk outputs
+    // [drums=880, bass=110, other=220, vocals=440] with a unit window must
+    // land each tone in its Mixxx slot.
+    constexpr int kChunkFrames = 64;
+    const QVector<float> unitWin(kChunkFrames, 1.0f);
+    QVector<float> onnxBuf[4] = {
+            makeTone(880.0, kSampleRate, kChunkFrames), // ONNX 0 = drums
+            makeTone(110.0, kSampleRate, kChunkFrames), // ONNX 1 = bass
+            makeTone(220.0, kSampleRate, kChunkFrames), // ONNX 2 = other
+            makeTone(440.0, kSampleRate, kChunkFrames), // ONNX 3 = vocals
+    };
+    float* srcStems[4] = {
+            onnxBuf[0].data(), onnxBuf[1].data(), onnxBuf[2].data(), onnxBuf[3].data()};
+    QVector<float> mixxxSlot[4] = {
+            QVector<float>(kChunkFrames * 2, 0.0f),
+            QVector<float>(kChunkFrames * 2, 0.0f),
+            QVector<float>(kChunkFrames * 2, 0.0f),
+            QVector<float>(kChunkFrames * 2, 0.0f),
+    };
+    QVector<float>* pMixxxSlots[4] = {
+            &mixxxSlot[0], &mixxxSlot[1], &mixxxSlot[2], &mixxxSlot[3]};
+    AnalyzerStemSeparation::accumulateChunk(
+            srcStems, kChunkFrames, unitWin, 0, kChunkFrames * 2, pMixxxSlots);
+    EXPECT_EQ(mixxxSlot[0], makeTone(440.0, kSampleRate, kChunkFrames)); // vocals
+    EXPECT_EQ(mixxxSlot[1], makeTone(880.0, kSampleRate, kChunkFrames)); // drums
+    EXPECT_EQ(mixxxSlot[2], makeTone(110.0, kSampleRate, kChunkFrames)); // bass
+    EXPECT_EQ(mixxxSlot[3], makeTone(220.0, kSampleRate, kChunkFrames)); // other
 }
 
 TEST_F(AnalyzerStemSeparationTest, ModelPathDocumentedAndOverridable) {
