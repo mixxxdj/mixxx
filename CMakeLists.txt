@@ -2681,6 +2681,7 @@ if(STEM)
   target_sources(
     mixxx-lib
     PRIVATE
+      src/engine/stems/enginestemmixer.cpp
       src/sources/soundsourcestem.cpp
       src/track/steminfoimporter.cpp
       src/track/steminfo.cpp
@@ -2691,6 +2692,101 @@ if(STEM)
     target_sources(
       mixxx-lib
       PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+endif()
+
+# S3: EngineStemMixer AVX2 — flags SOLO para este TU, nunca globales.
+# (set_source_files_properties afecta unicamente a enginestemmixer.cpp.)
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
+  if(MSVC)
+    set_source_files_properties(
+      src/engine/stems/enginestemmixer.cpp
+      PROPERTIES COMPILE_OPTIONS "/arch:AVX2")
+  else()
+    set_source_files_properties(
+      src/engine/stems/enginestemmixer.cpp
+      PROPERTIES COMPILE_OPTIONS "-mavx2;-mfma")
+  endif()
+endif()
+
+# AI Stem Separator (mixxx-stems-engine library)
+find_package(stem-engine QUIET)
+# onnxruntime-cpu ships headers in /usr/include/onnxruntime without a
+# reliable .pc on some distros (1.29.0-3). Resolve it without depending on
+# pkg-config so the S5 offline analyzer can include the engine headers.
+# stem-engine itself already links onnxruntime; this only provides include
+# diagnostics and a fallback include dir for Mixxx TU that include
+# OnnxInferenceEngine.h directly.
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+  pkg_check_modules(PC_ONNXRUNTIME QUIET libonnxruntime)
+endif()
+if(PC_ONNXRUNTIME_FOUND)
+  set(ONNXRUNTIME_INCLUDE_DIR ${PC_ONNXRUNTIME_INCLUDE_DIRS} CACHE PATH "onnxruntime include dir")
+  set(ONNXRUNTIME_LIB ${PC_ONNXRUNTIME_LIBRARIES} CACHE STRING "onnxruntime libraries")
+else()
+  find_path(ONNXRUNTIME_INCLUDE_DIR
+    NAMES onnxruntime_cxx_api.h
+    PATHS /usr/include/onnxruntime /usr/local/include/onnxruntime
+    NO_CMAKE_SYSTEM_PATH
+  )
+  if(NOT ONNXRUNTIME_INCLUDE_DIR)
+    find_path(ONNXRUNTIME_INCLUDE_DIR
+      NAMES onnxruntime_cxx_api.h
+      PATHS /usr/include/onnxruntime /usr/local/include/onnxruntime
+    )
+  endif()
+  find_library(ONNXRUNTIME_LIB
+    NAMES onnxruntime
+    PATHS /usr/lib /usr/local/lib
+  )
+endif()
+if(ONNXRUNTIME_INCLUDE_DIR)
+  message(STATUS "onnxruntime include: ${ONNXRUNTIME_INCLUDE_DIR}")
+else()
+  message(STATUS "onnxruntime headers not found in /usr/include/onnxruntime; "
+    "S5 offline separation will build with passthrough fallback (no model assumed).")
+endif()
+cmake_dependent_option(
+  STEM_SEPARATOR
+  "AI stem separation via mixxx-stems-engine"
+  OFF
+  "stem-engine_FOUND;STEM"
+  OFF
+)
+# S5: stem cache + native .stem.mp4 writer are always built (FFmpeg only,
+# no ONNX needed) so AnalyzerStemSeparation can cache {hash}.stem.mp4 even
+# when no model / no stem-engine is present.
+target_sources(
+  mixxx-lib
+  PRIVATE
+    src/analyzer/analyzerstemseparation.cpp
+    src/engine/stems/stemcachemanager.cpp
+    src/engine/stems/stemmp4writer.cpp
+)
+if(STEM_SEPARATOR)
+  target_compile_definitions(mixxx-lib PUBLIC __STEM_SEPARATOR__)
+  target_link_libraries(mixxx-lib PUBLIC stem-engine)
+  if(ONNXRUNTIME_INCLUDE_DIR)
+    target_include_directories(mixxx-lib PUBLIC ${ONNXRUNTIME_INCLUDE_DIR})
+  endif()
+  if(ONNXRUNTIME_LIB)
+    target_link_libraries(mixxx-lib PUBLIC ${ONNXRUNTIME_LIB})
+  endif()
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      src/engine/stems/enginestemseparator.cpp
+      src/engine/stems/offlineseparator.cpp
+      src/engine/stems/virtualstemsource.cpp
+      src/engine/stems/virtualstemsoundsource.cpp
+  )
+  if(QOPENGL)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        # Future: waveform renderer for separated stems
     )
   endif()
 endif()
@@ -2820,6 +2916,7 @@ if(BUILD_TESTING)
       src/test/stemtest.cpp
       src/test/steminfotest.cpp
       src/test/stemcontrolobjecttest.cpp
+      src/test/enginestemmixertest.cpp
     )
   endif()
   if(BUILD_BENCH)
