@@ -20,12 +20,12 @@ public:
         QString modelPath;
         QString outputDir;
         int sampleRate = 44100;
-        /// N18: Hann overlap ratio (0.5 default, 0.25 optional for speed).
+        /// N18: Hann overlap ratio (0.25 default, 0.5 optional for quality).
         /// 0.25 triggers WOLA weight renormalization in run().
-        double overlap = 0.5;
-        /// N18: stem mode (4 default, 3 folds bass+other into slot 3
-        /// "Instruments" and silences slot 2). Reader layout untouched.
-        int stemMode = 4;
+        double overlap = 0.25;
+        /// N18: stem mode (3 default, 4 keeps the legacy 4-stem layout:
+        /// slot 3 "Instruments" fold off). Reader layout untouched.
+        int stemMode = 3;
         ProgressCallback onProgress;
         FinishedCallback onFinished;
     };

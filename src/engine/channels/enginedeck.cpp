@@ -495,19 +495,24 @@ void EngineDeck::checkAndLoadAIStems(TrackPointer pTrack) {
     StemCacheManager::CacheKey key = StemCacheManager::generateKey(pTrack->getLocation());
     // N18: version the lookup key with the configured stem mode so mode-3
     // artifacts never poison mode-4 lookups (mode 4 keys are unchanged).
+    // N19: versioning intentionally unchanged after the default flip to
+    // mode 3 — legacy mode-4 entries stay valid but are only served when
+    // stem_mode=4 is set manually; default mode-3 entries live under the
+    // "|mode=3" key. The 8-channel reader layout is identical in both
+    // modes (still 4 slots in the file).
     // NOTE: changing stem_mode requires a re-separation; stale entries of
     // the other mode stay in the cache dir and are pruned by size, never
     // served.
-    int aiStemMode = 4;
-    double aiOverlap = 0.5;
+    int aiStemMode = 3;
+    double aiOverlap = 0.25;
     if (m_pConfig) {
         aiStemMode = m_pConfig->getValue(
-                ConfigKey("[StemSeparation]", "stem_mode"), 4) == 3
-                ? 3
-                : 4;
+                ConfigKey("[StemSeparation]", "stem_mode"), 3) == 4
+                ? 4
+                : 3;
         const double ov = m_pConfig->getValue(
-                ConfigKey("[StemSeparation]", "overlap"), 0.5);
-        aiOverlap = (std::abs(ov - 0.25) < 1e-9) ? 0.25 : 0.5;
+                ConfigKey("[StemSeparation]", "overlap"), 0.25);
+        aiOverlap = (std::abs(ov - 0.5) < 1e-9) ? 0.5 : 0.25;
         if (aiStemMode == 3) {
             key = StemCacheManager::generateKeyForMode(
                     pTrack->getLocation(), aiStemMode);

@@ -46,6 +46,10 @@ public:
     // generateKey() so all existing entries stay valid; mode 3 appends
     // "|mode=3" to the hashed material so 3-stem artifacts live in a
     // different dir and never poison 4-stem lookups.
+    // N19: versioning intentionally unchanged after the default flip to
+    // mode 3 (mode 4 stays legacy). Default mode-3 artifacts are versioned;
+    // legacy mode-4 entries are never served as mode 3, and the 8-channel
+    // reader layout is identical in both modes.
     static CacheKey generateKeyForMode(const QString& trackLocation, int stemMode);
 
     // Prune cache to max size (default 2GB)

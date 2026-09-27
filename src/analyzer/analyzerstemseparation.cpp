@@ -77,10 +77,11 @@ double AnalyzerStemSeparation::overlapRatio(const UserSettingsPointer& pConfig) 
     }
     const double v = pConfig->getValue(
             ConfigKey(kConfigGroup, "overlap"), kDefaultOverlap);
-    // Only 0.25 is accepted as an alternative; anything else falls back to
-    // the default 0.5 so quality never silently degrades.
-    if (std::abs(v - 0.25) < 1e-9) {
-        return 0.25;
+    // N19: default is 0.25 (fast); 0.5 stays available as a manual opt-in
+    // for quality. Anything else falls back to the default so quality
+    // never silently degrades to an untested ratio.
+    if (std::abs(v - 0.5) < 1e-9) {
+        return 0.5;
     }
     return kDefaultOverlap;
 }
@@ -106,7 +107,8 @@ int AnalyzerStemSeparation::stemMode(const UserSettingsPointer& pConfig) {
     }
     const int v = pConfig->getValue(
             ConfigKey(kConfigGroup, "stem_mode"), kDefaultStemMode);
-    return (v == 3) ? 3 : kDefaultStemMode;
+    // N19: default is 3 (fast); 4 stays available as a manual opt-in.
+    return (v == 4) ? 4 : kDefaultStemMode;
 }
 
 // static
@@ -299,7 +301,9 @@ bool AnalyzerStemSeparation::initialize(const AnalyzerTrack& track,
     m_overlap = overlapRatio(m_pConfig);
     // N18: versioned cache key — mode 3 appends "|mode=3" so 3-stem
     // artifacts never poison 4-stem entries (mode 4 keys are unchanged,
-    // keeping all existing cache entries valid).
+    // keeping all existing cache entries valid). N19: versioning is
+    // intentionally unchanged after the default flip to mode 3, so legacy
+    // mode-4 entries are never served as mode 3.
     m_key = StemCacheManager::generateKeyForMode(m_location, m_stemMode);
     // Cache hit: nothing to do, no inference on second load.
     if (StemCacheManager::instance().hasStems(m_key)) {

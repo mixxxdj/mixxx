@@ -175,10 +175,10 @@ void OfflineSeparator::run() {
 
     if (onnxReady) {
         const int kChunkSize = onnx.modelInfo().waveformInputSamples; // e.g. 343980
-        // N18: optional 25% overlap (hop = 3N/4) for speed; default 50%
-        // keeps the legacy COLA path bit-identical. Clamp to even so stereo
+        // N19: default 25% overlap (hop = 3N/4) for speed; 0.5 keeps the
+        // legacy COLA path bit-identical. Clamp to even so stereo
         // L/R pairs stay aligned.
-        const double overlapCfg = (m_config.overlap == 0.25) ? 0.25 : 0.5;
+        const double overlapCfg = (m_config.overlap == 0.5) ? 0.5 : 0.25;
         int kHopSize = kChunkSize / 2;                          // 50% overlap
         if (overlapCfg == 0.25) {
             kHopSize = (kChunkSize * 3) / 4;
@@ -336,11 +336,11 @@ void OfflineSeparator::run() {
     kLogger.warning() << "stem-engine not compiled in - using passthrough stems";
 #endif
 
-    // N18: optional 3-stem fold (default off). Slot 3 (other) becomes
-    // bass+other ("Instruments"), slot 2 (bass) becomes silence. The
+    // N19: default 3-stem fold (slot 3 "Instruments" = bass+other,
+    // slot 2 silence); stemMode=4 keeps the legacy 4-stem layout. The
     // 8-channel reader layout is untouched (still 4 slots in the file);
     // the UI should hide the bass slot in mode 3 (documented, not enforced).
-    const int stemModeCfg = (m_config.stemMode == 3) ? 3 : 4;
+    const int stemModeCfg = (m_config.stemMode == 4) ? 4 : 3;
     if (stemModeCfg == 3) {
         QVector<float>* foldStems[4] = {&outVocals, &outDrums, &outBass, &outOther};
         AnalyzerStemSeparation::foldTo3StemMode(foldStems);

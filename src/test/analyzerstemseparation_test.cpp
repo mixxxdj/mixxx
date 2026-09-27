@@ -263,7 +263,10 @@ TEST_F(AnalyzerStemSeparationTest, CacheRoundtripSecondLoadHitsWithoutInference)
 
     TrackPointer pTrack(Track::newTemporary(wavPath));
     ASSERT_TRUE(pTrack);
-    const auto key = StemCacheManager::generateKey(wavPath);
+    // N19: expected key follows the configured stem mode (default 3 is
+    // versioned, legacy 4 equals generateKey()).
+    const auto key = StemCacheManager::generateKeyForMode(
+            wavPath, AnalyzerStemSeparation::stemMode(config()));
     // Clean any previous run for this key
     {
         QDir d(StemCacheManager::stemDir(key));
@@ -372,7 +375,10 @@ TEST_F(AnalyzerStemSeparationTest, CacheRoundtrip48000HzSecondLoadHitsWithoutInf
 
     TrackPointer pTrack(Track::newTemporary(wavPath));
     ASSERT_TRUE(pTrack);
-    const auto key = StemCacheManager::generateKey(wavPath);
+    // N19: expected key follows the configured stem mode (default 3 is
+    // versioned, legacy 4 equals generateKey()).
+    const auto key = StemCacheManager::generateKeyForMode(
+            wavPath, AnalyzerStemSeparation::stemMode(config()));
     {
         QDir d(StemCacheManager::stemDir(key));
         if (d.exists()) {
@@ -488,8 +494,21 @@ TEST_F(AnalyzerStemSeparationTest, HopSizeDefaultsToHalfChunk) {
 }
 
 TEST_F(AnalyzerStemSeparationTest, OverlapAndStemModeDefaultWithoutConfig) {
-    EXPECT_DOUBLE_EQ(AnalyzerStemSeparation::overlapRatio(UserSettingsPointer()), 0.5);
-    EXPECT_EQ(AnalyzerStemSeparation::stemMode(UserSettingsPointer()), 4);
+    EXPECT_DOUBLE_EQ(AnalyzerStemSeparation::overlapRatio(UserSettingsPointer()), 0.25);
+    EXPECT_EQ(AnalyzerStemSeparation::stemMode(UserSettingsPointer()), 3);
+}
+
+// N19: legacy 0.5/4 stay available as manual opt-ins via config.
+TEST_F(AnalyzerStemSeparationTest, OverlapAndStemModeLegacyManualOptIn) {
+    config()->setValue(ConfigKey("[StemSeparation]", "overlap"), 0.5);
+    config()->setValue(ConfigKey("[StemSeparation]", "stem_mode"), 4);
+    EXPECT_DOUBLE_EQ(AnalyzerStemSeparation::overlapRatio(config()), 0.5);
+    EXPECT_EQ(AnalyzerStemSeparation::stemMode(config()), 4);
+    EXPECT_EQ(AnalyzerStemSeparation::hopSizeFor(1024, 0.5), 512);
+    config()->setValue(ConfigKey("[StemSeparation]", "overlap"), 0.25);
+    config()->setValue(ConfigKey("[StemSeparation]", "stem_mode"), 3);
+    EXPECT_DOUBLE_EQ(AnalyzerStemSeparation::overlapRatio(config()), 0.25);
+    EXPECT_EQ(AnalyzerStemSeparation::stemMode(config()), 3);
 }
 
 TEST_F(AnalyzerStemSeparationTest, FoldTo3StemModeSumsBassIntoOther) {
