@@ -241,7 +241,6 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
             "  Playlists.date_created AS date_created, "
-            "  LOWER(Playlists.name) AS sort_name, "
             "  max(PlaylistTracks.position) AS count,"
             "  SUM(library.duration) AS durationSeconds "
             "FROM Playlists "
@@ -249,14 +248,10 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             "  ON PlaylistTracks.playlist_id = Playlists.id "
             "LEFT JOIN library "
             "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = %2 "
-            "  GROUP BY Playlists.id")
+            "WHERE Playlists.hidden = %2 "
+            "GROUP BY Playlists.id")
                                   .arg(m_countsDurationTableName,
                                           QString::number(PlaylistDAO::PLHT_SET_LOG));
-    ;
-    queryString.append(
-            mixxx::DbConnection::collateLexicographically(
-                    " ORDER BY sort_name"));
     QSqlQuery query(database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
@@ -265,7 +260,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, database);
     playlistTableModel.setTable(m_countsDurationTableName);
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"), Qt::DescendingOrder);
+    playlistTableModel.setSort(playlistTableModel.fieldIndex("date_created"), Qt::DescendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
@@ -285,25 +280,19 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     itemList.reserve(kNumToplevelHistoryEntries + 15);
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, idColumn))
-                        .toInt();
-        QString name =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, nameColumn))
-                        .toString();
-        QDateTime dateCreated =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, createdColumn))
-                        .toDateTime();
+        int id = playlistTableModel.data(playlistTableModel.index(row, idColumn)).toInt();
+        QString name = playlistTableModel
+                               .data(playlistTableModel.index(row, nameColumn))
+                               .toString();
+        QDateTime dateCreated = playlistTableModel
+                                        .data(playlistTableModel.index(row, createdColumn))
+                                        .toDateTime();
         int count = playlistTableModel
                             .data(playlistTableModel.index(row, countColumn))
                             .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, durationColumn))
-                        .toInt();
+        int duration = playlistTableModel
+                               .data(playlistTableModel.index(row, durationColumn))
+                               .toInt();
         QString label = createPlaylistLabel(name, count, duration);
 
         // Create the TreeItem whose parent is the invisible root item.
