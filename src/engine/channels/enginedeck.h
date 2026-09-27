@@ -7,6 +7,13 @@
 #include "soundio/soundmanagerutil.h"
 #include "track/track_decl.h"
 #include "util/samplebuffer.h"
+#include "util/types.h"
+
+#ifdef __STEM__
+#include "engine/stems/enginestemseparator.h"
+#include "engine/stems/stemcachemanager.h"
+#include "engine/stems/virtualstemsource.h"
+#endif
 
 class EnginePregain;
 class EngineBuffer;
@@ -72,10 +79,21 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     void cloneStemState(const EngineDeck* deckToClone);
     void addStemHandle(const ChannelHandleAndGroup& stemHandleGroup);
     static QString getGroupForStem(QStringView deckGroup, int stemIdx);
+    
+    // AI Stem separation: check cache, load virtual stems, or trigger offline separation
+    void checkAndLoadAIStems(TrackPointer pTrack);
+    void loadVirtualStems();
+    void processVirtualStems(CSAMPLE* pOutput, const std::size_t bufferSize);
 #endif
 
   signals:
     void noPassthroughInputConfigured();
+#ifdef __STEM__
+    /// Emitted after an offline AI stem separation successfully produced a
+    /// native .stem.mp4 file. The deck player should reload this deck with
+    /// that file so Mixxx's native stem system takes over.
+    void aiStemFileReady(const QString& stemFilePath);
+#endif
 
   public slots:
     void slotPassthroughToggle(double v);
@@ -88,6 +106,11 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 #ifdef __STEM__
     // Process multiple channels and mix them together into the passed buffer
     void processStem(CSAMPLE* pOutput, const std::size_t bufferSize);
+#endif
+
+#ifdef __STEM_SEPARATOR__
+    // Process AI-separated stems from EngineStemSeparator
+    void processSeparatedStem(CSAMPLE* pOutput, const std::size_t bufferSize);
 #endif
 
     std::vector<ChannelHandleAndGroup> m_stems;
@@ -103,7 +126,21 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     std::unique_ptr<ControlObject> m_pStemCount;
     std::vector<std::unique_ptr<ControlPotmeter>> m_stemGain;
     std::vector<std::unique_ptr<ControlPushButton>> m_stemMute;
+    std::vector<std::unique_ptr<ControlPushButton>> m_stemSolo;
     bool m_stemClonedState;
+    
+    // AI Stem separation: virtual stem sources from cache
+    std::unique_ptr<VirtualStemSource> m_pVirtualStemSource;
+    StemCacheManager::CacheKey m_aiStemCacheKey;
+    bool m_aiStemsLoading = false;
+    std::unique_ptr<ControlPushButton> m_pStemSeparatorEnabled;
+    
+    // Read positions for virtual stems (per stem)
+    qint64 m_virtualStemReadPosition[4] = {0, 0, 0, 0};
+#endif
+
+#ifdef __STEM_SEPARATOR__
+    std::unique_ptr<EngineStemSeparator> m_pStemSeparator;
 #endif
 
     // Begin vinyl passthrough fields

@@ -1,0 +1,330 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    AI Stem Separator rack for Tango skin.
+    Shows a toggle per deck with 4 stem channel strips from
+    the AI-based separator (MultiDeckManager + htdemucs).
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+
+      <!-- ═══ DECK 1 ═══ -->
+      <WidgetGroup>
+        <ObjectName>StemSeparatorDeck</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <!-- Header -->
+          <WidgetGroup>
+            <ObjectName>StemSeparatorHeader</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>StemSeparatorTitle</ObjectName>
+                <Text>AI STEM DECK 1</Text>
+                <Alignment>left</Alignment>
+                <Size>100f,20f</Size>
+              </Label>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">40f,20f</SetVariable>
+                <SetVariable name="state_0_text">AI OFF</SetVariable>
+                <SetVariable name="state_1_text">AI ON</SetVariable>
+                <SetVariable name="ConfigKey">[Channel1],stem_separator_enabled</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <!-- Status indicator -->
+              <Label>
+                <ObjectName>StemSeparatorStatus</ObjectName>
+                <Size>50f,20f</Size>
+                <Text>Off</Text>
+                <Alignment>left</Alignment>
+              </Label>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Stem strips -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">1</SetVariable>
+                    <SetVariable name="stemNum">1</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">1</SetVariable>
+                    <SetVariable name="stemNum">2</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">1</SetVariable>
+                    <SetVariable name="stemNum">3</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">1</SetVariable>
+                    <SetVariable name="stemNum">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+      <!-- / DECK 1 -->
+
+      <!-- ═══ DECK 2 ═══ -->
+      <WidgetGroup>
+        <ObjectName>StemSeparatorDeck</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <!-- Header -->
+          <WidgetGroup>
+            <ObjectName>StemSeparatorHeader</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>StemSeparatorTitle</ObjectName>
+                <Text>AI STEM DECK 2</Text>
+                <Alignment>left</Alignment>
+                <Size>100f,20f</Size>
+              </Label>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">40f,20f</SetVariable>
+                <SetVariable name="state_0_text">AI OFF</SetVariable>
+                <SetVariable name="state_1_text">AI ON</SetVariable>
+                <SetVariable name="ConfigKey">[Channel2],stem_separator_enabled</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <!-- Status indicator -->
+              <Label>
+                <ObjectName>StemSeparatorStatus</ObjectName>
+                <Size>50f,20f</Size>
+                <Text>Off</Text>
+                <Alignment>left</Alignment>
+              </Label>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Stem strips -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">2</SetVariable>
+                    <SetVariable name="stemNum">1</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">2</SetVariable>
+                    <SetVariable name="stemNum">2</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">2</SetVariable>
+                    <SetVariable name="stemNum">3</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">2</SetVariable>
+                    <SetVariable name="stemNum">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+      <!-- / DECK 2 -->
+
+      <!-- ═══ DECK 3 (visible solo con 4 decks) ═══ -->
+      <WidgetGroup>
+        <ObjectName>StemSeparatorDeck</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>StemSeparatorHeader</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>StemSeparatorTitle</ObjectName>
+                <Text>AI STEM DECK 3</Text>
+                <Alignment>left</Alignment>
+                <Size>100f,20f</Size>
+              </Label>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">40f,20f</SetVariable>
+                <SetVariable name="state_0_text">AI OFF</SetVariable>
+                <SetVariable name="state_1_text">AI ON</SetVariable>
+                <SetVariable name="ConfigKey">[Channel3],stem_separator_enabled</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <Label>
+                <ObjectName>StemSeparatorStatus</ObjectName>
+                <Size>50f,20f</Size>
+                <Text>Off</Text>
+                <Alignment>left</Alignment>
+              </Label>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">3</SetVariable>
+                    <SetVariable name="stemNum">1</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">3</SetVariable>
+                    <SetVariable name="stemNum">2</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">3</SetVariable>
+                    <SetVariable name="stemNum">3</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">3</SetVariable>
+                    <SetVariable name="stemNum">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <!-- / DECK 3 -->
+
+      <!-- ═══ DECK 4 (visible solo con 4 decks) ═══ -->
+      <WidgetGroup>
+        <ObjectName>StemSeparatorDeck</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>StemSeparatorHeader</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>StemSeparatorTitle</ObjectName>
+                <Text>AI STEM DECK 4</Text>
+                <Alignment>left</Alignment>
+                <Size>100f,20f</Size>
+              </Label>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">40f,20f</SetVariable>
+                <SetVariable name="state_0_text">AI OFF</SetVariable>
+                <SetVariable name="state_1_text">AI ON</SetVariable>
+                <SetVariable name="ConfigKey">[Channel4],stem_separator_enabled</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+              <Label>
+                <ObjectName>StemSeparatorStatus</ObjectName>
+                <Size>50f,20f</Size>
+                <Text>Off</Text>
+                <Alignment>left</Alignment>
+              </Label>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">4</SetVariable>
+                    <SetVariable name="stemNum">1</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">4</SetVariable>
+                    <SetVariable name="stemNum">2</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">4</SetVariable>
+                    <SetVariable name="stemNum">3</SetVariable>
+                  </Template>
+                  <Template src="skins:Tango/stem_channel.xml">
+                    <SetVariable name="chanNum">4</SetVariable>
+                    <SetVariable name="stemNum">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+      <!-- / DECK 4 -->
+
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_stem_separator</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

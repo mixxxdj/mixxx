@@ -92,6 +92,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_stem_separator">0</attribute>
 
       <!-- Library -->
       <attribute config_key="[Skin],show_maximized_library">0</attribute>
@@ -490,6 +491,8 @@
                             <Template src="skins:Tango/sampler_rack.xml"/>
 
                             <Template src="skins:Tango/mic_aux_rack.xml"/>
+
+                            <Template src="skins:Tango/stem_separator_rack.xml"/>
 
                             <SingletonContainer>
                               <ObjectName>Library_Singleton</ObjectName>

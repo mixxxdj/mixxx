@@ -194,6 +194,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Mute button"),
             pMixerMenu,
             true);
+    addDeckAndSamplerControl("solo",
+            tr("Solo"),
+            tr("Solo button (stem solo: if any solo is active, only soloed stems sound)"),
+            pMixerMenu,
+            true);
     pMixerMenu->addSeparator();
     addDeckAndSamplerControl("pfl",
             tr("Headphone Listen"),

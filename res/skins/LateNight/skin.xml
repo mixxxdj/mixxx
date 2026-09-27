@@ -91,6 +91,7 @@
       <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_stem_separator">0</attribute>
     <!-- Library -->
       <attribute config_key="[Skin],show_maximized_library">0</attribute>
       <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>
@@ -498,6 +499,7 @@
                         <Template src="skins:LateNight/fx_rack.xml"/>
                         <Template src="skins:LateNight/samplers_rack.xml"/>
                         <Template src="skins:LateNight/mic_aux_rack.xml"/>
+                        <Template src="skins:LateNight/stem_separator_rack.xml"/>
 
                         <SingletonContainer>
                           <ObjectName>LibrarySingleton</ObjectName>

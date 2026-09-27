@@ -25,6 +25,21 @@
         </Children>
       </WidgetGroup>
 
+      <!-- Solo button -->
+      <WidgetGroup>
+        <ObjectName>StemSoloButtonWG</ObjectName>
+        <Size>12f,23f</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skins:Tango/controls/button_2state.xml">
+            <SetVariable name="TooltipId">StemSoloButton</SetVariable>
+            <SetVariable name="ObjectName">StemSoloButton</SetVariable>
+            <SetVariable name="Size">12f,23f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="stemGroup"/>,solo</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
       <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
       <StemLabel>

@@ -50,6 +50,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_stem_separator">0</attribute>
 
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
@@ -226,6 +227,7 @@
                         <Template src="skins:Deere/effect_rack.xml"/>
                         <Template src="skins:Deere/sample_decks.xml"/>
                         <Template src="skins:Deere/microphone_rack.xml"/>
+                        <Template src="skins:Deere/stem_separator_rack.xml"/>
                       </Children>
                     </WidgetGroup><!-- /Main section -->
                     <SingletonContainer>

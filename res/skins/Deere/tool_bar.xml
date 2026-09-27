@@ -406,6 +406,19 @@
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
               <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_stem_separator</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">AI STEM</SetVariable>
+                <SetVariable name="state_1_text">AI STEM</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_stem_separator</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
+
+              <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">show_microphone</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>

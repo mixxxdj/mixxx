@@ -73,6 +73,10 @@ class StemControlFixture : public BaseSignalPathTest,
         m_pStem2Mute = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 2), "mute");
         m_pStem3Mute = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 3), "mute");
         m_pStem4Mute = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 4), "mute");
+        m_pStem1Solo = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 1), "solo");
+        m_pStem2Solo = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 2), "solo");
+        m_pStem3Solo = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 3), "solo");
+        m_pStem4Solo = std::make_unique<PollingControlProxy>(getGroupForStem(m_sGroup1, 4), "solo");
         m_pStem1Color = std::make_unique<PollingControlProxy>(
                 getGroupForStem(m_sGroup1, 1), "color");
         m_pStem2Color = std::make_unique<PollingControlProxy>(
@@ -143,6 +147,10 @@ class StemControlFixture : public BaseSignalPathTest,
     std::unique_ptr<PollingControlProxy> m_pStem2Mute;
     std::unique_ptr<PollingControlProxy> m_pStem3Mute;
     std::unique_ptr<PollingControlProxy> m_pStem4Mute;
+    std::unique_ptr<PollingControlProxy> m_pStem1Solo;
+    std::unique_ptr<PollingControlProxy> m_pStem2Solo;
+    std::unique_ptr<PollingControlProxy> m_pStem3Solo;
+    std::unique_ptr<PollingControlProxy> m_pStem4Solo;
     std::unique_ptr<PollingControlProxy> m_pStem1Color;
     std::unique_ptr<PollingControlProxy> m_pStem2Color;
     std::unique_ptr<PollingControlProxy> m_pStem3Color;
@@ -252,6 +260,10 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
     m_pStem2Mute->set(1.0);
     m_pStem3Mute->set(0.0);
     m_pStem4Mute->set(1.0);
+    m_pStem1Solo->set(1.0);
+    m_pStem2Solo->set(0.0);
+    m_pStem3Solo->set(1.0);
+    m_pStem4Solo->set(0.0);
     m_pConfig->setValue(
             ConfigKey("[Mixer Profile]", "stem_auto_reset"), false);
 
@@ -267,6 +279,10 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
     EXPECT_EQ(m_pStem2Mute->get(), 1.0);
     EXPECT_EQ(m_pStem3Mute->get(), 0.0);
     EXPECT_EQ(m_pStem4Mute->get(), 1.0);
+    EXPECT_EQ(m_pStem1Solo->get(), 1.0);
+    EXPECT_EQ(m_pStem2Solo->get(), 0.0);
+    EXPECT_EQ(m_pStem3Solo->get(), 1.0);
+    EXPECT_EQ(m_pStem4Solo->get(), 0.0);
 
     m_pConfig->setValue(
             ConfigKey("[Mixer Profile]", "stem_auto_reset"), true);
@@ -280,6 +296,10 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
     EXPECT_EQ(m_pStem2Mute->get(), 0.0);
     EXPECT_EQ(m_pStem3Mute->get(), 0.0);
     EXPECT_EQ(m_pStem4Mute->get(), 0.0);
+    EXPECT_EQ(m_pStem1Solo->get(), 0.0);
+    EXPECT_EQ(m_pStem2Solo->get(), 0.0);
+    EXPECT_EQ(m_pStem3Solo->get(), 0.0);
+    EXPECT_EQ(m_pStem4Solo->get(), 0.0);
 }
 
 TEST_P(StemControlFixture, Mute) {
@@ -329,8 +349,120 @@ TEST_P(StemControlFixture, Mute) {
             QStringLiteral("StemMuteControlFull"));
 }
 
+TEST_P(StemControlFixture, Solo) {
+    // Volumes at unity, nothing muted: solo drives audibility.
+    m_pStem1Volume->set(1.0);
+    m_pStem2Volume->set(1.0);
+    m_pStem3Volume->set(1.0);
+    m_pStem4Volume->set(1.0);
+    m_pStem1Mute->set(0.0);
+    m_pStem2Mute->set(0.0);
+    m_pStem3Mute->set(0.0);
+    m_pStem4Mute->set(0.0);
+    m_pStem1Solo->set(0.0);
+    m_pStem2Solo->set(0.0);
+    m_pStem3Solo->set(0.0);
+    m_pStem4Solo->set(0.0);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pPlay->set(1.0);
+
+    // No solo active: everything sounds (same as unmuted full mix).
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemMuteControlFull"));
+
+    // Solo stem 1 only: only drums sound.
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pStem1Solo->set(1.0);
+
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemVolumeControlDrumOnly"));
+
+    // Solo stems 1+2: drums and bass sound.
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pStem2Solo->set(1.0);
+
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemMuteControlDrumAndBass"));
+
+    // Solo all stems: full mix again.
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pStem3Solo->set(1.0);
+    m_pStem4Solo->set(1.0);
+
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemMuteControlFull"));
+}
+
+TEST_P(StemControlFixture, SoloPlusMute) {
+    // Mute is applied after solo: a soloed but muted stem stays silent.
+    m_pStem1Volume->set(1.0);
+    m_pStem2Volume->set(1.0);
+    m_pStem3Volume->set(1.0);
+    m_pStem4Volume->set(1.0);
+    m_pStem1Mute->set(0.0);
+    m_pStem2Mute->set(0.0);
+    m_pStem3Mute->set(0.0);
+    m_pStem4Mute->set(0.0);
+    m_pStem1Solo->set(0.0);
+    m_pStem2Solo->set(0.0);
+    m_pStem3Solo->set(0.0);
+    m_pStem4Solo->set(0.0);
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pPlay->set(1.0);
+
+    // Solo stem 1: drums only.
+    m_pStem1Solo->set(1.0);
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemVolumeControlDrumOnly"));
+
+    // Muting a non-soloed stem changes nothing while solo is active.
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pStem2Mute->set(1.0);
+
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemVolumeControlDrumOnly"));
+
+    // Muting the soloed stem silences everything.
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pStem1Mute->set(1.0);
+
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemVolumeControlSilence"));
+
+    // Unmuting the soloed stem restores drums only.
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pStem1Mute->set(0.0);
+
+    m_pEngineMixer->process(kProcessBufferSize);
+    m_pEngineMixer->process(kProcessBufferSize);
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            QStringLiteral("StemVolumeControlDrumOnly"));
+}
+
 INSTANTIATE_TEST_SUITE_P(
-        DISABLED_StemControlTest,
+        StemControlTest,
         StemControlFixture,
         ::testing::ValuesIn(supportedCodecs),
         [](const testing::TestParamInfo<StemControlFixture::ParamType>& info) {

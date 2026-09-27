@@ -28,6 +28,23 @@
         </Connection>
       </PushButton>
 
+      <PushButton>
+        <TooltipId>StemSoloButton</TooltipId>
+        <Size>15f,20f</Size>
+        <ObjectName>StemSoloButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+        </State>
+        <State>
+          <Number>1</Number>
+        </State>
+        <Connection>
+          <ConfigKey><Variable name="StemGroup"/>,solo</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
       <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
 
       <StemLabel>

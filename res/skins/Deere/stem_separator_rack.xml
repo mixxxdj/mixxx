@@ -1,0 +1,187 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    AI Stem Separator rack — one section per deck, each with
+    separator controls and 4 stem channel strips.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>StemSeparatorRack</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <!-- ====== DECK 1 (Left) ====== -->
+          <WidgetGroup>
+            <ObjectName>StemSeparatorDeck</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <!-- Header: Deck label + AI toggle -->
+              <WidgetGroup>
+                <ObjectName>StemSeparatorHeader</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>h2</ObjectName>
+                    <Text>DECK 1</Text>
+                    <Alignment>left</Alignment>
+                    <Size>50f,20f</Size>
+                  </Label>
+
+                  <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">StemSeparatorEnable</SetVariable>
+                    <SetVariable name="ObjectName">StemSeparatorToggle</SetVariable>
+                    <SetVariable name="MinimumSize">55,22</SetVariable>
+                    <SetVariable name="MaximumSize">55,22</SetVariable>
+                    <SetVariable name="SizePolicy">f,f</SetVariable>
+                    <SetVariable name="state_0_text">AI OFF</SetVariable>
+                    <SetVariable name="state_1_text">AI ON</SetVariable>
+                    <SetVariable name="left_connection_control">[Channel1],stem_separator_enabled</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+                  <!-- Status indicator -->
+                  <Label>
+                    <ObjectName>StemSeparatorStatus</ObjectName>
+                    <Size>60f,20f</Size>
+                    <Text>Off</Text>
+                    <Alignment>left</Alignment>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+              <!-- Stem channel strips for Deck 1 -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">1</SetVariable>
+                        <SetVariable name="StemNum">1</SetVariable>
+                      </Template>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">1</SetVariable>
+                        <SetVariable name="StemNum">2</SetVariable>
+                      </Template>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">1</SetVariable>
+                        <SetVariable name="StemNum">3</SetVariable>
+                      </Template>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">1</SetVariable>
+                        <SetVariable name="StemNum">4</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+          <!-- / DECK 1 -->
+
+          <!-- ====== DECK 2 (Right) ====== -->
+          <WidgetGroup>
+            <ObjectName>StemSeparatorDeck</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <!-- Header: Deck label + AI toggle -->
+              <WidgetGroup>
+                <ObjectName>StemSeparatorHeader</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>h2</ObjectName>
+                    <Text>DECK 2</Text>
+                    <Alignment>left</Alignment>
+                    <Size>50f,20f</Size>
+                  </Label>
+
+                  <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="TooltipId">StemSeparatorEnable</SetVariable>
+                    <SetVariable name="ObjectName">StemSeparatorToggle</SetVariable>
+                    <SetVariable name="MinimumSize">55,22</SetVariable>
+                    <SetVariable name="MaximumSize">55,22</SetVariable>
+                    <SetVariable name="SizePolicy">f,f</SetVariable>
+                    <SetVariable name="state_0_text">AI OFF</SetVariable>
+                    <SetVariable name="state_1_text">AI ON</SetVariable>
+                    <SetVariable name="left_connection_control">[Channel2],stem_separator_enabled</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+
+                  <!-- Status indicator -->
+                  <Label>
+                    <ObjectName>StemSeparatorStatus</ObjectName>
+                    <Size>60f,20f</Size>
+                    <Text>Off</Text>
+                    <Alignment>left</Alignment>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+              <!-- Stem channel strips for Deck 2 -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">2</SetVariable>
+                        <SetVariable name="StemNum">1</SetVariable>
+                      </Template>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">2</SetVariable>
+                        <SetVariable name="StemNum">2</SetVariable>
+                      </Template>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">2</SetVariable>
+                        <SetVariable name="StemNum">3</SetVariable>
+                      </Template>
+                      <Template src="skins:Deere/stem_channel.xml">
+                        <SetVariable name="ChanNum">2</SetVariable>
+                        <SetVariable name="StemNum">4</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+          <!-- / DECK 2 -->
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey>[Skin],show_stem_separator</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

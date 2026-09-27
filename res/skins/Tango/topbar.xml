@@ -179,6 +179,17 @@ Description:
                 <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
               </Template>
 
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- AI STEM -->
+                <SetVariable name="TooltipId">show_stem_separator</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_text">AI</SetVariable>
+                <SetVariable name="state_1_text">AI</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_stem_separator</SetVariable>
+              </Template>
+
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
               <Template src="skins:Tango/controls/button_2state_persist.xml"><!-- Mixer -->

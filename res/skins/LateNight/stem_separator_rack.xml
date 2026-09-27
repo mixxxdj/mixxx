@@ -1,0 +1,609 @@
+<!DOCTYPE template>
+<!--
+  IA STEMS MIXER – Rack de mezcla de stems por IA para LateNight (3 stems).
+
+  CO mapping (expuestos por EngineStemSeparator::readStem):
+    UI stem 0 → Vocales       ← ONNX stem 3 (vocals)           → Azul    #3498DB
+    UI stem 1 → Instrumentos  ← ONNX stem 1 (bass) + 2 (other) → Púrpura #9B59B6
+    UI stem 2 → Percusión     ← ONNX stem 0 (drums)            → Naranja #E67E22
+
+  COs de volumen (creados por EngineDeck en __STEM__):
+    [Channel<N>_Stem1],volume → Vocales
+    [Channel<N>_Stem2],volume → Instrumentos
+    [Channel<N>_Stem3],volume → Percusión
+
+  COs de mute:
+    [Channel<N>_Stem1],mute → Vocales
+    [Channel<N>_Stem2],mute → Instrumentos
+    [Channel<N>_Stem3],mute → Percusión
+
+  AI enable:
+    [Channel<N>],stem_separator_enabled → toggle ON/OFF
+-->
+<Template>
+  <SetVariable name="BtnType">embedded</SetVariable>
+  <WidgetGroup>
+    <ObjectName>IaStemsRack</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,f</SizePolicy>
+    <Style>
+      WidgetGroup#IaStemsRack {
+        background-color: #1a1a1a;
+        border: 1px solid #333333;
+        border-radius: 3px;
+        padding: 2px;
+      }
+    </Style>
+
+    <Children>
+
+      <!-- TÍTULO CENTRAL -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>min,min</Size></WidgetGroup>
+          <Label>
+            <ObjectName>IaStemsTitle</ObjectName>
+            <Text>    IA STEMS MIXER    </Text>
+            <Alignment>center</Alignment>
+            <Size>me,22f</Size>
+            <Style>
+              Label#IaStemsTitle {
+                color: #ff9900;
+                font-weight: bold;
+                font-size: 11px;
+                padding: 2px;
+              }
+            </Style>
+          </Label>
+          <WidgetGroup><Size>min,min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <!-- DECKS 1 & 2 -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <!-- DECK 1 -->
+          <WidgetGroup>
+            <ObjectName>IaStemsDeck</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <!-- Header: label + AI toggle -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>IaStemsDeckLabel</ObjectName>
+                    <Text>DECK 1</Text>
+                    <Size>50f,20f</Size>
+                    <Style>
+                      Label#IaStemsDeckLabel {
+                        color: #cccccc;
+                        font-weight: bold;
+                        font-size: 10px;
+                      }
+                    </Style>
+                  </Label>
+                  <WidgetGroup><Size>min,min</Size></WidgetGroup>
+                  <Template src="skins:LateNight/controls/button_2state_persist.xml">
+                    
+                    <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                    <SetVariable name="Size">56f,18f</SetVariable>
+                    <SetVariable name="state_0_text">AI OFF</SetVariable>
+                    <SetVariable name="state_1_text">AI ON</SetVariable>
+                    <SetVariable name="ConfigKey">[Channel1],stem_separator_enabled</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <!-- 3 stem strips -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+
+                  <!-- VOCALES (stem 0) - Azul -->
+                  <WidgetGroup>
+                    <ObjectName>IaStemsStrip</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed>
+                        
+                        <Size>36f,90f</Size>
+                        <Horizontal>false</Horizontal>
+                        <BarColor>#3498DB</BarColor>
+                        <BarWidth>8</BarWidth>
+                        <BarAxisPos>18.0</BarAxisPos>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+                        <Connection>
+                          <ConfigKey>[Channel1_Stem1],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                      <PushButton>
+                        
+                        <ObjectName>StemMuteButton</ObjectName>
+                        <Size>18f,16f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <Connection>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConfigKey>[Channel1_Stem1],mute</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <ObjectName>StemLabelBlue</ObjectName>
+                        <Text>Vocales</Text>
+                        <Alignment>center</Alignment>
+                        <Size>52f,14f</Size>
+                        <Style>Label#StemLabelBlue { color: #3498DB; font-weight: bold; font-size: 8px; }</Style>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                  <!-- INSTRUMENTOS (stem 1) - Púrpura -->
+                  <WidgetGroup>
+                    <ObjectName>IaStemsStrip</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed>
+                        
+                        <Size>36f,90f</Size>
+                        <Horizontal>false</Horizontal>
+                        <BarColor>#9B59B6</BarColor>
+                        <BarWidth>8</BarWidth>
+                        <BarAxisPos>18.0</BarAxisPos>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+                        <Connection>
+                          <ConfigKey>[Channel1_Stem2],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                      <PushButton>
+                        
+                        <ObjectName>StemMuteButton</ObjectName>
+                        <Size>18f,16f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <Connection>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConfigKey>[Channel1_Stem2],mute</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <ObjectName>StemLabelPurple</ObjectName>
+                        <Text>Instrumentos</Text>
+                        <Alignment>center</Alignment>
+                        <Size>52f,14f</Size>
+                        <Style>Label#StemLabelPurple { color: #9B59B6; font-weight: bold; font-size: 8px; }</Style>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                  <!-- PERCUSIÓN (stem 2) - Naranja -->
+                  <WidgetGroup>
+                    <ObjectName>IaStemsStrip</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed>
+                        
+                        <Size>36f,90f</Size>
+                        <Horizontal>false</Horizontal>
+                        <BarColor>#E67E22</BarColor>
+                        <BarWidth>8</BarWidth>
+                        <BarAxisPos>18.0</BarAxisPos>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+                        <Connection>
+                          <ConfigKey>[Channel1_Stem3],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                      <PushButton>
+                        
+                        <ObjectName>StemMuteButton</ObjectName>
+                        <Size>18f,16f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <Connection>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConfigKey>[Channel1_Stem3],mute</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <ObjectName>StemLabelOrange</ObjectName>
+                        <Text>Percusión</Text>
+                        <Alignment>center</Alignment>
+                        <Size>52f,14f</Size>
+                        <Style>Label#StemLabelOrange { color: #E67E22; font-weight: bold; font-size: 8px; }</Style>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <!-- DECK 2 (simétrico) -->
+          <WidgetGroup>
+            <ObjectName>IaStemsDeck</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>IaStemsDeckLabel</ObjectName>
+                    <Text>DECK 2</Text>
+                    <Size>50f,20f</Size>
+                    <Style>Label#IaStemsDeckLabel { color: #cccccc; font-weight: bold; font-size: 10px; }</Style>
+                  </Label>
+                  <WidgetGroup><Size>min,min</Size></WidgetGroup>
+                  <Template src="skins:LateNight/controls/button_2state_persist.xml">
+                    
+                    <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                    <SetVariable name="Size">56f,18f</SetVariable>
+                    <SetVariable name="state_0_text">AI OFF</SetVariable>
+                    <SetVariable name="state_1_text">AI ON</SetVariable>
+                    <SetVariable name="ConfigKey">[Channel2],stem_separator_enabled</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+
+                  <!-- VOCALES Deck 2 -->
+                  <WidgetGroup>
+                    <ObjectName>IaStemsStrip</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed>
+                        
+                        <Size>36f,90f</Size>
+                        <Horizontal>false</Horizontal>
+                        <BarColor>#3498DB</BarColor>
+                        <BarWidth>8</BarWidth>
+                        <BarAxisPos>18.0</BarAxisPos>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+                        <Connection>
+                          <ConfigKey>[Channel2_Stem1],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                      <PushButton>
+                        
+                        <ObjectName>StemMuteButton</ObjectName>
+                        <Size>18f,16f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <Connection>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConfigKey>[Channel2_Stem1],mute</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <ObjectName>StemLabelBlue</ObjectName>
+                        <Text>Vocales</Text>
+                        <Alignment>center</Alignment>
+                        <Size>52f,14f</Size>
+                        <Style>Label#StemLabelBlue { color: #3498DB; font-weight: bold; font-size: 8px; }</Style>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                  <!-- INSTRUMENTOS Deck 2 -->
+                  <WidgetGroup>
+                    <ObjectName>IaStemsStrip</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed>
+                        
+                        <Size>36f,90f</Size>
+                        <Horizontal>false</Horizontal>
+                        <BarColor>#9B59B6</BarColor>
+                        <BarWidth>8</BarWidth>
+                        <BarAxisPos>18.0</BarAxisPos>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+                        <Connection>
+                          <ConfigKey>[Channel2_Stem2],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                      <PushButton>
+                        
+                        <ObjectName>StemMuteButton</ObjectName>
+                        <Size>18f,16f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <Connection>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConfigKey>[Channel2_Stem2],mute</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <ObjectName>StemLabelPurple</ObjectName>
+                        <Text>Instrumentos</Text>
+                        <Alignment>center</Alignment>
+                        <Size>52f,14f</Size>
+                        <Style>Label#StemLabelPurple { color: #9B59B6; font-weight: bold; font-size: 8px; }</Style>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+
+                  <!-- PERCUSIÓN Deck 2 -->
+                  <WidgetGroup>
+                    <ObjectName>IaStemsStrip</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed>
+                        
+                        <Size>36f,90f</Size>
+                        <Horizontal>false</Horizontal>
+                        <BarColor>#E67E22</BarColor>
+                        <BarWidth>8</BarWidth>
+                        <BarAxisPos>18.0</BarAxisPos>
+                        <Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider>
+                        <Connection>
+                          <ConfigKey>[Channel2_Stem3],volume</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                      <PushButton>
+                        
+                        <ObjectName>StemMuteButton</ObjectName>
+                        <Size>18f,16f</Size>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed>
+                          <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed>
+                        </State>
+                        <Connection>
+                          <ButtonState>LeftButton</ButtonState>
+                          <ConfigKey>[Channel2_Stem3],mute</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                      <Label>
+                        <ObjectName>StemLabelOrange</ObjectName>
+                        <Text>Percusión</Text>
+                        <Alignment>center</Alignment>
+                        <Size>52f,14f</Size>
+                        <Style>Label#StemLabelOrange { color: #E67E22; font-weight: bold; font-size: 8px; }</Style>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+      <!-- DECKS 3 & 4 (visibles solo con show_4decks) -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Children>
+
+          <!-- DECK 3 -->
+          <WidgetGroup>
+            <ObjectName>IaStemsDeck</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>IaStemsDeckLabel</ObjectName>
+                    <Text>DECK 3</Text>
+                    <Size>50f,20f</Size>
+                    <Style>Label#IaStemsDeckLabel { color: #cccccc; font-weight: bold; font-size: 10px; }</Style>
+                  </Label>
+                  <WidgetGroup><Size>min,min</Size></WidgetGroup>
+                  <Template src="skins:LateNight/controls/button_2state_persist.xml">
+                    
+                    <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                    <SetVariable name="Size">56f,18f</SetVariable>
+                    <SetVariable name="state_0_text">AI OFF</SetVariable>
+                    <SetVariable name="state_1_text">AI ON</SetVariable>
+                    <SetVariable name="ConfigKey">[Channel3],stem_separator_enabled</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><ObjectName>IaStemsStrip</ObjectName><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed><Size>36f,90f</Size><Horizontal>false</Horizontal><BarColor>#3498DB</BarColor><BarWidth>8</BarWidth><BarAxisPos>18.0</BarAxisPos><Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle><Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider><Connection><ConfigKey>[Channel3_Stem1],volume</ConfigKey></Connection></SliderComposed>
+                      <PushButton><ObjectName>StemMuteButton</ObjectName><Size>18f,16f</Size><NumberStates>2</NumberStates><State><Number>0</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><State><Number>1</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><Connection><ButtonState>LeftButton</ButtonState><ConfigKey>[Channel3_Stem1],mute</ConfigKey></Connection></PushButton>
+                      <Label><ObjectName>StemLabelBlue</ObjectName><Text>Vocales</Text><Alignment>center</Alignment><Size>52f,14f</Size><Style>Label#StemLabelBlue { color: #3498DB; font-weight: bold; font-size: 8px; }</Style></Label>
+                    </Children>
+                  </WidgetGroup><WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>IaStemsStrip</ObjectName><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed><Size>36f,90f</Size><Horizontal>false</Horizontal><BarColor>#9B59B6</BarColor><BarWidth>8</BarWidth><BarAxisPos>18.0</BarAxisPos><Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle><Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider><Connection><ConfigKey>[Channel3_Stem2],volume</ConfigKey></Connection></SliderComposed>
+                      <PushButton><ObjectName>StemMuteButton</ObjectName><Size>18f,16f</Size><NumberStates>2</NumberStates><State><Number>0</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><State><Number>1</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><Connection><ButtonState>LeftButton</ButtonState><ConfigKey>[Channel3_Stem2],mute</ConfigKey></Connection></PushButton>
+                      <Label><ObjectName>StemLabelPurple</ObjectName><Text>Instrumentos</Text><Alignment>center</Alignment><Size>52f,14f</Size><Style>Label#StemLabelPurple { color: #9B59B6; font-weight: bold; font-size: 8px; }</Style></Label>
+                    </Children>
+                  </WidgetGroup><WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>IaStemsStrip</ObjectName><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed><Size>36f,90f</Size><Horizontal>false</Horizontal><BarColor>#E67E22</BarColor><BarWidth>8</BarWidth><BarAxisPos>18.0</BarAxisPos><Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle><Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider><Connection><ConfigKey>[Channel3_Stem3],volume</ConfigKey></Connection></SliderComposed>
+                      <PushButton><ObjectName>StemMuteButton</ObjectName><Size>18f,16f</Size><NumberStates>2</NumberStates><State><Number>0</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><State><Number>1</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><Connection><ButtonState>LeftButton</ButtonState><ConfigKey>[Channel3_Stem3],mute</ConfigKey></Connection></PushButton>
+                      <Label><ObjectName>StemLabelOrange</ObjectName><Text>Percusión</Text><Alignment>center</Alignment><Size>52f,14f</Size><Style>Label#StemLabelOrange { color: #E67E22; font-weight: bold; font-size: 8px; }</Style></Label>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <!-- DECK 4 -->
+          <WidgetGroup>
+            <ObjectName>IaStemsDeck</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>IaStemsDeckLabel</ObjectName>
+                    <Text>DECK 4</Text>
+                    <Size>50f,20f</Size>
+                    <Style>Label#IaStemsDeckLabel { color: #cccccc; font-weight: bold; font-size: 10px; }</Style>
+                  </Label>
+                  <WidgetGroup><Size>min,min</Size></WidgetGroup>
+                  <Template src="skins:LateNight/controls/button_2state_persist.xml">
+                    
+                    <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                    <SetVariable name="Size">56f,18f</SetVariable>
+                    <SetVariable name="state_0_text">AI OFF</SetVariable>
+                    <SetVariable name="state_1_text">AI ON</SetVariable>
+                    <SetVariable name="ConfigKey">[Channel4],stem_separator_enabled</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><ObjectName>IaStemsStrip</ObjectName><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed><Size>36f,90f</Size><Horizontal>false</Horizontal><BarColor>#3498DB</BarColor><BarWidth>8</BarWidth><BarAxisPos>18.0</BarAxisPos><Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle><Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider><Connection><ConfigKey>[Channel4_Stem1],volume</ConfigKey></Connection></SliderComposed>
+                      <PushButton><ObjectName>StemMuteButton</ObjectName><Size>18f,16f</Size><NumberStates>2</NumberStates><State><Number>0</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><State><Number>1</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><Connection><ButtonState>LeftButton</ButtonState><ConfigKey>[Channel4_Stem1],mute</ConfigKey></Connection></PushButton>
+                      <Label><ObjectName>StemLabelBlue</ObjectName><Text>Vocales</Text><Alignment>center</Alignment><Size>52f,14f</Size><Style>Label#StemLabelBlue { color: #3498DB; font-weight: bold; font-size: 8px; }</Style></Label>
+                    </Children>
+                  </WidgetGroup><WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>IaStemsStrip</ObjectName><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed><Size>36f,90f</Size><Horizontal>false</Horizontal><BarColor>#9B59B6</BarColor><BarWidth>8</BarWidth><BarAxisPos>18.0</BarAxisPos><Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle><Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider><Connection><ConfigKey>[Channel4_Stem2],volume</ConfigKey></Connection></SliderComposed>
+                      <PushButton><ObjectName>StemMuteButton</ObjectName><Size>18f,16f</Size><NumberStates>2</NumberStates><State><Number>0</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><State><Number>1</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><Connection><ButtonState>LeftButton</ButtonState><ConfigKey>[Channel4_Stem2],mute</ConfigKey></Connection></PushButton>
+                      <Label><ObjectName>StemLabelPurple</ObjectName><Text>Instrumentos</Text><Alignment>center</Alignment><Size>52f,14f</Size><Style>Label#StemLabelPurple { color: #9B59B6; font-weight: bold; font-size: 8px; }</Style></Label>
+                    </Children>
+                  </WidgetGroup><WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>IaStemsStrip</ObjectName><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
+                      <SliderComposed><Size>36f,90f</Size><Horizontal>false</Horizontal><BarColor>#E67E22</BarColor><BarWidth>8</BarWidth><BarAxisPos>18.0</BarAxisPos><Handle scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/knob_volume_deck.svg</Handle><Slider scalemode="STRETCH_ASPECT">skins:LateNight/<Variable name="SliderScheme"/>/sliders/slider_volume_deck.svg</Slider><Connection><ConfigKey>[Channel4_Stem3],volume</ConfigKey></Connection></SliderComposed>
+                      <PushButton><ObjectName>StemMuteButton</ObjectName><Size>18f,16f</Size><NumberStates>2</NumberStates><State><Number>0</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><State><Number>1</Number><Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Unpressed><Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_eqkill_active.svg</Pressed></State><Connection><ButtonState>LeftButton</ButtonState><ConfigKey>[Channel4_Stem3],mute</ConfigKey></Connection></PushButton>
+                      <Label><ObjectName>StemLabelOrange</ObjectName><Text>Percusión</Text><Alignment>center</Alignment><Size>52f,14f</Size><Style>Label#StemLabelOrange { color: #E67E22; font-weight: bold; font-size: 8px; }</Style></Label>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+
+    <Connection>
+      <ConfigKey>[Skin],show_stem_separator</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

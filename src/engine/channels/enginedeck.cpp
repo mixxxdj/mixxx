@@ -10,9 +10,23 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
 #include "moc_enginedeck.cpp"
+#include "sources/soundsource.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/logger.h"
 #include "util/sample.h"
+
+#ifdef __STEM_SEPARATOR__
+#include "engine/stems/offlineseparator.h"
+#endif
+#include "engine/stems/stemcachemanager.h"
+#include "engine/stems/enginestemmixer.h"
+#include "engine/stems/virtualstemsource.h"
+#include "engine/stems/virtualstemsoundsource.h"
+
+namespace {
+const mixxx::Logger kLogger("EngineDeck");
+}
 
 EngineDeck::EngineDeck(
         const ChannelHandleAndGroup& handleGroup,
@@ -68,6 +82,7 @@ EngineDeck::EngineDeck(
 
     m_stemGain.reserve(mixxx::kMaxSupportedStems);
     m_stemMute.reserve(mixxx::kMaxSupportedStems);
+    m_stemSolo.reserve(mixxx::kMaxSupportedStems);
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain.emplace_back(std::make_unique<ControlPotmeter>(
                 ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("volume"))));
@@ -80,7 +95,16 @@ EngineDeck::EngineDeck(
                 ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("mute")));
         pMuteButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
         m_stemMute.push_back(std::move(pMuteButton));
+        auto pSoloButton = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroupForStem(getGroup(), stemIdx), QStringLiteral("solo")));
+        pSoloButton->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+        m_stemSolo.push_back(std::move(pSoloButton));
     }
+
+    m_pStemSeparatorEnabled = std::make_unique<ControlPushButton>(
+            ConfigKey(getGroup(), "stem_separator_enabled"));
+    m_pStemSeparatorEnabled->setButtonMode(mixxx::control::ButtonMode::PowerWindow);
+    m_pStemSeparatorEnabled->set(0.0);
 #endif
 }
 
@@ -96,14 +120,21 @@ void EngineDeck::slotTrackLoaded(TrackPointer pNewTrack,
         for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
             m_stemGain[stemIdx]->set(1.0);
             m_stemMute[stemIdx]->set(0.0);
+            m_stemSolo[stemIdx]->set(0.0);
         }
     }
     m_stemClonedState = false;
     if (pNewTrack) {
         int stemCount = pNewTrack->getStemInfo().size();
         m_pStemCount->forceSet(stemCount);
+        // If no native stems, try AI stem separation
+        if (stemCount == 0) {
+            checkAndLoadAIStems(pNewTrack);
+        }
     } else {
         m_pStemCount->forceSet(0);
+        m_pVirtualStemSource.reset();
+        m_aiStemsLoading = false;
     }
 }
 #endif
@@ -126,7 +157,8 @@ void EngineDeck::addStemHandle(const ChannelHandleAndGroup& stemHandleGroup) {
 void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     mixxx::audio::ChannelCount chCount = m_pBuffer->getChannelCount();
     VERIFY_OR_DEBUG_ASSERT(m_stems.size() <= chCount &&
-            m_stemMute.size() <= chCount && m_stemGain.size() <= chCount) {
+            m_stemMute.size() <= chCount && m_stemGain.size() <= chCount &&
+            m_stemSolo.size() <= chCount) {
         return;
     };
     mixxx::audio::SampleRate sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
@@ -156,12 +188,85 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     // effect manager so we can also apply the individual stem quick FX
     GroupFeatureState featureState;
     collectFeatures(&featureState);
+    // Solo semantics: if any stem solo is active, only soloed stems sound.
+    // Mute is applied afterwards, so a soloed but muted stem stays silent.
+    bool anySolo = false;
+    for (unsigned int stemIdx = 0; stemIdx < stemCount; stemIdx++) {
+        if (m_stemSolo[stemIdx]->toBool()) {
+            anySolo = true;
+            break;
+        }
+    }
+    // S3 fast path: 8ch nativos (4 stems) en CPU con AVX2+FMA. El FX por
+    // stem se conserva con ganancia unidad via processPostFaderInPlace y
+    // la ganancia + rampa click-free + downmix los hace EngineStemMixer
+    // en un solo pass SIMD (vs escalar, tol 1e-6). La rampa reutiliza
+    // m_stemsGainCache como oldGains. Solo/mute (S4) se respetan igual
+    // que en el legacy path de abajo.
+    if (chCount == mixxx::audio::ChannelCount::stem() &&
+            stemCount == static_cast<unsigned int>(mixxx::kMaxSupportedStems) &&
+            m_stems.size() >= stemCount &&
+            m_stemsGainCache.size() >= stemCount &&
+            EngineStemMixer::hasAVX2()) {
+        EngineStemMixer::GainArray oldGains, newGains;
+        for (unsigned int stemIdx = 0; stemIdx < stemCount;
+                stemIdx++) {
+            int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
+            float stemGain;
+            if (anySolo && !m_stemSolo[stemIdx]->toBool()) {
+                stemGain = 0.0f;
+            } else if (m_stemMute[stemIdx]->toBool()) {
+                stemGain = 0.0f;
+            } else {
+                stemGain = static_cast<float>(m_stemGain[stemIdx]->get());
+            }
+            // Extract the stem frames into the output buffer (LR......LR...... -> LRLR)
+            SampleUtil::copyOneStereoFromMulti(
+                    pOut,
+                    pIn,
+                    numFrames,
+                    chCount,
+                    chOffset);
+            // Apply the stem FX with unity gain; the gain ramp lives in the mixer.
+            pEngineEffectsManager->processPostFaderInPlace(m_stems[stemIdx].handle(),
+                    m_pEffectsManager->getMainHandle(),
+                    pOut,
+                    bufferSize,
+                    sampleRate,
+                    featureState,
+                    CSAMPLE_GAIN_ONE,
+                    CSAMPLE_GAIN_ONE,
+                    false);
+            // Put back the stem frames into the steam buffer (LRLR -> LR......LR......)
+            SampleUtil::insertStereoToMulti(
+                    pIn,
+                    pOut,
+                    numFrames,
+                    chCount,
+                    chOffset);
+            oldGains[stemIdx] = m_stemsGainCache[stemIdx];
+            newGains[stemIdx] = stemGain;
+        }
+        EngineStemMixer::process(pOut, pIn, oldGains, newGains, numFrames);
+        // We cache the current gain so we can use it to fade the frame on
+        // next iteration. Without this, (e.g using a static "previous"
+        // gain) gain changes will yield to audio cracks.
+        for (unsigned int stemIdx = 0; stemIdx < stemCount; stemIdx++) {
+            m_stemsGainCache[stemIdx] = newGains[stemIdx];
+        }
+        return;
+    }
     for (unsigned int stemIdx = 0; stemIdx < stemCount;
             stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
-        float stemGain = m_stemMute[stemIdx]->toBool()
-                ? 0.0f
-                : static_cast<float>(m_stemGain[stemIdx]->get());
+        float stemGain;
+        if (anySolo && !m_stemSolo[stemIdx]->toBool()) {
+            stemGain = 0.0f;
+        } else if (m_stemMute[stemIdx]->toBool()) {
+            stemGain = 0.0f;
+        } else {
+            stemGain = static_cast<float>(m_stemGain[stemIdx]->get());
+        }
         // Extract the stem frames into the output buffer (LR......LR...... -> LRLR)
         SampleUtil::copyOneStereoFromMulti(
                 pOut,
@@ -207,13 +312,16 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     }
     VERIFY_OR_DEBUG_ASSERT(m_stemGain.size() == mixxx::kMaxSupportedStems &&
             m_stemMute.size() == mixxx::kMaxSupportedStems &&
+            m_stemSolo.size() == mixxx::kMaxSupportedStems &&
             deckToClone->m_stemGain.size() == mixxx::kMaxSupportedStems &&
-            deckToClone->m_stemMute.size() == mixxx::kMaxSupportedStems) {
+            deckToClone->m_stemMute.size() == mixxx::kMaxSupportedStems &&
+            deckToClone->m_stemSolo.size() == mixxx::kMaxSupportedStems) {
         return;
     }
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
         m_stemGain[stemIdx]->set(deckToClone->m_stemGain[stemIdx]->get());
         m_stemMute[stemIdx]->set(deckToClone->m_stemMute[stemIdx]->get());
+        m_stemSolo[stemIdx]->set(deckToClone->m_stemSolo[stemIdx]->get());
     }
     m_stemClonedState = true;
 }
@@ -237,7 +345,11 @@ void EngineDeck::process(CSAMPLE* pOut, const std::size_t bufferSize) {
 
 #ifdef __STEM__
         // Process the raw audio
-        if (m_pBuffer->getChannelCount() <= mixxx::kEngineChannelOutputCount) {
+        if (m_pStemSeparatorEnabled && m_pStemSeparatorEnabled->toBool() &&
+                m_pVirtualStemSource && m_pVirtualStemSource->isLoaded()) {
+            // Use AI-separated virtual stems
+            processVirtualStems(pOut, bufferSize);
+        } else if (m_pBuffer->getChannelCount() <= mixxx::kEngineChannelOutputCount) {
             // Process a single mono or stereo channel
 #endif
             m_pBuffer->process(pOut, bufferSize);
@@ -364,5 +476,224 @@ void EngineDeck::slotPassthroughChangeRequest(double v) {
 QString EngineDeck::getGroupForStem(QStringView deckGroup, int stemIdx) {
     DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemIdx < 4);
     return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('1' + stemIdx) + QChar(']');
+}
+
+void EngineDeck::checkAndLoadAIStems(TrackPointer pTrack) {
+    if (!pTrack || m_aiStemsLoading) {
+        return;
+    }
+
+    // Never separate a track that is itself a native stem file (this also
+    // guards against re-entering this path when the deck is reloaded with the
+    // .stem.mp4 generated by a previous separation).
+    if (mixxx::SoundSource::getTypeFromUrl(QUrl::fromLocalFile(pTrack->getLocation())) ==
+            QStringLiteral("stem.mp4")) {
+        return;
+    }
+
+    StemCacheManager::CacheKey key = StemCacheManager::generateKey(pTrack->getLocation());
+
+    if (StemCacheManager::instance().hasStems(key)) {
+        // Already cached - load the native stem file if we have one, else
+        // fall back to virtual stems.
+        m_aiStemCacheKey = key;
+        StemCacheManager::StemFiles files =
+                StemCacheManager::instance().getStemFiles(key);
+        if (!files.stemFile.isEmpty() && QFile::exists(files.stemFile)) {
+            kLogger.info() << "Loading cached native stem file:" << files.stemFile;
+            emit aiStemFileReady(files.stemFile);
+            return;
+        }
+        m_aiStemsLoading = true;
+        loadVirtualStems();
+        return;
+    }
+
+    // Not cached - check if stem files exist on disk (manual placement)
+    QString trackBase = QFileInfo(pTrack->getLocation()).completeBaseName();
+    QString trackDir = QFileInfo(pTrack->getLocation()).absolutePath();
+    QStringList possibleStems = {
+        trackDir + "/" + trackBase + "_vocals.wav",
+        trackDir + "/" + trackBase + "_drums.wav",
+        trackDir + "/" + trackBase + "_bass.wav",
+        trackDir + "/" + trackBase + "_other.wav"
+    };
+    bool manualStemsExist = true;
+    for (const auto& path : possibleStems) {
+        if (!QFile::exists(path)) {
+            manualStemsExist = false;
+            break;
+        }
+    }
+
+    if (manualStemsExist) {
+        // Load manually placed stems
+        StemCacheManager::StemFiles files;
+        files.vocals = possibleStems[0];
+        files.drums = possibleStems[1];
+        files.bass = possibleStems[2];
+        files.other = possibleStems[3];
+        files.complete = true;
+        files.created = QDateTime::currentDateTime();
+        StemCacheManager::instance().markComplete(key, files);
+        m_aiStemCacheKey = key;
+        m_aiStemsLoading = true;
+        loadVirtualStems();
+        return;
+    }
+
+#ifdef __STEM_SEPARATOR__
+    // Neither cached nor manual stems found - launch offline separation
+    if (!StemCacheManager::instance().tryMarkProcessing(key)) {
+        return; // Already processing
+    }
+
+    m_aiStemCacheKey = key;
+    m_aiStemsLoading = true;
+
+    mixxx::OfflineSeparator::Config sepConfig;
+    sepConfig.inputPath = pTrack->getLocation();
+    // Model path: override via env var, else default install location.
+    // The OfflineSeparator falls back to the default path if this is empty.
+    sepConfig.modelPath = qEnvironmentVariable("MIXXX_STEM_MODEL");
+    sepConfig.outputDir = StemCacheManager::stemDir(key);
+    sepConfig.sampleRate = 44100;
+
+    auto* separator = new mixxx::OfflineSeparator(sepConfig);
+
+    // Connect signals with QueuedConnection for thread safety
+    QObject::connect(separator, &mixxx::OfflineSeparator::finished,
+            this, [this, key, separator](bool success, const StemCacheManager::StemFiles& files) {
+                if (success) {
+                    kLogger.info() << "AI stem separation completed for:" << key;
+                    StemCacheManager::instance().markComplete(key, files);
+                    if (!files.stemFile.isEmpty()) {
+                        // A native .stem.mp4 was generated: hand it over to
+                        // Mixxx's native stem system (SoundSourceSTEM etc).
+                        kLogger.info() << "Loading native stem file:" << files.stemFile;
+                        m_aiStemsLoading = false;
+                        emit aiStemFileReady(files.stemFile);
+                    } else {
+                        // No native file (e.g. writing failed) - fall back to
+                        // the virtual-stems path.
+                        loadVirtualStems();
+                    }
+                } else {
+                    kLogger.warning() << "AI stem separation failed for:" << key;
+                    StemCacheManager::instance().markFailed(key);
+                    m_aiStemsLoading = false;
+                    m_aiStemCacheKey = {};
+                }
+                separator->deleteLater();
+            },
+            Qt::QueuedConnection);
+
+    QObject::connect(separator, &mixxx::OfflineSeparator::progressChanged,
+            this, [this](float progress) {
+                Q_UNUSED(progress);
+                // Could update a ControlObject for progress display
+            },
+            Qt::QueuedConnection);
+
+    separator->start();
+#endif // __STEM_SEPARATOR__
+}
+
+void EngineDeck::loadVirtualStems() {
+    if (m_aiStemCacheKey.isEmpty()) {
+        return;
+    }
+
+    StemCacheManager::StemFiles files = StemCacheManager::instance().getStemFiles(m_aiStemCacheKey);
+    if (!files.complete) {
+        kLogger.warning() << "Cannot load incomplete virtual stems for:" << m_aiStemCacheKey;
+        m_aiStemsLoading = false;
+        return;
+    }
+
+    m_pVirtualStemSource = std::make_unique<VirtualStemSource>(files, 44100);
+    if (m_pVirtualStemSource->load()) {
+        kLogger.info() << "Virtual stems loaded successfully";
+        // Reset read positions
+        for (int i = 0; i < 4; ++i) {
+            m_virtualStemReadPosition[i] = 0;
+        }
+    } else {
+        kLogger.warning() << "Failed to load virtual stems";
+        m_pVirtualStemSource.reset();
+    }
+    m_aiStemsLoading = false;
+}
+
+void EngineDeck::processVirtualStems(CSAMPLE* pOutput, const std::size_t bufferSize) {
+    if (!m_pVirtualStemSource || !m_pVirtualStemSource->isLoaded()) {
+        return;
+    }
+
+    int numFrames = bufferSize / mixxx::kEngineChannelOutputCount;
+    int stemCount = qMin(4, mixxx::kMaxSupportedStems);
+
+    // Clear output buffer
+    SampleUtil::clear(pOutput, bufferSize);
+
+    // Mix each stem according to gain/mute/solo settings
+    // Solo: if any solo active, only soloed stems sound (mute applied after).
+    bool anySolo = false;
+    for (int stemIdx = 0; stemIdx < stemCount; ++stemIdx) {
+        if (stemIdx < static_cast<int>(m_stemSolo.size()) &&
+                m_stemSolo[stemIdx]->toBool()) {
+            anySolo = true;
+            break;
+        }
+    }
+    for (int stemIdx = 0; stemIdx < stemCount; ++stemIdx) {
+        if (stemIdx >= static_cast<int>(m_stemMute.size()) ||
+            stemIdx >= static_cast<int>(m_stemGain.size()) ||
+            stemIdx >= static_cast<int>(m_stemSolo.size())) {
+            continue;
+        }
+
+        if (anySolo && !m_stemSolo[stemIdx]->toBool()) {
+            continue;
+        }
+
+        // Check if stem is muted
+        if (m_stemMute[stemIdx]->toBool()) {
+            continue;
+        }
+
+        float gain = static_cast<float>(m_stemGain[stemIdx]->get());
+        if (gain <= 0.0f) {
+            continue;
+        }
+
+        auto* stemSource = m_pVirtualStemSource->getStemSource(stemIdx);
+        if (!stemSource) {
+            continue;
+        }
+
+        // Read stem audio into temp buffer
+        mixxx::SampleBuffer stemBuf(bufferSize);
+        stemSource->readFromBuffer(stemBuf.data(), m_virtualStemReadPosition[stemIdx], numFrames);
+
+        // Apply gain and mix into output
+        if (gain != 1.0f) {
+            SampleUtil::applyGain(stemBuf.data(), gain, bufferSize);
+        }
+        SampleUtil::add(pOutput, stemBuf.data(), bufferSize);
+    }
+
+    // Advance read positions
+    for (int stemIdx = 0; stemIdx < stemCount; ++stemIdx) {
+        m_virtualStemReadPosition[stemIdx] += numFrames;
+    }
+
+    // Wrap around if we reached the end
+    qint64 totalFrames = m_pVirtualStemSource->getTotalFrames();
+    for (int stemIdx = 0; stemIdx < stemCount; ++stemIdx) {
+        if (m_virtualStemReadPosition[stemIdx] >= totalFrames) {
+            m_virtualStemReadPosition[stemIdx] = 0; // Loop
+        }
+    }
 }
 #endif
