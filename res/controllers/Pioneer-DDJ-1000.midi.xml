@@ -238,6 +238,16 @@
                 </options>
             </control>
             <control>
+                <description>Deck 1 SHIFT + QUANTIZE: headphones mono split</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ1000.monoSplit</key>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <description>Deck 1 SLIP</description>
                 <group>[Channel1]</group>
                 <key>PioneerDDJ1000.slip</key>
@@ -1283,6 +1293,16 @@
                 <key>PioneerDDJ1000.quantize</key>
                 <status>0x91</status>
                 <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <description>Deck 2 SHIFT + QUANTIZE: headphones mono split</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ1000.monoSplit</key>
+                <status>0x91</status>
+                <midino>0x39</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2338,6 +2358,16 @@
                 </options>
             </control>
             <control>
+                <description>Deck 3 SHIFT + QUANTIZE: headphones mono split</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJ1000.monoSplit</key>
+                <status>0x92</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <description>Deck 3 SLIP</description>
                 <group>[Channel3]</group>
                 <key>PioneerDDJ1000.slip</key>
@@ -3383,6 +3413,16 @@
                 <key>PioneerDDJ1000.quantize</key>
                 <status>0x93</status>
                 <midino>0x35</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <description>Deck 4 SHIFT + QUANTIZE: headphones mono split</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJ1000.monoSplit</key>
+                <status>0x93</status>
+                <midino>0x39</midino>
                 <options>
                     <script-binding/>
                 </options>

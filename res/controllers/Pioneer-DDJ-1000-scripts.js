@@ -445,6 +445,9 @@ PioneerDDJ1000.connectDeck = function(deck) {
 };
 
 PioneerDDJ1000.connectGlobal = function() {
+    PioneerDDJ1000.connect("[Master]", "headSplit", (value) => {
+        PioneerDDJ1000.decks.forEach((deck) => PioneerDDJ1000.deckLed(deck, 0x39, value > 0));
+    });
     PioneerDDJ1000.connect("[EffectRack1_EffectUnit1]", "enabled", () => {
         PioneerDDJ1000.led(0x94, 0x47, PioneerDDJ1000.beatFx.on);
     });
@@ -809,6 +812,14 @@ PioneerDDJ1000.reverse = function(_channel, _control, value, _status, group) {
     }
 };
 
+// SHIFT + QUANTIZE: headphones mono split (cue in the left ear, main in the
+// right). The HEADPHONES MIXING knob should be fully on CUE while it is on.
+PioneerDDJ1000.monoSplit = function(_channel, _control, value) {
+    if (value) {
+        PioneerDDJ1000.toggle("[Master]", "headSplit");
+    }
+};
+
 PioneerDDJ1000.headphoneCue = function(_channel, _control, value, _status, group) {
     if (value) {
         PioneerDDJ1000.toggle(group, "pfl");
@@ -1026,6 +1037,7 @@ PioneerDDJ1000.jogTouch = function(_channel, _control, value, _status, group) {
     const state = PioneerDDJ1000.deck[deck];
     const cfg = PioneerDDJ1000.config;
     state.touched = value > 0;
+    state.settling = false;
     if (value) {
         state.freeSpin = false;
         state.spinTicks = [];
@@ -1073,6 +1085,10 @@ PioneerDDJ1000.jogRing = function(_channel, _control, value, _status, group) {
     } else if (state.freeSpin) {
         PioneerDDJ1000.recordSpin(state, ticks, Date.now());
         engine.scratchTick(deck, ticks);
+    } else if (state.settling) {
+        // The platter is still coasting after a scratch or backspin; bending
+        // with it would play the track off-speed (and off-key).
+        state.settledAt = Date.now();
     } else if (!engine.isScratching(deck)) {
         PioneerDDJ1000.bend(group, ticks);
     }
@@ -1087,6 +1103,9 @@ PioneerDDJ1000.bend = function(group, ticks) {
 // has slowed down or stopped reporting.
 PioneerDDJ1000.watchFreeSpin = function(deck, now) {
     const state = PioneerDDJ1000.deck[deck];
+    if (state.settling && now - state.settledAt > 150) {
+        state.settling = false; // platter has come to rest
+    }
     if (state.touched || !engine.isScratching(deck)) {
         state.freeSpin = false;
         return;
@@ -1095,6 +1114,8 @@ PioneerDDJ1000.watchFreeSpin = function(deck, now) {
     if (!state.freeSpin || now - lastReport > 60
             || PioneerDDJ1000.spinSpeed(state, now) < PioneerDDJ1000.config.freeSpinMinSpeed) {
         state.freeSpin = false;
+        state.settling = true;
+        state.settledAt = now;
         engine.scratchDisable(deck, true);
     }
 };
