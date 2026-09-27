@@ -47,7 +47,10 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
     // https://todo.sr.ht/~breakfastquay/rubberband/5
 
     double speed_abs = fabs(*pTempoRatio);
-    if (runningEngineVersion() == 2) {
+    // SIGFPE guard for all engines (R2 and R3): setting timeRatio near
+    // zero can cause division-by-zero inside RubberBand. Clamp to stop.
+    // See https://bugs.launchpad.net/ubuntu/+bug/1263233
+    {
         constexpr double kMinSeekSpeed = 1.0 / 128.0;
         if (speed_abs < kMinSeekSpeed) {
             // Let the caller know we ignored their speed.
@@ -119,22 +122,32 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
     m_rubberBand.clear();
 
     for (int chIdx = 0; chIdx < channelCount; chIdx++) {
-        if (m_buffers[chIdx].size() == MAX_BUFFER_LEN) {
-            continue;
+        if (m_buffers[chIdx].size() != MAX_BUFFER_LEN) {
+            m_buffers[chIdx] = mixxx::SampleBuffer(MAX_BUFFER_LEN);
         }
-        m_buffers[chIdx] = mixxx::SampleBuffer(MAX_BUFFER_LEN);
+        // Always refresh: vector growth may have moved the SampleBuffers.
+        // Setup/alloc happens here (main thread) only, never in scaleBuffer.
         m_bufferPtrs[chIdx] = m_buffers[chIdx].data();
     }
 
+    // Phase-locked, RT-safe configuration. RubberBand 4.0.0 exposes no
+    // OptionPhaseLock; OptionChannelsTogether IS the inter-channel phase
+    // lock (mono-compatible, preserves inter-channel correlation ~= 1.0
+    // for identical tones). The two must not be combined, so we use
+    // ChannelsTogether only. OptionThreadingNever forbids internal
+    // RubberBand threads; the wrapper is single-instance (see
+    // RubberBandWrapper::setup) so scaleBuffer() spawns no worker threads
+    // (helgrind-clean) and all channels share one phase-locked stretcher.
+    // Channel order is file order (no fixed stem remap): deinterleave /
+    // interleave preserve pBuffer order 0..N-1.
     RubberBandStretcher::Options rubberbandOptions =
-            RubberBandStretcher::OptionProcessRealTime;
+            RubberBandStretcher::OptionProcessRealTime |
+            RubberBandStretcher::OptionChannelsTogether |
+            RubberBandStretcher::OptionThreadingNever;
 #if RUBBERBANDV3
     if (m_useEngineFiner) {
         rubberbandOptions |=
-                RubberBandStretcher::OptionEngineFiner |
-                // Process Channels Together. otherwise the result is not
-                // mono-compatible. See #11361
-                RubberBandStretcher::OptionChannelsTogether;
+                RubberBandStretcher::OptionEngineFiner;
         if (m_useOptionWindowShort) {
             rubberbandOptions |= RubberBandStretcher::OptionWindowShort;
         }
@@ -210,20 +223,16 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         break;
     default: {
         int chCount = getOutputSignal().getChannelCount();
-        // The buffers samples are ordered as following
-        //  m_buffers#1 = 11..
-        //  m_buffers#2 = 22..
-        //  m_buffers#3 = 33..
-        //  m_buffers#4 = 44..
-        //  m_buffers#X = XX..
-        // And need to be reordered as following in pBuffer
-        //  1234..X1234...X...
-        //
-        // Because of the unanticipated number of buffer and channel, we cannot
-        // use any SampleUtil in this case
-        for (SINT frameIdx = 0; frameIdx < frames; ++frameIdx) {
+        // Generic N-channel fallback. Channel order is file order: planar
+        // buffer `ch` maps to interleaved position `ch`, no fixed stem
+        // remap (writer 8ch [VL VR DL DR BL BR OL OR] vs NI stem order
+        // differ, so file order is authoritative).
+        // Only the actually retrieved frames (minus dropped start padding
+        // via frame_offset) are valid.
+        for (SINT frameIdx = 0; frameIdx < received_frames; ++frameIdx) {
             for (int channel = 0; channel < chCount; channel++) {
-                pBuffer[frameIdx * chCount + channel] = m_buffers[channel].data()[frameIdx];
+                pBuffer[frameIdx * chCount + channel] =
+                        m_buffers[channel].data()[frame_offset + frameIdx];
             }
         }
     } break;

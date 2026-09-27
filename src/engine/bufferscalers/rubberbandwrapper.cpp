@@ -42,7 +42,7 @@ namespace {
 ///  | 7        | 1      | 2    |
 ///  | 8        | 1      | 1    |
 
-mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
+[[maybe_unused]] mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
     RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
 
     // There should always be a pool set, even if multi threading isn't enabled.
@@ -215,25 +215,22 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
         m_pInstances.clear();
     };
 
-    m_channelPerWorker = getChannelPerWorker(chCount);
+    // S2 phase-locked policy: a single stretcher instance owns ALL channels
+    // so OptionChannelsTogether couples every channel pair (inter-channel
+    // correlation ~= 1.0 for identical tones, mono-compatible). Splitting
+    // stems across workers (e.g. 2ch/instance) would leave inter-group
+    // phase unconstrained and reintroduce drift. A single instance also
+    // takes the synchronous fast path in process()/retrieve() and, combined
+    // with OptionThreadingNever, spawns no threads in scaleBuffer()
+    // (helgrind-clean). Setup runs on the main thread (onSignalChanged);
+    // scaleBuffer() only calls process()/retrieve().
+    // Channel order is file order; no fixed stem remap is applied here.
+    m_channelPerWorker = chCount;
     qDebug() << "RubberBandWrapper::setup - using" << m_channelPerWorker << "channel(s) per task";
-    VERIFY_OR_DEBUG_ASSERT(0 == chCount % m_channelPerWorker) {
-        // If we have an uneven number of channel, which we can't evenly
-        // distribute across the RubberBandPool workers, we fallback to using a
-        // single instance to limit the audio imperfection that may come from
-        // using RB with different parameters.
-        m_pInstances.emplace_back(
-                std::make_unique<RubberBandTask>(
-                        sampleRate, chCount, opt));
-        return;
-    }
-
-    m_pInstances.reserve(chCount / m_channelPerWorker);
-    for (int c = 0; c < chCount; c += m_channelPerWorker) {
-        m_pInstances.emplace_back(
-                std::make_unique<RubberBandTask>(
-                        sampleRate, m_channelPerWorker, opt));
-    }
+    m_pInstances.reserve(1);
+    m_pInstances.emplace_back(
+            std::make_unique<RubberBandTask>(
+                    sampleRate, chCount, opt));
 }
 void RubberBandWrapper::setPitchScale(double scale) {
     for (auto& stretcher : m_pInstances) {
