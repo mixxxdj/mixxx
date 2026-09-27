@@ -178,6 +178,11 @@ TEST_P(StemControlFixture, StemCount) {
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 }
 
+// FLAKE (2026-09-27): StemColor/AAC_256kbps_VBR segfaulted 1/3 local runs
+// (green 2/3); suspected AAC decoder teardown vs RubberBand stem resampler
+// threading, not the color assertions below. Do NOT silence: on failure run
+// `ctest -R StemColor --output-on-failure --repeat until-pass:3` and attach
+// the segfault backtrace instead of re-rolling.
 TEST_P(StemControlFixture, StemColor) {
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
