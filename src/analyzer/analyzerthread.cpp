@@ -7,6 +7,7 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerkey.h"
 #include "analyzer/analyzersilence.h"
+#include "analyzer/analyzerstemseparation.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
 #include "library/dao/analysisdao.h"
@@ -115,6 +116,11 @@ void AnalyzerThread::doRun() {
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerKey>(m_pConfig)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerSilence>(m_pConfig)));
+    // S5: offline AI stem separation. Runs in this AnalyzerThread (offline,
+    // never RT): buffers SoundSourceProxy-decoded samples and writes
+    // {hash}.stem.mp4 to the stem cache in storeResults(). Falls back to
+    // passthrough when no ONNX model is present.
+    m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerStemSeparation>(m_pConfig)));
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 

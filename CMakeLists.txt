@@ -2919,6 +2919,14 @@ if(BUILD_TESTING)
       src/test/enginestemmixertest.cpp
     )
   endif()
+  # S5 analyzer + writer tests run with synthetic stems even without ONNX:
+  # passthrough fallback must still produce a cached {hash}.stem.mp4.
+  set(
+    src-mixxx-test
+    ${src-mixxx-test}
+    src/test/stemmp4writertest.cpp
+    src/test/analyzerstemseparation_test.cpp
+  )
   if(BUILD_BENCH)
     set(
       src-mixxx-test
@@ -3666,6 +3674,7 @@ set(
   Concurrent
   Core
   Gui
+  Multimedia
   Network
   OpenGL
   PrintSupport
