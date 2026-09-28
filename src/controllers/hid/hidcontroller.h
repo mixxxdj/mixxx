@@ -104,6 +104,18 @@ class HidController final : public Controller {
     int open(const QString& resourcePath) override;
     int close() override;
 
+#ifdef __ANDROID__
+    // Requests USB permission for the device if needed and opens the
+    // underlying USB device, returning the UsbDeviceConnection, or an
+    // invalid QJniObject on failure.
+    //
+    // Must be called WITHOUT holding the hidapi mutex (see
+    // hidapimutex.h): the permission request may block indefinitely on a
+    // system dialog, and the Android USB stack is independent of hidapi, so
+    // concurrent hidapi operations must not be stalled for its duration.
+    QJniObject openAndroidUsbDevice();
+#endif
+
     // For devices which only support a single report, reportID must be set to
     // 0x0.
     bool sendBytes(const QByteArray& data) override;

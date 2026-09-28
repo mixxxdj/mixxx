@@ -11,6 +11,7 @@
 #include <QtConcurrent/QtConcurrentRun>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/hid/hidapimutex.h"
 #include "moc_hidcontroller.cpp"
 #include "util/string.h"
 
@@ -97,11 +98,75 @@ bool HidController::matchMapping(const MappingInfo& mapping) {
     return false;
 }
 
+#ifdef __ANDROID__
+QJniObject HidController::openAndroidUsbDevice() {
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    QJniObject USB_SERVICE =
+            QJniObject::getStaticObjectField(
+                    "android/content/Context",
+                    "USB_SERVICE",
+                    "Ljava/lang/String;");
+    auto usbManager = context.callObjectMethod("getSystemService",
+            "(Ljava/lang/String;)Ljava/lang/Object;",
+            USB_SERVICE.object());
+    if (!usbManager.isValid()) {
+        qDebug() << "usbManager invalid";
+        return QJniObject();
+    }
+
+    auto usbDevice = m_deviceInfo.androidUsbDevice();
+
+    if (!usbManager.callMethod<jboolean>("hasPermission",
+                "(Landroid/hardware/usb/UsbDevice;)Z",
+                usbDevice)) {
+        auto pendingIntent = mixxx::android::getIntent();
+        usbManager.callMethod<void>("requestPermission",
+                "(Landroid/hardware/usb/UsbDevice;)Landroid/app/"
+                "PendingIntent;)V",
+                usbDevice,
+                pendingIntent);
+        // Wait for permission
+        if (!mixxx::android::waitForPermission(usbDevice)) {
+            qDebug() << "access to device wasn't granted";
+            return QJniObject();
+        }
+        m_deviceInfo.updateSerialNumber(
+                usbDevice.callMethod<jstring>("getSerialNumber").toString());
+    }
+    auto usbDeviceConnection = usbManager.callMethod<jobject>("openDevice",
+            "(Landroid/hardware/usb/UsbDevice;)Landroid/hardware/usb/"
+            "UsbDeviceConnection;",
+            usbDevice);
+
+    if (!usbDeviceConnection.isValid()) {
+        qDebug() << "Unable to open HID device";
+        return QJniObject();
+    }
+
+    return usbDeviceConnection;
+}
+#endif
+
 int HidController::open(const QString& resourcePath) {
     if (isOpen()) {
         qDebug() << "HID device" << getName() << "already open";
         return -1;
     }
+
+#ifdef __ANDROID__
+    // Request USB permission and open the underlying USB device BEFORE
+    // acquiring any lock: the permission request may block indefinitely on a
+    // system dialog, and the Android USB stack is independent of hidapi, so
+    // concurrent hidapi operations must not be stalled for its duration. The
+    // returned connection is wrapped into a hidapi device handle below, under
+    // the hidapi mutex, and handed over to the I/O thread afterwards.
+    auto usbDeviceConnection = openAndroidUsbDevice();
+    if (!usbDeviceConnection.isValid()) {
+        return -1;
+    }
+    auto fileDescriptor = static_cast<intptr_t>(
+            usbDeviceConnection.callMethod<jint>("getFileDescriptor"));
+#endif
 
     // Acquire a persistent lock protecting m_reportDescriptor and
     // m_deviceUsesReportIds. The lock is intentionally kept for the entire time
@@ -117,60 +182,17 @@ int HidController::open(const QString& resourcePath) {
     std::unique_lock<std::mutex> lock(m_reportDescriptorMutex);
     m_reportDescriptorLock.emplace(std::move(lock));
 
+    // hidapi is not thread-safe (see hidapimutex.h). Serialize the whole
+    // open sequence, including the report descriptor fetch below, with the
+    // background fetch started by the constructor.
+    std::unique_lock<std::mutex> hidLock(mixxx::hid::hidapiMutex());
+
     VERIFY_OR_DEBUG_ASSERT(!m_pHidIoThread) {
         qWarning() << "HidIoThread already present for" << getName();
         return -1;
     }
 
 #ifdef __ANDROID__
-    QJniObject usbDeviceConnection;
-
-    QJniObject context = QNativeInterface::QAndroidApplication::context();
-    QJniObject USB_SERVICE =
-            QJniObject::getStaticObjectField(
-                    "android/content/Context",
-                    "USB_SERVICE",
-                    "Ljava/lang/String;");
-    auto usbManager = context.callObjectMethod("getSystemService",
-            "(Ljava/lang/String;)Ljava/lang/Object;",
-            USB_SERVICE.object());
-    if (!usbManager.isValid()) {
-        qDebug() << "usbManager invalid";
-        return -1;
-    }
-
-    auto usbDevice = m_deviceInfo.androidUsbDevice();
-
-    if (!usbManager.callMethod<jboolean>("hasPermission",
-                "(Landroid/hardware/usb/UsbDevice;)Z",
-                usbDevice)) {
-        auto pendingIntent = mixxx::android::getIntent();
-        usbManager.callMethod<void>("requestPermission",
-                "(Landroid/hardware/usb/UsbDevice;Landroid/app/"
-                "PendingIntent;)V",
-                usbDevice,
-                pendingIntent);
-        // Wait for permission
-        if (!mixxx::android::waitForPermission(usbDevice)) {
-            qDebug() << "access to device wasn't granted";
-            return -1;
-        }
-        m_deviceInfo.updateSerialNumber(
-                usbDevice.callMethod<jstring>("getSerialNumber").toString());
-    }
-    usbDeviceConnection = usbManager.callMethod<jobject>("openDevice",
-            "(Landroid/hardware/usb/UsbDevice;)Landroid/hardware/usb/"
-            "UsbDeviceConnection;",
-            usbDevice);
-
-    if (!usbDeviceConnection.isValid()) {
-        qDebug() << "Unable to open HID device";
-        return -1;
-    }
-
-    auto fileDescriptor = static_cast<intptr_t>(
-            usbDeviceConnection.callMethod<jint>("getFileDescriptor"));
-
     // Open device by file descriptor
     qCInfo(m_logBase) << "Opening HID device" << getName()
                       << "by file descriptor"
@@ -276,6 +298,10 @@ int HidController::open(const QString& resourcePath) {
     }
 
 #endif
+    // All hidapi calls are done; allow other threads to enumerate/open devices
+    // while this one starts its I/O thread and loads the mapping.
+    hidLock.unlock();
+
     m_pHidIoThread = std::make_unique<HidIoThread>(pHidDevice, m_deviceInfo, m_deviceUsesReportIds);
 #ifdef Q_OS_ANDROID
     m_pHidIoThread->setDeviceConnection(std::move(usbDeviceConnection));
@@ -405,6 +431,11 @@ void HidController::fetchReportDescriptorInBackground() {
             qCWarning(m_logBase) << "HID Report Descriptor structure is locked" << getName();
             return;
         }
+
+        // hidapi is not thread-safe (see hidapimutex.h). hid_open() enumerates
+        // internally on some platforms, so serialize the whole fetch with any
+        // other hidapi call (e.g. the other background fetches).
+        std::lock_guard<std::mutex> hidLock(mixxx::hid::hidapiMutex());
 
         hid_device* pHidDevice = hid_open_path(this->m_deviceInfo.pathRaw());
         if (!pHidDevice) {

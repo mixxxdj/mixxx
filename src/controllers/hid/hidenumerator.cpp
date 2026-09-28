@@ -12,6 +12,7 @@
 #include <hidapi.h>
 #endif
 
+#include "controllers/hid/hidapimutex.h"
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
 #include "moc_hidenumerator.cpp"
@@ -122,6 +123,8 @@ HidEnumerator::~HidEnumerator() {
     while (m_devices.size() > 0) {
         delete m_devices.takeLast();
     }
+    // hidapi is not thread-safe (see hidapimutex.h).
+    std::lock_guard<std::mutex> hidLock(mixxx::hid::hidapiMutex());
     hid_exit();
 }
 
@@ -184,7 +187,12 @@ QList<Controller*> HidEnumerator::queryDevices() {
 #else
 
     QStringList enumeratedDevices;
-    hid_device_info* p_device_info_list = hid_enumerate(0x0, 0x0);
+    hid_device_info* p_device_info_list;
+    {
+        // hidapi is not thread-safe (see hidapimutex.h).
+        std::lock_guard<std::mutex> hidLock(mixxx::hid::hidapiMutex());
+        p_device_info_list = hid_enumerate(0x0, 0x0);
+    }
     for (const auto* p_device_info = p_device_info_list;
             p_device_info;
             p_device_info = p_device_info->next) {
@@ -213,7 +221,11 @@ QList<Controller*> HidEnumerator::queryDevices() {
         HidController* newDevice = new HidController(std::move(deviceInfo));
         m_devices.push_back(newDevice);
     }
-    hid_free_enumeration(p_device_info_list);
+    {
+        // hidapi is not thread-safe (see hidapimutex.h).
+        std::lock_guard<std::mutex> hidLock(mixxx::hid::hidapiMutex());
+        hid_free_enumeration(p_device_info_list);
+    }
 #endif
 
     return m_devices;
