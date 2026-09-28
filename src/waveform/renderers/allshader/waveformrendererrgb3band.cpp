@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
-#include "rendergraph/material/rgbmaterial.h"
-#include "rendergraph/vertexupdaters/rgbvertexupdater.h"
+#include "rendergraph/material/rgbamaterial.h"
+#include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "track/track.h"
 #include "util/colorcomponents.h"
 #include "waveform/renderers/rgb3bandlevels.h"
@@ -41,8 +41,18 @@ constexpr int kLowLayer = 0;
 constexpr int kMidLayer = 1;
 constexpr int kLowMidLayer = 2;
 constexpr int kHighLayer = 3;
-constexpr int kLayerCount = 4;
+constexpr int kUnscaledLayerCount = 4;
+constexpr int kLayerCount = 2 * kUnscaledLayerCount;
 constexpr int kBandLayer[3] = {kLowLayer, kMidLayer, kHighLayer};
+constexpr int kDrawOrder[kLayerCount] = {
+        kLowLayer,
+        kUnscaledLayerCount + kLowLayer,
+        kMidLayer,
+        kUnscaledLayerCount + kMidLayer,
+        kLowMidLayer,
+        kUnscaledLayerCount + kLowMidLayer,
+        kHighLayer,
+        kUnscaledLayerCount + kHighLayer};
 
 } // namespace
 
@@ -57,7 +67,7 @@ WaveformRendererRGB3Band::WaveformRendererRGB3Band(
           m_lowMidColor_b(0),
           m_levelCompletion(0),
           m_normalization{1.0f, 1.0f, 1.0f} {
-    initForRectangles<RGBMaterial>(0);
+    initForRectangles<RGBAMaterial>(0);
     setUsePreprocess(true);
 }
 
@@ -92,7 +102,8 @@ void WaveformRendererRGB3Band::calculateHeights(const WaveformData* data,
         double firstPixelVisualFrame,
         double visualIncrementPerPixel,
         int pixelLength,
-        const float bandScale[3],
+        float scale,
+        const float bandGain[3],
         float maxHeight) {
     const double halfPixelFrames = visualIncrementPerPixel / 2.0;
     const int leadInFrames = static_cast<int>(
@@ -162,10 +173,16 @@ void WaveformRendererRGB3Band::calculateHeights(const WaveformData* data,
             }
             value = m_normalization[band] *
                     std::pow(std::max(0.0f, value - kFloor[band]), kExponent[band]);
-            m_heights[kBandLayer[band]][pos] = std::min(maxHeight, bandScale[band] * value);
+            const float height = scale * value;
+            m_heights[kBandLayer[band]][pos] = std::min(maxHeight, height);
+            m_heights[kUnscaledLayerCount + kBandLayer[band]][pos] =
+                    std::min(maxHeight, height * bandGain[band]);
         }
         m_heights[kLowMidLayer][pos] =
                 std::min(m_heights[kLowLayer][pos], m_heights[kMidLayer][pos]);
+        m_heights[kUnscaledLayerCount + kLowMidLayer][pos] =
+                std::min(m_heights[kUnscaledLayerCount + kLowLayer][pos],
+                        m_heights[kUnscaledLayerCount + kMidLayer][pos]);
     }
 }
 
@@ -269,36 +286,38 @@ bool WaveformRendererRGB3Band::preprocessInner() {
     const double firstPixelVisualFrame = firstPixel * visualIncrementPerPixel;
     const float xOffset = static_cast<float>(
             firstPixel - firstVisualFrame / visualIncrementPerPixel);
-    const float bandScale[3] = {allGain * halfBreadth * bandGain[0],
-            allGain * halfBreadth * bandGain[1],
-            allGain * halfBreadth * bandGain[2]};
     calculateHeights(data,
             visualFramesSize,
             visualSampleRate,
             firstPixelVisualFrame,
             visualIncrementPerPixel,
             pixelLength,
-            bandScale,
+            allGain * halfBreadth,
+            bandGain,
             halfBreadth);
 
     const int numVerticesPerLine = 6; // 2 triangles
 
     // Connected segments between neighboring pixels for each layer + horizontal axis
     const int segmentCount = std::max(0, pixelLength - 1);
-    const int reserved = numVerticesPerLine * (segmentCount * kLayerCount + 1);
+    const bool showUnscaled =
+            bandGain[0] < 1.0f || bandGain[1] < 1.0f || bandGain[2] < 1.0f;
+    const int reserved = numVerticesPerLine *
+            (segmentCount * (showUnscaled ? kLayerCount : kUnscaledLayerCount) + 1);
 
     geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
     geometry().allocate(reserved);
     markDirtyGeometry();
 
-    RGBVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBColoredPoint2D>()};
+    RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
     vertexUpdater.addRectangle({0.f, halfBreadth - 0.5f},
             {static_cast<float>(length), halfBreadth + 0.5f},
             {static_cast<float>(m_axesColor_r),
                     static_cast<float>(m_axesColor_g),
-                    static_cast<float>(m_axesColor_b)});
+                    static_cast<float>(m_axesColor_b),
+                    1.0f});
 
-    QVector3D rgb[kLayerCount];
+    QVector3D rgb[kUnscaledLayerCount];
     rgb[kLowLayer] = QVector3D(static_cast<float>(m_lowColor_r),
             static_cast<float>(m_lowColor_g),
             static_cast<float>(m_lowColor_b));
@@ -311,8 +330,13 @@ bool WaveformRendererRGB3Band::preprocessInner() {
             static_cast<float>(m_highColor_b));
 
     // Mirrored trapezoids between neighboring pixels
-    for (int layer = 0; layer < kLayerCount; ++layer) {
+    for (int layer : kDrawOrder) {
+        if (!showUnscaled && layer < kUnscaledLayerCount) {
+            continue;
+        }
         const std::vector<float>& height = m_heights[layer];
+        const QVector4D color(rgb[layer % kUnscaledLayerCount],
+                layer < kUnscaledLayerCount ? 0.6f : 1.0f);
         for (int pos = 0; pos < segmentCount; ++pos) {
             const float x1 = (static_cast<float>(pos) + xOffset) * invDevicePixelRatio;
             const float x2 = (static_cast<float>(pos + 1) + xOffset) * invDevicePixelRatio;
@@ -320,8 +344,8 @@ bool WaveformRendererRGB3Band::preprocessInner() {
             const float top2 = halfBreadth - height[pos + 1];
             const float bottom1 = halfBreadth + height[pos];
             const float bottom2 = halfBreadth + height[pos + 1];
-            vertexUpdater.addTriangle({x1, top1}, {x2, top2}, {x1, bottom1}, rgb[layer]);
-            vertexUpdater.addTriangle({x2, top2}, {x2, bottom2}, {x1, bottom1}, rgb[layer]);
+            vertexUpdater.addTriangle({x1, top1}, {x2, top2}, {x1, bottom1}, color);
+            vertexUpdater.addTriangle({x2, top2}, {x2, bottom2}, {x1, bottom1}, color);
         }
     }
 

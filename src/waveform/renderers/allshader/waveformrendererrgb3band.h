@@ -37,7 +37,8 @@ class allshader::WaveformRendererRGB3Band final
             double firstPixelVisualFrame,
             double visualIncrementPerPixel,
             int pixelLength,
-            const float bandScale[3],
+            float scale,
+            const float bandGain[3],
             float maxHeight);
 
     float m_lowMidColor_r;
@@ -51,7 +52,7 @@ class allshader::WaveformRendererRGB3Band final
 
     // Per-frame band envelopes and per-pixel layer heights
     std::vector<float> m_envelopes[3];
-    std::vector<float> m_heights[4];
+    std::vector<float> m_heights[8];
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB3Band);
 };
