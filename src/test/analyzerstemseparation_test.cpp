@@ -547,6 +547,76 @@ TEST_F(AnalyzerStemSeparationTest, VersionedKeyIsolatesMode3FromMode4) {
             StemCacheManager::generateKeyForMode(p, 4));
 }
 
+// N23: lightweight realtime route. Priority: explicit arg >
+// $MIXXX_STEM_REALTIME_MODEL > [StemSeparation],realtime_model= > default.
+// A synthetic fixture standing in for a small 2-3 stem model is selected
+// when it exists; otherwise the live path falls back to htdemucs. No
+// downloads; required ONNX input signature for all candidates is [1,2,N].
+TEST_F(AnalyzerStemSeparationTest, RealtimeModelPathResolutionAndFallback) {
+    // Default documents the small variant, distinct from offline htdemucs.
+    EXPECT_EQ(AnalyzerStemSeparation::defaultRealtimeModelPath(),
+            QStringLiteral(
+                    "/usr/local/share/stem-models/htdemucs_small_fp16weights.onnx"));
+    EXPECT_NE(AnalyzerStemSeparation::defaultRealtimeModelPath(),
+            AnalyzerStemSeparation::defaultModelPath());
+
+    // Candidate -> live stem count mapping (pure, no filesystem).
+    EXPECT_EQ(AnalyzerStemSeparation::liveStemCountForModel(
+                      "/m/htdemucs_small_fp16weights.onnx"),
+            3);
+    EXPECT_EQ(AnalyzerStemSeparation::liveStemCountForModel("/m/umx_small.onnx"), 3);
+    EXPECT_EQ(AnalyzerStemSeparation::liveStemCountForModel(
+                      "/m/spleeter_2stems.onnx"),
+            2);
+    EXPECT_EQ(AnalyzerStemSeparation::liveStemCountForModel(
+                      AnalyzerStemSeparation::defaultModelPath()),
+            4);
+
+    // Env override wins over config and default.
+    qputenv("MIXXX_STEM_REALTIME_MODEL", QByteArray("/tmp/rt_env.onnx"));
+    config()->setValue(
+            ConfigKey("[StemSeparation]", "realtime_model"), QStringLiteral("/tmp/rt_cfg.onnx"));
+    EXPECT_EQ(AnalyzerStemSeparation::effectiveRealtimeModelPath(config()),
+            QStringLiteral("/tmp/rt_env.onnx"));
+    qunsetenv("MIXXX_STEM_REALTIME_MODEL");
+
+    // Config wins over default when env is unset.
+    EXPECT_EQ(AnalyzerStemSeparation::effectiveRealtimeModelPath(config()),
+            QStringLiteral("/tmp/rt_cfg.onnx"));
+    config()->setValue(
+            ConfigKey("[StemSeparation]", "realtime_model"), QString());
+    EXPECT_EQ(AnalyzerStemSeparation::effectiveRealtimeModelPath(config()),
+            AnalyzerStemSeparation::defaultRealtimeModelPath());
+
+    // Explicit arg wins over everything.
+    qputenv("MIXXX_STEM_REALTIME_MODEL", QByteArray("/tmp/rt_env.onnx"));
+    EXPECT_EQ(AnalyzerStemSeparation::effectiveRealtimeModelPath(
+                      config(), QStringLiteral("/tmp/rt_arg.onnx")),
+            QStringLiteral("/tmp/rt_arg.onnx"));
+    qunsetenv("MIXXX_STEM_REALTIME_MODEL");
+
+    // Fallback: missing realtime file -> htdemucs path.
+    qputenv("MIXXX_STEM_MODEL", QByteArray("/tmp/offline_htdemucs.onnx"));
+    EXPECT_EQ(
+            AnalyzerStemSeparation::liveModelPathForRealtime(
+                    config(), QStringLiteral("/tmp/does-not-exist-rt-small.onnx")),
+            QStringLiteral("/tmp/offline_htdemucs.onnx"));
+    qunsetenv("MIXXX_STEM_MODEL");
+
+    // Live: synthetic fixture exists -> small model selected (no download).
+    QTemporaryDir tmp;
+    ASSERT_TRUE(tmp.isValid());
+    const QString fixture = tmp.filePath("htdemucs_small_fixture.onnx");
+    {
+        QFile f(fixture);
+        ASSERT_TRUE(f.open(QIODevice::WriteOnly));
+        f.write("N23-synthetic-fixture");
+    }
+    EXPECT_EQ(AnalyzerStemSeparation::liveModelPathForRealtime(config(), fixture),
+            fixture);
+    EXPECT_EQ(AnalyzerStemSeparation::liveStemCountForModel(fixture), 3);
+}
+
 // N21: chunk-streaming parcial. Tras los primeros kPartialChunks chunks
 // (~12 s a 50% overlap) se escribe {hash}.partial.stem.mp4 + markPartial()
 // para reproducir (aiStemFileReady parcial) mientras el resto sigue en

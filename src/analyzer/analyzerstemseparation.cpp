@@ -27,6 +27,11 @@ constexpr char kConfigEnabledKey[] = "offline_enabled";
 // Documented default location. The file is NOT shipped with Mixxx and must
 // never be assumed present (see class doc).
 constexpr char kDefaultModelPath[] = "/usr/local/share/stem-models/htdemucs_fp16weights.onnx";
+// N23: lightweight realtime default (2-3 stems live). Never shipped,
+// never downloaded; missing file => fallback to kDefaultModelPath.
+constexpr char kDefaultRealtimeModelPath[] =
+        "/usr/local/share/stem-models/htdemucs_small_fp16weights.onnx";
+constexpr char kConfigRealtimeModelKey[] = "realtime_model";
 
 bool trackHasNativeStems(TrackPointer pTrack) {
 #ifdef __STEM__
@@ -87,6 +92,58 @@ QString AnalyzerStemSeparation::executionProvider(
     }
     // Default seguro: cpu (incluye vacío y valores desconocidos).
     return QStringLiteral("cpu");
+}
+
+// static
+QString AnalyzerStemSeparation::defaultRealtimeModelPath() {
+    return QString::fromLatin1(kDefaultRealtimeModelPath);
+}
+
+// static
+QString AnalyzerStemSeparation::effectiveRealtimeModelPath(
+        const UserSettingsPointer& pConfig, const QString& overridePath) {
+    if (!overridePath.isEmpty()) {
+        return overridePath;
+    }
+    const QString env = qEnvironmentVariable("MIXXX_STEM_REALTIME_MODEL");
+    if (!env.isEmpty()) {
+        return env;
+    }
+    if (pConfig) {
+        const QString cfg = pConfig->getValue(
+                ConfigKey(kConfigGroup, kConfigRealtimeModelKey), QString());
+        if (!cfg.isEmpty()) {
+            return cfg;
+        }
+    }
+    return defaultRealtimeModelPath();
+}
+
+// static
+QString AnalyzerStemSeparation::liveModelPathForRealtime(
+        const UserSettingsPointer& pConfig, const QString& overridePath) {
+    const QString realtime = effectiveRealtimeModelPath(pConfig, overridePath);
+    if (!realtime.isEmpty() && QFile::exists(realtime)) {
+        return realtime;
+    }
+    return effectiveModelPath();
+}
+
+// static
+int AnalyzerStemSeparation::liveStemCountForModel(const QString& modelPath) {
+    const QString lower = modelPath.toLower();
+    if (lower.contains(QStringLiteral("spleeter")) ||
+            lower.contains(QStringLiteral("2stems")) ||
+            lower.contains(QStringLiteral("2-stems"))) {
+        return 2;
+    }
+    if (lower.contains(QStringLiteral("umx")) ||
+            lower.contains(QStringLiteral("small")) ||
+            lower.contains(QStringLiteral("light")) ||
+            lower.contains(QStringLiteral("mobile"))) {
+        return 3;
+    }
+    return 4;
 }
 
 // static

@@ -24,6 +24,24 @@
 //     sudo pacman -S openvino openvino-intel-gpu-plugin
 //   CUDA/DirectML are not applicable on this Linux/iGPU target.
 //
+// N23 realtime lightweight model policy (live 2-3 stems, never RT inference
+// here — this class only resolves paths; EngineStemSeparator consumes them):
+//   Expected path: /usr/local/share/stem-models/htdemucs_small_fp16weights.onnx
+//   Override order: explicit arg > $MIXXX_STEM_REALTIME_MODEL >
+//                   [StemSeparation],realtime_model= > defaultRealtimeModelPath()
+//   If the resolved realtime file exists (QFile::exists), the live path
+//   uses that small 2-3 stem model; otherwise it falls back to the offline
+//   htdemucs model (effectiveModelPath()). No model is ever downloaded by
+//   Mixxx; tests use synthetic fixtures only.
+//   Candidate lightweight models (all must accept stereo waveform input
+//   with ONNX signature [1,2,N] = batch 1, 2 channels, N samples):
+//     - htdemucs_small : 4 stems [drums,bass,other,vocals], waveform, ~small
+//     - UMX (Open-Unmix small) : 2-4 stems (typically vocals + rest, or
+//       vocals/drums/other 3-stem live fold), waveform/spectrogram wrapper
+//       exposing [1,2,N] input
+//     - Spleeter 2stems : 2 stems [vocals, accompaniment], [1,2,N] input;
+//       accompaniment fans out to drums/bass/other slots (silence-safe)
+//
 // Cache policy:
 //   key = SHA256(path + mtime + size)  (StemCacheManager::generateKey)
 //   file = <cacheDir>/<key>/<key>.stem.mp4, where cacheDir() is
@@ -65,6 +83,34 @@ class AnalyzerStemSeparation : public Analyzer {
     /// $MIXXX_STEM_EXECUTION_PROVIDER overrides when set. Unknown/empty
     /// values fall back to cpu so the CPU default never breaks.
     static QString executionProvider(const UserSettingsPointer& pConfig);
+
+    /// N23: default path for the lightweight realtime model (2-3 stems
+    /// live). Never assumed to exist; callers must handle a missing file
+    /// via fallback to effectiveModelPath() (htdemucs).
+    static QString defaultRealtimeModelPath();
+
+    /// N23: effective realtime model path. Priority: explicit arg >
+    /// $MIXXX_STEM_REALTIME_MODEL > [StemSeparation],realtime_model= >
+    /// defaultRealtimeModelPath(). Returns the resolved path even when the
+    /// file does not exist (existence check belongs to the caller / live
+    /// path selector below).
+    static QString effectiveRealtimeModelPath(
+            const UserSettingsPointer& pConfig, const QString& overridePath = {});
+
+    /// N23: live model selector. Returns effectiveRealtimeModelPath() when
+    /// that file exists (small 2-3 stem model in vivo); otherwise falls
+    /// back to effectiveModelPath() (htdemucs). Pure path logic + one
+    /// QFile::exists check; never downloads models.
+    static QString liveModelPathForRealtime(
+            const UserSettingsPointer& pConfig, const QString& overridePath = {});
+
+    /// N23: expected live stem count for a realtime model path (pure,
+    /// no filesystem). Spleeter 2-stem fixtures ("spleeter", "2stems")
+    /// expose 2 live stems [vocals, accompaniment]; UMX / small variants
+    /// ("umx", "small", "light", "mobile") expose 3 [vocals, drums, other];
+    /// anything else (htdemucs fallback) exposes 4. Required ONNX input
+    /// signature for all candidates: [1,2,N] (batch 1, stereo, N samples).
+    static int liveStemCountForModel(const QString& modelPath);
 
     /// Hann window with periodic=false (denominator N-1), identical to the
     /// one used in OfflineSeparator::run(). At 50% overlap the windows sum
