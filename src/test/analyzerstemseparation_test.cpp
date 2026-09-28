@@ -547,4 +547,93 @@ TEST_F(AnalyzerStemSeparationTest, VersionedKeyIsolatesMode3FromMode4) {
             StemCacheManager::generateKeyForMode(p, 4));
 }
 
+// N21: chunk-streaming parcial. Tras los primeros kPartialChunks chunks
+// (~12 s a 50% overlap) se escribe {hash}.partial.stem.mp4 + markPartial()
+// para reproducir (aiStemFileReady parcial) mientras el resto sigue en
+// background con progreso; markComplete final no se adelanta.
+TEST_F(AnalyzerStemSeparationTest, PartialStreamingAfterThreeChunks) {
+    // shouldEmitPartial: exactamente una vez (chunk 2) y solo si queda resto.
+    EXPECT_EQ(AnalyzerStemSeparation::kPartialChunks, 3);
+    EXPECT_FALSE(AnalyzerStemSeparation::shouldEmitPartial(0, 10));
+    EXPECT_FALSE(AnalyzerStemSeparation::shouldEmitPartial(1, 10));
+    EXPECT_TRUE(AnalyzerStemSeparation::shouldEmitPartial(2, 10));
+    EXPECT_FALSE(AnalyzerStemSeparation::shouldEmitPartial(3, 10));
+    // Sin resto no hay preview (job corto: directo a finished completo).
+    EXPECT_FALSE(AnalyzerStemSeparation::shouldEmitPartial(2, 3));
+    EXPECT_FALSE(AnalyzerStemSeparation::shouldEmitPartial(0, 1));
+
+    // Prefijo asentado: chunksDone*hop clamped a [0, inferFrames].
+    // htdemucs 343980 @50% overlap: hop 171990 -> 3 hops = 515970 (~11.7 s).
+    EXPECT_EQ(AnalyzerStemSeparation::partialPrefixFrames(3, 171990, 1000000),
+            515970);
+    EXPECT_EQ(AnalyzerStemSeparation::partialPrefixFrames(3, 257984, 10000000),
+            773952);
+    EXPECT_EQ(AnalyzerStemSeparation::partialPrefixFrames(3, 171990, 100),
+            100);
+    EXPECT_EQ(AnalyzerStemSeparation::partialPrefixFrames(0, 171990, 1000000), 0);
+    EXPECT_EQ(AnalyzerStemSeparation::partialPrefixFrames(3, 0, 1000000), 0);
+
+    // markPartial: preview visible sin completar; no limpia el claim.
+    const StemCacheManager::CacheKey pkey = QByteArray("n21-partial-test-key");
+    StemCacheManager::instance().markFailed(pkey);
+    EXPECT_TRUE(StemCacheManager::instance().tryMarkProcessing(pkey));
+    EXPECT_FALSE(StemCacheManager::instance().hasStems(pkey));
+    EXPECT_FALSE(StemCacheManager::instance().hasPartial(pkey));
+    // partialStemFilePath es distinto del final y con sufijo .partial.
+    const QString finalPath = StemCacheManager::stemFilePath(pkey);
+    const QString partialPath = StemCacheManager::partialStemFilePath(pkey);
+    EXPECT_TRUE(partialPath.endsWith(QStringLiteral(".partial.stem.mp4")));
+    EXPECT_NE(partialPath, finalPath);
+
+    // Entrada parcial sin archivo -> hasPartial false (no preview jugable).
+    StemCacheManager::StemFiles pending;
+    pending.stemFile = partialPath;
+    pending.complete = false;
+    pending.created = QDateTime::currentDateTime();
+    StemCacheManager::instance().markPartial(pkey, pending);
+    EXPECT_FALSE(StemCacheManager::instance().hasStems(pkey));
+    EXPECT_FALSE(StemCacheManager::instance().hasPartial(pkey));
+    // tryMarkProcessing sigue reclamado: el job de fondo sigue vivo.
+    EXPECT_FALSE(StemCacheManager::instance().tryMarkProcessing(pkey));
+
+    // Preview jugable: escribe un .stem.mp4 parcial real (4 tonos, 0.5 s)
+    // y verifica stem atom + hasPartial; luego markComplete lo promueve.
+    QTemporaryDir tmpPreview;
+    ASSERT_TRUE(tmpPreview.isValid());
+    const QString previewPath = tmpPreview.filePath("preview.partial.stem.mp4");
+    constexpr int kFrames = 22050; // 0.5 s @44100
+    const QVector<float> v = makeTone(440.0, kSampleRate, kFrames);
+    const QVector<float> d = makeTone(880.0, kSampleRate, kFrames);
+    const QVector<float> b = makeTone(110.0, kSampleRate, kFrames);
+    const QVector<float> o = makeTone(220.0, kSampleRate, kFrames);
+    mixxx::StemMp4Writer::Config pcfg;
+    pcfg.outputPath = previewPath;
+    pcfg.sampleRate = kSampleRate;
+    pcfg.numFrames = kFrames;
+    pcfg.stems[0] = v.constData();
+    pcfg.stems[1] = d.constData();
+    pcfg.stems[2] = b.constData();
+    pcfg.stems[3] = o.constData();
+    ASSERT_TRUE(mixxx::StemMp4Writer::write(pcfg));
+    EXPECT_TRUE(mixxx::StemInfoImporter::hasStemAtom(previewPath));
+
+    StemCacheManager::StemFiles playable;
+    playable.stemFile = previewPath;
+    playable.complete = false;
+    playable.created = QDateTime::currentDateTime();
+    StemCacheManager::instance().markPartial(pkey, playable);
+    EXPECT_FALSE(StemCacheManager::instance().hasStems(pkey));
+    EXPECT_TRUE(StemCacheManager::instance().hasPartial(pkey));
+    EXPECT_EQ(StemCacheManager::instance().getStemFiles(pkey).stemFile,
+            previewPath);
+
+    // El completo final sustituye al parcial (mismo key, complete=true).
+    StemCacheManager::StemFiles done = playable;
+    done.complete = true;
+    StemCacheManager::instance().markComplete(pkey, done);
+    EXPECT_TRUE(StemCacheManager::instance().hasStems(pkey));
+    EXPECT_FALSE(StemCacheManager::instance().hasPartial(pkey));
+    StemCacheManager::instance().markFailed(pkey);
+}
+
 } // namespace

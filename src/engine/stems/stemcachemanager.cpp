@@ -48,6 +48,13 @@ QString StemCacheManager::stemFilePath(const CacheKey& key) {
     return stemDir(key) + "/" + hex + ".stem.mp4";
 }
 
+QString StemCacheManager::partialStemFilePath(const CacheKey& key) {
+    // N21 preview: .../{hash}/{hash}.partial.stem.mp4 (distinct from the
+    // final file so the background job never clobbers a playing preview).
+    const QString hex = QString::fromUtf8(key);
+    return stemDir(key) + "/" + hex + ".partial.stem.mp4";
+}
+
 QString StemCacheManager::indexPath() {
     return cacheDir() + "/" + kIndexFileName;
 }
@@ -181,6 +188,26 @@ void StemCacheManager::markComplete(const CacheKey& key, const StemFiles& files)
     m_index[key] = files;
     saveIndex();
     emit separationFinished(key, true);
+}
+
+void StemCacheManager::markPartial(const CacheKey& key, const StemFiles& files) {
+    QMutexLocker lock(&m_mutex);
+    // Keep m_processing[key]: the background job is still running.
+    StemFiles partial = files;
+    partial.complete = false;
+    m_index[key] = partial;
+    // No saveIndex(): partials are in-memory previews, never persisted.
+    emit separationPartialReady(key);
+}
+
+bool StemCacheManager::hasPartial(const CacheKey& key) const {
+    QMutexLocker lock(&m_mutex);
+    auto it = m_index.find(key);
+    if (it == m_index.end() || it.value().complete) {
+        return false;
+    }
+    return !it.value().stemFile.isEmpty() &&
+            QFile::exists(it.value().stemFile);
 }
 
 void StemCacheManager::markFailed(const CacheKey& key) {

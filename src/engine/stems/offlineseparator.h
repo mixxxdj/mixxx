@@ -14,6 +14,9 @@ class OfflineSeparator : public QObject, public QRunnable {
 public:
     using ProgressCallback = std::function<void(float progress)>;
     using FinishedCallback = std::function<void(bool success, const StemCacheManager::StemFiles& files)>;
+    // N21: chunk-streaming preview callback (partial .stem.mp4 ready,
+    // background job still running).
+    using PartialCallback = std::function<void(const StemCacheManager::StemFiles& files)>;
 
     struct Config {
         QString inputPath;
@@ -28,6 +31,7 @@ public:
         int stemMode = 3;
         ProgressCallback onProgress;
         FinishedCallback onFinished;
+        PartialCallback onPartial;
     };
 
     explicit OfflineSeparator(const Config& config);
@@ -39,6 +43,10 @@ public:
 signals:
     void progressChanged(float progress);
     void finished(bool success, const StemCacheManager::StemFiles& files);
+    // N21: emitted once after kPartialChunks chunks with a playable
+    // preview .stem.mp4; the job keeps running in background with
+    // progressChanged until finished().
+    void partialReady(bool success, const StemCacheManager::StemFiles& files);
 
 private:
     void doSeparation();

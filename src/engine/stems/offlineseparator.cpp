@@ -108,6 +108,13 @@ void OfflineSeparator::run() {
     
     // 2. Create output directory
     QDir().mkpath(m_config.outputDir);
+
+    // N19 mode + N18 versioned key upfront so the N21 partial preview
+    // (written inside the chunk loop below) resolves the same key/dir
+    // as the final artifact.
+    const int stemModeCfg = (m_config.stemMode == 4) ? 4 : 3;
+    const StemCacheManager::CacheKey key =
+            StemCacheManager::generateKeyForMode(m_config.inputPath, stemModeCfg);
     
     // 3. Process with ONNX (using existing mixxx-stems-engine)
     // The engine expects a fixed window of samples per inference.
@@ -284,6 +291,90 @@ void OfflineSeparator::run() {
             const float progress = static_cast<float>(chunk + 1) / numChunks;
             if (m_config.onProgress) m_config.onProgress(progress);
             emit progressChanged(progress);
+
+            // N21: chunk-streaming preview after the first kPartialChunks
+            // chunks (~12 s at 50% overlap). Snapshot the settled prefix
+            // (chunksDone*hop, tail excluded), renormalize with the weights
+            // accumulated so far, resample the prefix to native rate, fold
+            // to the configured stem mode and write
+            // {hash}.partial.stem.mp4. The job keeps running in background
+            // with progressChanged until finished() carries the full file.
+            if (AnalyzerStemSeparation::shouldEmitPartial(chunk, numChunks)) {
+                const int prefixInfer = AnalyzerStemSeparation::partialPrefixFrames(
+                        chunk + 1, kHopSize, inferFrames);
+                if (prefixInfer > 0) {
+                    QVector<float> pVocals = outVocals.mid(leftPad * 2, prefixInfer * 2);
+                    QVector<float> pDrums = outDrums.mid(leftPad * 2, prefixInfer * 2);
+                    QVector<float> pBass = outBass.mid(leftPad * 2, prefixInfer * 2);
+                    QVector<float> pOther = outOther.mid(leftPad * 2, prefixInfer * 2);
+                    if (needWola) {
+                        const QVector<float> wPrefix =
+                                wolaWeight.mid(leftPad, prefixInfer);
+                        QVector<float>* pStems[kNumStems] = {
+                                &pVocals, &pDrums, &pBass, &pOther};
+                        AnalyzerStemSeparation::normalizeWola(pStems, wPrefix);
+                    }
+                    QVector<float> nVocals = needResample
+                            ? AnalyzerStemSeparation::resampleStereo(
+                                      pVocals, kModelRate, decodedSampleRate)
+                            : pVocals;
+                    QVector<float> nDrums = needResample
+                            ? AnalyzerStemSeparation::resampleStereo(
+                                      pDrums, kModelRate, decodedSampleRate)
+                            : pDrums;
+                    QVector<float> nBass = needResample
+                            ? AnalyzerStemSeparation::resampleStereo(
+                                      pBass, kModelRate, decodedSampleRate)
+                            : pBass;
+                    QVector<float> nOther = needResample
+                            ? AnalyzerStemSeparation::resampleStereo(
+                                      pOther, kModelRate, decodedSampleRate)
+                            : pOther;
+                    const int prefixNative = nVocals.size() / 2;
+                    if (prefixNative > 0) {
+                        QVector<float>* foldStems[4] = {
+                                &nVocals, &nDrums, &nBass, &nOther};
+                        if (stemModeCfg == 3) {
+                            AnalyzerStemSeparation::foldTo3StemMode(foldStems);
+                        }
+                        StemMp4Writer::Config partialCfg;
+                        partialCfg.outputPath =
+                                StemCacheManager::partialStemFilePath(key);
+                        QDir().mkpath(QFileInfo(partialCfg.outputPath)
+                                              .absolutePath());
+                        partialCfg.sampleRate = decodedSampleRate;
+                        partialCfg.numFrames = prefixNative;
+                        if (stemModeCfg == 3) {
+                            partialCfg.stemNames[3] =
+                                    QStringLiteral("Instruments");
+                        }
+                        partialCfg.stems[0] = nVocals.constData();
+                        partialCfg.stems[1] = nDrums.constData();
+                        partialCfg.stems[2] = nBass.constData();
+                        partialCfg.stems[3] = nOther.constData();
+                        if (StemMp4Writer::write(partialCfg)) {
+                            StemCacheManager::StemFiles partialFiles;
+                            partialFiles.stemFile = partialCfg.outputPath;
+                            partialFiles.complete = false;
+                            partialFiles.created =
+                                    QDateTime::currentDateTime();
+                            StemCacheManager::instance().markPartial(
+                                    key, partialFiles);
+                            kLogger.info()
+                                    << "Wrote partial stem preview (" << prefixNative
+                                    << "frames) after " << (chunk + 1)
+                                    << " chunks:" << partialCfg.outputPath;
+                            if (m_config.onPartial) {
+                                m_config.onPartial(partialFiles);
+                            }
+                            emit partialReady(true, partialFiles);
+                        } else {
+                            kLogger.warning()
+                                    << "Failed to write partial stem preview";
+                        }
+                    }
+                }
+            }
         }
 
         // Trim the padding, keep only the inference signal length, then
@@ -340,7 +431,7 @@ void OfflineSeparator::run() {
     // slot 2 silence); stemMode=4 keeps the legacy 4-stem layout. The
     // 8-channel reader layout is untouched (still 4 slots in the file);
     // the UI should hide the bass slot in mode 3 (documented, not enforced).
-    const int stemModeCfg = (m_config.stemMode == 4) ? 4 : 3;
+    // (stemModeCfg/key derived upfront for the N21 partial preview.)
     if (stemModeCfg == 3) {
         QVector<float>* foldStems[4] = {&outVocals, &outDrums, &outBass, &outOther};
         AnalyzerStemSeparation::foldTo3StemMode(foldStems);
@@ -403,8 +494,7 @@ void OfflineSeparator::run() {
     // Key derivation is SHA256(path + mtime + size), never the fragile
     // output-dir basename used before S5. N18: versioned with the stem
     // mode ("|mode=3") so 3-stem artifacts never poison 4-stem lookups.
-    const StemCacheManager::CacheKey key =
-            StemCacheManager::generateKeyForMode(m_config.inputPath, stemModeCfg);
+    // (key derived upfront for the N21 partial preview.)
     StemMp4Writer::Config stemMp4Config;
     stemMp4Config.outputPath = StemCacheManager::stemFilePath(key);
     QDir().mkpath(QFileInfo(stemMp4Config.outputPath).absolutePath());

@@ -142,6 +142,24 @@ class AnalyzerStemSeparation : public Analyzer {
     static QVector<float> resampleStereo(
             const QVector<float>& in, int srcRate, int dstRate);
 
+    /// N21: chunk-streaming preview. After the first kPartialChunks chunks
+    /// a playable .stem.mp4 prefix is written
+    /// (StemCacheManager::partialStemFilePath) and exposed via
+    /// StemCacheManager::markPartial() so playback can start while the
+    /// remaining chunks keep processing in background with progress.
+    /// At 50% overlap hop=N/2 ~= 171990 frames (~3.9 s @44100 Hz), so 3
+    /// chunks cover ~11.7 s ("ej. 3 chunks ~12 s"); at the default 25%
+    /// overlap the same 3 chunks cover ~17.5 s.
+    static constexpr int kPartialChunks = 3;
+    /// True exactly once per job: when chunkIndex is the kPartialChunks-th
+    /// chunk (0-based) and more chunks remain.
+    static bool shouldEmitPartial(int chunkIndex, int numChunks);
+    /// Settled prefix length (inference-rate frames) covered after
+    /// chunksDone chunks: chunksDone*hopSize clamped to [0, inferFrames].
+    /// The tail needing future overlapping windows is excluded, so the
+    /// preview boundary carries no half-window artifact.
+    static int partialPrefixFrames(int chunksDone, int hopSize, int inferFrames);
+
   private:
     void runSeparationAndCache();
 

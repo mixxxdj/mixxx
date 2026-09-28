@@ -36,6 +36,16 @@ public:
     // Called when separation completes successfully
     void markComplete(const CacheKey& key, const StemFiles& files);
 
+    // N21: chunk-streaming partial. Stores an incomplete preview entry
+    // (complete=false) WITHOUT clearing the in-progress claim, so the
+    // background job keeps running. hasStems() stays false while a
+    // partial is present; hasPartial() reports the preview. The partial
+    // .stem.mp4 lives at partialStemFilePath(key) so the final write
+    // never clobbers a file that may be playing. Partials are in-memory
+    // only (loadIndex() accepts just complete entries).
+    void markPartial(const CacheKey& key, const StemFiles& files);
+    bool hasPartial(const CacheKey& key) const;
+
     // Called when separation fails
     void markFailed(const CacheKey& key);
 
@@ -62,11 +72,15 @@ public:
     static QString cacheDir();
     static QString stemDir(const CacheKey& key);
     static QString stemFilePath(const CacheKey& key);
+    // N21: preview file for chunk-streaming ({hash}.partial.stem.mp4).
+    static QString partialStemFilePath(const CacheKey& key);
     static QString indexPath();
 
 signals:
     void separationStarted(const CacheKey& key);
     void separationFinished(const CacheKey& key, bool success);
+    // N21: emitted by markPartial() when a playable preview is ready.
+    void separationPartialReady(const CacheKey& key);
 
 private:
     StemCacheManager();

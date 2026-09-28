@@ -623,6 +623,24 @@ void EngineDeck::checkAndLoadAIStems(TrackPointer pTrack) {
             },
             Qt::QueuedConnection);
 
+    // N21: chunk-streaming preview. The separator emits partialReady()
+    // once after kPartialChunks chunks with a playable
+    // {hash}.partial.stem.mp4. Hand it to the native stem system
+    // immediately (early playback) while the job keeps running in
+    // background; finished() later reloads the deck with the full file.
+    // m_aiStemsLoading stays true until the full result arrives.
+    QObject::connect(separator, &mixxx::OfflineSeparator::partialReady,
+            this, [this, key](bool success, const StemCacheManager::StemFiles& files) {
+                if (success && !files.stemFile.isEmpty() &&
+                        QFile::exists(files.stemFile)) {
+                    kLogger.info() << "AI stem partial ready, early playback:"
+                                   << files.stemFile;
+                    StemCacheManager::instance().markPartial(key, files);
+                    emit aiStemFileReady(files.stemFile);
+                }
+            },
+            Qt::QueuedConnection);
+
     separator->start();
 #endif // __STEM_SEPARATOR__
 }

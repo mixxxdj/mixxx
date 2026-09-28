@@ -207,6 +207,27 @@ QVector<float> AnalyzerStemSeparation::resampleStereo(
 }
 
 // static
+bool AnalyzerStemSeparation::shouldEmitPartial(int chunkIndex, int numChunks) {
+    return chunkIndex + 1 == kPartialChunks && numChunks > kPartialChunks;
+}
+
+// static
+int AnalyzerStemSeparation::partialPrefixFrames(
+        int chunksDone, int hopSize, int inferFrames) {
+    if (chunksDone <= 0 || hopSize <= 0 || inferFrames <= 0) {
+        return 0;
+    }
+    const long long prefix = static_cast<long long>(chunksDone) * hopSize;
+    if (prefix <= 0) {
+        return 0;
+    }
+    if (prefix >= inferFrames) {
+        return inferFrames;
+    }
+    return static_cast<int>(prefix);
+}
+
+// static
 void AnalyzerStemSeparation::overlapAdd(
         const QVector<QVector<QVector<float>>>& srcChunks,
         int chunkSize,
@@ -389,6 +410,8 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
     QVector<float>* outStems[kNumStems] = {&outVocals, &outDrums, &outBass, &outOther};
 
     bool separated = false;
+    // N21: mode upfront so the partial preview folds identically to final.
+    const int stemModeCfgEarly = stemMode(m_pConfig);
 #ifdef __STEM_SEPARATOR__
     const QString modelPath = effectiveModelPath();
     if (QFile::exists(modelPath)) {
@@ -458,6 +481,87 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
                             wolaWeight[startFrame + i] += hannWindow[i];
                         }
                     }
+                    // N21: chunk-streaming preview (same policy as
+                    // OfflineSeparator::run): after kPartialChunks chunks
+                    // write {hash}.partial.stem.mp4 + markPartial() so
+                    // playback can start; the rest keeps processing.
+                    if (shouldEmitPartial(chunk, numChunks)) {
+                        const int prefixInfer = partialPrefixFrames(
+                                chunk + 1, kHopSize, inferFrames);
+                        if (prefixInfer > 0) {
+                            QVector<float> pV =
+                                    outVocals.mid(leftPad * 2, prefixInfer * 2);
+                            QVector<float> pD =
+                                    outDrums.mid(leftPad * 2, prefixInfer * 2);
+                            QVector<float> pB =
+                                    outBass.mid(leftPad * 2, prefixInfer * 2);
+                            QVector<float> pO =
+                                    outOther.mid(leftPad * 2, prefixInfer * 2);
+                            if (needWola) {
+                                const QVector<float> wPrefix =
+                                        wolaWeight.mid(leftPad, prefixInfer);
+                                QVector<float>* pStems[kNumStems] = {
+                                        &pV, &pD, &pB, &pO};
+                                normalizeWola(pStems, wPrefix);
+                            }
+                            QVector<float> nV = needResample
+                                    ? resampleStereo(pV, kModelSampleRate,
+                                              sampleRate)
+                                    : pV;
+                            QVector<float> nD = needResample
+                                    ? resampleStereo(pD, kModelSampleRate,
+                                              sampleRate)
+                                    : pD;
+                            QVector<float> nB = needResample
+                                    ? resampleStereo(pB, kModelSampleRate,
+                                              sampleRate)
+                                    : pB;
+                            QVector<float> nO = needResample
+                                    ? resampleStereo(pO, kModelSampleRate,
+                                              sampleRate)
+                                    : pO;
+                            const int prefixNative = nV.size() / 2;
+                            if (prefixNative > 0) {
+                                QVector<float>* fStems[4] = {
+                                        &nV, &nD, &nB, &nO};
+                                if (stemModeCfgEarly == 3) {
+                                    foldTo3StemMode(fStems);
+                                }
+                                const QString partialPath =
+                                        StemCacheManager::partialStemFilePath(
+                                                m_key);
+                                QDir().mkpath(QFileInfo(partialPath)
+                                                      .absolutePath());
+                                mixxx::StemMp4Writer::Config pcfg;
+                                pcfg.outputPath = partialPath;
+                                pcfg.sampleRate = sampleRate > 0 ? sampleRate
+                                                                 : kModelSampleRate;
+                                pcfg.numFrames = prefixNative;
+                                if (stemModeCfgEarly == 3) {
+                                    pcfg.stemNames[3] =
+                                            QStringLiteral("Instruments");
+                                }
+                                pcfg.stems[0] = nV.constData();
+                                pcfg.stems[1] = nD.constData();
+                                pcfg.stems[2] = nB.constData();
+                                pcfg.stems[3] = nO.constData();
+                                if (mixxx::StemMp4Writer::write(pcfg)) {
+                                    StemCacheManager::StemFiles partial;
+                                    partial.stemFile = partialPath;
+                                    partial.complete = false;
+                                    partial.created =
+                                            QDateTime::currentDateTime();
+                                    StemCacheManager::instance().markPartial(
+                                            m_key, partial);
+                                    kLogger.info()
+                                            << "Wrote partial stem preview ("
+                                            << prefixNative << "frames) after "
+                                            << (chunk + 1) << " chunks:"
+                                            << partialPath;
+                                }
+                            }
+                        }
+                    }
                 }
                 if (ok) {
                     if (needWola) {
@@ -506,7 +610,8 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
     // N18: optional 3-stem fold (default off). Slot 3 (other) becomes
     // bass+other ("Instruments"), slot 2 (bass) becomes silence. The
     // 8-channel reader layout is untouched (still 4 slots in the file).
-    const int stemModeCfg = stemMode(m_pConfig);
+    // (mode resolved upfront as stemModeCfgEarly for the N21 preview.)
+    const int stemModeCfg = stemModeCfgEarly;
     if (stemModeCfg == 3) {
         foldTo3StemMode(outStems);
     }
