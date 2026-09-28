@@ -341,6 +341,9 @@ void WOverview::slotWaveformSummaryUpdated() {
     if (m_pWaveform) {
         // If the waveform is already complete, just draw it.
         if (m_pWaveform->getCompletion() == m_pWaveform->getDataSize()) {
+            if (m_type == OverviewType::RGB3Band && !m_waveformSourceImage.isNull()) {
+                m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
+            }
             m_actualCompletion = 0;
             if (drawNextPixmapPart()) {
                 update();
@@ -1505,6 +1508,14 @@ bool WOverview::drawNextPixmapPart() {
     }
 
     const int nextCompletion = m_actualCompletion + completionIncrement;
+
+    // The RGB 3-band overview is scaled by the levels of the whole track, so
+    // the parts drawn during the analysis are redrawn when it is complete.
+    if (m_type == OverviewType::RGB3Band && !m_pixmapDone &&
+            m_actualCompletion > 0 && nextCompletion >= dataSize - 2) {
+        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
+        m_actualCompletion = 0;
+    }
 
     // qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
     //  << nextCompletion

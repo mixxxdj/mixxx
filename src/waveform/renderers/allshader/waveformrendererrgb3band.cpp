@@ -7,6 +7,7 @@
 #include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
 #include "util/colorcomponents.h"
+#include "waveform/renderers/rgb3bandlevels.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -15,15 +16,26 @@ using namespace rendergraph;
 
 namespace {
 
-// Each band is a peak envelope with instant attack and exponential release.
-// The constants were fitted against Rekordbox's 3-band analysis data. The low
-// band has the longest release, which also determines the lead-in.
-constexpr double kReleaseSeconds[3] = {0.2, 0.1, 0.1};
+// Each band is a peak envelope with instant attack and exponential release of
+// the stereo-combined amplitude, mixed with a share of a neighboring band's
+// envelope. Its height relative to half the breadth is
+//   normalization * max(0, envelope - floor)^exponent
+// with the per-track normalization gain / level^slope. The constants were
+// fitted against Rekordbox's 3-band analysis data of 323 tracks. The low band
+// has the longest release, which also determines the lead-in.
+constexpr double kReleaseSeconds[3] = {0.3, 0.08, 0.065};
+// Mid includes some low and high some mid, like Rekordbox's lower crossovers
+constexpr int kMixBand[3] = {0, 0, 1};
+constexpr float kMixWeight[3] = {0.0f, 0.125f, 0.14f};
+constexpr float kFloor[3] = {0.0f, 0.02f, 0.1f};
+constexpr float kExponent[3] = {1.4f, 0.79f, 1.27f};
+constexpr float kLevelQuantile[3] = {0.99f, 0.999f, 0.999f};
+constexpr float kNormalizationGain[3] = {0.7f, 0.6f, 0.91f};
+constexpr float kNormalizationSlope[3] = {0.97f, 0.66f, 0.63f};
 // Envelopes decay below 1/256 after this many release time constants.
 constexpr double kLeadInReleases = 5.6;
-// Height relative to half the breadth for a full-scale envelope.
-constexpr float kBandGain[3] = {0.77f, 1.23f, 0.44f};
-constexpr float kHighExponent = 1.25f;
+// Recalculate the levels during analysis after this share of the track
+constexpr int kLevelUpdateDivisor = 16;
 
 // Layers in drawing order
 constexpr int kLowLayer = 0;
@@ -43,7 +55,9 @@ WaveformRendererRGB3Band::WaveformRendererRGB3Band(
         : WaveformRendererSignalBase(waveformWidget, options),
           m_lowMidColor_r(0),
           m_lowMidColor_g(0),
-          m_lowMidColor_b(0) {
+          m_lowMidColor_b(0),
+          m_levelCompletion(0),
+          m_normalization{1.0f, 1.0f, 1.0f} {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }
@@ -98,26 +112,29 @@ void WaveformRendererRGB3Band::calculateHeights(const WaveformData* data,
         m_envelopes[band].resize(frameCount);
     }
 
-    // Stereo-combined amplitudes: low, mid, and mid + high. Mid and high
-    // together match Rekordbox's high band better than high alone.
-    constexpr float kInvMaxSquared = 1.0f / (255.0f * 255.0f);
+    constexpr float kInvMax = 1.0f / 255.0f;
     float envelope[3]{};
+    float mixEnvelope[3]{};
     for (int i = 0; i < frameCount; ++i) {
         const int frame = firstFrame + i;
-        float squared[3]{};
+        float amplitude[3]{};
         if (frame >= 0 && frame < visualFramesSize) {
-            for (int chn = 0; chn < 2; ++chn) {
-                const WaveformFilteredData& filtered = data[frame * 2 + chn].filtered;
-                const float mid = static_cast<float>(filtered.mid) * filtered.mid;
-                squared[0] += static_cast<float>(filtered.low) * filtered.low;
-                squared[1] += mid;
-                squared[2] += mid + static_cast<float>(filtered.high) * filtered.high;
-            }
+            const WaveformFilteredData& left = data[frame * 2].filtered;
+            const WaveformFilteredData& right = data[frame * 2 + 1].filtered;
+            amplitude[0] = kInvMax * rgb3band::combinedAmplitude(left.low, right.low);
+            amplitude[1] = kInvMax * rgb3band::combinedAmplitude(left.mid, right.mid);
+            amplitude[2] = kInvMax * rgb3band::combinedAmplitude(left.high, right.high);
         }
         for (int band = 0; band < 3; ++band) {
-            const float amplitude = std::sqrt(0.5f * squared[band] * kInvMaxSquared);
-            envelope[band] = std::max(amplitude, envelope[band] * decay[band]);
-            m_envelopes[band][i] = envelope[band];
+            envelope[band] = std::max(amplitude[band], envelope[band] * decay[band]);
+            if (band == 0) {
+                m_envelopes[band][i] = envelope[band];
+                continue;
+            }
+            mixEnvelope[band] = std::max(
+                    amplitude[kMixBand[band]], mixEnvelope[band] * decay[band]);
+            m_envelopes[band][i] = std::sqrt(envelope[band] * envelope[band] +
+                    kMixWeight[band] * mixEnvelope[band] * mixEnvelope[band]);
         }
     }
 
@@ -144,14 +161,35 @@ void WaveformRendererRGB3Band::calculateHeights(const WaveformData* data,
                 value = bandEnvelope[index] +
                         fraction * (bandEnvelope[index + 1] - bandEnvelope[index]);
             }
-            if (kBandLayer[band] == kHighLayer) {
-                value = std::pow(value, kHighExponent);
-            }
-            m_heights[kBandLayer[band]][pos] =
-                    std::min(maxHeight, kBandGain[band] * bandScale[band] * value);
+            value = m_normalization[band] *
+                    std::pow(std::max(0.0f, value - kFloor[band]), kExponent[band]);
+            m_heights[kBandLayer[band]][pos] = std::min(maxHeight, bandScale[band] * value);
         }
         m_heights[kLowMidLayer][pos] =
                 std::min(m_heights[kLowLayer][pos], m_heights[kMidLayer][pos]);
+    }
+}
+
+// The levels need the whole track. During analysis they are recalculated
+// whenever a bigger part of the track is available.
+void WaveformRendererRGB3Band::updateNormalization(const ConstWaveformPointer& pWaveform) {
+    const int completion = pWaveform->getCompletion();
+    if (pWaveform == m_pLevelWaveform &&
+            (completion == m_levelCompletion ||
+                    (completion < pWaveform->getDataSize() &&
+                            completion - m_levelCompletion <
+                                    pWaveform->getDataSize() /
+                                            kLevelUpdateDivisor))) {
+        return;
+    }
+    m_pLevelWaveform = pWaveform;
+    m_levelCompletion = completion;
+
+    float level[3];
+    rgb3band::bandLevels(*pWaveform, completion, kLevelQuantile, level);
+    for (int band = 0; band < 3; ++band) {
+        m_normalization[band] = rgb3band::normalization(
+                level[band], kNormalizationGain[band], kNormalizationSlope[band]);
     }
 }
 
@@ -159,11 +197,13 @@ bool WaveformRendererRGB3Band::preprocessInner() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
 
     if (!pTrack) {
+        m_pLevelWaveform.clear();
         return false;
     }
 
     ConstWaveformPointer waveform = pTrack->getWaveform();
     if (waveform.isNull()) {
+        m_pLevelWaveform.clear();
         return false;
     }
 
@@ -211,6 +251,8 @@ bool WaveformRendererRGB3Band::preprocessInner() {
     if (!(visualSampleRate > 0.0)) {
         return false;
     }
+
+    updateNormalization(waveform);
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0);

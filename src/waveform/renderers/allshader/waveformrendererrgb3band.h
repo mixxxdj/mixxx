@@ -5,8 +5,7 @@
 #include "rendergraph/geometrynode.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
-
-struct WaveformData;
+#include "waveform/waveform.h"
 
 namespace allshader {
 class WaveformRendererRGB3Band;
@@ -31,6 +30,7 @@ class allshader::WaveformRendererRGB3Band final
 
   private:
     bool preprocessInner();
+    void updateNormalization(const ConstWaveformPointer& pWaveform);
     void calculateHeights(const WaveformData* data,
             int visualFramesSize,
             double visualSampleRate,
@@ -43,6 +43,11 @@ class allshader::WaveformRendererRGB3Band final
     float m_lowMidColor_r;
     float m_lowMidColor_g;
     float m_lowMidColor_b;
+
+    // Per-track band normalization and the waveform state it was calculated for
+    ConstWaveformPointer m_pLevelWaveform;
+    int m_levelCompletion;
+    float m_normalization[3];
 
     // Per-frame band envelopes and per-pixel layer heights
     std::vector<float> m_envelopes[3];

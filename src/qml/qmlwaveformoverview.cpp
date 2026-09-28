@@ -245,6 +245,12 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         }
     }
 
+    waveformOverviewRenderer::RGB3BandNormalization rgb3BandNormalization{};
+    if (m_renderer == Renderer::RGB3Band) {
+        rgb3BandNormalization = waveformOverviewRenderer::rgb3BandNormalization(
+                *pWaveform, waveformCompletion);
+    }
+
     for (int currentCompletion = 0;
             currentCompletion < waveformCompletion;
             currentCompletion += 2) {
@@ -256,7 +262,11 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
             drawHsv(pPainter, m_channels, pWaveform, currentCompletion);
             break;
         case Renderer::RGB3Band:
-            drawRgb3Band(pPainter, m_channels, pWaveform, currentCompletion);
+            drawRgb3Band(pPainter,
+                    m_channels,
+                    pWaveform,
+                    currentCompletion,
+                    rgb3BandNormalization);
             break;
         default:
             drawRgb(pPainter, m_channels, pWaveform, currentCompletion);
@@ -409,14 +419,16 @@ void QmlWaveformOverview::drawHsv(QPainter* pPainter,
 void QmlWaveformOverview::drawRgb3Band(QPainter* pPainter,
         Channels channels,
         ConstWaveformPointer pWaveform,
-        int completion) const {
+        int completion,
+        const waveformOverviewRenderer::RGB3BandNormalization& normalization) const {
     // Uses the default RGB 3-band colors instead of the generic band colors
     static const QColor kColors[4] = {QColor(kDefaultRgb3BandLowColor),
             QColor(kDefaultRgb3BandMidColor),
             QColor(kDefaultRgb3BandLowMidColor),
             QColor(kDefaultRgb3BandHighColor)};
     const double offsetX = completion / 2.0;
-    const auto heights = waveformOverviewRenderer::rgb3BandHeights(*pWaveform, completion);
+    const auto heights = waveformOverviewRenderer::rgb3BandHeights(
+            *pWaveform, completion, normalization);
     const float layers[4] = {heights.low, heights.mid, heights.lowMid, heights.high};
     for (int layer = 0; layer < 4; ++layer) {
         pPainter->setPen(kColors[layer]);

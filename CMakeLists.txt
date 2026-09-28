@@ -1738,6 +1738,7 @@ add_library(
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
   src/waveform/renderers/waveformoverviewrenderer.cpp
+  src/waveform/renderers/rgb3bandlevels.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
   src/waveform/renderers/waveformrendererabstract.cpp

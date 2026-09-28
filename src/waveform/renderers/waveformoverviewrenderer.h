@@ -17,7 +17,15 @@ struct RGB3BandHeights {
     float lowMid;
     float high;
 };
-RGB3BandHeights rgb3BandHeights(const Waveform& waveform, int index);
+/// Per-track scale of the low, mid, and high band, calculated from the first
+/// `size` data elements of the waveform summary.
+struct RGB3BandNormalization {
+    float band[3];
+};
+RGB3BandNormalization rgb3BandNormalization(const Waveform& waveform, int size);
+RGB3BandHeights rgb3BandHeights(const Waveform& waveform,
+        int index,
+        const RGB3BandNormalization& normalization);
 
 /// This returns the normalized fullsize image
 /// for the library's overview column.

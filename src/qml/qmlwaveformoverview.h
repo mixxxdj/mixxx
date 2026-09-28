@@ -10,6 +10,7 @@
 
 #include "control/controlproxy.h"
 #include "qmltrackproxy.h"
+#include "waveform/renderers/waveformoverviewrenderer.h"
 #include "waveform/waveform.h"
 
 class ControlProxy;
@@ -122,7 +123,8 @@ class QmlWaveformOverview : public QQuickPaintedItem {
     void drawRgb3Band(QPainter* pPainter,
             Channels channels,
             ConstWaveformPointer pWaveform,
-            int completion) const;
+            int completion,
+            const waveformOverviewRenderer::RGB3BandNormalization& normalization) const;
     void drawMinuteMarkers(QPainter* pPainter, double duration) const;
     QColor getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const;
     QColor getRgbPenColor(qreal low, qreal mid, qreal high) const;
