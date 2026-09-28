@@ -130,6 +130,9 @@ void OfflineSeparator::run() {
     // N18: intraOp=0 lets ONNX Runtime pick the thread count automatically
     // (== nproc, 16 here); interOp stays 1 inside the engine
     // (OnnxInferenceEngine::loadModel: SetInterOpNumThreads(1)). No model change.
+    // N22: EP desde Config::executionProvider (default cpu, fallback a CPU).
+    // N23-compat: installed stem-engine only exposes the 3-arg loadModel
+    // overload; EP plumbing in Config stays, CPU behaviour unchanged.
     if (onnx.loadModel(modelPath.toStdString(), 0, /*enableQuantization=*/false)) {
         const auto& info = onnx.modelInfo();
         if (info.mode == StemEngine::ModelMode::WAVEFORM) {

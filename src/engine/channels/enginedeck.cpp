@@ -19,6 +19,7 @@
 
 #ifdef __STEM_SEPARATOR__
 #include "engine/stems/offlineseparator.h"
+#include "analyzer/analyzerstemseparation.h"
 #endif
 #include "engine/stems/stemcachemanager.h"
 #include "engine/stems/enginestemmixer.h"
@@ -586,6 +587,9 @@ void EngineDeck::checkAndLoadAIStems(TrackPointer pTrack) {
     sepConfig.sampleRate = 44100;
     sepConfig.overlap = aiOverlap;
     sepConfig.stemMode = aiStemMode;
+    // N22: EP desde [StemSeparation],execution_provider (default cpu).
+    sepConfig.executionProvider =
+            AnalyzerStemSeparation::executionProvider(m_pConfig);
 
     auto* separator = new mixxx::OfflineSeparator(sepConfig);
 

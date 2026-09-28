@@ -63,6 +63,33 @@ QString AnalyzerStemSeparation::effectiveModelPath(const QString& overridePath) 
 }
 
 // static
+QString AnalyzerStemSeparation::executionProvider(
+        const UserSettingsPointer& pConfig) {
+    const QString env = qEnvironmentVariable("MIXXX_STEM_EXECUTION_PROVIDER")
+                                .trimmed()
+                                .toLower();
+    if (env == QStringLiteral("openvino") || env == QStringLiteral("auto") ||
+            env == QStringLiteral("cpu")) {
+        return env;
+    }
+    QString cfg;
+    if (pConfig) {
+        cfg = pConfig
+                      ->getValue(ConfigKey(kConfigGroup, "execution_provider"),
+                              QStringLiteral("cpu"))
+                      .trimmed()
+                      .toLower();
+    } else {
+        cfg = QStringLiteral("cpu");
+    }
+    if (cfg == QStringLiteral("openvino") || cfg == QStringLiteral("auto")) {
+        return cfg;
+    }
+    // Default seguro: cpu (incluye vacío y valores desconocidos).
+    return QStringLiteral("cpu");
+}
+
+// static
 bool AnalyzerStemSeparation::isEnabled(const UserSettingsPointer& pConfig) {
     if (!pConfig) {
         return true;
@@ -421,6 +448,10 @@ void AnalyzerStemSeparation::runSeparationAndCache() {
         // automatically (== nproc, 16 here); interOp stays 1 inside the
         // engine (see OnnxInferenceEngine::loadModel: SetInterOpNumThreads(1)).
         // No model change, offline thread only.
+        // N22: EP desde [StemSeparation],execution_provider (default cpu).
+        // N23-compat: installed stem-engine only exposes the 3-arg loadModel
+        // overload, so the EP string is parsed/kept in config but not passed
+        // here until the engine gains EP support (CPU behaviour unchanged).
         if (onnx.loadModel(modelPath.toStdString(), 0, false) &&
                 onnx.modelInfo().mode == StemEngine::ModelMode::WAVEFORM) {
             const int kChunkSize = onnx.modelInfo().waveformInputSamples;

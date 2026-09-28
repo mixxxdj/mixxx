@@ -29,6 +29,9 @@ public:
         /// N18: stem mode (3 default, 4 keeps the legacy 4-stem layout:
         /// slot 3 "Instruments" fold off). Reader layout untouched.
         int stemMode = 3;
+        /// N22: ONNX execution provider (cpu|openvino|auto, default cpu).
+        /// openvino/auto try the Intel iGPU EP and fall back to CPU.
+        QString executionProvider = QStringLiteral("cpu");
         ProgressCallback onProgress;
         FinishedCallback onFinished;
         PartialCallback onPartial;

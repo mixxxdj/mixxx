@@ -16,6 +16,14 @@
 //   the analyzer falls back to passthrough stems (vocals = mix,
 //   drums/bass/other = silence) so analysis always succeeds.
 //
+// Execution provider policy (N22, CPU default):
+//   Config:        [StemSeparation],execution_provider=cpu|openvino|auto
+//   Env override:  $MIXXX_STEM_EXECUTION_PROVIDER (same values)
+//   Default cpu keeps prior behavior. openvino/auto try the Intel iGPU EP
+//   and fall back to CPU with a log telling how to install it:
+//     sudo pacman -S openvino openvino-intel-gpu-plugin
+//   CUDA/DirectML are not applicable on this Linux/iGPU target.
+//
 // Cache policy:
 //   key = SHA256(path + mtime + size)  (StemCacheManager::generateKey)
 //   file = <cacheDir>/<key>/<key>.stem.mp4, where cacheDir() is
@@ -51,6 +59,12 @@ class AnalyzerStemSeparation : public Analyzer {
 
     /// Effective model path: $MIXXX_STEM_MODEL if set, else defaultModelPath().
     static QString effectiveModelPath(const QString& overridePath = {});
+
+    /// N22: execution provider for ONNX inference. Reads
+    /// [StemSeparation],execution_provider (cpu|openvino|auto, default cpu);
+    /// $MIXXX_STEM_EXECUTION_PROVIDER overrides when set. Unknown/empty
+    /// values fall back to cpu so the CPU default never breaks.
+    static QString executionProvider(const UserSettingsPointer& pConfig);
 
     /// Hann window with periodic=false (denominator N-1), identical to the
     /// one used in OfflineSeparator::run(). At 50% overlap the windows sum
