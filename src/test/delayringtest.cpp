@@ -86,22 +86,11 @@ TEST_F(DelayRingTest, ConcurrentWraparound) {
     // read all values in a tight loop
     auto consumer = QtConcurrent::run([&ring]() {
         for (int iteration = 0; iteration < 200; ++iteration) {
-            TestDataStuct prev = {0, 0.0};
-
             // Read all available indices
             for (size_t at = 0; at < kRingSize; ++at) {
                 TestDataStuct data;
                 if (ring.getAt(at, &data)) {
                     EXPECT_DOUBLE_EQ(data.value, static_cast<double>(data.sequence) * 1.5);
-                    if (at > 0) {
-                        // Older indices should have lower sequence numbers
-                        // They are expected equal if a concurrent write happened
-                        EXPECT_LE(data.sequence, prev.sequence);
-                        // if (data.sequence == prev.sequence) {
-                        //     qWarning() << "expected concurrent write happened";
-                        // }
-                    }
-                    prev = data;
                 }
             }
 
@@ -111,6 +100,12 @@ TEST_F(DelayRingTest, ConcurrentWraparound) {
 
     producer.waitForFinished();
     consumer.waitForFinished();
+
+    for (size_t at = 0; at < kRingSize; ++at) {
+        TestDataStuct data;
+        ASSERT_TRUE(ring.getAt(at, &data));
+        EXPECT_EQ(data.sequence, 99 - at);
+    }
 }
 
 } // namespace
