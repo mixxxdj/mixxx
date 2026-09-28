@@ -24,17 +24,9 @@
 #include "widget/wlibrarysidebar.h"
 #endif
 
-MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-        UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
-          kMissingTitle(tr("Missing Tracks")),
-          kHiddenTitle(tr("Hidden Tracks")),
-          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
-          m_pLibraryTableModel(nullptr),
-          m_pSidebarModel(make_parented<TreeItemModel>(this)),
-          m_pMissingView(nullptr),
-          m_pHiddenView(nullptr),
-          m_trackCount{0} {
+// static
+QSharedPointer<BaseTrackCache> MixxxLibraryFeature::createLibraryTrackSource(
+        TrackCollection* pTrackCollection) {
     QString idColumn = LIBRARYTABLE_ID;
     QStringList columns = {
             LIBRARYTABLE_ID,
@@ -93,7 +85,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                 QLatin1Char('.') + col);
     }
 
-    QSqlQuery query(m_pTrackCollection->database());
+    QSqlQuery query(pTrackCollection->database());
     QString tableName = "library_cache_view";
     QString queryString = QString(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -105,14 +97,29 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         LOG_FAILED_QUERY(query);
     }
 
-    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(m_pTrackCollection,
+    auto pBaseTrackCache = QSharedPointer<BaseTrackCache>::create(
+            pTrackCollection,
             std::move(tableName),
             std::move(idColumn),
             std::move(columns),
             std::move(searchColumns),
             true);
-    m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
-    m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
+    pTrackCollection->connectTrackSource(pBaseTrackCache);
+    return pBaseTrackCache;
+}
+
+MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
+        UserSettingsPointer pConfig)
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
+          kMissingTitle(tr("Missing Tracks")),
+          kHiddenTitle(tr("Hidden Tracks")),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          m_pLibraryTableModel(nullptr),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
+          m_pMissingView(nullptr),
+          m_pHiddenView(nullptr),
+          m_trackCount{0} {
+    m_pBaseTrackCache = createLibraryTrackSource(m_pTrackCollection);
 
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this,

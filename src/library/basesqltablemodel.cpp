@@ -234,10 +234,21 @@ void BaseSqlTableModel::select() {
         return;
     }
 
+    // A select() rebuilds the entire row cache, which is a wholesale data
+    // change. Signal it as a model reset so that views update atomically.
+    // Emitting incremental remove/insert signals instead can leave a view
+    // with an inconsistent row count when those signals are processed from a
+    // nested event loop, which trips a Qt assertion in
+    // QQmlDelegateModelPrivate ("d->m_count >= 0"). The QML library track
+    // list is backed by such a delegate model.
+    beginResetModel();
+
     // Remove all the rows from the table after(!) the query has been
     // executed successfully. See issue #6782.
     // TODO(rryan) we could edit the table in place instead of clearing it?
-    clearRows();
+    m_rowInfo.clear();
+    m_trackIdToRows.clear();
+    m_trackPosToRow.clear();
 
     // The size of the result set is not known in advance for a
     // forward-only query, so we cannot reserve memory for rows
@@ -265,6 +276,7 @@ void BaseSqlTableModel::select() {
             qCritical()
                     << "ID column not available in database query results:"
                     << m_idColumn;
+            endResetModel();
             return;
         }
 
@@ -344,13 +356,14 @@ void BaseSqlTableModel::select() {
         DEBUG_ASSERT(trackPosToRows.size() == rowInfos.size());
     }
 
-    // We're done! Issue the update signals and replace the main maps.
-    replaceRows(
-            std::move(rowInfos),
-            std::move(trackIdToRows),
-            std::move(trackPosToRows));
+    // We're done! Replace the main maps and emit the model reset.
+    m_rowInfo = std::move(rowInfos);
+    m_trackIdToRows = std::move(trackIdToRows);
+    m_trackPosToRow = std::move(trackPosToRows);
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
+
+    endResetModel();
 
     qDebug() << this << "select() returned" << m_rowInfo.size()
              << "results in" << time.elapsed().debugMillisWithUnit();

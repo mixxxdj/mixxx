@@ -45,6 +45,11 @@ class MixxxLibraryFeature final : public LibraryFeature {
         return m_pLibraryTableModel;
     }
 
+    /// Creates the shared track cache backing the internal library and connects
+    /// it to the given collection. Exposed for reuse in tests.
+    static QSharedPointer<BaseTrackCache> createLibraryTrackSource(
+            TrackCollection* pTrackCollection);
+
     void searchAndActivate(const QString& query);
 
   public slots:
