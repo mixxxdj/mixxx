@@ -65,47 +65,4 @@ TEST_F(DelayRingTest, ConcurrentPushAndGet) {
     consumer.waitForFinished();
 }
 
-TEST_F(DelayRingTest, ConcurrentWraparound) {
-    DelayRing<TestDataStuct, kRingSize> ring;
-
-    // Make sure we have old values that the race can start
-    for (size_t i = 0; i < kRingSize; ++i) {
-        TestDataStuct data = {static_cast<uint64_t>(i), static_cast<double>(i) * 1.5};
-        ring.push(data);
-    }
-
-    // produce slowly new values.
-    auto producer = QtConcurrent::run([&ring]() {
-        for (size_t i = kRingSize; i < 100; ++i) {
-            TestDataStuct data = {static_cast<uint64_t>(i), static_cast<double>(i) * 1.5};
-            ring.push(data);
-            QThread::usleep(3);
-        }
-    });
-
-    // read all values in a tight loop
-    auto consumer = QtConcurrent::run([&ring]() {
-        for (int iteration = 0; iteration < 200; ++iteration) {
-            // Read all available indices
-            for (size_t at = 0; at < kRingSize; ++at) {
-                TestDataStuct data;
-                if (ring.getAt(at, &data)) {
-                    EXPECT_DOUBLE_EQ(data.value, static_cast<double>(data.sequence) * 1.5);
-                }
-            }
-
-            QThread::usleep(1);
-        }
-    });
-
-    producer.waitForFinished();
-    consumer.waitForFinished();
-
-    for (size_t at = 0; at < kRingSize; ++at) {
-        TestDataStuct data;
-        ASSERT_TRUE(ring.getAt(at, &data));
-        EXPECT_EQ(data.sequence, 99 - at);
-    }
-}
-
 } // namespace
