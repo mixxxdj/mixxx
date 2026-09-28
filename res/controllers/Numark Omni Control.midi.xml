@@ -282,12 +282,12 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pfl</key>
+                <key>NumarkOmniControl.tooglePFL</key>
                 <description>PFL</description>
                 <status>0x90</status>
                 <midino>0x30</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -352,12 +352,12 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pfl</key>
+                <key>NumarkOmniControl.tooglePFL</key>
                 <description>PFL</description>
                 <status>0x90</status>
                 <midino>0x37</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -669,7 +669,7 @@
                 <status>0x90</status>
                 <midino>0x37</midino>
                 <on>0x64</on>
-                <minimum>0.1</minimum>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -679,6 +679,7 @@
                 <midino>0x3C</midino>
                 <on>0x00</on>
                 <off>0x64</off>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -696,7 +697,7 @@
                 <status>0x90</status>
                 <midino>0x36</midino>
                 <on>0x64</on>
-                <minimum>0.1</minimum>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -705,7 +706,36 @@
                 <status>0x90</status>
                 <midino>0x33</midino>
                 <on>0x64</on>
-                <minimum>0.1</minimum>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_double</key>
+                <description>PITCH+</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>LOOP_OUT</description>
+                <status>0x90</status>
+                <midino>0x3B</midino>
+                <on>0x64</on>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_halve</key>
+                <description>PITCH-</description>
+                <status>0x90</status>
+                <midino>0x38</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -722,9 +752,8 @@
                 <description>PFL</description>
                 <status>0x90</status>
                 <midino>0x35</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -733,7 +762,7 @@
                 <status>0x90</status>
                 <midino>0x3E</midino>
                 <on>0x64</on>
-                <minimum>0.1</minimum>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel1]</group>
@@ -747,13 +776,32 @@
             </output>
             <output>
                 <group>[Channel1]</group>
+                <key>rate_temp_down</key>
+                <description>PITCH-</description>
+                <status>0x90</status>
+                <midino>0x38</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>rate_temp_up</key>
+                <description>PITCH+</description>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
                 <key>tempo_tap</key>
                 <description>TAP</description>
                 <status>0x90</status>
                 <midino>0x30</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -762,7 +810,7 @@
                 <status>0x90</status>
                 <midino>0x42</midino>
                 <on>0x64</on>
-                <minimum>0.1</minimum>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -772,6 +820,7 @@
                 <midino>0x4C</midino>
                 <on>0x00</on>
                 <off>0x64</off>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -789,7 +838,7 @@
                 <status>0x90</status>
                 <midino>0x41</midino>
                 <on>0x64</on>
-                <minimum>0.1</minimum>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -798,7 +847,36 @@
                 <status>0x90</status>
                 <midino>0x44</midino>
                 <on>0x64</on>
-                <minimum>0.1</minimum>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_double</key>
+                <description>PITCH+</description>
+                <status>0x90</status>
+                <midino>0x49</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>LOOP_OUT</description>
+                <status>0x90</status>
+                <midino>0x4B</midino>
+                <on>0x64</on>
+                <minimum>1</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_halve</key>
+                <description>PITCH-</description>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -807,6 +885,7 @@
                 <status>0x90</status>
                 <midino>0x4A</midino>
                 <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -814,9 +893,8 @@
                 <description>PFL</description>
                 <status>0x90</status>
                 <midino>0x40</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -825,6 +903,7 @@
                 <status>0x90</status>
                 <midino>0x4E</midino>
                 <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[Channel2]</group>
@@ -838,13 +917,32 @@
             </output>
             <output>
                 <group>[Channel2]</group>
+                <key>rate_temp_down</key>
+                <description>PITCH-</description>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>rate_temp_up</key>
+                <description>PITCH+</description>
+                <status>0x90</status>
+                <midino>0x49</midino>
+                <on>0x00</on>
+                <off>0x64</off>
+                <maximum>0</maximum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
                 <key>tempo_tap</key>
                 <description>TAP</description>
                 <status>0x90</status>
                 <midino>0x47</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
@@ -852,9 +950,8 @@
                 <description>BASS_KILL</description>
                 <status>0x90</status>
                 <midino>0x52</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
@@ -862,9 +959,8 @@
                 <description>MID_KILL</description>
                 <status>0x90</status>
                 <midino>0x51</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
@@ -872,9 +968,8 @@
                 <description>TREBLE_KILL</description>
                 <status>0x90</status>
                 <midino>0x50</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
@@ -882,9 +977,8 @@
                 <description>BASS_KILL</description>
                 <status>0x90</status>
                 <midino>0x55</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
@@ -892,9 +986,8 @@
                 <description>MID_KILL</description>
                 <status>0x90</status>
                 <midino>0x54</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
             <output>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
@@ -902,9 +995,8 @@
                 <description>TREBLE_KILL</description>
                 <status>0x90</status>
                 <midino>0x53</midino>
-                <on>0x00</on>
-                <off>0x64</off>
-                <maximum>0.1</maximum>
+                <on>0x64</on>
+                <minimum>1</minimum>
             </output>
         </outputs>
     </controller>
