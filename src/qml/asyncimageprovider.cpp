@@ -113,14 +113,21 @@ QQuickImageResponse* AsyncImageProvider::requestImageResponse(
     // move the response before connecting any signals.
     pResponse->moveToThread(m_pTrackCollectionManager->thread());
     if (QThread::currentThread() != m_pTrackCollectionManager->thread()) {
-        // requestImageResponse may be called from a non-main thread;
-        // initialize() must run on the main thread.
+        // requestImageResponse is called from the QQuickPixmapReader thread.
+        // initialize() must run on the main thread, but it must not block this
+        // thread: the main thread may simultaneously be tearing down the QML
+        // engine (e.g. on reloadQml), in which case QQuickPixmapReader's
+        // destructor waits for this thread while this thread would wait for the
+        // main thread, deadlocking the whole application.
+        //
+        // Use a queued invocation with the response as context so it is
+        // cancelled automatically if the response is destroyed first.
         QMetaObject::invokeMethod(
-                m_pTrackCollectionManager.get(),
+                pResponse,
                 [pResponse] {
                     pResponse->initialize();
                 },
-                Qt::BlockingQueuedConnection);
+                Qt::QueuedConnection);
     } else {
         pResponse->initialize();
     }
