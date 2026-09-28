@@ -1621,6 +1621,8 @@ Category {
             anchors.right: parent.right
             spacing: 10
 
+            readonly property bool hasChanges: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+
             Text {
                 id: errorMessage
 
@@ -1632,7 +1634,8 @@ Category {
             Skin.FormButton {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                // Weird bug on MacOS - if the button is disabled before the pressed property is clicked, the button remains pressed, leading to a no-op click when it gets next enabled
+                enabled: pressed || parent.hasChanges
                 objectName: "interfaceCancelButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: "Cancel"
@@ -1653,8 +1656,9 @@ Category {
             }
             Skin.FormButton {
                 activeColor: "#999999"
-                backgroundColor: root.hasChanges ? "#3a60be" : "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                backgroundColor: enabled ? "#3a60be" : "#3F3F3F"
+                // Weird bug on MacOS - if the button is disabled before the pressed property is clicked, the button remains pressed, leading to a no-op click when it gets next enabled
+                enabled: pressed || parent.hasChanges
                 objectName: "interfaceSaveButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: "Save"

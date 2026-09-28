@@ -4169,6 +4169,18 @@ if(QML)
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
   )
+
+  # The QtCore QML module (StandardPaths, used by res/qml/Settings/Library.qml) is
+  # not pulled in by any Qt library target on MacOS, so its QML plugin has
+  # to be linked explicitly, otherwise the import fails at runtime with
+  # 'module "QtCore" is not installed'.
+  if(APPLE AND TARGET Qt${QT_VERSION_MAJOR}::qtqmlcoreplugin)
+    target_link_libraries(
+      mixxx-qml-lib
+      PRIVATE Qt${QT_VERSION_MAJOR}::qtqmlcoreplugin
+    )
+  endif()
+
   target_link_libraries(mixxx-lib PRIVATE mixxx-qml-lib)
 
   # FIXME: Currently we need to add these include directories due to

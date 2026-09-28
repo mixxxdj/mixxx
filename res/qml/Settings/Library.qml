@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Dialogs
 import Qt.labs.qmlmodels
+import QtCore
 import Qt5Compat.GraphicalEffects
 import Mixxx 1.0 as Mixxx
 import "." as Setting
@@ -1067,7 +1068,8 @@ Category {
             Skin.FormButton {
                 activeColor: "#999999"
                 backgroundColor: root.dirty ? "#3a60be" : "#3F3F3F"
-                enabled: root.dirty
+                // Weird bug on MacOS - if the button is disabled before the pressed property is clicked, the button remains pressed, leading to a no-op click when it gets next enabled
+                enabled: pressed || root.dirty
                 objectName: "librarySaveButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: qsTr("Save")

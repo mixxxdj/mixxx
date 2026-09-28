@@ -663,7 +663,8 @@ Category {
             Skin.FormButton {
                 activeColor: "#999999"
                 backgroundColor: "#7D3B3B"
-                enabled: !root.committing
+                // Weird bug on MacOS - if the button is disabled before the pressed property is clicked, the button remains pressed, leading to a no-op click when it gets next enabled
+                enabled: pressed || !root.committing
                 objectName: "soundCancelButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: "Cancel"
@@ -687,7 +688,8 @@ Category {
             Skin.FormButton {
                 activeColor: "#999999"
                 backgroundColor: root.hasChanges ? "#3a60be" : Theme.darkGray3
-                enabled: root.hasChanges && !root.committing
+                // Weird bug on MacOS - if the button is disabled before the pressed property is clicked, the button remains pressed, leading to a no-op click when it gets next enabled
+                enabled: pressed || (root.hasChanges && !root.committing)
                 objectName: "soundSaveButton"
                 opacity: enabled ? 1.0 : 0.5
                 text: "Save"
