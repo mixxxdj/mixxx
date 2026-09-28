@@ -17,10 +17,10 @@ namespace {
 // the scrolling waveform.
 constexpr float kRgb3BandMixWeight[3] = {0.0f, 0.125f, 0.14f};
 constexpr float kRgb3BandFloor[3] = {0.0f, 0.015f, 0.04f};
-constexpr float kRgb3BandExponent[3] = {0.91f, 0.67f, 1.17f};
+constexpr float kRgb3BandExponent[3] = {1.0f, 0.67f, 1.17f};
 constexpr float kRgb3BandLevelQuantile[3] = {0.99f, 0.99f, 0.95f};
-constexpr float kRgb3BandNormalizationGain[3] = {0.76f, 0.6f, 0.88f};
-constexpr float kRgb3BandNormalizationSlope[3] = {0.47f, 0.24f, 0.18f};
+constexpr float kRgb3BandNormalizationGain[3] = {0.79f, 0.6f, 0.88f};
+constexpr float kRgb3BandNormalizationSlope[3] = {0.56f, 0.24f, 0.18f};
 
 float rgb3BandHeight(float amplitude, float mixAmplitude, int band, float normalization) {
     constexpr float kMax = 255.0f;

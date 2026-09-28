@@ -25,13 +25,12 @@ namespace {
 // has the longest release, which also determines the lead-in.
 constexpr double kReleaseSeconds[3] = {0.3, 0.08, 0.065};
 // Mid includes some low and high some mid, like Rekordbox's lower crossovers
-constexpr int kMixBand[3] = {0, 0, 1};
-constexpr float kMixWeight[3] = {0.0f, 0.125f, 0.14f};
-constexpr float kFloor[3] = {0.0f, 0.02f, 0.1f};
-constexpr float kExponent[3] = {1.4f, 0.79f, 1.27f};
+constexpr float kMixWeight[3] = {0.0f, 0.195f, 0.14f};
+constexpr float kFloor[3] = {0.0f, 0.0f, 0.1f};
+constexpr float kExponent[3] = {1.4f, 1.0f, 1.27f};
 constexpr float kLevelQuantile[3] = {0.99f, 0.999f, 0.999f};
-constexpr float kNormalizationGain[3] = {0.7f, 0.6f, 0.91f};
-constexpr float kNormalizationSlope[3] = {0.97f, 0.66f, 0.63f};
+constexpr float kNormalizationGain[3] = {0.7f, 0.63f, 0.91f};
+constexpr float kNormalizationSlope[3] = {0.97f, 0.76f, 0.63f};
 // Envelopes decay below 1/256 after this many release time constants.
 constexpr double kLeadInReleases = 5.6;
 // Recalculate the levels during analysis after this share of the track
@@ -132,7 +131,7 @@ void WaveformRendererRGB3Band::calculateHeights(const WaveformData* data,
                 continue;
             }
             mixEnvelope[band] = std::max(
-                    amplitude[kMixBand[band]], mixEnvelope[band] * decay[band]);
+                    amplitude[band - 1], mixEnvelope[band] * decay[band]);
             m_envelopes[band][i] = std::sqrt(envelope[band] * envelope[band] +
                     kMixWeight[band] * mixEnvelope[band] * mixEnvelope[band]);
         }

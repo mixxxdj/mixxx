@@ -245,9 +245,9 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         }
     }
 
-    waveformOverviewRenderer::RGB3BandNormalization rgb3BandNormalization{};
+    waveformOverviewRenderer::RGB3BandNormalization normalization{};
     if (m_renderer == Renderer::RGB3Band) {
-        rgb3BandNormalization = waveformOverviewRenderer::rgb3BandNormalization(
+        normalization = waveformOverviewRenderer::rgb3BandNormalization(
                 *pWaveform, waveformCompletion);
     }
 
@@ -266,7 +266,7 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
                     m_channels,
                     pWaveform,
                     currentCompletion,
-                    rgb3BandNormalization);
+                    normalization);
             break;
         default:
             drawRgb(pPainter, m_channels, pWaveform, currentCompletion);
