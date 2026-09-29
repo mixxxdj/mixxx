@@ -23,6 +23,25 @@ inline QUrl validateLocalFileUrl(QUrl url) {
     return url;
 }
 
+// audio/mp4 (.m4a) and video/mp4 (.mp4) are the same ISO BMFF / MPEG-4
+// Part 14 container. Qt's content sniffer picks one or the other from the
+// ftyp brand, so a valid audio-only .m4a is often reported as video/mp4.
+bool isIsoBmffMpeg4MimeType(const QMimeType& mimeType) {
+    return mimeType.inherits(QStringLiteral("audio/mp4")) ||
+            mimeType.inherits(QStringLiteral("video/mp4"));
+}
+
+bool fileSuffixIsCompatibleWithMimeType(
+        const QString& fileSuffix, const QMimeType& mimeType) {
+    if (mimeType.suffixes().contains(fileSuffix)) {
+        return true;
+    }
+    const QMimeType suffixMimeType = QMimeDatabase().mimeTypeForFile(
+            QStringLiteral("x.") + fileSuffix, QMimeDatabase::MatchExtension);
+    return isIsoBmffMpeg4MimeType(mimeType) &&
+            isIsoBmffMpeg4MimeType(suffixMimeType);
+}
+
 } // anonymous namespace
 
 //static
@@ -87,7 +106,8 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         qWarning() << "No file type registered for MIME type" << mimeType;
         return fileSuffix;
     }
-    if (fileType != fileSuffix && !mimeType.suffixes().contains(fileSuffix)) {
+    if (fileType != fileSuffix &&
+            !fileSuffixIsCompatibleWithMimeType(fileSuffix, mimeType)) {
         qWarning()
                 << "Using type" << fileType
                 << "instead of" << fileSuffix
