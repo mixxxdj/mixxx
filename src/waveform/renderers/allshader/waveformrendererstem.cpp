@@ -1,10 +1,9 @@
 #include "waveform/renderers/allshader/waveformrendererstem.h"
 
-#include <cmath>
-
 #include <QFont>
 #include <QImage>
 #include <QOpenGLTexture>
+#include <cmath>
 
 #include "control/controlproxy.h"
 #include "engine/channels/enginedeck.h"
