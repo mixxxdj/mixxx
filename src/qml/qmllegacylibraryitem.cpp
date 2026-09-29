@@ -32,8 +32,10 @@
 #include <cmath>
 #include <utility>
 
+#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "mixer/playermanager.h"
@@ -87,6 +89,15 @@ SchemeStyle getActiveSchemeStyle() {
 } // namespace
 
 QmlLegacyLibraryItem::~QmlLegacyLibraryItem() = default;
+
+void QmlLegacyLibraryItem::focusSearch() {
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchLineEdit) {
+        return;
+    }
+    forceActiveFocus(Qt::ShortcutFocusReason);
+    updateEmbeddedFocus(m_pSearchLineEdit, Qt::ShortcutFocusReason);
+    requestRender();
+}
 
 QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
         : QQuickPaintedItem(pParent),
@@ -191,10 +202,15 @@ QmlLegacyLibraryItem::QmlLegacyLibraryItem(QQuickItem* pParent)
     VERIFY_OR_DEBUG_ASSERT(pLibrary) {
         return;
     }
+    KeyboardEventFilter* pKeyboard = QmlLibraryProxy::getKeyboard();
+    VERIFY_OR_DEBUG_ASSERT(pKeyboard) {
+        return;
+    }
 
+    pKeyboard->registerSearchBar(m_pSearchLineEdit);
     pLibrary->bindSearchboxWidget(m_pSearchLineEdit);
     pLibrary->bindSidebarWidget(m_pSidebar);
-    pLibrary->bindLibraryWidget(m_pLibraryWidget, QmlLibraryProxy::getKeyboard());
+    pLibrary->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
 
     // The legacy skin parser makes this connection in parseLibrary().
     // Without it the search signal never reaches WLibrary and the
@@ -1412,6 +1428,16 @@ void QmlLegacyLibraryItem::updateEmbeddedFocus(
         pFocusTarget = pFocusTarget->parentWidget();
     }
 
+    if (m_pSearchLineEdit) {
+        const bool searchFocused = pFocusTarget == m_pSearchLineEdit;
+        if (m_pSearchLineEdit->property("qmlBridgeFocused").toBool() != searchFocused) {
+            m_pSearchLineEdit->setProperty("qmlBridgeFocused", searchFocused);
+            m_pSearchLineEdit->style()->unpolish(m_pSearchLineEdit);
+            m_pSearchLineEdit->style()->polish(m_pSearchLineEdit);
+            m_pSearchLineEdit->update();
+        }
+    }
+
     if (pFocusTarget == m_pFocusedWidget) {
         return;
     }
@@ -1610,6 +1636,10 @@ void QmlLegacyLibraryItem::initializeOverviewTypeControl() {
     const ConfigKey overviewTypeCfgKey(
             QStringLiteral("[Waveform]"),
             QStringLiteral("WaveformOverviewType"));
+
+    if (ControlObject::exists(overviewTypeCfgKey)) {
+        return;
+    }
 
     m_pOverviewTypeControl = std::make_unique<ControlPushButton>(overviewTypeCfgKey);
     m_pOverviewTypeControl->setStates(

@@ -19,29 +19,33 @@ Item {
         color: LateNightTheme.mixerPanelBorderTop
         height: 1
         width: parent.width
+        z: 1000
     }
     Rectangle {
         color: LateNightTheme.mixerPanelBorderLeft
         height: parent.height
         width: 1
+        z: 1000
     }
     Rectangle {
         anchors.bottom: parent.bottom
         color: LateNightTheme.mixerPanelBorderBottom
         height: 1
         width: parent.width
+        z: 1001
     }
     Rectangle {
         anchors.right: parent.right
         color: LateNightTheme.mixerPanelBorderRight
         height: parent.height
         width: 1
+        z: 1000
     }
     MixerDecks {
         id: decks
 
         groups: root.groups
-        height: root.implicitHeight
+        height: root.height
         show4decks: root.show4decks
         showEqKillButtons: showEqKillButtonsControl.value > 0
         showEqKnobs: showEqKnobsControl.value > 0
@@ -71,7 +75,7 @@ Item {
     MainHeadphonePanel {
         id: mainHeadphonePanel
 
-        height: root.implicitHeight
+        height: root.height
         show4decks: root.show4decks
         visible: showMainHeadMixerControl.value > 0
         width: 96

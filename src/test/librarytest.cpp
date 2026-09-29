@@ -1,6 +1,7 @@
 #include "test/librarytest.h"
 
 #include "library/coverartcache.h"
+#include "library/dateformatbroadcaster.h"
 #include "library/library_prefs.h"
 #include "track/track.h"
 
@@ -35,10 +36,12 @@ LibraryTest::LibraryTest()
           m_pTrackCollectionManager(newTrackCollectionManager(config(), dbConnectionPooler())),
           m_keyNotationCO(mixxx::library::prefs::kKeyNotationConfigKey) {
     CoverArtCache::createInstance();
+    DateFormatChangedBroadcaster::createInstance();
 }
 
 LibraryTest::~LibraryTest() {
     CoverArtCache::destroy();
+    DateFormatChangedBroadcaster::destroy();
 }
 
 TrackPointer LibraryTest::getOrAddTrackByLocation(

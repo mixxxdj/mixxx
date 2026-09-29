@@ -13,6 +13,7 @@ Item {
     required property string displayProperty
     property string editProperty: displayProperty
     property bool contextMenuEnabled: true
+    property bool dragEnabled: false
     property bool editable: true
     property bool showTrackPropertiesOnDoubleClick: true
     property color textColor: LateNightTheme.textColor
@@ -29,6 +30,20 @@ Item {
 
     implicitWidth: textLabel.implicitWidth + horizontalPadding * 2
     implicitHeight: textLabel.implicitHeight
+
+    Drag.active: root.dragEnabled && dragHandler.active
+    Drag.dragType: Drag.Automatic
+    Drag.imageSource: "qrc:/images/library/ic_library_drag_and_drop.svg"
+    Drag.mimeData: {
+        let data = {
+            "mixxx/player": root.group
+        };
+        const trackLocationUrl = root.track?.trackLocationUrl;
+        if (trackLocationUrl)
+            data["text/uri-list"] = trackLocationUrl;
+        return data;
+    }
+    Drag.supportedActions: Qt.CopyAction
 
     function propertyValue(propertyName) {
         if (!root.track) {
@@ -181,6 +196,14 @@ Item {
                 root.commitEditor();
             }
         }
+    }
+
+    DragHandler {
+        id: dragHandler
+
+        acceptedButtons: Qt.LeftButton
+        enabled: root.dragEnabled && !root.editing && !!root.track
+        target: null
     }
 
     MouseArea {

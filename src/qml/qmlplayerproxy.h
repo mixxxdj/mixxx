@@ -6,6 +6,7 @@
 #include <QString>
 #include <QUrl>
 
+#include "analyzer/analyzerprogress.h"
 #include "mixer/basetrackplayer.h"
 #include "qmltrackproxy.h"
 #include "track/track_decl.h"
@@ -16,7 +17,9 @@ namespace qml {
 class QmlPlayerProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(QmlTrackProxy* currentTrack READ currentTrack NOTIFY trackChanged)
+    Q_PROPERTY(double analyzerProgress READ analyzerProgress NOTIFY analyzerProgressChanged)
     Q_PROPERTY(bool isLoaded READ isLoaded NOTIFY trackChanged)
+    Q_PROPERTY(bool trackLoaded READ isTrackLoaded NOTIFY trackLoadedChanged)
     QML_NAMED_ELEMENT(Player)
     QML_UNCREATABLE("Only accessible via Mixxx.PlayerManager.getPlayer(group)")
 
@@ -24,6 +27,8 @@ class QmlPlayerProxy : public QObject {
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr);
 
     bool isLoaded() const;
+    bool isTrackLoaded() const;
+    double analyzerProgress() const;
     /// Needed for interacting with the raw track player object.
     BaseTrackPlayer* internalTrackPlayer() const {
         return m_pTrackPlayer;
@@ -37,12 +42,15 @@ class QmlPlayerProxy : public QObject {
     void slotTrackLoaded(TrackPointer pTrack);
     void slotTrackUnloaded(TrackPointer pOldTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void slotTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:
     void trackLoading();
     void trackLoaded();
     void trackUnloaded();
     void trackChanged();
+    void trackLoadedChanged();
+    void analyzerProgressChanged();
     void cloneFromGroup(const QString& group);
 
     void loadTrackFromLocationRequested(const QString& trackLocation, bool play);
@@ -54,9 +62,12 @@ class QmlPlayerProxy : public QObject {
 
   private:
     QmlTrackProxy* currentTrack();
+    void setAnalyzerProgress(AnalyzerProgress analyzerProgress);
 
     QPointer<BaseTrackPlayer> m_pTrackPlayer;
     TrackPointer m_pCurrentTrack;
+    AnalyzerProgress m_analyzerProgress{kAnalyzerProgressUnknown};
+    bool m_trackLoaded{false};
 };
 
 } // namespace qml

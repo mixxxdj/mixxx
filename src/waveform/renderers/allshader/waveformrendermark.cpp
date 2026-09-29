@@ -443,6 +443,14 @@ void allshader::WaveformRenderMark::update() {
         }
     }
 
+    const bool hasWaveform = !m_waveformRenderer->getWaveform().isNull();
+    if (hasWaveform && nextMarkPosition == kDefaultNextMarkPosition) {
+        const double trackSamples = m_waveformRenderer->getTrackSamples();
+        if (trackSamples > playPosition) {
+            nextMarkPosition = trackSamples;
+        }
+    }
+
     // Remove unused nodes
     while (pRangeChild) {
         auto* pNextChild = static_cast<GeometryNode*>(pRangeChild->nextSibling());
@@ -467,7 +475,7 @@ void allshader::WaveformRenderMark::update() {
         m_lastPlayMarkerPos = playMarkerPos;
     }
 
-    if (m_untilMarkShowBeats || m_untilMarkShowTime) {
+    if (hasWaveform && (m_untilMarkShowBeats || m_untilMarkShowTime)) {
         updateUntilMark(playPosition, nextMarkPosition);
         updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
     } else {
@@ -487,7 +495,15 @@ void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
             untilMarkMaxHeightForText,
             m_waveformRenderer->getDevicePixelRatio());
 
-    if (m_timeUntilMark == 0.0) {
+    const QString beatsUntilMark =
+            m_untilMarkShowBeats && m_beatsUntilMark > 0
+            ? QString::number(m_beatsUntilMark)
+            : QString{};
+    const QString timeUntilMark =
+            m_untilMarkShowTime && m_timeUntilMark > 0.0
+            ? timeSecToString(m_timeUntilMark)
+            : QString{};
+    if (beatsUntilMark.isEmpty() && timeUntilMark.isEmpty()) {
         m_pDigitsRenderNode->clear();
         return;
     }
@@ -516,8 +532,8 @@ void allshader::WaveformRenderMark::updateDigitsNodeForUntilMark(float x) {
             x,
             y,
             multiLine,
-            m_untilMarkShowBeats ? QString::number(m_beatsUntilMark) : QString{},
-            m_untilMarkShowTime ? timeSecToString(m_timeUntilMark) : QString{});
+            beatsUntilMark,
+            timeUntilMark);
 }
 
 // Generate the texture used to draw the play position marker.
@@ -530,7 +546,8 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
     const float height = m_waveformRenderer->getBreadth();
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-    if (height == m_playPosHeight && devicePixelRatio == m_playPosDevicePixelRatio) {
+    if (!m_playPosColorsDirty && height == m_playPosHeight &&
+            devicePixelRatio == m_playPosDevicePixelRatio) {
         return;
     }
     m_playPosHeight = height;
@@ -598,6 +615,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
     dynamic_cast<TextureMaterial&>(m_pPlayPosNode->material())
             .setTexture(std::make_unique<Texture>(pContext, image));
     m_pPlayPosNode->markDirtyMaterial();
+    m_playPosColorsDirty = false;
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
@@ -659,6 +677,22 @@ void allshader::WaveformRenderMark::updateUntilMark(
         return;
     }
 
+    const double endPosition = m_waveformRenderer->getTrackSamples();
+    const double remainingSamples = nextMarkPosition - playPosition;
+    const double remainingTrackSamples = endPosition - playPosition;
+    const double remainingTime = m_pTimeRemainingControl
+            ? m_pTimeRemainingControl->get()
+            : 0.0;
+    if (remainingTime > 0.0 && remainingTrackSamples > 0.0) {
+        m_timeUntilMark = std::max(0.0,
+                remainingTime * remainingSamples / remainingTrackSamples);
+    } else if (trackInfo->getSampleRate() > 0) {
+        const double remainingFrames =
+                mixxx::audio::FramePos::fromEngineSamplePos(remainingSamples).value();
+        m_timeUntilMark = std::max(
+                0.0, remainingFrames / trackInfo->getSampleRate());
+    }
+
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
         return;
@@ -689,18 +723,6 @@ void allshader::WaveformRenderMark::updateUntilMark(
         itA--;
         m_currentBeatPosition = itA->toEngineSamplePos();
         m_beatsUntilMark = std::distance(itA, itB);
-    }
-    // As endPosition - playPosition corresponds with remainingTime,
-    // we calculate the proportional part of nextMarkPosition - playPosition
-    if (m_pTimeRemainingControl) {
-        const double endPosition = m_waveformRenderer->getTrackSamples();
-        const double remainingTime = m_pTimeRemainingControl->get();
-        m_timeUntilMark = std::max(0.0,
-                remainingTime * (nextMarkPosition - playPosition) /
-                        (endPosition - playPosition));
-    } else {
-        m_timeUntilMark = std::max(0.0,
-                (nextMarkPosition - playPosition) / trackInfo->getSampleRate());
     }
 }
 

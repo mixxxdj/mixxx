@@ -114,6 +114,15 @@ class WaveformWidgetFactory : public QObject,
   public:
     bool setConfig(UserSettingsPointer config);
 
+#ifdef MIXXX_USE_QML
+    static void setQmlMode(bool enabled) {
+        s_qmlMode = enabled;
+    }
+    static bool isQmlMode() {
+        return s_qmlMode;
+    }
+#endif
+
     /// Creates the waveform widget using the type set with setWidgetType
     /// and binds it to the viewer.
     /// Deletes older widget and resets positions to config defaults.
@@ -251,6 +260,17 @@ class WaveformWidgetFactory : public QObject,
 
     void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML);
 
+    // QML waveforms are refreshed by Qt Quick rather than VSyncThread. Keep
+    // the shared preferences page's frame-rate telemetry working by reporting
+    // completed scene-graph frames through the same signal used by legacy
+    // waveforms.
+    // Returns true when a new one-second average was published.
+    bool reportQmlFrame();
+
+    double actualFrameRate() const {
+        return m_actualFrameRate;
+    }
+
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
@@ -321,6 +341,10 @@ class WaveformWidgetFactory : public QObject,
 
     //Currently in use widgets/visual/node
     std::vector<WaveformWidgetHolder> m_waveformWidgetHolders;
+
+#ifdef MIXXX_USE_QML
+    static inline bool s_qmlMode{false};
+#endif
 
     WaveformWidgetType::Type m_type;
     WaveformWidgetType::Type m_configType;

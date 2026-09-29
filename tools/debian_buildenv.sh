@@ -90,7 +90,7 @@ case "$1" in
             debhelper \
             devscripts \
             docbook-to-man \
-            dput \
+            dput-ng \
             fonts-open-sans \
             g++ \
             lcov \

@@ -60,7 +60,7 @@ Skin.ControlKnob {
         renderStrategy: Canvas.Immediate
         scale: 1 / root.arcRenderScale
         transformOrigin: Item.TopLeft
-        visible: root.displayArc
+        visible: root.displayArc && !LateNightTheme.isClassic
         width: root.width * root.arcRenderScale
         z: 1
 
@@ -68,7 +68,7 @@ Skin.ControlKnob {
         onPaint: {
             const ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
-            if (!root.displayArc) {
+            if (!root.displayArc || LateNightTheme.isClassic) {
                 return;
             }
 

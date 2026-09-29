@@ -12,6 +12,7 @@ Item {
     property bool toggleable: false
     property bool activateOnClick: false
     property bool ignoreActivePresses: false
+    property bool powerWindow: false
     property bool releaseToZero: true
     property bool longPressLatching: false
     property bool handlePointerInput: true
@@ -67,7 +68,13 @@ Item {
     function pressPrimary() {
         root.pressAndHoldTriggered = false;
         root.primaryPressed(displayControl.value);
-        if (root.longPressLatching) {
+        if (root.powerWindow) {
+            root.pressStartValue = displayControl.value;
+            root.pressTargetValue = root.nextState(root.pressStartValue);
+            powerWindowTimer.stop();
+            control.value = root.pressTargetValue;
+            powerWindowTimer.start();
+        } else if (root.longPressLatching) {
             root.pressStartValue = displayControl.value;
             root.pressTargetValue = root.nextState(root.pressStartValue);
             longPressTimer.stop();
@@ -90,7 +97,12 @@ Item {
     }
 
     function releasePrimary() {
-        if (root.longPressLatching) {
+        if (root.powerWindow) {
+            if (!powerWindowTimer.running) {
+                control.value = 0;
+            }
+            powerWindowTimer.stop();
+        } else if (root.longPressLatching) {
             if (longPressTimer.running &&
                     root.pressTargetValue > root.activeDisplayThreshold) {
                 control.value = root.pressStartValue;
@@ -190,6 +202,13 @@ Item {
         onTriggered: {
             root.longPressAnimationRunning = false;
         }
+    }
+
+    Timer {
+        id: powerWindowTimer
+
+        interval: root.longPressDuration
+        repeat: false
     }
 
     NumberAnimation {

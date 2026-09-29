@@ -49,11 +49,11 @@ class allshader::WaveformRendererStem final
     }
     void setOutlineOpacity(float value) {
         m_outlineOpacity = value;
-        markDirtyMaterial();
+        markDirtyGeometry();
     }
     void setOpacity(float value) {
         m_opacity = value;
-        markDirtyMaterial();
+        markDirtyGeometry();
     }
 
   private:
