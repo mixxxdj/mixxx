@@ -220,6 +220,7 @@ class PlayerManager : public PlayerManagerInterface {
     void slotLoadToPreviewDeck(const QString& location, int previewDeckNumber);
     // Slots for loading tracks to samplers
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
+    void slotReanalyzeLoadedTracks();
     // Loads the location to the sampler. samplerNumber is 1-indexed
     void slotLoadToSampler(const QString& location, int samplerNumber);
 

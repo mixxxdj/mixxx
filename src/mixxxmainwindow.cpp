@@ -288,6 +288,10 @@ void MixxxMainWindow::initialize() {
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
+    connect(WaveformWidgetFactory::instance(),
+            &WaveformWidgetFactory::waveformAnalysisProfileChanged,
+            pPlayerManager.get(),
+            &PlayerManager::slotReanalyzeLoadedTracks);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,

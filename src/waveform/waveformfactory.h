@@ -1,6 +1,7 @@
 #pragma once
 
 #include "library/dao/analysisdao.h"
+#include "waveform/waveformanalysisprofile.h"
 
 class Waveform;
 
@@ -35,15 +36,23 @@ class Waveform;
 #define WAVEFORMSUMMARY_6_VERSION "WaveformSummary-6.1"
 #define WAVEFORM_6_DESCRIPTION "Waveform 6.1"
 #define WAVEFORMSUMMARY_6_DESCRIPTION "WaveformSummary 6.1"
-
-#define WAVEFORM_CURRENT_VERSION WAVEFORM_6_VERSION
-#define WAVEFORM_CURRENT_DESCRIPTION WAVEFORM_6_DESCRIPTION
-#else
-#define WAVEFORM_CURRENT_VERSION WAVEFORM_5_VERSION
-#define WAVEFORM_CURRENT_DESCRIPTION WAVEFORM_5_DESCRIPTION
 #endif
-#define WAVEFORMSUMMARY_CURRENT_VERSION WAVEFORMSUMMARY_5_VERSION
-#define WAVEFORMSUMMARY_CURRENT_DESCRIPTION WAVEFORMSUMMARY_5_DESCRIPTION
+
+#ifdef __STEM__
+#define WAVEFORM_LEGACY_CURRENT_VERSION WAVEFORM_6_VERSION
+#define WAVEFORM_LEGACY_CURRENT_DESCRIPTION WAVEFORM_6_DESCRIPTION
+#else
+#define WAVEFORM_LEGACY_CURRENT_VERSION WAVEFORM_5_VERSION
+#define WAVEFORM_LEGACY_CURRENT_DESCRIPTION WAVEFORM_5_DESCRIPTION
+#endif
+#define WAVEFORMSUMMARY_LEGACY_CURRENT_VERSION WAVEFORMSUMMARY_5_VERSION
+#define WAVEFORMSUMMARY_LEGACY_CURRENT_DESCRIPTION WAVEFORMSUMMARY_5_DESCRIPTION
+
+#define WAVEFORM_PERCEPTUAL_3BAND_VERSION "Waveform-Perceptual3Band-1"
+#define WAVEFORM_PERCEPTUAL_3BAND_DESCRIPTION "Perceptual 3-band waveform 1"
+#define WAVEFORMSUMMARY_PERCEPTUAL_3BAND_VERSION "WaveformSummary-Perceptual3Band-1"
+#define WAVEFORMSUMMARY_PERCEPTUAL_3BAND_DESCRIPTION \
+    "Perceptual 3-band waveform summary 1"
 
 class WaveformFactory {
   public:
@@ -55,10 +64,18 @@ class WaveformFactory {
 
     static Waveform* loadWaveformFromAnalysis(
             const AnalysisDao::AnalysisInfo& analysis);
-    static VersionClass waveformVersionToVersionClass(const QString& version);
-    static VersionClass waveformSummaryVersionToVersionClass(const QString& version);
-    static QString currentWaveformVersion();
-    static QString currentWaveformDescription();
-    static QString currentWaveformSummaryVersion();
-    static QString currentWaveformSummaryDescription();
+    static VersionClass waveformVersionToVersionClass(
+            const QString& version,
+            mixxx::WaveformAnalysisProfile profile);
+    static VersionClass waveformSummaryVersionToVersionClass(
+            const QString& version,
+            mixxx::WaveformAnalysisProfile profile);
+    static QString currentWaveformVersion(
+            mixxx::WaveformAnalysisProfile profile);
+    static QString currentWaveformDescription(
+            mixxx::WaveformAnalysisProfile profile);
+    static QString currentWaveformSummaryVersion(
+            mixxx::WaveformAnalysisProfile profile);
+    static QString currentWaveformSummaryDescription(
+            mixxx::WaveformAnalysisProfile profile);
 };

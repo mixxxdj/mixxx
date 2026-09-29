@@ -1,4 +1,5 @@
 #include "waveform/waveformfactory.h"
+
 #include "waveform/waveform.h"
 
 // static
@@ -12,10 +13,17 @@ Waveform* WaveformFactory::loadWaveformFromAnalysis(
 }
 
 // static
-WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(const QString& version) {
-    if (version == WAVEFORM_CURRENT_VERSION) {
-        // use, since is our version
+WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(
+        const QString& version,
+        mixxx::WaveformAnalysisProfile profile) {
+    if (version == currentWaveformVersion(profile)) {
         return VC_USE;
+    }
+
+    if (version == WAVEFORM_LEGACY_CURRENT_VERSION ||
+            version == WAVEFORM_PERCEPTUAL_3BAND_VERSION ||
+            version == WAVEFORM_5_VERSION) {
+        return VC_REMOVE;
     }
 
     if (version == WAVEFORM_4_VERSION) {
@@ -34,9 +42,7 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
     }
 
 #ifdef __STEM__
-    if (version == WAVEFORM_6_0_VERSION) {
-        // Used in Mixxx 2.6 beta, introducing stem data but later replaced with
-        // the signal scale removal
+    if (version == WAVEFORM_6_VERSION || version == WAVEFORM_6_0_VERSION) {
         return VC_REMOVE;
     }
 #endif
@@ -46,10 +52,16 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
 }
 
 // static
-WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionClass(const QString& version) {
-    if (version == WAVEFORMSUMMARY_CURRENT_VERSION) {
-        // use, since is our version
+WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionClass(
+        const QString& version,
+        mixxx::WaveformAnalysisProfile profile) {
+    if (version == currentWaveformSummaryVersion(profile)) {
         return VC_USE;
+    }
+
+    if (version == WAVEFORMSUMMARY_LEGACY_CURRENT_VERSION ||
+            version == WAVEFORMSUMMARY_PERCEPTUAL_3BAND_VERSION) {
+        return VC_REMOVE;
     }
 
     if (version == WAVEFORMSUMMARY_4_VERSION) {
@@ -72,21 +84,33 @@ WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionCl
 }
 
 // static
-QString WaveformFactory::currentWaveformVersion() {
-    return WAVEFORM_CURRENT_VERSION;
+QString WaveformFactory::currentWaveformVersion(
+        mixxx::WaveformAnalysisProfile profile) {
+    return profile == mixxx::WaveformAnalysisProfile::Perceptual3Band
+            ? QStringLiteral(WAVEFORM_PERCEPTUAL_3BAND_VERSION)
+            : QStringLiteral(WAVEFORM_LEGACY_CURRENT_VERSION);
 }
 
 // static
-QString WaveformFactory::currentWaveformSummaryVersion() {
-    return WAVEFORMSUMMARY_CURRENT_VERSION;
+QString WaveformFactory::currentWaveformDescription(
+        mixxx::WaveformAnalysisProfile profile) {
+    return profile == mixxx::WaveformAnalysisProfile::Perceptual3Band
+            ? QStringLiteral(WAVEFORM_PERCEPTUAL_3BAND_DESCRIPTION)
+            : QStringLiteral(WAVEFORM_LEGACY_CURRENT_DESCRIPTION);
 }
 
 // static
-QString WaveformFactory::currentWaveformDescription() {
-    return WAVEFORM_CURRENT_DESCRIPTION;
+QString WaveformFactory::currentWaveformSummaryVersion(
+        mixxx::WaveformAnalysisProfile profile) {
+    return profile == mixxx::WaveformAnalysisProfile::Perceptual3Band
+            ? QStringLiteral(WAVEFORMSUMMARY_PERCEPTUAL_3BAND_VERSION)
+            : QStringLiteral(WAVEFORMSUMMARY_LEGACY_CURRENT_VERSION);
 }
 
 // static
-QString WaveformFactory::currentWaveformSummaryDescription() {
-    return WAVEFORMSUMMARY_CURRENT_DESCRIPTION;
+QString WaveformFactory::currentWaveformSummaryDescription(
+        mixxx::WaveformAnalysisProfile profile) {
+    return profile == mixxx::WaveformAnalysisProfile::Perceptual3Band
+            ? QStringLiteral(WAVEFORMSUMMARY_PERCEPTUAL_3BAND_DESCRIPTION)
+            : QStringLiteral(WAVEFORMSUMMARY_LEGACY_CURRENT_DESCRIPTION);
 }

@@ -54,6 +54,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
             options = ::WaveformRendererSignalBase::Option::HighDetail;
             break;
         case WaveformWidgetType::Type::Stacked:
+        case WaveformWidgetType::Type::Perceptual3Band:
             options = ::WaveformRendererSignalBase::Option::HighDetail;
             break;
         default:

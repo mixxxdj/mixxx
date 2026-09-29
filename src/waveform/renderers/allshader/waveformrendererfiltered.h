@@ -12,8 +12,14 @@ class allshader::WaveformRendererFiltered final
         : public allshader::WaveformRendererSignalBase,
           public rendergraph::GeometryNode {
   public:
+    enum class Mode {
+        Filtered,
+        Stacked,
+        Perceptual3Band,
+    };
+
     explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget,
-            bool rgbStacked,
+            Mode mode,
             ::WaveformRendererSignalBase::Options options);
 
     // Pure virtual from WaveformRendererSignalBase, not used
@@ -23,7 +29,7 @@ class allshader::WaveformRendererFiltered final
     void preprocess() override;
 
   private:
-    const bool m_bRgbStacked;
+    const Mode m_mode;
     bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererFiltered);

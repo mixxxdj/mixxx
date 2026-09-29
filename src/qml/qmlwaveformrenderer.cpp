@@ -188,7 +188,10 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererFiltered::create(
         options ^= allshader::WaveformRendererSignalBase::Option::HighDetail;
     }
     pRenderer.reset(new allshader::WaveformRendererFiltered(
-            waveformWidget, m_stacked, options));
+            waveformWidget,
+            m_stacked ? allshader::WaveformRendererFiltered::Mode::Stacked
+                      : allshader::WaveformRendererFiltered::Mode::Filtered,
+            options));
     setup(dynamic_cast<allshader::WaveformRendererSignalBase*>(pRenderer.get()));
 
     return QmlWaveformRendererFactory::Renderer{
