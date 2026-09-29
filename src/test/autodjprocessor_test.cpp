@@ -20,12 +20,16 @@
 #include "track/track.h"
 
 using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Between;
+using ::testing::Ne;
 using ::testing::Return;
 
 namespace {
 const int kDefaultTransitionTime = 10;
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelOutputCount;
 const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-png.mp3");
+const QString kTrackLocationTest2 = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-jpg.mp3");
 const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
@@ -1937,6 +1941,119 @@ TEST_F(AutoDJProcessorTest, EndMarker_NeverEmitsLoadTrackToPlayer) {
     pProcessor->toggleAutoDJ(true);
     EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
     EXPECT_EQ(0, pAutoDJTableModel->rowCount());
+}
+
+TEST_F(AutoDJProcessorTest, EndMarker_ReachedAfterFade_LeavesNextTrackQueued) {
+    const TrackId currentId = addTrackToCollection(kTrackLocationTest);
+    const TrackId nextId = addTrackToCollection(kTrackLocationTest2);
+    ASSERT_TRUE(currentId.isValid());
+    ASSERT_TRUE(nextId.isValid());
+    ASSERT_NE(currentId, nextId);
+
+    // A track is playing on deck 1.
+    mixer.crossfader.set(-1.0);
+    TrackPointer pPlayingTrack = newTestTrack();
+    deck1.slotLoadTrack(pPlayingTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pPlayingTrack);
+
+    // Queue: [current, END, next]
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(currentId);
+    pAutoDJTableModel->insertEndMarker(-1);
+    pAutoDJTableModel->appendTrack(nextId);
+    ASSERT_EQ(3, pAutoDJTableModel->rowCount());
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(_)).Times(AnyNumber());
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, pProcessor->toggleAutoDJ(true));
+
+    TrackPointer pCurrentTrack = newTestTrack(currentId);
+    deck2.slotLoadTrack(pCurrentTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pCurrentTrack);
+
+    // Fade from deck 1 to deck 2.
+    deck1.playposition.set(1.0);
+    deck1.playposition.set(9.9999);
+
+    // Once deck 2 plays, the end marker is next: the free deck is ejected
+    // and no real track may be loaded anymore.
+    // Emitted by toggleAutoDJ(false) and again by the fade handler.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_DISABLED))
+            .Times(Between(1, 2));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(TrackPointer(), QString("[Channel1]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(Ne(TrackPointer()), _, _)).Times(0);
+
+    deck2.playposition.set(0.1);
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+    ASSERT_EQ(1, pAutoDJTableModel->rowCount());
+    const QModelIndex top = pAutoDJTableModel->index(0, 0);
+    EXPECT_FALSE(pAutoDJTableModel->isEndMarker(top));
+    EXPECT_EQ(nextId, pAutoDJTableModel->getTrackId(top));
+}
+
+TEST_F(AutoDJProcessorTest, EndMarker_MovedToTop_EjectsWaitingTrack) {
+    const TrackId waitingId = addTrackToCollection(kTrackLocationTest);
+    const TrackId laterId = addTrackToCollection(kTrackLocationTest2);
+    ASSERT_TRUE(waitingId.isValid());
+    ASSERT_TRUE(laterId.isValid());
+    ASSERT_NE(waitingId, laterId);
+
+    // A track is playing on deck 1.
+    mixer.crossfader.set(-1.0);
+    TrackPointer pPlayingTrack = newTestTrack();
+    deck1.slotLoadTrack(pPlayingTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pPlayingTrack);
+
+    // Queue: [waiting, later, END]
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(waitingId);
+    pAutoDJTableModel->appendTrack(laterId);
+    pAutoDJTableModel->insertEndMarker(-1);
+    ASSERT_EQ(3, pAutoDJTableModel->rowCount());
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(_)).Times(AnyNumber());
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, pProcessor->toggleAutoDJ(true));
+
+    TrackPointer pWaitingTrack = newTestTrack(waitingId);
+    deck2.slotLoadTrack(pWaitingTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pWaitingTrack);
+
+    // Moving the end marker to the top stops Auto DJ after the playing track:
+    // the waiting track is ejected but stays queued.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_DISABLED));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(TrackPointer(), QString("[Channel2]"), false));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(Ne(TrackPointer()), _, _)).Times(0);
+
+    pAutoDJTableModel->moveTrack(pAutoDJTableModel->index(2, 0), pAutoDJTableModel->index(0, 0));
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    ASSERT_EQ(2, pAutoDJTableModel->rowCount());
+    const QModelIndex top = pAutoDJTableModel->index(0, 0);
+    EXPECT_FALSE(pAutoDJTableModel->isEndMarker(top));
+    EXPECT_EQ(waitingId, pAutoDJTableModel->getTrackId(top));
+    EXPECT_EQ(laterId, pAutoDJTableModel->getTrackId(pAutoDJTableModel->index(1, 0)));
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck2_ZeroTransition_PlayStopsBeforeEnd) {
