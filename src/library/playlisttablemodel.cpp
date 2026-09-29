@@ -423,7 +423,7 @@ QVariant PlaylistTableModel::rawValue(const QModelIndex& index) const {
     // Show a custom title for end marker rows
     const int titleCol = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
     if (titleCol >= 0 && index.column() == titleCol && isEndMarker(index)) {
-        return tr("\u23F9 Stop");
+        return tr("\u23F9 End");
     }
     return BaseSqlTableModel::rawValue(index);
 }

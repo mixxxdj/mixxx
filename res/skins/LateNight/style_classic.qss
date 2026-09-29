@@ -2190,7 +2190,7 @@ QPushButton#pushButtonAddRandomTrack:enabled {
   }
 
 QPushButton#pushButtonAddEndMarker:enabled {
-  image: url(skins:LateNight/classic/buttons/btn__autodj_stop_marker.svg) no-repeat center center;
+  image: url(skins:LateNight/classic/buttons/btn__autodj_end_marker.svg) no-repeat center center;
   }
 
 QPushButton#pushButtonRepeatPlaylist:!checked {
