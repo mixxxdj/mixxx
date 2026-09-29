@@ -147,6 +147,10 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")),
           m_pMainMonoMixdown(std::make_unique<ControlObject>(
                   ConfigKey(group, "mono_mixdown"), true, false, true)),
+          m_pBoothMonoMixdown(std::make_unique<ControlObject>(
+                  ConfigKey("[Booth]", "mono_mixdown"), true, false, true)),
+          m_pHeadphoneMonoMixdown(std::make_unique<ControlObject>(
+                  ConfigKey("[Headphone]", "mono_mixdown"), true, false, true)),
           m_pMicMonitorMode(std::make_unique<ControlObject>(
                   ConfigKey(group, "talkover_mix"), true, false, true)) {
     pEffectsManager->registerInputChannel(m_mainHandle);
@@ -777,9 +781,9 @@ void EngineMixer::process(const std::size_t bufferSize) {
     // processing.
     if (m_pMainMonoMixdown->toBool()) {
         SampleUtil::mixStereoToMono(m_main.data(), bufferSize);
-        if (boothEnabled) {
-            SampleUtil::mixStereoToMono(m_booth.data(), bufferSize);
-        }
+    }
+    if (boothEnabled && m_pBoothMonoMixdown->toBool()) {
+        SampleUtil::mixStereoToMono(m_booth.data(), bufferSize);
     }
 
     if (mainEnabled) {
@@ -839,7 +843,7 @@ void EngineMixer::processHeadphones(
             ph[i] = (ph[i] + ph[i + 1]) / 2;
             ph[i + 1] = (pm[i] + pm[i + 1]) / 2;
         }
-    } else if (m_pMainMonoMixdown->toBool()) {
+    } else if (m_pHeadphoneMonoMixdown->toBool()) {
         SampleUtil::mixStereoToMono(m_head.data(), bufferSize);
     }
 

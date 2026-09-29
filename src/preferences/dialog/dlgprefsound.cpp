@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "control/controlproxy.h"
@@ -475,17 +476,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::mainMixChanged);
     m_pMainEnabled->connectValueChanged(this, &DlgPrefSound::mainEnabledChanged);
 
-    m_pMainMonoMixdown =
-            make_parented<ControlProxy>(kMasterGroup, QStringLiteral("mono_mixdown"), this);
-    mainOutputModeComboBox->addItem(tr("Stereo"));
-    mainOutputModeComboBox->addItem(tr("Mono"));
-    mainOutputModeComboBox->setCurrentIndex(m_pMainMonoMixdown->toBool() ? 1 : 0);
-    connect(mainOutputModeComboBox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefSound::mainOutputModeComboBoxChanged);
-    m_pMainMonoMixdown->connectValueChanged(this, &DlgPrefSound::mainMonoMixdownChanged);
-
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
@@ -557,6 +547,13 @@ void DlgPrefSound::slotApply() {
     m_config.clearInputs();
     m_config.clearOutputs();
     emit writePaths(&m_config);
+
+    const auto outputItems = outputSoundItems();
+    for (auto* pItem : outputItems) {
+        if (pItem->isMonoApplicable()) {
+            pItem->applyMonoSetting();
+        }
+    }
 
     SoundDeviceStatus status = SoundDeviceStatus::Ok;
     {
@@ -751,6 +748,26 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     pLayout->insertWidget(pos, pItem);
 }
 
+QList<DlgPrefSoundItem*> DlgPrefSound::outputSoundItems() const {
+    QList<DlgPrefSoundItem*> items;
+    for (QObject* pObj : outputTab->children()) {
+        if (auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj)) {
+            items.append(pItem);
+        }
+    }
+    return items;
+}
+
+QList<DlgPrefSoundItem*> DlgPrefSound::inputSoundItems() const {
+    QList<DlgPrefSoundItem*> items;
+    for (QObject* pObj : inputTab->children()) {
+        if (auto* pItem = qobject_cast<DlgPrefSoundItem*>(pObj)) {
+            items.append(pItem);
+        }
+    }
+    return items;
+}
+
 /// Convenience overload to load settings from the SoundManagerConfig owned by
 /// SoundManager.
 void DlgPrefSound::loadSettings() {
@@ -830,27 +847,23 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     // selected later on, when a different device is selected for any I/O.
     m_selectedOutputChannelIndices.clear();
     m_selectedInputChannelIndices.clear();
-    for (auto* ch : std::as_const(outputTab->children())) {
-        DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
-        if (pItem) {
-            auto id = pItem->getDeviceId();
-            if (id == SoundDeviceId()) {
-                continue;
-            }
-            m_selectedOutputChannelIndices.insert(pItem,
-                    QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
+    const auto outputItems = outputSoundItems();
+    for (auto* pItem : outputItems) {
+        auto id = pItem->getDeviceId();
+        if (id == SoundDeviceId()) {
+            continue;
         }
+        m_selectedOutputChannelIndices.insert(pItem,
+                QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
     }
-    for (auto* ch : std::as_const(inputTab->children())) {
-        DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
-        if (pItem) {
-            auto id = pItem->getDeviceId();
-            if (id == SoundDeviceId()) {
-                continue;
-            }
-            m_selectedInputChannelIndices.insert(pItem,
-                    QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
+    const auto inputItems = inputSoundItems();
+    for (auto* pItem : inputItems) {
+        auto id = pItem->getDeviceId();
+        if (id == SoundDeviceId()) {
+            continue;
         }
+        m_selectedInputChannelIndices.insert(pItem,
+                QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
     }
 
 #ifdef __PIPEWIRE__
@@ -1117,7 +1130,14 @@ void DlgPrefSound::updateKeylockDualThreadingCheckbox() {
     bool supportedScaler = keylockComboBox->currentData()
                                    .value<EngineBuffer::KeylockEngine>() !=
             EngineBuffer::KeylockEngine::SoundTouch;
-    bool monoMix = mainOutputModeComboBox->currentIndex() == 1;
+    bool monoMix = false;
+    const auto outputItems = outputSoundItems();
+    for (const auto* pItem : outputItems) {
+        if (pItem->type() == AudioPathType::Main) {
+            monoMix = pItem->isMonoChecked();
+            break;
+        }
+    }
     keylockDualthreadedCheckBox->setEnabled(!monoMix && supportedScaler);
     keylockDualthreadedCheckBox->setToolTip(monoMix
                     ? kKeylockMultiThreadedUnavailableMono
@@ -1202,6 +1222,9 @@ void DlgPrefSound::deviceChanged() {
 
     checkLatencyCompensation();
     m_settingsModified = true;
+#ifdef __RUBBERBAND__
+    updateKeylockDualThreadingCheckbox();
+#endif
 }
 
 void DlgPrefSound::deviceChannelsChanged() {
@@ -1224,6 +1247,9 @@ void DlgPrefSound::deviceChannelsChanged() {
 
     checkLatencyCompensation();
     m_settingsModified = true;
+#ifdef __RUBBERBAND__
+    updateKeylockDualThreadingCheckbox();
+#endif
 }
 
 /// Slot called when the "Query Devices" button is clicked.
@@ -1238,6 +1264,13 @@ void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig(m_pSoundManager.get());
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
+
+    const auto outputItems = outputSoundItems();
+    for (auto* pItem : outputItems) {
+        if (pItem->isMonoApplicable()) {
+            pItem->resetMonoToDefault();
+        }
+    }
 
     const auto keylockEngine = EngineBuffer::defaultKeylockEngine();
     const int index = keylockComboBox->findData(QVariant::fromValue(keylockEngine));
@@ -1313,19 +1346,6 @@ void DlgPrefSound::mainMixChanged(int value) {
 void DlgPrefSound::mainEnabledChanged(double value) {
     const bool mainEnabled = (value != 0);
     mainMixComboBox->setCurrentIndex(mainEnabled ? 1 : 0);
-}
-
-void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
-    m_pMainMonoMixdown->set(static_cast<double>(value));
-
-#ifdef __RUBBERBAND__
-    updateKeylockDualThreadingCheckbox();
-#endif
-}
-
-void DlgPrefSound::mainMonoMixdownChanged(double value) {
-    const bool mainMonoMixdownEnabled = (value != 0);
-    mainOutputModeComboBox->setCurrentIndex(mainMonoMixdownEnabled ? 1 : 0);
 }
 
 void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {

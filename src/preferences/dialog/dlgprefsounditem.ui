@@ -33,6 +33,13 @@
    <item>
     <widget class="QComboBox" name="channelComboBox"/>
    </item>
+   <item>
+    <widget class="QCheckBox" name="monoCheckBox">
+     <property name="text">
+      <string>Mono</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
