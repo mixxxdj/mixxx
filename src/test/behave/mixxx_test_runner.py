@@ -123,6 +123,13 @@ def _start_xvfb(display):
         stderr=subprocess.DEVNULL,
     )
     time.sleep(3)
+    # A dead Xvfb (portability issue, wrong arguments, host display state)
+    # would make mixxx-test fail with a confusing RPC timeout; fail here
+    # with the actual reason instead.
+    if proc.poll() is not None:
+        raise RuntimeError(
+            f"Xvfb {display} exited during startup (code {proc.returncode})"
+        )
     return proc
 
 

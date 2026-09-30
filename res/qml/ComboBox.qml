@@ -233,6 +233,8 @@ ComboBox {
                     clip: true
 
                     ListView {
+                        objectName: root.objectName ? root.objectName + "_popupList" : ""
+
                         anchors.fill: parent
                         bottomMargin: 0
                         clip: true

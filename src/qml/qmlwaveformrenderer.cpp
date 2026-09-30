@@ -274,14 +274,12 @@ QmlWaveformRendererFactory::Renderer QmlWaveformRendererBeat::create(
         mixxx::qml::WaveformRendererSignalBaseOptions options) const {
     auto pRenderer = std::make_unique<allshader::WaveformRenderBeat>(
             waveformWidget, m_position);
-    waveformWidget->setDisplayBeatGridAlpha(m_color.alphaF() * 100);
-    pRenderer->setColor(m_color.rgb());
+    pRenderer->setColor(m_color);
     connect(this,
             &QmlWaveformRendererBeat::colorChanged,
             pRenderer.get(),
-            [waveformWidget, pRenderer = pRenderer.get()](const QColor& color) {
-                waveformWidget->setDisplayBeatGridAlpha(color.alphaF() * 100);
-                pRenderer->setColor(color.rgb());
+            [pRenderer = pRenderer.get()](const QColor& color) {
+                pRenderer->setColor(color);
             });
     return QmlWaveformRendererFactory::Renderer{pRenderer.get(), std::move(pRenderer)};
 }

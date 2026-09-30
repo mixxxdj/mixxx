@@ -908,6 +908,28 @@ After the last attempt the wrapper:
   and add a comment annotation explaining why.
 - **Custom C++ commands** (e.g. `loadTrack`, `getControlValue`) that bypass
   UI are subject to the same tagging rule as `_set_control_value`.
+- **No click-retry loops in `When` steps** — do not re-click an item in a
+  loop (or poll-then-reclick) until an effect "sticks". Every spix
+  interaction in a `When` step must be exactly one click / drag / key
+  sequence, matching what a real single user action produces:
+
+  - **Why not:** retry loops only paper over local-dev flakiness (dropped
+    synthetic clicks under load). CI — where the result actually gates
+    development — would keep failing on the same flake anyway, and a pass
+    from a retry loop can be a false positive: if the UI genuinely requires
+    multiple clicks for one action (state that only changes on the second
+    press, a misplaced click window, an `enabled` binding race), the retry
+    hides the bug instead of reporting it.
+  - **What to do instead:** a single click per action, then (at most) a
+    *bounded wait* on the resulting state (`_wait_for_visible` /
+    `_wait_for_hidden` / `_wait_for_setting_value`) so slow rendering does
+    not get misread as a dropped click. When a synthetic click is
+    genuinely dropped (the known spix flake), the scenario fails on its own;
+    treat that like any other flaky run (see `@xpass` above), or fix the
+    root cause in QML/spix — do not teach the steps to click twice. The
+    pre-existing exceptions stay as documented: keyboard-navigating a combo
+    whose delegate was never rendered, and the compacted spin
+    next/prev fallback that drives one already-known click sequence.
 
 ### Rules for `Then` steps
 
