@@ -167,8 +167,6 @@ Item {
     }
     Component.onDestruction: {
         // TODO to be saved by setting editor
-        console.log(`normal interface for ${root.group}:`, JSON.stringify(serializeModel(itemModel)));
-        console.log(`minimized interface for ${root.group}:`, JSON.stringify(serializeModel(minimizedItemModel)));
     }
 
     Skin.SectionBackground {
