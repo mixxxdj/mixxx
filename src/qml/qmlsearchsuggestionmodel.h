@@ -1,11 +1,13 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QColor>
 #include <QQmlEngine>
 #include <QString>
 #include <QVector>
 
-class TrackCollection;
+#include "track/keys.h"
+#include "util/db/dbconnectionpool.h"
 
 namespace mixxx {
 namespace qml {
@@ -34,10 +36,14 @@ class QmlSearchSuggestionModel : public QAbstractListModel {
     enum Roles {
         ValueRole = Qt::UserRole + 1,
         LabelRole,
+        KeyIdRole,
+        KeyColorRole,
     };
     Q_ENUM(Roles);
 
-    explicit QmlSearchSuggestionModel(TrackCollection* pTrackCollection, QObject* parent = nullptr);
+    explicit QmlSearchSuggestionModel(
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            QObject* parent = nullptr);
     ~QmlSearchSuggestionModel() override = default;
 
     Q_INVOKABLE void setQuery(const QString& field, const QString& prefix);
@@ -51,15 +57,34 @@ class QmlSearchSuggestionModel : public QAbstractListModel {
     struct Suggestion {
         QString value;
         QString label;
+        int keyId = mixxx::track::io::key::INVALID;
+        QColor keyColor;
     };
 
-    void setValueSuggestions(SearchField field, const QString& prefix);
+    void resetSuggestions();
     void setKeySuggestions(const QString& prefix);
-    void setTrackSuggestions(const QString& prefix);
-    QVector<Suggestion> runSuggestionsQuery(const QString& sql, const QString& prefix);
+    void scheduleSuggestionsQuery(SearchField field, const QString& prefix);
+    void applySuggestions(QVector<Suggestion> suggestions);
 
-    TrackCollection* m_pTrackCollection;
+    static QVector<Suggestion> querySuggestions(
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+            SearchField field,
+            const QString& prefix);
+    static QVector<Suggestion> queryValueSuggestions(
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+            SearchField field,
+            const QString& prefix);
+    static QVector<Suggestion> queryTrackSuggestions(
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+            const QString& prefix);
+    static QVector<Suggestion> runSuggestionsQuery(
+            const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+            const QString& sql,
+            const QString& prefix);
+
+    mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
     QVector<Suggestion> m_suggestions;
+    quint64 m_requestId = 0;
 };
 
 } // namespace qml

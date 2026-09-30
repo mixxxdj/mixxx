@@ -1,15 +1,20 @@
 #include "qml/qmlsearchsuggestionmodel.h"
 
+#include <QFutureWatcher>
 #include <QHash>
 #include <QSqlDatabase>
 #include <QString>
 #include <QVector>
+#include <QtConcurrentRun>
 
 #include "library/dao/trackschema.h"
-#include "library/trackcollection.h"
 #include "moc_qmlsearchsuggestionmodel.cpp"
+#include "preferences/colorpalettesettings.h"
+#include "qml/qmlconfigproxy.h"
 #include "track/keyutils.h"
 #include "util/assert.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqllikewildcards.h"
 
@@ -22,7 +27,21 @@ constexpr int kMaxSuggestions = 50;
 const QHash<int, QByteArray> kRoleNames = {
         {QmlSearchSuggestionModel::ValueRole, "value"},
         {QmlSearchSuggestionModel::LabelRole, "label"},
+        {QmlSearchSuggestionModel::KeyIdRole, "keyId"},
+        {QmlSearchSuggestionModel::KeyColorRole, "keyColor"},
 };
+
+const QString kLibraryTrackSource =
+        QStringLiteral(
+                " FROM " LIBRARY_TABLE " INNER JOIN " TRACKLOCATIONS_TABLE
+                " ON " LIBRARY_TABLE ".%1 = " TRACKLOCATIONS_TABLE
+                ".%2"
+                " WHERE " LIBRARY_TABLE ".%3=0 AND " TRACKLOCATIONS_TABLE
+                ".%4=0")
+                .arg(LIBRARYTABLE_LOCATION,
+                        TRACKLOCATIONSTABLE_ID,
+                        LIBRARYTABLE_MIXXXDELETED,
+                        TRACKLOCATIONSTABLE_FSDELETED);
 
 // Returns the SQL expression that yields the human-readable value of the
 // library column associated with a search field, or an empty string when the
@@ -96,12 +115,14 @@ QString keyNotationLabel(KeyUtils::KeyNotation notation) {
 } // namespace
 
 QmlSearchSuggestionModel::QmlSearchSuggestionModel(
-        TrackCollection* pTrackCollection, QObject* parent)
+        mixxx::DbConnectionPoolPtr pDbConnectionPool, QObject* parent)
         : QAbstractListModel(parent),
-          m_pTrackCollection(pTrackCollection) {
+          m_pDbConnectionPool(std::move(pDbConnectionPool)) {
 }
 
 void QmlSearchSuggestionModel::setQuery(const QString& field, const QString& prefix) {
+    // Any new query supersedes all pending suggestions queries.
+    ++m_requestId;
     const SearchField searchField = searchFieldFromName(field);
     switch (searchField) {
     case SearchField::Artist:
@@ -112,48 +133,89 @@ void QmlSearchSuggestionModel::setQuery(const QString& field, const QString& pre
     case SearchField::Comment:
     case SearchField::Year:
     case SearchField::BPM:
-        setValueSuggestions(searchField, prefix);
+    case SearchField::Track:
+        scheduleSuggestionsQuery(searchField, prefix);
         return;
     case SearchField::Key:
         setKeySuggestions(prefix);
         return;
-    case SearchField::Track:
-        setTrackSuggestions(prefix);
-        return;
     case SearchField::Invalid:
-        beginResetModel();
-        m_suggestions.clear();
-        endResetModel();
+        resetSuggestions();
         return;
     }
 }
 
-void QmlSearchSuggestionModel::setValueSuggestions(
-        SearchField field, const QString& prefix) {
-    const QString expression = fieldExpression(field);
+void QmlSearchSuggestionModel::resetSuggestions() {
+    beginResetModel();
+    m_suggestions.clear();
+    endResetModel();
+}
 
-    VERIFY_OR_DEBUG_ASSERT(!expression.isEmpty()) {
-        beginResetModel();
-        m_suggestions.clear();
-        endResetModel();
+void QmlSearchSuggestionModel::scheduleSuggestionsQuery(
+        SearchField field, const QString& prefix) {
+    VERIFY_OR_DEBUG_ASSERT(m_pDbConnectionPool) {
+        resetSuggestions();
         return;
     }
 
-    const QString sql =
-            QStringLiteral("SELECT DISTINCT %1 AS value FROM " LIBRARY_TABLE
-                           " WHERE %1 != '' AND %1 LIKE :prefix ESCAPE '\\'"
-                           " ORDER BY value COLLATE NOCASE LIMIT %2")
-                    .arg(expression, QString::number(kMaxSuggestions));
+    const quint64 requestId = m_requestId;
+    auto pWatcher = new QFutureWatcher<QVector<Suggestion>>(this);
+    connect(pWatcher,
+            &QFutureWatcher<QVector<Suggestion>>::finished,
+            this,
+            [this, pWatcher, requestId]() {
+                pWatcher->deleteLater();
+                if (requestId != m_requestId) {
+                    // Superseded by a more recent query.
+                    return;
+                }
+                applySuggestions(pWatcher->result());
+            });
+    pWatcher->setFuture(QtConcurrent::run(
+            &QmlSearchSuggestionModel::querySuggestions,
+            m_pDbConnectionPool,
+            field,
+            prefix));
+}
 
+void QmlSearchSuggestionModel::applySuggestions(QVector<Suggestion> suggestions) {
     beginResetModel();
-    m_suggestions = runSuggestionsQuery(sql, prefix);
+    m_suggestions = std::move(suggestions);
     endResetModel();
+}
+
+QVector<QmlSearchSuggestionModel::Suggestion>
+QmlSearchSuggestionModel::querySuggestions(
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+        SearchField field,
+        const QString& prefix) {
+    switch (field) {
+    case SearchField::Artist:
+    case SearchField::Album:
+    case SearchField::Title:
+    case SearchField::Genre:
+    case SearchField::Composer:
+    case SearchField::Comment:
+    case SearchField::Year:
+    case SearchField::BPM:
+        return queryValueSuggestions(pDbConnectionPool, field, prefix);
+    case SearchField::Track:
+        return queryTrackSuggestions(pDbConnectionPool, prefix);
+    case SearchField::Key:
+    case SearchField::Invalid:
+        // Handled synchronously on the GUI thread.
+        return {};
+    }
+    return {};
 }
 
 void QmlSearchSuggestionModel::setKeySuggestions(const QString& prefix) {
     const QString needle = prefix.trimmed();
     QVector<Suggestion> suggestions;
 
+    const ColorPalette keyColorPalette =
+            ColorPaletteSettings(QmlConfigProxy::get())
+                    .getConfigKeyColorPalette();
     for (int keyValue = mixxx::track::io::key::INVALID + 1;
             keyValue <= mixxx::track::io::key::ChromaticKey_MAX;
             ++keyValue) {
@@ -168,7 +230,10 @@ void QmlSearchSuggestionModel::setKeySuggestions(const QString& prefix) {
             if (!needle.isEmpty() && !value.contains(needle, Qt::CaseInsensitive)) {
                 continue;
             }
-            suggestions.push_back({value, keyNotationLabel(notation)});
+            suggestions.push_back({value,
+                    keyNotationLabel(notation),
+                    static_cast<int>(key),
+                    KeyUtils::keyToColor(key, keyColorPalette)});
         }
     }
 
@@ -177,34 +242,62 @@ void QmlSearchSuggestionModel::setKeySuggestions(const QString& prefix) {
     endResetModel();
 }
 
-void QmlSearchSuggestionModel::setTrackSuggestions(const QString& prefix) {
-    const QString sql =
-            QStringLiteral(
-                    "SELECT DISTINCT %1 || ' - ' || %2"
-                    " || CASE WHEN COALESCE(%3, '') != '' THEN ' (' || "
-                    "%3 || ')' ELSE '' END AS value"
-                    " FROM " LIBRARY_TABLE
-                    " WHERE %1 LIKE :prefix ESCAPE '\\' OR %2 LIKE "
-                    ":prefix ESCAPE '\\' OR %3 LIKE :prefix ESCAPE '\\'"
-                    " ORDER BY value COLLATE NOCASE LIMIT %4")
-                    .arg(LIBRARYTABLE_ARTIST,
-                            LIBRARYTABLE_TITLE,
-                            LIBRARYTABLE_ALBUM,
-                            QString::number(kMaxSuggestions));
+QVector<QmlSearchSuggestionModel::Suggestion>
+QmlSearchSuggestionModel::queryValueSuggestions(
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+        SearchField field,
+        const QString& prefix) {
+    const QString expression = fieldExpression(field);
 
-    beginResetModel();
-    m_suggestions = runSuggestionsQuery(sql, prefix);
-    endResetModel();
-}
-
-QVector<QmlSearchSuggestionModel::Suggestion> QmlSearchSuggestionModel::runSuggestionsQuery(
-        const QString& sql, const QString& prefix) {
-    VERIFY_OR_DEBUG_ASSERT(m_pTrackCollection) {
+    VERIFY_OR_DEBUG_ASSERT(!expression.isEmpty()) {
         return {};
     }
 
-    const auto database = m_pTrackCollection->database();
-    VERIFY_OR_DEBUG_ASSERT(database.isOpen()) {
+    const QString sql =
+            QStringLiteral(
+                    "SELECT DISTINCT %1 AS value%2"
+                    " AND %1 != '' AND %1 LIKE :prefix ESCAPE '\\'"
+                    " ORDER BY value COLLATE NOCASE LIMIT %3")
+                    .arg(expression,
+                            kLibraryTrackSource,
+                            QString::number(kMaxSuggestions));
+
+    return runSuggestionsQuery(pDbConnectionPool, sql, prefix);
+}
+
+QVector<QmlSearchSuggestionModel::Suggestion>
+QmlSearchSuggestionModel::queryTrackSuggestions(
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+        const QString& prefix) {
+    const QString sql =
+            QStringLiteral(
+                    "SELECT DISTINCT %1 || ' - ' || %2"
+                    " AS value%4"
+                    " AND (%1 LIKE :prefix ESCAPE '\\'"
+                    " OR %2 LIKE :prefix ESCAPE '\\'"
+                    " OR %3 LIKE :prefix ESCAPE '\\')"
+                    " ORDER BY value COLLATE NOCASE LIMIT %5")
+                    .arg(LIBRARYTABLE_ARTIST,
+                            LIBRARYTABLE_TITLE,
+                            LIBRARYTABLE_ALBUM,
+                            kLibraryTrackSource,
+                            QString::number(kMaxSuggestions));
+
+    return runSuggestionsQuery(pDbConnectionPool, sql, prefix);
+}
+
+QVector<QmlSearchSuggestionModel::Suggestion>
+QmlSearchSuggestionModel::runSuggestionsQuery(
+        const mixxx::DbConnectionPoolPtr& pDbConnectionPool,
+        const QString& sql,
+        const QString& prefix) {
+    VERIFY_OR_DEBUG_ASSERT(pDbConnectionPool) {
+        return {};
+    }
+
+    const mixxx::DbConnectionPooler dbConnectionPooler(pDbConnectionPool);
+    const QSqlDatabase database = mixxx::DbConnectionPooled(pDbConnectionPool);
+    VERIFY_OR_DEBUG_ASSERT(dbConnectionPooler.isPooling() && database.isOpen()) {
         return {};
     }
 
@@ -237,6 +330,10 @@ QVariant QmlSearchSuggestionModel::data(const QModelIndex& index, int role) cons
         return suggestion.value;
     case LabelRole:
         return suggestion.label;
+    case KeyIdRole:
+        return suggestion.keyId;
+    case KeyColorRole:
+        return suggestion.keyColor;
     default:
         return {};
     }

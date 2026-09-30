@@ -5,7 +5,6 @@ Item {
 
     property string field: ""
     property string value: ""
-    property bool exact: false
     property bool active: false
     property bool interactive: true
 
@@ -47,7 +46,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 5
-            width: root.active ? 162 : Math.max(valueMetrics.advanceWidth(root.value.length ? (root.exact ? "=" : "") + root.value : "..."), 20) + 8
+            width: root.active ? 162 : Math.max(valueMetrics.advanceWidth(root.value.length ? root.value : "..."), 20) + 10
             height: 18
             radius: 7
             color: '#D9D9D9'
@@ -58,17 +57,31 @@ Item {
             }
 
             Text {
+                id: exactIndicator
+                visible: !root.active && root.value.startsWith('=')
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                anchors.verticalCenter: parent.verticalCenter
+                text: "="
+                color: '#404040'
+                opacity: 0.4
+                font.pixelSize: 14
+                font.weight: Font.Light
+            }
+
+            Text {
                 id: valueText
                 visible: !root.active
-                anchors.fill: parent
+                anchors.left: parent.left
                 anchors.leftMargin: 5
+                anchors.right: parent.right
                 anchors.rightMargin: 5
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
+                anchors.verticalCenter: parent.verticalCenter
+                leftPadding: exactIndicator.visible ? exactIndicator.width : 0
                 clip: true
                 color: '#404040'
                 font.pixelSize: 14
-                text: root.value.length ? (root.exact ? "=" : "") + root.value : "..."
+                text: root.value.startsWith('=') ? root.value.slice(1) : root.value
             }
         }
     }

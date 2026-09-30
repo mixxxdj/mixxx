@@ -7,6 +7,7 @@
 #include "control/controlobject.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
+#include "library/searchqueriesstorage.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_qmllibraryproxy.cpp"
@@ -111,7 +112,7 @@ QmlLibraryProxy::QmlLibraryProxy(
           m_pScanner(new QmlLibraryScannerProxy(
                   m_pLibrary->trackCollectionManager()->scanner(), this)),
           m_pSearchSuggestions(new QmlSearchSuggestionModel(
-                  m_pLibrary->trackCollectionManager()->internalCollection(), this)) {
+                  m_pLibrary->dbConnectionPool(), this)) {
 }
 
 QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner, QObject* parent)
@@ -318,6 +319,10 @@ QmlLibraryProxy* QmlLibraryProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsE
         return nullptr;
     }
     return new QmlLibraryProxy(s_pLibrary, pQmlEngine);
+}
+
+QVariantMap QmlLibraryProxy::parseRecentSearchQuery(const QString& query) const {
+    return SearchQueriesStorage::parseQuery(query);
 }
 
 QmlLibraryProxy::Result QmlLibraryProxy::addSource(

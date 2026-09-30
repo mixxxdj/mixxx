@@ -433,6 +433,22 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
             qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, NumericFilterKeyId) {
+    m_parser.setSearchColumns({"artist", "album"});
+    auto pQuery(m_parser.parseQuery("key_id:11", QString()));
+
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setKey(static_cast<mixxx::track::io::key::ChromaticKey>(11),
+            mixxx::track::io::key::USER);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setKey(static_cast<mixxx::track::io::key::ChromaticKey>(12),
+            mixxx::track::io::key::USER);
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(qPrintable(QString("key_id = 11")),
+            qPrintable(pQuery->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     m_parser.setSearchColumns({"artist", "album"});
     auto pQuery(m_parser.parseQuery("bitrate:>127", QString()));

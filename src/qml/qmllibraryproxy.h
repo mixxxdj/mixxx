@@ -5,6 +5,7 @@
 #include <QQmlEngine>
 #include <QString>
 #include <QUrl>
+#include <QVariantMap>
 #include <Qt>
 #include <memory>
 
@@ -148,6 +149,7 @@ class QmlLibraryProxy : public QObject {
     Q_INVOKABLE static QString urlToLocalPath(const QUrl& url) {
         return url.toLocalFile();
     }
+    Q_INVOKABLE QVariantMap parseRecentSearchQuery(const QString& query) const;
 
     static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
         s_pKeyboard = std::move(pKeyboard);

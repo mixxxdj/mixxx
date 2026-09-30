@@ -5,12 +5,39 @@ import QtQml
 import QtQuick
 import QtQml.Models
 import QtQuick.Controls 2.15
+import QtQuick.Effects
 import QtQuick.Shapes 1.6
 import "Theme"
 import "Library" as LibraryComponent
 
 Item {
     id: root
+
+    component SearchIcon: Shape {
+        width: 16
+        height: 16
+
+        ShapePath {
+            strokeWidth: 2
+            strokeColor: "#808080"
+            fillColor: "transparent"
+            capStyle: ShapePath.RoundCap
+
+            PathSvg {
+                path: "M 6 2 A 4 4 0 1 0 6 10 A 4 4 0 1 0 6 2 Z"
+            }
+        }
+
+        ShapePath {
+            strokeWidth: 2
+            strokeColor: "#808080"
+            capStyle: ShapePath.RoundCap
+
+            PathSvg {
+                path: "M 9.5 9.5 L 14 14"
+            }
+        }
+    }
 
     property var activeSidebar: libraryLeftSources.sidebar()
 
@@ -162,6 +189,7 @@ Item {
                         } else {
                             root.activeSidebar = libraryLeftSources.sidebar()
                         }
+                        searchPane.applySearchQuery(searchDebounce.query)
                     }
                 }
 
@@ -204,6 +232,15 @@ Item {
                 }
             }
 
+            MultiEffect {
+                anchors.fill: searchPane
+                source: searchPane
+                shadowEnabled: true
+                shadowColor: '#66000000'
+                shadowBlur: 0.25
+                shadowVerticalOffset: 2
+            }
+
             Rectangle {
                 id: searchPane
 
@@ -216,7 +253,12 @@ Item {
                 property string freeSearchText: ""
                 property bool selectingAll: false
 
+                readonly property int maxRecentSearches: 50
+
                 readonly property bool hasSearch: activeQuery.length > 0
+
+                border.color: '#757575'
+                border.width: 1
 
                 onActivatedChanged: {
                     if (activated) {
@@ -225,6 +267,8 @@ Item {
                         Mixxx.Core.removeOpenedPopup(searchPane)
                     }
                 }
+
+                Component.onCompleted: searchPane.loadRecentSearches()
 
                 Connections {
                     target: Qt.inputMethod
@@ -238,8 +282,6 @@ Item {
 
                 ListModel {
                     id: recentSearchesModel
-                    ListElement { tokensJson: '[{"name":"Artist","value":"A Super Artist"}]'; freeText: "" }
-                    ListElement { tokensJson: '[{"name":"Artist","value":"super artist"},{"name":"BPM","value":"100"}]'; freeText: "Foo" }
                 }
 
                 width: 250
@@ -265,6 +307,30 @@ Item {
                         return '"' + value + '"'
                     }
                     return value
+                }
+
+                function escapeHtmlText(s) {
+                    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                }
+
+                function highlightMatches(text, needle) {
+                    let result = ""
+                    let pos = 0
+                    let lowerText = text.toLowerCase()
+                    let lowerNeedle = needle.toLowerCase()
+                    if (needle.length > 0) {
+                        while (true) {
+                            let idx = lowerText.indexOf(lowerNeedle, pos)
+                            if (idx < 0) {
+                                break
+                            }
+                            result += escapeHtmlText(text.slice(pos, idx)) +
+                                    "<b>" + escapeHtmlText(text.slice(idx, idx + needle.length)) + "</b>"
+                            pos = idx + needle.length
+                        }
+                    }
+                    result += escapeHtmlText(text.slice(pos))
+                    return result
                 }
 
                 function isRecentShown() {
@@ -316,15 +382,31 @@ Item {
                     searchField.height = host.height
                 }
 
-                function appendSearchSuggestions(field) {
+                function querySearchSuggestions(field) {
                     Mixxx.Library.searchSuggestions.setQuery(field, searchField.text)
+                }
+
+                function copySuggestionResults() {
+                    if (!searchPane.activated) {
+                        return
+                    }
+                    highlightedIndex = -1
                     for (let j = 0; j < Mixxx.Library.searchSuggestions.rowCount(); j++) {
                         let s = Mixxx.Library.searchSuggestions.get(j)
-                        suggestionModel.append({ display: s.value, meta: s.label, isField: false })
+                        suggestionModel.append({
+                            display: s.value,
+                            meta: s.label,
+                            isField: false,
+                            name: "",
+                            query: "",
+                            keyId: s.keyId || 0,
+                            keyColor: String(s.keyColor)
+                        })
                     }
                 }
 
                 function refreshSuggestions() {
+                    suggestionDebounce.stop()
                     suggestionModel.clear()
                     highlightedIndex = -1
                     highlightedRecentIndex = -1
@@ -337,15 +419,25 @@ Item {
                             for (let i = 0; i < fieldModel.count; i++) {
                                 let f = fieldModel.get(i)
                                 if (f.name.toLowerCase().indexOf(text) === 0) {
-                                    suggestionModel.append({ display: f.name + ":", meta: "", isField: true, name: f.name, query: f.query })
+                                    suggestionModel.append({
+                                        display: f.name + ":",
+                                        meta: "",
+                                        isField: true,
+                                        name: f.name,
+                                        query: f.query,
+                                        keyId: 0,
+                                        keyColor: "#00000000"
+                                    })
                                 }
                             }
-                            appendSearchSuggestions("track")
+                            querySearchSuggestions("track")
+                        } else {
+                            querySearchSuggestions("")
                         }
                     } else {
                         let tok = selectedCriteria.get(activeTokenIndex)
                         if (tok) {
-                            appendSearchSuggestions(tok.query)
+                            querySearchSuggestions(tok.query)
                         }
                     }
                 }
@@ -354,15 +446,10 @@ Item {
                     let query = []
                     for (let i = 0; i < selectedCriteria.count; i++) {
                         let item = selectedCriteria.get(i)
-                        let value = item.value
-                        if (!value.length) {
+                        if (!item.value.length) {
                             continue
                         }
-                        let v = quote(value)
-                        if (item.exact) {
-                            v = "=" + v
-                        }
-                        query.push(item.query + ":" + v)
+                        query.push(tokenToQueryString(item))
                     }
                     if (activeTokenIndex < 0 && searchField.text.length) {
                         query.push(searchField.text)
@@ -372,6 +459,19 @@ Item {
                     }
                     activeQuery = query.join(' ')
                     searchDebounce.query = activeQuery
+                }
+
+                function applySearchQuery(query) {
+                    let leftTracklist = libraryLeftSources.sidebar().tracklist
+                    if (leftTracklist) {
+                        leftTracklist.search(query)
+                    }
+                    if (splitViewButton.checked) {
+                        let rightTracklist = libraryRightSources.sidebar().tracklist
+                        if (rightTracklist) {
+                            rightTracklist.search(query)
+                        }
+                    }
                 }
 
                 function setActiveToken(index) {
@@ -450,7 +550,7 @@ Item {
                     if (activeTokenIndex < 0) {
                         if (s.isField) {
                             freeSearchText = ""
-                            selectedCriteria.append({ name: s.name, query: s.query, value: "", exact: false })
+                            selectedCriteria.append({ name: s.name, query: s.query, value: "", keyId: 0 })
                             setActiveToken(selectedCriteria.count - 1)
                         } else {
                             searchField.text = s.display
@@ -460,10 +560,9 @@ Item {
                             updateEditorPosition()
                         }
                     } else {
-                        selectedCriteria.setProperty(activeTokenIndex, "value", s.display)
+                        selectedCriteria.setProperty(activeTokenIndex, "keyId", s.keyId || 0)
                         searchField.text = s.display
-                        refreshSuggestions()
-                        updateSearchQuery()
+                        setActiveToken(-1)
                     }
                 }
 
@@ -481,13 +580,40 @@ Item {
                     acceptHighlightedSuggestion()
                 }
 
-                function toggleExactMatch() {
-                    if (activeTokenIndex < 0) {
-                        return
+                function tryConvertToFieldToken() {
+                    if (activeTokenIndex >= 0) {
+                        return false
                     }
-                    let exact = !selectedCriteria.get(activeTokenIndex).exact
-                    selectedCriteria.setProperty(activeTokenIndex, "exact", exact)
-                    updateSearchQuery()
+                    let text = searchField.text
+                    let colonIndex = text.indexOf(':')
+                    if (colonIndex < 1) {
+                        return false
+                    }
+                    let name = text.slice(0, colonIndex)
+                    if (/[\s"'=~-]/.test(name)) {
+                        return false
+                    }
+                    let value = text.slice(colonIndex + 1)
+                    if (/\s/.test(value)) {
+                        return false
+                    }
+                    let lowerName = name.toLowerCase()
+                    for (let i = 0; i < fieldModel.count; i++) {
+                        let f = fieldModel.get(i)
+                        if (f.name.toLowerCase() !== lowerName) {
+                            continue
+                        }
+                        freeSearchText = ""
+                        selectedCriteria.append({
+                            name: f.name,
+                            query: f.query,
+                            value: value,
+                            keyId: 0
+                        })
+                        setActiveToken(selectedCriteria.count - 1)
+                        return true
+                    }
+                    return false
                 }
 
                 function activateSearch() {
@@ -545,17 +671,12 @@ Item {
                     return name.toLowerCase()
                 }
 
-                function saveCurrentSearch() {
-                    // TODO: Persist the current search as a "smart" playlist in the
-                    // library sidebar.
-                }
-
                 function persistSearch() {
                     let tokens = []
                     for (let i = 0; i < selectedCriteria.count; i++) {
                         let item = selectedCriteria.get(i)
                         if (item.value.length > 0) {
-                            tokens.push({ name: item.name, value: item.value, exact: item.exact })
+                            tokens.push({ name: item.name, value: item.value, keyId: item.keyId || 0 })
                         }
                     }
                     let freeText = activeTokenIndex < 0 ? searchField.text : ""
@@ -568,7 +689,82 @@ Item {
                     } else {
                         recentSearchesModel.insert(0, { freeText: freeText, tokensJson: tokensJson })
                         activeRecentIndex = 0
+                        while (recentSearchesModel.count > searchPane.maxRecentSearches) {
+                            recentSearchesModel.remove(recentSearchesModel.count - 1)
+                        }
                     }
+                    saveRecentSearches()
+                }
+
+                function tokenToQueryString(t) {
+                    if (t.keyId > 0) {
+                        return "key_id:" + t.keyId
+                    }
+                    let value = t.value
+                    let exact = value.startsWith('=')
+                    if (exact) {
+                        value = value.slice(1)
+                    }
+                    let v = quote(value)
+                    if (exact) {
+                        v = "=" + v
+                    }
+                    return t.query + ":" + v
+                }
+
+                function entryToQueryString(entry) {
+                    let parts = []
+                    let tokens = []
+                    try {
+                        tokens = JSON.parse(entry.tokensJson)
+                    } catch (err) {
+                        tokens = []
+                    }
+                    if (Array.isArray(tokens)) {
+                        for (let i = 0; i < tokens.length; i++) {
+                            let t = tokens[i]
+                            if (!t || typeof t.name !== "string" ||
+                                    typeof t.value !== "string" || !t.value.length) {
+                                continue
+                            }
+                            parts.push(tokenToQueryString({
+                                query: fieldNameToQuery(t.name),
+                                value: t.value,
+                                keyId: t.keyId || 0
+                            }))
+                        }
+                    }
+                    if (typeof entry.freeText === "string" && entry.freeText.length > 0) {
+                        parts.push(entry.freeText)
+                    }
+                    return parts.join(' ')
+                }
+
+                function loadRecentSearches() {
+                    recentSearchesModel.clear()
+                    let queries = Mixxx.Config.getRecentSearches()
+                    for (let i = 0; i < queries.length && recentSearchesModel.count < searchPane.maxRecentSearches; i++) {
+                        let query = queries[i]
+                        if (typeof query !== "string" || query.length === 0) {
+                            continue
+                        }
+                        let parsed = Mixxx.Library.parseRecentSearchQuery(query)
+                        recentSearchesModel.append({
+                            tokensJson: JSON.stringify(parsed.tokens),
+                            freeText: parsed.freeText
+                        })
+                    }
+                }
+
+                function saveRecentSearches() {
+                    let queries = []
+                    for (let i = 0; i < recentSearchesModel.count; i++) {
+                        let query = entryToQueryString(recentSearchesModel.get(i))
+                        if (query.length > 0) {
+                            queries.push(query)
+                        }
+                    }
+                    Mixxx.Config.setRecentSearches(queries)
                 }
 
                 function applyRecentSearch(index) {
@@ -576,7 +772,15 @@ Item {
                     if (!entry) {
                         return
                     }
-                    let tokens = JSON.parse(entry.tokensJson)
+                    let tokens
+                    try {
+                        tokens = JSON.parse(entry.tokensJson)
+                    } catch (err) {
+                        return
+                    }
+                    if (!Array.isArray(tokens)) {
+                        return
+                    }
                     selectedCriteria.clear()
                     for (let i = 0; i < tokens.length; i++) {
                         let t = tokens[i]
@@ -584,7 +788,7 @@ Item {
                             name: t.name,
                             query: fieldNameToQuery(t.name),
                             value: t.value,
-                            exact: t.exact !== undefined ? t.exact : false
+                            keyId: t.keyId !== undefined ? t.keyId : 0
                         })
                     }
                     activeRecentIndex = index
@@ -612,7 +816,23 @@ Item {
                     interval: 800
                     repeat: false
                     onTriggered: {
-                        root.activeSidebar.tracklist.search(query)
+                        searchPane.applySearchQuery(query)
+                    }
+                }
+
+                Timer {
+                    id: suggestionDebounce
+
+                    interval: 300
+                    repeat: false
+                    onTriggered: searchPane.refreshSuggestions()
+                }
+
+                Connections {
+                    target: Mixxx.Library.searchSuggestions
+
+                    function onModelReset() {
+                        searchPane.copySuggestionResults()
                     }
                 }
 
@@ -688,6 +908,7 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
                             text: "Search..."
                             color: '#808080'
+                            font.italic: true
                         }
 
                         Row {
@@ -705,7 +926,6 @@ Item {
                                 Skin.SearchFieldCriteria {
                                     field: model.name
                                     value: model.value
-                                    exact: model.exact
                                     active: false
                                     interactive: false
                                 }
@@ -720,34 +940,11 @@ Item {
                             }
                         }
 
-                        Shape {
+                        SearchIcon {
                             visible: !searchPane.hasSearch
                             anchors.right: parent.right
                             anchors.rightMargin: 11
                             anchors.verticalCenter: parent.verticalCenter
-                            width: 16
-                            height: 16
-
-                            ShapePath {
-                                strokeWidth: 2
-                                strokeColor: "#808080"
-                                fillColor: "transparent"
-                                capStyle: ShapePath.RoundCap
-
-                                PathSvg {
-                                    path: "M 6 2 A 4 4 0 1 0 6 10 A 4 4 0 1 0 6 2 Z"
-                                }
-                            }
-
-                            ShapePath {
-                                strokeWidth: 2
-                                strokeColor: "#808080"
-                                capStyle: ShapePath.RoundCap
-
-                                PathSvg {
-                                    path: "M 9.5 9.5 L 14 14"
-                                }
-                            }
                         }
                     }
 
@@ -767,16 +964,27 @@ Item {
                             }
                         }
 
-                        Column {
-                            anchors.fill: parent
+                        Rectangle {
+                            id: inputRowBackground
+
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.topMargin: 1
+                            anchors.leftMargin: 1
+                            anchors.rightMargin: 1
+                            height: 31
+                            color: '#E0E0E0'
+                            topLeftRadius: 15
 
                             Row {
                                 id: criteriaRow
 
                                 anchors.left: parent.left
-                                anchors.leftMargin: 11
+                                anchors.leftMargin: 10
+                                anchors.verticalCenter: parent.verticalCenter
 
-                                width: searchPane.width - 22
+                                width: parent.width - 22
                                 spacing: 5
 
                                 Repeater {
@@ -788,7 +996,6 @@ Item {
                                         anchors.verticalCenter: parent.verticalCenter
                                         field: model.name
                                         value: model.value
-                                        exact: model.exact
                                         active: searchPane.activeTokenIndex === index
                                         onActivated: searchPane.setActiveToken(index)
                                         onDeleted: searchPane.removeToken(index)
@@ -811,6 +1018,17 @@ Item {
                                 }
                             }
 
+                            SearchIcon {
+                                anchors.right: parent.right
+                                anchors.rightMargin: 10
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Column {
+                            anchors.fill: parent
+                            anchors.topMargin: 32
+
                             Rectangle {
                                 width: searchPane.width
                                 height: 1
@@ -830,51 +1048,91 @@ Item {
                                 model: suggestionModel
 
                                 delegate: Item {
+                                    id: suggestionDelegate
+
+                                    required property int index
+                                    required property string display
+                                    required property string meta
+                                    required property bool isField
+                                    required property string name
+                                    required property string query
+                                    required property int keyId
+                                    required property string keyColor
+
                                     height: 24
                                     width: suggestionList.width
 
+                                    HoverHandler {
+                                        id: suggestionHover
+                                    }
+
                                     Rectangle {
                                         anchors.fill: parent
-                                        color: searchPane.highlightedIndex === index ? '#B0B0B0' : 'transparent'
+                                        color: searchPane.highlightedIndex === suggestionDelegate.index
+                                                ? '#B0B0B0'
+                                                : (suggestionHover.hovered ? '#C6C6C6' : 'transparent')
                                     }
 
                                     TapHandler {
                                         onTapped: {
-                                            searchPane.highlightedIndex = index
+                                            searchPane.highlightedIndex = suggestionDelegate.index
                                             searchPane.acceptHighlightedSuggestion()
                                         }
                                     }
 
                                     Skin.SearchFieldCriteria {
-                                        visible: isField
+                                        visible: suggestionDelegate.isField
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.left: parent.left
                                         anchors.leftMargin: 5
-                                        field: name
+                                        field: suggestionDelegate.name
                                         active: false
                                         interactive: false
                                     }
 
+                                    Rectangle {
+                                        visible: !suggestionDelegate.isField && suggestionDelegate.meta.length > 0
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 5
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: keyPillText.implicitWidth + 12
+                                        height: 18
+                                        radius: 5
+                                        color: suggestionDelegate.keyColor
+
+                                        Text {
+                                            id: keyPillText
+                                            anchors.centerIn: parent
+                                            text: suggestionDelegate.display
+                                            color: '#FFFFFF'
+                                            font.pixelSize: 11
+                                        }
+                                    }
+
                                     Text {
-                                        visible: !isField
+                                        visible: !suggestionDelegate.isField && suggestionDelegate.meta.length === 0
                                         anchors.left: parent.left
                                         anchors.leftMargin: 5
                                         anchors.right: metaLabel.left
                                         anchors.rightMargin: 5
                                         anchors.verticalCenter: parent.verticalCenter
-                                        text: display
+                                        text: searchPane.highlightMatches(
+                                                  suggestionDelegate.display,
+                                                  searchField.text)
+                                        textFormat: Text.StyledText
                                         color: '#404040'
                                         elide: Text.ElideRight
                                     }
 
                                     Text {
                                         id: metaLabel
-                                        visible: !isField
+                                        visible: !suggestionDelegate.isField
                                         anchors.right: parent.right
                                         anchors.rightMargin: 5
                                         anchors.verticalCenter: parent.verticalCenter
-                                        text: meta
+                                        text: suggestionDelegate.meta
                                         color: '#808080'
+                                        font.pixelSize: 11
                                         horizontalAlignment: Text.AlignRight
                                     }
                                 }
@@ -912,9 +1170,15 @@ Item {
                                         height: 24
                                         width: recentList.width
 
+                                        HoverHandler {
+                                            id: recentHover
+                                        }
+
                                         Rectangle {
                                             anchors.fill: parent
-                                            color: searchPane.highlightedRecentIndex === recentDelegate.index ? '#B0B0B0' : 'transparent'
+                                            color: searchPane.highlightedRecentIndex === recentDelegate.index
+                                                    ? '#B0B0B0'
+                                                    : (recentHover.hovered ? '#C6C6C6' : 'transparent')
                                         }
 
                                         TapHandler {
@@ -935,7 +1199,6 @@ Item {
                                                 Skin.SearchFieldCriteria {
                                                     field: modelData.name
                                                     value: modelData.value
-                                                    exact: modelData.exact !== undefined ? modelData.exact : false
                                                     active: false
                                                     interactive: false
                                                 }
@@ -961,7 +1224,7 @@ Item {
 
                         visible: searchPane.hasSearch
                         anchors.right: parent.right
-                        anchors.rightMargin: 13
+                        anchors.rightMargin: searchPane.activated ? 36 : 13
                         y: searchPane.activated ? 4 : (parent.height - height) / 2
                         text: "✕"
                         color: '#808080'
@@ -969,52 +1232,6 @@ Item {
 
                         TapHandler {
                             onTapped: searchPane.clearSearch()
-                        }
-                    }
-
-                    Item {
-                        id: saveButton
-
-                        visible: searchPane.hasSearch && !searchPane.activated
-                        anchors.right: clearButton.left
-                        anchors.rightMargin: 8
-                        y: (parent.height - height) / 2
-                        width: 16
-                        height: 16
-
-                        TapHandler {
-                            onTapped: searchPane.saveCurrentSearch()
-                        }
-
-                        Shape {
-                            anchors.fill: parent
-
-                            ShapePath {
-                                strokeWidth: 1.5
-                                strokeColor: "#808080"
-                                fillColor: "transparent"
-                                capStyle: ShapePath.RoundCap
-                                startX: 2
-                                startY: 2
-
-                                PathLine { x: 9; y: 2 }
-                                PathLine { x: 9; y: 5 }
-                                PathLine { x: 14; y: 5 }
-                                PathLine { x: 14; y: 14 }
-                                PathLine { x: 2; y: 14 }
-                                PathLine { x: 2; y: 2 }
-                            }
-
-                            ShapePath {
-                                fillColor: "#808080"
-                                startX: 4
-                                startY: 10
-
-                                PathLine { x: 12; y: 10 }
-                                PathLine { x: 12; y: 13 }
-                                PathLine { x: 4; y: 13 }
-                                PathLine { x: 4; y: 10 }
-                            }
                         }
                     }
 
@@ -1089,10 +1306,6 @@ Item {
                                     event.accepted = true
                                 }
                                 break
-                            case Qt.Key_Equal:
-                                searchPane.toggleExactMatch()
-                                event.accepted = true
-                                break
                             case Qt.Key_A:
                                 if (event.modifiers & Qt.ControlModifier) {
                                     searchField.selectAll()
@@ -1138,8 +1351,11 @@ Item {
                             }
                             if (searchPane.activeTokenIndex >= 0) {
                                 selectedCriteria.setProperty(searchPane.activeTokenIndex, "value", searchField.text)
+                                selectedCriteria.setProperty(searchPane.activeTokenIndex, "keyId", 0)
+                            } else if (searchPane.tryConvertToFieldToken()) {
+                                return
                             }
-                            searchPane.refreshSuggestions()
+                            suggestionDebounce.restart()
                             searchPane.updateSearchQuery()
                             searchPane.updateEditorPosition()
                         }
@@ -1156,13 +1372,13 @@ Item {
 
                         visible: searchPane.activated && searchField.text.length === 0
                         color: '#808080'
+                        font.italic: true
                         elide: Text.ElideRight
                         text: {
                             if (searchPane.activeTokenIndex < 0) {
                                 return "Start typing to get suggestion"
                             }
-                            let exact = selectedCriteria.get(searchPane.activeTokenIndex).exact
-                            return exact ? "Press = to disable exact match" : "Press = for an exact match"
+                            return 'Type "=" for an exact match'
                         }
 
                         x: searchField.x
@@ -1205,7 +1421,13 @@ Item {
                         elide: Text.ElideRight
                         text: tip
 
-                        x: searchField.x + editorFontMetrics.advanceWidth(searchField.text) + 6
+                        x: {
+                            if (searchPane.activeTokenIndex < 0) {
+                                return searchField.x + editorFontMetrics.advanceWidth(searchField.text) + 6
+                            }
+                            let p = freeTextHost.mapToItem(searchField.parent, 0, 0)
+                            return p.x + 6
+                        }
                         y: searchField.y
                         height: searchField.height
                         width: Math.max(0, searchPane.width - x - 12)

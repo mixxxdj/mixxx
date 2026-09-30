@@ -4,6 +4,7 @@
 #include <QColor>
 #include <QObject>
 #include <QQmlEngine>
+#include <QStringList>
 #include <QVariantList>
 #include <type_traits>
 
@@ -423,6 +424,9 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     PROPERTY_DECL_ACCESSOR(bool, libraryTraktorEnabled);
     PROPERTY_DECL_ACCESSOR(bool, libraryRekordboxEnabled);
     PROPERTY_DECL_ACCESSOR(bool, librarySeratoEnabled);
+
+    Q_INVOKABLE QStringList getRecentSearches() const;
+    Q_INVOKABLE void setRecentSearches(const QStringList& queries);
 
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static inline void registerUserSettings(UserSettingsPointer pConfig) {
