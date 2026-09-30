@@ -19,10 +19,10 @@ Skin.EmbeddedText {
         HectoSeconds
     }
 
-    property var display: TrackTime.Mode.Display
+    property int display: TrackTime.Display.Elapsed
     property double elapsed: durationControl.value
     property string group: "[Channel1]"
-    property var mode: TrackTime.Mode.Traditional
+    property int mode: TrackTime.Mode.Traditional
     property double remaining: durationControl.value * (1 - playPositionControl.value)
 
     function toTime(value) {

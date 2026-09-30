@@ -131,6 +131,24 @@ SETTING_MAP = {
     "permanent coarse adjustment": {"path": "mainWindow/setting_permanentCoarseAdjustment", "kind": "spinbox", "precision": 2},
     "permanent fine adjustment": {"path": "mainWindow/setting_permanentFineAdjustment", "kind": "spinbox", "precision": 2},
     "ramping sensitivity": {"path": "mainWindow/setting_rampingSensitivity", "kind": "slider", "min": 100, "max": 2500, "markers": []},
+    # Interface category — waveform tab
+    "end of track warning": {"path": "mainWindow/setting_endOfTrackWarning", "kind": "slider", "min": 0, "max": 120, "markers": [0, 10, 30, 60, 120]},
+    "beat grid opacity": {"path": "mainWindow/setting_beatGridAlpha", "kind": "slider", "min": 0, "max": 100, "markers": [0, 50, 100]},
+    "default zoom level": {"path": "mainWindow/setting_defaultZoom", "kind": "slider", "min": 10, "max": 100, "markers": [10, 30, 50, 100]},
+    "synchronise zoom level across waveforms": {"path": "mainWindow/setting_zoomSynchronization", "kind": "ratio", "options": ["on", "off"]},
+    "normalise waveform overview": {"path": "mainWindow/setting_overviewNormalized", "kind": "ratio", "options": ["on", "off"]},
+    "waveform type": {"path": "mainWindow/setting_waveformType", "kind": "combo", "model": ["Filtered", "HSV", "RGB", "Simple", "Stacked"]},
+    "stereo split": {"path": "mainWindow/setting_stereoSplit", "kind": "ratio", "options": ["on", "off"]},
+    "high details": {"path": "mainWindow/setting_highDetails", "kind": "ratio", "options": ["on", "off"]},
+    "play marker position": {"path": "mainWindow/setting_playMarkerPosition", "kind": "slider", "min": 0, "max": 100, "markers": [0, 50, 100]},
+    "beats until next marker": {"path": "mainWindow/setting_untilMarkShowBeats", "kind": "ratio", "options": ["on", "off"]},
+    "time until next marker": {"path": "mainWindow/setting_untilMarkShowTime", "kind": "ratio", "options": ["on", "off"]},
+    "marker hint placement": {"path": "mainWindow/setting_untilMarkAlign", "kind": "ratio", "options": ["top", "center", "bottom"]},
+    "marker hint font size": {"path": "mainWindow/setting_untilMarkTextPointSize", "kind": "combo", "model": ["10 pt", "12 pt", "15 pt", "18 pt", "24 pt", "32 pt", "48 pt"]},
+    "global visual gain": {"path": "mainWindow/setting_visualGainAll", "kind": "slider", "min": 50, "max": 500, "markers": [50, 100, 150, 300, 500]},
+    "low visual gain": {"path": "mainWindow/setting_visualGainLow", "kind": "slider", "min": 50, "max": 500, "markers": [50, 100, 150, 300, 500]},
+    "medium visual gain": {"path": "mainWindow/setting_visualGainMedium", "kind": "slider", "min": 50, "max": 500, "markers": [50, 100, 150, 300, 500]},
+    "high visual gain": {"path": "mainWindow/setting_visualGainHigh", "kind": "slider", "min": 50, "max": 500, "markers": [50, 100, 150, 300, 500]},
     # Library category — sources & integrations
     "Rhythmbox integration": {"path": "mainWindow/setting_integration0", "kind": "ratio", "options": ["on", "off"]},
     "Banshee integration": {"path": "mainWindow/setting_integration1", "kind": "ratio", "options": ["on", "off"]},
@@ -175,6 +193,102 @@ CONFIG_SAVE_MAP = {
         "expected": {"down": "", "up": "0"},
     },
     "track palette": {"group": "[Config]", "key": "TrackColorPalette"},
+    # Interface category — waveform tab. See Interface.qml saveWaveform() and
+    # QmlConfigProxy. Mixxx removes a config key whose value equals its
+    # declared default, so assertions only use non-default values (or map
+    # onto the empty string where a default is saved anyway).
+    "end of track warning": {
+        "group": "[Waveform]",
+        "key": "EndOfTrackWarningTime",
+        "expected": lambda value: str(int(float(value))),
+    },
+    "beat grid opacity": {
+        "group": "[Waveform]",
+        "key": "beatGridAlpha",
+        "expected": lambda value: str(int(float(value))),
+    },
+    "default zoom level": {
+        "group": "[Waveform]",
+        "key": "DefaultZoom",
+        # The feature's saved-as value is already in config form (zoom,
+        # not the slider's zoom*10 display).
+        "expected": lambda value: _format_double(float(value)),
+    },
+    "synchronise zoom level across waveforms": {
+        "group": "[Waveform]",
+        "key": "ZoomSynchronization",
+        "expected": {"on": "1", "off": "0"},
+    },
+    "normalise waveform overview": {
+        "group": "[Waveform]",
+        "key": "OverviewNormalized",
+        "expected": {"on": "1", "off": "0"},
+    },
+    "play marker position": {
+        "group": "[Waveform]",
+        "key": "PlayMarkerPosition",
+        # The feature's saved-as value is already in config form (a 0..1
+        # ratio, not the slider's percent display).
+        "expected": lambda value: _format_double(float(value)),
+    },
+    "beats until next marker": {
+        "group": "[Waveform]",
+        "key": "UntilMarkShowBeats",
+        "expected": {"on": "1", "off": "0"},
+    },
+    "time until next marker": {
+        "group": "[Waveform]",
+        "key": "UntilMarkShowTime",
+        "expected": {"on": "1", "off": "0"},
+    },
+    "marker hint font size": {
+        "group": "[Waveform]",
+        "key": "UntilMarkTextPointSize",
+        "expected": lambda value: str(int(value.split()[0])),
+    },
+    "global visual gain": {
+        "group": "[Waveform]",
+        "key": "VisualGain_0",
+        # The feature's saved-as value is already in config form (a gain
+        # factor, not the slider's percent display).
+        "expected": lambda value: _format_double(float(value)),
+    },
+    "low visual gain": {
+        "group": "[Waveform]",
+        "key": "VisualGain_1",
+        "expected": lambda value: _format_double(float(value)),
+    },
+    "medium visual gain": {
+        "group": "[Waveform]",
+        "key": "VisualGain_2",
+        "expected": lambda value: _format_double(float(value)),
+    },
+    "high visual gain": {
+        "group": "[Waveform]",
+        "key": "VisualGain_3",
+        "expected": lambda value: _format_double(float(value)),
+    },
+    "waveform type": {
+        "group": "[Waveform]",
+        "key": "WaveformType",
+        # QmlWaveformDisplay::Type values, i.e. the legacy
+        # WaveformWidgetType::Type ids.
+        "expected": {
+            "Filtered": "7",
+            "HSV": "8",
+            "RGB": "12",
+            "Simple": "5",
+            "Stacked": "16",
+        },
+    },
+    # Computed from the stereo split / high details checkboxes
+    # (QmlWaveformDisplay::Options bitmask). "none" removes the key
+    # (QmlConfigProxy::set_waveformOptions), hence the empty string.
+    "waveform options": {
+        "group": "[Waveform]",
+        "key": "waveform_options",
+        "expected": {"stereo split": "1", "high details": "2", "none": ""},
+    },
     # Library category — see Library.qml save() and QmlConfigProxy
     "Serato integration": {"group": "[Library]", "key": "ShowSeratoLibrary", "expected": {"on": "1", "off": "0"}},
     "synchronise metadata with file": {"group": "[Library]", "key": "SyncTrackMetadataExport", "expected": {"on": "1", "off": "0"}},
@@ -190,7 +304,41 @@ CONTROL_VALUE_MAP = {
     "slider orientation": {"key": "rate_dir", "expected": {"down": -1, "up": 1}},
 }
 
+# Waveform tab live-feedback paths. The "waveformSettingsTab" SettingGroup
+# exposes the derived values the settings' own preview renderers consume
+# ("waveformPreview" reacts to the controls immediately); the deck waveforms
+# in res/qml/WaveformDisplay.qml expose the same config-derived values.
+WAVEFORM_PREVIEW_PATH = "mainWindow/waveformPreview"
+WAVEFORM_SETTINGS_TAB_PATH = "mainWindow/waveformSettingsTab"
+COLOR_PICKER_TEST_PATH = "mainWindow/colorPickerTest"
+
+# Bands for the visual gain color parameters (QmlConfigProxy keys), shared by
+# the settings preview waveformsTab properties ("globalGain") and the deck
+# WaveformDisplay properties ("gainAll").
+GAIN_BAND_MAP = {
+    "global": {"preview": "gainAll", "settings": "globalGain", "deck": "gainAll"},
+    "low": {"preview": "gainLow", "settings": "lowGain", "deck": "gainLow"},
+    "middle": {"preview": "gainMid", "settings": "middleGain", "deck": "gainMid"},
+    "high": {"preview": "gainHigh", "settings": "highGain", "deck": "gainHigh"},
+}
+
+COLOR_BAND_MAP = {"all": 0, "low": 0, "mid": 1, "high": 2}
+
+WAVEFORM_OPTION_BITS = {"stereo split": 1, "high details": 2}
+
+WAVEFORM_TYPE_IDS = [  # as stored by QmlWaveformDisplay::Type
+    "Filtered",
+    "HSV",
+    "RGB",
+    "Simple",
+    "Stacked",
+]
+
 # --- Helpers ---
+
+def _format_double(value):
+    """Format a double the way ConfigObject does (QString::number, 'g', 6)."""
+    return format(value, ".6g")
 
 def _rpc(context):
     return context.mixxx_rpc
@@ -581,7 +729,10 @@ def step_set_setting(context, setting, value, method=None):
         assert _wait_for_visible(s, path), f"Setting '{setting}' control not visible"
         _click(s, path)
         option_path = f"{path}_option_{index}"
-        if _wait_for_visible(s, option_path):
+        in_view = bool(_wait_for_visible(s, option_path)) and _scroll_combo_option_into_view(
+            s, path, index
+        )
+        if in_view:
             _click(s, option_path)
         else:
             _combo_select_keyboard(s, path, index)
@@ -904,11 +1055,12 @@ def _assert_setting_value_matches(s, setting, spec, value):
     kind = spec["kind"]
     if kind == "combo":
         try:
-            expected = str(spec["model"].index(value))
+            expected_index = str(spec["model"].index(value))
         except (ValueError, AttributeError):
             raise ValueError(f"Setting '{setting}' has no option '{value}'")
-        assert actual == expected, (
-            f"Setting '{setting}' should be '{value}' but is '{actual}'"
+        assert actual == expected_index, (
+            f"Setting '{setting}' should be '{value}' (index {expected_index}) "
+            f"but is index '{actual}'"
         )
     elif kind == "slider":
         tolerance = min(1.0, 0.01 * (spec["max"] - spec["min"]))
@@ -956,7 +1108,19 @@ def step_setting_saved_as(context, setting, value):
     elif isinstance(expected, dict):
         expected = expected[value]
     assert actual == expected, (
-        f"Config for '{setting}' should be saved as '{value}' but is '{actual}'"
+        f"Config for '{setting}' ([{spec['group']}],{spec['key']}) should be saved as '{value}' but is '{actual}'"
+    )
+
+
+@then('the "{setting}" config key should be unset')
+def step_setting_key_unset(context, setting):
+    s = _rpc(context)
+    spec = CONFIG_SAVE_MAP.get(setting)
+    if not spec:
+        raise ValueError(f"No config mapping for setting: {setting}")
+    actual = _get_config_value(s, spec["group"], spec["key"])
+    assert actual == "", (
+        f"Config key '{spec['group']},{spec['key']}' should be unset but is '{actual}'"
     )
 
 
@@ -1099,6 +1263,297 @@ def step_search_results_visible(context):
     s = _rpc(context)
     result_list = f"{SETTINGS_POPUP_ITEM}/settingResultList"
     assert _wait_for_visible(s, result_list, timeout=10), "Search results are not visible"
+
+
+valid = None
+# --- Waveform tab live feedback ---
+#
+# Property reads on two objectName-proxied levels (see the constants at the
+# top): the live waveform preview inside the settings popup, which values the
+# settings' own renderer bindings, and the deck waveforms of
+# res/qml/WaveformDisplay.qml, which consume the persisted Mixxx.Config
+# values.
+
+
+def _deck_waveform_path(deck):
+    return f"mainWindow/waveformDisplay_Channel{deck}"
+
+
+def _read_float_property(s, path, prop):
+    value = s.getStringProperty(path, prop)
+    try:
+        return float(value)
+    except (TypeError, ValueError) as e:
+        raise AssertionError(
+            f"Expected a numeric '{prop}' on '{path}' but read '{value}' ({e})"
+        )
+
+
+def _waveform_color_props(context, band, color):
+    s = _rpc(context)
+    assert band in COLOR_BAND_MAP, f"Unknown waveform color '{band}'"
+    actual = s.getStringProperty(WAVEFORM_PREVIEW_PATH, "colorCode" if band == "all" else f"{band}ColorCode")
+    assert actual.lower() == color.lower(), (
+        f"The '{band}' waveform color should be '{color}' but is '{actual}'"
+    )
+
+
+def _assert_deck_until_mark(context, prop, deck, expected, description):
+    s = _rpc(context)
+    actual = s.getStringProperty(_deck_waveform_path(deck), prop)
+    assert actual == str(expected).lower(), (
+        f"The until-marker hint on deck {deck} should "
+        f"{'show' if expected else 'not show'} {description} "
+        f"but '{prop}' is '{actual}'"
+    )
+
+
+@when('I pick the color "{color}" for the "{band}" waveform color')
+def step_pick_waveform_color(context, color, band):
+    s = _rpc(context)
+    assert band in COLOR_BAND_MAP, f"Unknown waveform color '{band}'"
+    index = COLOR_BAND_MAP[band]
+    swatch_path = f"mainWindow/waveformColorSwatch_{index}"
+    assert _wait_for_visible(s, swatch_path), (
+        f"Color swatch '{swatch_path}' is not visible; the current waveform "
+        f"type must support the '{band}' color"
+    )
+    before = int(s.getStringProperty(COLOR_PICKER_TEST_PATH, "openCount"))
+    s.setStringProperty(COLOR_PICKER_TEST_PATH, "testMode", "true")
+    s.setStringProperty(COLOR_PICKER_TEST_PATH, "selectedColor", color)
+    _click(s, swatch_path)
+    deadline = time.time() + 5
+    after = before
+    while time.time() < deadline:
+        after = int(s.getStringProperty(COLOR_PICKER_TEST_PATH, "openCount"))
+        if after > before:
+            break
+        time.sleep(0.1)
+    assert after == before + 1, (
+        f"The color picker for the '{band}' waveform color did not open "
+        f"(open count {before} -> {after})"
+    )
+
+
+@then('the "{setting}" setting should not be visible')
+def step_setting_not_visible(context, setting):
+    s = _rpc(context)
+    spec = _setting_spec(setting)
+    assert _wait_for_hidden(s, spec["path"]), f"Setting '{setting}' is still visible"
+
+
+@then("the waveform preview should be at zoom {zoom:g}")
+def step_preview_waveform_zoom(context, zoom):
+    s = _rpc(context)
+    actual = _read_float_property(s, WAVEFORM_PREVIEW_PATH, "zoom")
+    assert abs(actual - zoom) < 0.01, (
+        f"The waveform preview should be at zoom {zoom} but is {actual}"
+    )
+
+
+@then("the waveform preview beat grid should be {pct:d}% opaque")
+def step_preview_waveform_beat_grid(context, pct):
+    s = _rpc(context)
+    actual = _read_float_property(s, WAVEFORM_PREVIEW_PATH, "beatGridOpacity")
+    expected = pct / 100
+    assert abs(actual - expected) < 0.01, (
+        f"The waveform preview beat grid should be {pct}% opaque ({expected}) "
+        f"but is {actual}"
+    )
+
+
+@then("the waveform preview play marker should sit at {pct:d}%")
+def step_preview_waveform_play_marker(context, pct):
+    s = _rpc(context)
+    actual = _read_float_property(s, WAVEFORM_PREVIEW_PATH, "playMarkerPosition")
+    expected = pct / 100
+    assert abs(actual - expected) < 0.01, (
+        f"The waveform preview play marker should sit at {pct}% ({expected}) "
+        f"but is at {actual}"
+    )
+
+
+@then('the waveform preview until-marker hint should show beats')
+def step_preview_waveform_until_mark_beats(context):
+    s = _rpc(context)
+    actual = s.getStringProperty(WAVEFORM_PREVIEW_PATH, "untilMarkShowBeats")
+    assert actual == "true", (
+        f"The waveform preview until-marker hint should show beats "
+        f"but showBeats is '{actual}'"
+    )
+
+
+@then('the waveform preview until-marker hint should not show beats')
+def step_preview_waveform_until_mark_beats_off(context):
+    s = _rpc(context)
+    actual = s.getStringProperty(WAVEFORM_PREVIEW_PATH, "untilMarkShowBeats")
+    assert actual == "false", (
+        f"The waveform preview until-marker hint should not show beats "
+        f"but showBeats is '{actual}'"
+    )
+
+
+@then('the waveform preview until-marker hint should show the remaining time')
+def step_preview_waveform_until_mark_time(context):
+    s = _rpc(context)
+    actual = s.getStringProperty(WAVEFORM_PREVIEW_PATH, "untilMarkShowTime")
+    assert actual == "true", (
+        f"The waveform preview until-marker hint should show the remaining "
+        f"time but showTime is '{actual}'"
+    )
+
+
+@then('the waveform preview until-marker hint should not show the remaining time')
+def step_preview_waveform_until_mark_time_off(context):
+    s = _rpc(context)
+    actual = s.getStringProperty(WAVEFORM_PREVIEW_PATH, "untilMarkShowTime")
+    assert actual == "false", (
+        f"The waveform preview until-marker hint should not show the remaining "
+        f"time but showTime is '{actual}'"
+    )
+
+
+@then('the waveform preview until-marker hint should be placed at the "{placement}"')
+def step_preview_waveform_until_mark_placement(context, placement):
+    s = _rpc(context)
+    actual = s.getStringProperty(WAVEFORM_PREVIEW_PATH, "untilMarkAlignName")
+    assert actual == placement, (
+        f"The waveform preview until-marker hint should be placed at the "
+        f"'{placement}' but is '{actual}'"
+    )
+
+
+@then('the waveform preview until-marker hint should use a {size:d}pt font')
+def step_preview_waveform_until_mark_font(context, size):
+    s = _rpc(context)
+    actual = _read_float_property(s, WAVEFORM_PREVIEW_PATH, "untilMarkTextSize")
+    assert abs(actual - size) < 0.01, (
+        f"The waveform preview until-marker hint should use a {size}pt font "
+        f"but is {actual}pt"
+    )
+
+
+@then('the waveform preview should have the "{band}" band gain set to "{value}"')
+def step_preview_waveform_band_gain(context, band, value):
+    s = _rpc(context)
+    prop = GAIN_BAND_MAP[band]["preview"]
+    actual = _read_float_property(s, WAVEFORM_PREVIEW_PATH, prop)
+    assert abs(actual - float(value)) < 1e-3, (
+        f"The waveform preview should have the '{band}' band gain set to "
+        f"'{value}' ({prop}) but is {actual}"
+    )
+
+
+@then('the waveform preview should render with the selected options')
+def step_preview_waveform_option(context):
+    s = _rpc(context)
+    bits = 0
+    for name, bit in WAVEFORM_OPTION_BITS.items():
+        selected = s.getStringProperty(_setting_spec(name)["path"], "selected")
+        if selected == "on":
+            bits |= bit
+    actual = int(s.getStringProperty(WAVEFORM_PREVIEW_PATH, "options"))
+    assert actual == bits, (
+        f"The waveform preview should render with option bits {bits} "
+        f"but renders with bits {actual}"
+    )
+
+
+@then('the "{band}" color swatch should be "{color}"')
+def step_waveform_color_swatch(context, band, color):
+    _waveform_color_props(context, band, color)
+
+
+@then('the waveform preview should render the "{band}" band with "{color}"')
+def step_preview_waveform_color(context, band, color):
+    _waveform_color_props(context, band, color)
+
+
+# --- Deck waveforms (validation of the saved values) ---
+
+@then("the beat grid on deck {deck:d} should fade to {pct:d}% opacity")
+def step_deck_waveform_beat_grid(context, deck, pct):
+    s = _rpc(context)
+    actual = _read_float_property(s, _deck_waveform_path(deck), "beatGridAlpha")
+    expected = pct / 100
+    assert abs(actual - expected) < 0.01, (
+        f"The beat grid on deck {deck} should fade to {pct}% opacity "
+        f"({expected}) but is {actual}"
+    )
+
+
+@then("the play marker on deck {deck:d} should sit at {pct:d}%")
+def step_deck_waveform_play_marker(context, deck, pct):
+    s = _rpc(context)
+    actual = _read_float_property(
+            s, _deck_waveform_path(deck), "playMarkerPosition")
+    expected = pct / 100
+    assert abs(actual - expected) < 0.01, (
+        f"The play marker on deck {deck} should sit at {pct}% ({expected}) "
+        f"but is at {actual}"
+    )
+
+
+@then("the until-marker hint on deck {deck:d} should show beats")
+def step_deck_waveform_until_mark_beats_on(context, deck):
+    _assert_deck_until_mark(context, "untilMarkShowBeats", deck, True, "beats")
+
+
+@then("the until-marker hint on deck {deck:d} should not show beats")
+def step_deck_waveform_until_mark_beats_off(context, deck):
+    _assert_deck_until_mark(context, "untilMarkShowBeats", deck, False, "beats")
+
+
+@then("the until-marker hint on deck {deck:d} should show the remaining time")
+def step_deck_waveform_until_mark_time_on(context, deck):
+    _assert_deck_until_mark(context, "untilMarkShowTime", deck, True, "remaining time")
+
+
+@then("the until-marker hint on deck {deck:d} should not show the remaining time")
+def step_deck_waveform_until_mark_time_off(context, deck):
+    _assert_deck_until_mark(context, "untilMarkShowTime", deck, False, "remaining time")
+
+
+@then('the until-marker hint on deck {deck:d} should be placed at the "{placement}"')
+def step_deck_waveform_until_mark_placement(context, deck, placement):
+    s = _rpc(context)
+    actual = s.getStringProperty(_deck_waveform_path(deck), "untilMarkAlignName")
+    assert actual == placement, (
+        f"The until-marker hint on deck {deck} should be placed at the "
+        f"'{placement}' but is '{actual}'"
+    )
+
+
+@then('the until-marker hint on deck {deck:d} should use a {size:d}pt font')
+def step_deck_waveform_until_mark_font(context, deck, size):
+    s = _rpc(context)
+    actual = _read_float_property(s, _deck_waveform_path(deck), "untilMarkTextSize")
+    assert abs(actual - size) < 0.01, (
+        f"The until-marker hint on deck {deck} should use a {size}pt font "
+        f"but is {actual}pt"
+    )
+
+
+@then('the waveform on deck {deck:d} should have the "{band}" band gain set to "{value}"')
+def step_deck_waveform_band_gain(context, deck, band, value):
+    s = _rpc(context)
+    prop = GAIN_BAND_MAP[band]["deck"]
+    actual = _read_float_property(s, _deck_waveform_path(deck), prop)
+    assert abs(actual - float(value)) < 1e-3, (
+        f"The waveform on deck {deck} should have the '{band}' band gain set "
+        f"to '{value}' ({prop}) but is {actual}"
+    )
+
+
+@then("the zoom of the waveform on deck {deck_a:d} should be equal to the zoom on deck {deck_b:d}")
+def step_deck_waveform_zoom_equal(context, deck_a, deck_b):
+    s = _rpc(context)
+    a = _read_float_property(s, _deck_waveform_path(deck_a), "waveformZoom")
+    b = _read_float_property(s, _deck_waveform_path(deck_b), "waveformZoom")
+    assert abs(a - b) < 1e-6, (
+        f"The zoom of the waveform on deck {deck_a} ({a}) differs from the "
+        f"zoom on deck {deck_b} ({b}); zoom synchronization did not couple them"
+    )
 
 
 # --- Responsiveness steps ---
@@ -1447,6 +1902,74 @@ def _enter_text_value(s, path, value):
     s.wait(100)
     s.enterKey("mainWindow", QT_KEY_ENTER, 0)
     time.sleep(0.3)
+
+
+def _scroll_combo_option_into_view(s, path, index):
+    """Scroll the combo popup's list so that the option at ``index`` is fully
+    inside the visible list viewport, mirroring a user wheel-spinning the
+    popup to reach the option before clicking it.
+
+    The popup's ListView (``<path>_popupList``, named in ComboBox.qml) only
+    instantiates delegates inside its viewport, so an option above or below
+    the fold either has no bounding box yet or is clipped. Scroll by driving
+    the list's ``contentY``, computing the shift from both bounding boxes
+    (option vs. list), iterating until the option is contained in view or a
+    bounded deadline runs out.
+
+    Returns True when the option is clickable in view; False when the popup
+    list is not reachable or the option could not be brought in view (the
+    caller then falls back to keyboard selection).
+    """
+    list_path = f"{path}_popupList"
+    option_path = f"{path}_option_{index}"
+    deadline = time.time() + 8
+    while time.time() < deadline:
+        try:
+            content_y = float(s.getStringProperty(list_path, "contentY") or 0)
+            content_height = float(s.getStringProperty(list_path, "contentHeight") or 0)
+            lx, ly, lw, lh = s.getBoundingBox(list_path)
+        except Exception:
+            # Popup list not reachable (popup closed, or the combo does not
+            # use the shared Skin.ComboBox popup with a named list).
+            return False
+        max_y = max(0.0, content_height - lh)
+        option_bb = None
+        try:
+            option_bb = s.getBoundingBox(option_path)
+        except Exception:
+            pass
+        if option_bb is None or option_bb[2] <= 0 or option_bb[3] <= 0:
+            # A zero-sized (or failed) bounding box means the delegate is not
+            # instantiated yet. Scroll toward the list end so it is created;
+            # give up when there is nothing left to scroll.
+            if max_y <= 0.0 or content_y >= max_y:
+                return False
+            s.setStringProperty(list_path, "contentY", str(max_y))
+            time.sleep(0.3)
+            continue
+        _, oy, _, oh = option_bb
+        if lw <= 0 or lh <= 0:
+            return False
+        if oy >= ly and oy + oh <= ly + lh:
+            return True
+        if oy + oh > ly + lh:
+            # Below the fold: scroll down by the overshoot.
+            shift = (oy + oh) - (ly + lh)
+        else:
+            # Above the fold: scroll up by the overshoot.
+            shift = -(ly - oy)
+        target_y = max(0.0, min(content_y + shift, max_y))
+        if abs(target_y - content_y) < 1.0:
+            # Already at the scroll limit (or sub-pixel movement): the
+            # option may still be clickable if its center is in the
+            # viewport; otherwise the click would land on a clipped item.
+            center = oy + oh / 2
+            if ly <= center <= ly + lh:
+                return True
+            return False
+        s.setStringProperty(list_path, "contentY", str(target_y))
+        time.sleep(0.3)
+    return False
 
 
 def _combo_select_keyboard(s, path, index):
