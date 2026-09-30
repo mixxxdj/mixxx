@@ -155,6 +155,7 @@ bool WaveformRendererStem::preprocessInner() {
     const double lastVisualFrame =
             m_waveformRenderer->getLastDisplayedPosition(positionType) * visualFramesSize;
 
+    // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
     if (visualIncrementPerPixel == 0.0) {
