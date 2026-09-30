@@ -1,11 +1,11 @@
 import "." as Skin
 import Mixxx 1.0 as Mixxx
 import Mixxx.Controls 1.0 as MixxxControls
-import Qt5Compat.GraphicalEffects
 import QtQuick 2.12
 import QtQuick.Layouts
 import QtQuick.Shapes
 import QtQuick.Controls 2.12
+import QtQuick.Effects
 import QtQml.Models // DelegateChoice for Qt >= 6.9
 import Qt.labs.qmlmodels // DelegateChooser
 import "Theme"
@@ -841,12 +841,10 @@ Item {
                 }
             }
         }
-        GaussianBlur {
+        MultiEffect {
             anchors.fill: layoutItem
-            deviation: 4
-            radius: blurRadius
-            samples: 16
             source: content
+            blur: root.editMode ? Math.min(1, layoutItem.blurRadius / 16) : 0
             visible: root.editMode
         }
         Rectangle {
