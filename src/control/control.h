@@ -59,6 +59,8 @@ class ControlDoublePrivate : public QObject {
             double defaultValue = kDefaultValue);
     static QSharedPointer<ControlDoublePrivate> getDefaultControl();
 
+    static void writeOscQueryDescription(QString& oscQueryFileName);
+
     // Returns a list of all existing instances.
     static QList<QSharedPointer<ControlDoublePrivate>> getAllInstances();
     // Clears all existing instances and returns them as a list.
