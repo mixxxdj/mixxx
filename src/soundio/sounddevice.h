@@ -38,6 +38,12 @@ class SoundDevice {
     virtual void writeProcess(SINT framesPerBuffer) = 0;
     virtual QString getError() const = 0;
     virtual mixxx::audio::SampleRate getDefaultSampleRate() const = 0;
+    /// Whether the device can plausibly be opened for output. Used to avoid
+    /// auto-selecting a sound API whose devices enumerate but are broken,
+    /// e.g. an ASIO driver that rejects every standard sample rate.
+    virtual bool isUsable() const {
+        return true;
+    }
     mixxx::audio::ChannelCount getNumOutputChannels() const;
     mixxx::audio::ChannelCount getNumInputChannels() const;
     SoundDeviceStatus addOutput(const AudioOutputBuffer& out);

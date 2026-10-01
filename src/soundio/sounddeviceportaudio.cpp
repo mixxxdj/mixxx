@@ -411,6 +411,33 @@ bool SoundDevicePortAudio::isOpen() const {
     return m_pStream.load() != nullptr;
 }
 
+bool SoundDevicePortAudio::isUsable() const {
+    if (!m_deviceInfo || m_deviceInfo->maxOutputChannels < 1) {
+        return false;
+    }
+    PaStreamParameters outputParams;
+    outputParams.device = m_deviceId.portAudioIndex;
+    outputParams.channelCount = math_min(2, m_deviceInfo->maxOutputChannels);
+    outputParams.sampleFormat = paFloat32;
+    outputParams.suggestedLatency = m_deviceInfo->defaultHighOutputLatency;
+    outputParams.hostApiSpecificStreamInfo = nullptr;
+
+    // Accept the device if it supports its own default rate or any of the
+    // rates Mixxx offers. A device that rejects all of them (seen with the
+    // Realtek ASIO driver, which fails every open with "Invalid sample
+    // rate") would only produce a broken configuration.
+    const double candidateRates[] = {
+            m_deviceInfo->defaultSampleRate, 44100.0, 48000.0, 96000.0};
+    for (const double rate : candidateRates) {
+        if (rate > 0.0 &&
+                Pa_IsFormatSupported(nullptr, &outputParams, rate) ==
+                        paFormatIsSupported) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void paFinishedCallback(void* soundDevice) {
     // This callback is called by PortAudio when Pa_IsStreamStopped becomes true.
     // This is triggered when Mixxx sets the return value from the process callback
