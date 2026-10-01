@@ -91,7 +91,8 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
     auto pAction = make_parented<QWidgetAction>(this);
     pAction->setDefaultWidget(pCheckBox.get());
     // While the checkbox is selected (via keyboard, not hovered by pointer)
-    // pressing Space will toggle it whereas pressing Return triggers the action.
+    // pressing Space will toggle it whereas pressing Return triggers the action
+    // and closes the menu (see WTrackMenu).
     connect(pAction.get(),
             &QAction::triggered,
             this,
