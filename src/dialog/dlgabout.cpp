@@ -1,18 +1,65 @@
 #include "dialog/dlgabout.h"
 
+#include <QApplication>
+#include <QClipboard>
 #include <QDebug>
 #include <QFile>
 #include <QLocale>
+#include <QTimer>
+#include <utility>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
+#include "skin/skinloader.h"
 #include "util/color/color.h"
 #include "util/desktophelper.h"
 #include "util/versionstore.h"
 
-DlgAbout::DlgAbout()
+namespace {
+
+/// How long the "Copied!" feedback is shown before the original button label
+/// is restored.
+constexpr int kCopyInfoLabelResetMillis = 2000;
+
+/// Formats the name of the configured skin, e.g. "LateNight / PaleMoon
+/// (Classic)" or "LateNightQML (QML)", or the null string if the skin cannot
+/// be determined.
+QString skinInfoText(UserSettingsPointer pConfig, mixxx::skin::SkinLoader* pSkinLoader) {
+    if (pSkinLoader == nullptr) {
+        return QString();
+    }
+    const mixxx::skin::SkinPointer pSkin = pSkinLoader->getConfiguredSkin();
+    if (!pSkin || !pSkin->isValid()) {
+        return QString();
+    }
+    QString skinText = pSkin->name();
+
+    // Append the configured colorscheme, but only if it belongs to the
+    // configured skin, as the scheme may be stale from another skin.
+    const QString scheme = pConfig->getValueString(
+            ConfigKey(QStringLiteral("[Config]"), QStringLiteral("Scheme")));
+    if (!scheme.isEmpty() && pSkin->colorschemes().contains(scheme)) {
+        skinText += QStringLiteral(" / ") + scheme;
+    }
+
+    switch (pSkin->type()) {
+    case mixxx::skin::SkinType::Legacy:
+        skinText += QStringLiteral(" (Classic)");
+        break;
+    case mixxx::skin::SkinType::QML:
+        skinText += QStringLiteral(" (QML)");
+        break;
+    }
+    return skinText;
+}
+
+} // namespace
+
+DlgAbout::DlgAbout(UserSettingsPointer pConfig, mixxx::skin::SkinLoader* pSkinLoader)
         : QDialog(nullptr),
-          Ui::DlgAboutDlg() {
+          Ui::DlgAboutDlg(),
+          m_pConfig(std::move(pConfig)),
+          m_pSkinLoader(pSkinLoader) {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
@@ -501,6 +548,16 @@ DlgAbout::DlgAbout()
     btnDonate->setText(tr("Donate"));
     connect(btnDonate, &QPushButton::clicked, this, [] {
         mixxx::DesktopHelper::openUrl(QUrl(MIXXX_DONATE_URL));
+    });
+
+    btnCopyInfo->setText(tr("Copy Info"));
+    connect(btnCopyInfo, &QPushButton::clicked, this, [this] {
+        QApplication::clipboard()->setText(VersionStore::diagnosticInfo(
+                skinInfoText(m_pConfig, m_pSkinLoader)));
+        btnCopyInfo->setText(tr("Copied!"));
+        QTimer::singleShot(kCopyInfoLabelResetMillis, this, [this] {
+            btnCopyInfo->setText(tr("Copy Info"));
+        });
     });
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);
