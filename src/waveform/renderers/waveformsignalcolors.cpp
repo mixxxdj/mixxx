@@ -69,6 +69,45 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     }
     m_rgbHighFilteredColor = WSkinColor::getCorrectColor(m_rgbHighFilteredColor).toRgb();
 
+    // stacked band colors default to the RGB colors so existing skins keep working
+    m_stackedLowColor = QColor(context.selectString(node, "SignalStackedLowColor"));
+    if (!m_stackedLowColor.isValid()) {
+        m_stackedLowColor = m_rgbLowColor;
+    }
+    m_stackedLowColor = WSkinColor::getCorrectColor(m_stackedLowColor).toRgb();
+
+    m_stackedMidColor = QColor(context.selectString(node, "SignalStackedMidColor"));
+    if (!m_stackedMidColor.isValid()) {
+        m_stackedMidColor = m_rgbMidColor;
+    }
+    m_stackedMidColor = WSkinColor::getCorrectColor(m_stackedMidColor).toRgb();
+
+    m_stackedHighColor = QColor(context.selectString(node, "SignalStackedHighColor"));
+    if (!m_stackedHighColor.isValid()) {
+        m_stackedHighColor = m_rgbHighColor;
+    }
+    m_stackedHighColor = WSkinColor::getCorrectColor(m_stackedHighColor).toRgb();
+
+    // stacked filtered colors default to darkened stacked colors, mirroring
+    // the rgb filtered fallback
+    m_stackedLowFilteredColor = QColor(context.selectString(node, "SignalStackedLowFilteredColor"));
+    if (!m_stackedLowFilteredColor.isValid()) {
+        m_stackedLowFilteredColor = m_stackedLowColor.darker(300);
+    }
+    m_stackedLowFilteredColor = WSkinColor::getCorrectColor(m_stackedLowFilteredColor).toRgb();
+
+    m_stackedMidFilteredColor = QColor(context.selectString(node, "SignalStackedMidFilteredColor"));
+    if (!m_stackedMidFilteredColor.isValid()) {
+        m_stackedMidFilteredColor = m_stackedMidColor.darker(300);
+    }
+    m_stackedMidFilteredColor = WSkinColor::getCorrectColor(m_stackedMidFilteredColor).toRgb();
+
+    m_stackedHighFilteredColor = QColor(context.selectString(node, "SignalStackedHighFilteredColor"));
+    if (!m_stackedHighFilteredColor.isValid()) {
+        m_stackedHighFilteredColor = m_stackedHighColor.darker(300);
+    }
+    m_stackedHighFilteredColor = WSkinColor::getCorrectColor(m_stackedHighFilteredColor).toRgb();
+
     m_axesColor = context.selectColor(node, "AxesColor");
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);

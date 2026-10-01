@@ -349,9 +349,9 @@ void drawWaveformPartStackedRGB(
         startVal = *start;
     }
 
-    const QColor lowColor = signalColors.getRgbLowColor();
-    const QColor midColor = signalColors.getRgbMidColor();
-    const QColor highColor = signalColors.getRgbHighColor();
+    const QColor lowColor = signalColors.getStackedLowColor();
+    const QColor midColor = signalColors.getStackedMidColor();
+    const QColor highColor = signalColors.getStackedHighColor();
 
     // stacked mode: draw low/mid/high bands layered on top of each other
     // draw in order: low (widest), mid (on top), high (on top of that)
