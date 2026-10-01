@@ -839,6 +839,11 @@ void MixxxMainWindow::connectMenuBar() {
             &MixxxMainWindow::slotOptionsPreferences,
             Qt::UniqueConnection);
     connect(m_pMenuBar,
+            &WMainMenuBar::repairDatabase,
+            this,
+            &MixxxMainWindow::slotOptionsRepairDatabase,
+            Qt::UniqueConnection);
+    connect(m_pMenuBar,
             &WMainMenuBar::loadTrackToDeck,
             this,
             &MixxxMainWindow::slotFileLoadSongPlayer,
@@ -1118,6 +1123,28 @@ void MixxxMainWindow::slotOptionsPreferences() {
     m_pPrefDlg->show();
     m_pPrefDlg->raise();
     m_pPrefDlg->activateWindow();
+}
+
+void MixxxMainWindow::slotOptionsRepairDatabase() {
+    QMessageBox::StandardButton btn = QMessageBox::warning(
+            this,
+            VersionStore::applicationName(),
+            tr("Repairing the database requires a restart of Mixxx.\n"
+               "Do you want to exit out of Mixxx and run the database repair on the next launch?"),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No);
+    if (btn == QMessageBox::Yes) {
+        // TODO(cr7pt0gr4ph7): Implement an external restart handler that
+        // automatically restarts Mixxx here. Basically just a small
+        // cmdline application that, when invoked, forwards everything to the
+        // main Mixxx executable, but also listens for a a special restart flag.
+
+        // Set flag and exit out of Mixxx
+        m_pCoreServices->getSettings()->setValue(
+                mixxx::library::prefs::kRepairDatabaseOnNextRestartConfigKey,
+                true);
+        close();
+    }
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
