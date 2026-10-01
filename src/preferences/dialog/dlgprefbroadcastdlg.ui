@@ -674,6 +674,26 @@ p, li { white-space: pre-wrap; }
          <string>Server connection</string>
         </property>
         <layout class="QGridLayout">
+         <item row="3" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_21">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Encryption</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="encryptionModeComboBox"/>
+           </item>
+          </layout>
+         </item>
          <item row="0" column="0">
           <layout class="QGridLayout" name="gridLayoutSC">
            <item row="0" column="0">
