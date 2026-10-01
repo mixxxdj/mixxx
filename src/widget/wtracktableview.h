@@ -87,6 +87,30 @@ class WTrackTableView : public WLibraryTableView {
     // Color for the table items' focus border. Default: white
     // Used by table delegates.
     static constexpr QColor kDefaultFocusBorderColor = QColor(0xff, 0xff, 0xff);
+
+    // This property allows styling the filtered view in qss,
+    // eg. with a background pattern
+    Q_PROPERTY(bool filtered
+                    READ isFiltered
+                            // WRITE setFiltered
+                            NOTIFY filteredChanged
+                                    DESIGNABLE true);
+    bool isFiltered() const {
+        return m_filtered;
+    }
+    void setFiltered(bool f) {
+        if (f == m_filtered) {
+            return;
+        }
+        m_filtered = f;
+        emit filteredChanged(m_filtered);
+
+        style()->unpolish(this);
+        style()->polish(this);
+        // These calls may not always trigger the repaint, do it explicitly
+        repaint();
+    }
+
     Q_PROPERTY(QColor focusBorderColor
                     MEMBER m_focusBorderColor
                             NOTIFY focusBorderColorChanged
@@ -124,6 +148,7 @@ class WTrackTableView : public WLibraryTableView {
 
   signals:
     void trackMenuVisible(bool visible);
+    void filteredChanged(bool filtered);
     void focusBorderColorChanged(QColor col);
     void trackPlayedColorChanged(QColor col);
     void trackMissingColorChanged(QColor col);
@@ -201,6 +226,7 @@ class WTrackTableView : public WLibraryTableView {
     parented_ptr<WTrackMenu> m_pTrackMenu;
 
     const double m_backgroundColorOpacity;
+    bool m_filtered;
     QColor m_focusBorderColor;
     QColor m_trackPlayedColor;
     QColor m_trackMissingColor;
