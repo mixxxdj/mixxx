@@ -1,10 +1,12 @@
 #include "controllers/scripting/controllerscriptenginebase.h"
 
+#include <QFileInfo>
 #include <QJSEngine>
 
 #include "controllers/controller.h"
 #include "controllers/scripting/colormapperjsproxy.h"
 #include "errordialoghandler.h"
+#include "mixer/playermanager.h"
 #ifdef MIXXX_USE_QML
 #include <QQmlEngine>
 #endif
@@ -38,6 +40,29 @@ void ControllerScriptEngineBase::registerPlayerManager(
 void ControllerScriptEngineBase::registerTrackCollectionManager(
         std::shared_ptr<TrackCollectionManager> pTrackCollectionManager) {
     s_pTrackCollectionManager = std::move(pTrackCollectionManager);
+}
+
+bool ControllerScriptEngineBase::loadTrackToPlayer(
+        const QString& group, const QString& path) {
+    VERIFY_OR_DEBUG_ASSERT(s_pPlayerManager != nullptr) {
+        qCritical() << "loadTrackToPlayer: PlayerManager not initialised";
+        return false;
+    }
+    if (path.isEmpty()) {
+        qWarning() << "loadTrackToPlayer: empty path";
+        return false;
+    }
+    const QFileInfo fi(path);
+    if (!fi.exists() || !fi.isFile()) {
+        qWarning() << "loadTrackToPlayer: file not found:" << path;
+        return false;
+    }
+    // slotLoadLocationToPlayer just emits a signal; Qt queues it to
+    // whichever thread the Library lives on, so calling from the
+    // controller script thread is safe.
+    s_pPlayerManager->slotLoadLocationToPlayer(
+            fi.absoluteFilePath(), group, /*play=*/false);
+    return true;
 }
 
 #ifdef MIXXX_USE_QML
