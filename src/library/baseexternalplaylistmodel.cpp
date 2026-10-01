@@ -149,7 +149,8 @@ void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
     auto playlistViewColumns = QStringList{
             PLAYLISTTRACKSTABLE_TRACKID,
             PLAYLISTTRACKSTABLE_POSITION,
-            QStringLiteral("'' AS ") + LIBRARYTABLE_PREVIEW};
+            QStringLiteral("'' AS ") + LIBRARYTABLE_PREVIEW,
+            QStringLiteral("'' AS ") + LIBRARYTABLE_LOADED_DECK};
     const auto queryString =
             QStringLiteral(
                     "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -169,7 +170,8 @@ void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
     }
 
     m_currentPlaylistId = playlistId;
-    playlistViewColumns.last() = LIBRARYTABLE_PREVIEW;
+    playlistViewColumns[2] = LIBRARYTABLE_PREVIEW;
+    playlistViewColumns[3] = LIBRARYTABLE_LOADED_DECK;
     setTable(playlistViewTable, playlistViewColumns.first(), playlistViewColumns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
@@ -191,6 +193,11 @@ TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) cons
         }
     }
     return TrackId();
+}
+
+QString BaseExternalPlaylistModel::normalizeTrackLocationForLoadedDecks(
+        const QString& location) const {
+    return resolveLocation(location);
 }
 
 TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {

@@ -100,6 +100,12 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     virtual void initSortColumnMapping();
 
+    void handleLoadedDecksChanged(
+            const QList<int>& rows) override;
+
+    virtual QString normalizeTrackLocationForLoadedDecks(
+            const QString& location) const;
+
     TrackCollectionManager* const m_pTrackCollectionManager;
 
     QList<TrackRef> getTrackRefs(const QModelIndexList& indices) const;
@@ -163,6 +169,13 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             QVector<RowInfo>&& rows,
             TrackId2Rows&& trackIdToRows,
             TrackPos2Row&& trackPosToRows);
+
+    void rebuildRowMappings();
+    bool isLoadedDecksSortActive() const;
+    void applyLoadedDecksSort();
+    void applyLoadedDecksSort(QVector<RowInfo>* pRows) const;
+    QHash<TrackId, LoadedDeckMasks> buildLoadedDeckMasks(
+            const QVector<RowInfo>& rows) const;
 
     QVector<RowInfo> m_rowInfo;
 

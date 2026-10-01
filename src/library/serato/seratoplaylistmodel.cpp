@@ -66,6 +66,8 @@ void SeratoPlaylistModel::initSortColumnMapping() {
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
     m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
+    m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::LoadedDeck)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK);
     m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::CoverArt)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
     m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::Position)] =

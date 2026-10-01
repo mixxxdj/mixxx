@@ -9,6 +9,7 @@
 #include "library/starrating.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basesqltablemodel.cpp"
 #include "track/keyutils.h"
@@ -17,6 +18,7 @@
 #include "util/assert.h"
 #include "util/datetime.h"
 #include "util/db/dbconnection.h"
+#include "util/defs.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
 #include "util/platform.h"
@@ -35,6 +37,15 @@ constexpr int kMaxSortColumns = 3;
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
 const QString kModelName = "table:";
+
+bool loadedDeckMasksLessThan(
+        const BaseTrackTableModel::LoadedDeckMasks& lhs,
+        const BaseTrackTableModel::LoadedDeckMasks& rhs) {
+    if (lhs.mainDeck != rhs.mainDeck) {
+        return lhs.mainDeck < rhs.mainDeck;
+    }
+    return lhs.samplersDeck < rhs.samplersDeck;
+}
 
 } // anonymous namespace
 
@@ -134,6 +145,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LoadedDeck)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
             fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
@@ -315,10 +329,6 @@ void BaseSqlTableModel::select() {
     // should not disturb that if we are only removing tracks.
     std::stable_sort(rowInfos.begin(), rowInfos.end());
 
-    TrackId2Rows trackIdToRows;
-    // We expect almost all rows to be valid and that only a few tracks
-    // are contained multiple times in rowInfos (e.g. in history playlists)
-    trackIdToRows.reserve(rowInfos.size());
     for (int i = 0; i < rowInfos.size(); ++i) {
         const RowInfo& rowInfo = rowInfos[i];
         if (rowInfo.row == -1) {
@@ -327,6 +337,22 @@ void BaseSqlTableModel::select() {
             rowInfos.resize(i);
             break;
         }
+    }
+
+    if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK) >= 0) {
+        setLoadedDeckMasks(buildLoadedDeckMasks(rowInfos));
+        applyLoadedDecksSort(&rowInfos);
+    } else {
+        setLoadedDeckMasks({});
+    }
+
+    TrackId2Rows trackIdToRows;
+    // We expect almost all rows to be valid and that only a few tracks
+    // are contained multiple times in rowInfos (e.g. in history playlists)
+    trackIdToRows.reserve(rowInfos.size());
+    for (int i = 0; i < rowInfos.size(); ++i) {
+        auto& rowInfo = rowInfos[i];
+        rowInfo.row = i;
         trackIdToRows[rowInfo.trackId].push_back(i);
     }
     // The number of unique tracks cannot be greater than the
@@ -529,6 +555,8 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
             // Random sort easter egg
             m_tableOrderBy = "ORDER BY RANDOM()";
+        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK)) {
+            m_tableOrderBy.clear();
         } else {
             m_tableOrderBy = "ORDER BY ";
             QString field = m_tableColumns[column];
@@ -643,6 +671,175 @@ QString BaseSqlTableModel::modelKey(bool noSearch) const {
             currentSearch();
 }
 
+void BaseSqlTableModel::handleLoadedDecksChanged(
+        const QList<int>& rows) {
+    if (isLoadedDecksSortActive()) {
+        applyLoadedDecksSort();
+        return;
+    }
+    BaseTrackTableModel::handleLoadedDecksChanged(rows);
+}
+
+QString BaseSqlTableModel::normalizeTrackLocationForLoadedDecks(
+        const QString& location) const {
+    return QDir::fromNativeSeparators(location);
+}
+
+void BaseSqlTableModel::rebuildRowMappings() {
+    m_trackIdToRows.clear();
+    m_trackIdToRows.reserve(m_rowInfo.size());
+    m_trackPosToRow.clear();
+
+    const int positionColumn =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    for (int row = 0; row < m_rowInfo.size(); ++row) {
+        auto& rowInfo = m_rowInfo[row];
+        rowInfo.row = row;
+        m_trackIdToRows[rowInfo.trackId].push_back(row);
+        if (positionColumn >= 0) {
+            m_trackPosToRow.insert(rowInfo.getPosition(positionColumn), row);
+        }
+    }
+}
+
+bool BaseSqlTableModel::isLoadedDecksSortActive() const {
+    const int loadedDecksColumn =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK);
+    return !m_sortColumns.isEmpty() &&
+            loadedDecksColumn >= 0 &&
+            m_sortColumns.first().m_column == loadedDecksColumn;
+}
+
+void BaseSqlTableModel::applyLoadedDecksSort() {
+    if (!isLoadedDecksSortActive()) {
+        return;
+    }
+
+    const auto persistentIndexes = persistentIndexList();
+    QList<QModelIndex> oldIndexes;
+    QList<QModelIndex> newIndexes;
+    oldIndexes.reserve(persistentIndexes.size());
+    newIndexes.reserve(persistentIndexes.size());
+
+    const QList<QPersistentModelIndex> parents;
+    emit layoutAboutToBeChanged(parents, QAbstractItemModel::VerticalSortHint);
+    applyLoadedDecksSort(&m_rowInfo);
+
+    QVector<int> newRowByOldRow(m_rowInfo.size(), -1);
+    for (int row = 0; row < m_rowInfo.size(); ++row) {
+        const int oldRow = m_rowInfo[row].row;
+        if (oldRow >= 0 && oldRow < newRowByOldRow.size()) {
+            newRowByOldRow[oldRow] = row;
+        }
+    }
+    for (const auto& persistentIndex : persistentIndexes) {
+        if (!persistentIndex.isValid()) {
+            continue;
+        }
+        const int oldRow = persistentIndex.row();
+        if (oldRow < 0 || oldRow >= newRowByOldRow.size()) {
+            continue;
+        }
+        const int newRow = newRowByOldRow[oldRow];
+        if (newRow < 0) {
+            continue;
+        }
+        oldIndexes.append(persistentIndex);
+        newIndexes.append(index(newRow, persistentIndex.column()));
+    }
+    changePersistentIndexList(oldIndexes, newIndexes);
+
+    rebuildRowMappings();
+    emit layoutChanged(parents, QAbstractItemModel::VerticalSortHint);
+}
+
+void BaseSqlTableModel::applyLoadedDecksSort(
+        QVector<RowInfo>* pRows) const {
+    if (!isLoadedDecksSortActive()) {
+        return;
+    }
+
+    const auto sortOrder = m_sortColumns.first().m_order;
+    std::stable_sort(
+            pRows->begin(),
+            pRows->end(),
+            [this, sortOrder](const RowInfo& lhs, const RowInfo& rhs) {
+                const auto lhsMask = loadedDeckMaskForTrackId(lhs.trackId);
+                const auto rhsMask = loadedDeckMaskForTrackId(rhs.trackId);
+                if (sortOrder == Qt::AscendingOrder) {
+                    return loadedDeckMasksLessThan(lhsMask, rhsMask);
+                }
+                return loadedDeckMasksLessThan(rhsMask, lhsMask);
+            });
+}
+
+QHash<TrackId, BaseTrackTableModel::LoadedDeckMasks> BaseSqlTableModel::buildLoadedDeckMasks(
+        const QVector<RowInfo>& rows) const {
+    QHash<TrackId, BaseTrackTableModel::LoadedDeckMasks> loadedDeckMasksByRowKey;
+    if (!m_trackSource || rows.isEmpty()) {
+        return loadedDeckMasksByRowKey;
+    }
+
+    const int locationColumn =
+            m_trackSource->fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
+    if (locationColumn < 0) {
+        return loadedDeckMasksByRowKey;
+    }
+
+    const auto loadedTracks = PlayerInfo::instance().getLoadedTracks();
+    if (loadedTracks.isEmpty()) {
+        return loadedDeckMasksByRowKey;
+    }
+
+    QHash<QString, TrackId> rowKeyByLocation;
+    rowKeyByLocation.reserve(rows.size());
+    for (const auto& rowInfo : rows) {
+        const auto normalizedLocation = normalizeTrackLocationForLoadedDecks(
+                m_trackSource->data(rowInfo.trackId, locationColumn).toString());
+        if (!normalizedLocation.isEmpty()) {
+            rowKeyByLocation.insert(normalizedLocation, rowInfo.trackId);
+        }
+    }
+
+    for (auto track = loadedTracks.cbegin(); track != loadedTracks.cend(); ++track) {
+        if (!track.value()) {
+            continue;
+        }
+
+        BaseTrackTableModel::LoadedDeckMasks loadedBitmask;
+        int deckNumber = 0;
+        if (PlayerManager::isDeckGroup(track.key(), &deckNumber)) {
+            if (deckNumber <= 0 || deckNumber > kMaxNumberOfDecks) {
+                continue;
+            }
+            loadedBitmask.mainDeck =
+                    static_cast<quint8>(1U << (deckNumber - 1));
+        } else {
+            int samplerNumber = 0;
+            if (!PlayerManager::isSamplerGroup(track.key(), &samplerNumber) ||
+                    samplerNumber <= 0 ||
+                    samplerNumber > kMaxNumberOfSamplers) {
+                continue;
+            }
+            loadedBitmask.samplersDeck =
+                    static_cast<quint64>(1ULL << (samplerNumber - 1));
+        }
+
+        const auto rowKey = rowKeyByLocation.value(track.value()->getLocation());
+        if (!rowKey.isValid()) {
+            continue;
+        }
+
+        auto updatedMask = loadedDeckMasksByRowKey.value(rowKey);
+        updatedMask.mainDeck = static_cast<quint8>(
+                updatedMask.mainDeck | loadedBitmask.mainDeck);
+        updatedMask.samplersDeck |= loadedBitmask.samplersDeck;
+        loadedDeckMasksByRowKey.insert(rowKey, updatedMask);
+    }
+
+    return loadedDeckMasksByRowKey;
+}
+
 QVariant BaseSqlTableModel::rawValue(
         const QModelIndex& index) const {
     DEBUG_ASSERT(index.isValid());
@@ -662,6 +859,9 @@ QVariant BaseSqlTableModel::rawValue(
 
     // If the row info has the row-specific column, return that.
     if (column < m_tableColumns.size()) {
+        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK)) {
+            return QVariant::fromValue(loadedDeckMaskForTrackId(trackId));
+        }
         // Special case for preview column. Return whether trackId is the
         // current preview deck track.
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
