@@ -559,21 +559,27 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
         const QList<TrackId>& trackIds) const {
     FwdSqlQuery query(m_database,
             mixxx::DbConnection::collateLexicographically(
-                    QStringLiteral("SELECT *, "
-                                   "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
-                                   "%1.%5 in (%10)) AS %6, "
-                                   "0 as %7 FROM %2 "
-                                   "ORDER BY %8 ASC NULLS LAST, %9")
+                    QStringLiteral("SELECT %1, %2, %3, %4, %5, "
+                                   "(SELECT COUNT(*) FROM %6 WHERE %6.%8 = %7.%1 AND "
+                                   "%6.%9 in (%15)) AS %10, "
+                                   "0 as %11, %12, %13, %14 "
+                                   "FROM %7 "
+                                   "ORDER BY %12 ASC NULLS LAST, %2")
                             .arg(
+                                    CRATETABLE_ID,
+                                    CRATETABLE_NAME,
+                                    CRATETABLE_LOCKED,
+                                    CRATETABLE_AUTODJ_SOURCE,
+                                    CRATETABLE_PARENTID,
                                     CRATE_TRACKS_TABLE,
                                     CRATE_SUMMARY_VIEW,
-                                    CRATETABLE_ID,
                                     CRATETRACKSTABLE_CRATEID,
                                     CRATETRACKSTABLE_TRACKID,
                                     CRATESUMMARY_TRACK_COUNT,
                                     CRATESUMMARY_TRACK_DURATION,
                                     CRATESUMMARY_FULL_PATH,
-                                    CRATETABLE_NAME,
+                                    CRATESUMMARY_FOLDER_PATH,
+                                    CRATESUMMARY_ANCESTOR_IDS,
                                     joinSqlStringList(trackIds))));
 
     if (query.execPrepared()) {
