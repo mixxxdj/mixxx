@@ -6,6 +6,7 @@
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
+#include <QMap>
 #include <QRegularExpression>
 #include <QString>
 #include <QStringList>
@@ -59,11 +60,10 @@ constexpr const char* kServertype = "Servertype";
 constexpr const char* kStreamDesc = "StreamDesc";
 constexpr const char* kStreamGenre = "StreamGenre";
 constexpr const char* kStreamName = "StreamName";
-constexpr const char* kStreamIRC = "StreamIRC";
-constexpr const char* kStreamAIM = "StreamAIM";
-constexpr const char* kStreamICQ = "StreamICQ";
 constexpr const char* kStreamPublic = "StreamPublic";
 constexpr const char* kStreamWebsite = "StreamWebsite";
+constexpr const char* kStreamExtraMetadata = "StreamExtraMetadata";
+constexpr const char* kStreamExtraMetadataEntry = "Entry";
 
 #ifdef __QTKEYCHAIN__
 constexpr const char* kKeychainPrefix = "Mixxx - ";
@@ -188,37 +188,34 @@ bool BroadcastProfile::equals(BroadcastProfilePtr other) {
 }
 
 bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
-    if (getEnabled() == other->getEnabled()
-            && secureCredentialStorage() == other->secureCredentialStorage()
-            && getHost() == other->getHost()
-            && getPort() == other->getPort()
-            && getServertype() == other->getServertype()
-            && getLogin() == other->getLogin()
-            && getPassword() == other->getPassword()
-            && getEnableReconnect() == other->getEnableReconnect()
-            && getReconnectPeriod() == other->getReconnectPeriod()
-            && getLimitReconnects() == other->getLimitReconnects()
-            && getMaximumRetries() == other->getMaximumRetries()
-            && getNoDelayFirstReconnect() == other->getNoDelayFirstReconnect()
-            && getReconnectFirstDelay() == other->getReconnectFirstDelay()
-            && getFormat() == other->getFormat()
-            && getBitrate() == other->getBitrate()
-            && getChannels() == other->getChannels()
-            && getMountpoint() == other->getMountpoint()
-            && getStreamName() == other->getStreamName()
-            && getStreamDesc() == other->getStreamDesc()
-            && getStreamGenre() == other->getStreamGenre()
-            && getStreamPublic() == other->getStreamPublic()
-            && getStreamWebsite() == other->getStreamWebsite()
-            && getStreamIRC() == other->getStreamIRC()
-            && getStreamAIM() == other->getStreamAIM()
-            && getStreamICQ() == other->getStreamICQ()
-            && getEnableMetadata() == other->getEnableMetadata()
-            && getMetadataCharset() == other->getMetadataCharset()
-            && getCustomArtist() == other->getCustomArtist()
-            && getCustomTitle() == other->getCustomTitle()
-            && getMetadataFormat() == other->getMetadataFormat()
-            && getOggDynamicUpdate() == other->getOggDynamicUpdate()) {
+    if (getEnabled() == other->getEnabled() &&
+            secureCredentialStorage() == other->secureCredentialStorage() &&
+            getHost() == other->getHost() && getPort() == other->getPort() &&
+            getServertype() == other->getServertype() &&
+            getLogin() == other->getLogin() &&
+            getPassword() == other->getPassword() &&
+            getEnableReconnect() == other->getEnableReconnect() &&
+            getReconnectPeriod() == other->getReconnectPeriod() &&
+            getLimitReconnects() == other->getLimitReconnects() &&
+            getMaximumRetries() == other->getMaximumRetries() &&
+            getNoDelayFirstReconnect() == other->getNoDelayFirstReconnect() &&
+            getReconnectFirstDelay() == other->getReconnectFirstDelay() &&
+            getFormat() == other->getFormat() &&
+            getBitrate() == other->getBitrate() &&
+            getChannels() == other->getChannels() &&
+            getMountpoint() == other->getMountpoint() &&
+            getStreamName() == other->getStreamName() &&
+            getStreamDesc() == other->getStreamDesc() &&
+            getStreamGenre() == other->getStreamGenre() &&
+            getStreamPublic() == other->getStreamPublic() &&
+            getStreamWebsite() == other->getStreamWebsite() &&
+            getStreamExtraMetadata() == other->getStreamExtraMetadata() &&
+            getEnableMetadata() == other->getEnableMetadata() &&
+            getMetadataCharset() == other->getMetadataCharset() &&
+            getCustomArtist() == other->getCustomArtist() &&
+            getCustomTitle() == other->getCustomTitle() &&
+            getMetadataFormat() == other->getMetadataFormat() &&
+            getOggDynamicUpdate() == other->getOggDynamicUpdate()) {
         return true;
     }
 
@@ -261,10 +258,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setStreamGenre(this->getStreamGenre());
     other->setStreamPublic(this->getStreamPublic());
     other->setStreamWebsite(this->getStreamWebsite());
-    other->setStreamIRC(this->getStreamIRC());
-    other->setStreamAIM(this->getStreamAIM());
-    other->setStreamICQ(this->getStreamICQ());
-
+    other->setStreamExtraMetadata(this->getStreamExtraMetadata());
     other->setEnableMetadata(this->getEnableMetadata());
     other->setMetadataCharset(this->getMetadataCharset());
     other->setCustomArtist(this->getCustomArtist());
@@ -295,9 +289,7 @@ void BroadcastProfile::adoptDefaultValues() {
     m_streamName = kDefaultStreamName;
     m_streamPublic = kDefaultStreamPublic;
     m_streamWebsite = MIXXX_WEBSITE_URL;
-    m_streamIRC.clear();
-    m_streamAIM.clear();
-    m_streamICQ.clear();
+    m_streamExtraMetadata.clear();
 
     m_enableMetadata = kDefaultEnableMetadata;
     m_metadataCharset = QString();
@@ -384,9 +376,32 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_streamGenre = selectCleanNodeString(doc, kStreamGenre, &fixedStrings);
     m_streamPublic = (bool)XmlParse::selectNodeInt(doc, kStreamPublic);
     m_streamWebsite = selectCleanNodeString(doc, kStreamWebsite, &fixedStrings);
-    m_streamIRC = selectCleanNodeString(doc, kStreamIRC, &fixedStrings);
-    m_streamAIM = selectCleanNodeString(doc, kStreamAIM, &fixedStrings);
-    m_streamICQ = selectCleanNodeString(doc, kStreamICQ, &fixedStrings);
+
+    // Load extra metadata key/value pairs
+    m_streamExtraMetadata.clear();
+
+    // Migrate legacy StreamIRC field if present
+    QString legacyIrc = selectCleanNodeString(doc, QStringLiteral("StreamIRC"), &fixedStrings);
+    if (!legacyIrc.isEmpty()) {
+        m_streamExtraMetadata.insert(QStringLiteral("irc"), legacyIrc);
+        // By changing it, we mark the document as needing a save to update the schema
+        fixedStrings = true;
+    }
+    QDomElement extraMetaElem = XmlParse::selectNode(doc, kStreamExtraMetadata).toElement();
+    if (!extraMetaElem.isNull()) {
+        QDomNodeList entries = extraMetaElem.elementsByTagName(
+                QString::fromLatin1(kStreamExtraMetadataEntry));
+        for (int i = 0; i < entries.count(); i++) {
+            QDomElement entry = entries.at(i).toElement();
+            if (!entry.isNull()) {
+                QString key = entry.attribute(QStringLiteral("key"));
+                QString value = removeControlCharacters(entry.text(), key, &fixedStrings);
+                if (!key.isEmpty()) {
+                    m_streamExtraMetadata.insert(key, value);
+                }
+            }
+        }
+    }
 
     m_format = selectCleanNodeString(doc, kFormat, &fixedStrings);
     if (m_format == BROADCAST_FORMAT_OV_LEGACY) {
@@ -463,9 +478,22 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kStreamPublic,
                          QString::number((int)m_streamPublic));
     XmlParse::addElement(doc, docRoot, kStreamWebsite, m_streamWebsite);
-    XmlParse::addElement(doc, docRoot, kStreamIRC, m_streamIRC);
-    XmlParse::addElement(doc, docRoot, kStreamAIM, m_streamAIM);
-    XmlParse::addElement(doc, docRoot, kStreamICQ, m_streamICQ);
+
+    // Save extra metadata key/value pairs
+    if (!m_streamExtraMetadata.isEmpty()) {
+        QDomElement extraMetaElem = doc.createElement(
+                QString::fromLatin1(kStreamExtraMetadata));
+        for (auto it = m_streamExtraMetadata.constBegin();
+                it != m_streamExtraMetadata.constEnd();
+                ++it) {
+            QDomElement entry = doc.createElement(
+                    QString::fromLatin1(kStreamExtraMetadataEntry));
+            entry.setAttribute(QStringLiteral("key"), it.key());
+            entry.appendChild(doc.createTextNode(it.value()));
+            extraMetaElem.appendChild(entry);
+        }
+        docRoot.appendChild(extraMetaElem);
+    }
 
     XmlParse::addElement(doc, docRoot, kFormat, m_format);
     XmlParse::addElement(doc, docRoot, kBitrate,
@@ -774,28 +802,12 @@ void BroadcastProfile::setStreamWebsite(const QString& value) {
     m_streamWebsite = removeControlCharacters(value, kStreamWebsite);
 }
 
-QString BroadcastProfile::getStreamIRC() const {
-    return m_streamIRC;
+QMap<QString, QString> BroadcastProfile::getStreamExtraMetadata() const {
+    return m_streamExtraMetadata;
 }
 
-void BroadcastProfile::setStreamIRC(const QString& value) {
-    m_streamIRC = removeControlCharacters(value, kStreamIRC);
-}
-
-QString BroadcastProfile::getStreamAIM() const {
-    return m_streamAIM;
-}
-
-void BroadcastProfile::setStreamAIM(const QString& value) {
-    m_streamAIM = removeControlCharacters(value, kStreamAIM);
-}
-
-QString BroadcastProfile::getStreamICQ() const {
-    return m_streamICQ;
-}
-
-void BroadcastProfile::setStreamICQ(const QString& value) {
-    m_streamICQ = removeControlCharacters(value, kStreamICQ);
+void BroadcastProfile::setStreamExtraMetadata(const QMap<QString, QString>& metadata) {
+    m_streamExtraMetadata = metadata;
 }
 
 QString BroadcastProfile::getFormat() const {
