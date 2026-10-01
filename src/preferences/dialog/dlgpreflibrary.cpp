@@ -269,6 +269,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     spinbox_history_min_tracks_to_keep->setValue(1);
     checkBox_sync_track_metadata->setChecked(false);
     checkBox_serato_metadata_export->setChecked(false);
+    checkBox_reset_missing_tag_metadata->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_edit_metadata_selected_clicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
@@ -327,6 +328,8 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_serato_metadata_export->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
     setSeratoMetadataEnabled(checkBox_sync_track_metadata->isChecked());
+    checkBox_reset_missing_tag_metadata->setChecked(
+            m_pConfig->getValue(kResetMissingTagMetadataOnImportConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             kUseRelativePathOnExportConfigKey, false));
 
@@ -610,6 +613,9 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(
             kSyncSeratoMetadataConfigKey,
             ConfigValue{checkBox_serato_metadata_export->isChecked()});
+    m_pConfig->set(
+            kResetMissingTagMetadataOnImportConfigKey,
+            ConfigValue{checkBox_reset_missing_tag_metadata->isChecked()});
 
     m_pConfig->set(kUseRelativePathOnExportConfigKey,
             ConfigValue((int)checkBox_use_relative_path->isChecked()));
