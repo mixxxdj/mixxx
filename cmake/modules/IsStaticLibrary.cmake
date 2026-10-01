@@ -24,7 +24,7 @@ Example invocation:
 
 #]=======================================================================]
 
-macro(IS_STATIC_LIBRARY var target)
+macro(is_static_library var target)
   get_target_property(_target_type ${target} TYPE)
   if(${_target_type} STREQUAL "STATIC_LIBRARY")
     set(${var} TRUE)

@@ -130,9 +130,18 @@ repos:
     hooks:
       - id: qml_formatter
   - repo: https://github.com/BlankSpruce/gersemi
-    rev: 0.17.1
+    rev: 0.26.1
     hooks:
       - id: gersemi
+        args:
+          [
+            "--definitions",
+            "CMakeLists.txt",
+            "cmake/modules",
+            "cmake/gersemi_stubs.txt",
+            "--warnings-as-errors",
+            "-i",
+          ]
   - repo: https://github.com/cmake-lint/cmake-lint.git
     rev: 1.4.3
     hooks:
