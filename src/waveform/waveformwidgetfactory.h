@@ -249,6 +249,16 @@ class WaveformWidgetFactory : public QObject,
     }
     static bool isOverviewNormalizedDefault();
 
+    WaveformWidgetBackend setAcceleration(bool enabled);
+
+    allshader::WaveformRendererSignalBase::Options getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options getWaveformOptionsSupportedByType(
+            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void setWaveformOption(allshader::WaveformRendererSignalBase::Option option,
+            bool enabled,
+            WaveformWidgetType::Type type);
+    void resetWaveformOptions();
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }
@@ -327,8 +337,7 @@ class WaveformWidgetFactory : public QObject,
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
             WaveformWidgetType::Type type,
-            WWaveformViewer* pViewer,
-            WaveformRendererSignalBase::Options option);
+            WWaveformViewer* pViewer);
     WaveformWidgetAbstract* createWaveformWidget(
             WaveformWidgetType::Type type, WWaveformViewer* pViewer);
     int findIndexOf(WWaveformViewer* viewer) const;
@@ -372,7 +381,9 @@ class WaveformWidgetFactory : public QObject,
     std::unique_ptr<ControlObject> m_pStemSplitTracksControl;
 
     bool m_openGlAvailable;
+#ifdef MIXXX_USE_QOPENGL
     bool m_openGlesAvailable;
+#endif
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
@@ -389,10 +400,8 @@ class WaveformWidgetFactory : public QObject,
             WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer,
             WaveformRendererSignalBase::Options option);
-    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer,
-            WaveformRendererSignalBase::Options option);
-    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer,
-            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
     WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);
 
     //Debug
