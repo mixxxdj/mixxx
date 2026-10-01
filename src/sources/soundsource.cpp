@@ -53,6 +53,16 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/mimetype.20sometimes.20wrong
         return fileSuffix;
     }
+    if (fileSuffix == QLatin1String("mkv") ||
+            fileSuffix == QLatin1String("mka") ||
+            fileSuffix == QLatin1String("webm")) {
+        // Bypass the insufficient mime type lookup from content for Matroska/MKA/WebM files.
+        // Qt's QMimeDatabase may not properly recognize these container formats,
+        // causing "no mime type registered" errors. The file suffix is used instead
+        // to determine the appropriate SoundSource provider.
+        return fileSuffix;
+    }
+
     QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
             fileInfo, QMimeDatabase::MatchContent);
 #ifdef __STEM__
