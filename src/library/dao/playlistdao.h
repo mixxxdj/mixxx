@@ -131,6 +131,14 @@ class PlaylistDAO : public QObject, public virtual DAO {
         m_currentHistoryPlaylist = id;
     }
 
+    int togglePrepPlaylist(int playlistId);
+    int getPrepPlaylistId() {
+        return m_prepPlaylistId;
+    }
+    bool isTrackInPrepPlaylist(TrackId id);
+    bool appendTrackToPrepPlaylist(TrackId id);
+    bool removeTrackFromPrepPlaylist(TrackId id);
+
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 
   signals:
@@ -164,5 +172,6 @@ class PlaylistDAO : public QObject, public virtual DAO {
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
     int m_currentHistoryPlaylist;
     AutoDJProcessor* m_pAutoDJProcessor;
+    int m_prepPlaylistId;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };

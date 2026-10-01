@@ -20,6 +20,16 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 
+namespace {
+const QString kSetPrepPlaylistTitle = QObject::tr("Set as Quick Prep playlist");
+const QString kUnsetPrepPlaylistTitle = QObject::tr("Unset Quick Prep playlist");
+const QIcon kSetPrepPlaylistIcon(":/images/library/ic_heart_beige.svg");
+const QIcon kSetPrepPlaylistDisabledIcon(":/images/library/ic_heart_disabled.svg");
+const QIcon kUnsetPrepPlaylistIcon(":/images/library/ic_heart_beige_crossed.svg");
+
+const QString kPrepPlaylistModelKey(QStringLiteral("PrepPlaylistId"));
+} // anonymous namespace
+
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
@@ -59,10 +69,46 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QAction::triggered,
             this,
             &PlaylistFeature::slotDeleteAllUnlockedPlaylists);
+
+    m_pTogglePrepPlaylistAction = make_parented<QAction>(kSetPrepPlaylistTitle, this);
+    m_pTogglePrepPlaylistAction->setIcon(kSetPrepPlaylistIcon);
+    connect(m_pTogglePrepPlaylistAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotTogglePrepPlaylist);
+
+    // Restore the Prep playlist
+    const QString prepPlaylistIdStr = m_pPlaylistTableModel->getModelSetting(kPrepPlaylistModelKey);
+    bool okay = false;
+    int prepPlaylistId = prepPlaylistIdStr.toInt(&okay);
+    if (okay && prepPlaylistId != kInvalidPlaylistId) {
+        // Returns kInvalidPlaylistId on failure
+        prepPlaylistId = m_playlistDao.togglePrepPlaylist(prepPlaylistId);
+        if (prepPlaylistId != kInvalidPlaylistId) {
+            updateChildModel(QSet<int>{prepPlaylistId});
+        }
+    }
 }
 
 QVariant PlaylistFeature::title() {
     return tr("Playlists");
+}
+
+void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    BasePlaylistFeature::bindSidebarWidget(pSidebarWidget);
+    // Now we have a valid m_pSidebarWidget.
+    connect(m_pSidebarWidget,
+            &WLibrarySidebar::togglePrepPlaylist,
+            this,
+            [this]() {
+                // Check if the selected sidebar item is one of ours.
+                // If yes, adopt it as m_lastRightClickedIndex and
+                // toggle the prep playlist.
+                if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+                    m_lastRightClickedIndex = m_lastClickedIndex;
+                    slotTogglePrepPlaylist();
+                }
+            });
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -90,14 +136,22 @@ void PlaylistFeature::onRightClickChild(
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pShufflePlaylistAction->setEnabled(!locked);
     m_pOrderByCurrentPosAction->setEnabled(!locked && isChildIndexSelectedInSidebar(index));
+    bool isPrepPlaylist = m_playlistDao.getPrepPlaylistId() == playlistId;
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
     m_pShufflePlaylistAction->setEnabled(!locked);
     m_pImportPlaylistAction->setEnabled(!locked);
 
+    m_pTogglePrepPlaylistAction->setText(
+            isPrepPlaylist ? kUnsetPrepPlaylistTitle : kSetPrepPlaylistTitle);
+    m_pTogglePrepPlaylistAction->setIcon(
+            isPrepPlaylist ? kUnsetPrepPlaylistIcon : kSetPrepPlaylistIcon);
+
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pTogglePrepPlaylistAction);
+    menu.addSeparator();
     menu.addAction(m_pCreatePlaylistAction);
     menu.addSeparator();
     // TODO If playlist is selected and has more than one track selected
@@ -337,6 +391,30 @@ void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
     m_playlistDao.deleteUnlockedPlaylists(std::move(ids));
 }
 
+void PlaylistFeature::slotTogglePrepPlaylist() {
+    int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (playlistId == kInvalidPlaylistId) {
+        return;
+    }
+
+    bool wasSelected = isChildIndexSelectedInSidebar(m_lastRightClickedIndex);
+    // Update the sidebar model (Prep icon)
+    // TODO is toggle, ie. setting same pl again unsets it (plId = -1)
+    // Adjust action name accordingly + crossed heart
+    int prepPlaylistId = m_playlistDao.togglePrepPlaylist(playlistId);
+    // Reconstruct, not just updateChildModel(allIds), in order to move the Prep playlist
+    // to the top -- or back to the position where it belongs (sorted a-z)
+    clearChildModel();
+    QModelIndex newIndex = constructChildModel(playlistId);
+    if (wasSelected && newIndex.isValid()) {
+        // reselect (former) Prep playlist
+        selectAndActivate(newIndex);
+    }
+
+    // Store the id for the next session
+    m_pPlaylistTableModel->setModelSetting(kPrepPlaylistModelKey, prepPlaylistId);
+}
+
 /// Purpose: When inserting or removing playlists,
 /// we require the sidebar model not to reset.
 /// This method queries the database and does dynamic insertion
@@ -346,25 +424,31 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
-    int row = 0;
     const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
     for (const auto& idAndLabel : playlistLabels) {
         int playlistId = idAndLabel.id;
         QString playlistLabel = idAndLabel.label;
-
-        if (selectedId == playlistId) {
-            // save index for selection
-            selectedRow = row;
-        }
 
         // Create the TreeItem whose parent is the invisible root item
         auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
         pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
         decorateChild(pItem.get(), playlistId);
-        childrenToAdd.push_back(std::move(pItem));
 
-        ++row;
+        // Add the Prep as first item (sticky)
+        if (playlistId == m_playlistDao.getPrepPlaylistId()) {
+            childrenToAdd.insert(childrenToAdd.begin(), std::move(pItem));
+            // save index for selection
+            if (selectedId == playlistId) {
+                selectedRow = 0;
+            }
+        } else {
+            childrenToAdd.push_back(std::move(pItem));
+            // save index for selection
+            if (selectedId == playlistId) {
+                selectedRow = static_cast<int>(childrenToAdd.size()) - 1;
+            }
+        }
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel
@@ -376,9 +460,15 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
-    if (m_playlistDao.isPlaylistLocked(playlistId)) {
-        item->setIcon(
-                QIcon(":/images/library/ic_library_locked_tracklist.svg"));
+    if (m_playlistDao.getPrepPlaylistId() == playlistId) {
+        // Note that this creates a stack of Prep and Lock icon
+        if (m_playlistDao.isPlaylistLocked(playlistId)) {
+            item->setIcon(QIcon(":/images/library/ic_heart_cyan_locked.svg"));
+        } else {
+            item->setIcon(QIcon(":/images/library/ic_heart_cyan.svg"));
+        }
+    } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
+        item->setIcon(QIcon(":/images/library/ic_library_locked_tracklist.svg"));
     } else {
         item->setIcon(QIcon());
     }
