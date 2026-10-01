@@ -1643,6 +1643,14 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
             [this, trackId]() {
                 emit mixxx::thisAsNonConst(this)->waveformSummaryUpdated(trackId);
             });
+    connect(pTrack.get(), &Track::cuesUpdated, this, [this, trackId]() {
+        // Must run on the main thread (owner of m_database).
+        // Qt::DirectConnection would invoke this on the engine thread when
+        // hotcues are set via controller input, causing a cross-thread SQLite
+        // access crash (SIGSEGV in BaseTrackCache::updateIndexWithQuery).
+        // Track::changed handles the tracksChanged notification.
+        m_cueDao.updateTrackHotcueCount(trackId);
+    });
 
     // BaseTrackCache cares about track trackDirty/trackClean notifications
     // from TrackDAO that are triggered by the track itself. But the preceding
