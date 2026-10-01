@@ -7,9 +7,11 @@
 
 #include "library/dao/analysisdao.h"
 #include "moc_overviewcache.cpp"
+#include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
+#include "util/painterscope.h"
 #include "waveform/renderers/waveformoverviewrenderer.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformfactory.h"
@@ -64,6 +66,21 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
     emit overviewChanged(trackId);
 }
 
+void OverviewCache::invalidateAll() {
+    QSet<TrackId> affectedIds;
+    for (auto it = m_cacheKeysByTrackId.constBegin();
+            it != m_cacheKeysByTrackId.constEnd();
+            ++it) {
+        QPixmapCache::remove(it.value());
+        affectedIds.insert(it.key());
+    }
+    m_cacheKeysByTrackId.clear();
+    m_tracksWithoutOverview.clear();
+    for (const TrackId& trackId : std::as_const(affectedIds)) {
+        emit overviewChanged(trackId);
+    }
+}
+
 QPixmap OverviewCache::requestCachedOverview(
         mixxx::OverviewType type,
         TrackId trackId,
@@ -94,6 +111,8 @@ QPixmap OverviewCache::requestUncachedOverview(
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         TrackId trackId,
+        const QList<mixxx::CueInfo>& cueInfos,
+        double trackDurationMillis,
         const QObject* pRequester,
         QSize desiredSize) {
     if (!trackId.isValid()) {
@@ -107,8 +126,6 @@ QPixmap OverviewCache::requestUncachedOverview(
     if (m_tracksWithoutOverview.contains(trackId)) {
         return QPixmap();
     }
-
-    // kLogger.info() << "requestUncachedOverview()" << trackId << pRequester << desiredSize;
 
     const QString cacheKey = pixmapCacheKey(trackId, desiredSize, type);
     QPixmap pixmap;
@@ -128,6 +145,8 @@ QPixmap OverviewCache::requestUncachedOverview(
             type,
             signalColors,
             trackId,
+            cueInfos,
+            trackDurationMillis,
             pRequester,
             desiredSize);
     connect(watcher,
@@ -146,9 +165,10 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
         mixxx::OverviewType type,
         const WaveformSignalColors& signalColors,
         TrackId trackId,
+        const QList<mixxx::CueInfo>& cueInfos,
+        double trackDurationMillis,
         const QObject* pRequester,
         QSize desiredSize) {
-    // kLogger.warning() << "prepareOverview" << trackId;
     FutureResult result;
     result.trackId = trackId;
     result.type = type;
@@ -160,10 +180,14 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
         return result;
     }
 
+    const bool bDrawMinuteMarkers = pConfig->getValue(
+            ConfigKey("[Waveform]", QStringLiteral("draw_library_overview_minute_markers")), true);
+
     mixxx::DbConnectionPooler dbConnectionPooler(pDbConnectionPool);
+    QSqlDatabase database = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     AnalysisDao analysisDao(pConfig);
-    analysisDao.initialize(mixxx::DbConnectionPooled(pDbConnectionPool));
+    analysisDao.initialize(database);
 
     QList<AnalysisDao::AnalysisInfo> analyses =
             analysisDao.getAnalysesForTrackByType(
@@ -182,12 +206,112 @@ OverviewCache::FutureResult OverviewCache::prepareOverview(
 
             if (!image.isNull()) {
                 image = resizeImageSize(image, desiredSize);
+                // draw markers on the resized image for crisp lines
+                // at the final display resolution
+                if (trackDurationMillis > 0) {
+                    if (bDrawMinuteMarkers) {
+                        QList<int> markerXPositions;
+                        for (double currentMarkerMillis = 60000;
+                                currentMarkerMillis < trackDurationMillis;
+                                currentMarkerMillis += 60000) {
+                            markerXPositions.append(static_cast<int>(
+                                    (currentMarkerMillis / trackDurationMillis) *
+                                    image.width()));
+                        }
+                        drawMinuteMarkers(&image, markerXPositions);
+                    }
+                    if (!cueInfos.isEmpty()) {
+                        drawHotcueMarkers(&image, cueInfos, trackDurationMillis);
+                    }
+                }
             }
             result.image = image;
         }
     }
 
     return result;
+}
+
+// static
+void OverviewCache::drawHotcueMarkers(
+        QImage* pImage,
+        const QList<mixxx::CueInfo>& cueInfos,
+        double trackDurationMillis) {
+    if (pImage->format() != QImage::Format_ARGB32_Premultiplied) {
+        *pImage = pImage->convertToFormat(QImage::Format_ARGB32_Premultiplied);
+    }
+
+    QPainter markerPainter(pImage);
+    markerPainter.setRenderHint(QPainter::Antialiasing, false);
+    const int imageWidth = pImage->width();
+    const int imageHeight = pImage->height();
+    PainterScope painterScope(&markerPainter);
+    for (const auto& cueInfo : cueInfos) {
+        if (cueInfo.getType() != mixxx::CueType::HotCue) {
+            continue;
+        }
+
+        auto positionMillis = cueInfo.getStartPositionMillis();
+        if (!positionMillis.has_value()) {
+            continue;
+        }
+
+        // allow negative positions (preroll)
+        if (*positionMillis > trackDurationMillis) {
+            continue;
+        }
+
+        const int x = static_cast<int>(
+                (*positionMillis / trackDurationMillis) * imageWidth);
+
+        if (x < 0 || x >= imageWidth) {
+            continue;
+        }
+
+        // use same rendering style as deck overview:
+        // contrasting border line + bright fill line
+        auto color = cueInfo.getColor();
+        if (!color.has_value()) {
+            continue;
+        }
+
+        QColor fillColor = QColor::fromRgb(*color).lighter(110);
+        QColor borderColor = Color::chooseContrastColor(
+                QColor::fromRgb(*color), 120);
+
+        // draw border/shadow line (1px wide, offset by -1)
+        markerPainter.setPen(borderColor);
+        markerPainter.drawLine(x - 1, 0, x - 1, imageHeight);
+
+        // draw main bright marker line (1px wide)
+        markerPainter.setPen(fillColor);
+        markerPainter.drawLine(x, 0, x, imageHeight);
+    }
+}
+
+// static
+void OverviewCache::drawMinuteMarkers(
+        QImage* pImage,
+        const QList<int>& markerXPositions) {
+    if (pImage->format() != QImage::Format_ARGB32_Premultiplied) {
+        *pImage = pImage->convertToFormat(QImage::Format_ARGB32_Premultiplied);
+    }
+
+    QPainter markerPainter(pImage);
+    markerPainter.setRenderHint(QPainter::Antialiasing, false);
+    const int imageWidth = pImage->width();
+    const int imageHeight = pImage->height();
+    const int markerHeight = static_cast<int>(imageHeight * 0.2);
+    const int lowerMarkerYPos = static_cast<int>(imageHeight * 0.8);
+    const int inset = 1;
+    const QColor minuteColor(255, 255, 255, 204); // 80% opacity
+
+    for (int x : markerXPositions) {
+        if (x >= 0 && x < imageWidth) {
+            markerPainter.fillRect(x, inset, 1, markerHeight - inset, minuteColor);
+            markerPainter.fillRect(x, lowerMarkerYPos, 1, imageHeight - lowerMarkerYPos - inset, minuteColor);
+        }
+    }
 }
 
 // watcher
