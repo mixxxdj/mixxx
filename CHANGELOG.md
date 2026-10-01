@@ -2,6 +2,11 @@
 
 ## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
 
+### Library
+
+* Defer opening audio files until playback or analysis so library menus and
+  track loads stay fast on remote filesystems
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
 ### STEM file support
