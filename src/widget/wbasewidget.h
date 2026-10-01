@@ -79,6 +79,7 @@ class WBaseWidget {
     double getControlParameterLeft() const;
     double getControlParameterRight() const;
     double getControlParameterDisplay() const;
+    bool isControlParameterDefault() const;
 
     QString shortcutHints() const {
         return m_shortcutTooltip;
