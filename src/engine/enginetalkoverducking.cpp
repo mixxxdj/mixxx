@@ -15,63 +15,87 @@ EngineTalkoverDucking::EngineTalkoverDucking(
         : EngineSideChainCompressor(group),
           m_pConfig(pConfig),
           m_group(group) {
-    m_pSampleRate = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("samplerate"), this);
+    m_pSampleRate = make_parented<ControlProxy>(
+            QStringLiteral("[App]"), QStringLiteral("samplerate"), this);
     m_pSampleRate->connectValueChanged(this,
             &EngineTalkoverDucking::slotSampleRateChanged,
             Qt::DirectConnection);
 
-    m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);
-    m_pDuckStrength->set(
-            m_pConfig->getValue<double>(ConfigKey(m_group, "duckStrength"), 90) / 100);
-    connect(m_pDuckStrength, &ControlObject::valueChanged,
-            this, &EngineTalkoverDucking::slotDuckStrengthChanged,
+    m_pDuckStrength = std::make_unique<ControlPotmeter>(
+            ConfigKey(m_group, QStringLiteral("duckStrength")),
+            0.0,
+            1.0,
+            false,
+            true,
+            false,
+            true,
+            0.9);
+    connect(m_pDuckStrength.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EngineTalkoverDucking::slotDuckStrengthChanged,
             Qt::DirectConnection);
 
-    // We only allow the strength to be configurable for now.  The next most likely
-    // candidate for customization is the threshold, which may be too low for
-    // noisy club situations.
-    setParameters(
-            kDuckThreshold,
-            static_cast<CSAMPLE>(m_pDuckStrength->get()),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2));
+    // TODO Add "duckThreshold"
 
-    m_pTalkoverDucking = new ControlPushButton(ConfigKey(m_group, "talkoverDucking"));
+    m_pDuckAttackTime = std::make_unique<ControlPotmeter>(
+            ConfigKey(m_group, QStringLiteral("duckAttackTime")),
+            0.0,
+            1.0,
+            false,
+            true,
+            false,
+            true,
+            0.5);
+    connect(m_pDuckAttackTime.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EngineTalkoverDucking::slotDuckAttackTimeChanged,
+            Qt::DirectConnection);
+
+    m_pDuckDecayTime = std::make_unique<ControlPotmeter>(
+            ConfigKey(m_group, QStringLiteral("duckDecayTime")),
+            0.0,
+            1.0,
+            false,
+            true,
+            false,
+            true,
+            0.5);
+    connect(m_pDuckDecayTime.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EngineTalkoverDucking::slotDuckDecayTimeChanged,
+            Qt::DirectConnection);
+
+    slotSampleRateChanged(m_pSampleRate->get());
+
+    m_pTalkoverDucking = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, QStringLiteral("talkoverDucking")), true, AUTO);
     m_pTalkoverDucking->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
-    m_pTalkoverDucking->set(
-            m_pConfig->getValue<double>(
-                ConfigKey(m_group, "duckMode"), AUTO));
-    connect(m_pTalkoverDucking, &ControlObject::valueChanged,
-            this, &EngineTalkoverDucking::slotDuckModeChanged,
-            Qt::DirectConnection);
-}
-
-EngineTalkoverDucking::~EngineTalkoverDucking() {
-    m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(m_pDuckStrength->get() * 100));
-    m_pConfig->set(ConfigKey(m_group, "duckMode"), ConfigValue(m_pTalkoverDucking->get()));
-
-    delete m_pDuckStrength;
-    delete m_pTalkoverDucking;
 }
 
 void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
+    qWarning() << ".";
+    qWarning() << "EngineTalkoverDucking::slotSampleRateChanged:" << samplerate;
+    qWarning() << ".";
     setParameters(
             kDuckThreshold,
             static_cast<CSAMPLE>(m_pDuckStrength->get()),
-            static_cast<unsigned int>(samplerate / 2 * .1),
-            static_cast<unsigned int>(samplerate / 2));
+            static_cast<unsigned int>(m_pDuckAttackTime->get() * samplerate / 2 * .1),
+            static_cast<unsigned int>(m_pDuckDecayTime->get() * samplerate / 2));
 }
 
 void EngineTalkoverDucking::slotDuckStrengthChanged(double strength) {
-    setParameters(kDuckThreshold,
-            static_cast<CSAMPLE>(strength),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2 * .1),
-            static_cast<unsigned int>(m_pSampleRate->get() / 2));
-    m_pConfig->set(ConfigKey(m_group, "duckStrength"), ConfigValue(strength * 100));
+    setStrength(static_cast<CSAMPLE>(strength));
 }
 
-void EngineTalkoverDucking::slotDuckModeChanged(double mode) {
-   m_pConfig->set(ConfigKey(m_group, "duckMode"), ConfigValue(mode));
+void EngineTalkoverDucking::slotDuckAttackTimeChanged(double attackTime) {
+    setAttackTime(static_cast<unsigned int>(m_pSampleRate->get() / 2 * attackTime));
+}
+
+void EngineTalkoverDucking::slotDuckDecayTimeChanged(double decayTime) {
+    setDecayTime(static_cast<unsigned int>(m_pSampleRate->get() / 2 * decayTime));
 }
 
 CSAMPLE EngineTalkoverDucking::getGain(int numFrames) {

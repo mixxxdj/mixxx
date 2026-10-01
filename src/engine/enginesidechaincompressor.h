@@ -1,4 +1,6 @@
 #pragma once
+
+#include <QDebug>
 #include <QString>
 
 #include "util/types.h"
@@ -13,6 +15,13 @@ class EngineSideChainCompressor {
         // TODO(owilliams): There is a race condition here because the parameters
         // are not updated atomically.  This function should instead take a
         // struct.
+        qWarning() << ".";
+        qWarning() << "Compressor::setParameters";
+        qWarning() << "-- thresh  " << threshold;
+        qWarning() << "-- strength" << strength;
+        qWarning() << "-- attackT " << attack_time;
+        qWarning() << "-- decayT  " << decay_time;
+        qWarning() << ".";
         m_threshold = threshold;
         m_strength = strength;
         m_attackTime = attack_time;
