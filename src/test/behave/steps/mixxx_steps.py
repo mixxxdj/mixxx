@@ -488,6 +488,75 @@ KNOWN_COLUMNS = [
     "Color", "Cover", "Rating", "Date Added", "Times Played",
 ]
 
+QT_KEY_ESCAPE = 0x01000000
+QT_KEY_DELETE = 0x01000007
+
+
+# --- Library search / split view paths ---
+
+SEARCH_PANE_PATH = f"{LIBRARY_CONTENT}/browsingView/searchPane"
+SEARCH_FIELD_PATH = f"{SEARCH_PANE_PATH}/searchField"
+SEARCH_CLEAR_BUTTON_PATH = f"{SEARCH_PANE_PATH}/searchClearButton"
+SEARCH_SUGGESTION_LIST_PATH = f"{SEARCH_PANE_PATH}/searchSuggestionList"
+SEARCH_RECENT_LIST_PATH = f"{SEARCH_PANE_PATH}/searchRecentList"
+SPLIT_VIEW_BUTTON_PATH = f"{LIBRARY_CONTENT}/tracklistMenu/splitViewButton"
+RIGHT_TRACKLIST_PATH = f"{LIBRARY_CONTENT}/rightTrackList"
+
+# Delay after typing into the search bar: the query is applied through a
+# debouncing timer (searchDebounce, 800 ms in res/qml/Library.qml).
+SEARCH_APPLY_DELAY = 1.5
+
+
+def _search_activated(rpc):
+    return _get_property(rpc, SEARCH_PANE_PATH, "activated") == "true"
+
+
+def _activate_library_search(context, timeout=5):
+    s = context.mixxx_rpc
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if _search_activated(s):
+            return
+        # The collapsed search bar opens on tap (TapHandler); under load the
+        # first synthetic tap can be dropped, so re-click until activated.
+        _click(s, SEARCH_PANE_PATH)
+        time.sleep(0.3)
+    assert _search_activated(s), "Library search bar did not open"
+
+
+def _deactivate_library_search(context, timeout=5):
+    # Escape triggers persistSearch() + deactivateSearch() in the search bar's
+    # key handler, which is the deterministic way to give up focus.
+    s = context.mixxx_rpc
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if not _search_activated(s):
+            return
+        s.enterKey("mainWindow", QT_KEY_ESCAPE, 0)
+        time.sleep(0.3)
+    assert not _search_activated(s), "Library search bar is still activated"
+
+
+def _track_rows(rpc, tracklist_path):
+    table = f"{tracklist_path}/trackTableView"
+    height = float(rpc.getStringProperty(table, "contentHeight") or 0)
+    return max(0, int(height // _ROW_HEIGHT))
+
+
+def _track_row_by_title(rpc, tracklist_path, title, timeout=10):
+    """Index of the first row whose displayed title matches, or -1."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        rows = _track_rows(rpc, tracklist_path)
+        for row in range(rows):
+            track_title = str(
+                rpc.invokeMethod(tracklist_path, "trackTitleForRow", [row]) or ""
+            )
+            if track_title == title:
+                return row
+        time.sleep(0.3)
+    return -1
+
 
 # --- Session helpers ---
 
@@ -1346,3 +1415,194 @@ def step_track_is_loaded_on_deck(context, assertion, deck):
     expected = assertion == "is"
     reverse = "is not" if expected else "is"
     assert bool(_get_control_value(context.mixxx_rpc, group, "track_loaded")) is expected, f"Track {reverse} loaded on {group}"
+
+
+
+
+@when("I dump the library debug state")
+def step_dump_debug(context):
+    s = context.mixxx_rpc
+    for probe in (
+        "mainWindow/libraryContent/trackList",
+        "mainWindow/libraryContent/trackList/columnHeader",
+        "mainWindow/libraryContent/trackList/trackTableView",
+        "mainWindow/libraryContent/browsingView",
+        "mainWindow/libraryContent/libraryContent/trackList",
+        "mainWindow/libraryContent/trackList/columnHeader/Title",
+        "mainWindow/splashScreen",
+    ):
+        try:
+            vis = s.existsAndVisible(probe)
+        except Exception as e:
+            e_str = str(e)[:80]
+            print(f"probe {probe}: ERR {e_str}")
+            continue
+        print(f"probe {probe}: {vis}")
+    print("columnLabels:", s.getStringProperty(
+        "mainWindow/libraryContent/trackList", "columnLabels"))
+    for r in range(3):
+        print("title", r, "=>", repr(s.invokeMethod(
+            "mainWindow/libraryContent/trackList", "trackTitleForRow", [r])))
+    try:
+        state = _get_library_state(s)
+        print("library state:", json.dumps(state)[:300])
+    except Exception as e:
+        print("library state err", e)
+
+
+# --- Gherkin: library search debug ---
+@given("I dump the library debug state")
+def step_dump_debug_given(context):
+    step_dump_debug(context)
+
+
+# --- When: library search ---
+
+def _type_into_library_search(context, text):
+    _activate_library_search(context)
+    s = context.mixxx_rpc
+    # inputText() appends to the text that is already in the field, so clear
+    # it first; typing goes through real key events so the search bar's
+    # onTextEdited handlers run (setting the `text` property directly would
+    # bypass them).
+    _set_property(s, SEARCH_FIELD_PATH, "text", "")
+    time.sleep(0.3)
+    s.inputText(SEARCH_FIELD_PATH, text)
+    time.sleep(SEARCH_APPLY_DELAY)
+
+
+@when("I activate the library search")
+def step_activate_library_search(context):
+    _activate_library_search(context)
+
+
+@when("I deactivate the library search")
+def step_deactivate_library_search(context):
+    _deactivate_library_search(context)
+
+
+@when('I type "{text}" into the library search')
+def step_type_library_search(context, text):
+    _type_into_library_search(context, text)
+
+
+@when("I type the title of the track at row {row:d} into the library search")
+def step_type_row_title_library_search(context, row):
+    title = str(context.mixxx_rpc.invokeMethod(TRACKLIST_PATH, "trackTitleForRow", [row]) or "")
+    assert title, f"Track at row {row} has no title"
+    context._search_title = title
+    _type_into_library_search(context, title)
+
+
+@when("I clear the library search")
+def step_clear_library_search(context):
+    s = context.mixxx_rpc
+    _click(s, SEARCH_CLEAR_BUTTON_PATH)
+    _wait_for_hidden(s, SEARCH_CLEAR_BUTTON_PATH, 5)
+
+
+@when('I select the library search suggestion "{suggestion}"')
+def step_select_suggestion(context, suggestion):
+    s = context.mixxx_rpc
+    _click(s, f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}")
+    time.sleep(0.5)
+
+
+# --- When: split view ---
+
+@when("I click the split view button")
+def step_click_split_view(context):
+    _click(context.mixxx_rpc, SPLIT_VIEW_BUTTON_PATH)
+    time.sleep(1)
+
+
+@when("I {action} the track at row {row:d} on the right track list")
+def step_track_action_right_list(context, action, row):
+    s = context.mixxx_rpc
+    table = f"{RIGHT_TRACKLIST_PATH}/trackTableView"
+    _wait_for_visible(s, RIGHT_TRACKLIST_PATH)
+    path = f"{table}/trackRow_{row}"
+    _wait_for_clickable(s, path)
+    time.sleep(0.3)
+    TRACK_ACTIONS[action](s, path)
+    time.sleep(0.3)
+
+
+# --- Then: library search ---
+
+@then("the library search bar should be visible")
+def step_library_search_bar_visible(context):
+    assert _search_activated(context.mixxx_rpc), "Library search bar is not open"
+
+
+@then("the track at row {row:d} should be visible in the results")
+def step_track_row_visible_in_results(context, row):
+    title = getattr(context, "_search_title", None)
+    assert title is not None, "No track title was typed into the search"
+    s = context.mixxx_rpc
+    found = _track_row_by_title(s, TRACKLIST_PATH, title, timeout=15)
+    assert found >= 0, f"Track '{title}' (row {row}) is not in the results"
+
+
+@then("no other track should be visible in the results")
+def step_no_other_track_in_results(context, ):
+    """Typing a full track title keeps only the matching row(s)."""
+    s = context.mixxx_rpc
+    assert _track_rows(s, TRACKLIST_PATH) <= 1, (
+        f"{_track_rows(s, TRACKLIST_PATH)} tracks are shown, expected only the typed one")
+
+
+@then("all tracks in the library should be shown again")
+def step_all_tracks_shown_again(context, ):
+    s = context.mixxx_rpc
+    total = _get_library_state(s).get("visibleTrackCount", 0)
+    rows = _track_rows(s, TRACKLIST_PATH)
+    assert rows == total, f"{rows} tracks are shown, expected all {total}"
+
+
+@then('the library search suggestion "{suggestion}" should be visible')
+def step_suggestion_visible(context, suggestion):
+    s = context.mixxx_rpc
+    # While a query is being typed, the suggestion list replaces the recent
+    # searches, so the recents must have been dismissed first.
+    _wait_for_hidden(s, SEARCH_RECENT_LIST_PATH)
+    _wait_for_visible(s, f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}")
+
+
+@then('the library recent search "{needle}" should be visible')
+def step_recent_search_visible(context, needle):
+    s = context.mixxx_rpc
+    title = getattr(context, "_search_title", None)
+    expected = title if "title of the track" in needle else needle
+    _wait_for_visible(s, SEARCH_RECENT_LIST_PATH)
+    _wait_for_visible(s, f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}")
+
+
+@then('a search token "{field}" should be shown in the search bar')
+def step_search_token_shown(context, field):
+    s = context.mixxx_rpc
+    count = int(_get_property(s, SEARCH_PANE_PATH, "criteriaCount") or 0)
+    assert count > 0, f"Search bar has no criteria tokens ({count})"
+    query = _get_property(s, SEARCH_PANE_PATH, "activeQuery")
+    assert query.startswith(field), (
+        f"Active query '{query}' does not start with '{field}'"
+    )
+
+
+# --- Then: split view ---
+
+@then('the track list on the right should {assertion} visible')
+def step_right_tracklist_visible(context, assertion):
+    s = context.mixxx_rpc
+    if assertion == "be":
+        _wait_for_visible(s, RIGHT_TRACKLIST_PATH)
+    else:
+        _wait_for_hidden(s, RIGHT_TRACKLIST_PATH)
+
+
+@then('the track at row {row:d} on the right track list should be selected')
+def step_track_selected_right_list(context, row):
+    s = context.mixxx_rpc
+    path = f"{RIGHT_TRACKLIST_PATH}/trackTableView/trackRow_{row}"
+    selected = _get_property(s, path, "selected")
+    assert selected == "true", f"Track at row {row} is not selected (selected={selected})"

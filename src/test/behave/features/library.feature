@@ -82,3 +82,73 @@ Feature: Library
     Then the library should not be visible
     When I resize the window's height to 800px
     Then the library should be visible
+
+  # --- Library search (new search bar in the bottom right of the library) ---
+  #
+  # Requires objectNames on the search pane UI (res/qml/Library.qml):
+  #   searchPane, searchField, clearButton, suggestionList, recentList
+  # and new steps in steps/mixxx_steps.py:
+  #   I activate the library search          (click the search bar / press Ctrl+F)
+  #   I type "{text}" into the library search (inputText on searchField)
+  #   I deactivate the library search        (focus outside the search bar)
+  #   I clear the library search             (click clearButton)
+  #   the library search suggestion "{text}" should be visible (suggestionList)
+  #   the library recent search "{text}" should be visible     (recentList)
+  Scenario: Search bar opens and closes without filtering
+    When I activate the library search
+    Then the library search bar should be visible
+    When I deactivate the library search
+    Then all tracks in the library should be shown without a search filter
+
+  Scenario: Search filters the track results
+    When I activate the library search
+    And I type the title of the track at row 1 into the library search
+    Then the track at row 1 should be visible in the results
+    And no other track should be visible in the results
+
+  Scenario: Clearing the search shows all tracks again
+    When I activate the library search
+    And I type the title of the track at row 1 into the library search
+    Then the track at row 1 should be visible in the results
+    When I clear the library search
+    Then all tracks in the library should be shown again
+
+  Scenario: Search suggests matching field names
+    When I activate the library search
+    And I type "art" into the library search
+    Then the library search suggestion "artist:" should be visible
+
+  Scenario: A field suggestion creates a search token
+    When I activate the library search
+    And I type "art" into the library search
+    And I select the library search suggestion "artist:"
+    Then a search token "artist:" should be shown in the search bar
+
+  Scenario: A committed search appears in recent searches
+    When I activate the library search
+    And I type the title of the track at row 1 into the library search
+    And I deactivate the library search
+    When I activate the library search
+    Then the library recent search "<title of the track at row 1>" should be visible
+
+  # --- Right side menu & split view (tracklist toolbar on the right edge) ---
+  #
+  # Requires objectNames on the tracklist right menu (res/qml/Library.qml):
+  #   splitViewButton, rightTrackListLoader (the right-side Loader's TrackList)
+  # and new steps:
+  #   I click the split view button
+  #   I click the track at row {row} on the right track list
+  Scenario: Split view opens a second track list
+    When I click the split view button
+    Then the track list on the right should be visible
+    When I click the track at row 1 on the right track list
+    Then the track at row 1 on the right track list should be selected
+    When I click the split view button
+    Then the track list on the right should not be visible
+
+  Scenario: A search applies to both track lists in split view
+    When I click the split view button
+    And I activate the library search
+    And I type the title of the track at row 1 into the library search
+    Then the track at row 1 should be visible in the left track list
+    And the track at row 1 should be visible in the right track list

@@ -51,6 +51,13 @@ Rectangle {
 
     color: Theme.darkGray
 
+    // Displayed title of the track model row, for the E2E test harness
+    function trackTitleForRow(row) {
+        const track = view.model ? view.model.getTrackByRow(row) : null;
+        return track ? track.getTitle() : "";
+    }
+
+
     LibraryComponent.Control {
         id: libraryControl
 

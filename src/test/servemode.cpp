@@ -12,6 +12,7 @@
 #include <QSqlQuery>
 #include <QThread>
 #include <atomic>
+#include <functional>
 #include <memory>
 
 #include "control/controlobject.h"
@@ -307,6 +308,44 @@ int runServeMode(int argc, char** argv) {
                 } else if (command == "reloadQml") {
                     qmlApplication.loadQml(qmlApplication.mainFilePath());
                     qDebug() << "reloadQml: QML engine reloaded";
+                } else if (command == "dumpObjectTree") {
+                    // Returns the subset of the QML object tree whose
+                    // objectName is set, as nested JSON. Test harness aid
+                    // for locating objectName paths.
+                    std::function<QJsonArray(const QObjectList&)> dumpChildren =
+                            [&dumpChildren](const QObjectList& children) {
+                                QJsonArray result;
+                                for (auto* child : children) {
+                                    if (child->isWidgetType()) {
+                                        continue;
+                                    }
+                                    auto name = child->objectName();
+                                    QJsonObject node;
+                                    node[name.isEmpty()
+                                                    ? QStringLiteral("<unnamed>")
+                                                    : name] =
+                                            dumpChildren(child->children());
+                                    result.append(node);
+                                }
+                                return result;
+                            };
+                    QJsonArray tree;
+                    for (auto* rootObj : QGuiApplication::topLevelWindows()) {
+                        QJsonObject node;
+                        node[QStringLiteral("window:") +
+                                (rootObj->objectName().isEmpty()
+                                                ? QStringLiteral("<unnamed>")
+                                                : rootObj->objectName())] =
+                                dumpChildren(rootObj->children());
+                        tree.append(node);
+                    }
+                    QString json = QString::fromUtf8(
+                            QJsonDocument(tree).toJson(QJsonDocument::Compact));
+                    auto windows = QGuiApplication::topLevelWindows();
+                    for (auto* w : std::as_const(windows)) {
+                        w->setProperty("lastObjectTree", json);
+                    }
+                    qDebug().noquote() << "dumpObjectTree:" << json;
                 } else {
                     qWarning() << "Unknown generic command:" << QString::fromStdString(command);
                 }

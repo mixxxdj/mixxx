@@ -98,6 +98,8 @@ Item {
         }
         Item {
             id: browsingView
+            objectName: "browsingView"
+
             SplitView.fillHeight: true
             SplitView.minimumHeight: 200
             SplitView.preferredWidth: root.width * 0.75
@@ -139,6 +141,7 @@ Item {
                 }
 
                 Loader {
+                    objectName: "rightTrackListLoader"
                     visible: splitViewButton.checked
                     SplitView.preferredHeight: trackListSplitView.height * 0.5
                     SplitView.preferredWidth: trackListSplitView.width * 0.5
@@ -148,6 +151,7 @@ Item {
 
                     sourceComponent: Component {
                         LibraryComponent.TrackList {
+                            objectName: "rightTrackList"
                             opacity: root.activeSidebar == model.sidebar() ? 1 : 0.6
 
                             focus: true
@@ -164,6 +168,7 @@ Item {
             }
             Column {
                 id: tracklistMenu
+                objectName: "tracklistMenu"
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
@@ -173,6 +178,7 @@ Item {
 
                 Skin.Button {
                     id: splitViewButton
+                    objectName: "splitViewButton"
 
                     activeColor: Theme.white
                     checkable: true
@@ -243,6 +249,7 @@ Item {
 
             Rectangle {
                 id: searchPane
+                objectName: "searchPane"
 
                 property bool activated: false
                 property int activeTokenIndex: -1
@@ -256,6 +263,9 @@ Item {
                 readonly property int maxRecentSearches: 50
 
                 readonly property bool hasSearch: activeQuery.length > 0
+
+                // Exposed for the E2E test harness
+                readonly property int criteriaCount: selectedCriteria.count
 
                 border.color: '#757575'
                 border.width: 1
@@ -1037,6 +1047,7 @@ Item {
 
                             ListView {
                                 id: suggestionList
+                                objectName: "searchSuggestionList"
 
                                 width: searchPane.width - 10
                                 anchors.margins: 5
@@ -1049,6 +1060,9 @@ Item {
 
                                 delegate: Item {
                                     id: suggestionDelegate
+
+                                    objectName: "suggestion_"
+                                            + suggestionDelegate.display
 
                                     required property int index
                                     required property string display
@@ -1153,6 +1167,7 @@ Item {
 
                                 ListView {
                                     id: recentList
+                                    objectName: "searchRecentList"
 
                                     width: searchPane.width - 10
                                     height: 110
@@ -1162,6 +1177,10 @@ Item {
                                     model: recentSearchesModel
                                     delegate: Item {
                                         id: recentDelegate
+
+                                        objectName: "recent_"
+                                                + (recentDelegate.freeText
+                                                || recentDelegate.tokensJson)
 
                                         required property int index
                                         required property string tokensJson
@@ -1221,6 +1240,7 @@ Item {
 
                     Text {
                         id: clearButton
+                        objectName: "searchClearButton"
 
                         visible: searchPane.hasSearch
                         anchors.right: parent.right
@@ -1237,6 +1257,7 @@ Item {
 
                     TextInput {
                         id: searchField
+                        objectName: "searchField"
 
                         visible: searchPane.activated
                         color: '#404040'

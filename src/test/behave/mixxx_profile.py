@@ -103,10 +103,14 @@ def _download_file(entry, dest):
                 "-map", "0:a", "-map", "1",
                 "-c:a", "copy",
                 "-c:v", "mjpeg",
-                "-metadata", f"title={repr(entry['title'])}",
-                "-metadata", f"artist={repr(entry['artist'])}",
-                "-metadata:s:v", "title=\"Album cover\"",
-                "-metadata:s:v", "comment=\"Cover (front)\"",
+                # No shell is involved (subprocess.run with a list of args),
+                # so the value is passed verbatim to ffmpeg's -metadata
+                # key=value. Do not use repr()/quotes: ffmpeg stores metadata
+                # values literally, so 'Foo' would embed the quotes.
+                "-metadata", f"title={entry['title']}",
+                "-metadata", f"artist={entry['artist']}",
+                "-metadata:s:v", "title=Album cover",
+                "-metadata:s:v", "comment=Cover (front)",
                 dest
             ], text=True, capture_output=True)
             if p.returncode:
