@@ -24,4 +24,7 @@ class QuickEffectChain : public PerGroupEffectChain {
 
     void loadChainPreset(EffectChainPresetPointer pPreset) override;
     int numPresets() const override;
+
+  signals:
+    void presetIndexChanged(int presetIndex);
 };
