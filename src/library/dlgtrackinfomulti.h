@@ -29,6 +29,7 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     ~DlgTrackInfoMulti() override = default;
 
     void loadTracks(const QList<TrackPointer>& pTracks);
+    QList<TrackPointer> getTracksClearLoadedTracksHash();
     void focusField(const QString& property);
 
   protected:
