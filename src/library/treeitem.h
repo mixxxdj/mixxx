@@ -126,6 +126,15 @@ class TreeItem final {
         return m_bold;
     }
 
+    // Gets or sets whether to display the expander triangle next
+    // to this tree item even when it has no children.
+    void setForceExpandable(bool forceExpandable) {
+        m_forceExpandable = forceExpandable;
+    }
+    bool isForceExpandable() const {
+        return m_forceExpandable;
+    }
+
   private:
     explicit TreeItem(
             LibraryFeature* pFeature,
@@ -147,4 +156,5 @@ class TreeItem final {
     QVariant m_data;
     QIcon m_icon;
     bool m_bold;
+    bool m_forceExpandable;
 };
