@@ -23,6 +23,10 @@ class SearchQueryParser {
 
     /// splits the query into a list of terms
     static QStringList splitQueryIntoWords(const QString& query);
+    /// splits the query (part) at ' OR ' or '|' at its top-level
+    /// ie. not inside parenthesis, not inside quotes.
+    /// called for the original query and, if available, isolated parts in parenthesis
+    QStringList splitTopLevelOr(const QString& query) const;
     /// checks if the changed search query is less specific then the original term
     static bool queryIsLessSpecific(const QString& original, const QString& changed);
 
