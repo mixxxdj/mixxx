@@ -26,7 +26,18 @@
                 <Property>titleInfo</Property>
                 <Elide>right</Elide>
               </TrackProperty>
-
+              <Key>
+                <ObjectName>KeyText</ObjectName>
+                <TooltipId>track_key</TooltipId>
+                <Group><Variable name="Group"/></Group>
+                <MinimumSize>40,20</MinimumSize>
+                <MaximumSize>60,20</MaximumSize>
+                <SizePolicy>me,f</SizePolicy>
+                <Elide>right</Elide>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+                </Connection>
+              </Key>
               <WidgetGroup>
                 <ObjectName>SamplerTitleBpmSeparator</ObjectName>
                 <Layout>horizontal</Layout>
