@@ -37,6 +37,9 @@ const QString kDefaultMainEqId = QString();
 const ConfigKey kHighEqFreqKey = ConfigKey(kMixerProfile, kHighEqFrequency);
 const ConfigKey kHighEqFreqPreciseKey =
         ConfigKey(kMixerProfile, QStringLiteral("HiEQFrequencyPrecise"));
+const ConfigKey kMidEqFreqKey = ConfigKey(kMixerProfile, kMidEqFrequency);
+const ConfigKey kMidEqFreqPreciseKey =
+        ConfigKey(kMixerProfile, QStringLiteral("MidEQFrequencyPrecise"));
 const ConfigKey kLowEqFreqKey = ConfigKey(kMixerProfile, kLowEqFrequency);
 const ConfigKey kLowEqFreqPreciseKey =
         ConfigKey(kMixerProfile, QStringLiteral("LoEQFrequencyPrecise"));
@@ -81,8 +84,10 @@ DlgPrefMixer::DlgPrefMixer(
           m_crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
+          m_COMidFreq(kMidEqFreqKey),
           m_COHiFreq(kHighEqFreqKey),
           m_lowEqFreq(0.0),
+          m_midEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager),
@@ -142,6 +147,10 @@ DlgPrefMixer::DlgPrefMixer(
     connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotHiEqSliderChanged);
     connect(SliderHiEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotHiEqSliderChanged);
     connect(SliderHiEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotHiEqSliderChanged);
+
+    connect(SliderMidEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotMidEqSliderChanged);
+    connect(SliderMidEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotMidEqSliderChanged);
+    connect(SliderMidEQ, &QSlider::sliderReleased, this, &DlgPrefMixer::slotMidEqSliderChanged);
 
     connect(SliderLoEQ, &QSlider::valueChanged, this, &DlgPrefMixer::slotLoEqSliderChanged);
     connect(SliderLoEQ, &QSlider::sliderMoved, this, &DlgPrefMixer::slotLoEqSliderChanged);
@@ -222,6 +231,7 @@ DlgPrefMixer::DlgPrefMixer(
 
     setScrollSafeGuard(SliderXFader);
     setScrollSafeGuard(SliderHiEQ);
+    setScrollSafeGuard(SliderMidEQ);
     setScrollSafeGuard(SliderLoEQ);
     setScrollSafeGuard(comboBoxMainEq);
 
@@ -493,9 +503,13 @@ QUrl DlgPrefMixer::helpUrl() const {
 
 void DlgPrefMixer::setDefaultShelves() {
     SliderHiEQ->setValue(
-            getSliderPosition(2500,
+            getSliderPosition(4500,
                     SliderHiEQ->minimum(),
                     SliderHiEQ->maximum()));
+    SliderMidEQ->setValue(
+            getSliderPosition(1500,
+                    SliderMidEQ->minimum(),
+                    SliderMidEQ->maximum()));
     SliderLoEQ->setValue(
             getSliderPosition(250,
                     SliderLoEQ->minimum(),
@@ -641,8 +655,8 @@ void DlgPrefMixer::applyQuickEffects() {
 }
 
 void DlgPrefMixer::slotHiEqSliderChanged() {
-    if (SliderHiEQ->value() < SliderLoEQ->value()) {
-        SliderHiEQ->setValue(SliderLoEQ->value());
+    if (SliderHiEQ->value() < SliderMidEQ->value()) {
+        SliderMidEQ->setValue(SliderHiEQ->value());
     }
     m_highEqFreq = getEqFreq(SliderHiEQ->value(),
             SliderHiEQ->minimum(),
@@ -657,9 +671,28 @@ void DlgPrefMixer::slotHiEqSliderChanged() {
     m_COHiFreq.set(m_highEqFreq);
 }
 
+void DlgPrefMixer::slotMidEqSliderChanged() {
+    if (SliderMidEQ->value() < SliderLoEQ->value()) {
+        SliderLoEQ->setValue(SliderMidEQ->value());
+    } else if (SliderHiEQ->value() < SliderMidEQ->value()) {
+        SliderHiEQ->setValue(SliderMidEQ->value());
+    }
+    m_midEqFreq = getEqFreq(SliderMidEQ->value(),
+            SliderMidEQ->minimum(),
+            SliderMidEQ->maximum());
+    validateEQShelves();
+    if (m_midEqFreq < 1000) {
+        TextMidEQ->setText(QString("%1 Hz").arg(std::round(m_midEqFreq)));
+    } else {
+        TextMidEQ->setText(QString("%1 kHz").arg(std::round(m_midEqFreq) / 1000.));
+    }
+
+    m_COMidFreq.set(m_midEqFreq);
+}
+
 void DlgPrefMixer::slotLoEqSliderChanged() {
-    if (SliderLoEQ->value() > SliderHiEQ->value()) {
-        SliderLoEQ->setValue(SliderHiEQ->value());
+    if (SliderLoEQ->value() > SliderMidEQ->value()) {
+        SliderMidEQ->setValue(SliderLoEQ->value());
     }
     m_lowEqFreq = getEqFreq(SliderLoEQ->value(),
             SliderLoEQ->minimum(),
@@ -765,6 +798,7 @@ void DlgPrefMixer::storeEqShelves() {
     }
 
     m_pConfig->set(kHighEqFreqPreciseKey, ConfigValue(QString::number(m_highEqFreq, 'f')));
+    m_pConfig->set(kMidEqFreqPreciseKey, ConfigValue(QString::number(m_midEqFreq, 'f')));
     m_pConfig->set(kLowEqFreqPreciseKey, ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
 
@@ -807,24 +841,35 @@ void DlgPrefMixer::slotUpdate() {
     // EQ shelves //////////////////////////////////////////////////////////////
     QString highEqCoarse = m_pConfig->getValueString(kHighEqFreqKey);
     QString highEqPrecise = m_pConfig->getValueString(kHighEqFreqPreciseKey);
+    QString midEqCoarse = m_pConfig->getValueString(kMidEqFreqKey);
+    QString midEqPrecise = m_pConfig->getValueString(kMidEqFreqPreciseKey);
     QString lowEqCoarse = m_pConfig->getValueString(kLowEqFreqKey);
     QString lowEqPrecise = m_pConfig->getValueString(kLowEqFreqPreciseKey);
     double lowEqFreq = 0.0;
+    double midEqFreq = 0.0;
     double highEqFreq = 0.0;
 
     // Precise takes precedence over coarse.
     lowEqFreq = lowEqCoarse.isEmpty() ? lowEqFreq : lowEqCoarse.toDouble();
     lowEqFreq = lowEqPrecise.isEmpty() ? lowEqFreq : lowEqPrecise.toDouble();
+    midEqFreq = midEqCoarse.isEmpty() ? midEqFreq : midEqCoarse.toDouble();
+    midEqFreq = midEqPrecise.isEmpty() ? midEqFreq : midEqPrecise.toDouble();
     highEqFreq = highEqCoarse.isEmpty() ? highEqFreq : highEqCoarse.toDouble();
     highEqFreq = highEqPrecise.isEmpty() ? highEqFreq : highEqPrecise.toDouble();
 
-    if (lowEqFreq == 0.0 || highEqFreq == 0.0 || lowEqFreq == highEqFreq) {
+    if (lowEqFreq == 0.0 || midEqFreq == 0.0 || highEqFreq == 0.0 ||
+            lowEqFreq == midEqFreq || midEqFreq == highEqFreq) {
         setDefaultShelves();
     } else {
         SliderHiEQ->setValue(
                 getSliderPosition(highEqFreq,
                         SliderHiEQ->minimum(),
                         SliderHiEQ->maximum()));
+
+        SliderMidEQ->setValue(
+                getSliderPosition(midEqFreq,
+                        SliderMidEQ->minimum(),
+                        SliderMidEQ->maximum()));
 
         SliderLoEQ->setValue(
                 getSliderPosition(lowEqFreq,
@@ -1313,12 +1358,22 @@ double DlgPrefMixer::getEqFreq(int sliderVal, int minValue, int maxValue) {
 
 void DlgPrefMixer::validateEQShelves() {
     m_highEqFreq = math_clamp<double>(m_highEqFreq, kFrequencyLowerLimit, kFrequencyUpperLimit);
+    m_midEqFreq = math_clamp<double>(m_midEqFreq, kFrequencyLowerLimit, kFrequencyUpperLimit);
     m_lowEqFreq = math_clamp<double>(m_lowEqFreq, kFrequencyLowerLimit, kFrequencyUpperLimit);
-    if (m_lowEqFreq == m_highEqFreq) {
+    if (m_lowEqFreq == m_midEqFreq) {
         if (m_lowEqFreq == kFrequencyLowerLimit) {
+            ++m_midEqFreq;
+        } else if (m_midEqFreq == kFrequencyUpperLimit) {
+            --m_lowEqFreq;
+        } else {
+            ++m_midEqFreq;
+        }
+    }
+    if (m_midEqFreq == m_highEqFreq) {
+        if (m_midEqFreq == kFrequencyLowerLimit) {
             ++m_highEqFreq;
         } else if (m_highEqFreq == kFrequencyUpperLimit) {
-            --m_lowEqFreq;
+            --m_midEqFreq;
         } else {
             ++m_highEqFreq;
         }
