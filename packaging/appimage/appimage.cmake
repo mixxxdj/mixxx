@@ -106,7 +106,10 @@ install(
     "^libwayland-client\\.so.*"
     # Sound server client libraries (must match the local sound server)
     "^libasound\\.so.*"
-    "^libjack\\.so.*"
+    # The vcpkg jack2 port is an unversioned weak-API shim (libjack.so) that
+    # loads the system JACK at runtime; bundle the shim but keep the real,
+    # versioned JACK library delegated so it matches the host's sound server.
+    "^libjack\\.so\\.[0-9].*"
     "^libpipewire.*"
     # Low-level font stack and other system essentials
     "^libfontconfig\\.so.*"
