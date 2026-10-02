@@ -12,6 +12,11 @@
 
 namespace {
 
+/// Column of the color swatch, holding a plain QStandardItem.
+constexpr int kColorColumn = 0;
+/// Column of the hotcue number assignment, holding a HotcueIndexListItem.
+constexpr int kHotcueIndexColumn = 1;
+
 QIcon toQIcon(const QColor& color) {
     QPixmap pixmap(50, 50);
     pixmap.fill(color);
@@ -67,7 +72,7 @@ bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction
 
 bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVariant& value, int role) {
     setDirty(true);
-    if (modelIndex.isValid() && modelIndex.column() == 1) {
+    if (modelIndex.isValid() && modelIndex.column() == kHotcueIndexColumn) {
         const bool initialAttemptSuccessful = QStandardItemModel::setData(modelIndex, value, role);
 
         const auto* pHotcueIndexListItem = toHotcueIndexListItem(itemFromIndex(modelIndex));
@@ -87,7 +92,7 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
         constErase(&hotcueIndexList, hotcueIndexList.constBegin(), endLower);
 
         for (int i = 0; i < rowCount(); ++i) {
-            auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
+            auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, kHotcueIndexColumn));
 
             if (pHotcueIndexListItem == nullptr) {
                 continue;
@@ -106,7 +111,7 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
 }
 
 void ColorPaletteEditorModel::setColor(int row, const QColor& color) {
-    QStandardItem* pItem = item(row, 0);
+    QStandardItem* pItem = item(row, kColorColumn);
     if (pItem) {
         pItem->setIcon(toQIcon(color));
         pItem->setText(color.name());
@@ -154,9 +159,9 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
     QList<mixxx::RgbColor> colors;
     QMap<int, int> hotcueColorIndices;
     for (int i = 0; i < rowCount(); i++) {
-        QStandardItem* pColorItem = item(i, 0);
+        QStandardItem* pColorItem = item(i, kColorColumn);
+        const auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, kHotcueIndexColumn));
 
-        const auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, 1));
         if (!pHotcueIndexItem) {
             continue;
         }
