@@ -23,8 +23,8 @@
 #ifdef __FFMPEG__
 #include "sources/soundsourceffmpeg.h"
 #endif
-#ifdef __MODPLUG__
-#include "sources/soundsourcemodplug.h"
+#ifdef __OPENMPT__
+#include "sources/soundsourceopenmpt.h"
 #endif
 #ifdef __FAAD__
 #include "sources/soundsourcem4a.h"
@@ -220,10 +220,10 @@ bool SoundSourceProxy::registerProviders() {
             &s_soundSourceProviders,
             std::make_shared<mixxx::SoundSourceProviderMp3>());
 #endif
-#ifdef __MODPLUG__
+#ifdef __OPENMPT__
     registerSoundSourceProvider(
             &s_soundSourceProviders,
-            std::make_shared<mixxx::SoundSourceProviderModPlug>());
+            std::make_shared<mixxx::SoundSourceProviderOpenMPT>());
 #endif
 #ifdef __FAAD__
     registerSoundSourceProvider(

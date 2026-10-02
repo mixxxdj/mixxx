@@ -53,7 +53,7 @@ modules:
   - modules/libid3tag.yaml
   - modules/upower.yaml
   - modules/fdk-aac-free.yaml
-  - modules/libmodplug.yaml
+  - modules/libopenmpt.yaml
   - modules/qtkeychain.yaml
   - modules/libebur128.yaml
   - modules/libkeyfinder.yaml
