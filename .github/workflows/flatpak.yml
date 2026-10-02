@@ -14,7 +14,7 @@ on:
     secrets:
       DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY:
         required: false
-      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+      DASCHUER_AT_MIXXX_DOT_GPG_PRIVATE_KEY:
         required: false
 
 jobs:
@@ -96,7 +96,7 @@ jobs:
           echo "VERSION=${version}" >> $GITHUB_ENV
 
       - name: "[Ubuntu] Import PPA GPG key"
-        run: gpg --import <(echo "${ORG_GPG_PRIVATE_KEY}")
+        run: gpg --import <(echo "${GPG_PRIVATE_KEY}")
         env:
           GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
