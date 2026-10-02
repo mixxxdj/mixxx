@@ -45,7 +45,7 @@ jobs:
       DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
       PPA_SSH_PRIVATE_KEY: ${{ secrets.PPA_SSH_PRIVATE_KEY }}
 
-  publish:
+  publish-flatpak:
     needs:
       - build
     uses: ./.github/workflows/flatpak.yml
