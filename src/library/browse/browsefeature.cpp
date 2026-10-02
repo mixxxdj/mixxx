@@ -469,7 +469,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 #endif
         folders = createRemovableDevices();
     } else {
-        folders = getChildDirectoryItems(path);
+        folders = createChildDirectoryItems(path);
     }
 
     if (!folders.empty()) {
@@ -477,7 +477,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     }
 }
 
-std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
+std::vector<std::unique_ptr<TreeItem>> BrowseFeature::createChildDirectoryItems(
         const QString& path) const {
     std::vector<std::unique_ptr<TreeItem>> items;
 
