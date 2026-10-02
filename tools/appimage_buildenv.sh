@@ -169,7 +169,6 @@ case "$1" in
                 libxkbcommon-dev \
                 libxkbcommon-x11-dev \
                 libegl1-mesa-dev \
-                libupower-glib-dev \
                 libsm-dev \
                 libxrandr-dev \
                 libxext-dev \
