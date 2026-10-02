@@ -68,7 +68,9 @@ reapplying those migrations.
         position INTEGER,
         hidden INTEGER DEFAULT 0 NOT NULL,
         date_created datetime,
-        date_modified datetime);
+        date_modified datetime,
+        parent_id INTEGER DEFAULT NULL,
+        is_folder INTEGER DEFAULT 0 NOT NULL);
 
       CREATE TABLE PlaylistTracks (
         id INTEGER PRIMARY KEY,
