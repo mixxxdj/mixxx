@@ -304,6 +304,31 @@ bool initDatabase(const QSqlDatabase& database, mixxx::StringCollator* pCollator
                 << "Failed to install custom 3-arg LIKE function for SQLite3:"
                 << result;
     }
+
+    // Enable WAL (Write-Ahead Logging) journal mode and a busy timeout so
+    // that concurrent database access from multiple threads (e.g. the
+    // library scanner running in its own thread while the GUI thread is
+    // also writing) does not fail with SQLITE_BUSY:
+    // - WAL allows concurrent readers while a single writer is active.
+    //   This is a database-level, persistent setting: setting it once on
+    //   any connection persists it for all subsequent connections. The
+    //   PRAGMA is silently ignored for in-memory databases (as used in
+    //   tests).
+    // - The busy timeout makes SQLite wait and retry instead of failing
+    //   immediately when two connections compete for the write lock.
+    result = sqlite3_exec(handle, "PRAGMA journal_mode=WAL", nullptr, nullptr, nullptr);
+    if (result != SQLITE_OK) {
+        kLogger.warning()
+                << "Failed to enable WAL journal mode for SQLite3:"
+                << result;
+    }
+
+    result = sqlite3_busy_timeout(handle, 30000);
+    if (result != SQLITE_OK) {
+        kLogger.warning()
+                << "Failed to set busy timeout for SQLite3:"
+                << result;
+    }
 #else
     Q_UNUSED(database);
     Q_UNUSED(pCollator);
