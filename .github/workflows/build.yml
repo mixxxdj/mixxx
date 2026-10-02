@@ -600,6 +600,20 @@ jobs:
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
 
+      - name: "[AppImage] Check floor dependencies"
+        # The AppImage delegates fontconfig, freetype, harfbuzz, alsa and the
+        # base system stack to the host, so the shipped binary must not
+        # reference symbols or symbol versions the Ubuntu 22.04 floor cannot
+        # provide.  Headers from newer vcpkg ports can introduce them; walk
+        # the packaged AppImage's dynamic-linking closure against its bundled
+        # libraries and the build host's own libraries and fail on anything
+        # unsatisfiable.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Checking ${APPIMAGE}"
+          python3 tools/check_appimage_floor_deps.py "${APPIMAGE}"
+
       - name: "[AppImage] Upload AppImage"
         if: matrix.cpack_generator == 'AppImage'
         uses: actions/upload-artifact@v7

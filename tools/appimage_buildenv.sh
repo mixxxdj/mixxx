@@ -147,6 +147,24 @@ case "$1" in
             fi
             # XCB packages needed to link the static Qt plugin from the
             # buildenv; keep in sync with the buildenv's Qt build.
+            # binutils (readelf) feeds the appimage_floor_deps check; the
+            # libharfbuzz0b/libfontconfig1/libfreetype6/libasound2/libjack0
+            # runtime packages are the delegated floor libraries the check
+            # resolves against, and libpipewire is a delegated dependency of
+            # the AppImage that the bare runner lacks.
+            # libasound2t64/libfontconfig1t64/libfreetype6t64/libharfbuzz0bt64
+            # are the time_t-transitioned names on Ubuntu 24.04+, where the
+            # base names are virtual packages; Ubuntu 22.04 uses the base
+            # names.  Pick per library like FUSE_PKG above so local setup
+            # works on both.
+            ASOUND_PKG="libasound2t64"
+            if ! apt-cache show libasound2t64 &>/dev/null; then ASOUND_PKG="libasound2"; fi
+            FONTCONFIG_PKG="libfontconfig1t64"
+            if ! apt-cache show libfontconfig1t64 &>/dev/null; then FONTCONFIG_PKG="libfontconfig1"; fi
+            FREETYPE_PKG="libfreetype6t64"
+            if ! apt-cache show libfreetype6t64 &>/dev/null; then FREETYPE_PKG="libfreetype6"; fi
+            HARFBUZZ_PKG="libharfbuzz0bt64"
+            if ! apt-cache show libharfbuzz0bt64 &>/dev/null; then HARFBUZZ_PKG="libharfbuzz0b"; fi
             sudo apt-get install -y --no-install-recommends \
                 ccache \
                 g++ \
@@ -158,6 +176,13 @@ case "$1" in
                 "${FUSE_PKG}" \
                 unzip \
                 squashfs-tools \
+                binutils \
+                "${HARFBUZZ_PKG}" \
+                "${FONTCONFIG_PKG}" \
+                "${FREETYPE_PKG}" \
+                "${ASOUND_PKG}" \
+                libjack0 \
+                libpipewire-0.3-0 \
                 libsecret-1-dev \
                 libgcrypt20-dev \
                 libgpg-error-dev \
