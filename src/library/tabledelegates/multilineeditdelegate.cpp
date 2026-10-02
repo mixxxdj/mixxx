@@ -191,6 +191,20 @@ MultiLineEditDelegate::MultiLineEditDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView) {
 }
 
+void MultiLineEditDelegate::paint(
+        QPainter* pPainter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    // Workaround for a Qt6 bug occurring on Wayland (maybe also with other OS or
+    // compositors) https://github.com/mixxxdj/mixxx/issues/17037
+    // Paint background color from model if available and not selected to
+    // ensure the alpha channel is respected.
+    //
+    // Clazy: we don't want to call TableItemDelegate::paint() because that
+    // wouldn't call DefaultDelegate::paintItemBackground()
+    DefaultDelegate::paint(pPainter, option, index); // clazy:exclude=skipped-base-method
+}
+
 QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
