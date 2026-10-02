@@ -129,6 +129,31 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
             &m_rgbHighFilteredColor_g,
             &m_rgbHighFilteredColor_b);
 
+    getRgbF(pColors->getStackedLowColor(),
+            &m_stackedLowColor_r,
+            &m_stackedLowColor_g,
+            &m_stackedLowColor_b);
+    getRgbF(pColors->getStackedMidColor(),
+            &m_stackedMidColor_r,
+            &m_stackedMidColor_g,
+            &m_stackedMidColor_b);
+    getRgbF(pColors->getStackedHighColor(),
+            &m_stackedHighColor_r,
+            &m_stackedHighColor_g,
+            &m_stackedHighColor_b);
+    getRgbF(pColors->getStackedLowFilteredColor(),
+            &m_stackedLowFilteredColor_r,
+            &m_stackedLowFilteredColor_g,
+            &m_stackedLowFilteredColor_b);
+    getRgbF(pColors->getStackedMidFilteredColor(),
+            &m_stackedMidFilteredColor_r,
+            &m_stackedMidFilteredColor_g,
+            &m_stackedMidFilteredColor_b);
+    getRgbF(pColors->getStackedHighFilteredColor(),
+            &m_stackedHighFilteredColor_r,
+            &m_stackedHighFilteredColor_g,
+            &m_stackedHighFilteredColor_b);
+
     getRgbF(pColors->getAxesColor(),
             &m_axesColor_r,
             &m_axesColor_g,
