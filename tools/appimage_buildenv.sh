@@ -43,27 +43,26 @@ case "$HOST_ARCH" in
         if [ -n "${BUILDENV_RELEASE}" ]; then
             : "${VCPKG_TARGET_TRIPLET:=x64-linux-release}"
             : "${BUILDENV_BRANCH:=2.7-rel}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-9506d686}"
-            : "${BUILDENV_SHA256:=1d9d9781bd5198f8d72228ba1cdb76fe140dd515a5ca3d3b1bf4560900556364}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-c2a79b5e}"
+            : "${BUILDENV_SHA256:=b77478f14bb632dfb0dd76ad42a09f351e48431e3ebfdb2f5944d00d561393f3}"
         else
             : "${VCPKG_TARGET_TRIPLET:=x64-linux}"
             : "${BUILDENV_BRANCH:=2.7}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-332464ba}"
-            : "${BUILDENV_SHA256:=2760a1ba5e5f04a0a3e13330bcd298e1e84773169c105266aee4308599b01fa6}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-42c3d165}"
+            : "${BUILDENV_SHA256:=da3eb518cf96fdfd5238a2c0ff63a72d9f1af10b79fa3fe6354f7f9a8fa18516}"
         fi
         ;;
     aarch64)
-        VCPKG_TARGET_TRIPLET="arm64-linux"
-        : "${BUILDENV_BRANCH:=2.7}"
-        # The arm64-linux buildenv is not yet published by Mixxx, but an
-        # explicit BUILDENV_NAME / BUILDENV_URL override (e.g. a CI artifact)
-        # is still honoured.
-        if [ -z "${BUILDENV_NAME+x}" ] && [ -z "${BUILDENV_URL+x}" ]; then
-            echo "ERROR: arm64-linux buildenv is not yet published by Mixxx."
-            echo "Once a mixxx-deps-<version>-arm64-linux-XXXXXXXX.zip appears on"
-            echo "https://downloads.mixxx.org/dependencies/<version>/Linux/,"
-            echo "set BUILDENV_NAME via the environment or in this script and re-run."
-            exit 1
+        if [ -n "${BUILDENV_RELEASE}" ]; then
+            : "${VCPKG_TARGET_TRIPLET:=arm64-linux-release}"
+            : "${BUILDENV_BRANCH:=2.7-rel}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-rel-c2a79b5e}"
+            : "${BUILDENV_SHA256:=721bd3ac560f45f2810c9240f368e7fb982db3b05bd4a4918fa200bd75df84f0}"
+        else
+            : "${VCPKG_TARGET_TRIPLET:=arm64-linux}"
+            : "${BUILDENV_BRANCH:=2.7}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-42c3d165}"
+            : "${BUILDENV_SHA256:=69501c2b0af41ac3422289c45f499ff40fe74f9e6c6755a8a90f4360469a9553}"
         fi
         ;;
     *)
