@@ -14,7 +14,7 @@ on:
     secrets:
       DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY:
         required: false
-      DASCHUER_AT_MIXXX_DOT_GPG_PRIVATE_KEY:
+      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
         required: false
 
 jobs:
