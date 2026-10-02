@@ -551,6 +551,8 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # See "Sign executables"
+          cache-dependencies: false
 
       - name: "[Windows] Install WiX Toolset"
         if: runner.os == 'Windows'
