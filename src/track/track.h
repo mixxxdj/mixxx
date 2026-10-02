@@ -91,6 +91,11 @@ class Track : public QObject {
         return m_fileAccess.info();
     }
 
+    mixxx::FileAccess getFileAccess() const {
+        const auto locked = lockMutex(&m_qMutex);
+        return m_fileAccess;
+    }
+
     TrackId getId() const;
 
     // Returns absolute path to the file, including the filename.
