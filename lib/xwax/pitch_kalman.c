@@ -151,7 +151,7 @@ void pitch_kalman_update(struct pitch_kalman_filter* p, double dx)
 
     /*
      * Toggle mode switches for stable playback and scratching. When the
-     * innovation quantity hits a certain treshold the filter sensitivity
+     * innovation quantity hits a certain threshold the filter sensitivity
      * is tuned.
      *
      * The innovation is similar to the residual in the alpha-beta filter,
