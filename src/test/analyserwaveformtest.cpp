@@ -6,9 +6,12 @@
 
 #include "analyzer/analyzertrack.h"
 #include "analyzer/analyzerwaveform.h"
+#include "effects/defs.h"
 #include "library/dao/analysisdao.h"
+#include "proto/waveform.pb.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
+#include "waveform/waveformfactory.h"
 
 namespace {
 
@@ -26,6 +29,12 @@ class AnalyzerWaveformTest : public MixxxTest {
     }
 
     void SetUp() override {
+        config()->setValue(ConfigKey(kMixerProfile, kLowEqFrequency), 600.0);
+        config()->setValue(ConfigKey(kMixerProfile, kHighEqFrequency), 4000.0);
+        config()->setValue(ConfigKey(kMixerProfile, QStringLiteral("LoEQFrequencyPrecise")), 600.0);
+        config()->setValue(ConfigKey(kMixerProfile,
+                                   QStringLiteral("HiEQFrequencyPrecise")),
+                4000.0);
         m_pTrack = Track::newTemporary();
         m_pTrack->setAudioProperties(
                 mixxx::audio::ChannelCount(kChannelCount),
@@ -128,6 +137,61 @@ TEST_F(AnalyzerWaveformTest, canary) {
     EXPECT_EQ(pWaveformSummary->getDataSize(), 3842);
     EXPECT_EQ(pWaveformSummary->getCompletion(), 3842);
     EXPECT_DOUBLE_EQ(pWaveformSummary->getAudioVisualRatio(), 1.0);
+}
+
+TEST_F(AnalyzerWaveformTest, frequencyChangeInvalidatesLoadedWaveforms) {
+    const AnalyzerTrack track(m_pTrack);
+    ASSERT_TRUE(m_aw.initialize(track,
+            m_pTrack->getSampleRate(),
+            m_pTrack->getChannels(),
+            kBigBufSize / kChannelCount));
+    ASSERT_TRUE(m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize));
+    m_aw.storeResults(m_pTrack);
+    m_aw.cleanup();
+
+    const auto oldWaveform = m_pTrack->getWaveform();
+    const auto oldSummary = m_pTrack->getWaveformSummary();
+    ASSERT_FALSE(m_aw.initialize(track,
+            m_pTrack->getSampleRate(),
+            m_pTrack->getChannels(),
+            kBigBufSize / kChannelCount));
+
+    config()->setValue(ConfigKey(kMixerProfile, QStringLiteral("LoEQFrequencyPrecise")), 250.0);
+    config()->setValue(ConfigKey(kMixerProfile, QStringLiteral("HiEQFrequencyPrecise")), 2500.0);
+    ASSERT_TRUE(m_aw.initialize(track,
+            m_pTrack->getSampleRate(),
+            m_pTrack->getChannels(),
+            kBigBufSize / kChannelCount));
+    EXPECT_NE(m_pTrack->getWaveform(), oldWaveform);
+    EXPECT_NE(m_pTrack->getWaveformSummary(), oldSummary);
+    ASSERT_TRUE(m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize));
+    m_aw.storeResults(m_pTrack);
+
+    EXPECT_EQ(m_pTrack->getWaveform()->getVersion(),
+            WaveformFactory::currentWaveformVersion(250.0, 2500.0));
+    EXPECT_EQ(m_pTrack->getWaveformSummary()->getVersion(),
+            WaveformFactory::currentWaveformSummaryVersion(250.0, 2500.0));
+    mixxx::track::io::Waveform serialized;
+    const QByteArray data = m_pTrack->getWaveform()->toByteArray();
+    ASSERT_TRUE(serialized.ParseFromArray(data.constData(), data.size()));
+    EXPECT_DOUBLE_EQ(serialized.signal_filtered().low_cutoff_frequency(), 250.0);
+    EXPECT_DOUBLE_EQ(serialized.signal_filtered().high_cutoff_frequency(), 2500.0);
+    m_aw.cleanup();
+}
+
+TEST(WaveformFactoryTest, frequencyVersions) {
+    EXPECT_EQ(WaveformFactory::waveformVersionToVersionClass(
+                      WaveformFactory::currentWaveformVersion(250.0, 2500.0), 250.0, 2500.0),
+            WaveformFactory::VC_USE);
+    EXPECT_EQ(WaveformFactory::waveformVersionToVersionClass(
+                      WaveformFactory::currentWaveformVersion(600.0, 4000.0), 250.0, 2500.0),
+            WaveformFactory::VC_REMOVE);
+    EXPECT_EQ(WaveformFactory::waveformVersionToVersionClass(
+                      WAVEFORM_5_VERSION, 250.0, 2500.0),
+            WaveformFactory::VC_REMOVE);
+    EXPECT_EQ(WaveformFactory::waveformSummaryVersionToVersionClass(
+                      WAVEFORMSUMMARY_5_VERSION, 250.0, 2500.0),
+            WaveformFactory::VC_REMOVE);
 }
 
 } // namespace

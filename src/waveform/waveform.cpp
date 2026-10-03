@@ -88,22 +88,10 @@ QByteArray Waveform::toByteArray() const {
     for (int i = 0; i < m_stemCount; i++) {
         stems.append(waveform.add_signal_stems());
     }
-    // TODO(rryan) get the actual cutoff values from analyzerwaveform.cpp so
-    // that if they change we don't have to remember to update these.
-
-    // Frequency cutoffs for butterworth filters:
-    // filtered->set_low_cutoff_frequency(200);
-    // filtered->set_mid_low_cutoff_frequency(200);
-    // filtered->set_mid_high_cutoff_frequency(2000);
-    // filtered->set_high_cutoff_frequency(2000);
-
-    // Frequency cutoff for bessel_lowpass4
-    filtered->set_low_cutoff_frequency(600);
-    // Frequency cutoff for bessel_bandpass
-    filtered->set_mid_low_cutoff_frequency(600);
-    filtered->set_mid_high_cutoff_frequency(4000);
-    // Frequency cutoff for bessel_highpass4
-    filtered->set_high_cutoff_frequency(4000);
+    filtered->set_low_cutoff_frequency(m_lowMidFrequency);
+    filtered->set_mid_low_cutoff_frequency(m_lowMidFrequency);
+    filtered->set_mid_high_cutoff_frequency(m_midHighFrequency);
+    filtered->set_high_cutoff_frequency(m_midHighFrequency);
 
     io::Waveform::Signal* low = filtered->mutable_low();
     io::Waveform::Signal* mid = filtered->mutable_mid();
@@ -179,6 +167,9 @@ void Waveform::readByteArray(const QByteArray& data) {
     const io::Waveform::Signal& low = waveform.signal_filtered().low();
     const io::Waveform::Signal& mid = waveform.signal_filtered().mid();
     const io::Waveform::Signal& high = waveform.signal_filtered().high();
+
+    m_lowMidFrequency = waveform.signal_filtered().low_cutoff_frequency();
+    m_midHighFrequency = waveform.signal_filtered().high_cutoff_frequency();
 
     qDebug() << "Reading waveform from byte array:"
              << "allSignalSize" << all.value_size()

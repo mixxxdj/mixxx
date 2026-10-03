@@ -727,6 +727,17 @@ int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
 }
 
 void DlgPrefMixer::slotApply() {
+    const QString lowFrequency = QString::number(m_lowEqFreq, 'f');
+    const QString highFrequency = QString::number(m_highEqFreq, 'f');
+    const QString oldLowFrequency = m_pConfig->getValueString(kLowEqFreqPreciseKey);
+    const QString oldHighFrequency = m_pConfig->getValueString(kHighEqFreqPreciseKey);
+    const bool crossoversChanged =
+            (oldLowFrequency.isEmpty()
+                            ? m_pConfig->getValueString(kLowEqFreqKey).toDouble()
+                            : oldLowFrequency.toDouble()) != lowFrequency.toDouble() ||
+            (oldHighFrequency.isEmpty()
+                            ? m_pConfig->getValueString(kHighEqFreqKey).toDouble()
+                            : oldHighFrequency.toDouble()) != highFrequency.toDouble();
     applyXFader();
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
@@ -742,6 +753,9 @@ void DlgPrefMixer::slotApply() {
     applyQuickEffects();
 
     storeEqShelves();
+    if (crossoversChanged) {
+        emit eqCrossoversChanged();
+    }
 }
 
 void DlgPrefMixer::applyXFader() {
