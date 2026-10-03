@@ -12,6 +12,7 @@
 #include <ostream>
 #include <string>
 
+#include "control/controlobject.h"
 #include "coreservices.h"
 #include "preferences/configobject.h"
 #include "qml/qmlapplication.h"
@@ -80,7 +81,9 @@ class QmlStartupSmokeTest : public MixxxTest,
 
         QFile soundConfig(settingsPath + "soundconfig.xml");
         ASSERT_TRUE(soundConfig.open(QIODevice::WriteOnly | QIODevice::Truncate));
-        ASSERT_GT(soundConfig.write("<SoundManagerConfig api=\"None\"/>\n"), 0);
+        ASSERT_GT(soundConfig.write(
+                          "<SoundManagerConfig api=\"None\" samplerate=\"48000\"/>\n"),
+                0);
     }
 };
 
@@ -100,6 +103,16 @@ TEST_P(QmlStartupSmokeTest, Starts) {
     CmdlineArgs::Instance().setSettingsPath(settingsPath);
     const auto args = makeCmdlineArgs(settingsPath);
     auto coreServices = std::make_shared<mixxx::CoreServices>(args, application());
+    bool sampleRateInitializedBeforeDeviceSetup = false;
+    QObject::connect(coreServices.get(),
+            &mixxx::CoreServices::initializationProgressUpdate,
+            [&sampleRateInitializedBeforeDeviceSetup](int progress, const QString&) {
+                if (progress == 40) {
+                    sampleRateInitializedBeforeDeviceSetup =
+                            ControlObject::get(ConfigKey("[App]", "samplerate")) ==
+                            48000.0;
+                }
+            });
 
     QString mainQmlFilePath;
     if (!skin.useNewUi) {
@@ -128,6 +141,8 @@ TEST_P(QmlStartupSmokeTest, Starts) {
             << "\nQML entry point: "
             << (mainQmlFilePath.isEmpty() ? "<default>" : qPrintable(mainQmlFilePath))
             << "\nSettings path: " << qPrintable(settingsPath);
+    EXPECT_TRUE(sampleRateInitializedBeforeDeviceSetup)
+            << "The saved sample rate was not initialized before audio device setup";
 }
 
 INSTANTIATE_TEST_SUITE_P(
