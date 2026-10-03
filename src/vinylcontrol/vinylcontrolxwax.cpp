@@ -445,7 +445,12 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 m_deltaRelativeDriftAmount = calcDeltaRelativeDriftAmount(m_deltaFilePos);
             }
 
-            //qDebug() << "drift" << m_dDriftAmt;
+            // qDebug().noquote()
+            //         << "drift" << QString::asprintf("%+3f", m_dDriftAmt)
+            //         << "| relative drift"
+            //         << QString::asprintf("%+3f", m_deltaRelativeDriftAmount)
+            //         << "| vinyl position"
+            //         << QString::asprintf("%+3f", m_dVinylPosition);
 
             if (m_bForceResync) {
                 //if forceresync was set but we're no longer absolute,
@@ -606,6 +611,7 @@ double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
             m_passthroughEnabled.toBool() || reverseButton->toBool() ||
             m_scratchPositionEnabled.toBool()) {
         m_initialRelativeDriftAmt = m_dDriftAmt;
+        // qDebug() << "NEEDLE DROPPED!!!";
     }
 
     return m_dDriftAmt - m_initialRelativeDriftAmt;

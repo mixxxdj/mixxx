@@ -37,6 +37,13 @@ extern "C" {
 
 typedef unsigned int bits_t;
 
+struct phase_rejection {
+    double trigger; /* Pitch multiple to enable filter for */
+    double gate; /* Pitch multiple to gate for */
+    double tau; /* Moving average tau in ms */
+    double hold; /* Time in ms to reject samples for */
+};
+
 struct timecode_def {
     const char *name, *desc;
     int bits, /* number of bits in string */
@@ -52,6 +59,7 @@ struct timecode_def {
     bool lookup; /* true if lut has been generated */
     struct lut lut;
     struct lut_mk2 lut_mk2; /* MK2 version */
+    struct phase_rejection phase_reject; /* Values for the phase-rejection filter */
 };
 
 struct timecoder_channel {
@@ -111,6 +119,10 @@ struct timecoder {
 
     struct pitch_filter pitch_filter;
     struct pitch_kalman_filter pitch_kalman_filter;
+
+    struct ewma_filter dphi_filter; /* Running average of the accepted phase differences */
+    double dphi_gate, dphi_ref; /* Phase gate for the phase filter */
+    unsigned int dphi_rejected, dphi_hold_samples;
 
     /* Numerical timecode */
 
