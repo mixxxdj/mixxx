@@ -1,5 +1,6 @@
 #include "engine/cachingreader/cachingreader.h"
 
+#include <QDir>
 #include <QtDebug>
 
 #include "moc_cachingreader.cpp"
@@ -35,7 +36,18 @@ constexpr SINT kDefaultHintFrames = 1024;
 // massive drop outs are expected to occur Mixxx should run reliably!
 constexpr SINT kNumberOfCachedChunksInMemory = 80;
 
+#ifdef Q_OS_WIN
+// Default trackFileCache directory on Windows.
+// Preferably a ramdriveletter
+const QString kDefaultTrackFileCachePath = QStringLiteral("R:/MixxxTmp/");
+#else
+// Default trackFileCache directory on Linux /dev/shm
+const QString kDefaultTrackFileCachePath = QStringLiteral("/dev/shm/MixxxTmp/");
+#endif
+
 } // anonymous namespace
+CachingReader::TrackFileCacheConfig CachingReader::s_trackFileCacheConfig;
+QMutex CachingReader::s_configMutex;
 
 CachingReader::CachingReader(const QString& group,
         UserSettingsPointer config,
@@ -64,6 +76,18 @@ CachingReader::CachingReader(const QString& group,
                   &m_chunkReadRequestFIFO,
                   &m_readerStatusUpdateFIFO,
                   maxSupportedChannel) {
+    // Initialize TrackFileCache config (only once)
+    initializeTrackFileCacheConfig(m_pConfig);
+
+    // Pass config values to worker
+    QMutexLocker locker(&s_configMutex);
+    m_worker.setTrackFileCacheConfig(
+            s_trackFileCacheConfig.enabled,
+            s_trackFileCacheConfig.trackFileCacheDiskPath,
+            s_trackFileCacheConfig.maxSizeMB,
+            s_trackFileCacheConfig.decksEnabled,
+            s_trackFileCacheConfig.samplersEnabled,
+            s_trackFileCacheConfig.previewEnabled);
     m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
@@ -80,14 +104,20 @@ CachingReader::CachingReader(const QString& group,
     }
 
     // Forward signals from worker
-    connect(&m_worker, &CachingReaderWorker::trackLoading,
-            this, &CachingReader::trackLoading,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoading,
+            this,
+            &CachingReader::trackLoading,
             Qt::DirectConnection);
-    connect(&m_worker, &CachingReaderWorker::trackLoaded,
-            this, &CachingReader::trackLoaded,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoaded,
+            this,
+            &CachingReader::trackLoaded,
             Qt::DirectConnection);
-    connect(&m_worker, &CachingReaderWorker::trackLoadFailed,
-            this, &CachingReader::trackLoadFailed,
+    connect(&m_worker,
+            &CachingReaderWorker::trackLoadFailed,
+            this,
+            &CachingReader::trackLoadFailed,
             Qt::DirectConnection);
 
     m_worker.start(QThread::HighPriority);
@@ -96,6 +126,117 @@ CachingReader::CachingReader(const QString& group,
 CachingReader::~CachingReader() {
     m_worker.quitWait();
     qDeleteAll(m_chunks);
+}
+
+QString CachingReader::getTrackFileCachePathFromConfig(UserSettingsPointer pConfig) {
+    if (!pConfig) {
+        return kDefaultTrackFileCachePath;
+    }
+
+#ifdef Q_OS_WIN
+    const ConfigKey pathKey("[TrackFileCache]", "WindowsPath");
+#else
+    const ConfigKey pathKey("[TrackFileCache]", "UnixPath");
+#endif
+
+    QString path = pConfig->getValueString(pathKey);
+    if (path.isEmpty()) {
+        path = kDefaultTrackFileCachePath;
+    }
+
+    // the path must always end with exactly one '/'.
+    while (path.endsWith('/')) {
+        path.chop(1);
+    }
+    path += '/';
+
+    return path;
+}
+
+void CachingReader::initializeTrackFileCacheConfig(UserSettingsPointer pConfig) {
+    QMutexLocker locker(&s_configMutex);
+
+    if (s_trackFileCacheConfig.initialized) {
+        return;
+    }
+
+    if (!pConfig) {
+        // No config -> defaults
+        s_trackFileCacheConfig.enabled = kDefaultTrackFileCacheEnabled;
+        s_trackFileCacheConfig.maxSizeMB = kDefaultTrackFileCacheMaxSizeMB;
+        s_trackFileCacheConfig.decksEnabled = kDefaultTrackFileCacheDecks;
+        s_trackFileCacheConfig.samplersEnabled = kDefaultTrackFileCacheSamplers;
+        s_trackFileCacheConfig.previewEnabled = kDefaultTrackFileCachePreviewDeck;
+        s_trackFileCacheConfig.trackFileCacheDiskPath = kDefaultTrackFileCachePath;
+        s_trackFileCacheConfig.initialized = true;
+        return;
+    }
+
+    createTrackFileCacheConfigVars(pConfig);
+
+    s_trackFileCacheConfig.enabled = pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Enabled"));
+    s_trackFileCacheConfig.maxSizeMB = pConfig->getValue<int>(
+            ConfigKey("[TrackFileCache]", "MaxSizeMB"));
+    s_trackFileCacheConfig.decksEnabled = pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Decks"));
+    s_trackFileCacheConfig.samplersEnabled = pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Samplers"));
+    s_trackFileCacheConfig.previewEnabled = pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "PreviewDeck"));
+
+    s_trackFileCacheConfig.trackFileCacheDiskPath =
+            getTrackFileCachePathFromConfig(pConfig);
+
+    s_trackFileCacheConfig.initialized = true;
+
+    kLogger.debug() << "[TrackFileCache] Config initialized: "
+                    << "TrackFileCache Enabled : " << s_trackFileCacheConfig.enabled
+                    << "- Path:" << s_trackFileCacheConfig.trackFileCacheDiskPath
+                    << "- MaxSize:" << s_trackFileCacheConfig.maxSizeMB << "MB "
+                    << "- Decks:" << s_trackFileCacheConfig.decksEnabled
+                    << "- Samplers:" << s_trackFileCacheConfig.samplersEnabled
+                    << "- PreviewDeck:" << s_trackFileCacheConfig.previewEnabled;
+}
+
+void CachingReader::createTrackFileCacheConfigVars(UserSettingsPointer pConfig) {
+    if (!pConfig) {
+        return;
+    }
+
+    ConfigKey enabledKey("[TrackFileCache]", "Enabled");
+    if (!pConfig->exists(enabledKey)) {
+        pConfig->setValue(enabledKey, kDefaultTrackFileCacheEnabled);
+    }
+
+    ConfigKey maxSizeKey("[TrackFileCache]", "MaxSizeMB");
+    if (!pConfig->exists(maxSizeKey)) {
+        pConfig->setValue(maxSizeKey, kDefaultTrackFileCacheMaxSizeMB);
+    }
+
+    ConfigKey decksKey("[TrackFileCache]", "Decks");
+    if (!pConfig->exists(decksKey)) {
+        pConfig->setValue(decksKey, kDefaultTrackFileCacheDecks);
+    }
+
+    ConfigKey samplersKey("[TrackFileCache]", "Samplers");
+    if (!pConfig->exists(samplersKey)) {
+        pConfig->setValue(samplersKey, kDefaultTrackFileCacheSamplers);
+    }
+
+    ConfigKey previewKey("[TrackFileCache]", "PreviewDeck");
+    if (!pConfig->exists(previewKey)) {
+        pConfig->setValue(previewKey, kDefaultTrackFileCachePreviewDeck);
+    }
+
+#ifdef Q_OS_WIN
+    ConfigKey pathKey("[TrackFileCache]", "WindowsPath");
+#else
+    ConfigKey pathKey("[TrackFileCache]", "UnixPath");
+#endif
+    if (!pConfig->exists(pathKey)) {
+        pConfig->setValue(pathKey, QString());
+    }
 }
 
 void CachingReader::freeChunkFromList(CachingReaderChunkForOwner* pChunk) {
@@ -418,7 +559,6 @@ CachingReader::ReadResult CachingReader::read(SINT startSample,
             for (SINT chunkIndex = firstChunkIndex;
                     chunkIndex <= lastChunkIndex;
                     ++chunkIndex) {
-
                 // Process new messages from the reader thread before looking up
                 // the next chunk
                 process();
@@ -546,18 +686,18 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // any are not, then wake.
     bool shouldWake = false;
 
-    for (const auto& hint: hintList) {
+    for (const auto& hint : hintList) {
         SINT hintFrame = hint.frame;
         SINT hintFrameCount = hint.frameCount;
 
         // Handle some special length values
         if (hintFrameCount == Hint::kFrameCountForward) {
-        	hintFrameCount = kDefaultHintFrames;
+            hintFrameCount = kDefaultHintFrames;
         } else if (hintFrameCount == Hint::kFrameCountBackward) {
-        	hintFrame -= kDefaultHintFrames;
-        	hintFrameCount = kDefaultHintFrames;
+            hintFrame -= kDefaultHintFrames;
+            hintFrameCount = kDefaultHintFrames;
             if (hintFrame < 0) {
-            	hintFrameCount += hintFrame;
+                hintFrameCount += hintFrame;
                 if (hintFrameCount <= 0) {
                     continue;
                 }
