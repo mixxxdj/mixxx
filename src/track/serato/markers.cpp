@@ -659,6 +659,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         cueIndex,
                         QString(),
                         pEntry->getColor().toDisplayedColor(),
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
                         CueFlag::None);
                 cueInfos.append(cueInfo);
             }
@@ -681,6 +685,10 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         loopIndex,
                         QString(),
                         std::nullopt,
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0,
                         pEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute
