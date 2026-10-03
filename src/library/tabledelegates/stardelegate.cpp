@@ -25,6 +25,10 @@ void StarDelegate::paintItem(
 
     paintItemBackground(painter, option, index);
 
+    if (isEndMarkerRow(index)) {
+        return;
+    }
+
     StarRating starRating = index.data().value<StarRating>();
     starRating.paint(painter, option.rect);
 }
