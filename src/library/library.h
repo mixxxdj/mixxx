@@ -196,7 +196,7 @@ class Library: public QObject {
 
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
-    WLibrary* m_pLibraryWidget;
+    QPointer<WLibrary> m_pLibraryWidget;
     parented_ptr<MixxxLibraryFeature> m_pMixxxLibraryFeature;
     parented_ptr<AutoDJFeature> m_pAutoDJFeature;
     parented_ptr<PlaylistFeature> m_pPlaylistFeature;

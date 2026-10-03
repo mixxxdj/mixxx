@@ -46,6 +46,9 @@ Q_IMPORT_QML_PLUGIN(Mixxx_ControlsPlugin)
 
 namespace {
 const QString kMainQmlFileName = QStringLiteral("qml/main.qml");
+const ConfigKey kOverviewTypeCfgKey(
+        QStringLiteral("[Waveform]"),
+        QStringLiteral("WaveformOverviewType"));
 
 QString normalizedColorScheme(const QString& colorScheme) {
     if (colorScheme.compare(QStringLiteral("Classic"), Qt::CaseInsensitive) == 0) {
@@ -239,6 +242,7 @@ QmlApplication::QmlApplication(
     // closed because it does not take into account the window created by
     // the QQmlApplicationEngine.
     pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
+    setupOverviewTypeControl();
 
     auto inputWarningVisible = std::make_shared<bool>(false);
     auto showNoInputConfiguredWarning =
@@ -411,6 +415,8 @@ void QmlApplication::slotFrameSwapped() {
 
 QmlApplication::~QmlApplication() {
     QmlApplicationProxy::registerReloadCallback({});
+    m_guiTickTimer.stop();
+    disconnect(&m_autoReload, nullptr, this, nullptr);
     // Destroy the QML engine before the waveform factory. Scene-graph nodes
     // owned by the engine may still reference QML waveform renderers and the
     // factory while the engine is tearing down its object tree.
@@ -459,6 +465,31 @@ void QmlApplication::setupSpinnyCoverControls() {
             &QmlApplication::updateSpinnyCoverControls);
 
     updateSpinnyCoverControls();
+}
+
+void QmlApplication::setupOverviewTypeControl() {
+    if (WaveformWidgetFactory::isCreated()) {
+        return;
+    }
+
+    m_pOverviewTypeControl = std::make_unique<ControlPushButton>(kOverviewTypeCfgKey);
+    m_pOverviewTypeControl->setStates(
+            QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
+    m_pOverviewTypeControl->setReadOnly();
+
+    const int storedOverviewType = m_pCoreServices->getSettings()->getValue<int>(
+            kOverviewTypeCfgKey,
+            static_cast<int>(mixxx::OverviewType::RGB));
+    const int overviewTypeCount = QMetaEnum::fromType<mixxx::OverviewType>().keyCount();
+    const bool overviewTypeIsValid = storedOverviewType >= 0 &&
+            storedOverviewType < overviewTypeCount;
+    const auto overviewType = overviewTypeIsValid
+            ? static_cast<mixxx::OverviewType>(storedOverviewType)
+            : mixxx::OverviewType::RGB;
+    if (!overviewTypeIsValid) {
+        m_pCoreServices->getSettings()->setValue(kOverviewTypeCfgKey, overviewType);
+    }
+    m_pOverviewTypeControl->forceSet(static_cast<double>(overviewType));
 }
 
 void QmlApplication::updateSpinnyCoverControls() {
