@@ -204,6 +204,11 @@ class SoundSourceProxy {
 
     friend class TrackCollectionManager;
     FRIEND_TEST(TrackMetadataExportTest, keepWithespaceKey);
+    FRIEND_TEST(TrackMetadataExportTest, ClearRatingRemovesFileTag);
+    FRIEND_TEST(TrackMetadataExportTest, UnchangedRatingSkipsExport);
+    FRIEND_TEST(TrackMetadataExportTest, RatingOnlyChangeExports);
+    FRIEND_TEST(TrackMetadataExportTest, RatingExportKeepsSourceSynchronized);
+    FRIEND_TEST(TrackMetadataExportTest, RatingOnlyPrefDoesNotExportOtherTags);
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             const SyncTrackMetadataParams& syncParams);

@@ -265,6 +265,14 @@ class QmlConfigProxy : public QmlConfigProxyBase {
                     librarySyncTrackMetadataExport WRITE
                             set_librarySyncTrackMetadataExport NOTIFY
                                     librarySyncTrackMetadataExportChanged);
+    Q_PROPERTY(bool libraryExportRatingToFileTags READ
+                    libraryExportRatingToFileTags WRITE
+                            set_libraryExportRatingToFileTags NOTIFY
+                                    libraryExportRatingToFileTagsChanged);
+    Q_PROPERTY(bool libraryImportRatingFromFileTags READ
+                    libraryImportRatingFromFileTags WRITE
+                            set_libraryImportRatingFromFileTags NOTIFY
+                                    libraryImportRatingFromFileTagsChanged);
     Q_PROPERTY(bool librarySeratoMetadataExport READ librarySeratoMetadataExport
                     WRITE set_librarySeratoMetadataExport NOTIFY
                             librarySeratoMetadataExportChanged);
@@ -457,6 +465,8 @@ class QmlConfigProxy : public QmlConfigProxyBase {
 
     // Library group
     PROPERTY_DECL_ACCESSOR(bool, librarySyncTrackMetadataExport);
+    PROPERTY_DECL_ACCESSOR(bool, libraryExportRatingToFileTags);
+    PROPERTY_DECL_ACCESSOR(bool, libraryImportRatingFromFileTags);
     PROPERTY_DECL_ACCESSOR(bool, librarySeratoMetadataExport);
     PROPERTY_DECL_ACCESSOR(bool, libraryUseRelativePathOnExport);
     // Count, 0..
@@ -558,6 +568,8 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     void configSkinChanged();
     void bpmSyncLockAlgorithmChanged();
     void librarySyncTrackMetadataExportChanged();
+    void libraryExportRatingToFileTagsChanged();
+    void libraryImportRatingFromFileTagsChanged();
     void librarySeratoMetadataExportChanged();
     void libraryUseRelativePathOnExportChanged();
     void libraryHistoryMinTracksToKeepChanged();

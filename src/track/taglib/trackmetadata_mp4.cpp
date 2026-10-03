@@ -9,8 +9,12 @@
 
 #include "track/taglib/trackmetadata_mp4.h"
 
+#include <optional>
+
+#include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
+#include "track/trackrecord.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -41,6 +45,10 @@ const TagLib::String kAtomKeySeratoBeatGrid = "----:com.serato.dj:beatgrid";
 const TagLib::String kAtomKeySeratoMarkers = "----:com.serato.dj:markers";
 const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
 
+// FMPS Rating - freeform atom for cross-application rating compatibility
+// https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
+// Using org.freedesktop.FMPS namespace for compatibility
+const TagLib::String kAtomKeyFMPSRating = "----:org.freedesktop.FMPS:FMPS_Rating";
 
 bool readAtom(
         const TagLib::MP4::Tag& tag,
@@ -100,6 +108,43 @@ inline void updateAtom(
 } // anonymous namespace
 
 namespace mp4 {
+
+std::optional<int> importRatingFromTag(const TagLib::MP4::Tag& tag) {
+    QString fmpsRating;
+    if (!readAtom(tag, kAtomKeyFMPSRating, &fmpsRating) ||
+            fmpsRating.isEmpty()) {
+        return std::nullopt;
+    }
+    const std::optional<int> rating = parseFmpsRating(fmpsRating);
+    if (!rating) {
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Rating value in MP4 atom:"
+                << fmpsRating;
+    }
+    return rating;
+}
+
+bool exportRatingIntoTag(
+        TagLib::MP4::Tag* pTag,
+        int rating) {
+    DEBUG_ASSERT(pTag);
+    if (rating == TrackRecord::kNoRating) {
+        // Remove any existing FMPS_Rating atom if the rating is cleared
+        pTag->removeItem(kAtomKeyFMPSRating);
+        return true;
+    }
+    const std::optional<QString> fmpsRating = formatFmpsRating(rating);
+    if (!fmpsRating) {
+        kLogger.warning()
+                << "Invalid rating value for export:" << rating;
+        return false;
+    }
+    writeAtom(
+            pTag,
+            kAtomKeyFMPSRating,
+            toTString(*fmpsRating));
+    return true;
+}
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,
