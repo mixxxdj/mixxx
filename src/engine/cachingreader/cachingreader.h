@@ -86,6 +86,15 @@ class CachingReader : public QObject {
             mixxx::audio::ChannelCount maxSupportedChannel);
     ~CachingReader() override;
 
+    // TrackFileCache defaults
+    static constexpr bool kDefaultTrackFileCacheEnabled = false;
+    static constexpr int kDefaultTrackFileCacheMaxSizeMB = 512;
+    static constexpr bool kDefaultTrackFileCacheDecks = true;
+    static constexpr bool kDefaultTrackFileCacheSamplers = true;
+    static constexpr bool kDefaultTrackFileCachePreviewDeck = false;
+
+    static QString getTrackFileCachePathFromConfig(UserSettingsPointer pConfig);
+
     void process();
 
     enum class ReadResult {
@@ -137,6 +146,20 @@ class CachingReader : public QObject {
 
   private:
     const UserSettingsPointer m_pConfig;
+    struct TrackFileCacheConfig {
+        bool initialized = false;
+        bool enabled = kDefaultTrackFileCacheEnabled;
+        int maxSizeMB = kDefaultTrackFileCacheMaxSizeMB;
+        bool decksEnabled = kDefaultTrackFileCacheDecks;
+        bool samplersEnabled = kDefaultTrackFileCacheSamplers;
+        bool previewEnabled = kDefaultTrackFileCachePreviewDeck;
+        QString trackFileCacheDiskPath;
+    };
+
+    static TrackFileCacheConfig s_trackFileCacheConfig;
+    static QMutex s_configMutex;
+    void initializeTrackFileCacheConfig(UserSettingsPointer pConfig);
+    void createTrackFileCacheConfigVars(UserSettingsPointer pConfig);
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.

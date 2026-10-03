@@ -1,10 +1,15 @@
 #include "preferences/dialog/dlgprefdeck.h"
 
+#include <QDir>
 #include <QDoubleSpinBox>
+#include <QFileDialog>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
@@ -91,16 +96,16 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::REMAINING));
+                static_cast<double>(TrackTime::DisplayMode::REMAINING));
     } else if (positionDisplayType ==
-                   static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING)) {
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING)) {
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
+                static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
     } else {
         radioButtonElapsed->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
+                static_cast<double>(TrackTime::DisplayMode::ELAPSED));
     }
     connect(buttonGroupTrackTime,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
@@ -118,29 +123,24 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     comboBoxTimeFormat->clear();
 
     comboBoxTimeFormat->addItem(tr("mm:ss%1zz - Traditional")
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::TRADITIONAL));
+                                        .arg(mixxx::DurationBase::kDecimalSeparator),
+            static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL));
 
     comboBoxTimeFormat->addItem(tr("mm:ss - Traditional (Coarse)"),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::TRADITIONAL_COARSE));
+            static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL_COARSE));
 
     comboBoxTimeFormat->addItem(tr("s%1zz - Seconds")
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::SECONDS));
+                                        .arg(mixxx::DurationBase::kDecimalSeparator),
+            static_cast<int>(TrackTime::DisplayFormat::SECONDS));
 
     comboBoxTimeFormat->addItem(tr("sss%1zz - Seconds (Long)")
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::SECONDS_LONG));
+                                        .arg(mixxx::DurationBase::kDecimalSeparator),
+            static_cast<int>(TrackTime::DisplayFormat::SECONDS_LONG));
 
     comboBoxTimeFormat->addItem(tr("s%1sss%2zz - Kiloseconds")
-                                .arg(QString(mixxx::DurationBase::kDecimalSeparator),
-                                     QString(mixxx::DurationBase::kKiloGroupSeparator)),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::KILO_SECONDS));
+                                        .arg(QString(mixxx::DurationBase::kDecimalSeparator),
+                                                QString(mixxx::DurationBase::kKiloGroupSeparator)),
+            static_cast<int>(TrackTime::DisplayFormat::KILO_SECONDS));
 
     double time_format = static_cast<double>(
             m_pConfig->getValue(
@@ -148,7 +148,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
                     static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL)));
     m_pControlTrackTimeFormat->set(time_format);
     comboBoxTimeFormat->setCurrentIndex(
-                comboBoxTimeFormat->findData(time_format));
+            comboBoxTimeFormat->findData(time_format));
 
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
@@ -262,7 +262,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         } else if (legacyIndex == 1) {
             m_iRateRangePercent = 8;
         } else {
-            m_iRateRangePercent = (legacyIndex-1) * 10;
+            m_iRateRangePercent = (legacyIndex - 1) * 10;
         }
     } else {
         m_iRateRangePercent = m_pConfig->getValue(
@@ -430,6 +430,17 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
     slotUpdate();
+    // TrackFileCache
+    connect(checkBoxTrackFileCacheEnabled,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotTrackFileCacheEnabledChanged);
+    connect(pushButtonBrowseTrackFileCacheLocation,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefDeck::slotBrowseTrackFileCacheLocation);
+    populateTrackFileCacheSizeComboBox();
+    loadTrackFileCacheSettings();
 }
 
 DlgPrefDeck::~DlgPrefDeck() {
@@ -564,6 +575,28 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+    // TrackFileCache
+    checkBoxTrackFileCacheEnabled->setChecked(CachingReader::kDefaultTrackFileCacheEnabled);
+
+    // Reset path to the platform default. Passing nullptr returns the default
+    // without touching the user's config; the value only gets persisted on
+    // Apply via saveTrackFileCacheSettings().
+    lineEditTrackFileCacheLocation->setText(
+            CachingReader::getTrackFileCachePathFromConfig(nullptr));
+
+    int defaultSizeIndex = comboBoxMaxTrackFileCacheSize->findData(
+            CachingReader::kDefaultTrackFileCacheMaxSizeMB);
+    if (defaultSizeIndex != -1) {
+        comboBoxMaxTrackFileCacheSize->setCurrentIndex(defaultSizeIndex);
+    }
+
+    checkBoxTrackFileCacheDecks->setChecked(CachingReader::kDefaultTrackFileCacheDecks);
+    checkBoxTrackFileCacheSamplers->setChecked(CachingReader::kDefaultTrackFileCacheSamplers);
+    checkBoxTrackFileCachePreviewDeck->setChecked(
+            CachingReader::kDefaultTrackFileCachePreviewDeck);
+
+    // Sync dependent widget enable/disable state with the checkbox.
+    slotTrackFileCacheEnabledChanged(CachingReader::kDefaultTrackFileCacheEnabled);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -681,7 +714,7 @@ void DlgPrefDeck::slotTimeFormatChanged(double v) {
     int i = static_cast<int>(v);
     m_pConfig->set(ConfigKey(kControlsGroup, QStringLiteral("TimeFormat")), ConfigValue(v));
     comboBoxTimeFormat->setCurrentIndex(
-                comboBoxTimeFormat->findData(i));
+            comboBoxTimeFormat->findData(i));
 }
 
 void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
@@ -792,6 +825,66 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(
             ConfigKey(kControlsGroup, QStringLiteral("RatePermRight")),
             m_dRatePermFine);
+    // TrackFileCache (only its own keys)
+    saveTrackFileCacheSettings();
+}
+
+void DlgPrefDeck::saveTrackFileCacheSettings() {
+    bool trackFileCacheEnabled = checkBoxTrackFileCacheEnabled->isChecked();
+    m_pConfig->setValue(ConfigKey("[TrackFileCache]", "Enabled"), trackFileCacheEnabled);
+
+    QString newTrackFileCachePath = lineEditTrackFileCacheLocation->text();
+    // path -> ends with exactly one slash.
+    while (newTrackFileCachePath.endsWith('/')) {
+        newTrackFileCachePath.chop(1);
+    }
+    newTrackFileCachePath += '/';
+
+    // old path -> needed for clean up if changed.
+#ifdef Q_OS_WIN
+    QString oldTrackFileCachePath =
+            m_pConfig->getValueString(ConfigKey("[TrackFileCache]", "WindowsPath"));
+#else
+    QString oldTrackFileCachePath =
+            m_pConfig->getValueString(ConfigKey("[TrackFileCache]", "UnixPath"));
+#endif
+    if (oldTrackFileCachePath.isEmpty()) {
+        oldTrackFileCachePath = CachingReader::getTrackFileCachePathFromConfig(nullptr);
+    } else {
+        while (oldTrackFileCachePath.endsWith('/')) {
+            oldTrackFileCachePath.chop(1);
+        }
+        oldTrackFileCachePath += '/';
+    }
+
+    // save new path
+#ifdef Q_OS_WIN
+    m_pConfig->setValue(ConfigKey("[TrackFileCache]", "WindowsPath"), newTrackFileCachePath);
+#else
+    m_pConfig->setValue(ConfigKey("[TrackFileCache]", "UnixPath"), newTrackFileCachePath);
+#endif
+
+    // if path changed -> clean up old location and clear tracking
+    if (oldTrackFileCachePath != newTrackFileCachePath) {
+        qDebug() << "TrackFileCache location changed from" << oldTrackFileCachePath
+                 << "to" << newTrackFileCachePath << "- cleaning up old location";
+
+        // clean up files in old location
+        CachingReaderWorker::cleanupAllTrackFileCacheFiles(oldTrackFileCachePath);
+
+        // clear all tracking entries
+        CachingReaderWorker::clearAllTrackFileCacheEntries();
+    }
+
+    int trackFileCacheMaxSizeMB = comboBoxMaxTrackFileCacheSize->currentData().toInt();
+    m_pConfig->setValue(ConfigKey("[TrackFileCache]", "MaxSizeMB"), trackFileCacheMaxSizeMB);
+
+    m_pConfig->setValue(ConfigKey("[TrackFileCache]", "Decks"),
+            checkBoxTrackFileCacheDecks->isChecked());
+    m_pConfig->setValue(ConfigKey("[TrackFileCache]", "Samplers"),
+            checkBoxTrackFileCacheSamplers->isChecked());
+    m_pConfig->setValue(ConfigKey("[TrackFileCache]", "PreviewDeck"),
+            checkBoxTrackFileCachePreviewDeck->isChecked());
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
@@ -878,4 +971,99 @@ int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
     qWarning() << "No default cue behavior found for value" << userData
                << "returning default";
     return 0;
+}
+
+void DlgPrefDeck::populateTrackFileCacheSizeComboBox() {
+    comboBoxMaxTrackFileCacheSize->clear();
+
+    // Add predefined sizes
+    comboBoxMaxTrackFileCacheSize->addItem("128 MB", 128);
+    comboBoxMaxTrackFileCacheSize->addItem("256 MB", 256);
+    comboBoxMaxTrackFileCacheSize->addItem("512 MB", 512);
+    comboBoxMaxTrackFileCacheSize->addItem("1 GB", 1024);
+    comboBoxMaxTrackFileCacheSize->addItem("2 GB", 2048);
+
+    // larger sizes > +1GB increments
+    for (int i = 3; i <= 16; i++) {
+        comboBoxMaxTrackFileCacheSize->addItem(QString("%1 GB").arg(i), i * 1024);
+    }
+}
+
+void DlgPrefDeck::loadTrackFileCacheSettings() {
+    bool trackFileCacheEnabled = m_pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Enabled"),
+            CachingReader::kDefaultTrackFileCacheEnabled);
+    checkBoxTrackFileCacheEnabled->setChecked(trackFileCacheEnabled);
+
+    QString trackFileCachePath =
+            CachingReader::getTrackFileCachePathFromConfig(m_pConfig);
+    lineEditTrackFileCacheLocation->setText(trackFileCachePath);
+
+    int trackFileCacheMaxSizeMB = m_pConfig->getValue<int>(
+            ConfigKey("[TrackFileCache]", "MaxSizeMB"),
+            CachingReader::kDefaultTrackFileCacheMaxSizeMB);
+
+    int trackFileCacheIndex = comboBoxMaxTrackFileCacheSize->findData(trackFileCacheMaxSizeMB);
+    if (trackFileCacheIndex != -1) {
+        comboBoxMaxTrackFileCacheSize->setCurrentIndex(trackFileCacheIndex);
+    } else {
+        comboBoxMaxTrackFileCacheSize->addItem(
+                QString("%1 MB").arg(trackFileCacheMaxSizeMB),
+                trackFileCacheMaxSizeMB);
+        comboBoxMaxTrackFileCacheSize->setCurrentIndex(
+                comboBoxMaxTrackFileCacheSize->count() - 1);
+    }
+
+    bool trackFileCacheDecksEnabled = m_pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Decks"),
+            CachingReader::kDefaultTrackFileCacheDecks);
+    checkBoxTrackFileCacheDecks->setChecked(trackFileCacheDecksEnabled);
+
+    bool trackFileCacheSamplersEnabled = m_pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "Samplers"),
+            CachingReader::kDefaultTrackFileCacheSamplers);
+    checkBoxTrackFileCacheSamplers->setChecked(trackFileCacheSamplersEnabled);
+
+    bool trackFileCachePreviewDeckEnabled = m_pConfig->getValue<bool>(
+            ConfigKey("[TrackFileCache]", "PreviewDeck"),
+            CachingReader::kDefaultTrackFileCachePreviewDeck);
+    checkBoxTrackFileCachePreviewDeck->setChecked(trackFileCachePreviewDeckEnabled);
+
+    slotTrackFileCacheEnabledChanged(trackFileCacheEnabled);
+}
+
+void DlgPrefDeck::slotTrackFileCacheEnabledChanged(bool enabled) {
+    lineEditTrackFileCacheLocation->setEnabled(enabled);
+    pushButtonBrowseTrackFileCacheLocation->setEnabled(enabled);
+    comboBoxMaxTrackFileCacheSize->setEnabled(enabled);
+    checkBoxTrackFileCacheDecks->setEnabled(enabled);
+    checkBoxTrackFileCacheSamplers->setEnabled(enabled);
+    checkBoxTrackFileCachePreviewDeck->setEnabled(enabled);
+}
+
+void DlgPrefDeck::slotBrowseTrackFileCacheLocation() {
+    QString currentPath = lineEditTrackFileCacheLocation->text();
+
+    // On Linux, start in /dev/shm if it exists
+#ifdef Q_OS_LINUX
+    if (currentPath.isEmpty() && QDir("/dev/shm").exists()) {
+        currentPath = "/dev/shm";
+    }
+#endif
+
+    QString dir = QFileDialog::getExistingDirectory(
+            this,
+            tr("Select Cache Location"),
+            currentPath,
+            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+    if (!dir.isEmpty()) {
+        while (dir.endsWith('/')) {
+            dir.chop(1);
+        }
+        if (!dir.endsWith(QStringLiteral("/MixxxTmp"))) {
+            dir += QStringLiteral("/MixxxTmp");
+        }
+        lineEditTrackFileCacheLocation->setText(dir + '/');
+    }
 }
