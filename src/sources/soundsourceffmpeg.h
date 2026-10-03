@@ -217,8 +217,6 @@ class SoundSourceFFmpeg : public SoundSource {
     AVFrame* m_pavResampledFrame;
 
     const unsigned int m_avutilVersion;
-
-    bool m_isLibfdk_aac;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {
