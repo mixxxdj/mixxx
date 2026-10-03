@@ -70,10 +70,19 @@ TrackMetadataExportThread::TrackMetadataExportThread(
 void TrackMetadataExportThread::enqueueExport(
         const Track& track,
         const SyncTrackMetadataParams& syncParams) {
+    Job job{createTrackForMetadataExport(track), syncParams};
+    const QString location = job.pTrack->getLocation();
     {
         const std::lock_guard lock(m_queueMutex);
-        m_queue.push_back(
-                {createTrackForMetadataExport(track), syncParams});
+        // A still pending job for the same file is replaced by the
+        // newer snapshot instead of writing the file twice.
+        if (const auto it = m_pendingByLocation.find(location);
+                it != m_pendingByLocation.end()) {
+            *it.value() = std::move(job);
+        } else {
+            m_queue.push_back(std::move(job));
+            m_pendingByLocation.insert(location, &m_queue.back());
+        }
     }
     wake();
 }
@@ -113,13 +122,20 @@ void TrackMetadataExportThread::doRun() {
 
 WorkerThread::TryFetchWorkItemsResult TrackMetadataExportThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentJob.has_value());
+    m_currentJob = tryPopJob();
+    return m_currentJob.has_value() ? TryFetchWorkItemsResult::Ready
+                                  : TryFetchWorkItemsResult::Idle;
+}
+
+std::optional<TrackMetadataExportThread::Job> TrackMetadataExportThread::tryPopJob() {
     const std::lock_guard lock(m_queueMutex);
     if (m_queue.empty()) {
-        return TryFetchWorkItemsResult::Idle;
+        return std::nullopt;
     }
-    m_currentJob = std::move(m_queue.front());
+    std::optional<Job> job = std::move(m_queue.front());
+    m_pendingByLocation.remove(job->pTrack->getLocation());
     m_queue.pop_front();
-    return TryFetchWorkItemsResult::Ready;
+    return job;
 }
 
 int TrackMetadataExportThread::pendingJobs() {

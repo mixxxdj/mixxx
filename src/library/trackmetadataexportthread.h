@@ -4,6 +4,8 @@
 #include <mutex>
 #include <optional>
 
+#include <QHash>
+
 #include "track/track_decl.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/workerthread.h"
@@ -52,12 +54,18 @@ class TrackMetadataExportThread : public WorkerThread {
 
     void doRun() override;
     TryFetchWorkItemsResult tryFetchWorkItems() override;
+    std::optional<Job> tryPopJob();
     void processJob(Job&& job);
     int pendingJobs();
 
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
+    // Element pointers in a std::deque remain valid as long as the
+    // container is only modified at either end, so the pending jobs
+    // can be indexed by file location for deduplication while still
+    // being processed in FIFO order.
     std::deque<Job> m_queue;
+    QHash<QString, Job*> m_pendingByLocation;
     std::mutex m_queueMutex;
     std::optional<Job> m_currentJob;
 };
