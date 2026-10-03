@@ -3930,6 +3930,15 @@ if(QT_EXTRA_COMPONENTS)
   endforeach()
 endif()
 
+# The QuickShapes module carries the static QML plugin registration used
+# by qt_finalize_target(), while QuickShapesPrivate only provides the
+# C++ API.  Link the module where it exists (the vcpkg buildenvs) so the
+# plugin import does not depend on the Qt flavor; system Qts without the
+# module keep linking QuickShapesPrivate alone.
+if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes)
+endif()
+
 if(QT_KNOWN_POLICY_QTP0002 AND ANDROID)
   qt6_policy(SET QTP0002 NEW)
 endif()
@@ -3978,6 +3987,12 @@ if(QML)
         PUBLIC Qt${QT_VERSION_MAJOR}::${component}
       )
     endforeach()
+  endif()
+  if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+    target_link_libraries(
+      mixxx-qml-lib
+      PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes
+    )
   endif()
   set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
   set_source_files_properties(
@@ -4366,14 +4381,48 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
+      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+        get_target_property(
+          _QuickShapes_Type
+          Qt${QT_VERSION_MAJOR}::QuickShapes
+          TYPE
+        )
+        if(
+          _QuickShapes_Type STREQUAL "SHARED_LIBRARY"
+          OR _QuickShapes_Type STREQUAL "MODULE_LIBRARY"
+          OR _QuickShapes_Type STREQUAL "EXECUTABLE"
+        )
+          install(
+            IMPORTED_RUNTIME_ARTIFACTS
+              Qt${QT_VERSION_MAJOR}::QuickShapes
+              DESTINATION
+              "${MIXXX_INSTALL_DATADIR}"
+              COMPONENT
+              applocal
+          )
+        endif()
+      endif()
+      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapesPrivate)
+        get_target_property(
+          _QuickShapesPrivate_Type
           Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+          TYPE
+        )
+        if(
+          _QuickShapesPrivate_Type STREQUAL "SHARED_LIBRARY"
+          OR _QuickShapesPrivate_Type STREQUAL "MODULE_LIBRARY"
+          OR _QuickShapesPrivate_Type STREQUAL "EXECUTABLE"
+        )
+          install(
+            IMPORTED_RUNTIME_ARTIFACTS
+              Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
+              DESTINATION
+              "${MIXXX_INSTALL_DATADIR}"
+              COMPONENT
+              applocal
+          )
+        endif()
+      endif()
 
       if(QT_VERSION VERSION_LESS 6.4)
         # From Qt 6.4 integrated in QuickControls2
