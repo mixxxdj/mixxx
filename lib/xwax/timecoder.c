@@ -66,7 +66,8 @@
 #define SWITCH_PHASE 0x1 /* tone phase difference of 270 (not 90) degrees */
 #define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
 #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
-#define TRAKTOR_MK2 0x8 /* use for Traktor MK2 timecode*/
+#define TRAKTOR_MK1 0x8 /* use for Traktor MK1 timecode */
+#define TRAKTOR_MK2 0x10 /* use for Traktor MK2 timecode */
 
 static struct timecode_def timecodes[] = {
     {
@@ -124,7 +125,7 @@ static struct timecode_def timecodes[] = {
         .name = "traktor_a",
         .desc = "Traktor Scratch, side A",
         .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE | TRAKTOR_MK1,
         .bits = 23,
         .seed = 0x134503,
         .taps = 0x041040,
@@ -142,7 +143,7 @@ static struct timecode_def timecodes[] = {
         .name = "traktor_b",
         .desc = "Traktor Scratch, side B",
         .resolution = 2000,
-        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
+        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE | TRAKTOR_MK1,
         .bits = 23,
         .seed = 0x32066c,
         .taps = 0x041040,
@@ -595,7 +596,13 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def, double speed
     if (tc->use_legacy_pitch_filter) {
         pitch_init(&tc->pitch_filter, tc->dt);
     } else {
-        if (tc->def->flags & TRAKTOR_MK2) {
+        if (tc->def->flags & TRAKTOR_MK1) {
+            pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
+                              KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
+                              KALMAN_COEFFS(0.0135, 8e-6), /* scratch mode */
+                              15, /* threshold */
+                              true);
+        } else if (tc->def->flags & TRAKTOR_MK2) {
             pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
                               KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
                               KALMAN_COEFFS(0.0135, 8e-6), /* scratch mode */
