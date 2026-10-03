@@ -702,6 +702,45 @@
 
               <!--
               **********************************************
+              Ableton Link Widget
+              **********************************************
+              -->
+              <PushButton>
+               <ObjectName>AbletonLinkButton</ObjectName>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>LINK</Text>
+                  <Pressed></Pressed>
+                  <Unpressed></Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text>LINK</Text>
+                  <Pressed></Pressed>
+                  <Unpressed></Unpressed>
+                </State>
+                <Size>20f,18f</Size>
+                <Pos>13,0</Pos>
+                <Connection>
+                  <ConfigKey>[AbletonLink],sync_enabled</ConfigKey>
+                </Connection>
+              </PushButton>
+
+              <Number>
+                <TooltipId>num_peers</TooltipId>
+                <ObjectName>AbletonLinkPeers</ObjectName>
+                <Size>10f,18f</Size>
+                <Pos>34,0</Pos>
+                <Alignment>center</Alignment>
+                <NumberOfDigits>0</NumberOfDigits>
+                <Connection>
+                  <ConfigKey>[AbletonLink],num_peers</ConfigKey>
+                </Connection>
+              </Number>
+
+              <!--
+              **********************************************
               Button - Headphone split cue
               **********************************************
               -->
