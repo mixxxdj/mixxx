@@ -50,7 +50,7 @@ jobs:
     with:
       branch: ${{ github.head_ref || github.ref_name }}
 
-  publish:
+  publish-flatpak:
     needs:
       - build
     uses: ./.github/workflows/flatpak.yml
