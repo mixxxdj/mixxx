@@ -152,10 +152,6 @@ DlgPrefWaveform::DlgPrefWaveform(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_library_overview_minute_markers")));
     m_pOverviewLibraryMinuteMarkersControl->setReadOnly();
 
-    m_pOverviewLibraryMinuteMarkersControl = std::make_unique<ControlObject>(
-            ConfigKey(kWaveformGroup, QStringLiteral("draw_library_overview_minute_markers")));
-    m_pOverviewLibraryMinuteMarkersControl->setReadOnly();
-
     m_pOverviewUniformTimeBaseControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("overview_uniform_time_base")));
     m_pOverviewUniformTimeBaseControl->setReadOnly();
@@ -482,11 +478,6 @@ void DlgPrefWaveform::slotUpdate() {
                        ConfigKey(kWaveformGroup, QStringLiteral("draw_overview_minute_markers")))) {
         pControl->forceSet(drawOverviewMinuteMarkers);
     }
-
-    bool drawLibraryOverviewMinuteMarkers = m_pConfig->getValue(
-            ConfigKey(kWaveformGroup, QStringLiteral("draw_library_overview_minute_markers")), true);
-    overviewLibraryMinuteMarkersCheckBox->setChecked(drawLibraryOverviewMinuteMarkers);
-    m_pOverviewLibraryMinuteMarkersControl->forceSet(drawLibraryOverviewMinuteMarkers);
 
     bool drawLibraryOverviewMinuteMarkers = m_pConfig->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("draw_library_overview_minute_markers")), true);
@@ -860,14 +851,6 @@ void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
         pControl->forceSet(draw);
     }
     notifyQmlWaveformSettingsChanged();
-}
-
-void DlgPrefWaveform::slotSetOverviewLibraryMinuteMarkers(bool draw) {
-    m_pConfig->setValue(ConfigKey(kWaveformGroup,
-                                QStringLiteral("draw_library_overview_minute_markers")),
-            draw);
-    m_pOverviewLibraryMinuteMarkersControl->forceSet(draw);
-    OverviewCache::instance()->invalidateAll();
 }
 
 void DlgPrefWaveform::slotSetOverviewLibraryMinuteMarkers(bool draw) {
