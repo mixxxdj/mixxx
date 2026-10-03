@@ -575,10 +575,11 @@ bool TrackCollection::saveTrack(Track* pTrack) const {
 }
 
 TrackPointer TrackCollection::getTrackById(
-        TrackId trackId) const {
+        TrackId trackId,
+        bool updateTrackFromSource) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_trackDao.getTrackById(trackId);
+    return m_trackDao.getTrackById(trackId, updateTrackFromSource);
 }
 
 TrackPointer TrackCollection::getTrackByRef(
