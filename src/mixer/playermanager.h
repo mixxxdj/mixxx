@@ -216,6 +216,8 @@ class PlayerManager : public PlayerManagerInterface {
     // Loads the location to the deck. deckNumber is 1-indexed
     void slotLoadToDeck(const QString& location, int deckNumber);
 
+    void slotPreview(const QString& location);
+
     // Loads the location to the preview deck. previewDeckNumber is 1-indexed
     void slotLoadToPreviewDeck(const QString& location, int previewDeckNumber);
     // Slots for loading tracks to samplers
