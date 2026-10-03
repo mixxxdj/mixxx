@@ -12,6 +12,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "library/trackset/crate/cratesummary.h"
 #include "library/treeitem.h"
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
@@ -356,11 +357,11 @@ void AutoDJFeature::slotAddRandomTrack() {
 
 void AutoDJFeature::constructCrateChildModel() {
     m_crateList.clear();
-    CrateSelectResult autoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(true));
-    Crate crate;
+    CrateSummarySelectResult autoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(true));
+    CrateSummary crate;
     while (autoDjCrates.populateNext(&crate)) {
         // Create the TreeItem for this crate.
-        m_pCratesTreeItem->appendChild(crate.getName(), crate.getId().toVariant());
+        m_pCratesTreeItem->appendChild(crate.getFullPath(), crate.getId().toVariant());
         m_crateList.append(crate);
     }
 }
@@ -385,10 +386,11 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         // Bring up the context menu.
         QMenu crateMenu(m_pSidebarWidget);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
-        CrateSelectResult nonAutoDjCrates(m_pTrackCollection->crates().selectAutoDjCrates(false));
-        Crate crate;
+        CrateSummarySelectResult nonAutoDjCrates(
+                m_pTrackCollection->crates().selectAutoDjCrates(false));
+        CrateSummary crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
-            auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
+            auto pAction = std::make_unique<QAction>(crate.getFullPath(), &crateMenu);
             auto crateId = crate.getId();
             connect(pAction.get(), &QAction::triggered, this, [this, crateId] {
                 slotAddCrateToAutoDj(crateId);

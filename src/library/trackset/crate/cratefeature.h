@@ -30,9 +30,11 @@ class CrateFeature : public BaseTrackSetFeature {
 
     QVariant title() override;
 
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
             QObject* pSource) override;
+    bool dragMoveAccept(const QList<QUrl>& url) override;
     bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
@@ -57,6 +59,7 @@ class CrateFeature : public BaseTrackSetFeature {
 #endif
 
   private slots:
+    void slotCreateSubCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotDuplicateCrate();
@@ -65,6 +68,8 @@ class CrateFeature : public BaseTrackSetFeature {
     void slotImportPlaylist();
     void slotImportPlaylistFile(const QString& playlistFile, CrateId crateId);
     void slotCreateImportCrate();
+    void slotCreateImportSubCrate();
+    void slotCreateImportPlaylist(CrateId parentId);
     void slotExportPlaylist();
     // Copy all of the tracks in a crate to a new directory (like a thumbdrive).
     void slotExportTrackFiles();
@@ -81,8 +86,11 @@ class CrateFeature : public BaseTrackSetFeature {
     void connectLibrary(Library* pLibrary);
     void connectTrackCollection();
 
+    // Navigation handling
     bool activateCrate(CrateId crateId);
 
+    // TreeItem construction
+    TreeItem* getOrCreateTreeItemForCrateId(CrateId crateId);
     std::unique_ptr<TreeItem> newTreeItemForCrateSummary(
             const CrateSummary& crateSummary);
     void updateTreeItemForCrateSummary(
@@ -92,11 +100,17 @@ class CrateFeature : public BaseTrackSetFeature {
     QModelIndex rebuildChildModel(CrateId selectedCrateId = CrateId());
     void updateChildModel(const QSet<CrateId>& updatedCrateIds);
 
+    // TreeItem mapping
     CrateId crateIdFromIndex(const QModelIndex& index) const;
     QModelIndex indexFromCrateId(CrateId crateId) const;
 
     bool isChildIndexSelectedInSidebar(const QModelIndex& index);
     bool readLastRightClickedCrate(Crate* pCrate) const;
+
+    // TreeItem actions
+    void createNewCrate(CrateId parentId, bool selectAfterCreation);
+    bool moveToParent(CrateId destinationId, CrateId itemToMoveId, bool selectAfterMove);
+    bool moveToParent(CrateId destinationId, const QList<CrateId>& itemsToMove);
 
     QString formatRootViewHtml() const;
 
@@ -105,6 +119,8 @@ class CrateFeature : public BaseTrackSetFeature {
     TrackCollection* const m_pTrackCollection;
 
     CrateTableModel m_crateTableModel;
+
+    QHash<CrateId, TreeItem*> m_idToCrate;
 
     // Stores the id of a crate in the sidebar that is adjacent to the crate(crateId).
     void storePrevSiblingCrateId(CrateId crateId);
@@ -116,6 +132,7 @@ class CrateFeature : public BaseTrackSetFeature {
     TrackId m_selectedTrackId;
 
     parented_ptr<QAction> m_pCreateCrateAction;
+    parented_ptr<QAction> m_pCreateSubCrateAction;
     parented_ptr<QAction> m_pDeleteCrateAction;
     parented_ptr<QAction> m_pRenameCrateAction;
     parented_ptr<QAction> m_pLockCrateAction;
@@ -123,6 +140,7 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pAutoDjTrackSourceAction;
     parented_ptr<QAction> m_pImportPlaylistAction;
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
+    parented_ptr<QAction> m_pCreateImportSubCrateAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
 #ifdef __ENGINEPRIME__
