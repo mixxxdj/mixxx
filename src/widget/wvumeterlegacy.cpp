@@ -76,6 +76,12 @@ void WVuMeterLegacy::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
+void WVuMeterLegacy::refresh() {
+    m_dLastParameter = -1.0;
+    m_dLastPeakParameter = -1.0;
+    repaint();
+}
+
 void WVuMeterLegacy::setPixmapBackground(
         const PixmapSource& source,
         Paintable::DrawMode mode,

@@ -15,13 +15,15 @@ class SliderEventHandler {
             : m_dStartHandlePos(0),
               m_dStartMousePos(0),
               m_bRightButtonPressed(false),
+              m_bMouseButtonPressed(false),
               m_dOldParameter(-1.0), // virgin
               m_dPos(0.0),
               m_dHandleLength(0),
               m_dSliderLength(0),
               m_bHorizontal(false),
               m_bDrag(false),
-              m_bEventWhileDrag(true) { }
+              m_bEventWhileDrag(true) {
+    }
 
     void setHorizontal(bool horiz) {
         m_bHorizontal = horiz;
@@ -40,7 +42,7 @@ class SliderEventHandler {
     }
 
     void mouseMoveEvent(T* pWidget, QMouseEvent* e) {
-        if (!m_bRightButtonPressed) {
+        if (m_bMouseButtonPressed && !m_bRightButtonPressed) {
             if (m_bHorizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 m_dPos = e->position().x() - m_dHandleLength / 2;
@@ -79,6 +81,7 @@ class SliderEventHandler {
 
     void mousePressEvent(T* pWidget, QMouseEvent* e) {
         if (!m_bEventWhileDrag) {
+            m_bMouseButtonPressed = true;
             m_dStartMousePos = 0;
             m_dStartHandlePos = 0;
             pWidget->mouseMoveEvent(e);
@@ -88,6 +91,7 @@ class SliderEventHandler {
                 pWidget->resetControlParameter();
                 m_bRightButtonPressed = true;
             } else {
+                m_bMouseButtonPressed = true;
                 if (m_bHorizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     m_dStartMousePos = e->position().x() - m_dHandleLength / 2;
@@ -122,6 +126,8 @@ class SliderEventHandler {
         } else {
             pWidget->setControlParameter(m_dOldParameter);
         }
+        m_bMouseButtonPressed =
+                (e->buttons() & ~Qt::RightButton) != Qt::NoButton;
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
@@ -209,6 +215,8 @@ class SliderEventHandler {
     double m_dStartMousePos;
     // True while right mouse button is pressed.
     bool m_bRightButtonPressed;
+    // Mouse tracking may deliver move events without a button being pressed.
+    bool m_bMouseButtonPressed;
     // Previous parameter value of the control object, 0 to 1
     double m_dOldParameter;
     // Internal storage of slider position in pixels
