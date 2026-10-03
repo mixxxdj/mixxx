@@ -2957,6 +2957,11 @@ WColorPicker QPushButton[checked="true"] {
   * set to 18px it's 2px too small
   qproperty-iconSize: 20px;*/
 }
+WColorPicker QPushButton[checked="false"]:hover,
+WColorPicker QPushButton[checked="true"]:hover {
+  border-image: none;
+  border: 2px solid #2C454F;
+}
 
 /************** Button icons **************************************************/
 /************** Button styles *************************************************/
