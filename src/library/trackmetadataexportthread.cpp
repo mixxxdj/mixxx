@@ -2,6 +2,9 @@
 
 #include <QDateTime>
 #include <QSqlDatabase>
+#include <atomic>
+#include <thread>
+#include <vector>
 
 #include "library/queryutil.h"
 #include "moc_trackmetadataexportthread.cpp"
@@ -15,6 +18,13 @@
 namespace {
 
 const mixxx::Logger kLogger("TrackMetadataExportThread");
+
+// Writing file tags is dominated by per-file I/O latency, especially
+// on slow or network-mounted storage, so the remaining queue is
+// drained by a few workers rather than a single thread at shutdown.
+// Since pending jobs are deduplicated by file location, no two
+// workers ever write the same file concurrently.
+constexpr int kDrainWorkerCount = 4;
 
 // Creates a temporary, uncached copy of the given track that contains
 // all properties needed for exporting the metadata into the source
@@ -100,23 +110,12 @@ void TrackMetadataExportThread::doRun() {
     }
     // Write all pending jobs before exiting, e.g. after the global
     // track cache has been deactivated during shutdown.
-    int pending = pendingJobs();
+    const int pending = pendingJobs();
     if (pending > 0) {
         kLogger.info()
                 << "Writing" << pending
                 << "pending track metadata exports before exiting";
-    }
-    int drained = 0;
-    while (tryFetchWorkItems() == TryFetchWorkItemsResult::Ready) {
-        processJob(std::move(*m_currentJob));
-        m_currentJob.reset();
-        ++drained;
-        pending = pendingJobs();
-        if (drained % 10 == 0 || pending == 0) {
-            kLogger.info()
-                    << "Track metadata exports written during shutdown:" << drained
-                    << "- remaining:" << pending;
-        }
+        drainQueueInParallel();
     }
 }
 
@@ -124,7 +123,7 @@ WorkerThread::TryFetchWorkItemsResult TrackMetadataExportThread::tryFetchWorkIte
     DEBUG_ASSERT(!m_currentJob.has_value());
     m_currentJob = tryPopJob();
     return m_currentJob.has_value() ? TryFetchWorkItemsResult::Ready
-                                  : TryFetchWorkItemsResult::Idle;
+                                    : TryFetchWorkItemsResult::Idle;
 }
 
 std::optional<TrackMetadataExportThread::Job> TrackMetadataExportThread::tryPopJob() {
@@ -136,6 +135,37 @@ std::optional<TrackMetadataExportThread::Job> TrackMetadataExportThread::tryPopJ
     m_pendingByLocation.remove(job->pTrack->getLocation());
     m_queue.pop_front();
     return job;
+}
+
+void TrackMetadataExportThread::drainQueueInParallel() {
+    const int workerCount = std::min(pendingJobs(), kDrainWorkerCount);
+    kLogger.info()
+            << "Draining track metadata export queue with" << workerCount
+            << "worker(s)";
+    std::atomic<int> drained = 0;
+    const auto worker = [this, &drained] {
+        // Each worker obtains its own pooled database connection for
+        // updating the source synchronization timestamps.
+        mixxx::DbConnectionPooler dbConnectionPooler(m_pDbConnectionPool);
+        while (auto job = tryPopJob()) {
+            processJob(std::move(*job));
+            const int done = drained.fetch_add(1) + 1;
+            const int pending = pendingJobs();
+            if (done % 10 == 0 || pending == 0) {
+                kLogger.info()
+                        << "Track metadata exports written during shutdown:" << done
+                        << "- remaining:" << pending;
+            }
+        }
+    };
+    std::vector<std::thread> workers;
+    workers.reserve(workerCount);
+    for (int i = 0; i < workerCount; ++i) {
+        workers.emplace_back(worker);
+    }
+    for (auto& thread : workers) {
+        thread.join();
+    }
 }
 
 int TrackMetadataExportThread::pendingJobs() {

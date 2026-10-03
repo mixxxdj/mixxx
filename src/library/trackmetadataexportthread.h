@@ -1,10 +1,9 @@
 #pragma once
 
+#include <QHash>
 #include <deque>
 #include <mutex>
 #include <optional>
-
-#include <QHash>
 
 #include "track/track_decl.h"
 #include "util/db/dbconnectionpool.h"
@@ -57,6 +56,7 @@ class TrackMetadataExportThread : public WorkerThread {
     std::optional<Job> tryPopJob();
     void processJob(Job&& job);
     int pendingJobs();
+    void drainQueueInParallel();
 
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
