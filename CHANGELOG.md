@@ -2,6 +2,8 @@
 
 ## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
 
+* Highlight harmonically compatible tracks in the library for the loaded deck's key [#14823](https://github.com/mixxxdj/mixxx/issues/14823)
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
 ### STEM file support

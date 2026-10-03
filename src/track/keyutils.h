@@ -37,6 +37,44 @@ class KeyUtils {
         Unknown = 7
     };
 
+    /// Harmonic relationship of a track key to a reference (deck) key, used by
+    /// the library key highlighter. Ordered from most to least mixable; the
+    /// numeric order is used to pick the "best" class across multiple decks
+    /// (lower value wins), so do not reorder without updating that logic.
+    enum class KeyHighlightClass {
+        GreenPerfect = 0,   //< Same key, or relative major/minor.
+        GreenNeighbour = 1, //< Other member of the compatible set (4th/5th).
+        Yellow = 2,         //< Not compatible, but +/-1 semitone is compatible.
+        Red = 3,            //< Neither compatible nor reachable by +/-1 semitone.
+        None = 4,           //< Invalid key on either side; not applicable.
+    };
+
+    /// Classifies a track key against a single reference key for the library
+    /// key highlighter. Pure function composed from getCompatibleKeys() and
+    /// scaleKeySteps(); compares ChromaticKey values only (notation-independent).
+    static KeyHighlightClass classifyAgainst(
+            mixxx::track::io::key::ChromaticKey trackKey,
+            mixxx::track::io::key::ChromaticKey refKey);
+
+    /// For a Yellow track (one that classifyAgainst() rates Yellow against the
+    /// same refKey), which way the track must be transposed to become
+    /// compatible. Up means pitch the track up +1 semitone, Down means down -1,
+    /// Both means either works. Returns None for non-Yellow pairs (compatible,
+    /// unreachable, or invalid keys) so it can be queried unconditionally.
+    enum class YellowShift {
+        None = 0, //< Not a Yellow pair; no transpose applies.
+        Up = 1,   //< +1 semitone (pitch the track up) reaches a compatible key.
+        Down = 2, //< -1 semitone (pitch the track down) reaches a compatible key.
+        Both = 3, //< Either +1 or -1 reaches a compatible key.
+    };
+
+    /// Direction(s) in which a track must be transposed by one semitone to be
+    /// compatible with refKey. Mirrors the Yellow branch of classifyAgainst():
+    /// non-None exactly when classifyAgainst() returns Yellow. Pure function.
+    static YellowShift yellowShiftDirection(
+            mixxx::track::io::key::ChromaticKey trackKey,
+            mixxx::track::io::key::ChromaticKey refKey);
+
     static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
 
     static inline bool keyIsMajor(mixxx::track::io::key::ChromaticKey key) {

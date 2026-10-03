@@ -24,6 +24,9 @@ class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
 class KeyboardEventFilter;
+namespace mixxx {
+class KeyHighlightManager;
+} // namespace mixxx
 class MixxxLibraryFeature;
 class PlayerManager;
 class PlaylistFeature;
@@ -193,6 +196,7 @@ class Library: public QObject {
 
     parented_ptr<SidebarModel> m_pSidebarModel;
     parented_ptr<LibraryControl> m_pLibraryControl;
+    parented_ptr<mixxx::KeyHighlightManager> m_pKeyHighlightManager;
 
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
