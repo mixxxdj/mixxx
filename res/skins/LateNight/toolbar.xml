@@ -79,6 +79,15 @@
             <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
           </Template>
 
+          <Template src="skins:LateNight/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_prepwin</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">52f,20f</SetVariable>
+            <SetVariable name="state_0_text">PREP WIN</SetVariable>
+            <SetVariable name="state_1_text">PREP WIN</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_preparation_window</SetVariable>
+          </Template>
+
         </Children>
         <Connection>
           <ConfigKey>[Skin],show_maximized_library</ConfigKey>
@@ -109,6 +118,15 @@
             <SetVariable name="state_0_text">4 DECKS</SetVariable>
             <SetVariable name="state_1_text">4 DECKS</SetVariable>
             <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
+          </Template>
+
+          <Template src="skins:LateNight/controls/button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_prepwin</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">52f,20f</SetVariable>
+            <SetVariable name="state_0_text">PREP WIN</SetVariable>
+            <SetVariable name="state_1_text">PREP WIN</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_preparation_window</SetVariable>
           </Template>
 
         </Children>
