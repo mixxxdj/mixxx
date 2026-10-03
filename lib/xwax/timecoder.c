@@ -48,7 +48,7 @@
 
 #define MONITOR_DECAY_EVERY 512 /* in samples */
 
-#define SQ(x) ((x)*(x))
+#define SQ(x) ((x) * (x))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*x))
 
 /* Timecode definitions */
@@ -303,11 +303,11 @@ static int build_lookup(struct timecode_def *def)
     if (def->lookup)
         return 0;
 
-    fprintf(stderr, "Building LUT for %d bit %dHz timecode (%s)\n",
-            def->bits, def->resolution, def->desc);
+    fprintf(stderr, "Building LUT for %d bit %dHz timecode (%s)\n", def->bits, def->resolution,
+            def->desc);
 
     if (lut_init(&def->lut, def->length) == -1)
-	return -1;
+        return -1;
 
     current = def->seed;
 
@@ -336,7 +336,7 @@ static int build_lookup(struct timecode_def *def)
  * Return: pointer to timecode definition, or NULL if not available
  */
 
-struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path)
+struct timecode_def *timecoder_find_definition(const char *name, const char *lut_dir_path)
 {
     unsigned int n;
 
@@ -352,7 +352,7 @@ struct timecode_def* timecoder_find_definition(const char *name, const char *lut
                     return def;
 
                 if (build_lookup_mk2(def) == -1)
-                    return NULL;  /* error */
+                    return NULL; /* error */
 
                 if (lut_store_mk2(def, lut_dir_path)) {
                     timecoder_free_lookup();
@@ -361,20 +361,21 @@ struct timecode_def* timecoder_find_definition(const char *name, const char *lut
                 }
             } else {
                 if (build_lookup(def) == -1)
-                    return NULL;  /* error */
+                    return NULL; /* error */
             }
         }
         return def;
     }
 
-    return NULL;  /* not found */
+    return NULL; /* not found */
 }
 
 /*
  * Free the timecoder lookup tables when they are no longer needed
  */
 
-void timecoder_free_lookup(void) {
+void timecoder_free_lookup(void)
+{
     unsigned int n;
 
     for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
@@ -397,8 +398,8 @@ void timecoder_free_lookup(void) {
 void mk2_subcode_init(struct mk2_subcode *sc)
 {
     sc->valid_counter = 0;
-    sc->avg_reading = INT_MAX/2;
-    sc->avg_slope = INT_MAX/2;
+    sc->avg_reading = INT_MAX / 2;
+    sc->avg_slope = INT_MAX / 2;
     sc->bit = U128_ZERO;
 
     sc->readings = rb_alloc(3, sizeof(int));
@@ -414,13 +415,13 @@ void mk2_subcode_init(struct mk2_subcode *sc)
  */
 
 static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
-    unsigned int sample_rate)
+                         unsigned int sample_rate)
 {
     ch->positive = false;
     ch->zero = 0;
 
-    ch->deriv = INT_MAX/2;
-    ch->rms = INT_MAX/2;
+    ch->deriv = INT_MAX / 2;
+    ch->rms = INT_MAX / 2;
     ch->rms_deriv = 0;
 
     ch->delayline = rb_alloc(5, sizeof(int));
@@ -440,7 +441,7 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
      * make for a good window size. This was concluded empirically.
      */
 
-    size_t window = (size_t)ceil(sample_rate / def->resolution)/4;
+    size_t window = (size_t)ceil(sample_rate / def->resolution) / 4;
     if (window % 2 == 0)
         window++;
 
@@ -456,8 +457,8 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
  * Return: -1 if the timecoder could not be initialised, otherwise 0
  */
 
-void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator)
+void timecoder_init(struct timecoder *tc, struct timecode_def *def, double speed,
+                    unsigned int sample_rate, bool phono, bool pitch_estimator)
 {
     assert(def != NULL);
 
@@ -559,7 +560,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
 {
     assert(tc->mon == NULL);
     tc->mon_size = size;
-    tc->mon = (unsigned char*)(malloc(SQ(tc->mon_size)));
+    tc->mon = (unsigned char *)(malloc(SQ(tc->mon_size)));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
@@ -584,8 +585,7 @@ void timecoder_monitor_clear(struct timecoder *tc)
  * Update channel information with axis-crossings
  */
 
-static void detect_zero_crossing(struct timecoder_channel *ch,
-                                 signed int v, double alpha,
+static void detect_zero_crossing(struct timecoder_channel *ch, signed int v, double alpha,
                                  signed int threshold)
 {
     ch->crossing_ticker++;
@@ -665,23 +665,22 @@ static void process_bitstream(struct timecoder *tc, signed int m)
      * the vinyl, regardless of the direction. */
 
     if (tc->forwards) {
-	tc->timecode = fwd(tc->timecode, tc->def);
-	tc->bitstream = (tc->bitstream >> 1)
-	    + (b << (tc->def->bits - 1));
+        tc->timecode = fwd(tc->timecode, tc->def);
+        tc->bitstream = (tc->bitstream >> 1) + (b << (tc->def->bits - 1));
 
     } else {
-	bits_t mask;
+        bits_t mask;
 
-	mask = ((1 << tc->def->bits) - 1);
-	tc->timecode = rev(tc->timecode, tc->def);
-	tc->bitstream = ((tc->bitstream << 1) & mask) + b;
+        mask = ((1 << tc->def->bits) - 1);
+        tc->timecode = rev(tc->timecode, tc->def);
+        tc->bitstream = ((tc->bitstream << 1) & mask) + b;
     }
 
     if (tc->timecode == tc->bitstream)
-	tc->valid_counter++;
+        tc->valid_counter++;
     else {
-	tc->timecode = tc->bitstream;
-	tc->valid_counter = 0;
+        tc->timecode = tc->bitstream;
+        tc->valid_counter = 0;
     }
 
     /* Take note of the last time we read a valid timecode */
@@ -693,11 +692,8 @@ static void process_bitstream(struct timecoder *tc, signed int m)
     tc->ref_level -= tc->ref_level / REF_PEAKS_AVG;
     tc->ref_level += m / REF_PEAKS_AVG;
 
-    debug("%+6d zero, %+6d (ref %+6d)\t= %d%c (%5d)",
-          tc->primary.zero,
-          m, tc->ref_level,
-	  b, tc->valid_counter == 0 ? 'x' : ' ',
-	  tc->valid_counter);
+    debug("%+6d zero, %+6d (ref %+6d)\t= %d%c (%5d)", tc->primary.zero, m, tc->ref_level, b,
+          tc->valid_counter == 0 ? 'x' : ' ', tc->valid_counter);
 }
 
 /*
@@ -705,8 +701,8 @@ static void process_bitstream(struct timecoder *tc, signed int m)
  * complex number theory in ARM Q1.31 fixed-point format for max efficiency.
  */
 
-static inline double phase_difference(const int cos0, const int sin0,
-                                      const int cos1, const int sin1)
+static inline double phase_difference(const int cos0, const int sin0, const int cos1,
+                                      const int sin1)
 {
     struct complex_q31 z0 = { .re = cos0, .im = sin0 };
     struct complex_q31 z1 = { .re = cos1, .im = sin1 };
@@ -725,8 +721,7 @@ static inline double phase_difference(const int cos0, const int sin0,
  * algorithm.
  */
 
-static void process_carrier(struct timecoder *tc, signed int primary,
-    signed int secondary)
+static void process_carrier(struct timecoder *tc, signed int primary, signed int secondary)
 {
     if (!tc) {
         errno = EINVAL;
@@ -743,10 +738,8 @@ static void process_carrier(struct timecoder *tc, signed int primary,
     secondary = rhpf_process(&tc->secondary.rumble_filter, secondary);
 
     /* Compute the discrete derivative */
-    tc->primary.deriv = derivative(&tc->primary.differentiator,
-        primary);
-    tc->secondary.deriv = derivative(&tc->secondary.differentiator,
-        secondary);
+    tc->primary.deriv = derivative(&tc->primary.differentiator, primary);
+    tc->secondary.deriv = derivative(&tc->secondary.differentiator, secondary);
 
     tc->primary.deriv = ewma(&tc->primary.ewma_filter, tc->primary.deriv);
     tc->secondary.deriv = ewma(&tc->secondary.ewma_filter, tc->secondary.deriv);
@@ -762,10 +755,8 @@ static void process_carrier(struct timecoder *tc, signed int primary,
     tc->secondary.rms = rms(&tc->secondary.rms_filter, secondary);
 
     /* Compute the smoothed RMS value for the derivative */
-    tc->primary.rms_deriv =
-        rms(&tc->primary.rms_deriv_filter, tc->primary.deriv);
-    tc->secondary.rms_deriv =
-        rms(&tc->secondary.rms_deriv_filter, tc->secondary.deriv);
+    tc->primary.rms_deriv = rms(&tc->primary.rms_deriv_filter, tc->primary.deriv);
+    tc->secondary.rms_deriv = rms(&tc->secondary.rms_deriv_filter, tc->secondary.deriv);
 
     tc->dB = 20 * log10((double)tc->secondary.rms / INT_MAX);
 
@@ -781,25 +772,23 @@ static void process_carrier(struct timecoder *tc, signed int primary,
  * of a signed int; ie. 32-bit signed.
  */
 
-static void process_sample(struct timecoder *tc,
-			   signed int primary, signed int secondary)
+static void process_sample(struct timecoder *tc, signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
         detect_zero_crossing(&tc->primary, tc->primary.deriv_decoder, tc->zero_alpha,
-                tc->threshold);
+                             tc->threshold);
         detect_zero_crossing(&tc->secondary, tc->secondary.deriv_decoder, tc->zero_alpha,
-                tc->threshold);
+                             tc->threshold);
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
     }
 
     if (tc->dB > -45.0) { // Ignore noise
-        tc->dphi =
-            phase_difference(*(int*)rb_at(tc->primary.delayline_deriv, 0),
-                             *(int*)rb_at(tc->secondary.delayline_deriv, 0),
-                             *(int*)rb_at(tc->primary.delayline_deriv, 1),
-                             *(int*)rb_at(tc->secondary.delayline_deriv, 1));
+        tc->dphi = phase_difference(*(int *)rb_at(tc->primary.delayline_deriv, 0),
+                                    *(int *)rb_at(tc->secondary.delayline_deriv, 0),
+                                    *(int *)rb_at(tc->primary.delayline_deriv, 1),
+                                    *(int *)rb_at(tc->secondary.delayline_deriv, 1));
 
         double ddphi = 0.0; /* Derivative of the phase difference */
 
@@ -837,14 +826,13 @@ static void process_sample(struct timecoder *tc,
      * it's time to read off a timecode 0 or 1 value */
 
     if (tc->def->flags & TRAKTOR_MK2) {
-        if (tc->secondary.swapped)
-        {
+        if (tc->secondary.swapped) {
             int reading = *(int *)rb_at(tc->secondary.delayline, 2);
             mk2_process_timecode(tc, reading);
         }
     } else {
-        if (tc->secondary.swapped &&
-           tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
+        if (tc->secondary.swapped
+            && tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
         {
             signed int m;
 
@@ -863,7 +851,7 @@ static void process_sample(struct timecoder *tc,
  * Return: pointer to timecode definition
  */
 
-static struct timecode_def* next_definition(struct timecode_def *def)
+static struct timecode_def *next_definition(struct timecode_def *def)
 {
     assert(def != NULL);
 
@@ -898,7 +886,7 @@ void timecoder_cycle_definition(struct timecoder *tc)
 void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
 {
     while (npcm--) {
-	signed int left, right, primary, secondary;
+        signed int left, right, primary, secondary;
 
         left = pcm[0] << 16;
         right = pcm[1] << 16;
@@ -923,8 +911,7 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
              * two is necessary.
              */
 
-            update_monitor(tc, tc->primary.deriv * 2,
-                    tc->secondary.deriv * 2);
+            update_monitor(tc, tc->primary.deriv * 2, tc->secondary.deriv * 2);
         } else {
             process_sample(tc, primary, secondary);
             update_monitor(tc, left, right);
