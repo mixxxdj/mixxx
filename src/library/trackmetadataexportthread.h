@@ -53,6 +53,7 @@ class TrackMetadataExportThread : public WorkerThread {
     void doRun() override;
     TryFetchWorkItemsResult tryFetchWorkItems() override;
     void processJob(Job&& job);
+    int pendingJobs();
 
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 

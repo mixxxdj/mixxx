@@ -91,9 +91,23 @@ void TrackMetadataExportThread::doRun() {
     }
     // Write all pending jobs before exiting, e.g. after the global
     // track cache has been deactivated during shutdown.
+    int pending = pendingJobs();
+    if (pending > 0) {
+        kLogger.info()
+                << "Writing" << pending
+                << "pending track metadata exports before exiting";
+    }
+    int drained = 0;
     while (tryFetchWorkItems() == TryFetchWorkItemsResult::Ready) {
         processJob(std::move(*m_currentJob));
         m_currentJob.reset();
+        ++drained;
+        pending = pendingJobs();
+        if (drained % 10 == 0 || pending == 0) {
+            kLogger.info()
+                    << "Track metadata exports written during shutdown:" << drained
+                    << "- remaining:" << pending;
+        }
     }
 }
 
@@ -106,6 +120,11 @@ WorkerThread::TryFetchWorkItemsResult TrackMetadataExportThread::tryFetchWorkIte
     m_currentJob = std::move(m_queue.front());
     m_queue.pop_front();
     return TryFetchWorkItemsResult::Ready;
+}
+
+int TrackMetadataExportThread::pendingJobs() {
+    const std::lock_guard lock(m_queueMutex);
+    return static_cast<int>(m_queue.size());
 }
 
 void TrackMetadataExportThread::processJob(Job&& job) {
