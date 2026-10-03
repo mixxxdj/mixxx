@@ -627,7 +627,7 @@ static inline void update_monitor(struct timecoder *tc, signed int x, signed int
     size = tc->mon_size;
     ref = tc->ref_level;
 
-    /* Decay the pixels already in the montior */
+    /* Decay the pixels already in the monitor */
 
     if (++tc->mon_counter % MONITOR_DECAY_EVERY == 0) {
         int p;
@@ -719,7 +719,7 @@ static inline double phase_difference(const int cos0, const int sin0, const int 
  *
  * Pushes samples into a delayline, computes the derivative, filters it and
  * computes RMS values.
- * Afterards the upscaled derivative can by processed by the pitch detection
+ * Afterwards the upscaled derivative can by processed by the pitch detection
  * algorithm.
  */
 
