@@ -273,7 +273,18 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     m_inputParams.device = m_deviceId.deviceIndex;
     m_inputParams.sampleFormat  = paFloat32;
     m_inputParams.suggestedLatency = bufferMSec / 1000.0;
+#ifdef PA_USE_OBOE
+    // Apply the same low-latency Oboe settings to the input stream so
+    // microphone / line-in recording benefits from exclusive mode and
+    // real-time scheduling as well.
+    if (m_deviceTypeId == PaHostApiTypeId::paOboe) {
+        m_inputParams.hostApiSpecificStreamInfo = (void*)&obeoStreamInfo;
+    } else {
+        m_inputParams.hostApiSpecificStreamInfo = nullptr;
+    }
+#else
     m_inputParams.hostApiSpecificStreamInfo = nullptr;
+#endif
 
     qDebug() << "Opening stream with id" << m_deviceId.deviceIndex;
 

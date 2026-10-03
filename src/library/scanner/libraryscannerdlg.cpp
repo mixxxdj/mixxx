@@ -1,5 +1,6 @@
 #include "library/scanner/libraryscannerdlg.h"
 
+#include <QFontMetrics>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -116,7 +117,12 @@ void LibraryScannerDlg::slotUpdate(const QString& path) {
 
     if (isVisible()) {
         updateProgressBar();
-        m_pLabelCurrent->setText(tr("Scanning: ") + path);
+        const QFontMetrics metrics(m_pLabelCurrent->font());
+        const QString elidedCurrent = metrics.elidedText(
+                tr("Scanning: ") + path,
+                Qt::ElideRight,
+                m_pLabelCurrent->width() - 20);
+        m_pLabelCurrent->setText(elidedCurrent);
     }
 }
 
