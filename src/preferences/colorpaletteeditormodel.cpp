@@ -24,6 +24,12 @@ QIcon toQIcon(const QColor& color) {
 }
 
 HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* pFrom) {
+    // QStandardItem::item() returns nullptr for empty cells and
+    // QStandardItem::type() is a virtual function, i.e. it dereferences the
+    // (null) pointer before the assertion could be evaluated.
+    if (!pFrom) {
+        return nullptr;
+    }
     VERIFY_OR_DEBUG_ASSERT(pFrom->type() == QStandardItem::UserType) {
         return nullptr;
     }
@@ -162,7 +168,7 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
         QStandardItem* pColorItem = item(i, kColorColumn);
         const auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, kHotcueIndexColumn));
 
-        if (!pHotcueIndexItem) {
+        if (!pColorItem || !pHotcueIndexItem) {
             continue;
         }
 
