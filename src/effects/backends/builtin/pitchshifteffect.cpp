@@ -57,7 +57,7 @@ QString PitchShiftEffect::getId() {
     return QStringLiteral("org.mixxx.effects.pitchshift");
 }
 
-//static
+// static
 EffectManifestPointer PitchShiftEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
 
@@ -249,4 +249,14 @@ void PitchShiftEffect::processChannel(
             pState->m_retrieveBuffer[0].data(),
             pState->m_retrieveBuffer[1].data(),
             receivedFrames);
+
+    // RubberBand requires latency/buffering when first initialized, so receivedFrames
+    // may be less than framesPerBuffer. Clear any remaining frames in pOutput to silence
+    // to avoid leaving uninitialized/garbage audio in the buffer.
+    const SINT samplesReceived = receivedFrames * engineParameters.channelCount();
+    if (samplesReceived < engineParameters.samplesPerBuffer()) {
+        SampleUtil::clear(
+                pOutput + samplesReceived,
+                engineParameters.samplesPerBuffer() - samplesReceived);
+    }
 }
