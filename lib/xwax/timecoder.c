@@ -227,6 +227,7 @@ static struct timecode_def timecodes[] = {
         .taps = 0x1a0f1b,
         .length = 600000,
         .safe = 590000,
+        .threshold = (128 << 16),
     },
     {
         .name = "algoriddim_b",
@@ -237,6 +238,7 @@ static struct timecode_def timecodes[] = {
         .taps = 0x1f1e7b,
         .length = 900000,
         .safe = 890000,
+        .threshold = (128 << 16),
     },
 };
 
