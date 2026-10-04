@@ -330,7 +330,8 @@ int runServeMode(int argc, char** argv) {
                                 return result;
                             };
                     QJsonArray tree;
-                    for (auto* rootObj : QGuiApplication::topLevelWindows()) {
+                    auto windows = QGuiApplication::topLevelWindows();
+                    for (auto* rootObj : std::as_const(windows)) {
                         QJsonObject node;
                         node[QStringLiteral("window:") +
                                 (rootObj->objectName().isEmpty()
@@ -341,7 +342,6 @@ int runServeMode(int argc, char** argv) {
                     }
                     QString json = QString::fromUtf8(
                             QJsonDocument(tree).toJson(QJsonDocument::Compact));
-                    auto windows = QGuiApplication::topLevelWindows();
                     for (auto* w : std::as_const(windows)) {
                         w->setProperty("lastObjectTree", json);
                     }
