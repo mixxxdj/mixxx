@@ -13,5 +13,6 @@ int lut_load_mk2(struct timecode_def *def, const char *lut_dir_path);
 int lut_store_mk2(struct timecode_def *def, const char *lut_dir_path);
 
 void mk2_process_timecode(struct timecoder *tc, signed int reading);
+void mk2_subcode_init(struct mk2_subcode *sc);
 
 #endif /* end of include guard TIMECODER_MK2_H */
