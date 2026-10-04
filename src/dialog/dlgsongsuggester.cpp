@@ -1,8 +1,5 @@
 #include "dialog/dlgsongsuggester.h"
 
-#include <algorithm>
-#include <cmath>
-
 #include <QComboBox>
 #include <QCoreApplication>
 #include <QDoubleSpinBox>
@@ -16,6 +13,7 @@
 #include <QStringList>
 #include <QVBoxLayout>
 
+#include "dialog/songsuggesterutils.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -28,55 +26,22 @@
 
 namespace {
 
-// Energy is estimated from ReplayGain loudness, which is stored as a
-// linear ratio where 1.0 == 0 dB. A louder master requires negative gain
-// (ratio < 1.0) for normalization and is treated as high energy.
-enum class EnergyLevel { Any, Low, Medium, High };
+using mixxx::SongSuggesterEnergyLevel;
+using mixxx::SongSuggesterFameLevel;
 
-constexpr double kHighEnergyRatioMax = 0.8; // about -2 dB
-constexpr double kLowEnergyRatioMin = 1.25; // about +2 dB
-
-EnergyLevel energyLevelForRatio(double ratio) {
-    if (ratio < kHighEnergyRatioMax) {
-        return EnergyLevel::High;
-    }
-    if (ratio > kLowEnergyRatioMin) {
-        return EnergyLevel::Low;
-    }
-    return EnergyLevel::Medium;
-}
-
-QString energyLevelText(EnergyLevel level) {
+QString energyLevelText(SongSuggesterEnergyLevel level) {
     switch (level) {
-    case EnergyLevel::Low:
+    case SongSuggesterEnergyLevel::Low:
         return QCoreApplication::translate("DlgSongSuggester", "low energy");
-    case EnergyLevel::Medium:
+    case SongSuggesterEnergyLevel::Medium:
         return QCoreApplication::translate("DlgSongSuggester", "medium energy");
-    case EnergyLevel::High:
+    case SongSuggesterEnergyLevel::High:
         return QCoreApplication::translate("DlgSongSuggester", "high energy");
-    case EnergyLevel::Any:
+    case SongSuggesterEnergyLevel::Any:
         break;
     }
     return QString();
 }
-
-// Fame is approximated by the number of times a track has been played.
-enum class FameLevel { Any, Underground, Known, Popular };
-
-constexpr int kKnownPlays = 5;
-constexpr int kPopularPlays = 50;
-
-FameLevel fameLevelForPlays(int plays) {
-    if (plays >= kPopularPlays) {
-        return FameLevel::Popular;
-    }
-    if (plays >= kKnownPlays) {
-        return FameLevel::Known;
-    }
-    return FameLevel::Underground;
-}
-
-constexpr int kMaxResults = 100;
 
 } // namespace
 
@@ -141,10 +106,13 @@ DlgSongSuggester::DlgSongSuggester(
 
     pCriteria->addWidget(new QLabel(tr("Energy:"), this), 1, 0);
     m_pEnergyComboBox = new QComboBox(this);
-    m_pEnergyComboBox->addItem(tr("Any"), static_cast<int>(EnergyLevel::Any));
-    m_pEnergyComboBox->addItem(tr("Low (quiet master)"), static_cast<int>(EnergyLevel::Low));
-    m_pEnergyComboBox->addItem(tr("Medium"), static_cast<int>(EnergyLevel::Medium));
-    m_pEnergyComboBox->addItem(tr("High (loud master)"), static_cast<int>(EnergyLevel::High));
+    m_pEnergyComboBox->addItem(tr("Any"), static_cast<int>(SongSuggesterEnergyLevel::Any));
+    m_pEnergyComboBox->addItem(
+            tr("Low (quiet master)"), static_cast<int>(SongSuggesterEnergyLevel::Low));
+    m_pEnergyComboBox->addItem(
+            tr("Medium"), static_cast<int>(SongSuggesterEnergyLevel::Medium));
+    m_pEnergyComboBox->addItem(
+            tr("High (loud master)"), static_cast<int>(SongSuggesterEnergyLevel::High));
     m_pEnergyComboBox->setToolTip(
             tr("Energy is estimated from ReplayGain loudness."));
     pCriteria->addWidget(m_pEnergyComboBox, 1, 1, 1, 3);
@@ -159,11 +127,15 @@ DlgSongSuggester::DlgSongSuggester(
 
     pCriteria->addWidget(new QLabel(tr("Fame:"), this), 3, 0);
     m_pFameComboBox = new QComboBox(this);
-    m_pFameComboBox->addItem(tr("Any"), static_cast<int>(FameLevel::Any));
+    m_pFameComboBox->addItem(tr("Any"), static_cast<int>(SongSuggesterFameLevel::Any));
     m_pFameComboBox->addItem(
-            tr("Underground (< 5 plays)"), static_cast<int>(FameLevel::Underground));
-    m_pFameComboBox->addItem(tr("Known (5-49 plays)"), static_cast<int>(FameLevel::Known));
-    m_pFameComboBox->addItem(tr("Popular (50+ plays)"), static_cast<int>(FameLevel::Popular));
+            tr("Underground (< 5 plays)"),
+            static_cast<int>(SongSuggesterFameLevel::Underground));
+    m_pFameComboBox->addItem(
+            tr("Known (5-49 plays)"), static_cast<int>(SongSuggesterFameLevel::Known));
+    m_pFameComboBox->addItem(
+            tr("Popular (50+ plays)"),
+            static_cast<int>(SongSuggesterFameLevel::Popular));
     m_pFameComboBox->setToolTip(
             tr("Fame is estimated from how often a track has been played."));
     pCriteria->addWidget(m_pFameComboBox, 3, 1, 1, 3);
@@ -222,12 +194,14 @@ void DlgSongSuggester::slotSuggest() {
         return;
     }
 
-    const double targetBpm = m_pTargetBpmSpinBox->value();
-    const double tolerance = m_pBpmToleranceSpinBox->value();
-    const EnergyLevel energy =
-            static_cast<EnergyLevel>(m_pEnergyComboBox->currentData().toInt());
-    const QString language = m_pLanguageEdit->text().trimmed();
-    const FameLevel fame = static_cast<FameLevel>(m_pFameComboBox->currentData().toInt());
+    mixxx::SongSuggesterCriteria criteria;
+    criteria.targetBpm = m_pTargetBpmSpinBox->value();
+    criteria.bpmTolerance = m_pBpmToleranceSpinBox->value();
+    criteria.energy = static_cast<SongSuggesterEnergyLevel>(
+            m_pEnergyComboBox->currentData().toInt());
+    criteria.language = m_pLanguageEdit->text().trimmed();
+    criteria.fame = static_cast<SongSuggesterFameLevel>(
+            m_pFameComboBox->currentData().toInt());
 
     const QSet<QString> locations =
             m_pTrackCollectionManager->internalCollection()
@@ -239,62 +213,28 @@ void DlgSongSuggester::slotSuggest() {
 
     const ScopedWaitCursor waitCursor;
 
+    QList<TrackPointer> candidates;
+    candidates.reserve(locations.size());
     for (const QString& location : locations) {
         const TrackPointer pTrack = m_pTrackCollectionManager->getTrackByRef(
                 TrackRef::fromFilePath(location));
-        if (!pTrack) {
-            continue;
+        if (pTrack) {
+            candidates.append(pTrack);
         }
-        if (m_pReferenceTrack && m_pReferenceTrack->getId().isValid() &&
-                pTrack->getId() == m_pReferenceTrack->getId()) {
-            continue;
-        }
-        if (std::abs(pTrack->getBpm() - targetBpm) > tolerance) {
-            continue;
-        }
-        if (energy != EnergyLevel::Any) {
-            const auto replayGain = pTrack->getReplayGain();
-            if (!replayGain.hasRatio() ||
-                    energyLevelForRatio(replayGain.getRatio()) != energy) {
-                continue;
-            }
-        }
-        if (!language.isEmpty() &&
-                !pTrack->getMetadata().getTrackInfo().getLanguage().contains(
-                        language, Qt::CaseInsensitive)) {
-            continue;
-        }
-        if (fame != FameLevel::Any &&
-                fameLevelForPlays(pTrack->getTimesPlayed()) != fame) {
-            continue;
-        }
-        m_matches.append(pTrack);
     }
 
-    std::stable_sort(
-            m_matches.begin(),
-            m_matches.end(),
-            [targetBpm](const TrackPointer& a, const TrackPointer& b) {
-                const double distanceA = std::abs(a->getBpm() - targetBpm);
-                const double distanceB = std::abs(b->getBpm() - targetBpm);
-                if (distanceA != distanceB) {
-                    return distanceA < distanceB;
-                }
-                return a->getTimesPlayed() > b->getTimesPlayed();
-            });
-
-    if (m_matches.size() > kMaxResults) {
-        m_matches.resize(kMaxResults);
-    }
+    m_matches = mixxx::filterAndRankSongSuggesterMatches(
+            candidates, m_pReferenceTrack, criteria);
 
     for (const TrackPointer& pTrack : m_matches) {
         QStringList details;
         details << tr("%1 BPM").arg(QString::number(pTrack->getBpm(), 'f', 1));
         const auto replayGain = pTrack->getReplayGain();
         if (replayGain.hasRatio()) {
-            details << energyLevelText(energyLevelForRatio(replayGain.getRatio()));
+            details << energyLevelText(
+                    mixxx::songSuggesterEnergyLevelForRatio(replayGain.getRatio()));
         }
-        const QString trackLanguage = pTrack->getMetadata().getTrackInfo().getLanguage();
+        const QString trackLanguage = mixxx::songSuggesterTrackLanguage(pTrack);
         if (!trackLanguage.isEmpty()) {
             details << trackLanguage;
         }
@@ -343,14 +283,16 @@ void DlgSongSuggester::prefillCriteria(const TrackPointer& pTrack) {
     const auto replayGain = pTrack->getReplayGain();
     if (replayGain.hasRatio()) {
         m_pEnergyComboBox->setCurrentIndex(m_pEnergyComboBox->findData(
-                static_cast<int>(energyLevelForRatio(replayGain.getRatio()))));
+                static_cast<int>(mixxx::songSuggesterEnergyLevelForRatio(
+                        replayGain.getRatio()))));
     } else {
         m_pEnergyComboBox->setCurrentIndex(m_pEnergyComboBox->findData(
-                static_cast<int>(EnergyLevel::Any)));
+                static_cast<int>(SongSuggesterEnergyLevel::Any)));
     }
-    m_pLanguageEdit->setText(pTrack->getMetadata().getTrackInfo().getLanguage());
+    m_pLanguageEdit->setText(mixxx::songSuggesterTrackLanguage(pTrack));
     m_pFameComboBox->setCurrentIndex(m_pFameComboBox->findData(
-            static_cast<int>(fameLevelForPlays(pTrack->getTimesPlayed()))));
+            static_cast<int>(mixxx::songSuggesterFameLevelForPlays(
+                    pTrack->getTimesPlayed()))));
 }
 
 void DlgSongSuggester::loadSelectedTrackToDeck(int deck) {

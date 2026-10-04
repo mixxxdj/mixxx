@@ -1244,12 +1244,14 @@ add_library(
   src/database/schemamanager.cpp
   src/dialog/dlgabout.cpp
   src/dialog/dlgaboutdlg.ui
+  src/dialog/songsuggesterutils.h
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
   src/dialog/dlgfreemusic.cpp
   src/dialog/dlgkeywheel.cpp
   src/dialog/dlgsongsuggester.cpp
   src/dialog/dlgkeywheel.ui
+  src/dialog/songsuggesterutils.cpp
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
   src/effects/backends/builtin/autopaneffect.cpp
@@ -2977,6 +2979,7 @@ if(BUILD_TESTING)
     src/test/signalpathtest.cpp
     src/test/skincontext_test.cpp
     src/test/softtakeover_test.cpp
+    src/test/songsuggestertest.cpp
     src/test/soundproxy_test.cpp
     src/test/soundsourceproviderregistrytest.cpp
     src/test/sqliteliketest.cpp
