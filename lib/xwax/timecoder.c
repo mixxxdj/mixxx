@@ -422,7 +422,7 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
      * make for a good window size. This was concluded empirically.
      */
 
-    size_t window = (size_t)ceil(sample_rate / def->resolution) / 4;
+    size_t window = (size_t)ceil((double)sample_rate / def->resolution) / 4;
     if (window % 2 == 0)
         window++;
 
