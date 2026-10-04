@@ -6,9 +6,12 @@
 
 #include <QObject>
 #include <cstdint>
+#include <unordered_set>
 
 #include "audio/types.h"
+#include "control/controlaudiotaperpot.h"
 #include "control/controlobject.h"
+#include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "preferences/dialog/dlgprefsound.h"
 #include "preferences/usersettings.h"
@@ -41,12 +44,15 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::string openDeviceOutput(uint32_t id, const AudioOutput& output);
     void closeDevices();
 
-    mixxx::audio::SampleRate getDefaultSampleRate() const {
-        return m_defaultSampleRate;
-    }
-
     QList<QString> getAPIs() const override {
         return {SoundManagerConfig::kAPIPipewire};
+    }
+
+    std::vector<std::pair<uint32_t, QString>> queryHardwareDevices() override;
+    std::unordered_map<uint32_t, QString> queryHardwareVolumes(uint32_t deviceIndex) override;
+
+    mixxx::audio::SampleRate getDefaultSampleRate() const {
+        return m_defaultSampleRate;
     }
 
     QString getChannelString(uint32_t id, ChannelGroup channelGroup, bool input) const;
@@ -58,6 +64,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
   private slots:
     void registerInput(const AudioInput& input, AudioDestination* dest);
     void registerOutput(const AudioOutput& output, AudioSource* src);
+    void setHardwareGain(uint32_t deviceIndex, uint32_t routeIndex, float gain);
 
   private:
     struct Link {
@@ -85,6 +92,29 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     struct Node {
         std::vector<uint32_t> inputs;
         std::vector<uint32_t> outputs;
+        spa_hook listener;
+        pw_node* proxy;
+    };
+
+    struct Device {
+        struct Route {
+            bool mute;
+            uint32_t device;
+            uint32_t numChannels;
+            QString description;
+
+            Route(const QString& description)
+                    : mute(false),
+                      description(description) {
+            }
+        };
+
+        pw_device* device;
+        std::string name;
+        spa_hook listener = {};
+        bool serialFlag = false;
+        bool enumSerialFlag = false;
+        std::unordered_map<uint32_t, Route> routes = {};
     };
 
     struct PortPair {
@@ -125,40 +155,56 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void coreEventDone(uint32_t id, int seq);
     void coreEventError(uint32_t id, int seq, int res, const char* message);
 
-    static void registryEventGlobalOuter(void* data,
+    static void registryEventGlobal(void* data,
             uint32_t id,
             uint32_t permissions,
             const char* type,
             uint32_t version,
             const struct spa_dict* props) {
-        ((PipewireEnumerator*)data)->registryEventGlobal(id, permissions, type, version, props);
+        static_cast<PipewireEnumerator*>(data)->registryEventGlobal(
+                id, permissions, type, version, props);
     }
 
-    static void registryEventGlobalRemoveOuter(void* data, uint32_t id) {
-        ((PipewireEnumerator*)data)->registryEventGlobalRemove(id);
+    static void registryEventGlobalRemove(void* data, uint32_t id) {
+        static_cast<PipewireEnumerator*>(data)->registryEventGlobalRemove(id);
     }
 
-    static constexpr pw_registry_events registry_events = {
+    static constexpr pw_registry_events registryEvents = {
             .version = PW_VERSION_REGISTRY_EVENTS,
-            .global = registryEventGlobalOuter,
-            .global_remove = registryEventGlobalRemoveOuter,
+            .global = registryEventGlobal,
+            .global_remove = registryEventGlobalRemove,
     };
+
+    void registryEventGlobal(uint32_t id,
+            uint32_t permissions,
+            const char* type,
+            uint32_t version,
+            const struct spa_dict* props);
+    void registryEventGlobalRemove(unsigned int id);
 
     static int metadataProperty(void* data,
             uint32_t id,
             const char* key,
             const char* type,
-            const char* value);
+            const char* value) {
+        return static_cast<PipewireEnumerator*>(data)->metadataProperty(id, key, type, value);
+    }
 
     static constexpr struct pw_metadata_events metadataEvents = {
             .version = PW_VERSION_METADATA_EVENTS,
-            .property = metadataProperty};
+            .property = metadataProperty,
+    };
+
+    int metadataProperty(uint32_t id,
+            const char* key,
+            const char* type,
+            const char* value);
 
     static void callback(void* data, spa_io_position* pos) {
-        ((PipewireEnumerator*)data)->callback(pos);
+        static_cast<PipewireEnumerator*>(data)->callback(pos);
     }
 
-    static constexpr pw_filter_events filter_events{
+    static constexpr pw_filter_events filterEvents{
             .version = PW_VERSION_FILTER_EVENTS,
             .destroy = nullptr,
             .state_changed = nullptr,
@@ -171,14 +217,45 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             .command = nullptr,
     };
 
-    void registryEventGlobal(uint32_t id,
-            uint32_t permissions,
-            const char* type,
-            uint32_t version,
-            const struct spa_dict* props);
-    void registryEventGlobalRemove(unsigned int id);
-
     void callback(const spa_io_position* pos);
+
+    static void nodeEventInfo(void* data, const struct pw_node_info* info) {
+        static_cast<PipewireEnumerator*>(data)->nodeEventInfo(info);
+    }
+
+    static constexpr pw_node_events nodeEvents{
+            .version = PW_VERSION_NODE_EVENTS,
+            .info = nodeEventInfo,
+            .param = nullptr,
+    };
+
+    void nodeEventInfo(const struct pw_node_info* info);
+
+    static void deviceEventInfo(void* data, const struct pw_device_info* info) {
+        static_cast<PipewireEnumerator*>(data)->deviceEventInfo(info);
+    }
+
+    static void deviceEventParam(void* data,
+            int seq,
+            uint32_t id,
+            uint32_t index,
+            uint32_t next,
+            const struct spa_pod* param) {
+        static_cast<PipewireEnumerator*>(data)->deviceEventParam(seq, id, index, next, param);
+    }
+
+    static constexpr pw_device_events deviceEvents{
+            .version = PW_VERSION_DEVICE_EVENTS,
+            .info = deviceEventInfo,
+            .param = deviceEventParam,
+    };
+
+    void deviceEventInfo(const struct pw_device_info* info);
+    void deviceEventParam(int seq,
+            uint32_t id,
+            uint32_t index,
+            uint32_t next,
+            const struct spa_pod* param);
 
     void addDevice(uint32_t id);
     void removeDevice(uint32_t id);
@@ -201,11 +278,16 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     void closePorts(PortPair& ports);
 
     void updateFilterLatency(const SINT samplerate, const SINT bufferSize);
+    std::unordered_set<uint32_t> getPwDevicesByOutput(
+            const AudioPath& path, spa_direction direction);
+
     bool nodeHasPorts(const Node& node);
 
     std::unordered_map<uint32_t, Node> m_nodes;
     std::unordered_map<uint32_t, Port> m_ports;
     std::unordered_map<uint32_t, Link> m_links;
+    std::unordered_map<uint32_t, Device> m_devices;
+
     QList<mixxx::audio::SampleRate> m_samplerates;
 
     SoundManager* m_pSoundManager;
@@ -221,6 +303,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     spa_hook m_pwRegistryListener;
     spa_hook m_pwFilterListener;
     spa_hook m_pwMetadataListener;
+    spa_hook m_pwDeviceListener;
 
     std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
@@ -247,9 +330,28 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     // preference page, and leave the external patchbay connections
     // If we do, then all connections to Mixxx will be affected, even
     // the ones made with external patchbay
-    int m_coreSyncSeq;
+    int m_coreRegistrySyncSeq;
+    int m_coreDeviceSyncSeq;
     bool m_forceQuantum;
     bool m_forceSamplerate;
     uint32_t m_samplerate;
     uint32_t m_bufferSize;
+
+    ControlAudioTaperPot m_coMainVolume;
+    ControlAudioTaperPot m_coHeadVolume;
+    ControlAudioTaperPot m_coBoothVolume;
+    ControlObject m_coMainVolumeRoute;
+    ControlObject m_coHeadVolumeRoute;
+    ControlObject m_coBoothVolumeRoute;
+    ControlObject m_coMainVolumeDevice;
+    ControlObject m_coHeadVolumeDevice;
+    ControlObject m_coBoothVolumeDevice;
+    ControlObject m_coGraphDriver;
+    uint32_t m_enumParamDeviceId;
+    uint32_t m_coreSync;
+    // pw_device param enumeration seq, since one enumeration
+    // request yields multiple callbacks, we manually track
+    // and remove previous entries
+    std::unordered_map<int, uint32_t> m_deviceParamSeq;
+    int m_prevDeviceParamSeq = 0;
 };
