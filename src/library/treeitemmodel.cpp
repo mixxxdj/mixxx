@@ -102,6 +102,20 @@ QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int
     return QVariant();
 }
 
+QModelIndex TreeItemModel::index(TreeItem* pTreeItem) const {
+    VERIFY_OR_DEBUG_ASSERT(pTreeItem) {
+        return QModelIndex();
+    }
+    if (pTreeItem == m_pRootItem.get()) {
+        return QModelIndex();
+    }
+    int row = pTreeItem->parentRow();
+    VERIFY_OR_DEBUG_ASSERT(row != TreeItem::kInvalidRow) {
+        return QModelIndex();
+    }
+    return createIndex(row, 0, pTreeItem);
+}
+
 QModelIndex TreeItemModel::index(int row, int column, const QModelIndex &parent) const {
     if (!hasIndex(row, column, parent)) {
         return QModelIndex();
