@@ -115,6 +115,45 @@ class WTrackTableView : public WLibraryTableView {
     QColor getTrackMissingColor() const {
         return m_trackMissingColor;
     }
+    // Background colors of the harmonic key highlighter's Key and BPM cells.
+    // BaseTrackTableModel uses these for their BackgroundRole.
+    // The same key, or a BPM within the tolerance. Default: dark green
+    static constexpr QColor kDefaultKeyHighlightMatchColor = QColor(0x1b, 0x78, 0x37);
+    Q_PROPERTY(QColor keyHighlightMatchColor
+                    MEMBER m_keyHighlightMatchColor
+                            NOTIFY keyHighlightMatchColorChanged
+                                    DESIGNABLE true);
+    QColor getKeyHighlightMatchColor() const {
+        return m_keyHighlightMatchColor;
+    }
+    // A compatible key, or half or double the BPM. Default: light green
+    static constexpr QColor kDefaultKeyHighlightNeighbourColor = QColor(0x7f, 0xbf, 0x7b);
+    Q_PROPERTY(QColor keyHighlightNeighbourColor
+                    MEMBER m_keyHighlightNeighbourColor
+                            NOTIFY keyHighlightNeighbourColorChanged
+                                    DESIGNABLE true);
+    QColor getKeyHighlightNeighbourColor() const {
+        return m_keyHighlightNeighbourColor;
+    }
+    // A key that becomes compatible when pitched by a semitone. Default: yellow
+    static constexpr QColor kDefaultKeyHighlightShiftColor = QColor(0xf4, 0xd0, 0x3f);
+    Q_PROPERTY(QColor keyHighlightShiftColor
+                    MEMBER m_keyHighlightShiftColor
+                            NOTIFY keyHighlightShiftColorChanged
+                                    DESIGNABLE true);
+    QColor getKeyHighlightShiftColor() const {
+        return m_keyHighlightShiftColor;
+    }
+    // A played track, match or not, if played tracks are greyed out.
+    // Default: dark blue
+    static constexpr QColor kDefaultKeyHighlightPlayedColor = QColor(0x1a, 0x2a, 0x44);
+    Q_PROPERTY(QColor keyHighlightPlayedColor
+                    MEMBER m_keyHighlightPlayedColor
+                            NOTIFY keyHighlightPlayedColorChanged
+                                    DESIGNABLE true);
+    QColor getKeyHighlightPlayedColor() const {
+        return m_keyHighlightPlayedColor;
+    }
     // Color for the track drop indicator line. Default: red
     static constexpr QColor kDefaultDropIndicatorColor = QColor(0xff, 0x00, 0x00);
     Q_PROPERTY(QColor dropIndicatorColor
@@ -127,6 +166,10 @@ class WTrackTableView : public WLibraryTableView {
     void focusBorderColorChanged(QColor col);
     void trackPlayedColorChanged(QColor col);
     void trackMissingColorChanged(QColor col);
+    void keyHighlightMatchColorChanged(QColor col);
+    void keyHighlightNeighbourColorChanged(QColor col);
+    void keyHighlightShiftColorChanged(QColor col);
+    void keyHighlightPlayedColorChanged(QColor col);
     void dropIndicatorColorChanged(QColor col);
 
   public slots:
@@ -204,6 +247,10 @@ class WTrackTableView : public WLibraryTableView {
     QColor m_focusBorderColor;
     QColor m_trackPlayedColor;
     QColor m_trackMissingColor;
+    QColor m_keyHighlightMatchColor;
+    QColor m_keyHighlightNeighbourColor;
+    QColor m_keyHighlightShiftColor;
+    QColor m_keyHighlightPlayedColor;
     QColor m_dropIndicatorColor;
     bool m_sorting;
 

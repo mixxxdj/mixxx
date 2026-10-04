@@ -20,6 +20,16 @@ class TrackModel {
     static constexpr int kDataExportRole = Qt::UserRole + 2;
     // This role provides the tuning frequency in Hz
     static constexpr int kTuningFrequencyRole = Qt::UserRole + 3;
+    // This role provides the harmonic key highlighter's match for the Key
+    // column as a KeyHighlightManager::KeyMatch cast to int (0 == None).
+    static constexpr int kKeyMatchRole = Qt::UserRole + 4;
+    // This role provides the harmonic highlighter's background QBrush for the
+    // Key and BPM columns, and is empty wherever the highlighter doesn't tint
+    // the cell. Delegates use it to keep the tint on selected rows.
+    static constexpr int kHighlightBackgroundRole = Qt::UserRole + 5;
+    // This role provides the key the highlighter's reference deck plays the
+    // track in, as text, if the pitch moved it away from the stored key.
+    static constexpr int kPlayingKeyRole = Qt::UserRole + 6;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)

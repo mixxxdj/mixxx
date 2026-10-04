@@ -14,6 +14,7 @@
 #include "defs_urls.h"
 #include "library/basetracktablemodel.h"
 #include "library/dlgtrackmetadataexport.h"
+#include "library/keyhighlightmanager.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/searchquery.h"
@@ -80,6 +81,10 @@ DlgPrefLibrary::DlgPrefLibrary(
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefLibrary::slotBpmColumnPrecisionChanged);
+
+    // The minimum is 0 ("Off") in the .ui file.
+    spinBox_key_highlight_bpm_range->setMaximum(
+            mixxx::KeyHighlightManager::kBpmRangePercentMax);
 
     spinBox_search_debouncing_timeout->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
     spinBox_search_debouncing_timeout->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
@@ -275,6 +280,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     spinbox_bpm_precision->setValue(BaseTrackTableModel::kBpmColumnPrecisionDefault);
     checkbox_played_track_color->setChecked(
             BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    spinBox_key_highlight_bpm_range->setValue(
+            mixxx::KeyHighlightManager::kBpmRangePercentDefault);
 
     radioButton_cover_art_fetcher_medium->setChecked(true);
 
@@ -458,6 +465,10 @@ void DlgPrefLibrary::slotUpdate() {
                     kApplyPlayedTrackColorConfigKey,
                     BaseTrackTableModel::kApplyPlayedTrackColorDefault);
     checkbox_played_track_color->setChecked(applyPlayedTrackColor);
+
+    spinBox_key_highlight_bpm_range->setValue(m_pConfig->getValue(
+            kKeyHighlightBpmRangeConfigKey,
+            mixxx::KeyHighlightManager::kBpmRangePercentDefault));
 
     const auto sidebarHoverExpandDelay =
             m_pConfig->getValue(
@@ -685,6 +696,10 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(
             kApplyPlayedTrackColorConfigKey,
             ConfigValue(checkbox_played_track_color->isChecked()));
+
+    const double keyHighlightBpmRange = spinBox_key_highlight_bpm_range->value();
+    m_pConfig->setValue(kKeyHighlightBpmRangeConfigKey, keyHighlightBpmRange);
+    m_pLibrary->setKeyHighlightBpmRange(keyHighlightBpmRange);
 
     int sidebarHoverExpandDelay = spinBox_sidebar_hover_expand_delay->value();
     m_pConfig->setValue(kSidebarHoverExpandDelayConfigKey, sidebarHoverExpandDelay);

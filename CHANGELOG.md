@@ -2,6 +2,12 @@
 
 ## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
 
+### Library
+
+* Highlight harmonically compatible tracks and tracks within a configurable BPM range in the library for the loaded deck
+  [#16554](https://github.com/mixxxdj/mixxx/pull/16554)
+  [#14823](https://github.com/mixxxdj/mixxx/issues/14823)
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
 ### STEM file support

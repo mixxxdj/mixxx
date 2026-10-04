@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "library/trackmodel.h"
 #include "moc_tableitemdelegate.cpp"
 #include "util/painterscope.h"
 #include "widget/wtracktableview.h"
@@ -71,6 +72,26 @@ void TableItemDelegate::paint(
 
 int TableItemDelegate::columnWidth(const QModelIndex &index) const {
     return m_pTableView->columnWidth(index.column());
+}
+
+// static
+QColor TableItemDelegate::paintHighlightOverSelection(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) {
+    const QVariant highlightBgData = index.data(TrackModel::kHighlightBackgroundRole);
+    const QColor highlightBg = highlightBgData.isValid()
+            ? highlightBgData.value<QBrush>().color()
+            : QColor();
+    // The highlighter tint is the point of the Key and BPM cells, so it must
+    // survive selection: otherwise the DJ loses the hint on the row they just
+    // clicked. Keep it semi-transparent so the selection shows through.
+    if ((option.state & QStyle::State_Selected) && highlightBg.isValid()) {
+        QColor tint = highlightBg;
+        tint.setAlphaF(0.65f);
+        painter->fillRect(option.rect, tint);
+    }
+    return highlightBg;
 }
 
 // static
