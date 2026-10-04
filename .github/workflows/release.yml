@@ -16,7 +16,6 @@ permissions:
   contents: write # to sync branches
   pull-requests: write # to sync branches
   checks: write #  to create new checks (coverallsapp/github-action)
-  actions: write # to delete outdated caches (build.yml)
 
 jobs:
   checks:
@@ -28,6 +27,9 @@ jobs:
       MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT: ${{ secrets.MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT }}
 
   build:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches
     uses: ./.github/workflows/build.yml
     with:
       publish: true

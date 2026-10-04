@@ -336,6 +336,11 @@ jobs:
         # the older ones so they don't evict the caches of other branches.
         if: steps.ccache_save.outcome == 'success'
         run: |
+          # A build of a newer commit may have saved its cache already
+          if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
+            echo "$GITHUB_REF has newer commits, not deleting any caches"
+            exit 0
+          fi
           gh cache list --ref "$GITHUB_REF" --key "$KEY_PREFIX" --limit 100 --json id,key \
             --jq ".[] | select(.key != \"$KEY\") | .id" |
           while read -r id; do
