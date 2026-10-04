@@ -9,6 +9,8 @@ const defaultPadMode = engine.getSetting("defaultPadMode");
 const useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratching");
+const loopRollLongestDuration = parseFloat(engine.getSetting("loopRollLongestDuration")) || 0.5;
+const useLoopRollPingPong = engine.getSetting("useLoopRollPingPong");
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -125,6 +127,10 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
 
     const button = new components.Button({
         input: function(channel, control, value, status, group) {
+            if (useLoopRollPingPong && deck.padmode_str === "roll") {
+                NS4FX.handleLoopRollPingPong(deck.number, padNumber, value);
+                return;
+            }
             NS4FX.dbg(`Transport pad ${padNumber} on deck ${deck.number} pressed with value ${value}`);
             const isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === "hotcue";
 
@@ -416,6 +422,8 @@ NS4FX.init = function(id, debug) {
 };
 
 NS4FX.shutdown = function() {
+    NS4FX.stopLoopRollPingPong();
+
     // note: not all of this appears to be strictly necessary, things work fine
     // with out this, but Serato has been observed sending these led reset
     // messages during shutdown. The last sysex message may be necessary to
@@ -1115,8 +1123,10 @@ NS4FX.Deck = function(number, midi_chan) {
             });
         }
 
-        const rollDuration = Math.pow(2, -(i)); // Calculates the loop roll duration (0.5, 0.25, 0.125, 0.0625)
-        const rollDurationString = rollDuration.toFixed(4).replace(/0+$/, "");
+        // Calculate roll duration based on loopRollLongestDuration (assigned to Pad 4, i=1),
+        // with each preceding pad halving the duration (Pad 3 = /2, Pad 2 = /4, Pad 1 = /8).
+        const rollDuration = loopRollLongestDuration / Math.pow(2, i - 1);
+        const rollDurationString = rollDuration.toFixed(4).replace(/\.?0+$/, "");
         this.roll_buttons[5 - i] = new components.Button({
             midi: [0x94 + midi_chan, 0x18 - i], // MIDI address for the buttons
             number: 5 - i, // Button number (1 to 4)
@@ -1148,6 +1158,9 @@ NS4FX.Deck = function(number, midi_chan) {
     }
 
     this.change_padmode = function(padmode) {
+        if (this.padmode_str === "roll") {
+            NS4FX.stopLoopRollPingPong(this.number);
+        }
         NS4FX.dbg(`Deck ${this.number} change_padmode: from ${this.padmode_str} to ${padmode}`);
         this.padmode_str = padmode;
         // This is the main pad mode switching logic.
@@ -1172,6 +1185,11 @@ NS4FX.Deck = function(number, midi_chan) {
         } else if (padmode === "pitchplay") {
             print("not implemented yet");
         } else if (padmode === "roll") {
+            if (useLoopRollPingPong) {
+                for (let p = 0x18; p <= 0x1B; p++) {
+                    midi.sendShortMsg(0x94 + this.midi_chan, p, 0x01);
+                }
+            }
             buttons = this.roll_buttons;
         } else if (padmode === "slicer") {
             buttons = this.slicer_buttons;
@@ -1183,6 +1201,17 @@ NS4FX.Deck = function(number, midi_chan) {
         });
         this.hotcues = buttons;
         this.hotcues.reconnectComponents();
+
+        if (this.padMode) {
+            this.padMode.pad_hotcue.output(padmode === "hotcue" ? 1 : 0);
+            this.padMode.pad_pitchplay.output(padmode === "pitchplay" ? 1 : 0);
+            this.padMode.pad_autoloop.output(padmode === "autoloop" ? 1 : 0);
+            this.padMode.pad_roll.output(padmode === "roll" ? 1 : 0);
+            this.padMode.pad_fadercuts.output(padmode === "fadercuts" ? 1 : 0);
+            this.padMode.pad_slicer.output((padmode === "stems" || padmode === "slicer") ? 1 : 0);
+            this.padMode.pad_sampler.output(padmode === "sampler" ? 1 : 0);
+            this.padMode.pad_scratchbanks.output(padmode === "scratchbanks" ? 1 : 0);
+        }
     };
     this.hotcues = new components.ComponentContainer();
     this.pitch = new components.Pot({
@@ -1516,17 +1545,14 @@ NS4FX.Deck = function(number, midi_chan) {
             reloop: new components.Button({
                 midi: [0x94 + midi_chan, 0x41],
                 input: function(_channel, _control, value, _status) {
+                    NS4FX.dbg(`[RELOOP/ROLL] Shift+Loop On/Off pressed on deck ${  deck.number  } with value: ${  value  } for group: ${  this.group}`);
                     if (value === 0x7F) { // Button pressed
-                        const loopEnabled = engine.getValue(this.group, "loop_enabled");
-                        if (loopEnabled) {
-                            // If the loop is active, we deactivate it
-                            engine.setValue(this.group, "loop_enabled", 0);
-                        } else {
-                            // If no loop is active, we activate the last loop
-                            engine.setValue(this.group, "reloop_toggle", 1);
-                        }
+                        // Activate loop roll over the current beatloop_size
+                        engine.setValue(this.group, "beatlooproll_activate", 1);
                         this.output(1);
                     } else if (value === 0x00) { // Button released
+                        // Deactivate loop roll and resume normal playback
+                        engine.setValue(this.group, "beatlooproll_activate", 0);
                         this.output(0);
                     }
                 },
@@ -1534,11 +1560,11 @@ NS4FX.Deck = function(number, midi_chan) {
                     this.send(value ? 0x7F : 0x01);
                 },
                 connect: function() { // NOSONAR
-                    this.connections.push(
-                        engine.connectControl(this.group, "loop_enabled", function(value) {
+                    this.connections = [
+                        engine.makeConnection(this.group, "loop_enabled", function(value) {
                             this.output(value);
                         }.bind(this))
-                    );
+                    ];
                 }
             }),
 
@@ -2221,4 +2247,112 @@ NS4FX.shiftToggle = function(_channel, control, value, _status, _group) {
         NS4FX.browse.unshift();
         NS4FX.head_gain.unshift();
     }
+};
+
+/**
+ * Ping-Pong loop roll effect for Loop Roll mode (momentary).
+ * In Loop Roll mode, transport pads 1-4 act as pads 5-8, matching the
+ * loop roll durations of pads 1-4 with stereo bounce panning:
+ * - Each odd loop iteration plays from Left channel ([Master], balance = -1.0)
+ * - Each even loop iteration plays from Right channel ([Master], balance = 1.0)
+ *
+ * Pad 4: longest loop roll duration (loopRollLongestDuration)
+ * Pad 3: half duration of Pad 4
+ * Pad 2: quarter duration of Pad 4
+ * Pad 1: eighth duration of Pad 4
+ */
+NS4FX.activePingPong = null;
+NS4FX.pingPongTimer = null;
+NS4FX.pingPongSavedBalance = null;
+
+NS4FX.handleLoopRollPingPong = function(deckNum, padNumber, value) {
+    const isPress = (value === 0x7F || value > 0);
+    const deck = NS4FX.decks[deckNum];
+    if (!deck) {
+        return;
+    }
+    const midiNote = 0x18 + (padNumber - 1);
+    const midiChan = 0x94 + deck.midi_chan;
+
+    if (isPress) {
+        midi.sendShortMsg(midiChan, midiNote, 0x7F);
+        NS4FX.startLoopRollPingPong(deckNum, padNumber);
+    } else {
+        midi.sendShortMsg(midiChan, midiNote, 0x01);
+        if (NS4FX.activePingPong && NS4FX.activePingPong.padNumber === padNumber && NS4FX.activePingPong.deckNumber === deckNum) {
+            NS4FX.stopLoopRollPingPong(deckNum);
+        }
+    }
+};
+
+NS4FX.startLoopRollPingPong = function(deckNum, padNumber) {
+    if (NS4FX.activePingPong) {
+        NS4FX.stopLoopRollPingPong(NS4FX.activePingPong.deckNumber);
+    }
+
+    const deck = NS4FX.decks[deckNum];
+    if (!deck) {
+        return;
+    }
+
+    // Save previous balance before modifying it
+    if (NS4FX.pingPongSavedBalance === null || NS4FX.pingPongSavedBalance === undefined) {
+        NS4FX.pingPongSavedBalance = engine.getValue("[Master]", "balance");
+    }
+
+    // Transport Pad 4 is the longest duration (matching Pad 4); preceding pads halve the duration
+    const rollDuration = loopRollLongestDuration / Math.pow(2, 4 - padNumber);
+    const rollDurationString = rollDuration.toFixed(4).replace(/\.?0+$/, "");
+
+    const deckBpm = engine.getValue(deck.currentDeck, "bpm") || engine.getValue(deck.currentDeck, "local_bpm") || 120;
+    const effectiveBpm = Math.max(20, deckBpm);
+    const intervalMs = (rollDuration * 60000) / effectiveBpm;
+
+    NS4FX.dbg(`[PINGPONG] Deck ${deckNum} Pad ${padNumber + 4} (Transport Pad ${padNumber}): ${rollDurationString} beat roll, loop interval ${intervalMs.toFixed(2)} ms at ${effectiveBpm.toFixed(2)} BPM`);
+
+    NS4FX.activePingPong = {
+        deckNumber: deckNum,
+        deckGroup: deck.currentDeck,
+        padNumber: padNumber,
+        rollDurationString: rollDurationString,
+        step: 0
+    };
+
+    // Activate the slip beatloop roll on the deck
+    engine.setValue(deck.currentDeck, `beatlooproll_${rollDurationString}_activate`, 1);
+
+    // Apply odd loop 1 (Left channel: -1.0)
+    engine.setValue("[Master]", "balance", -1.0);
+    NS4FX.activePingPong.step = 1;
+
+    // Flip balance on each subsequent loop: even loops (step 2, 4...) -> Right (+1.0), odd loops (step 3, 5...) -> Left (-1.0)
+    NS4FX.pingPongTimer = engine.beginTimer(intervalMs, function() {
+        if (!NS4FX.activePingPong) {
+            return;
+        }
+        NS4FX.activePingPong.step++;
+        const balanceVal = (NS4FX.activePingPong.step % 2 === 1) ? -1.0 : 1.0;
+        engine.setValue("[Master]", "balance", balanceVal);
+    });
+};
+
+NS4FX.stopLoopRollPingPong = function(deckNum) {
+    NS4FX.dbg(`[PINGPONG] stopLoopRollPingPong called for Deck ${deckNum}`);
+    if (NS4FX.pingPongTimer) {
+        engine.stopTimer(NS4FX.pingPongTimer);
+        NS4FX.pingPongTimer = null;
+    }
+
+    if (NS4FX.activePingPong) {
+        // Deactivate the beatloop roll on the deck
+        engine.setValue(NS4FX.activePingPong.deckGroup, `beatlooproll_${NS4FX.activePingPong.rollDurationString}_activate`, 0);
+        NS4FX.activePingPong = null;
+    }
+
+    const restoreBalance = (NS4FX.pingPongSavedBalance !== null && NS4FX.pingPongSavedBalance !== undefined)
+        ? NS4FX.pingPongSavedBalance
+        : 0.0;
+    engine.setValue("[Master]", "balance", restoreBalance);
+    NS4FX.dbg(`[PINGPONG] Restored master balance to ${restoreBalance}`);
+    NS4FX.pingPongSavedBalance = null;
 };
