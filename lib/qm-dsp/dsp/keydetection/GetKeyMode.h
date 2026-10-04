@@ -102,14 +102,19 @@ protected:
     double* m_chromaBuffer;
     double* m_meanHPCP;
 
-    double* m_majProfileNorm;
-    double* m_minProfileNorm;
+    double* m_inTuneChroma;
+    double m_ProgressionProbability[25];
+    double m_ScaleProbability[48];
+    double m_maxTuneSumme;
+
     double* m_majCorr;
     double* m_minCorr;
     int* m_medianFilterBuffer;
     int* m_sortedBuffer;
 
     double *m_keyStrengths;
+    int m_processCall;
+    double m_secondsPerProcessCall;
 };
 
 #endif // !defined QM_DSP_GETKEYMODE_H
