@@ -59,7 +59,7 @@ QStringList SearchQueriesStorage::loadQueries(const UserSettingsPointer& pConfig
     QStringList queries;
     queries.reserve(queryKeys.size());
     QSet<QString> seenQueries;
-    for (const auto& queryKey : queryKeys) {
+    for (const auto& queryKey : std::as_const(queryKeys)) {
         const QString queryString = pConfig->getValueString(queryKey).trimmed();
         if (queryString.isEmpty() || seenQueries.contains(queryString)) {
             continue;
