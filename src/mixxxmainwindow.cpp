@@ -30,6 +30,7 @@
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgfreemusic.h"
 #include "dialog/dlgkeywheel.h"
+#include "dialog/dlgautorecommend.h"
 #include "dialog/dlgsongsuggester.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/dialog/dlgpreferences.h"
@@ -916,6 +917,11 @@ void MixxxMainWindow::connectMenuBar() {
             this,
             &MixxxMainWindow::slotShowSongSuggester,
             Qt::UniqueConnection);
+    connect(m_pMenuBar,
+            &WMainMenuBar::showAutoRecommend,
+            this,
+            &MixxxMainWindow::slotShowAutoRecommend,
+            Qt::UniqueConnection);
 
     // Developer
     connect(m_pMenuBar,
@@ -1292,6 +1298,32 @@ void MixxxMainWindow::slotShowSongSuggester() {
     m_pSongSuggesterDlg->show();
     m_pSongSuggesterDlg->raise();
     m_pSongSuggesterDlg->activateWindow();
+}
+
+void MixxxMainWindow::slotShowAutoRecommend() {
+    if (!m_pAutoRecommendBot) {
+        m_pAutoRecommendBot = new AutoRecommendBot(
+                m_pCoreServices->getTrackCollectionManager().get(),
+                m_pCoreServices->getPlayerManager().get(),
+                m_pCoreServices->getSettings(),
+                this);
+        connect(
+                &PlayerInfo::instance(),
+                &PlayerInfo::currentPlayingTrackChanged,
+                m_pAutoRecommendBot,
+                &AutoRecommendBot::slotCurrentPlayingTrackChanged);
+        // Watch the deck play controls so the bot can preload the top
+        // recommendation into an idle deck when a deck stops playing.
+        m_pAutoRecommendBot->bindDeckPlayControls(
+                m_pCoreServices->getPlayerManager()->numberOfDecks());
+    }
+    if (!m_pAutoRecommendDlg) {
+        m_pAutoRecommendDlg = new DlgAutoRecommend(m_pAutoRecommendBot, this);
+        m_pAutoRecommendDlg->setWindowIcon(QIcon(MIXXX_ICON_PATH));
+    }
+    m_pAutoRecommendDlg->show();
+    m_pAutoRecommendDlg->raise();
+    m_pAutoRecommendDlg->activateWindow();
 }
 
 void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result) {

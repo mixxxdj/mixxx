@@ -74,6 +74,7 @@ class WMainMenuBar : public QMenuBar {
     void showAutoDJ();
     void showFreeMusic();
     void showSongSuggester();
+    void showAutoRecommend();
     void menubarAutoHideChanged(bool autohide);
     void showAbout();
     void showKeywheel(bool visible);

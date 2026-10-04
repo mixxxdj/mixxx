@@ -14,6 +14,8 @@ class DlgDeveloperTools;
 class DlgFreeMusic;
 class DlgPreferences;
 class DlgSongSuggester;
+class DlgAutoRecommend;
+class AutoRecommendBot;
 class DlgKeywheel;
 class GuiTick;
 class LaunchImage;
@@ -70,6 +72,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotShowFreeMusic();
     /// show the song suggester dialog
     void slotShowSongSuggester();
+    /// show the auto-recommendation bot dialog
+    void slotShowAutoRecommend();
     /// show popup with library scan results
     void slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result);
     /// show keywheel
@@ -156,6 +160,8 @@ class MixxxMainWindow : public QMainWindow {
     DlgDeveloperTools* m_pDeveloperToolsDlg;
     DlgFreeMusic* m_pFreeMusicDlg;
     DlgSongSuggester* m_pSongSuggesterDlg;
+    DlgAutoRecommend* m_pAutoRecommendDlg;
+    AutoRecommendBot* m_pAutoRecommendBot;
 
     DlgPreferences* m_pPrefDlg;
     parented_ptr<DlgKeywheel> m_pKeywheel;

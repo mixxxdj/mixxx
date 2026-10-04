@@ -403,6 +403,16 @@ void WMainMenuBar::initialize() {
     connect(pViewSongSuggester, &QAction::triggered, this, &WMainMenuBar::showSongSuggester);
     pViewMenu->addAction(pViewSongSuggester);
 
+    QString autoRecommendTitle = tr("Auto-Recommendation Bot");
+    QString autoRecommendText = tr(
+            "Automatically fill the Auto DJ queue with tracks matching the "
+            "currently playing track.");
+    auto* pViewAutoRecommend = new QAction(autoRecommendTitle, this);
+    pViewAutoRecommend->setStatusTip(autoRecommendText);
+    pViewAutoRecommend->setWhatsThis(buildWhatsThis(autoRecommendTitle, autoRecommendText));
+    connect(pViewAutoRecommend, &QAction::triggered, this, &WMainMenuBar::showAutoRecommend);
+    pViewMenu->addAction(pViewAutoRecommend);
+
     QString autoDJTitle = tr("Show Auto DJ");
     QString autoDJText = tr("Switch to the Auto DJ view.");
     auto* pViewAutoDJ = new QAction(autoDJTitle, this);

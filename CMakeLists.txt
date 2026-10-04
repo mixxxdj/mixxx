@@ -1244,6 +1244,10 @@ add_library(
   src/database/schemamanager.cpp
   src/dialog/dlgabout.cpp
   src/dialog/dlgaboutdlg.ui
+  src/dialog/dlgautorecommend.cpp
+  src/dialog/autorecommendbot.cpp
+  src/dialog/autorecommendationengine.cpp
+  src/dialog/autorecommendationengine.h
   src/dialog/songsuggesterutils.h
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
@@ -2980,6 +2984,7 @@ if(BUILD_TESTING)
     src/test/skincontext_test.cpp
     src/test/softtakeover_test.cpp
     src/test/songsuggestertest.cpp
+    src/test/autorecommendationenginetest.cpp
     src/test/soundproxy_test.cpp
     src/test/soundsourceproviderregistrytest.cpp
     src/test/sqliteliketest.cpp
