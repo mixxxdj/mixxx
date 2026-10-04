@@ -2,11 +2,9 @@
 
 #include "pitch_kalman.h"
 
-static bool kalman_debug_state = false;
-
 #define kalman_debug(...)          \
     {                                     \
-        if (kalman_debug_state) {                      \
+        if (p->kalman_debug_state) {                      \
             fprintf(stderr, __VA_ARGS__); \
         }                                 \
     }
@@ -35,7 +33,7 @@ static inline double pow3(double val)
 void pitch_kalman_init(struct pitch_kalman_filter *p, double dt, struct kalman_coeffs stable,
                        struct kalman_coeffs scratch, double scratch_threshold, bool debug)
 {
-    kalman_debug_state = debug;
+    p->kalman_debug_state = debug;
 
     /* Sampling interval */
 
