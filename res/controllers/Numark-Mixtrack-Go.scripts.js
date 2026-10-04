@@ -667,6 +667,11 @@ NumarkMixtrackGo.init = function() {
         }
     });
 
+    // softTakeovers for the Filter/Low knob switching
+    engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
+    engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
+    engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
+    engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
 };
 
 /**
@@ -791,13 +796,20 @@ NumarkMixtrackGo.crossFader = new components.Pot({
 
 // toggles the filter/low knob function between controlling the channels quick effect
 // and the low EQ
+// 0 for filter, 1 for low
 NumarkMixtrackGo.filterLowSwitcher = new components.Button({
     input: function(_channel, _control, value) {
         if (value === 127) {
             if (filterLowSwitch === 0) {
                 filterLowSwitch = 1;
+                // without this the softTakeover calls in init() dont work
+                engine.softTakeoverIgnoreNextValue("[EqualizerRack1_[Channel1]_Effect1]", "parameter1");
+                engine.softTakeoverIgnoreNextValue("[EqualizerRack1_[Channel2]_Effect1]", "parameter1");
             } else {
                 filterLowSwitch = 0;
+                // without this the softTakeover calls in init() dont work
+                engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_[Channel1]]", "super1");
+                engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_[Channel2]]", "super1");
             }
         }
     },
@@ -1254,41 +1266,19 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     };
 
     this.filterLowPot = new components.Pot({
-        quickEffectRackGroup: `[QuickEffectRack1_[Channel${deckNumber}]]`,
-        lowEqGroup: `[EqualizerRack1_[Channel${deckNumber}]_Effect1]`,
-        super1StoredValue: 0,
-        parameter1StoredValue: 0,
-        newValue: 0,
-        valueChange: 0,
-
         input: function(_channel, _control, value) {
-            this.newValue = Math.round(script.absoluteLin(value, 0, 1, 0, 127) * 100) / 100;
-            this.valueChange = 0;
+            const newValue = Math.round(script.absoluteLin(value, 0, 1, 0, 127) * 100) / 100;
 
             if (filterLowSwitch === 0) {
                 // Filter - since this will use QuickEffectRack1, the effect is whatever the user has set
                 // Setting the filter programmatically is a bad idea because whatever is set, if it's parameters where modified,
                 // they'd be reset if filter was set programmatically and the sound could change drastically.
-                this.super1StoredValue = engine.getValue(this.quickEffectRackGroup, "super1");
-                this.valueChange = this.super1StoredValue - this.newValue;
-
-                // takeover at 2% distance
-                if ((this.valueChange < 0.02 && this.valueChange > -0.02)) {
-                    this.super1StoredValue = this.newValue;
-                    engine.setValue(this.quickEffectRackGroup, "super1", this.newValue);
-                }
+                engine.setValue(`[QuickEffectRack1_[Channel${deckNumber}]]`, "super1", newValue);
             } else {
                 // Low
                 // warning [Main] "EffectParameter(Low)" WARNING: Value was outside of limits, clamped.
                 // getting this warning when script.absoluteLin returns 1
-                this.parameter1StoredValue = engine.getParameter(this.lowEqGroup, "parameter1");
-                this.valueChange = this.parameter1StoredValue - this.newValue;
-
-                // takeover at 2% distance
-                if ((this.valueChange < 0.02 && this.valueChange > -0.02)) {
-                    this.parameter1StoredValue = this.newValue;
-                    engine.setParameter(this.lowEqGroup, "parameter1", this.newValue);
-                }
+                engine.setParameter(`[EqualizerRack1_[Channel${deckNumber}]_Effect1]`, "parameter1", newValue);
             }
         },
     });
