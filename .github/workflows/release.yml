@@ -16,6 +16,7 @@ permissions:
   contents: write # to sync branches
   pull-requests: write # to sync branches
   checks: write #  to create new checks (coverallsapp/github-action)
+  actions: write # to delete outdated caches (build.yml)
 
 jobs:
   checks:
