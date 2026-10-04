@@ -8,6 +8,7 @@
 #include "track/globaltrackcache.h"
 #include "track/keyutils.h"
 #include "track/track.h"
+#include "util/color/rgbcolor.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -528,6 +529,9 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         m_trackOrder.reserve(rows);
     }
 
+    // Collect tracks in the order defined by `orderByClause`.
+    // Note that the `color` column is not sorted by its raw integer value,
+    // but by hue, using the `mixxx_hue()` SQL function (see ColumnCache).
     while (query.next()) {
         TrackId trackId(query.value(idColumn));
         (*trackToIndex)[trackId] = m_trackOrder.size();
@@ -690,7 +694,6 @@ int BaseTrackCache::compareColumnValues(int sortColumn,
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) ||
-            sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) ||
             sortColumn == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION)) {
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
@@ -701,6 +704,26 @@ int BaseTrackCache::compareColumnValues(int sortColumn,
             result = 1;
         } else {
             result = -1;
+        }
+    } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+        // Sort colors by hue, consistent with the `mixxx_hue()` SQL function
+        // used to build the "ORDER BY" clause for the initial result set
+        // (see ColumnCache). Both have to use the same ordering, otherwise
+        // rows re-sorted here would not match the order of the rows that
+        // were sorted by SQL.
+        //
+        // Note that the values are color codes, not QColors, hence
+        // RgbColor::fromQVariant() instead of QVariant::toColor().
+        const auto color1 = mixxx::RgbColor::fromQVariant(val1);
+        const auto color2 = mixxx::RgbColor::fromQVariant(val2);
+        const qint64 key1 = mixxx::RgbColor::sortKey(color1);
+        const qint64 key2 = mixxx::RgbColor::sortKey(color2);
+        if (key1 > key2) {
+            result = 1;
+        } else if (key1 < key2) {
+            result = -1;
+        } else {
+            result = 0;
         }
     } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         KeyUtils::KeyNotation keyNotation = m_columnCache.keyNotation();
