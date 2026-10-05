@@ -273,6 +273,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_edit_metadata_selected_clicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
     spinbox_bpm_precision->setValue(BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    checkbox_track_color->setChecked(
+            BaseTrackTableModel::kApplyTrackColorDefault);
     checkbox_played_track_color->setChecked(
             BaseTrackTableModel::kApplyPlayedTrackColorDefault);
 
@@ -452,6 +454,12 @@ void DlgPrefLibrary::slotUpdate() {
                     kBpmColumnPrecisionConfigKey,
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     spinbox_bpm_precision->setValue(bpmColumnPrecision);
+
+    const auto applyTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyTrackColorDefault);
+    checkbox_track_color->setChecked(applyTrackColor);
 
     const auto applyPlayedTrackColor =
             m_pConfig->getValue(
@@ -679,6 +687,12 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->setValue(kDateFormatConfigKey, m_dateFormat);
     BaseTrackTableModel::setDateFormat(m_dateFormat);
+
+    BaseTrackTableModel::setApplyTrackColor(
+            checkbox_track_color->isChecked());
+    m_pConfig->set(
+            mixxx::library::prefs::kApplyTrackColorConfigKey,
+            ConfigValue(checkbox_track_color->isChecked()));
 
     BaseTrackTableModel::setApplyPlayedTrackColor(
             checkbox_played_track_color->isChecked());
