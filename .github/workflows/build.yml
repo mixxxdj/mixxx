@@ -47,6 +47,9 @@ permissions:
 
 jobs:
   build:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches (gh cache delete)
     strategy:
       fail-fast: false
       matrix:
@@ -477,11 +480,34 @@ jobs:
           ${{ matrix.compiler_cache }} --cleanup
 
       - name: "[Ubuntu/macOS] Save ccache cache"
+        id: ccache_save
         if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
         uses: actions/cache/save@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+
+      - name: "[Ubuntu/macOS] Delete outdated ccache caches"
+        # Every source change creates a new cache entry for this branch. Drop
+        # the older ones so they don't evict the caches of other branches.
+        if: steps.ccache_save.outcome == 'success'
+        run: |
+          # A build of a newer commit may have saved its cache already
+          if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
+            echo "$GITHUB_REF has newer commits, not deleting any caches"
+            exit 0
+          fi
+          gh cache list --ref "$GITHUB_REF" --key "$KEY_PREFIX" --limit 100 --json id,key \
+            --jq ".[] | select(.key != \"$KEY\") | .id" |
+          while read -r id; do
+            gh cache delete "$id"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEY: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+          # Also matches caches made with an outdated build environment
+          KEY_PREFIX: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-
 
       - name: "Test"
         if: matrix.crosscompile != true
