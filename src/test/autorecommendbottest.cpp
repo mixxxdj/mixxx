@@ -137,6 +137,17 @@ class TestPlayerManager : public PlayerManagerInterface {
         emit numberOfDecksChanged(static_cast<int>(m_decks.size()));
     }
 
+    // Mirrors a runtime deck removal: the last deck is dropped and
+    // the smaller count is announced, which must make the bot rebind
+    // to the remaining decks.
+    void removeDeckAtRuntime() {
+        if (m_decks.isEmpty()) {
+            return;
+        }
+        m_decks.removeLast();
+        emit numberOfDecksChanged(static_cast<int>(m_decks.size()));
+    }
+
     BaseTrackPlayer* getPlayer(const QString& group) const override {
         for (BaseTrackPlayer* pDeck : m_decks) {
             if (pDeck->getGroup() == group) {
@@ -463,4 +474,75 @@ TEST_F(AutoRecommendBotTest, ExistingDecksStayWatchedAfterDeckAddedAtRuntime) {
     ASSERT_NE(nullptr, deck2.getLoadedTrack());
     EXPECT_EQ(pCandidate->getId(), deck2.getLoadedTrack()->getId());
     EXPECT_EQ(pRef1, deck1.getLoadedTrack());
+}
+
+// When the deck count shrinks the bot re-binds to the smaller set:
+// the removed deck's watcher is dropped (a play/stop cycle on its
+// control becomes inert) and the surviving decks keep working,
+// including a deck that was playing across the rebind.
+TEST_F(AutoRecommendBotTest, DeckRemovedAtRuntimeUnwatchesItAndKeepsOthers) {
+    const TrackPointer pRef1 =
+            getOrAddTrackByLocation(getTestDir().filePath(kTestFile1));
+    const TrackPointer pBest =
+            getOrAddTrackByLocation(getTestDir().filePath(kTestFile2));
+    const TrackPointer pRemoved =
+            getOrAddTrackByLocation(
+                    getTestDir().filePath(QStringLiteral("id3-test-data/all.mp3")));
+    ASSERT_TRUE(pRef1 && pRef1->getId().isValid());
+    ASSERT_TRUE(pBest && pBest->getId().isValid());
+    ASSERT_TRUE(pRemoved && pRemoved->getId().isValid());
+
+    // Deck 1 plays the reference; deck 2 is the idle target.
+    ControlObject* pDeck1Play = loadAndMarkPlaying(deck1, pRef1);
+
+    enableBot(true);
+    AutoRecommendBot bot(trackCollectionManager(), &m_playerManager, config());
+    ASSERT_TRUE(bot.isEnabled());
+    ASSERT_TRUE(bot.isDeckPreloadingEnabled());
+    bot.bindDeckPlayControls(m_playerManager.numberOfDecks());
+
+    int preloadedCount = 0;
+    QString preloadedGroup;
+    QObject::connect(&bot,
+            &AutoRecommendBot::trackPreloaded,
+            [&](const QString& group, const QString&) {
+                ++preloadedCount;
+                preloadedGroup = group;
+            });
+
+    // Grow to three decks (the bot re-binds automatically) and give
+    // the third deck a track while it is stopped.
+    m_playerManager.addDeckAtRuntime(&deck3);
+    ASSERT_EQ(3, m_playerManager.numberOfDecks());
+    deck3.slotLoadTrack(pRemoved,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    ASSERT_EQ(pRemoved, deck3.getLoadedTrack());
+
+    // Then the deck count shrinks again and deck 3 is removed.
+    m_playerManager.removeDeckAtRuntime();
+    ASSERT_EQ(2, m_playerManager.numberOfDecks());
+
+    // The removed deck is inert: a full play/stop cycle on its
+    // control preloads nothing and touches no other deck.
+    deck3.play.set(1.0);
+    deck3.play.set(0.0);
+    EXPECT_EQ(0, preloadedCount);
+    EXPECT_EQ(nullptr, deck2.getLoadedTrack());
+
+    // The surviving decks stayed watched across the rebind: deck 1
+    // was playing when the count shrank, and its stop still preloads
+    // the idle deck with the only eligible candidate (the reference
+    // and the removed deck's track are excluded).
+    ASSERT_TRUE(pDeck1Play->toBool());
+    pDeck1Play->set(0.0);
+    ASSERT_EQ(1, preloadedCount);
+    EXPECT_EQ(deck2.getGroup(), preloadedGroup);
+    ASSERT_NE(nullptr, deck2.getLoadedTrack());
+    EXPECT_EQ(pBest->getId(), deck2.getLoadedTrack()->getId());
+    EXPECT_EQ(pRef1, deck1.getLoadedTrack());
+    // The removed deck kept its track; nothing touched it.
+    EXPECT_EQ(pRemoved, deck3.getLoadedTrack());
 }
