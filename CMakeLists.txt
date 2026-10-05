@@ -3035,6 +3035,32 @@ if(BUILD_TESTING)
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
   )
 
+  # On Windows the vcpkg-provided lilv only finds the LV2 specification
+  # bundles when LV2_PATH points at them. Without any specification on its
+  # search path, lilv_world_load_all() corrupts the heap in debug builds and
+  # test setup aborts before it finishes (PlayerManagerTest::SetUp hangs).
+  # Point the tests at the bundles of the build environment when LV2_PATH
+  # is not provided by the caller (see src/test/main.cpp).
+  if(WIN32 AND DEFINED MIXXX_VCPKG_ROOT AND DEFINED VCPKG_TARGET_TRIPLET)
+    file(TO_CMAKE_PATH
+      "${MIXXX_VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/lib/lv2"
+      _mixxx_test_lv2_dir
+    )
+    if(NOT IS_DIRECTORY "${_mixxx_test_lv2_dir}")
+      file(TO_CMAKE_PATH
+        "${MIXXX_VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/debug/lib/lv2"
+        _mixxx_test_lv2_dir
+      )
+    endif()
+    if(IS_DIRECTORY "${_mixxx_test_lv2_dir}")
+      target_compile_definitions(
+        mixxx-test
+        PRIVATE MIXXX_TEST_LV2_PATH="${_mixxx_test_lv2_dir}"
+      )
+    endif()
+    unset(_mixxx_test_lv2_dir)
+  endif()
+
   if(HID)
     target_sources(
       mixxx-test
