@@ -2985,6 +2985,7 @@ if(BUILD_TESTING)
     src/test/softtakeover_test.cpp
     src/test/songsuggestertest.cpp
     src/test/autorecommendationenginetest.cpp
+    src/test/autorecommendbottest.cpp
     src/test/soundproxy_test.cpp
     src/test/soundsourceproviderregistrytest.cpp
     src/test/sqliteliketest.cpp

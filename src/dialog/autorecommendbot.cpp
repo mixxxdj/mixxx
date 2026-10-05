@@ -47,7 +47,7 @@ bool isAutoDjEnabled() {
 
 AutoRecommendBot::AutoRecommendBot(
         TrackCollectionManager* pTrackCollectionManager,
-        PlayerManager* pPlayerManager,
+        PlayerManagerInterface* pPlayerManager,
         UserSettingsPointer pConfig,
         QObject* pParent)
         : QObject(pParent),
@@ -68,6 +68,18 @@ AutoRecommendBot::AutoRecommendBot(
     m_weights.energy = loadWeight(m_pConfig, kConfigWeightEnergy, 1.0);
     m_weights.key = loadWeight(m_pConfig, kConfigWeightKey, 1.0);
     m_weights.fame = loadWeight(m_pConfig, kConfigWeightFame, 0.5);
+
+    DEBUG_ASSERT(m_pPlayerManager);
+    if (m_pPlayerManager) {
+        // Rebind the deck play watchers whenever the number of decks
+        // changes, so newly added decks are watched and preloaded
+        // too. The signal is emitted after the new decks exist, so
+        // their play controls are available for binding.
+        connect(m_pPlayerManager,
+                &PlayerManagerInterface::numberOfDecksChanged,
+                this,
+                &AutoRecommendBot::slotNumDecksChanged);
+    }
 }
 
 mixxx::AutoRecommendationWeights AutoRecommendBot::weights() const {
@@ -136,12 +148,23 @@ void AutoRecommendBot::setQueueSize(int queueSize) {
 }
 
 void AutoRecommendBot::bindDeckPlayControls(int numDecks) {
+    numDecks = std::max(numDecks, 0);
+    // Replace the watchers of the previous deck count. They are
+    // owned by the Qt object tree; deleting a proxy also drops its
+    // value-changed connection. This is never called from within a
+    // play-control callback, so immediate deletion is safe.
+    for (ControlProxy* pPlayProxy : m_deckPlayProxies) {
+        delete pPlayProxy;
+    }
+    m_deckPlayProxies.clear();
+
     m_deckWasPlaying.clear();
     m_deckWasPlaying.reserve(numDecks);
     for (int deckIndex = 0; deckIndex < numDecks; ++deckIndex) {
         const QString group = PlayerManager::groupForDeck(deckIndex);
         // The proxies are parented to this bot and cleaned up by the
-        // Qt object tree, so they do not need to be stored.
+        // Qt object tree; the raw pointers are only tracked to allow
+        // rebinding on deck-count changes.
         auto pPlayProxy = make_parented<ControlProxy>(group, "play", this);
         // Capture the deck index, because the valueChanged signal does
         // not carry the group of the changed control.
@@ -151,7 +174,16 @@ void AutoRecommendBot::bindDeckPlayControls(int numDecks) {
                     slotDeckPlayChanged(deckIndex, value);
                 });
         m_deckWasPlaying.append(pPlayProxy->toBool());
+        m_deckPlayProxies.append(pPlayProxy.get());
     }
+}
+
+void AutoRecommendBot::slotNumDecksChanged(int numDecks) {
+    if (numDecks < 0 || numDecks == m_deckWasPlaying.size()) {
+        // Nothing changed: keep the current watchers.
+        return;
+    }
+    bindDeckPlayControls(numDecks);
 }
 
 QSet<TrackId> AutoRecommendBot::queuedTrackIds() const {

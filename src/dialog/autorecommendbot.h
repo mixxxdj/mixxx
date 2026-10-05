@@ -13,7 +13,7 @@
 #include "util/parented_ptr.h"
 
 class PlaylistDAO;
-class PlayerManager;
+class PlayerManagerInterface;
 class TrackCollectionManager;
 
 // Controls the state of the Auto-Recommendation bot and stores its
@@ -41,7 +41,7 @@ class AutoRecommendBot : public QObject {
 
     AutoRecommendBot(
             TrackCollectionManager* pTrackCollectionManager,
-            PlayerManager* pPlayerManager,
+            PlayerManagerInterface* pPlayerManager,
             UserSettingsPointer pConfig,
             QObject* pParent = nullptr);
 
@@ -69,7 +69,10 @@ class AutoRecommendBot : public QObject {
     int topUpQueue(const TrackPointer& pReferenceTrack);
 
     // Connects the bot to the deck play controls. Called by the main
-    // window once the player manager has created all decks.
+    // window once the player manager has created all decks. Safe to
+    // call again: the watchers of the previous deck count are
+    // replaced, which also happens automatically whenever the number
+    // of decks changes.
     void bindDeckPlayControls(int numDecks);
 
   public slots:
@@ -84,6 +87,11 @@ class AutoRecommendBot : public QObject {
     // Preloads the top recommendation into an idle deck when the deck
     // with the given index stops playing.
     void slotDeckPlayChanged(int deckIndex, double value);
+
+  private slots:
+    // Rebinds the deck play watchers when the number of decks
+    // changes, so newly added decks are preloaded too.
+    void slotNumDecksChanged(int numDecks);
 
   signals:
     void enabledChanged(bool enabled);
@@ -105,7 +113,7 @@ class AutoRecommendBot : public QObject {
             int fallbackDeckIndex);
 
     TrackCollectionManager* const m_pTrackCollectionManager;
-    PlayerManager* const m_pPlayerManager;
+    PlayerManagerInterface* const m_pPlayerManager;
     const UserSettingsPointer m_pConfig;
 
     bool m_enabled;
@@ -116,7 +124,9 @@ class AutoRecommendBot : public QObject {
 
     // Remembers whether each deck was playing before the most recent
     // play-control change, to detect playing -> stopped transitions.
-    // The play-control watchers themselves are owned by the Qt parent
-    // child tree and do not need to be stored.
     QList<bool> m_deckWasPlaying;
+
+    // The play-control watcher of each bound deck, owned by the Qt
+    // object tree. Tracked so a deck-count change can replace them.
+    QList<ControlProxy*> m_deckPlayProxies;
 };
