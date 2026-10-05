@@ -1527,7 +1527,7 @@ NS4FX.Deck = function(number, midi_chan) {
             reloop: new components.Button({
                 midi: [0x94 + midi_chan, 0x41],
                 input: function(_channel, _control, value, _status) {
-                    NS4FX.dbg("[RELOOP/ROLL] Shift+Loop On/Off pressed on deck " + deck.number + " with value: " + value + " for group: " + this.group);
+                    NS4FX.dbg(`[RELOOP/ROLL] Shift+Loop On/Off pressed on deck ${  deck.number  } with value: ${  value  } for group: ${  this.group}`);
                     if (value === 0x7F) { // Button pressed
                         // Activate loop roll over the current beatloop_size
                         engine.setValue(this.group, "beatlooproll_activate", 1);
