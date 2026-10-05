@@ -226,7 +226,7 @@ class ControllerScriptEngineLegacyTimerTest : public ControllerScriptEngineLegac
         m_pCo = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"), -10.0, 10.0);
         m_pCo->setParameter(0.0);
         m_pCoTimerId = std::make_unique<ControlPotmeter>(
-                ConfigKey("[Test]", "coTimerId"), -10.0, 50.0);
+                ConfigKey("[Test]", "coTimerId"), -10.0, 1.0e12);
         m_pCoTimerId->setParameter(0.0);
         EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', 0.0);"));
         EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
