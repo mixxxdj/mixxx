@@ -77,6 +77,7 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("titleInfo", txtTitle);
     m_propertyWidgets.insert("album", txtAlbum);
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
+    m_propertyWidgets.insert("record_label", txtRecordLabel);
     m_propertyWidgets.insert("composer", txtComposer);
     m_propertyWidgets.insert("genre", txtGenre);
     m_propertyWidgets.insert("year", txtYear);
@@ -227,6 +228,19 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text());
             });
+    connect(txtRecordLabel,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                txtRecordLabel->setText(
+                    txtRecordLabel->text().trimmed());
+
+                m_trackRecord
+                    .refMetadata()
+                    .refAlbumInfo()
+                    .setRecordLabel(
+                        txtRecordLabel->text());
+        });
     connect(txtGenre,
             &QLineEdit::editingFinished,
             this,
@@ -639,6 +653,7 @@ void DlgTrackInfo::trackColorDialogSetColor(const mixxx::RgbColor::optional_t& n
 }
 
 void DlgTrackInfo::saveTrack() {
+    qDebug() << "DlgTrackInfo::saveTrack() called";
     if (!m_pLoadedTrack) {
         return;
     }
@@ -659,6 +674,12 @@ void DlgTrackInfo::saveTrack() {
     // Special case handling for the comment field that is not
     // updated by the editingFinished signal.
     m_trackRecord.refMetadata().refTrackInfo().setComment(txtComment->toPlainText());
+
+    m_trackRecord
+        .refMetadata()
+        .refAlbumInfo()
+        .setRecordLabel(
+                txtRecordLabel->text().trimmed());
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
