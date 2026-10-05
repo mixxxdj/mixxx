@@ -1,6 +1,7 @@
 #include "soundio/sounddevicenetwork.h"
 
 #include <QtDebug>
+#include <atomic>
 
 #include "control/controlobject.h"
 #include "engine/sidechain/enginenetworkstream.h"
@@ -29,6 +30,22 @@ constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 
 const QString kAppGroup = QStringLiteral("[App]");
+
+bool updateIfGreater(std::atomic_int* pAtomic, int newValue) {
+    int current = pAtomic->load(std::memory_order_relaxed);
+    // Keep trying when the current value has been changed before we have updated it
+    while (newValue > current) {
+        // If pAtomic == current, it is replaced with newValue and we return true.
+        if (pAtomic->compare_exchange_weak(
+                    current, // non const reference, updated each call
+                    newValue)) {
+            // pAtomic has now newValue
+            return true;
+        }
+    }
+    return false;
+}
+
 } // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(
@@ -318,8 +335,20 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             // kLogger.debug() << "workerWriteProcess: buffer empty."
             //                 << "Catch up with silence:" << writeExpected - readAvailable
             //                 << "streamTime" << pWorker->getStreamTimeFrames();;
-            // catch up by filling buffer until we are synced
-            workerWriteSilence(pWorker, (writeExpected - readAvailable) / m_numOutputChannels);
+
+            // Catch up by filling buffer until the worker buffer is in sync with
+            // the network clock. Worker buffers are by a magnitude bigger than
+            // engine buffers and can consume these samples. But remove one chunk
+            // to not add the normal sleep after this call.
+            int silenceFrames = (writeExpected - readAvailable - outChunkSize) /
+                    m_numOutputChannels;
+            workerWriteSilence(pWorker, silenceFrames);
+            // Inform the engine cycle about the extra frames written to avoid
+            // underflows in other code paths.
+            // Note, this is called for each pWorker (broadcats connection) all
+            // running at the same network clock. The value is used for shifting
+            // the m_targetTime and then reset to 0.
+            updateIfGreater(&m_extraFramesWritten, silenceFrames);
             m_pSoundManager->underflowHappened(24);
         } else {
             pWorker->setOutputDrift(true);
@@ -338,7 +367,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
     } else if (writeExpected < outChunkSize / 2) {
         // We will overshoot by more than a half of the new frames
         if (pWorker->outputDrift()) {
-            // kLogger.debug() << "workerWriteProcess() "
+            // kLogger.debug() << "SoundDeviceNetwork::workerWriteProcess() "
             //                    "skip one frame"
             //                 << (float)writeExpected / outChunkSize
             //                 << (float)readAvailable / outChunkSize;
@@ -517,7 +546,8 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {
     m_clkRefTimer.start();
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
-    // This deadline for the next buffer in microseconds since the Unix epoch
+    // Calculate the deadline for the next buffer in microseconds since the Unix epoch
+    framesPerBuffer += m_extraFramesWritten.exchange(0, std::memory_order_relaxed);
     m_targetTime += static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000);
     double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
     callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
@@ -538,12 +568,16 @@ void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
 
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
     unsigned long sleepUs = 0;
-    if (currentTime > m_targetTime) {
-        m_pSoundManager->underflowHappened(22);
-        //qDebug() << "underflow" << currentTime << m_targetTime;
-        m_targetTime = currentTime;
+    qint64 remain = m_targetTime - currentTime;
+    if (remain < 0) {
+        // qDebug() << "delayed" << remain << m_targetTime;
+        if (remain + static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000) < 0) {
+            // No remaining time, so we don't sleep to catch up.
+            // m_targetTime is adjusted in workerWriteProcess()
+            m_pSoundManager->underflowHappened(22);
+        }
     } else {
-        sleepUs = m_targetTime - currentTime;
+        sleepUs = static_cast<unsigned long>(remain);
     }
 
     //qDebug() << "sleep" << sleepUs;
