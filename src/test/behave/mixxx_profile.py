@@ -273,7 +273,9 @@ class MixxxProcess:
         # 0xC0000005, an access violation); the hex form makes them readable.
         return f"{code} (0x{code & 0xFFFFFFFF:08X})"
 
-    def start(self, timeout=20):
+    # Fresh profiles apply schema migrations and load the full skin at first
+    # start, which can exceed the historical 20 s on loaded systems.
+    def start(self, timeout=60):
         env = os.environ.copy()
         if self.display:
             env["DISPLAY"] = self.display

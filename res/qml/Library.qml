@@ -267,6 +267,28 @@ Item {
                 // Exposed for the E2E test harness
                 readonly property int criteriaCount: selectedCriteria.count
 
+                // Field names of the selected criteria in insertion order,
+                // joined with a comma. Exposed for the E2E test harness to
+                // resolve a token index to its field name.
+                readonly property string criteriaFields: {
+                    let names = [];
+                    for (let i = 0; i < selectedCriteria.count; i++) {
+                        names.push(selectedCriteria.get(i).name);
+                    }
+                    return JSON.stringify(names);
+                }
+
+                // Display texts of the currently suggested criteria values,
+                // in list order. Exposed for the E2E test harness to assert
+                // suggestion entries without depending on delegate geometry.
+                readonly property string suggestionTexts: {
+                    let texts = [];
+                    for (let i = 0; i < suggestionModel.count; i++) {
+                        texts.push(suggestionModel.get(i).display);
+                    }
+                    return JSON.stringify(texts);
+                }
+
                 border.color: '#757575'
                 border.width: 1
 
@@ -912,6 +934,9 @@ Item {
                         }
 
                         Text {
+                            id: collapsedPlaceholder
+                            objectName: "searchCollapsedPlaceholder"
+
                             visible: !searchPane.hasSearch
                             anchors.left: parent.left
                             anchors.leftMargin: 11
@@ -1390,6 +1415,7 @@ Item {
 
                     Text {
                         id: searchPlaceholder
+                        objectName: "searchPlaceholder"
 
                         visible: searchPane.activated && searchField.text.length === 0
                         color: '#808080'
@@ -1417,6 +1443,7 @@ Item {
 
                     Text {
                         id: typingTip
+                        objectName: "searchTabHint"
 
                         readonly property string tip: {
                             if (!searchPane.activated || searchField.text.length === 0) {

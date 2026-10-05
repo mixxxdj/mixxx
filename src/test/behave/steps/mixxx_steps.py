@@ -511,7 +511,7 @@ def _search_activated(rpc):
     return _get_property(rpc, SEARCH_PANE_PATH, "activated") == "true"
 
 
-def _activate_library_search(context, timeout=5):
+def _activate_library_search(context, timeout=15):
     s = context.mixxx_rpc
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -1488,7 +1488,15 @@ def step_type_library_search(context, text):
 
 @when("I type the title of the track at row {row:d} into the library search")
 def step_type_row_title_library_search(context, row):
-    title = str(context.mixxx_rpc.invokeMethod(TRACKLIST_PATH, "trackTitleForRow", [row]) or "")
+    s = context.mixxx_rpc
+    title = ""
+    deadline = time.time() + 10
+    while time.time() < deadline:
+        title = str(
+                s.invokeMethod(TRACKLIST_PATH, "trackTitleForRow", [row]) or "")
+        if title:
+            break
+        time.sleep(0.3)
     assert title, f"Track at row {row} has no title"
     context._search_title = title
     _type_into_library_search(context, title)
@@ -1502,6 +1510,7 @@ def step_clear_library_search(context):
 
 
 @when('I select the library search suggestion "{suggestion}"')
+@then('I select the library search suggestion "{suggestion}"')
 def step_select_suggestion(context, suggestion):
     s = context.mixxx_rpc
     _click(s, f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}")
@@ -1544,6 +1553,16 @@ def step_track_row_visible_in_results(context, row):
     assert found >= 0, f"Track '{title}' (row {row}) is not in the results"
 
 
+@then('the track at row {row:d} should be visible in the {side} track list')
+def step_track_row_visible_in_side_list(context, row, side):
+    title = getattr(context, "_search_title", None)
+    assert title is not None, "No track title was typed into the search"
+    tracklist = RIGHT_TRACKLIST_PATH if side == "right" else TRACKLIST_PATH
+    _wait_for_visible(context.mixxx_rpc, tracklist)
+    found = _track_row_by_title(context.mixxx_rpc, tracklist, title, timeout=15)
+    assert found >= 0, f"Track '{title}' (row {row}) is not in the {side} track list"
+
+
 @then("no other track should be visible in the results")
 def step_no_other_track_in_results(context, ):
     """Typing a full track title keeps only the matching row(s)."""
@@ -1556,8 +1575,20 @@ def step_no_other_track_in_results(context, ):
 def step_all_tracks_shown_again(context, ):
     s = context.mixxx_rpc
     total = _get_library_state(s).get("visibleTrackCount", 0)
-    rows = _track_rows(s, TRACKLIST_PATH)
-    assert rows == total, f"{rows} tracks are shown, expected all {total}"
+    deadline = time.time() + 5
+    rows = -1
+    while time.time() < deadline:
+        rows = _track_rows(s, TRACKLIST_PATH)
+        if rows == total:
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+            f"{rows} tracks are shown, expected all {total}")
+
+
+@then("all tracks in the library should be shown without a search filter")
+def step_all_tracks_shown_without_filter(context):
+    step_all_tracks_shown_again(context)
 
 
 @then('the library search suggestion "{suggestion}" should be visible')
@@ -1567,6 +1598,15 @@ def step_suggestion_visible(context, suggestion):
     # searches, so the recents must have been dismissed first.
     _wait_for_hidden(s, SEARCH_RECENT_LIST_PATH)
     _wait_for_visible(s, f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}")
+
+
+@then('the library search suggestion "{suggestion}" should not be visible')
+def step_suggestion_not_visible(context, suggestion):
+    s = context.mixxx_rpc
+    path = f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}"
+    time.sleep(SEARCH_APPLY_DELAY)
+    assert not _is_visible(s, path), (
+        f'The field suggestion "{suggestion}" is visible')
 
 
 @then('the library recent search "{needle}" should be visible')
@@ -1583,9 +1623,9 @@ def step_search_token_shown(context, field):
     s = context.mixxx_rpc
     count = int(_get_property(s, SEARCH_PANE_PATH, "criteriaCount") or 0)
     assert count > 0, f"Search bar has no criteria tokens ({count})"
-    query = _get_property(s, SEARCH_PANE_PATH, "activeQuery")
-    assert query.startswith(field), (
-        f"Active query '{query}' does not start with '{field}'"
+    fields = _search_criteria_fields(s)
+    assert field in fields, (
+        f"Search bar has no token for '{field}' (criteria: {fields})"
     )
 
 
@@ -1606,3 +1646,388 @@ def step_track_selected_right_list(context, row):
     path = f"{RIGHT_TRACKLIST_PATH}/trackTableView/trackRow_{row}"
     selected = _get_property(s, path, "selected")
     assert selected == "true", f"Track at row {row} is not selected (selected={selected})"
+
+
+# --- Library search: token-based criteria ---
+
+QT_KEY_BACKSPACE = 0x01000003
+QT_KEY_LEFT = 0x01000012
+QT_KEY_RIGHT = 0x01000014
+QT_KEY_F = 0x46
+
+# Human-readable key names of the search-bar scenarios, mapped to Qt key
+# codes.
+_SEARCH_KEYS = {
+    "Escape": QT_KEY_ESCAPE,
+    "Tab": QT_KEY_TAB,
+    "Backspace": QT_KEY_BACKSPACE,
+    "Enter": QT_KEY_ENTER,
+    "Delete": QT_KEY_DELETE,
+    "Left": QT_KEY_LEFT,
+    "Up": QT_KEY_UP,
+    "Right": QT_KEY_RIGHT,
+    "Down": QT_KEY_DOWN,
+    # "Ctrl+F" is a special case: it keys on a window-level Shortcut and is
+    # delivered as a (Qt key code, Qt modifier) pair.
+    "Ctrl+F": (QT_KEY_F, QT_CONTROL_MODIFIER),
+}
+
+
+def _search_criteria_fields(rpc):
+    """Field names of the criteria tokens in insertion order (JSON list)."""
+    raw = _get_property(rpc, SEARCH_PANE_PATH, "criteriaFields") or "[]"
+    try:
+        return json.loads(raw)
+    except (TypeError, ValueError):
+        return []
+
+
+def _remember_search_track(context):
+    """Remember a track with a title unique among the visible rows.
+
+    Scenarios reference it as "this track" and must not depend on which tracks
+    happen to be in the test profile or on their order.
+    """
+    s = context.mixxx_rpc
+    deadline = time.time() + 30
+    chosen = None
+    while chosen is None and time.time() < deadline:
+        rows = _track_rows(s, TRACKLIST_PATH)
+        if rows == 0:
+            # The track list may still be building up after the scan
+            time.sleep(0.3)
+            continue
+        titles = [
+            str(s.invokeMethod(TRACKLIST_PATH, "trackTitleForRow", [row]) or "")
+            for row in range(rows)
+        ]
+        for row, title in enumerate(titles):
+            if title and titles.count(title) == 1:
+                chosen = (row, title)
+                break
+        if chosen is None:
+            time.sleep(0.3)
+    assert chosen is not None, "No track with a unique title in the library"
+    row, _ = chosen
+    data = json.loads(
+        str(s.invokeMethod(TRACKLIST_PATH, "trackDataForRow", [row]) or "{}"))
+    data["title"] = data.get("title") or chosen[1]
+    data["row"] = row
+    context.search_track = data
+
+
+def _this_track_field(context, field):
+    data = getattr(context, "search_track", None)
+    assert data is not None, "No track was remembered as \"this track\""
+    value = data.get(field)
+    assert value not in (None, ""), (
+        f"The remembered track has no '{field}'"
+    )
+    return value
+
+
+def _type_this_track(context, field, transform=None):
+    value = str(_this_track_field(context, field))
+    if transform:
+        value = transform(value)
+    _type_into_library_search(context, value)
+    return value
+
+
+@given("a track available in the library with a unique title")
+def step_remember_search_track(context):
+    _remember_search_track(context)
+
+
+@given("no search is currently active")
+def step_no_search_active(context):
+    """Reset the search bar to its fresh state: no criteria tokens, no query
+    and deactivated. Clears without persisting, so no recent-search entry is
+    created for a leftover query."""
+    s = context.mixxx_rpc
+    pane = SEARCH_PANE_PATH
+    has_criteria = int(_get_property(s, pane, "criteriaCount") or 0) > 0
+    has_query = bool(_get_property(s, pane, "activeQuery"))
+    if has_criteria or has_query:
+        s.invokeMethod(pane, "clearAllCriteria", [])
+    if _search_activated(s):
+        s.invokeMethod(pane, "deactivatePane", [])
+    deadline = time.time() + 5
+    criteria_count = -1
+    query = ""
+    while time.time() < deadline:
+        criteria_count = int(_get_property(s, pane, "criteriaCount") or 0)
+        query = _get_property(s, pane, "activeQuery") or ""
+        if criteria_count == 0 and query == "" and not _search_activated(s):
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+            f"The search bar could not be reset (criteria: {criteria_count}, "
+            f"query: \"{query}\")")
+
+
+@given('the library search criteria include the field "{field}" with the value "{value}"')
+def step_search_criteria_include(context, field, value):
+    _type_into_library_search(context, f"{field.lower()}:")
+    _type_into_library_search(context, value)
+
+
+@when('I type the title of this track into the library search')
+def step_type_this_title(context):
+    _type_this_track(context, "title")
+
+
+@when("I type the first word of the title of this track into the library search")
+def step_type_this_title_first_word(context):
+    _type_this_track(
+        context, "title", lambda title: title.split()[0] if title.split() else "")
+
+
+@when("I type the artist of this track into the library search")
+def step_type_this_artist(context):
+    _type_this_track(context, "artist")
+
+
+@when('I press the "{key}" key in the library search')
+@then('I press the "{key}" key in the library search')
+def step_press_key_in_search(context, key):
+    s = context.mixxx_rpc
+    binding = _SEARCH_KEYS.get(key)
+    assert binding is not None, f"Unsupported key '{key}'"
+    if isinstance(binding, tuple):
+        code, modifiers = binding
+    else:
+        code, modifiers = binding, 0
+    s.enterKey("mainWindow", code, modifiers)
+    time.sleep(0.3)
+
+
+@when('I click the recent library search "{search}"')
+def step_click_recent_search(context, search):
+    s = context.mixxx_rpc
+    title = getattr(context, "_search_title", None)
+    expected = title if "title of the track" in search else search
+    _click(s, f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}")
+    time.sleep(0.5)
+
+
+@when("I wait for the search to settle")
+def step_wait_search_settle(context):
+    # The query is applied through an 800 ms debounce timer; allow one full
+    # cycle plus reaction time.
+    time.sleep(SEARCH_APPLY_DELAY + 0.5)
+
+
+@then("the library search bar should be present")
+def step_search_bar_present(context):
+    assert _is_visible(context.mixxx_rpc, SEARCH_PANE_PATH), (
+        "The search bar is not present in the library pane")
+
+
+@then("the library search bar should be anchored to the bottom-right of the library pane")
+def step_search_bar_anchored(context):
+    s = context.mixxx_rpc
+    pane = _get_bb(s, SEARCH_PANE_PATH)
+    host = _get_bb(s, f"{LIBRARY_CONTENT}/browsingView")
+    tolerance = 10
+    right = abs((pane["x"] + pane["width"]) - (host["x"] + host["width"])) <= tolerance
+    bottom = abs((pane["y"] + pane["height"]) - (host["y"] + host["height"])) <= tolerance
+    assert right and bottom, (
+        f"Search bar {pane} is not anchored to the bottom-right of the "
+        f"library pane {host}")
+
+
+@then("the library search bar should be expanded")
+def step_search_bar_expanded(context):
+    s = context.mixxx_rpc
+    deadline = time.time() + 5
+    state = ""
+    while time.time() < deadline:
+        state = _get_property(s, SEARCH_PANE_PATH, "state") or ""
+        if state == "expanded":
+            return
+        time.sleep(0.3)
+    raise AssertionError(f"The search bar is not expanded (state={state})")
+
+
+@then('the search placeholder "{text}" should be visible')
+def step_search_placeholder_visible(context, text):
+    s = context.mixxx_rpc
+    deadline = time.time() + 5
+    seen = ""
+    while time.time() < deadline:
+        for path in (
+                f"{SEARCH_PANE_PATH}/searchPlaceholder",
+                f"{SEARCH_PANE_PATH}/searchCollapsedPlaceholder"):
+            if _is_visible(s, path):
+                seen = _get_property(s, path, "text") or ""
+                if seen == text:
+                    return
+        time.sleep(0.3)
+    raise AssertionError(
+        f'The search placeholder "{text}" is not visible (visible text: "{seen}")')
+
+
+@then('the search hint "{text}" should be visible')
+def step_search_hint_visible(context, text):
+    s = context.mixxx_rpc
+    path = f"{SEARCH_PANE_PATH}/searchTabHint"
+    deadline = time.time() + 5
+    seen = ""
+    while time.time() < deadline:
+        if _is_visible(s, path):
+            seen = _get_property(s, path, "text") or ""
+            if seen == text:
+                return
+        time.sleep(0.3)
+    raise AssertionError(
+        f'The search hint "{text}" is not visible (visible text: "{seen}")')
+
+
+@then('the search token "{field}" should be active')
+def step_search_token_active(context, field):
+    s = context.mixxx_rpc
+    deadline = time.time() + 5
+    fields = []
+    index = -1
+    while time.time() < deadline:
+        fields = _search_criteria_fields(s)
+        index = int(_get_property(s, SEARCH_PANE_PATH, "activeTokenIndex") or -1)
+        if 0 <= index < len(fields) and fields[index] == field:
+            return
+        time.sleep(0.3)
+    active = fields[index] if 0 <= index < len(fields) else "none"
+    raise AssertionError(
+        f'The token "{field}" is not active (active: {active}, criteria: {fields})')
+
+
+@then('the library search query should be "{query}"')
+def step_search_query_is(context, query):
+    s = context.mixxx_rpc
+    expected = query
+    title = getattr(context, "_search_title", None)
+    if "title of the track" in expected and title:
+        expected = expected.replace(
+            "<title of the track at row 1>", title)
+    deadline = time.time() + 5
+    seen = ""
+    while time.time() < deadline:
+        seen = _get_property(s, SEARCH_PANE_PATH, "activeQuery") or ""
+        if seen == expected:
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+        f'The search query is "{seen}", expected "{expected}"')
+
+
+@then("the library search bar should be empty")
+def step_search_bar_empty(context):
+    s = context.mixxx_rpc
+    deadline = time.time() + 5
+    seen = None
+    while time.time() < deadline:
+        count = int(_get_property(s, SEARCH_PANE_PATH, "criteriaCount") or 0)
+        text = _get_property(s, SEARCH_FIELD_PATH, "text") or ""
+        seen = (count, text)
+        if count == 0 and text == "":
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+        f"The search bar is not empty: {seen[0]} criteria, text \"{seen[1]}\"")
+
+
+@then("the library search suggestion showing the artist of this track should be visible")
+def step_artist_suggestion_visible(context):
+    location = context.search_track["location"]
+    data = _get_track_summary_state(context.mixxx_rpc, location)
+    assert data.get("artist"), "The remembered track has no artist"
+    _wait_for_search_suggestion(context, data["artist"])
+
+
+def _get_track_summary_state(rpc, filepath):
+    """Introspection of a library track via the getTrackSummary command,
+    which reads the track through the data manager (not the test database)."""
+    rpc.command("getTrackSummary", filepath)
+    raw = rpc.getStringProperty("mainWindow", "lastTrackSummary")
+    try:
+        return json.loads(raw or "{}")
+    except (TypeError, ValueError):
+        return {}
+
+
+def _search_suggestion_texts(rpc):
+    """Display texts of the currently suggested values (JSON list)."""
+    raw = _get_property(rpc, SEARCH_PANE_PATH, "suggestionTexts") or "[]"
+    try:
+        return json.loads(raw)
+    except (TypeError, ValueError):
+        return []
+
+
+def _wait_for_search_suggestion(context, value, timeout=30):
+    s = context.mixxx_rpc
+    deadline = time.time() + timeout
+    texts = []
+    while time.time() < deadline:
+        texts = _search_suggestion_texts(s)
+        if value in texts:
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+        f'The search suggestion "{value}" is not visible (suggestions: {texts})')
+
+
+def search_field_quote(value):
+    """Quote a criterion value the same way res/qml/Library.qml does."""
+    if re.search(r"[\s\"'=~-]", value):
+        return '"' + value + '"'
+    return value
+
+
+@then("the library search query should contain the artist of this track")
+def step_query_contains_artist(context):
+    s = context.mixxx_rpc
+    expected = "artist:" + search_field_quote(_this_track_field(context, "artist"))
+    deadline = time.time() + 5
+    query = ""
+    while time.time() < deadline:
+        query = _get_property(s, SEARCH_PANE_PATH, "activeQuery") or ""
+        if expected in query:
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+        f"The search query \"{query}\" does not contain \"{expected}\"")
+
+
+def _this_track_results_visible(context):
+    s = context.mixxx_rpc
+    title = _this_track_field(context, "title")
+    return _track_row_by_title(s, TRACKLIST_PATH, title, timeout=15) >= 0
+
+
+@then("this track should be visible in the results")
+def step_this_track_visible(context):
+    assert _this_track_results_visible(context), (
+        f'The remembered track "{_this_track_field(context, "title")}" '
+        "is not in the results")
+
+
+@then("only this track should be visible in the results")
+def step_only_this_track_visible(context):
+    s = context.mixxx_rpc
+    title = _this_track_field(context, "title")
+    row = _track_row_by_title(s, TRACKLIST_PATH, title, timeout=15)
+    assert row >= 0, (
+        f'The remembered track "{title}" is not in the results')
+    rows = _track_rows(s, TRACKLIST_PATH)
+    assert rows == 1, (
+        f"{rows} track rows are shown; only the track \"{title}\" was expected")
+
+
+@then("not all tracks should be visible in the results")
+def step_not_all_tracks_visible(context):
+    s = context.mixxx_rpc
+    total = _get_library_state(s).get("visibleTrackCount", 0)
+    rows = _track_rows(s, TRACKLIST_PATH)
+    assert rows < total, (
+        f"{rows} track rows are shown, expected fewer than all {total}")

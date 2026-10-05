@@ -37,6 +37,7 @@ class QmlTrackProxy : public QObject {
     Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyTextChanged)
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
     Q_PROPERTY(double duration READ getDuration NOTIFY durationChanged)
+    Q_PROPERTY(double bpm READ getBpm NOTIFY bpmChanged)
     Q_PROPERTY(int sampleRate READ getSampleRate NOTIFY sampleRateChanged)
     Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
     Q_PROPERTY(QUrl trackLocationUrl READ getTrackLocationUrl NOTIFY trackLocationUrlChanged)
@@ -68,6 +69,7 @@ class QmlTrackProxy : public QObject {
     QString getKeyText() const;
     QColor getColor() const;
     double getDuration() const;
+    double getBpm() const;
     int getSampleRate() const;
     QUrl getCoverArtUrl() const;
     QUrl getTrackLocationUrl() const;
@@ -127,6 +129,7 @@ class QmlTrackProxy : public QObject {
     void keyTextChanged();
     void colorChanged();
     void durationChanged();
+    void bpmChanged();
     void sampleRateChanged();
     void coverArtUrlChanged();
     void trackLocationUrlChanged();

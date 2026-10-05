@@ -106,6 +106,10 @@ QmlTrackProxy::QmlTrackProxy(TrackPointer track, QObject* parent)
             &Track::durationChanged,
             this,
             &QmlTrackProxy::durationChanged);
+    connect(m_pTrack.get(),
+            &Track::bpmChanged,
+            this,
+            &QmlTrackProxy::bpmChanged);
 #ifdef __STEM__
     connect(m_pTrack.get(),
             &Track::stemsUpdated,
@@ -193,6 +197,13 @@ double QmlTrackProxy::getDuration() const {
         return -1;
     }
     return m_pTrack->getDuration();
+}
+
+double QmlTrackProxy::getBpm() const {
+    if (m_pTrack == nullptr) {
+        return 0.0;
+    }
+    return m_pTrack->getBpm();
 }
 
 int QmlTrackProxy::getSampleRate() const {
