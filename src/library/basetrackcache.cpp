@@ -14,11 +14,6 @@ namespace {
 
 constexpr bool sDebug = false;
 
-// Denotes "no color". Unlike an invalid QVariant, which signals that
-// Track does not provide the requested column (see BaseTrackCache::data()),
-// this is a valid (typed) null that matches NULL values from the database.
-const QVariant kNullColorVariant = QVariant(QMetaType::fromType<mixxx::RgbColor::code_t>());
-
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
@@ -382,7 +377,7 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         return QVariant{pTrack->isBpmLocked()};
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) == column) {
-        return mixxx::RgbColor::toQVariant(pTrack->getColor(), kNullColorVariant);
+        return mixxx::RgbColor::toQVariant(pTrack->getColor());
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         return QVariant{pTrack->getCoverInfo().coverLocation};
@@ -394,7 +389,7 @@ QVariant BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         return QVariant{pTrack->getCoverInfo().imageDigest()};
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) == column) {
-        return mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color, kNullColorVariant);
+        return mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color);
     }
     if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) == column) {
         return QVariant{pTrack->getCoverInfo().imageDigest()};
