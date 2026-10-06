@@ -1,0 +1,7 @@
+Diagnostics:
+  ClangTidy:
+    Add: [performance*, boost*, clang*, concurrency*, portability*]
+    Remove: [modernize*, readability*, llvm-qualified-auto, misc-non-private-member-variables-in-classes, cppcoreguidelines-pro-type-reinterpret-cast, llvmlibc-*, altera-*, misc-no-recursion]
+CompileFlags:
+  Add: -Wno-gnu-zero-variadic-macro-arguments
+  Remove: [-Wgnu-zero-variadic-macro-arguments, -mno-direct-extern-access]
