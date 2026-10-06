@@ -18,7 +18,7 @@ ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags 
 }
 
 ControlProxy::~ControlProxy() {
-    //qDebug() << "ControlProxy::~ControlProxy()";
+    // qDebug() << "ControlProxy::~ControlProxy()" << m_pControl->getKey() << this;
 }
 
 const ConfigKey& ControlProxy::getKey() const {

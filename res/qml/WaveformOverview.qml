@@ -119,8 +119,11 @@ Item {
 
         MixxxControls.WaveformOverview {
             anchors.fill: parent
-            channels: Mixxx.WaveformOverview.Channels.LeftChannel
-            renderer: Mixxx.WaveformOverview.Renderer.Filtered
+            channels: Mixxx.WaveformOverview.Channels.BothChannels
+            minuteMarkers: Mixxx.Config.waveformOverviewMinuteMarkers
+            normalized: Mixxx.Config.waveformOverviewNormalized
+            renderer: Mixxx.Config.waveformOverviewType === 0 ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.Config.waveformOverviewType === 1 ? Mixxx.WaveformOverview.Renderer.HSV : Mixxx.WaveformOverview.Renderer.RGB
+            stereo: Mixxx.Config.waveformOverviewStereo
             colorHigh: Theme.white
             colorMid: Theme.blue
             colorLow: Theme.green

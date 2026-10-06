@@ -2,6 +2,8 @@
 
 #include <QStyledItemDelegate>
 
+class QStandardItem;
+
 class MidiOptionsDelegate : public QStyledItemDelegate {
     Q_OBJECT
   public:
@@ -20,4 +22,5 @@ class MidiOptionsDelegate : public QStyledItemDelegate {
 
   private slots:
     void commitAndCloseEditor(int index);
+    void slotItemChanged(QStandardItem* pItem);
 };

@@ -36,12 +36,21 @@ SoundDevicePipewire::~SoundDevicePipewire() {
 }
 
 SoundDeviceStatus SoundDevicePipewire::open(bool, int) {
-    m_error = m_pEnumerator->openDevice(*this, m_sampleRate, m_configFramesPerBuffer);
-    if (m_error.empty()) {
-        return SoundDeviceStatus::Ok;
-    } else {
-        return SoundDeviceStatus::Error;
+    std::string error;
+    for (auto& input : m_audioInputs) {
+        error += m_pEnumerator->openDeviceInput(m_deviceId.deviceIndex, input);
     }
+
+    for (auto& output : m_audioOutputs) {
+        error += m_pEnumerator->openDeviceOutput(m_deviceId.deviceIndex, output);
+    }
+
+    if (error.empty()) {
+        return SoundDeviceStatus::Ok;
+    }
+
+    m_error = error;
+    return SoundDeviceStatus::Error;
 }
 
 bool SoundDevicePipewire::isOpen() const {
@@ -49,9 +58,7 @@ bool SoundDevicePipewire::isOpen() const {
 }
 
 SoundDeviceStatus SoundDevicePipewire::close() {
-    m_pEnumerator->closeDevice(m_deviceId.deviceIndex);
-    m_inPorts.clear();
-    m_outPorts.clear();
+    m_pEnumerator->closeDevices();
     return SoundDeviceStatus::Ok;
 }
 
@@ -117,51 +124,6 @@ void SoundDevicePipewire::writeInput(
     }
 }
 
-void SoundDevicePipewire::registerPort(uint32_t id, const struct spa_dict* props) {
-    const char* portName = spa_dict_lookup(props, PW_KEY_PORT_NAME);
-    const char* channel = spa_dict_lookup(props, PW_KEY_AUDIO_CHANNEL);
-    const char* direction = spa_dict_lookup(props, PW_KEY_PORT_DIRECTION);
-    const char* portId = spa_dict_lookup(props, PW_KEY_PORT_ID);
-
-    Port port{};
-    port.id = id;
-    port.channel = channel ? channel : (portName ? portName : portId);
-
-    if (portName && channel) {
-        std::string_view name = portName;
-        const size_t last = name.find_last_of("_:-");
-        const bool nameContainsChannel = last != std::string_view::npos and
-                port.channel == name.substr(last + 1);
-        port.name = nameContainsChannel ? name.substr(0, last) : portName;
-        port.name += ':';
-    }
-
-    // m_numInputChannels, m_numOutputChannels, m_audioInputs, m_audioOutputs
-    // are with respect to Mixxx and not the SoundDevice
-    if (strcmp(direction, "in") == 0) {
-        m_inPorts.push_back(std::move(port));
-        m_numOutputChannels = mixxx::audio::ChannelCount::fromInt(m_inPorts.size());
-    } else if (strcmp(direction, "out") == 0) {
-        m_outPorts.push_back(std::move(port));
-        m_numInputChannels = mixxx::audio::ChannelCount::fromInt(m_outPorts.size());
-    }
-}
-
-void SoundDevicePipewire::unregisterPort(uint32_t id) {
-    for (auto it = m_inPorts.begin(); it != m_inPorts.end(); it++) {
-        if (it->id == id) {
-            m_inPorts.erase(it);
-            return;
-        }
-    }
-    for (auto it = m_outPorts.begin(); it != m_outPorts.end(); it++) {
-        if (it->id == id) {
-            m_outPorts.erase(it);
-            return;
-        }
-    }
-}
-
 mixxx::audio::SampleRate SoundDevicePipewire::getDefaultSampleRate() const {
     auto defaultSampleRate = m_pEnumerator->getDefaultSampleRate();
     if (defaultSampleRate.isValid()) {
@@ -171,47 +133,6 @@ mixxx::audio::SampleRate SoundDevicePipewire::getDefaultSampleRate() const {
     return SoundManagerConfig::kMixxxDefaultSampleRate;
 }
 
-void SoundDevicePipewire::registerLink(uint32_t id, spa_direction direction) {
-    if (direction == SPA_DIRECTION_INPUT) {
-        m_inLinks.push_back(id);
-    } else {
-        m_outLinks.push_back(id);
-    }
-}
-
-void SoundDevicePipewire::unregisterLink(uint32_t id, spa_direction direction) {
-    if (direction == SPA_DIRECTION_INPUT) {
-        auto it = std::ranges::find(m_inLinks, id);
-        if (it != m_inLinks.end()) {
-            m_inLinks.erase(it);
-        }
-    } else {
-        auto it = std::ranges::find(m_outLinks, id);
-        if (it != m_outLinks.end()) {
-            m_outLinks.erase(it);
-        }
-    }
-}
-
-QString SoundDevicePipewire::getChannelString(ChannelGroup channelGroup, bool input) {
-    unsigned char base = channelGroup.getChannelBase();
-    mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
-
-    std::span<Port> ports = input ? m_outPorts : m_inPorts;
-    std::span<Port> subspan = ports.subspan(base + 1, count - 1);
-
-    // without this 1st port will always take else branch, inserting unnecessary ' '
-    Port& firstPort = ports[base];
-    std::string_view currentCommonSubstr = firstPort.name;
-    std::string channelString = firstPort.name + firstPort.channel;
-
-    for (Port& port : subspan) {
-        if (!port.name.empty() and port.name == currentCommonSubstr) {
-            channelString = channelString + '/' + port.channel;
-        } else {
-            channelString = channelString + ' ' + port.name + port.channel;
-            currentCommonSubstr = port.name;
-        }
-    }
-    return QString::fromStdString(channelString);
+QString SoundDevicePipewire::getChannelString(ChannelGroup channelGroup, bool input) const {
+    return m_pEnumerator->getChannelString(m_deviceId.deviceIndex, channelGroup, input);
 }

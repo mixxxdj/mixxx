@@ -37,7 +37,10 @@ class allshader::WaveformRendererStem final
 
   public slots:
     void setSplitStemTracks(bool splitStemTracks) {
-        m_splitStemTracks = splitStemTracks;
+        if (m_splitStemTracks != splitStemTracks) {
+            m_splitStemTracks = splitStemTracks;
+            markDirtyGeometry();
+        }
     }
     void setReorderOnChange(bool value) {
         m_reorderOnChange = value;
@@ -46,11 +49,11 @@ class allshader::WaveformRendererStem final
     }
     void setOutlineOpacity(float value) {
         m_outlineOpacity = value;
-        markDirtyMaterial();
+        markDirtyGeometry();
     }
     void setOpacity(float value) {
         m_opacity = value;
-        markDirtyMaterial();
+        markDirtyGeometry();
     }
 
   private:

@@ -9,18 +9,27 @@
 #include "mixxxtest.h"
 #include "test/signalpathtest.h"
 
-#define STEM_FILE QStringLiteral("stems/sin_%1.stem.mp4").arg(QString::fromStdString(GetParam()))
-
 namespace {
 const std::vector<std::string> supportedCodecs = {
-#if !defined(Q_OS_WIN)
         "AAC_256kbps_VBR",
-#endif
         "ALAC_24bit"};
+
+struct StemFileInfo {
+    QString dir;
+    QString title;
+};
+
+static const std::array<StemFileInfo, 2> kStemFileInfos = {
+        StemFileInfo{QStringLiteral("stem01"), QStringLiteral("sin")},
+        StemFileInfo{QStringLiteral("stem02"), QStringLiteral("trance")}};
+
 } // namespace
 
+// must be a std::tuple for std::combine in INSTANTIATE_TEST_SUITE_P
+using StemParam = std::tuple<std::string, StemFileInfo>;
+
 class StemControlFixture : public BaseSignalPathTest,
-                           public ::testing::WithParamInterface<std::string> {
+                           public ::testing::WithParamInterface<StemParam> {
   public:
     QString getGroupForStem(QStringView deckGroup, int stemNr) {
         DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemNr <= 4);
@@ -29,6 +38,14 @@ class StemControlFixture : public BaseSignalPathTest,
     QString getFxGroupForStem(const QString& deckGroup, int stemNr) {
         return QStringLiteral("[QuickEffectRack1_%1]")
                 .arg(getGroupForStem(deckGroup, stemNr));
+    }
+    QString GetStemFilePath() {
+        const auto& [codec, info] = GetParam();
+        return getTestDir().filePath(getTestDir()
+                        .filePath("stems/%1/%2_%3.stem.mp4")
+                        .arg(info.dir,
+                                info.title,
+                                QString::fromStdString(codec)));
     }
 
     void SetUp() override {
@@ -53,11 +70,11 @@ class StemControlFixture : public BaseSignalPathTest,
             m_pEffectsManager->addStem(stemHandleGroup);
         }
 
-        const QString kStemFileLocationTest = getTestDir().filePath(STEM_FILE);
-        TrackPointer pStemFile(Track::newTemporary(kStemFileLocationTest));
+        const QString sourceStemPath = GetStemFilePath();
+        TrackPointer pStemFile(Track::newTemporary(sourceStemPath));
 
-        loadTrack(m_pMixerDeck1, pStemFile);
-        loadTrack(m_pMixerDeck3, pStemFile);
+        loadTrack(m_pMixerDeck1.get(), pStemFile);
+        loadTrack(m_pMixerDeck3.get(), pStemFile);
 
         m_pPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
 
@@ -172,18 +189,20 @@ TEST_P(StemControlFixture, StemCount) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStemCount->get(), 0.0);
 
-    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
+    auto sourceStemPath = GetStemFilePath();
+    kTrackLocationTest = getTestDir().filePath(sourceStemPath);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 }
 
 TEST_P(StemControlFixture, StemColor) {
+    auto sourceStemPath = GetStemFilePath();
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
     EXPECT_EQ(m_pStem3Color->get(), 0x00 << 16 | 0xe8 << 8 | 0xe8);
@@ -191,16 +210,16 @@ TEST_P(StemControlFixture, StemColor) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Color->get(), -1.0);
     EXPECT_EQ(m_pStem2Color->get(), -1.0);
     EXPECT_EQ(m_pStem3Color->get(), -1.0);
     EXPECT_EQ(m_pStem4Color->get(), -1.0);
 
-    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
+    kTrackLocationTest = getTestDir().filePath(sourceStemPath);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
@@ -270,7 +289,7 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Volume->get(), 0.1);
     EXPECT_EQ(m_pStem2Volume->get(), 0.2);
@@ -283,7 +302,7 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
 
     m_pConfig->setValue(
             ConfigKey("[Mixer Profile]", "stem_auto_reset"), true);
-    loadTrack(m_pMixerDeck1, pTrack);
+    loadTrack(m_pMixerDeck1.get(), pTrack);
 
     EXPECT_EQ(m_pStem1Volume->get(), 1.0);
     EXPECT_EQ(m_pStem2Volume->get(), 1.0);
@@ -335,11 +354,16 @@ TEST_P(StemControlFixture, Mute) {
     m_pStem3Mute->set(0.0);
     m_pStem4Mute->set(0.0);
 
+    // We need to allow a bigger bigger delta than the 0.0001 default
+    // to cover the difference of different AAC decoder.
+    // aac and libfdk_aac have a difference of 0.00017 in tests with FFmpeg 4.4.2
+    double acceptableDelta = 0.0002; // -74 dB
     // Proceed the buffer a first time to proceed the ramping gain
     m_pEngineMixer->process(kProcessBufferSize);
     m_pEngineMixer->process(kProcessBufferSize);
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-            QStringLiteral("StemMuteControlFull"));
+            QStringLiteral("StemMuteControlFull"),
+            acceptableDelta);
 }
 
 TEST_P(StemControlFixture, VuMeter) {
@@ -379,7 +403,10 @@ TEST_P(StemControlFixture, VuMeter) {
 INSTANTIATE_TEST_SUITE_P(
         DISABLED_StemControlTest,
         StemControlFixture,
-        ::testing::ValuesIn(supportedCodecs),
+        ::testing::Combine(
+                ::testing::ValuesIn(supportedCodecs),
+                ::testing::ValuesIn(kStemFileInfos)),
         [](const testing::TestParamInfo<StemControlFixture::ParamType>& info) {
-            return info.param;
+            return std::get<0>(info.param) + "_" +
+                    std::get<1>(info.param).title.toStdString();
         });

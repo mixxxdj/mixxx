@@ -5,6 +5,8 @@ import QtQuick 2.12
 Skin.ControlProxyButtonBehavior {
     id: root
 
+    anchors.fill: parent
+
     required property int hotcueNumber
     property color fallbackColor: "white"
     readonly property color hotcueColor: colorProxy.value >= 0

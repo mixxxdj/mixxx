@@ -1,7 +1,9 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 
+#include <QAbstractSpinBox>
 #include <QAction>
 #include <QEvent>
+#include <QGuiApplication>
 #include <QKeyEvent>
 #include <QtDebug>
 
@@ -41,6 +43,23 @@ QKeySequence safeKeySequence(const QString& str) {
 }
 
 mixxx::Logger kLogger("KeyboardEventFilter");
+
+bool isEditableTextInput(QObject* object) {
+    for (QObject* current = object; current; current = current->parent()) {
+        if (auto* spinBox = qobject_cast<QAbstractSpinBox*>(current)) {
+            return !spinBox->isReadOnly();
+        }
+
+        const QMetaObject* metaObject = current->metaObject();
+        if (metaObject->indexOfProperty("text") >= 0 &&
+                metaObject->indexOfProperty("cursorPosition") >= 0 &&
+                metaObject->indexOfProperty("readOnly") >= 0) {
+            return !current->property("readOnly").toBool();
+        }
+    }
+
+    return false;
+}
 } // anonymous namespace
 
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
@@ -87,6 +106,10 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
         QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
+
+        if (isEditableTextInput(QGuiApplication::focusObject())) {
+            return false;
+        }
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
@@ -432,6 +455,7 @@ void KeyboardEventFilter::reloadKeyboardConfig() {
     updateWidgetShortcuts();
     updateSearchBarShortcuts();
     updateMenuBarActionShortcuts();
+    emit keyboardConfigReloaded();
 }
 
 void KeyboardEventFilter::createKeyboardConfig() {

@@ -41,7 +41,7 @@ Variables:
       <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
     </State>
     <State>
-      <Number>4</Number>
+      <Number>3</Number>
       <Text><Variable name="state_3_text"/></Text>
       <Alignment><Variable name="Align"/></Alignment>
       <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Unpressed>
