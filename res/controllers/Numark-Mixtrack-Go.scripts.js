@@ -756,7 +756,7 @@ NumarkMixtrackGo.fadeFx = new components.Button({
 
 // should eventually be reviewed to get at least a better fader curve and/or
 // implement a better solution than using quick effects
-NumarkMixtrackGo.crossFader = new components.Pot({
+NumarkMixtrackGo.crossFader = new components.Pot({//TODO
     input: function(_channel, _control, value) {
         const newValue = script.absoluteLin(value, 0, 1, 0, 100);
         const invertedValue = script.absoluteLin((127 - value), 0, 1, 0, 100);
@@ -834,6 +834,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
 
     const padModesNumber = padModes.length;
     let currentPadMode = 0;
+    let isStemsTrackLoaded = false;
 
     // pfl status led control
     const pflConnection = engine.makeConnection(group, "pfl", function() {
@@ -846,7 +847,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
 
     // load status led control
     const loadConnection = engine.makeConnection(group, "track_loaded", function() {
-
+        isStemsTrackLoaded = false;
         if (engine.getValue(group, "track_loaded") === 1) {
             NumarkMixtrackGo.led.setLoadBright(deckIndex);
         } else {
@@ -1027,8 +1028,6 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     };
 
-    let isStemsTrackLoaded = false;
-
     const stemsStateConnection = engine.makeConnection(group, "stem_count", function() {
         if (engine.getValue(group, "stem_count") > 0) {
             isStemsTrackLoaded = true;
@@ -1066,6 +1065,8 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     };
 
+    // these next 4 makeConnections set each their corresponding pad led
+    // and refresh the state of the acapel and instru leds
     engine.makeConnection(drumsStemGroup, "mute", function() {
         if (isStemsTrackLoaded) {
             if (engine.getValue(drumsStemGroup, "mute") === 1) {
