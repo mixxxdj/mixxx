@@ -185,7 +185,9 @@ jobs:
           ostree --repo=repo summary -u --gpg-sign=$GPG_KEY_ID
           flatpak build-update-repo --gpg-sign=$GPG_KEY_ID repo
           export GPG_PUBLIC_KEY="$(gpg --export $GPG_KEY_ID | base64 --wrap=0)"
-          envsubst '$GPG_PUBLIC_KEY' < packaging/flatpak/repo.flatpakrepo.in > repo/repo.flatpakrepo
+          while IFS= read -r line; do
+              printf '%s\n' "${line//\$GPG_PUBLIC_KEY/${GPG_PUBLIC_KEY}}"
+          done < packaging/flatpak/repo.flatpakrepo.in > repo/repo.flatpakrepo
           ./rsync-repos --src "repo/" --dest "${SSH_USER}@${SSH_HOST}:public_html/downloads/flatpak" --rsync-opts "--verbose --recursive --checksum --times --delay-updates"
 
       # TODO we could also publish a .flatpakref file to allow one-click install a version and publish this as a comment to the PR.
