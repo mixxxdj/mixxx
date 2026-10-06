@@ -650,7 +650,7 @@ NumarkMixtrackGo.init = function() {
     }, true);
 
     // Fade fx blinking
-    let fadeFxIndicatorControl = "indicator_500ms";
+    const fadeFxIndicatorControl = "indicator_500ms";
 
     engine.makeConnection("[App]", fadeFxIndicatorControl, function() {
         if (isFadeFxOn) {
