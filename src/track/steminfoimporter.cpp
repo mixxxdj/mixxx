@@ -18,6 +18,10 @@ namespace {
 
 const mixxx::Logger kLogger("StemInfoImporter");
 constexpr int kSupportedStemVersion = 1;
+// Upper bound for a stem manifest read from a file: real-world manifests
+// hold a handful of stem entries and stay around 1 KiB. Refusing larger
+// ones keeps a hostile file from forcing a huge allocation.
+constexpr uint32_t kMaxManifestSize = 1024 * 1024;
 const QStringList kStemMimes = {"audio/mp4", "audio/m4a", "audio/x-m4a", "video/mp4"};
 // STEM file are usually detected by probing the specific stem atom contained in
 // file, in case the file's MIME is one of the above. In case the MIME detection
@@ -50,10 +54,22 @@ quint64 operator>>(QIODevice* reader, MP4BoxHeader& box) {
     if (box.size == 1) {
         // If the box/atom has a size of 1, it is an extended box, and the true
         // size is in the next 64bits integer big endian
-        quint64 extendedSize;
-        reader->read((char*)&extendedSize, sizeof(extendedSize));
-        box.size = qFromBigEndian(box.size);
+        quint64 extendedSize = 0;
+        if (reader->read((char*)&extendedSize, sizeof(extendedSize)) !=
+                static_cast<qint64>(sizeof(extendedSize))) {
+            // Truncated extended size
+            return 0;
+        }
+        extendedSize = qFromBigEndian(extendedSize);
+        if (extendedSize < kAtomHeaderSize + sizeof(extendedSize)) {
+            // Declared size cannot hold its own header
+            return 0;
+        }
         return extendedSize - kAtomHeaderSize - sizeof(extendedSize);
+    }
+    if (box.size < kAtomHeaderSize) {
+        // Declared size cannot hold its own header
+        return 0;
     }
     return box.size - kAtomHeaderSize;
 }
@@ -142,6 +158,15 @@ QList<StemInfo> StemInfoImporter::importStemInfos(
     if (!(manifestSize = seekTillAtom(&file, kStemManifestAtomPath))) {
         kLogger.debug()
                 << "No stem manifest found in the file"
+                << filePath;
+        return {};
+    }
+
+    if (manifestSize > kMaxManifestSize) {
+        kLogger.warning()
+                << "Stem manifest size" << manifestSize
+                << "exceeds the maximum of" << kMaxManifestSize
+                << "in the file"
                 << filePath;
         return {};
     }
