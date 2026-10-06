@@ -849,6 +849,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     const loadConnection = engine.makeConnection(group, "track_loaded", function() {
         isStemsTrackLoaded = false;
         if (engine.getValue(group, "track_loaded") === 1) {
+            stemsStateConnection.trigger(); // to evaluate if its a stems track
             NumarkMixtrackGo.led.setLoadBright(deckIndex);
         } else {
             NumarkMixtrackGo.led.setLoadDim(deckIndex);
