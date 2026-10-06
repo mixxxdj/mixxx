@@ -47,8 +47,10 @@ def _reset_session(context):
 def patch_scenario_with_autoretry(context, scenario, max_attempts=3):
     """Monkey-patches :func:`~behave.model.Scenario.run()` to auto-retry a
     scenario that fails. Based on behave.contrib.scenario_autoretry but also:
-    - Collects retry results and appends a single entry to context.results
+    - Never retries @xfail scenarios (single attempt)
     - Sets had_failure only when all retries are exhausted
+
+    Result entries are written by after_scenario(), one per attempt.
     """
     def scenario_run_with_retries(scenario_run, *args, **kwargs):
         attempts = []

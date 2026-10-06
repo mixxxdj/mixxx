@@ -306,7 +306,7 @@ class MixxxProcess:
 
     # Fresh profiles apply schema migrations and load the full skin at first
     # start, which can exceed the historical 20 s on loaded systems.
-    def start(self, timeout=60):
+    def start(self, timeout=20):
         env = os.environ.copy()
         if self.display:
             env["DISPLAY"] = self.display

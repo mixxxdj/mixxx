@@ -44,7 +44,7 @@ _RPC_ERRORS = (
 class _TimeoutTransport(xmlrpc.client.Transport):
     """Transport that sets a per-connection timeout instead of global socket timeout."""
 
-    def __init__(self, timeout=30, **kwargs):
+    def __init__(self, timeout=15, **kwargs):
         super().__init__(**kwargs)
         self._timeout = timeout
 
@@ -88,7 +88,7 @@ class RobustRpcProxy:
 
     @staticmethod
     def _make_proxy():
-        transport = _TimeoutTransport(timeout=30)
+        transport = _TimeoutTransport(timeout=15)
         return xmlrpc.client.ServerProxy(
             RobustRpcProxy.URL, transport=transport, allow_none=True
         )
@@ -141,12 +141,12 @@ class RobustRpcProxy:
 
 # Thin adapters over spix_helpers: this module treats "condition not met"
 # as an assertion failure, so its helpers raise instead of returning False.
-def _wait_for_visible(rpc, path, timeout=30):
+def _wait_for_visible(rpc, path, timeout=15):
     if not _wait_visible_impl(rpc, path, timeout):
         raise AssertionError(f"Timed out waiting for '{path}' to be visible/opened")
 
 
-def _wait_for_hidden(rpc, path, timeout=30):
+def _wait_for_hidden(rpc, path, timeout=15):
     if not _wait_hidden_impl(rpc, path, timeout):
         raise AssertionError(f"Timed out waiting for '{path}' to be hidden")
 
@@ -305,7 +305,7 @@ def _get_library_state(rpc):
     return json.loads(rpc.getStringProperty("mainWindow", "lastLibraryState"))
 
 
-def _wait_for_library_scan(rpc, scan_generation, timeout=60):
+def _wait_for_library_scan(rpc, scan_generation, timeout=20):
     """Wait for a library scan triggered after ``scan_generation`` to finish.
 
     The ``library`` command starts the scan asynchronously and returns
@@ -1822,7 +1822,9 @@ def step_press_key_in_search(context, key):
 def step_click_recent_search(context, search):
     s = context.mixxx_rpc
     expected = _remembered_track(context).title if "title of this track" in search else search
-    _click(s, f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}")
+    path = f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}"
+    _wait_for_clickable(s, path)
+    _click(s, path)
     time.sleep(0.5)
 
 
@@ -1978,7 +1980,7 @@ def _search_suggestion_texts(rpc):
         return []
 
 
-def _wait_for_search_suggestion(context, value, timeout=30):
+def _wait_for_search_suggestion(context, value, timeout=15):
     s = context.mixxx_rpc
     deadline = time.time() + timeout
     texts = []

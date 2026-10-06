@@ -476,10 +476,13 @@ step definitions, add `objectName`s in QML, rebuild `mixxx-test`. Specifically:
    `steps/mixxx_steps.py`.
 4. **Autoretry**: `before_feature` patches every scenario's `run()` method with
    a custom wrapper. If a scenario fails, it is retried up to `--retry N` times
-   (default 3). Each attempt triggers `before_scenario`/`after_scenario` hooks
-   normally. Only the final outcome is recorded in `context.results` (with a
-   `retries` field summarizing previous attempts). `had_failure` / `fail_early`
-   is only set when all retries are exhausted.
+   (default 3), except for `@xfail` scenarios which are never retried. Each
+   attempt triggers `before_scenario`/`after_scenario` hooks normally, and
+   `after_scenario` appends one entry per attempt to `context.results` — a
+   retried scenario therefore appears several times. Consumers score the
+   *last* entry per `(feature, name)`; that is what
+   `tools/generate_gh_e2e_comment.py` does when it builds the CI comment.
+   `had_failure` / `fail_early` is only set when all retries are exhausted.
 
 ## mixxx-test --serve Mode
 
@@ -844,8 +847,9 @@ LOOP_BUTTONS = {
 - `before_scenario`: restores `context.mixxx`, `context.mixxx_rpc`,
   `context.profile_dir`, `context.active_profile_type` from session; skips
   if `fail_early` is set and a previous scenario failed all retries
-- `after_scenario`: computes outcome, records timing, stores pending result on
-  `scenario._pending_result` for the autoretry wrapper to finalize
+- `after_scenario`: computes the outcome (including `@xfail`/`@xpass`
+  mapping), records timing and appends a result entry for *this attempt* to
+  `context.results`
 - `after_all`: writes `chapters.json` to artifacts directory, sends
   `rpc.quit()`, stops Mixxx process, cleans up temp profile dirs
 
@@ -853,14 +857,17 @@ LOOP_BUTTONS = {
 
 Based on `behave.contrib.scenario_autoretry.patch_scenario_with_autoretry`.
 Wraps `scenario.run()` so that failed scenarios are retried up to N times.
-For each attempt: `before_scenario` → steps → `after_scenario` runs normally.
+For each attempt: `before_scenario` → steps → `after_scenario` runs normally,
+and `after_scenario` appends that attempt's entry to `context.results` (the
+wrapper never writes to `context.results` itself). `@xfail` scenarios stop
+after the first attempt and are not retried.
+
 After the last attempt the wrapper:
 
-1. Reads `scenario._pending_result` (set by `after_scenario`) to build the
-   final result entry, adding a `retries` field when there were multiple
-   attempts.
-2. Appends the single result to `context.results`.
-3. Sets `had_failure = True` **only** when all retries are exhausted and the
+1. Resets the session (`_reset_session`) so a later scenario never inherits
+   partial state — except for expected failures / flaky outcomes, which
+   return before that.
+2. Sets `had_failure = True` **only** when all retries are exhausted and the
    scenario still failed (excluding `@xfail`/`@xpass`).
 
 ## How to Add a New Step
@@ -983,9 +990,9 @@ value = context.mixxx_rpc.getStringProperty("mainWindow", "lastControlValue")
   traceable. The runner labels chapters `EXPECTED FAILURE` or `UNEXPECTED PASS`
   and prints the issue link on failure.
 
-- **Autoretry applies to all scenarios**, including `@xpass` and `@xfail`.
-  For `@xfail` scenarios that always fail, the retry attempts are harmless
-  (just add time). `had_failure` is never set for `@xfail`/`@xpass` scenarios
+- **Autoretry applies to `@xpass` scenarios, but not to `@xfail` ones**: the
+  wrapper returns right after the first attempt when an `xfail` tag is
+  present. `had_failure` is never set for `@xfail`/`@xpass` scenarios
   regardless of retry outcome.
 
 ## Known Limitations / Blockers
