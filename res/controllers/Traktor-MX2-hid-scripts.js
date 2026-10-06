@@ -506,11 +506,17 @@ class TraktorMX2Class {
             this.outputHandler(0, field.group, "patterns");
             this.outputHandler(0, field.group, "loops");
             // Light LEDs (stem color for all unmuted stems, dimmed red for muted)
-            for (let stemIdx = 1; stemIdx <= engine.getValue(field.group, "stem_count"); stemIdx++) {
-                const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${stemIdx}]`, "color");
-                const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${stemIdx}]`, "mute");
-                const colorValue = status ? this.baseColors.dimmedRed : this.padColorMap.getValueForNearestColor(color);
-                this.outputHandler(colorValue, field.group, `pad_${stemIdx}`);
+            {
+                let stemIdx = 1;
+                for (; stemIdx <= engine.getValue(field.group, "stem_count"); stemIdx++) {
+                    const color = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${stemIdx}]`, "color");
+                    const status = engine.getValue(`[Channel${field.group[field.group.length - 2]}_Stem${stemIdx}]`, "mute");
+                    const colorValue = status ? this.baseColors.dimmedRed : this.padColorMap.getValueForNearestColor(color);
+                    this.outputHandler(colorValue, field.group, `pad_${stemIdx}`);
+                }
+                for (; stemIdx <= 8; stemIdx++) {
+                    this.outputHandler(this.baseColors.dimmedWhite, field.group, `pad_${stemIdx}`);
+                }
             }
             break;
 
@@ -1691,12 +1697,15 @@ class TraktorMX2Class {
 
     patternOutputHandler(_value, _group, _name) {
         for (const group of ["[Channel1]", "[Channel2]"]) {
-        	if (this.padModeState[group] === 2) {
+            if (this.padModeState[group] === 2) {
                 for (let padIdx = 1; padIdx <= 4; padIdx++) {
                     const samplerIdx = padIdx + 4 * (group[group.length - 2] - 1);
-            		const state = engine.getValue(`[Sampler${samplerIdx}]`, "play_indicator");
+                    const state = engine.getValue(`[Sampler${samplerIdx}]`, "play_indicator");
                     this.outputHandler(state ? this.baseColors.green : this.baseColors.dimmedGreen, group, `pad_${padIdx}`);
-             	}
+                }
+                for (let padIdx = 5; padIdx <= 8; padIdx++) {
+                    this.outputHandler(this.baseColors.dimmedWhite, group, `pad_${padIdx}`);
+                }
             }
         }
     };
