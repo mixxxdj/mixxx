@@ -112,7 +112,9 @@ QmlLibraryProxy::QmlLibraryProxy(
           m_pScanner(new QmlLibraryScannerProxy(
                   m_pLibrary->trackCollectionManager()->scanner(), this)),
           m_pSearchSuggestions(new QmlSearchSuggestionModel(
-                  m_pLibrary->dbConnectionPool(), this)) {
+                  m_pLibrary->dbConnectionPool(), this)),
+          m_pRecentSearches(new QmlRecentSearchModel(
+                  m_pLibrary->userSettings(), this)) {
 }
 
 QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner, QObject* parent)
@@ -321,8 +323,9 @@ QmlLibraryProxy* QmlLibraryProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsE
     return new QmlLibraryProxy(s_pLibrary, pQmlEngine);
 }
 
-QVariantMap QmlLibraryProxy::parseRecentSearchQuery(const QString& query) const {
-    return SearchQueriesStorage::parseQuery(query);
+QString QmlLibraryProxy::serializeSearchQuery(
+        const QVariantList& tokens, const QString& freeText) const {
+    return SearchQueriesStorage::serializeQuery(tokens, freeText);
 }
 
 QmlLibraryProxy::Result QmlLibraryProxy::addSource(

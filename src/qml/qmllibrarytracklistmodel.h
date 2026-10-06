@@ -16,6 +16,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
     QML_NAMED_ELEMENT(LibraryTrackListModel)
     Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns
                     READ columns NOTIFY columnsChanged)
+    Q_PROPERTY(QString search READ search WRITE setSearch NOTIFY searchChanged)
     QML_UNCREATABLE("Only accessible via Mixxx.Library")
 
   public:
@@ -68,7 +69,9 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
 
     QVariant data(const QModelIndex& index, int role) const override;
     int columnCount(const QModelIndex& index = QModelIndex()) const override;
-    Q_INVOKABLE void search(const QString& searchText);
+    QString search() const;
+    void setSearch(const QString& searchText);
+
     Q_INVOKABLE QUrl getUrl(int row) const;
     Q_INVOKABLE mixxx::qml::QmlTrackProxy* getTrackByRow(int row) const;
     Q_INVOKABLE TrackModel::Capabilities getCapabilities() const;
@@ -81,6 +84,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
 
   signals:
     void columnsChanged();
+    void searchChanged();
 
   private:
     QmlTrackProxy* getOrCreateTrackProxy(int row) const;

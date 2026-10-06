@@ -106,16 +106,18 @@ Feature: Library
 
   Scenario: Search filters the track results
     Given no search is currently active
+    And a track available in the library
     When I activate the library search
-    And I type the title of the track at row 1 into the library search
-    Then the track at row 1 should be visible in the results
+    And I type the title of this track into the library search
+    Then this track should be visible in the results
     And no other track should be visible in the results
 
   Scenario: Clearing the search shows all tracks again
     Given no search is currently active
+    And a track available in the library
     When I activate the library search
-    And I type the title of the track at row 1 into the library search
-    Then the track at row 1 should be visible in the results
+    And I type the title of this track into the library search
+    Then this track should be visible in the results
     When I clear the library search
     Then all tracks in the library should be shown again
 
@@ -135,12 +137,13 @@ Feature: Library
 
   Scenario: A committed search appears in recent searches
     Given no search is currently active
+    And a track available in the library
     When I activate the library search
-    And I type the title of the track at row 1 into the library search
+    And I type the title of this track into the library search
     And I deactivate the library search
     And I clear the library search
     When I activate the library search
-    Then the library recent search "<title of the track at row 1>" should be visible
+    Then the library recent search "<title of this track>" should be visible
 
   Scenario: Search bar is present in the library pane
     Given no search is currently active
@@ -261,33 +264,36 @@ Feature: Library
 
   Scenario: Recent searches are listed when the search bar is empty
     Given no search is currently active
+    And a track available in the library
     When I activate the library search
-    And I type the title of the track at row 1 into the library search
+    And I type the title of this track into the library search
     And I deactivate the library search
     And I clear the library search
     When I activate the library search
-    Then the library recent search "<title of the track at row 1>" should be visible
+    Then the library recent search "<title of this track>" should be visible
 
   Scenario: Clicking a recent search restores the query
     Given no search is currently active
+    And a track available in the library
     When I activate the library search
-    And I type the title of the track at row 1 into the library search
+    And I type the title of this track into the library search
     And I deactivate the library search
     And I clear the library search
     When I activate the library search
-    And I click the recent library search "<title of the track at row 1>"
-    Then the library search query should be "<title of the track at row 1>"
+    And I click the recent library search "<title of this track>"
+    Then the library search query should be "<title of this track>"
 
   Scenario: A recent search can be applied with the keyboard
     Given no search is currently active
+    And a track available in the library
     When I activate the library search
-    And I type the title of the track at row 1 into the library search
+    And I type the title of this track into the library search
     And I deactivate the library search
     And I clear the library search
     When I activate the library search
     And I press the "Down" key in the library search
     And I press the "Enter" key in the library search
-    Then the library search query should be "<title of the track at row 1>"
+    Then the library search query should be "<title of this track>"
 
   Scenario: A single criterion filters the library results
     Given no search is currently active
@@ -371,9 +377,12 @@ Feature: Library
     When I click the split view button
     Then the track list on the right should not be visible
 
+  # TODO: This scenario is invalid: we need to verify that search is independent per splits, and gets restored when the focus changes. Currently needs backend work so LibraryTableModel is specific to the view and not shared.
+  @xfail
   Scenario: A search applies to both track lists in split view
+    Given a track available in the library
     When I click the split view button
     And I activate the library search
-    And I type the title of the track at row 1 into the library search
-    Then the track at row 1 should be visible in the left track list
-    And the track at row 1 should be visible in the right track list
+    And I type the title of this track into the library search
+    Then this track should be visible in the left track list
+    And this track should be visible in the right track list

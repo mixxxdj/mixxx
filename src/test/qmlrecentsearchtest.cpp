@@ -1,71 +1,129 @@
 #include <gtest/gtest.h>
 
-#include <QQmlComponent>
-#include <QQmlEngine>
 #include <QString>
-#include <QUrl>
-#include <QVariant>
+#include <QStringList>
 #include <QVariantList>
-#include <memory>
+#include <QVariantMap>
 
 #include "library/searchqueriesstorage.h"
-#include "qml/qmlconfigproxy.h"
+#include "qml/qmlrecentsearchmodel.h"
 #include "test/mixxxtest.h"
 
 namespace {
 
-// Tests the QML bridge the search pane in Library.qml uses for persisting
-// and restoring recent searches via Mixxx.Config.getRecentSearches().
-// The query string parsing itself is covered by SearchQueriesStorageTest.
-class QmlRecentSearchTest : public MixxxTest {
-  protected:
-    void SetUp() override {
-        mixxx::qml::QmlConfigProxy::registerUserSettings(config());
-        m_engine.addImportPath(QStringLiteral(RESOURCE_FOLDER "/qml"));
-    }
+// Tests that QmlRecentSearchModel owns the whole load/parse/serialize/save
+// cycle for recent library searches, without any QML-side processing. The
+// query string parsing and serialization itself are covered by
+// SearchQueriesStorageTest.
+class QmlRecentSearchTest : public MixxxTest {};
 
-    QVariant loadRecentSearchesFromQml() {
-        QQmlComponent component(&m_engine);
-        component.setData(R"(
-import QtQml
-import Mixxx 1.0 as Mixxx
-
-QtObject {
-    function load() {
-        return Mixxx.Config.getRecentSearches()
-    }
+QVariantMap token(const QString& name, const QString& query, const QString& value, int keyId) {
+    return {
+            {QStringLiteral("name"), name},
+            {QStringLiteral("query"), query},
+            {QStringLiteral("value"), value},
+            {QStringLiteral("keyId"), keyId},
+    };
 }
-)",
-                QUrl::fromLocalFile(QStringLiteral(
-                        RESOURCE_FOLDER "/qml/qmlrecentsearchtest.qml")));
-        std::unique_ptr<QObject> pRoot(component.create());
-        EXPECT_FALSE(component.isError()) << qPrintable(component.errorString());
-        if (!pRoot) {
-            return QVariant();
-        }
 
-        QVariant result;
-        const bool invoked = QMetaObject::invokeMethod(pRoot.get(),
-                "load",
-                Q_RETURN_ARG(QVariant, result));
-        EXPECT_TRUE(invoked);
-        return result;
+TEST_F(QmlRecentSearchTest, LoadBuildsRowsFromConfig) {
+    mixxx::SearchQueriesStorage::saveQueries(config(),
+            {QStringLiteral("artist:\"A Super Artist\" bpm:120"),
+                    QStringLiteral("hello world")});
+
+    mixxx::qml::QmlRecentSearchModel model(config());
+    EXPECT_EQ(model.rowCount(), 2);
+
+    const QVariantMap entry = model.get(0);
+    EXPECT_QSTRING_EQ("artist:\"A Super Artist\" bpm:120",
+            entry.value(QStringLiteral("queryString")).toString());
+    const QVariantList tokens = entry.value(QStringLiteral("tokens")).toList();
+    ASSERT_EQ(tokens.size(), 2);
+    EXPECT_QSTRING_EQ("Artist", tokens.at(0).toMap().value(QStringLiteral("name")).toString());
+    EXPECT_QSTRING_EQ("A Super Artist",
+            tokens.at(0).toMap().value(QStringLiteral("value")).toString());
+    EXPECT_QSTRING_EQ("artist",
+            tokens.at(0).toMap().value(QStringLiteral("query")).toString());
+    EXPECT_QSTRING_EQ("BPM", tokens.at(1).toMap().value(QStringLiteral("name")).toString());
+
+    const QVariantMap helloWorldEntry = model.get(1);
+    EXPECT_QSTRING_EQ("hello world",
+            helloWorldEntry.value(QStringLiteral("freeText")).toString());
+
+    EXPECT_TRUE(model.get(99).isEmpty());
+}
+
+TEST_F(QmlRecentSearchTest, PersistInsertsAtFrontAndSavesConfig) {
+    mixxx::qml::QmlRecentSearchModel model(config());
+
+    const int row = model.persist({token("Artist", "artist", "foo", 0)},
+            QStringLiteral("hello world"),
+            -1);
+    EXPECT_EQ(row, 0);
+    EXPECT_EQ(model.rowCount(), 1);
+
+    EXPECT_EQ(mixxx::SearchQueriesStorage::loadQueries(config()),
+            QStringList({QStringLiteral("artist:foo hello world")}));
+}
+
+TEST_F(QmlRecentSearchTest, PersistSerializesKeyTokens) {
+    mixxx::qml::QmlRecentSearchModel model(config());
+
+    model.persist({token("Key", "key", "11d", 11)}, QString(), -1);
+
+    EXPECT_EQ(mixxx::SearchQueriesStorage::loadQueries(config()),
+            QStringList({QStringLiteral("key_id:11")}));
+    const QVariantMap entry = model.get(0);
+    EXPECT_QSTRING_EQ("key_id:11",
+            entry.value(QStringLiteral("queryString")).toString());
+    EXPECT_QSTRING_EQ("11",
+            entry.value(QStringLiteral("tokens"))
+                    .toList()
+                    .at(0)
+                    .toMap()
+                    .value(QStringLiteral("keyId"))
+                    .toString());
+}
+
+TEST_F(QmlRecentSearchTest, PersistReplacesActiveRow) {
+    mixxx::SearchQueriesStorage::saveQueries(config(),
+            {QStringLiteral("artist:foo"), QStringLiteral("title:bar")});
+
+    mixxx::qml::QmlRecentSearchModel model(config());
+    ASSERT_EQ(model.rowCount(), 2);
+
+    EXPECT_EQ(model.persist({token("Artist", "artist", "baz", 0)}, QString(), 1), 1);
+    EXPECT_EQ(model.rowCount(), 2);
+    EXPECT_EQ(mixxx::SearchQueriesStorage::loadQueries(config()),
+            QStringList({QStringLiteral("artist:foo"), QStringLiteral("artist:baz")}));
+}
+
+TEST_F(QmlRecentSearchTest, PersistCapsListSize) {
+    mixxx::qml::QmlRecentSearchModel model(config());
+
+    for (int i = 0; i < mixxx::SearchQueriesStorage::kMaxQueries + 5; ++i) {
+        model.persist({token("Artist", "artist", QString("v%1").arg(i), 0)},
+                QString(),
+                -1);
     }
 
-  private:
-    QQmlEngine m_engine;
-};
+    EXPECT_EQ(model.rowCount(), mixxx::SearchQueriesStorage::kMaxQueries);
+    // Each persist inserts at the front, so the last persisted entry is
+    // index 0 and the oldest surviving entry is at the back.
+    EXPECT_QSTRING_EQ("artist:v54",
+            model.get(0).value(QStringLiteral("queryString")).toString());
+    EXPECT_QSTRING_EQ("artist:v5",
+            model.get(mixxx::SearchQueriesStorage::kMaxQueries - 1)
+                    .value(QStringLiteral("queryString"))
+                    .toString());
+}
 
-TEST_F(QmlRecentSearchTest, ConfigQueriesRoundTripThroughQmlBridge) {
-    mixxx::SearchQueriesStorage::saveQueries(config(),
-            {QStringLiteral("artist:foo"), QStringLiteral("key_id:11")});
+TEST_F(QmlRecentSearchTest, PersistEmptyDoesNotStore) {
+    mixxx::qml::QmlRecentSearchModel model(config());
 
-    const QVariant result = loadRecentSearchesFromQml();
-    ASSERT_TRUE(result.canConvert<QVariantList>()) << qPrintable(result.toString());
-    const QVariantList queries = result.toList();
-    ASSERT_EQ(queries.size(), 2);
-    EXPECT_QSTRING_EQ("artist:foo", queries.at(0).toString());
-    EXPECT_QSTRING_EQ("key_id:11", queries.at(1).toString());
+    EXPECT_EQ(model.persist({}, QString(), 0), -1);
+    EXPECT_EQ(model.rowCount(), 0);
+    EXPECT_TRUE(mixxx::SearchQueriesStorage::loadQueries(config()).isEmpty());
 }
 
 } // namespace

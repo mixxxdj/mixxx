@@ -5,7 +5,6 @@
 #include "library/basetracktablemodel.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
-#include "library/searchqueriesstorage.h"
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/constants.h"
@@ -432,14 +431,6 @@ PROPERTY_IMPL(kBpmGroup,
         EngineSync::SyncLockAlgorithm,
         bpmSyncLockAlgorithm,
         EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER);
-
-QStringList QmlConfigProxy::getRecentSearches() const {
-    return SearchQueriesStorage::loadQueries(m_pConfig);
-}
-
-void QmlConfigProxy::setRecentSearches(const QStringList& queries) {
-    SearchQueriesStorage::saveQueries(m_pConfig, queries);
-}
 
 // static
 QmlConfigProxy* QmlConfigProxy::create(QQmlEngine* pQmlEngine, QJSEngine*) {

@@ -164,4 +164,41 @@ QVariantMap SearchQueriesStorage::parseQuery(const QString& query) {
     return result;
 }
 
+QString SearchQueriesStorage::serializeToken(const QVariantMap& token) {
+    const int keyId = token.value(QStringLiteral("keyId")).toInt();
+    if (keyId > 0) {
+        return QStringLiteral("key_id:%1").arg(keyId);
+    }
+    QString value = token.value(QStringLiteral("value")).toString();
+    const bool exact = value.startsWith('=');
+    if (exact) {
+        value = value.mid(1);
+    }
+    const bool containsWhitespace =
+            std::any_of(value.cbegin(), value.cend(), [](const QChar c) {
+                return c.isSpace();
+            });
+    QString argument = value;
+    if (containsWhitespace) {
+        argument = QStringLiteral("\"%1\"").arg(argument);
+    }
+    if (exact) {
+        argument = QStringLiteral("=") + argument;
+    }
+    return token.value(QStringLiteral("query")).toString() + ":" + argument;
+}
+
+QString SearchQueriesStorage::serializeQuery(
+        const QVariantList& tokens, const QString& freeText) {
+    QStringList parts;
+    parts.reserve(tokens.size() + (freeText.isEmpty() ? 0 : 1));
+    for (const auto& tokenValue : tokens) {
+        parts.append(serializeToken(tokenValue.toMap()));
+    }
+    if (!freeText.isEmpty()) {
+        parts.append(freeText);
+    }
+    return parts.join(' ');
+}
+
 } // namespace mixxx

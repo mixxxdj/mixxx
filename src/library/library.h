@@ -61,6 +61,10 @@ class Library: public QObject {
         return m_pDbConnectionPool;
     }
 
+    const UserSettingsPointer& userSettings() const {
+        return m_pConfig;
+    }
+
     TrackCollectionManager* trackCollectionManager() const;
 
     TrackAnalysisScheduler::Pointer createTrackAnalysisScheduler(

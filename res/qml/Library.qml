@@ -195,7 +195,8 @@ Item {
                         } else {
                             root.activeSidebar = libraryLeftSources.sidebar()
                         }
-                        searchPane.applySearchQuery(searchDebounce.query)
+                        searchField.text = root.activeSidebar.tracklist.search
+                        searchPane.tryConvertToFieldToken()
                     }
                 }
 
@@ -260,8 +261,6 @@ Item {
                 property string freeSearchText: ""
                 property bool selectingAll: false
 
-                readonly property int maxRecentSearches: 50
-
                 readonly property bool hasSearch: activeQuery.length > 0
 
                 // Exposed for the E2E test harness
@@ -300,8 +299,6 @@ Item {
                     }
                 }
 
-                Component.onCompleted: searchPane.loadRecentSearches()
-
                 Connections {
                     target: Qt.inputMethod
 
@@ -312,9 +309,7 @@ Item {
                     }
                 }
 
-                ListModel {
-                    id: recentSearchesModel
-                }
+                readonly property var recentSearches: Mixxx.Library.recentSearches
 
                 width: 250
                 height: 36
@@ -332,13 +327,6 @@ Item {
 
                 Skin.FocusedWidgetControl {
                     id: focusedWidgetControl
-                }
-
-                function quote(value) {
-                    if (/\s/.test(value)) {
-                        return '"' + value + '"'
-                    }
-                    return value
                 }
 
                 function escapeHtmlText(s) {
@@ -475,35 +463,26 @@ Item {
                 }
 
                 function updateSearchQuery() {
-                    let query = []
+                    let tokens = []
+                    let freeText = ""
                     for (let i = 0; i < selectedCriteria.count; i++) {
                         let item = selectedCriteria.get(i)
                         if (!item.value.length) {
                             continue
                         }
-                        query.push(tokenToQueryString(item))
-                    }
-                    if (activeTokenIndex < 0 && searchField.text.length) {
-                        query.push(searchField.text)
+                        tokens.push({ name: item.name, query: item.query, value: item.value, keyId: item.keyId })
                     }
                     if (activeTokenIndex < 0) {
+                        freeText = searchField.text
                         freeSearchText = searchField.text
                     }
-                    activeQuery = query.join(' ')
+                    activeQuery = Mixxx.Library.serializeSearchQuery(tokens, freeText)
                     searchDebounce.query = activeQuery
                 }
 
                 function applySearchQuery(query) {
-                    let leftTracklist = libraryLeftSources.sidebar().tracklist
-                    if (leftTracklist) {
-                        leftTracklist.search(query)
-                    }
-                    if (splitViewButton.checked) {
-                        let rightTracklist = libraryRightSources.sidebar().tracklist
-                        if (rightTracklist) {
-                            rightTracklist.search(query)
-                        }
-                    }
+                    let sidebar = root.activeSidebar ?? libraryLeftSources.sidebar()
+                    sidebar.tracklist.search = query
                 }
 
                 function setActiveToken(index) {
@@ -693,124 +672,29 @@ Item {
                     browsingView.forceActiveFocus()
                 }
 
-                function fieldNameToQuery(name) {
-                    for (let i = 0; i < fieldModel.count; i++) {
-                        let f = fieldModel.get(i)
-                        if (f.name === name) {
-                            return f.query
-                        }
-                    }
-                    return name.toLowerCase()
-                }
-
                 function persistSearch() {
                     let tokens = []
                     for (let i = 0; i < selectedCriteria.count; i++) {
                         let item = selectedCriteria.get(i)
                         if (item.value.length > 0) {
-                            tokens.push({ name: item.name, value: item.value, keyId: item.keyId || 0 })
+                            tokens.push({ name: item.name, query: item.query, value: item.value, keyId: item.keyId || 0 })
                         }
                     }
                     let freeText = activeTokenIndex < 0 ? searchField.text : ""
                     if (tokens.length === 0 && freeText.length === 0) {
                         return
                     }
-                    let tokensJson = JSON.stringify(tokens)
-                    if (activeRecentIndex >= 0 && activeRecentIndex < recentSearchesModel.count) {
-                        recentSearchesModel.set(activeRecentIndex, { freeText: freeText, tokensJson: tokensJson })
-                    } else {
-                        recentSearchesModel.insert(0, { freeText: freeText, tokensJson: tokensJson })
-                        activeRecentIndex = 0
-                        while (recentSearchesModel.count > searchPane.maxRecentSearches) {
-                            recentSearchesModel.remove(recentSearchesModel.count - 1)
-                        }
-                    }
-                    saveRecentSearches()
-                }
-
-                function tokenToQueryString(t) {
-                    if (t.keyId > 0) {
-                        return "key_id:" + t.keyId
-                    }
-                    let value = t.value
-                    let exact = value.startsWith('=')
-                    if (exact) {
-                        value = value.slice(1)
-                    }
-                    let v = quote(value)
-                    if (exact) {
-                        v = "=" + v
-                    }
-                    return t.query + ":" + v
-                }
-
-                function entryToQueryString(entry) {
-                    let parts = []
-                    let tokens = []
-                    try {
-                        tokens = JSON.parse(entry.tokensJson)
-                    } catch (err) {
-                        tokens = []
-                    }
-                    if (Array.isArray(tokens)) {
-                        for (let i = 0; i < tokens.length; i++) {
-                            let t = tokens[i]
-                            if (!t || typeof t.name !== "string" ||
-                                    typeof t.value !== "string" || !t.value.length) {
-                                continue
-                            }
-                            parts.push(tokenToQueryString({
-                                query: fieldNameToQuery(t.name),
-                                value: t.value,
-                                keyId: t.keyId || 0
-                            }))
-                        }
-                    }
-                    if (typeof entry.freeText === "string" && entry.freeText.length > 0) {
-                        parts.push(entry.freeText)
-                    }
-                    return parts.join(' ')
-                }
-
-                function loadRecentSearches() {
-                    recentSearchesModel.clear()
-                    let queries = Mixxx.Config.getRecentSearches()
-                    for (let i = 0; i < queries.length && recentSearchesModel.count < searchPane.maxRecentSearches; i++) {
-                        let query = queries[i]
-                        if (typeof query !== "string" || query.length === 0) {
-                            continue
-                        }
-                        let parsed = Mixxx.Library.parseRecentSearchQuery(query)
-                        recentSearchesModel.append({
-                            tokensJson: JSON.stringify(parsed.tokens),
-                            freeText: parsed.freeText
-                        })
-                    }
-                }
-
-                function saveRecentSearches() {
-                    let queries = []
-                    for (let i = 0; i < recentSearchesModel.count; i++) {
-                        let query = entryToQueryString(recentSearchesModel.get(i))
-                        if (query.length > 0) {
-                            queries.push(query)
-                        }
-                    }
-                    Mixxx.Config.setRecentSearches(queries)
+                    let row = searchPane.recentSearches.persist(tokens, freeText, activeRecentIndex)
+                    activeRecentIndex = row
                 }
 
                 function applyRecentSearch(index) {
-                    let entry = recentSearchesModel.get(index)
+                    let entry = searchPane.recentSearches.get(index)
                     if (!entry) {
                         return
                     }
-                    let tokens
-                    try {
-                        tokens = JSON.parse(entry.tokensJson)
-                    } catch (err) {
-                        return
-                    }
-                    if (!Array.isArray(tokens)) {
+                    let tokens = entry.tokens
+                    if (!tokens) {
                         return
                     }
                     selectedCriteria.clear()
@@ -818,7 +702,7 @@ Item {
                         let t = tokens[i]
                         selectedCriteria.append({
                             name: t.name,
-                            query: fieldNameToQuery(t.name),
+                            query: t.query,
                             value: t.value,
                             keyId: t.keyId !== undefined ? t.keyId : 0
                         })
@@ -1199,17 +1083,29 @@ Item {
                                     clip: true
                                     spacing: 4
                                     interactive: true
-                                    model: recentSearchesModel
+                                    model: searchPane.recentSearches
                                     delegate: Item {
                                         id: recentDelegate
 
+                                        property var recentProxy: ListModel {
+                                            id: recentModelProxy
+
+                                            Component.onCompleted: {
+                                                var tokens = recentDelegate.tokens
+                                                for (var i = 0; i < tokens.length; i++) {
+                                                    append(tokens[i])
+                                                }
+                                            }
+                                        }
+
                                         objectName: "recent_"
                                                 + (recentDelegate.freeText
-                                                || recentDelegate.tokensJson)
+                                                || recentDelegate.queryString)
 
                                         required property int index
-                                        required property string tokensJson
+                                        required property var tokens
                                         required property string freeText
+                                        required property string queryString
 
                                         height: 24
                                         width: recentList.width
@@ -1230,8 +1126,6 @@ Item {
                                         }
 
                                         Row {
-                                            property var tokens: JSON.parse(recentDelegate.tokensJson)
-
                                             anchors.fill: parent
                                             anchors.leftMargin: 5
                                             anchors.rightMargin: 5
@@ -1239,7 +1133,7 @@ Item {
                                             spacing: 5
 
                                             Repeater {
-                                                model: parent.tokens
+                                                model: recentModelProxy
                                                 Skin.SearchFieldCriteria {
                                                     field: modelData.name
                                                     value: modelData.value
@@ -1323,8 +1217,8 @@ Item {
                             case Qt.Key_Down:
                                 if (suggestionModel.count > 0) {
                                     searchPane.highlightedIndex = (searchPane.highlightedIndex + 1) % suggestionModel.count
-                                } else if (searchPane.isRecentShown() && recentSearchesModel.count > 0) {
-                                    searchPane.highlightedRecentIndex = (searchPane.highlightedRecentIndex + 1) % recentSearchesModel.count
+                                } else if (searchPane.isRecentShown() && searchPane.recentSearches.rowCount() > 0) {
+                                    searchPane.highlightedRecentIndex = (searchPane.highlightedRecentIndex + 1) % searchPane.recentSearches.rowCount()
                                     recentList.positionViewAtIndex(searchPane.highlightedRecentIndex, ListView.Contain)
                                 }
                                 event.accepted = true
@@ -1332,8 +1226,8 @@ Item {
                             case Qt.Key_Up:
                                 if (suggestionModel.count > 0) {
                                     searchPane.highlightedIndex = (searchPane.highlightedIndex - 1 + suggestionModel.count) % suggestionModel.count
-                                } else if (searchPane.isRecentShown() && recentSearchesModel.count > 0) {
-                                    searchPane.highlightedRecentIndex = (searchPane.highlightedRecentIndex - 1 + recentSearchesModel.count) % recentSearchesModel.count
+                                } else if (searchPane.isRecentShown() && searchPane.recentSearches.rowCount() > 0) {
+                                    searchPane.highlightedRecentIndex = (searchPane.highlightedRecentIndex - 1 + searchPane.recentSearches.rowCount()) % searchPane.recentSearches.rowCount()
                                     recentList.positionViewAtIndex(searchPane.highlightedRecentIndex, ListView.Contain)
                                 }
                                 event.accepted = true

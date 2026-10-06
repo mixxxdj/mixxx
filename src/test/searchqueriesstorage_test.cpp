@@ -92,41 +92,53 @@ TEST_F(SearchQueriesStorageTest, SaveSkipsEmptyQueries) {
 
 namespace {
 
-QString tokenToQueryString(const QVariantMap& token) {
-    const int keyId = token.value(QStringLiteral("keyId")).toInt();
-    if (keyId > 0) {
-        return QStringLiteral("key_id:%1").arg(keyId);
-    }
-    QString value = token.value(QStringLiteral("value")).toString();
-    const bool exact = value.startsWith('=');
-    if (exact) {
-        value = value.mid(1);
-    }
-    QString argument = value;
-    if (argument.contains(' ')) {
-        argument = QStringLiteral("\"%1\"").arg(argument);
-    }
-    if (exact) {
-        argument = QStringLiteral("=") + argument;
-    }
-    return token.value(QStringLiteral("query")).toString() + ":" + argument;
-}
-
 QString entryToQueryString(const QVariantMap& parsed) {
-    QStringList parts;
-    const QVariantList tokens = parsed.value(QStringLiteral("tokens")).toList();
-    parts.reserve(tokens.size());
-    for (const auto& tokenValue : tokens) {
-        parts.append(tokenToQueryString(tokenValue.toMap()));
-    }
-    const QString freeText = parsed.value(QStringLiteral("freeText")).toString();
-    if (!freeText.isEmpty()) {
-        parts.append(freeText);
-    }
-    return parts.join(' ');
+    return mixxx::SearchQueriesStorage::serializeQuery(
+            parsed.value(QStringLiteral("tokens")).toList(),
+            parsed.value(QStringLiteral("freeText")).toString());
 }
 
 } // namespace
+
+TEST_F(SearchQueriesStorageTest, SerializeToken) {
+    QVariantMap keyToken = {
+            {QStringLiteral("query"), QStringLiteral("key")},
+            {QStringLiteral("value"), QStringLiteral("11d")},
+            {QStringLiteral("keyId"), 11},
+    };
+    EXPECT_QSTRING_EQ("key_id:11", mixxx::SearchQueriesStorage::serializeToken(keyToken));
+
+    QVariantMap exactToken = {
+            {QStringLiteral("query"), QStringLiteral("artist")},
+            {QStringLiteral("value"), QStringLiteral("=A Super Artist")},
+            {QStringLiteral("keyId"), 0},
+    };
+    EXPECT_QSTRING_EQ("artist:=\"A Super Artist\"",
+            mixxx::SearchQueriesStorage::serializeToken(exactToken));
+
+    // Any whitespace character (not just ' ') triggers quoting.
+    QVariantMap tabToken = {
+            {QStringLiteral("query"), QStringLiteral("artist")},
+            {QStringLiteral("value"), QStringLiteral("a\tb")},
+            {QStringLiteral("keyId"), 0},
+    };
+    EXPECT_QSTRING_EQ("artist:\"a\tb\"",
+            mixxx::SearchQueriesStorage::serializeToken(tabToken));
+
+    QVariantMap artistToken = {
+            {QStringLiteral("query"), QStringLiteral("artist")},
+            {QStringLiteral("value"), QStringLiteral("foo")},
+            {QStringLiteral("keyId"), 0},
+    };
+    QVariantMap bpmToken = {
+            {QStringLiteral("query"), QStringLiteral("bpm")},
+            {QStringLiteral("value"), QStringLiteral("120")},
+            {QStringLiteral("keyId"), 0},
+    };
+    EXPECT_QSTRING_EQ("artist:foo bpm:120 hello world",
+            mixxx::SearchQueriesStorage::serializeQuery(
+                    {artistToken, bpmToken}, QStringLiteral("hello world")));
+}
 
 TEST_F(SearchQueriesStorageTest, ParseQueryChips) {
     const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(

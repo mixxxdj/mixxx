@@ -13,6 +13,7 @@
 #include "library/scanner/libraryscanner.h"
 #include "qml/qmllibrarysource.h"
 #include "qml/qmllibrarytracklistmodel.h"
+#include "qml/qmlrecentsearchmodel.h"
 #include "qml/qmlsearchsuggestionmodel.h"
 #include "util/parented_ptr.h"
 
@@ -94,6 +95,8 @@ class QmlLibraryProxy : public QObject {
     Q_PROPERTY(mixxx::qml::QmlLibraryScannerProxy* scanner MEMBER m_pScanner CONSTANT)
     Q_PROPERTY(mixxx::qml::QmlSearchSuggestionModel* searchSuggestions MEMBER
                     m_pSearchSuggestions CONSTANT)
+    Q_PROPERTY(mixxx::qml::QmlRecentSearchModel* recentSearches MEMBER
+                    m_pRecentSearches CONSTANT)
     QML_NAMED_ELEMENT(Library)
     QML_SINGLETON
 
@@ -149,7 +152,11 @@ class QmlLibraryProxy : public QObject {
     Q_INVOKABLE static QString urlToLocalPath(const QUrl& url) {
         return url.toLocalFile();
     }
-    Q_INVOKABLE QVariantMap parseRecentSearchQuery(const QString& query) const;
+
+    /// Serializes structured search criteria (tokens + optional free text)
+    /// into the query string form used for searching and persistence.
+    Q_INVOKABLE QString serializeSearchQuery(
+            const QVariantList& tokens, const QString& freeText) const;
 
     static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
         s_pKeyboard = std::move(pKeyboard);
@@ -186,6 +193,7 @@ class QmlLibraryProxy : public QObject {
     QmlLibraryTrackListModel* m_pModelProperty;
     QmlLibraryScannerProxy* m_pScanner;
     QmlSearchSuggestionModel* m_pSearchSuggestions;
+    QmlRecentSearchModel* m_pRecentSearches;
 
     static qsizetype sources_count(QQmlListProperty<QmlLibrarySource>* property);
     static QmlLibrarySource* sources_at(

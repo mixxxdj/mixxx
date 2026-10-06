@@ -127,35 +127,66 @@ def _download_file(entry, dest):
             os.replace(f.name, dest)
 
 
-def ensure_tracks_downloaded(target_dir=None, nb_tracks=20):
-    """Download all tracks from the manifest into target_dir (or default tracks_dir)."""
+def track_filename(entry):
+    """Name of the downloaded file for a manifest entry."""
+    return os.path.basename(urllib.parse.urlparse(entry["url"]).path)
+
+
+def available_tracks(target_dir):
+    """Catalog of the tracks actually present in target_dir.
+
+    Builds a copy of each manifest entry whose downloaded file exists
+    (non-empty) in target_dir, adding its absolute path as ``location``.
+    """
+    # Entries that share a downloaded filename with another entry cannot be
+    # attributed to a single file unambiguously and are excluded.
+    counts = collections.Counter(
+        track_filename(entry) for entry in load_track_manifest()
+    )
+    ambiguous = {name for name, count in counts.items() if count > 1}
+    catalog = []
+    for entry in load_track_manifest():
+        filename = track_filename(entry)
+        if filename in ambiguous:
+            continue
+        filepath = os.path.join(target_dir, filename)
+        if not os.path.isfile(filepath) or os.path.getsize(filepath) == 0:
+            continue
+        entry = dict(entry)
+        entry["location"] = filepath
+        catalog.append(entry)
+    return catalog
+
+
+def ensure_track_catalog(target_dir, nb_tracks):
+    """Download missing tracks from the manifest into target_dir.
+
+    Downloads only as many tracks as needed to reach nb_tracks files, then
+    returns the resulting catalog (see available_tracks): the manifest
+    metadata of every track file present in target_dir, with ``location``.
+    """
     os.makedirs(target_dir, exist_ok=True)
     existing_track_count = len(glob.glob(f'{target_dir}/*.mp3'))
-    if existing_track_count >= nb_tracks:
-        return
-    manifest = random.sample(load_track_manifest(), nb_tracks - existing_track_count)
-    downloaded = []
-    for entry in manifest:
-        url = entry.get("url")
-        if not url:
-            continue
-        a = urllib.parse.urlparse(url)
-        filename = os.path.basename(a.path)
-        dest = os.path.join(target_dir, filename)
-        if os.path.exists(dest) and os.path.getsize(dest) > 0:
-            downloaded.append(dest)
-            continue
-        sys.stdout.write(f"Downloading {filename}...\n")
-        sys.stdout.flush()
-        try:
-            _download_file(entry, dest)
-            if not os.path.exists(dest) or os.path.getsize(dest) == 0:
-                raise RuntimeError(f"Download failed, no output at {dest}")
-            downloaded.append(dest)
-        except Exception as e:
-            sys.stdout.write(f"  FAILED: {e}\n")
+    if existing_track_count < nb_tracks:
+        manifest = random.sample(load_track_manifest(), nb_tracks - existing_track_count)
+        for entry in manifest:
+            url = entry.get("url")
+            if not url:
+                continue
+            filename = track_filename(entry)
+            dest = os.path.join(target_dir, filename)
+            if os.path.exists(dest) and os.path.getsize(dest) > 0:
+                continue
+            sys.stdout.write(f"Downloading {filename}...\n")
             sys.stdout.flush()
-    return downloaded
+            try:
+                _download_file(entry, dest)
+                if not os.path.exists(dest) or os.path.getsize(dest) == 0:
+                    raise RuntimeError(f"Download failed, no output at {dest}")
+            except Exception as e:
+                sys.stdout.write(f"  FAILED: {e}\n")
+                sys.stdout.flush()
+    return available_tracks(target_dir)
 
 
 def create_empty_profile(settings_dir=None):

@@ -773,6 +773,8 @@ LOOP_BUTTONS = {
 | `the window's height is {height:d}px` | Sets `mainWindow.height` (impersonal Given form of `I resize the window's height to {height:d}px`) |
 | `the window size is default` | Sets `mainWindow.width=1792`, `mainWindow.height=1008`. Declares the default size a scenario relies on when reusing a session (no QML reload between scenarios) |
 | `the library columns are in their default state` | `invokeMethod(trackList, "resetColumns")` — restores default column order, visibility and sort (see `Library/TrackList.qml`) |
+| `a track available in the library with a unique title` | Remembers a random track whose title is unique in the tracks catalog (persisted from the manifest by the runner) as "this track" (`context.remembered_tracks["this"]`, `RememberedTrack` dataclass) |
+| `a track available in the library` | Remembers a random catalog track as "this track" — no uniqueness constraint; uniqueness-demanding assertions may fail if the picked title repeats |
 | `I wait for {second:d} second` | `time.sleep(second)` (also available as @when and @then) |
 
 ### When Steps

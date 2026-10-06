@@ -4,8 +4,11 @@ import os
 import sys
 import re
 import time
+import functools
 import socket
+import dataclasses
 import xmlrpc.client
+from typing import Optional
 from behave import given, when, then
 import mixxx_profile as profile
 import random
@@ -543,7 +546,7 @@ def _track_rows(rpc, tracklist_path):
     return max(0, int(height // _ROW_HEIGHT))
 
 
-def _track_row_by_title(rpc, tracklist_path, title, timeout=10):
+def _track_row_by_title(rpc, tracklist_path, title, timeout=5):
     """Index of the first row whose displayed title matches, or -1."""
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -1486,22 +1489,6 @@ def step_type_library_search(context, text):
     _type_into_library_search(context, text)
 
 
-@when("I type the title of the track at row {row:d} into the library search")
-def step_type_row_title_library_search(context, row):
-    s = context.mixxx_rpc
-    title = ""
-    deadline = time.time() + 10
-    while time.time() < deadline:
-        title = str(
-                s.invokeMethod(TRACKLIST_PATH, "trackTitleForRow", [row]) or "")
-        if title:
-            break
-        time.sleep(0.3)
-    assert title, f"Track at row {row} has no title"
-    context._search_title = title
-    _type_into_library_search(context, title)
-
-
 @when("I clear the library search")
 def step_clear_library_search(context):
     s = context.mixxx_rpc
@@ -1544,23 +1531,13 @@ def step_library_search_bar_visible(context):
     assert _search_activated(context.mixxx_rpc), "Library search bar is not open"
 
 
-@then("the track at row {row:d} should be visible in the results")
-def step_track_row_visible_in_results(context, row):
-    title = getattr(context, "_search_title", None)
-    assert title is not None, "No track title was typed into the search"
-    s = context.mixxx_rpc
-    found = _track_row_by_title(s, TRACKLIST_PATH, title, timeout=15)
-    assert found >= 0, f"Track '{title}' (row {row}) is not in the results"
-
-
-@then('the track at row {row:d} should be visible in the {side} track list')
-def step_track_row_visible_in_side_list(context, row, side):
-    title = getattr(context, "_search_title", None)
-    assert title is not None, "No track title was typed into the search"
+@then("this track should be visible in the {side} track list")
+def step_this_track_visible_in_side_list(context, side):
+    track = _remembered_track(context)
     tracklist = RIGHT_TRACKLIST_PATH if side == "right" else TRACKLIST_PATH
     _wait_for_visible(context.mixxx_rpc, tracklist)
-    found = _track_row_by_title(context.mixxx_rpc, tracklist, title, timeout=15)
-    assert found >= 0, f"Track '{title}' (row {row}) is not in the {side} track list"
+    found = _track_row_by_title(context.mixxx_rpc, tracklist, track.title)
+    assert found >= 0, f"Track '{track}' is not in the {side} track list"
 
 
 @then("no other track should be visible in the results")
@@ -1612,8 +1589,7 @@ def step_suggestion_not_visible(context, suggestion):
 @then('the library recent search "{needle}" should be visible')
 def step_recent_search_visible(context, needle):
     s = context.mixxx_rpc
-    title = getattr(context, "_search_title", None)
-    expected = title if "title of the track" in needle else needle
+    expected = _remembered_track(context).title if "title of this track" in needle else needle
     _wait_for_visible(s, SEARCH_RECENT_LIST_PATH)
     _wait_for_visible(s, f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}")
 
@@ -1682,45 +1658,78 @@ def _search_criteria_fields(rpc):
         return []
 
 
-def _remember_search_track(context):
-    """Remember a track with a title unique among the visible rows.
+@dataclasses.dataclass(frozen=True)
+class RememberedTrack:
+    """A tracks-catalog entry remembered by an earlier step under a name.
 
     Scenarios reference it as "this track" and must not depend on which tracks
-    happen to be in the test profile or on their order.
+    happen to be in the test profile or on their order. The catalog (persisted
+    by the runner from ``load_track_manifest`` at download time) supplies both
+    the track choice and its metadata, so no live-library introspection is
+    needed. Later scenarios (crates, playlists, ...) can remember tracks under
+    their own names through the same store.
     """
-    s = context.mixxx_rpc
-    deadline = time.time() + 30
-    chosen = None
-    while chosen is None and time.time() < deadline:
-        rows = _track_rows(s, TRACKLIST_PATH)
-        if rows == 0:
-            # The track list may still be building up after the scan
-            time.sleep(0.3)
-            continue
-        titles = [
-            str(s.invokeMethod(TRACKLIST_PATH, "trackTitleForRow", [row]) or "")
-            for row in range(rows)
+    title: str
+    artist: str
+    location: str
+    bpm: Optional[float]
+    first_beat: Optional[int]
+    samplerate: Optional[float]
+    tags: Optional[str]
+
+    def __str__(self):
+        return f"{self.title} - {self.artist}"
+
+
+def remember_track(context, entry, name="this"):
+    """Add ``entry`` (a tracks-catalog entry with ``location``) to
+    ``context.remembered_tracks`` under ``name``."""
+    if not hasattr(context, "remembered_tracks"):
+        context.remembered_tracks = {}
+    track = RememberedTrack(
+        title=entry["title"],
+        artist=entry.get("artist", ""),
+        location=entry["location"],
+        bpm=entry.get("bpm"),
+        first_beat=entry.get("first_beat"),
+        samplerate=entry.get("samplerate"),
+        tags=entry.get("tags"),
+    )
+    context.remembered_tracks[name] = track
+    return track
+
+
+def _remembered_track(context, name="this"):
+    """The track remembered under ``name`` (default: "this track")."""
+    tracks = getattr(context, "remembered_tracks", {})
+    assert name in tracks, f"No track was remembered as \"{name} track\""
+    return tracks[name]
+
+
+def _remember_catalog_track(context, unique_attr=False):
+    """Randomly remember an available track, optionally with a unique attribute
+    among the available tracks.
+    """
+    catalog = context.config.userdata.get("tracks_catalog")
+    assert catalog, "No tracks catalog was persisted by the test runner"
+    pool = catalog
+    if unique_attr:
+        values = [entry.get(unique_attr) for entry in catalog]
+        pool = [
+            entry for entry in catalog
+            if entry.get(unique_attr) and values.count(entry[unique_attr]) == 1
         ]
-        for row, title in enumerate(titles):
-            if title and titles.count(title) == 1:
-                chosen = (row, title)
-                break
-        if chosen is None:
-            time.sleep(0.3)
-    assert chosen is not None, "No track with a unique title in the library"
-    row, _ = chosen
-    data = json.loads(
-        str(s.invokeMethod(TRACKLIST_PATH, "trackDataForRow", [row]) or "{}"))
-    data["title"] = data.get("title") or chosen[1]
-    data["row"] = row
-    context.search_track = data
+    assert pool, f"No tracks available in the catalog"
+    assert all(entry.get("title") for entry in pool), (
+        "The catalog contains tracks without a title"
+    )
+    return remember_track(context, random.choice(pool))
 
 
 def _this_track_field(context, field):
-    data = getattr(context, "search_track", None)
-    assert data is not None, "No track was remembered as \"this track\""
-    value = data.get(field)
-    assert value not in (None, ""), (
+    track = _remembered_track(context)
+    value = getattr(track, field, None)
+    assert value, (
         f"The remembered track has no '{field}'"
     )
     return value
@@ -1734,9 +1743,13 @@ def _type_this_track(context, field, transform=None):
     return value
 
 
-@given("a track available in the library with a unique title")
-def step_remember_search_track(context):
-    _remember_search_track(context)
+@given("a track available in the library")
+@given("a track available in the library {rule}")
+def step_remember_any_track(context, rule=None):
+    if rule and rule.startswith("with a unique"):
+        _remember_catalog_track(context, unique_attr=rule[len("with a unique"):].strip())
+
+    _remember_catalog_track(context)
 
 
 @given("no search is currently active")
@@ -1772,20 +1785,23 @@ def step_search_criteria_include(context, field, value):
     _type_into_library_search(context, value)
 
 
-@when('I type the title of this track into the library search')
-def step_type_this_title(context):
-    _type_this_track(context, "title")
+@when('I type the {attr_with_transform} of this track into the library search')
+@when('I type the {attr_with_transform} of this track into the library search {rule}')
+def step_type_this_title(context, attr_with_transform, rule=None):
+    def wrap(transform, wrapper):
+        return lambda v: wrapper(transform(v) if transform else v)
+    transform = None
 
+    if rule and rule.startswith("prefixed with"):
+        prefix = rule[len("prefixed with") + 2:-1]
+        transform = wrap(transform, lambda value: f"{prefix}{value}")
 
-@when("I type the first word of the title of this track into the library search")
-def step_type_this_title_first_word(context):
-    _type_this_track(
-        context, "title", lambda title: title.split()[0] if title.split() else "")
+    attr = attr_with_transform
+    if attr_with_transform.startswith("first word of the "):
+        attr = attr_with_transform[len("first word of the "):]
+        transform = wrap(transform, lambda value: value.split(" ")[0])
 
-
-@when("I type the artist of this track into the library search")
-def step_type_this_artist(context):
-    _type_this_track(context, "artist")
+    _type_this_track(context, attr, transform)
 
 
 @when('I press the "{key}" key in the library search')
@@ -1805,8 +1821,7 @@ def step_press_key_in_search(context, key):
 @when('I click the recent library search "{search}"')
 def step_click_recent_search(context, search):
     s = context.mixxx_rpc
-    title = getattr(context, "_search_title", None)
-    expected = title if "title of the track" in search else search
+    expected = _remembered_track(context).title if "title of this track" in search else search
     _click(s, f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}")
     time.sleep(0.5)
 
@@ -1905,10 +1920,9 @@ def step_search_token_active(context, field):
 def step_search_query_is(context, query):
     s = context.mixxx_rpc
     expected = query
-    title = getattr(context, "_search_title", None)
-    if "title of the track" in expected and title:
+    if "title of this track" in expected:
         expected = expected.replace(
-            "<title of the track at row 1>", title)
+            "<title of this track>", _remembered_track(context).title)
     deadline = time.time() + 5
     seen = ""
     while time.time() < deadline:
@@ -1938,7 +1952,7 @@ def step_search_bar_empty(context):
 
 @then("the library search suggestion showing the artist of this track should be visible")
 def step_artist_suggestion_visible(context):
-    location = context.search_track["location"]
+    location = _remembered_track(context).location
     data = _get_track_summary_state(context.mixxx_rpc, location)
     assert data.get("artist"), "The remembered track has no artist"
     _wait_for_search_suggestion(context, data["artist"])
@@ -2002,13 +2016,13 @@ def step_query_contains_artist(context):
 def _this_track_results_visible(context):
     s = context.mixxx_rpc
     title = _this_track_field(context, "title")
-    return _track_row_by_title(s, TRACKLIST_PATH, title, timeout=15) >= 0
+    return _track_row_by_title(s, TRACKLIST_PATH, title) >= 0
 
 
 @then("this track should be visible in the results")
 def step_this_track_visible(context):
     assert _this_track_results_visible(context), (
-        f'The remembered track "{_this_track_field(context, "title")}" '
+        f'The remembered track "{_remembered_track(context)}" '
         "is not in the results")
 
 
@@ -2016,7 +2030,7 @@ def step_this_track_visible(context):
 def step_only_this_track_visible(context):
     s = context.mixxx_rpc
     title = _this_track_field(context, "title")
-    row = _track_row_by_title(s, TRACKLIST_PATH, title, timeout=15)
+    row = _track_row_by_title(s, TRACKLIST_PATH, title)
     assert row >= 0, (
         f'The remembered track "{title}" is not in the results')
     rows = _track_rows(s, TRACKLIST_PATH)

@@ -1,5 +1,6 @@
 #include "qml/qmllibrarytracklistmodel.h"
 
+#include <qcontainerfwd.h>
 #include <qnamespace.h>
 
 #include <QObject>
@@ -192,7 +193,16 @@ QUrl QmlLibraryTrackListModel::getUrl(int row) const {
     return pTrackModel->getTrackUrl(sourceModel()->index(row, 0));
 }
 
-void QmlLibraryTrackListModel::search(const QString& searchText) {
+QString QmlLibraryTrackListModel::search() const {
+    auto* const pTrackModel = dynamic_cast<TrackModel*>(sourceModel());
+
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+        return {};
+    }
+    return pTrackModel->currentSearch();
+}
+
+void QmlLibraryTrackListModel::setSearch(const QString& searchText) {
     auto* const pTrackModel = dynamic_cast<TrackModel*>(sourceModel());
 
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {

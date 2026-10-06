@@ -651,8 +651,10 @@ def main():
         tracks_cache = os.path.join(tempfile.gettempdir(), "mixxx-test-tracks")
     os.makedirs(tracks_cache, exist_ok=True)
 
-    # Download tracks if not already cached
-    profile.ensure_tracks_downloaded(tracks_cache, nb_tracks=LIBRARY_TRACK_COUNT)
+    # Download tracks (if not already cached) and build the catalog:
+    # manifest metadata for every track file available to the tests.
+    tracks_catalog = profile.ensure_track_catalog(
+        tracks_cache, nb_tracks=LIBRARY_TRACK_COUNT)
 
     artifacts = args.artifacts_dir
     if not artifacts:
@@ -777,6 +779,7 @@ def main():
         runner.config.show_timings = True
         runner.config.userdata = dict(
             tracks_dir=tracks_cache,
+            tracks_catalog=tracks_catalog,
             binary=args.binary,
             fail_early=args.fail_early,
             retry_max_attempts=args.retry,
@@ -801,7 +804,7 @@ def main():
         if recorder_proc:
             recorder_name_pretty = os.path.basename(recorder_name)
             _stop_recorder(recorder_proc, recorder_name_pretty)
-            _mux_chapters(video_path, runner.context.results, recording_start, _find_ffmpeg(args.ffmpeg_path))
+            _mux_chapters(video_path, getattr(runner.context, "results"), recording_start, _find_ffmpeg(args.ffmpeg_path))
         if "runner" in locals() and hasattr(runner.context, "results"):
             with open(result_path, "w") as f:
                 json.dump(runner.context.results, f, indent=2)
