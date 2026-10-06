@@ -100,7 +100,7 @@ void DlgPrefColors::slotUpdate() {
                 paletteIcon);
         comboBoxTrackColors->addItem(paletteName);
         comboBoxTrackColors->setItemIcon(
-                comboBoxHotcueColors->count() - 1,
+                comboBoxTrackColors->count() - 1,
                 paletteIcon);
     }
 
