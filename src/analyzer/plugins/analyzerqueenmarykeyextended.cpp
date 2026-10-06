@@ -159,7 +159,7 @@ KeyChangeList AnalyzerQueenMaryKeyExtended::getKeyChanges() const {
 }
 
 double AnalyzerQueenMaryKeyExtended::calculateConfidence(
-        double* keyStrengths, int detectedKeyIndex) const {
+        const double* keyStrengths, int detectedKeyIndex) const {
     if (!keyStrengths) {
         return 50.0;
     }
