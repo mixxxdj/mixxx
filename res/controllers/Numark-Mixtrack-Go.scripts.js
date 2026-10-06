@@ -965,7 +965,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     });
 
     // play led control
-    engine.makeConnection(group, "play_indicator", function() {
+    const playIndicatorConnection = engine.makeConnection(group, "play_indicator", function() {
         if (engine.getValue(group, "play_indicator") === 1) {
             NumarkMixtrackGo.led.setPlayBright(deckIndex);
         } else {
@@ -1124,6 +1124,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
 
         cueConnection.trigger();
         playConnection.trigger();
+        playIndicatorConnection.trigger();
         playAndCueShiftTrackLoadedConnection.trigger();
 
         try {
