@@ -2,9 +2,6 @@ name: Flatpak
 on:
   workflow_call:
     inputs:
-      update_repo:
-        type: boolean
-        default: false
       run_id:
         type: string
         required: true
@@ -36,7 +33,6 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: Check out repository
-        if: ${{ inputs.update_repo }}
         uses: actions/checkout@v7
 
       - name: "Prepare"

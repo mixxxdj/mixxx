@@ -56,7 +56,6 @@ jobs:
     if: ${{ (github.ref_type == 'tag' && !contains('-', github.ref_name)) || github.ref_name == '2.6' || github.ref_name == 'main' }}
     with:
       ref: ${{ github.ref }}
-      update_repo: ${{ github.ref_name == 'main' }}
       run_id: ${{ github.run_id }}
     secrets:
       DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
