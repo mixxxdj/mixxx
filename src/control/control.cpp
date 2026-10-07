@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "moc_control.cpp"
+#include "osc/query/oscquerydescription.h"
 #include "util/mutex.h"
 #include "util/stat.h"
 
@@ -35,6 +36,9 @@ QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> s_qCOHash
 /// Hash of aliases between ConfigKeys. Solely used for looking up the first
 /// alias associated with a key.
 QHash<ConfigKey, ConfigKey> s_qCOAliasHash
+        GUARDED_BY(s_qCOHashMutex);
+
+OscQueryDescription s_oscQueryDecription
         GUARDED_BY(s_qCOHashMutex);
 
 /// is used instead of a nullptr, helps to omit null checks everywhere
@@ -82,6 +86,7 @@ ControlDoublePrivate::ControlDoublePrivate(
 ControlDoublePrivate::~ControlDoublePrivate() {
     s_qCOHashMutex.lock();
     //qDebug() << "ControlDoublePrivate::s_qCOHash.remove(" << m_key.group << "," << m_key.item << ")";
+    s_oscQueryDecription.removeControlKey(m_key);
     s_qCOHash.remove(m_key);
     s_qCOHashMutex.unlock();
 
@@ -187,6 +192,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const MMutexLocker locker(&s_qCOHashMutex);
         //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
         s_qCOHash.insert(key, pControl);
+        s_oscQueryDecription.insertControlKey(key);
         return pControl;
     }
 
@@ -213,6 +219,12 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getDefaultControl() {
         }
     }
     return defaultCO;
+}
+
+// static
+void ControlDoublePrivate::writeOscQueryDescription(QString& oscQueryFileName) {
+    const MMutexLocker locker(&s_qCOHashMutex);
+    s_oscQueryDecription.saveToFile(oscQueryFileName);
 }
 
 // static
