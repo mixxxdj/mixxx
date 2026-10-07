@@ -154,10 +154,17 @@ jobs:
       - name: Set up ctcache
         if: matrix.name == 'clang-tidy'
         run: |
-          export CTCACHE_DIR="$HOME/.cache/ctcache"
+          # ctcache doesn't hash the clang-tidy binary, so keep a cache per
+          # version and drop the ones of older versions
+          version="$(clang-tidy --version | sha256sum | cut -c1-16)"
+          mkdir -p "$HOME/.cache/ctcache"
+          find "$HOME/.cache/ctcache" -mindepth 1 -maxdepth 1 ! -name "$version" -exec rm -rf {} +
+          export CTCACHE_DIR="$HOME/.cache/ctcache/$version"
           echo "CTCACHE_DIR=$CTCACHE_DIR" >> "$GITHUB_ENV"
           # Store clang-tidy's output, so cache hits still report findings
           echo "CTCACHE_SAVE_OUTPUT=1" >> "$GITHUB_ENV"
+          # Comments are stripped by default, but NOLINT and namespace comments matter
+          echo "CTCACHE_KEEP_COMMENTS=1" >> "$GITHUB_ENV"
           python3 ctcache/src/ctcache/clang_tidy_cache.py --zero-stats
       - name: Set up ccache for clazy
         if: matrix.name == 'clazy'
@@ -199,6 +206,12 @@ jobs:
         # the older ones so they don't evict the caches of other branches.
         if: steps.ccache_save.outcome == 'success'
         run: |
+          # The save step only warns when the upload fails
+          if ! gh cache list --ref "$GITHUB_REF" --key "$KEY" --limit 100 --json key \
+              --jq ".[] | select(.key == \"$KEY\") | .key" | grep -qx "$KEY"; then
+            echo "$KEY was not saved, not deleting any caches"
+            exit 0
+          fi
           # A build of a newer commit may have saved its cache already
           if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
             echo "$GITHUB_REF has newer commits, not deleting any caches"
