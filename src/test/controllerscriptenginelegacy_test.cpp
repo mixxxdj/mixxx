@@ -98,7 +98,8 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
 
         // Background key analysis would otherwise race with tests that set keys
         // manually and overwrite them once the analysis finishes.
-        KeyDetectionSettings(config()).setKeyDetectionEnabled(false);
+        KeyDetectionSettings keyDetectionSettings(config());
+        keyDetectionSettings.setKeyDetectionEnabled(false);
 
         m_pPlayerManager->addConfiguredDecks();
         m_pPlayerManager->addSampler();
