@@ -60,8 +60,10 @@ TEST(RgbColorTest, toQVariant) {
 }
 
 TEST(RgbColorTest, toQVariantOptional) {
-    EXPECT_EQ(QVariant(),
-            RgbColor::toQVariant(RgbColor::nullopt()));
+    const auto noColorVariant = RgbColor::toQVariant(RgbColor::nullopt());
+    EXPECT_TRUE(noColorVariant.isValid());
+    EXPECT_TRUE(noColorVariant.isNull());
+    EXPECT_EQ(RgbColor::nullopt(), RgbColor::fromQVariant(noColorVariant));
     EXPECT_EQ(QVariant(0x123456),
             RgbColor::toQVariant(RgbColor::fromQColor(QColor::fromRgba(0xAA123456))));
 }
