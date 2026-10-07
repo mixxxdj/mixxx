@@ -37,8 +37,16 @@ jobs:
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           git config --global --list
 
+      # These steps are the ones of pre-commit/action, minus its cache. The
+      # action saves a cache from every pull request, which only that pull
+      # request can use again and which fills the 10 GB repository quota.
+      - name: "Install pre-commit"
+        run: python -m pip install pre-commit
+
       - name: "Detect code style issues"
-        uses: pre-commit/action@v3.0.1
+        # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
+        # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
+        run: pre-commit run --show-diff-on-failure --color=always ${{ inputs.pull_request && '--from-ref HEAD^1 --to-ref HEAD' || '' }}
         env:
           # There are too many files in the repo that have formatting issues. We'll
           # disable these checks for now when pushing directly (but still run these
@@ -46,10 +54,6 @@ jobs:
           SKIP: ${{ inputs.pull_request && 'no-commit-to-branch' || 'clang-format,eslint,no-commit-to-branch' }}
           # https://github.com/paleite/eslint-plugin-diff?tab=readme-ov-file#ci-setup
           ESLINT_PLUGIN_DIFF_COMMIT: ${{ inputs.pull_request && 'HEAD^1' || '' }}
-        with:
-          # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
-          # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
-          extra_args: ${{ inputs.pull_request && '--from-ref HEAD^1 --to-ref HEAD' || '' }}
 
       - name: "Generate patch file"
         if: failure()
