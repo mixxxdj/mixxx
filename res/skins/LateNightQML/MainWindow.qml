@@ -25,6 +25,36 @@ Item {
     property alias editDeck: toolbar.editDeck
     property var focusedDeck: null
     property alias maximizeLibrary: toolbar.maximizeLibrary
+    property bool layoutMaximizedLibrary: false
+    property bool bigLibraryTransition: false
+    property bool bigLibraryFadeIn: false
+    property bool deckModeTransition: false
+    property bool bigLibraryEffectsRestoreActive: false
+    readonly property int bigLibraryFadeDuration: 60
+    readonly property bool bigLibraryContentReady: deck1.contentReady && deck2.contentReady
+            && (!deck3.shouldShow || (deck3.status === Loader.Ready && (deck3.item as LateNightDeck.Deck).contentReady))
+            && (!deck4.shouldShow || (deck4.status === Loader.Ready && (deck4.item as LateNightDeck.Deck).contentReady))
+            && (!showSamplers || samplers.contentReady)
+            && library.status === Loader.Ready
+    readonly property bool bigLibraryAnimationsReady: !waveformsMinimumHeightAnimation.running
+            && !waveformsPreferredHeightAnimation.running
+            && !waveformsOpacityAnimation.running
+            && !deckHeightAnimation.running
+            && !deckRowExpansionAnimation.running
+            && !deckSideMarginLayoutAnimation.running
+            && !deck1AnchorAnimation.running
+            && !compactVuSlotWidthAnimation.running
+            && !mixerAnchorAnimation.running
+            && !mixerLibraryWidthAnimation.running
+            && !deck2AnchorAnimation.running
+            && !deck3AnchorAnimation.running
+            && !deck3OpacityAnimation.running
+            && !deck4AnchorAnimation.running
+            && !deck4OpacityAnimation.running
+            && !libraryAnchorAnimation.running
+    readonly property bool restoringFromBigLibrary: bigLibraryTransition && !maximizeLibrary
+    readonly property int bigLibraryTransitionDuration: restoringFromBigLibrary ? 80 : 100
+    readonly property int deckModeTransitionDuration: 100
     readonly property int normalDeckState: layoutState.normalizedSavedDeckSize
     readonly property int numDecks: 4
     readonly property int numSamplers: 64
@@ -37,6 +67,75 @@ Item {
     readonly property bool showMixer: toolbar.showMixer
     property alias showSamplers: toolbar.showSamplers
     readonly property bool showWaveforms: toolbar.showWaveforms
+
+    onMaximizeLibraryChanged: {
+        bigLibraryReadinessTimer.stop();
+        bigLibraryFadeInTimer.stop();
+        bigLibraryEffectsRestoreTimer.stop();
+        bigLibraryTransition = true;
+        bigLibraryFadeIn = false;
+        bigLibraryEffectsRestoreActive = !maximizeLibrary;
+        deckModeTransition = false;
+        deckModeTransitionTimer.stop();
+        layoutMaximizedLibrary = maximizeLibrary;
+        bigLibraryReadinessTimer.start();
+    }
+    onNormalDeckStateChanged: {
+        if (bigLibraryTransition || maximizeLibrary || showMixer)
+            return;
+
+        deckModeTransition = true;
+        deckModeTransitionTimer.restart();
+    }
+    onShowMixerChanged: {
+        if (showMixer || bigLibraryTransition || maximizeLibrary || normalDeckState !== 1)
+            return;
+
+        deckModeTransition = true;
+        deckModeTransitionTimer.restart();
+    }
+    Component.onCompleted: {
+        if (!bigLibraryTransition)
+            layoutMaximizedLibrary = maximizeLibrary;
+    }
+
+    function finishBigLibraryTransitionWhenReady() {
+        if (!bigLibraryTransition || !bigLibraryContentReady || !bigLibraryAnimationsReady)
+            return;
+
+        bigLibraryReadinessTimer.stop();
+        bigLibraryFadeIn = true;
+        bigLibraryTransition = false;
+        bigLibraryFadeInTimer.restart();
+        if (bigLibraryEffectsRestoreActive)
+            bigLibraryEffectsRestoreTimer.restart();
+    }
+
+    Timer {
+        id: bigLibraryReadinessTimer
+
+        interval: 16
+        repeat: true
+        onTriggered: root.finishBigLibraryTransitionWhenReady()
+    }
+    Timer {
+        id: bigLibraryFadeInTimer
+
+        interval: root.bigLibraryFadeDuration + 16
+        onTriggered: root.bigLibraryFadeIn = false
+    }
+    Timer {
+        id: bigLibraryEffectsRestoreTimer
+
+        interval: 180
+        onTriggered: root.bigLibraryEffectsRestoreActive = false
+    }
+    Timer {
+        id: deckModeTransitionTimer
+
+        interval: root.deckModeTransitionDuration + 10
+        onTriggered: root.deckModeTransition = false
+    }
 
     SkinControlBootstrap {
         id: skinControlBootstrap
@@ -54,7 +153,7 @@ Item {
     LayoutState {
         id: layoutState
 
-        maximizeLibrary: root.maximizeLibrary
+        maximizeLibrary: root.layoutMaximizedLibrary
         mixerVisible: root.showMixer
         savedDeckSize: toolbar.deckSizeWithoutMixer
         show4decks: root.show4decks
@@ -179,33 +278,41 @@ Item {
             LateNightWaveforms.WaveformStack {
                 id: waveforms
 
-                readonly property bool shouldShow: root.showWaveforms && !root.maximizeLibrary
+                readonly property bool shouldShow: root.showWaveforms && !root.layoutMaximizedLibrary
                 property real paneMinimumHeight: shouldShow ? minimumContentHeight : 0
                 property real panePreferredHeight: shouldShow ? Math.max(120, minimumContentHeight) : 0
 
                 SplitView.fillHeight: !library.active
                 SplitView.minimumHeight: paneMinimumHeight
                 implicitHeight: panePreferredHeight
+                layoutTransitioning: root.bigLibraryTransition
+                splitterResizing: splitView.resizing
                 show4decks: root.show4decks
                 visible: panePreferredHeight > 0
-                opacity: shouldShow ? 1 : 0
+                opacity: shouldShow && !root.bigLibraryTransition ? 1 : 0
                 clip: true
 
                 Behavior on paneMinimumHeight {
                     NumberAnimation {
-                        duration: 180
+                        id: waveformsMinimumHeightAnimation
+
+                        duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 180
                         easing.type: Easing.OutCubic
                     }
                 }
                 Behavior on panePreferredHeight {
                     NumberAnimation {
-                        duration: 180
+                        id: waveformsPreferredHeightAnimation
+
+                        duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 180
                         easing.type: Easing.OutCubic
                     }
                 }
                 Behavior on opacity {
                     NumberAnimation {
-                        duration: 120
+                        id: waveformsOpacityAnimation
+
+                        duration: root.bigLibraryTransition || root.bigLibraryFadeIn ? root.bigLibraryFadeDuration : 120
                     }
                 }
             }
@@ -222,11 +329,11 @@ Item {
                 readonly property real deckRowsHeight: visibleDeckHeight > 0
                         ? (visibleDeckHeight + LateNightTheme.deckRowGutter) * deckRowCount
                         : 0
-                property real deckSideMargin: root.showMixer && !root.maximizeLibrary ? LateNightTheme.deckMixerGutter : 2
+                property real deckSideMargin: root.showMixer && !root.layoutMaximizedLibrary ? LateNightTheme.deckMixerGutter : 2
                 readonly property real deckStackHeight: basePaneHeight - LateNightTheme.deckRowGutter
-                readonly property bool mixerLayoutVisible: root.showMixer && !root.maximizeLibrary
+                readonly property bool mixerLayoutVisible: root.showMixer && !root.layoutMaximizedLibrary
                 readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height + micAuxSection.height
-                property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
+                property real visibleDeckHeight: root.layoutMaximizedLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
 
                 SplitView.fillHeight: library.active
                 SplitView.maximumHeight: library.active ? undefined : requiredPaneHeight
@@ -236,23 +343,36 @@ Item {
 
                 Behavior on visibleDeckHeight {
                     NumberAnimation {
-                        duration: 250
+                        id: deckHeightAnimation
+
+                        duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration
+                                : root.deckModeTransition ? root.deckModeTransitionDuration : 250
                         easing.type: Easing.OutCubic
                     }
                 }
                 Behavior on deckRowExpansion {
-                    SpringAnimation {
-                        damping: root.show4decks ? 0.55 : 1
-                        duration: 180
-                        spring: 2
+                    NumberAnimation {
+                        id: deckRowExpansionAnimation
+
+                        duration: 120
+                        easing.type: Easing.OutCubic
                     }
                 }
                 Behavior on deckSideMargin {
-                    SpringAnimation {
-                        damping: 0.2
-                        duration: 500
-                        spring: 2
-                    }
+                    animation: root.bigLibraryTransition ? deckSideMarginLayoutAnimation : deckSideMarginSpringAnimation
+                }
+                NumberAnimation {
+                    id: deckSideMarginLayoutAnimation
+
+                    duration: root.bigLibraryTransitionDuration
+                    easing.type: Easing.OutCubic
+                }
+                SpringAnimation {
+                    id: deckSideMarginSpringAnimation
+
+                    damping: 0.2
+                    duration: 500
+                    spring: 2
                 }
 
                 Item {
@@ -270,10 +390,11 @@ Item {
                 LateNightDeck.Deck {
                     id: deck1
 
-                    deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
+                    deckState: root.layoutMaximizedLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel1]"
-                    visible: !root.maximizeLibrary || root.showMaximizedDecks
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
+                    visible: !root.layoutMaximizedLibrary || root.showMaximizedDecks
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck1) ? null : deck1;
                     }
@@ -288,7 +409,7 @@ Item {
 
                     states: [
                         State {
-                            when: root.showCompactVuMeters && !root.maximizeLibrary
+                            when: root.showCompactVuMeters && !root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.right: compactVuSlot.left
@@ -296,7 +417,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary
+                            when: root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.right: parent.horizontalCenter
@@ -304,6 +425,20 @@ Item {
                             }
                         }
                     ]
+                    transitions: Transition {
+                        AnchorAnimation {
+                            id: deck1AnchorAnimation
+
+                            duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 0
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            id: deck1OpacityAnimation
+
+                            duration: root.deckModeTransition && !root.bigLibraryTransition ? 0 : root.bigLibraryFadeDuration
+                        }
+                    }
                 }
                 Item {
                     id: compactVuSlot
@@ -311,14 +446,25 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
                     height: root.showCompactVuMeters ? deckPane.deckStackHeight : 0
-                    visible: root.showCompactVuMeters
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
+                    visible: root.showCompactVuMeters || compactVuSlotWidthAnimation.running
                     width: root.showCompactVuMeters ? LateNightTheme.compactVuSlotWidth : 0
                     z: 10
 
                     Behavior on width {
                         NumberAnimation {
-                            duration: 250
+                            id: compactVuSlotWidthAnimation
+
+                            duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration
+                                    : root.deckModeTransition ? root.deckModeTransitionDuration : 250
                             easing.type: Easing.OutCubic
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            id: compactVuSlotOpacityAnimation
+
+                            duration: root.deckModeTransition && !root.bigLibraryTransition ? 0 : root.bigLibraryFadeDuration
                         }
                     }
 
@@ -340,14 +486,23 @@ Item {
                     anchors.top: parent.top
                     clip: true
                     groups: [deck1.group, deck2.group, deck3.group, deck4.group]
-                    height: deckPane.mixerLayoutVisible || mixerWidthAnimation.running ? deckPane.deckStackHeight : 0
+                    height: deckPane.mixerLayoutVisible || mixer.width > 0 ? deckPane.deckStackHeight : 0
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
                     show4decks: root.show4decks
-                    visible: deckPane.mixerLayoutVisible || mixerWidthAnimation.running
+                    visible: deckPane.mixerLayoutVisible || mixer.width > 0
                     width: deckPane.mixerLayoutVisible ? implicitWidth : 0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            id: mixerOpacityAnimation
+
+                            duration: root.deckModeTransition && !root.bigLibraryTransition ? 0 : root.bigLibraryFadeDuration
+                        }
+                    }
 
                     states: [
                         State {
-                            when: root.showMixer && root.focusedDeck === deck1 && root.width < 1400 && !root.maximizeLibrary
+                            when: root.showMixer && root.focusedDeck === deck1 && root.width < 1400 && !root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.right
@@ -359,7 +514,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.showMixer && root.focusedDeck === deck2 && root.width < 1400 && !root.maximizeLibrary
+                            when: root.showMixer && root.focusedDeck === deck2 && root.width < 1400 && !root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.left
@@ -371,7 +526,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.showMixer && (!root.focusedDeck || root.width > 1400) && !root.maximizeLibrary
+                            when: root.showMixer && (!root.focusedDeck || root.width > 1400) && !root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -387,7 +542,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary
+                            when: root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -405,26 +560,36 @@ Item {
                     ]
                     transitions: Transition {
                         AnchorAnimation {
-                            duration: 200
+                            id: mixerAnchorAnimation
+
+                            duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 200
                         }
                     }
                     Behavior on width {
-                        SpringAnimation {
-                            id: mixerWidthAnimation
+                        animation: root.bigLibraryTransition ? mixerLibraryWidthAnimation : mixerWidthAnimation
+                    }
+                    NumberAnimation {
+                        id: mixerLibraryWidthAnimation
 
-                            damping: 0.2
-                            duration: 500
-                            spring: 2
-                        }
+                        duration: root.bigLibraryTransitionDuration
+                        easing.type: Easing.OutCubic
+                    }
+                    SpringAnimation {
+                        id: mixerWidthAnimation
+
+                        damping: 0.2
+                        duration: 500
+                        spring: 2
                     }
                 }
                 LateNightDeck.Deck {
                     id: deck2
 
-                    deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
+                    deckState: root.layoutMaximizedLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                     editMode: root.editDeck
                     group: "[Channel2]"
-                    visible: !root.maximizeLibrary || root.showMaximizedDecks
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
+                    visible: !root.layoutMaximizedLibrary || root.showMaximizedDecks
                     onToggleFocus: {
                         root.focusedDeck = (root.focusedDeck === deck2) ? null : deck2;
                     }
@@ -439,7 +604,7 @@ Item {
 
                     states: [
                         State {
-                            when: root.showCompactVuMeters && !root.maximizeLibrary
+                            when: root.showCompactVuMeters && !root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.left: compactVuSlot.right
@@ -447,7 +612,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary
+                            when: root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.left: parent.horizontalCenter
@@ -455,32 +620,48 @@ Item {
                             }
                         }
                     ]
+                    transitions: Transition {
+                        AnchorAnimation {
+                            id: deck2AnchorAnimation
+
+                            duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 0
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            id: deck2OpacityAnimation
+
+                            duration: root.deckModeTransition && !root.bigLibraryTransition ? 0 : root.bigLibraryFadeDuration
+                        }
+                    }
                 }
                 Loader {
                     id: deck3
 
                     readonly property string group: "[Channel3]"
-                    readonly property bool shouldShow: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
+                    readonly property bool shouldShow: root.show4decks && (!root.layoutMaximizedLibrary || root.showMaximizedDecks)
 
                     active: shouldShow || opacity > 0
                     clip: true
-                    opacity: shouldShow ? 1 : 0
+                    opacity: shouldShow && !root.bigLibraryTransition && !root.deckModeTransition ? 1 : 0
                     sourceComponent: Component {
                         LateNightDeck.Deck {
                             anchors.fill: parent
-                            deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
+                            deckState: root.layoutMaximizedLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck3.group
                         }
                     }
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 150
+                            id: deck3OpacityAnimation
+
+                            duration: root.deckModeTransition && !root.bigLibraryTransition ? 0 : root.bigLibraryFadeDuration
                         }
                     }
                     states: [
                         State {
-                            when: root.showCompactVuMeters && !root.maximizeLibrary
+                            when: root.showCompactVuMeters && !root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.right: compactVuSlot.left
@@ -488,7 +669,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary
+                            when: root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.right: parent.horizontalCenter
@@ -496,6 +677,13 @@ Item {
                             }
                         }
                     ]
+                    transitions: Transition {
+                        AnchorAnimation {
+                            id: deck3AnchorAnimation
+
+                            duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 0
+                        }
+                    }
 
                     anchors {
                         bottom: deckStackBottom.top
@@ -510,27 +698,29 @@ Item {
                     id: deck4
 
                     readonly property string group: "[Channel4]"
-                    readonly property bool shouldShow: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
+                    readonly property bool shouldShow: root.show4decks && (!root.layoutMaximizedLibrary || root.showMaximizedDecks)
 
                     active: shouldShow || opacity > 0
                     clip: true
-                    opacity: shouldShow ? 1 : 0
+                    opacity: shouldShow && !root.bigLibraryTransition && !root.deckModeTransition ? 1 : 0
                     sourceComponent: Component {
                         LateNightDeck.Deck {
                             anchors.fill: parent
-                            deckState: root.maximizeLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
+                            deckState: root.layoutMaximizedLibrary ? LateNightDeck.Deck.Mini : root.activeDeckState
                             editMode: root.editDeck
                             group: deck4.group
                         }
                     }
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 150
+                            id: deck4OpacityAnimation
+
+                            duration: root.deckModeTransition && !root.bigLibraryTransition ? 0 : root.bigLibraryFadeDuration
                         }
                     }
                     states: [
                         State {
-                            when: root.showCompactVuMeters && !root.maximizeLibrary
+                            when: root.showCompactVuMeters && !root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.left: compactVuSlot.right
@@ -538,7 +728,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary
+                            when: root.layoutMaximizedLibrary
 
                             AnchorChanges {
                                 anchors.left: parent.horizontalCenter
@@ -546,6 +736,13 @@ Item {
                             }
                         }
                     ]
+                    transitions: Transition {
+                        AnchorAnimation {
+                            id: deck4AnchorAnimation
+
+                            duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 0
+                        }
+                    }
 
                     anchors {
                         bottom: deckStackBottom.top
@@ -570,34 +767,37 @@ Item {
                     id: effectsSection
 
                     clip: true
-                    height: root.showEffects && !root.maximizeLibrary ? effectsRack.implicitHeight : 0
-                    opacity: root.showEffects && !root.maximizeLibrary ? 1 : 0
+                    height: root.showEffects && !root.layoutMaximizedLibrary ? effectsRack.implicitHeight : 0
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
                     visible: height > 0
                     width: parent.width
                     y: deckPane.basePaneHeight
                     z: 2
 
                     Behavior on height {
+                        enabled: !root.bigLibraryTransition || root.bigLibraryEffectsRestoreActive
+
                         SpringAnimation {
                             damping: 0.2
-                            duration: 500
+                            duration: root.bigLibraryEffectsRestoreActive ? 180 : 500
                             spring: 2
                         }
                     }
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 120
+                            id: effectsSectionOpacityAnimation
+
+                            duration: 60
                         }
                     }
-
                     LateNightEffects.EffectsRack {
                         id: effectsRack
 
                         anchors.fill: parent
-                        leftUnitEnd: deckPane.mixerLayoutVisible || mixerWidthAnimation.running || root.showCompactVuMeters
+                        leftUnitEnd: deckPane.mixerLayoutVisible || mixer.width > 0 || root.showCompactVuMeters
                                 ? Math.round((effectsRack.width - effectsRack.unitSpacing) / 2)
                                 : deck1.x + deck1.width
-                        rightUnitStart: deckPane.mixerLayoutVisible || mixerWidthAnimation.running || root.showCompactVuMeters
+                        rightUnitStart: deckPane.mixerLayoutVisible || mixer.width > 0 || root.showCompactVuMeters
                                 ? Math.round((effectsRack.width + effectsRack.unitSpacing) / 2)
                                 : deck2.x
                     }
@@ -606,14 +806,16 @@ Item {
                     id: samplersSection
 
                     clip: true
-                    height: root.showSamplers && !root.maximizeLibrary ? samplers.implicitHeight : 0
-                    opacity: root.showSamplers && !root.maximizeLibrary ? 1 : 0
+                    height: root.showSamplers && !root.layoutMaximizedLibrary ? samplers.implicitHeight : 0
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
                     visible: height > 0
                     width: parent.width
                     y: effectsSection.y + effectsSection.height
                     z: 2
 
                     Behavior on height {
+                        enabled: !root.bigLibraryTransition
+
                         SpringAnimation {
                             damping: 0.2
                             duration: 500
@@ -622,10 +824,11 @@ Item {
                     }
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 120
+                            id: samplersSectionOpacityAnimation
+
+                            duration: 60
                         }
                     }
-
                     LateNightSamplers.SamplersRack {
                         id: samplers
 
@@ -636,14 +839,16 @@ Item {
                     id: micAuxSection
 
                     clip: true
-                    height: root.showMicAux && !root.maximizeLibrary ? micAuxRack.implicitHeight : 0
-                    opacity: root.showMicAux && !root.maximizeLibrary ? 1 : 0
+                    height: root.showMicAux && !root.layoutMaximizedLibrary ? micAuxRack.implicitHeight : 0
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
                     visible: height > 0
                     width: parent.width
                     y: samplersSection.y + samplersSection.height
                     z: 2
 
                     Behavior on height {
+                        enabled: !root.bigLibraryTransition
+
                         SpringAnimation {
                             damping: 0.2
                             duration: 500
@@ -652,10 +857,11 @@ Item {
                     }
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: 120
+                            id: micAuxSectionOpacityAnimation
+
+                            duration: 60
                         }
                     }
-
                     LateNightMicAux.MicAuxRack {
                         id: micAuxRack
 
@@ -675,7 +881,7 @@ Item {
                     }
                     states: [
                         State {
-                            when: root.maximizeLibrary && !root.showMaximizedDecks
+                            when: root.layoutMaximizedLibrary && !root.showMaximizedDecks
 
                             AnchorChanges {
                                 anchors.top: parent.top
@@ -683,7 +889,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary && root.showMaximizedDecks && root.show4decks
+                            when: root.layoutMaximizedLibrary && root.showMaximizedDecks && root.show4decks
 
                             AnchorChanges {
                                 anchors.top: deck4.bottom
@@ -691,7 +897,7 @@ Item {
                             }
                         },
                         State {
-                            when: root.maximizeLibrary && root.showMaximizedDecks && !root.show4decks
+                            when: root.layoutMaximizedLibrary && root.showMaximizedDecks && !root.show4decks
 
                             AnchorChanges {
                                 anchors.top: deck1.bottom
@@ -701,8 +907,10 @@ Item {
                     ]
                     transitions: Transition {
                         AnchorAnimation {
-                            duration: 500
-                            easing.type: Easing.OutBack
+                            id: libraryAnchorAnimation
+
+                            duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 100
+                            easing.type: Easing.OutCubic
                         }
                     }
 

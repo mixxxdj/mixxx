@@ -28,6 +28,8 @@ Item {
     implicitHeight: root.minimumContentHeight
     readonly property int waveformContentHeight: Math.max(0, root.height - root.bottomGutterHeight)
     property bool show4decks: false
+    property bool splitterResizing: false
+    property bool layoutTransitioning: false
 
     Loader {
         id: deck3waveform
@@ -41,6 +43,8 @@ Item {
         width: root.width
 
         Behavior on height {
+            enabled: !root.splitterResizing && !root.layoutTransitioning
+
             NumberAnimation {
                 duration: 180
                 easing.type: Easing.OutCubic
@@ -71,6 +75,8 @@ Item {
         width: root.width
 
         Behavior on height {
+            enabled: !root.splitterResizing && !root.layoutTransitioning
+
             NumberAnimation {
                 duration: 180
                 easing.type: Easing.OutCubic
@@ -86,6 +92,8 @@ Item {
         width: root.width
 
         Behavior on height {
+            enabled: !root.splitterResizing && !root.layoutTransitioning
+
             NumberAnimation {
                 duration: 180
                 easing.type: Easing.OutCubic
@@ -104,6 +112,8 @@ Item {
         width: root.width
 
         Behavior on height {
+            enabled: !root.splitterResizing && !root.layoutTransitioning
+
             NumberAnimation {
                 duration: 180
                 easing.type: Easing.OutCubic
