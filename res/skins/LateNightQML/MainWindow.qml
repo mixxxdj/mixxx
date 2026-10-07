@@ -179,39 +179,81 @@ Item {
             LateNightWaveforms.WaveformStack {
                 id: waveforms
 
-                SplitView.fillHeight: !library.active
-                SplitView.minimumHeight: visible ? minimumContentHeight : 0
-                SplitView.preferredHeight: library.active ? 120 : undefined
-                show4decks: root.show4decks
-                visible: root.showWaveforms && !root.maximizeLibrary
+                readonly property bool shouldShow: root.showWaveforms && !root.maximizeLibrary
+                property real paneMinimumHeight: shouldShow ? minimumContentHeight : 0
+                property real panePreferredHeight: shouldShow ? Math.max(120, minimumContentHeight) : 0
 
-                Skin.FadeBehavior on visible {
-                    fadeTarget: waveforms
+                SplitView.fillHeight: !library.active
+                SplitView.minimumHeight: paneMinimumHeight
+                implicitHeight: panePreferredHeight
+                show4decks: root.show4decks
+                visible: panePreferredHeight > 0
+                opacity: shouldShow ? 1 : 0
+                clip: true
+
+                Behavior on paneMinimumHeight {
+                    NumberAnimation {
+                        duration: 180
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on panePreferredHeight {
+                    NumberAnimation {
+                        duration: 180
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 120
+                    }
                 }
             }
             Rectangle {
                 id: deckPane
 
                 color: LateNightTheme.layoutGutterColor
-                readonly property int deckRowCount: root.show4decks ? 2 : 1
+                property real deckRowExpansion: root.show4decks ? 1 : 0
+                readonly property real deckRowCount: 1 + Math.max(0, deckRowExpansion)
                 readonly property real basePaneHeight: Math.max(deckRowsHeight, mixerLayoutVisible ? mixer.implicitHeight + LateNightTheme.deckRowGutter : 0)
                 readonly property real deckRowHeight: visibleDeckHeight > 0
                         ? (deckStackHeight - LateNightTheme.deckRowGutter * (deckRowCount - 1)) / deckRowCount
                         : 0
                 readonly property real deckRowsHeight: visibleDeckHeight > 0
-                        ? visibleDeckHeight * (root.show4decks ? 2 : 1) + LateNightTheme.deckRowGutter * (root.show4decks ? 2 : 1)
+                        ? (visibleDeckHeight + LateNightTheme.deckRowGutter) * deckRowCount
                         : 0
-                readonly property int deckSideMargin: root.showMixer && !root.maximizeLibrary ? LateNightTheme.deckMixerGutter : 2
+                property real deckSideMargin: root.showMixer && !root.maximizeLibrary ? LateNightTheme.deckMixerGutter : 2
                 readonly property real deckStackHeight: basePaneHeight - LateNightTheme.deckRowGutter
                 readonly property bool mixerLayoutVisible: root.showMixer && !root.maximizeLibrary
                 readonly property real requiredPaneHeight: basePaneHeight + effectsSection.height + samplersSection.height + micAuxSection.height
-                readonly property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
+                property real visibleDeckHeight: root.maximizeLibrary ? (root.showMaximizedDecks ? LateNightTheme.miniDeckHeight : 0) : root.activeDeckHeight
 
                 SplitView.fillHeight: library.active
                 SplitView.maximumHeight: library.active ? undefined : requiredPaneHeight
                 SplitView.minimumHeight: requiredPaneHeight
                 implicitHeight: requiredPaneHeight
                 width: splitView.width
+
+                Behavior on visibleDeckHeight {
+                    NumberAnimation {
+                        duration: 250
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on deckRowExpansion {
+                    SpringAnimation {
+                        damping: root.show4decks ? 0.55 : 1
+                        duration: 180
+                        spring: 2
+                    }
+                }
+                Behavior on deckSideMargin {
+                    SpringAnimation {
+                        damping: 0.2
+                        duration: 500
+                        spring: 2
+                    }
+                }
 
                 Item {
                     id: deckFirstRowBottom
@@ -237,10 +279,10 @@ Item {
                     }
 
                     anchors {
-                        bottom: root.show4decks ? deckFirstRowBottom.top : deckStackBottom.top
+                        bottom: deckFirstRowBottom.top
                         left: parent.left
                         right: mixer.left
-                        rightMargin: deckPane.deckSideMargin
+                        rightMargin: Math.max(2, deckPane.deckSideMargin)
                         top: parent.top
                     }
 
@@ -250,14 +292,6 @@ Item {
 
                             AnchorChanges {
                                 anchors.right: compactVuSlot.left
-                                target: deck1
-                            }
-                        },
-                        State {
-                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
-
-                            AnchorChanges {
-                                anchors.right: parent.horizontalCenter
                                 target: deck1
                             }
                         },
@@ -281,6 +315,13 @@ Item {
                     width: root.showCompactVuMeters ? LateNightTheme.compactVuSlotWidth : 0
                     z: 10
 
+                    Behavior on width {
+                        NumberAnimation {
+                            duration: 250
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
                     Rectangle {
                         anchors.fill: parent
                         color: LateNightTheme.compactVuGutterColor
@@ -297,10 +338,11 @@ Item {
 
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.top: parent.top
+                    clip: true
                     groups: [deck1.group, deck2.group, deck3.group, deck4.group]
-                    height: deckPane.mixerLayoutVisible ? deckPane.deckStackHeight : 0
+                    height: deckPane.mixerLayoutVisible || mixerWidthAnimation.running ? deckPane.deckStackHeight : 0
                     show4decks: root.show4decks
-                    visible: root.showMixer && !root.maximizeLibrary
+                    visible: deckPane.mixerLayoutVisible || mixerWidthAnimation.running
                     width: deckPane.mixerLayoutVisible ? implicitWidth : 0
 
                     states: [
@@ -366,9 +408,6 @@ Item {
                             duration: 200
                         }
                     }
-                    Skin.FadeBehavior on visible {
-                        fadeTarget: mixer
-                    }
                     Behavior on width {
                         SpringAnimation {
                             id: mixerWidthAnimation
@@ -391,9 +430,9 @@ Item {
                     }
 
                     anchors {
-                        bottom: root.show4decks ? deckFirstRowBottom.top : deckStackBottom.top
+                        bottom: deckFirstRowBottom.top
                         left: mixer.right
-                        leftMargin: deckPane.deckSideMargin
+                        leftMargin: Math.max(2, deckPane.deckSideMargin)
                         right: parent.right
                         top: parent.top
                     }
@@ -404,14 +443,6 @@ Item {
 
                             AnchorChanges {
                                 anchors.left: compactVuSlot.right
-                                target: deck2
-                            }
-                        },
-                        State {
-                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
-
-                            AnchorChanges {
-                                anchors.left: parent.horizontalCenter
                                 target: deck2
                             }
                         },
@@ -429,9 +460,11 @@ Item {
                     id: deck3
 
                     readonly property string group: "[Channel3]"
+                    readonly property bool shouldShow: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
 
-                    active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
+                    active: shouldShow || opacity > 0
                     clip: true
+                    opacity: shouldShow ? 1 : 0
                     sourceComponent: Component {
                         LateNightDeck.Deck {
                             anchors.fill: parent
@@ -440,20 +473,17 @@ Item {
                             group: deck3.group
                         }
                     }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 150
+                        }
+                    }
                     states: [
                         State {
                             when: root.showCompactVuMeters && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.right: compactVuSlot.left
-                                target: deck3
-                            }
-                        },
-                        State {
-                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
-
-                            AnchorChanges {
-                                anchors.right: parent.horizontalCenter
                                 target: deck3
                             }
                         },
@@ -471,18 +501,20 @@ Item {
                         bottom: deckStackBottom.top
                         left: parent.left
                         right: mixer.left
-                        rightMargin: deckPane.deckSideMargin
+                        rightMargin: Math.max(2, deckPane.deckSideMargin)
                         top: deckFirstRowBottom.bottom
-                        topMargin: LateNightTheme.deckRowGutter
+                        topMargin: LateNightTheme.deckRowGutter * Math.max(0, deckPane.deckRowExpansion)
                     }
                 }
                 Loader {
                     id: deck4
 
                     readonly property string group: "[Channel4]"
+                    readonly property bool shouldShow: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
 
-                    active: root.show4decks && (!root.maximizeLibrary || root.showMaximizedDecks)
+                    active: shouldShow || opacity > 0
                     clip: true
+                    opacity: shouldShow ? 1 : 0
                     sourceComponent: Component {
                         LateNightDeck.Deck {
                             anchors.fill: parent
@@ -491,20 +523,17 @@ Item {
                             group: deck4.group
                         }
                     }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 150
+                        }
+                    }
                     states: [
                         State {
                             when: root.showCompactVuMeters && !root.maximizeLibrary
 
                             AnchorChanges {
                                 anchors.left: compactVuSlot.right
-                                target: deck4
-                            }
-                        },
-                        State {
-                            when: !deckPane.mixerLayoutVisible && !root.showCompactVuMeters && !root.maximizeLibrary
-
-                            AnchorChanges {
-                                anchors.left: parent.horizontalCenter
                                 target: deck4
                             }
                         },
@@ -521,10 +550,10 @@ Item {
                     anchors {
                         bottom: deckStackBottom.top
                         left: mixer.right
-                        leftMargin: deckPane.deckSideMargin
+                        leftMargin: Math.max(2, deckPane.deckSideMargin)
                         right: parent.right
                         top: deckFirstRowBottom.bottom
-                        topMargin: LateNightTheme.deckRowGutter
+                        topMargin: LateNightTheme.deckRowGutter * Math.max(0, deckPane.deckRowExpansion)
                     }
                 }
 
@@ -549,9 +578,10 @@ Item {
                     z: 2
 
                     Behavior on height {
-                        NumberAnimation {
-                            duration: 150
-                            easing.type: Easing.OutCubic
+                        SpringAnimation {
+                            damping: 0.2
+                            duration: 500
+                            spring: 2
                         }
                     }
                     Behavior on opacity {
@@ -564,10 +594,10 @@ Item {
                         id: effectsRack
 
                         anchors.fill: parent
-                        leftUnitEnd: deckPane.mixerLayoutVisible || root.showCompactVuMeters
+                        leftUnitEnd: deckPane.mixerLayoutVisible || mixerWidthAnimation.running || root.showCompactVuMeters
                                 ? Math.round((effectsRack.width - effectsRack.unitSpacing) / 2)
                                 : deck1.x + deck1.width
-                        rightUnitStart: deckPane.mixerLayoutVisible || root.showCompactVuMeters
+                        rightUnitStart: deckPane.mixerLayoutVisible || mixerWidthAnimation.running || root.showCompactVuMeters
                                 ? Math.round((effectsRack.width + effectsRack.unitSpacing) / 2)
                                 : deck2.x
                     }
@@ -584,9 +614,10 @@ Item {
                     z: 2
 
                     Behavior on height {
-                        NumberAnimation {
-                            duration: 150
-                            easing.type: Easing.OutCubic
+                        SpringAnimation {
+                            damping: 0.2
+                            duration: 500
+                            spring: 2
                         }
                     }
                     Behavior on opacity {
@@ -613,9 +644,10 @@ Item {
                     z: 2
 
                     Behavior on height {
-                        NumberAnimation {
-                            duration: 150
-                            easing.type: Easing.OutCubic
+                        SpringAnimation {
+                            damping: 0.2
+                            duration: 500
+                            spring: 2
                         }
                     }
                     Behavior on opacity {
@@ -667,6 +699,12 @@ Item {
                             }
                         }
                     ]
+                    transitions: Transition {
+                        AnchorAnimation {
+                            duration: 500
+                            easing.type: Easing.OutBack
+                        }
+                    }
 
                     anchors {
                         bottom: parent.bottom

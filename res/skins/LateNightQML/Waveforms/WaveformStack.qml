@@ -34,10 +34,23 @@ Item {
 
         readonly property string group: root.deck3Group
 
-        active: root.show4decks
+        active: root.show4decks || height > 0 || opacity > 0
         anchors.top: parent.top
-        height: root.deck3MinimumHeight + root.extraHeightPerDeck
+        height: root.show4decks ? root.deck3MinimumHeight + root.extraHeightPerDeck : 0
+        opacity: root.show4decks ? 1 : 0
         width: root.width
+
+        Behavior on height {
+            NumberAnimation {
+                duration: 180
+                easing.type: Easing.OutCubic
+            }
+        }
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+        }
 
         sourceComponent: Component {
             DeckWaveform {
@@ -52,28 +65,55 @@ Item {
     DeckWaveform {
         id: deck1waveform
 
-        anchors.top: root.show4decks ? deck3waveform.bottom : parent.top
+        anchors.top: deck3waveform.bottom
         group: root.deck1Group
         height: deck1waveform.minimumHeight + root.extraHeightPerDeck
         width: root.width
+
+        Behavior on height {
+            NumberAnimation {
+                duration: 180
+                easing.type: Easing.OutCubic
+            }
+        }
     }
     DeckWaveform {
         id: deck2waveform
 
-        anchors.bottom: root.show4decks ? deck4waveform.top : bottomGutter.top
+        anchors.bottom: deck4waveform.top
         group: root.deck2Group
         height: deck2waveform.minimumHeight + root.extraHeightPerDeck
         width: root.width
+
+        Behavior on height {
+            NumberAnimation {
+                duration: 180
+                easing.type: Easing.OutCubic
+            }
+        }
     }
     Loader {
         id: deck4waveform
 
         readonly property string group: root.deck4Group
 
-        active: root.show4decks
+        active: root.show4decks || height > 0 || opacity > 0
         anchors.bottom: bottomGutter.top
-        height: root.deck4MinimumHeight + root.extraHeightPerDeck
+        height: root.show4decks ? root.deck4MinimumHeight + root.extraHeightPerDeck : 0
+        opacity: root.show4decks ? 1 : 0
         width: root.width
+
+        Behavior on height {
+            NumberAnimation {
+                duration: 180
+                easing.type: Easing.OutCubic
+            }
+        }
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+        }
 
         sourceComponent: Component {
             DeckWaveform {
