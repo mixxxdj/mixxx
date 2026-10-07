@@ -86,10 +86,12 @@ Feature: Library
   # --- Library search (floating search bar in the bottom right of the library) ---
   #
   # Requires objectNames on the search pane UI (res/qml/Library.qml):
-  #   searchPane, searchField, searchClearButton, searchSuggestionList,
-  #   searchRecentList, searchPlaceholder, searchCollapsedPlaceholder,
-  #   searchTabHint and the read-only properties activated, activeTokenIndex,
-  #   criteriaCount, criteriaFields, activeQuery, suggestionTexts.
+  #   searchPane, searchField, searchClearButton, searchSuggestionFieldList
+  #   (field suggestions, e.g. "Artist:"), searchSuggestionList (value
+  #   suggestions), searchRecentList, searchPlaceholder,
+  #   searchCollapsedPlaceholder, searchTabHint and the read-only properties
+  #   activated, activeTokenIndex, criteriaCount, criteriaFields, activeQuery,
+  #   suggestionTexts (value-suggestion texts, JSON list).
   # At the track list (res/qml/Library/TrackList.qml):
   #   trackTitleForRow(row), trackDataForRow(row)
   #
@@ -106,7 +108,7 @@ Feature: Library
 
   Scenario: Search filters the track results
     Given no search is currently active
-    And a track available in the library
+    And a track available in the library with a unique title
     When I activate the library search
     And I type the title of this track into the library search
     Then this track should be visible in the results

@@ -501,9 +501,21 @@ SEARCH_PANE_PATH = f"{LIBRARY_CONTENT}/browsingView/searchPane"
 SEARCH_FIELD_PATH = f"{SEARCH_PANE_PATH}/searchField"
 SEARCH_CLEAR_BUTTON_PATH = f"{SEARCH_PANE_PATH}/searchClearButton"
 SEARCH_SUGGESTION_LIST_PATH = f"{SEARCH_PANE_PATH}/searchSuggestionList"
+SEARCH_SUGGESTION_FIELD_LIST_PATH = f"{SEARCH_PANE_PATH}/searchSuggestionFieldList"
 SEARCH_RECENT_LIST_PATH = f"{SEARCH_PANE_PATH}/searchRecentList"
 SPLIT_VIEW_BUTTON_PATH = f"{LIBRARY_CONTENT}/tracklistMenu/splitViewButton"
 RIGHT_TRACKLIST_PATH = f"{LIBRARY_CONTENT}/rightTrackList"
+
+def _suggestion_path(suggestion):
+    """Path of a suggestion entry, based on which list shows it.
+
+    Field suggestions ("Artist:") live in searchSuggestionFieldList; value
+    suggestions live in searchSuggestionList.
+    """
+    if suggestion.endswith(":"):
+        return f"{SEARCH_SUGGESTION_FIELD_LIST_PATH}/suggestion_{suggestion}"
+    return f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}"
+
 
 # Delay after typing into the search bar: the query is applied through a
 # debouncing timer (searchDebounce, 800 ms in res/qml/Library.qml).
@@ -1500,7 +1512,7 @@ def step_clear_library_search(context):
 @then('I select the library search suggestion "{suggestion}"')
 def step_select_suggestion(context, suggestion):
     s = context.mixxx_rpc
-    _click(s, f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}")
+    _click(s, _suggestion_path(suggestion))
     time.sleep(0.5)
 
 
@@ -1574,13 +1586,13 @@ def step_suggestion_visible(context, suggestion):
     # While a query is being typed, the suggestion list replaces the recent
     # searches, so the recents must have been dismissed first.
     _wait_for_hidden(s, SEARCH_RECENT_LIST_PATH)
-    _wait_for_visible(s, f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}")
+    _wait_for_visible(s, _suggestion_path(suggestion))
 
 
 @then('the library search suggestion "{suggestion}" should not be visible')
 def step_suggestion_not_visible(context, suggestion):
     s = context.mixxx_rpc
-    path = f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}"
+    path = _suggestion_path(suggestion)
     time.sleep(SEARCH_APPLY_DELAY)
     assert not _is_visible(s, path), (
         f'The field suggestion "{suggestion}" is visible')
@@ -1591,7 +1603,18 @@ def step_recent_search_visible(context, needle):
     s = context.mixxx_rpc
     expected = _remembered_track(context).title if "title of this track" in needle else needle
     _wait_for_visible(s, SEARCH_RECENT_LIST_PATH)
-    _wait_for_visible(s, f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}")
+    recent_path = f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}"
+    _wait_for_visible(s, recent_path)
+    # Verify that token labels are correctly shown (not empty strings)
+    token_field_names = _get_property(s, recent_path, "tokenFieldNames")
+    if not token_field_names:
+        return
+    fields = json.loads(token_field_names)
+    for i, field in enumerate(fields):
+        assert field, (
+            f"Recent search token {i} has empty label "
+            f"(fields={fields}, recent_path={recent_path})"
+        )
 
 
 @then('a search token "{field}" should be shown in the search bar')

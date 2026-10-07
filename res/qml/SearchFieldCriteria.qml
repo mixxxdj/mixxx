@@ -16,7 +16,7 @@ Item {
     signal deleted()
 
     height: 24
-    width: labelText.width + valueArea.width + 18
+    width: labelText.width + valueArea.width + 14
 
     TapHandler {
         enabled: root.interactive
@@ -36,7 +36,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.leftMargin: 5
-            text: root.field + ":"
+            text: root.field.length > 0 ? root.field + ":" : root.field
             color: '#FFFFFF'
             font.pixelSize: 14
         }
@@ -46,7 +46,12 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 5
-            width: root.active ? 162 : Math.max(valueMetrics.advanceWidth(root.value.length ? root.value : "..."), 20) + 10
+            width: root.active ? 132 : Math.max(valueMetrics.advanceWidth(root.value.length ? root.value : "..."), 20) + 10
+
+            Behavior on width {
+                PropertyAnimation { duration: 200 }
+            }
+
             height: 18
             radius: 7
             color: '#D9D9D9'
@@ -79,9 +84,12 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 leftPadding: exactIndicator.visible ? exactIndicator.width : 0
                 clip: true
-                color: '#404040'
+                color: root.value.length === 0 ? '#808080' : '#404040'
                 font.pixelSize: 14
-                text: root.value.startsWith('=') ? root.value.slice(1) : root.value
+                font.italic: root.value.length === 0
+                text: root.value.length === 0
+                        ? "..."
+                        : (root.value.startsWith('=') ? root.value.slice(1) : root.value)
             }
         }
     }
