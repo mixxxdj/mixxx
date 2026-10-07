@@ -118,7 +118,8 @@ Item {
             backgroundSource: LateNightTheme.assetSmallKnobBackground
             displayArc: true
             displayArcColor: root.unitColor
-            displayArcRadius: 11.5
+            displayArcOffsetY: 1.883
+            displayArcRadius: LateNightTheme.mixerArcRadiusCompact
             displayArcStart: LateNightControls.Knob.ArcStart.Minimum
             group: root.slot.group
             height: 30

@@ -207,7 +207,7 @@ LateNightControls.Panel {
             backgroundSource: LateNightTheme.assetSmallKnobBackground
             displayArc: true
             displayArcColor: LateNightTheme.mixerAccentRed
-            displayArcRadius: 11.5
+            displayArcRadius: LateNightTheme.mixerArcRadiusCompact
             displayArcStart: LateNightControls.Knob.ArcStart.Minimum
             group: root.group
             height: 30
@@ -222,7 +222,7 @@ LateNightControls.Panel {
             backgroundSource: LateNightTheme.assetSmallKnobBackground
             displayArc: true
             displayArcColor: root.unitColor
-            displayArcRadius: 11.5
+            displayArcRadius: LateNightTheme.mixerArcRadiusCompact
             displayArcStart: LateNightControls.Knob.ArcStart.Minimum
             group: root.group
             height: 30
