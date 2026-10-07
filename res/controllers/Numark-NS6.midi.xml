@@ -1,0 +1,3076 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset mixxxVersion="2.5.0+" schemaVersion="1">
+  <info>
+      <name>Numark NS6</name>
+      <author>maurojuniorr</author>
+      <description>4 channel MIDI Mapping for Numark NS6</description>
+      <manual>numark_ns6</manual>
+  </info>
+  <settings>
+    <group label="Playback">
+      <option
+        variable="playStartFactor"
+        type="real"
+        default="0"
+        min="0"
+        max="6"
+        step="0.25"
+        precision="2"
+        label="Start Time">
+        <description>
+          Adjusts how quickly a deck accelerates when PLAY is pressed while paused. Zero starts instantly; higher values make the soft start faster.
+          After a jog release, the mapping follows the platter's actual remaining movement and returns to normal playback when that movement stops.
+        </description>
+      </option>
+    </group>
+  </settings>
+  <controller id="NS6 MIDI 1">
+    <scriptfiles>
+      <file filename="common-controller-scripts.js"/>
+      <file filename="lodash.mixxx.js"/>
+      <file filename="midi-components-0.0.js"/>
+      <file functionprefix="NumarkNS6" filename="Numark-NS6.scripts.js"/>
+    </scriptfiles>
+    <init-function>NumarkNS6.init</init-function>
+    <shutdown-function>NumarkNS6.shutdown</shutdown-function>
+    <controls>
+      <control>
+            <group>[Channel1]</group>
+            <key>NumarkNS6.touchStripInput</key>
+            <status>0xB1</status>
+            <midino>0x02</midino>
+            <options><script-binding/></options>
+        </control>
+        <control>
+            <group>[Channel2]</group>
+            <key>NumarkNS6.touchStripInput</key>
+            <status>0xB2</status>
+            <midino>0x02</midino>
+            <options><script-binding/></options>
+        </control>
+        <control>
+            <group>[Channel3]</group>
+            <key>NumarkNS6.touchStripInput</key>
+            <status>0xB3</status>
+            <midino>0x02</midino>
+            <options><script-binding/></options>
+        </control>
+        <control>
+            <group>[Channel4]</group>
+            <key>NumarkNS6.touchStripInput</key>
+            <status>0xB4</status>
+            <midino>0x02</midino>
+            <options><script-binding/></options>
+        </control>
+    
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].gridSetClearInput</key>
+        <status>0x91</status><midino>0x1F</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].gridSetClearInput</key>
+        <status>0x92</status><midino>0x1F</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].gridSetClearInput</key>
+        <status>0x93</status><midino>0x1F</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].gridSetClearInput</key>
+        <status>0x94</status><midino>0x1F</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].gridSlipAdjustInput</key>
+        <status>0x91</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].gridSlipAdjustInput</key>
+        <status>0x81</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].gridSlipAdjustInput</key>
+        <status>0x92</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].gridSlipAdjustInput</key>
+        <status>0x82</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].gridSlipAdjustInput</key>
+        <status>0x93</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].gridSlipAdjustInput</key>
+        <status>0x83</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].gridSlipAdjustInput</key>
+        <status>0x94</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].gridSlipAdjustInput</key>
+        <status>0x84</status><midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].skipButtonInput</key>
+        <status>0x91</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].skipButtonInput</key>
+        <status>0x81</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].skipButtonInput</key>
+        <status>0x92</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].skipButtonInput</key>
+        <status>0x82</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].skipButtonInput</key>
+        <status>0x93</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].skipButtonInput</key>
+        <status>0x83</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].skipButtonInput</key>
+        <status>0x94</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].skipButtonInput</key>
+        <status>0x84</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+     <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x91</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x81</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x91</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x81</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x92</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x82</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x92</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x82</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x93</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x83</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x93</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x83</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x94</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopHalveInput</key>
+        <status>0x84</status><midino>0x22</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x94</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopDoubleInput</key>
+        <status>0x84</status><midino>0x23</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x91</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x81</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x91</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x81</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x92</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x82</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x92</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x82</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x93</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x83</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x93</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x83</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x94</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopMoveLeftInput</key>
+        <status>0x84</status>
+        <midino>0x25</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x94</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.loopMoveRightInput</key>
+        <status>0x84</status>
+        <midino>0x26</midino>
+        <options><script-binding /></options>
+      </control>
+    
+  <control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x91</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x81</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+
+  <control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x92</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x82</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+
+  <control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x93</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x83</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+
+  <control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x94</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopOnOffInput</key>
+    <status>0x84</status>
+    <midino>0x24</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x91</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x81</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+
+  <control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x92</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x82</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+
+  <control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x93</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x83</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+
+  <control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x94</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopModeInput</key>
+    <status>0x84</status>
+    <midino>0x27</midino>
+    <options>
+      <script-binding/>
+    </options>
+  </control>
+  <control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x91</status>
+    <midino>0x28</midino> <options><script-binding/></options>
+  </control>
+  <control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x81</status>
+    <midino>0x28</midino>
+    <options><script-binding/></options>
+  </control>
+  <control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x92</status>
+    <midino>0x28</midino>
+    <options><script-binding/></options>
+  </control>
+  <control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x82</status>
+    <midino>0x28</midino>
+    <options><script-binding/></options>
+  </control>
+  <control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x93</status>
+    <midino>0x28</midino>
+    <options><script-binding/></options>
+  </control>
+  <control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x83</status>
+    <midino>0x28</midino>
+    <options><script-binding/></options>
+  </control>
+  <control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x94</status>
+    <midino>0x28</midino>
+    <options><script-binding/></options>
+  </control>
+  <control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x84</status>
+    <midino>0x28</midino>
+    <options><script-binding/></options>
+  </control>
+<control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x91</status><midino>0x29</midino><options><script-binding/></options> </control>
+<control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x81</status><midino>0x29</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x91</status><midino>0x2A</midino><options><script-binding/></options> </control>
+<control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x81</status><midino>0x2A</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x91</status><midino>0x2B</midino><options><script-binding/></options> </control>
+<control>
+    <group>[Channel1]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x81</status><midino>0x2B</midino><options><script-binding/></options>
+</control>
+
+<control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x92</status><midino>0x29</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x82</status><midino>0x29</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x92</status><midino>0x2A</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x82</status><midino>0x2A</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x92</status><midino>0x2B</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel2]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x82</status><midino>0x2B</midino><options><script-binding/></options>
+</control>
+
+<control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x93</status><midino>0x29</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x83</status><midino>0x29</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x93</status><midino>0x2A</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x83</status><midino>0x2A</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x93</status><midino>0x2B</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel3]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x83</status><midino>0x2B</midino><options><script-binding/></options>
+</control>
+
+<control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x94</status><midino>0x29</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x84</status><midino>0x29</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x94</status><midino>0x2A</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x84</status><midino>0x2A</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x94</status><midino>0x2B</midino><options><script-binding/></options>
+</control>
+<control>
+    <group>[Channel4]</group>
+    <key>NumarkNS6.loopButtonInput</key>
+    <status>0x84</status><midino>0x2B</midino><options><script-binding/></options>
+</control>
+
+
+
+ 
+
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x91</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x92</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x93</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x94</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x81</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x82</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x83</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.reverseButtonInput</key>
+          <status>0x84</status> <midino>0x1C</midino>
+          <options><Script-Binding/></options>
+      </control>
+    
+
+      <!-- nav encoder -->
+
+      <control>
+          <group>[Skin]</group>
+          <key>NumarkNS6.toggleEffects</key> 
+          <description>Toggle Effects Container</description>
+          <status>0x90</status>
+          <midino>0x30</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FX.encoderLeft.input</key>
+        <status>0xB0</status>
+        <midino>0x5A</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FX.encoderRight.input</key>
+        <status>0xB0</status>
+        <midino>0x5B</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FX.toggleLeft.input</key>
+        <status>0x90</status>
+        <midino>0x2D</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FX.toggleRight.input</key>
+        <status>0x90</status>
+        <midino>0x2F</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FX.Assign.btn_1_Channel1.input</key>
+        <status>0x90</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FX.Assign.btn_1_Channel2.input</key>
+        <status>0x90</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FX.Assign.btn_1_Channel3.input</key>
+        <status>0x90</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FX.Assign.btn_1_Channel4.input</key>
+        <status>0x90</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FX.Assign.btn_1_Master.input</key>
+        <status>0x90</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FX.Assign.btn_2_Channel1.input</key>
+        <status>0x90</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FX.Assign.btn_2_Channel2.input</key>
+        <status>0x90</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FX.Assign.btn_2_Channel3.input</key>
+        <status>0x90</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FX.Assign.btn_2_Channel4.input</key>
+        <status>0x90</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FX.Assign.btn_2_Master.input</key>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FXMixLeftMSB</key>
+        <status>0xB0</status>
+        <midino>0x57</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>NumarkNS6.FXMixLeftLSB</key>
+        <status>0xB0</status>
+        <midino>0x77</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FXMixRightMSB</key>
+        <status>0xB0</status>
+        <midino>0x59</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>NumarkNS6.FXMixRightLSB</key>
+        <status>0xB0</status>
+        <midino>0x79</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1_Effect1]</group>
+        <key>NumarkNS6.FX.selectLeft.input</key>
+        <status>0xB0</status>
+        <midino>0x56</midino>
+        <options><script-binding/></options>
+      </control>
+
+      <control>
+        <group>[EffectRack1_EffectUnit2_Effect1]</group>
+        <key>NumarkNS6.FX.selectRight.input</key>
+        <status>0xB0</status>
+        <midino>0x58</midino>
+        <options><script-binding/></options>
+      </control>
+      <!-- End Fx -->
+      <control>
+        <group>[Skin]</group>
+        <key>NumarkNS6.Mixer.cratesButton.input</key>
+        <status>0x90</status><midino>0x0B</midino>
+        <options><script-binding/></options>
+      </control>
+      
+      <control>
+        <group>[Skin]</group>
+        <key>NumarkNS6.Mixer.prepareButton.input</key>
+        <status>0x90</status><midino>0x09</midino>
+        <options><script-binding/></options>
+      </control>
+      
+      <control>
+        <group>[Skin]</group>
+        <key>NumarkNS6.Mixer.filesButton.input</key>
+        <status>0x90</status><midino>0x0A</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[AutoDJ]</group>
+        <key>NumarkNS6.Mixer.autoDjAddButton.input</key>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Skin]</group>
+        <key>NumarkNS6.Mixer.viewButton.input</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>NumarkNS6.Mixer.backButton.input</key>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+
+      <control>
+        <group>[Library]</group>
+        <key>NumarkNS6.Mixer.fwdButton.input</key>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>NumarkNS6.Mixer.navigationEncoderTick.input</key>
+        <status>0xB0</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>NumarkNS6.Mixer.navigationEncoderButton.input</key>
+        <status>0x80</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>NumarkNS6.Mixer.navigationEncoderButton.input</key>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- Crossfader side Assignment -->
+
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue1.input</key>
+          <status>0x91</status>
+          <midino>0x13</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue2.input</key>
+          <status>0x91</status>
+          <midino>0x14</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue3.input</key>
+          <status>0x91</status>
+          <midino>0x15</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue4.input</key>
+          <status>0x91</status>
+          <midino>0x16</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue5.input</key>
+          <status>0x91</status>
+          <midino>0x17</midino>
+          <options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue1.input</key>
+          <status>0x92</status>
+          <midino>0x13</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue2.input</key>
+          <status>0x92</status>
+          <midino>0x14</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue3.input</key>
+          <status>0x92</status>
+          <midino>0x15</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue4.input</key>
+          <status>0x92</status>
+          <midino>0x16</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue5.input</key>
+          <status>0x92</status>
+          <midino>0x17</midino>
+          <options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue1.input</key>
+          <status>0x93</status>
+          <midino>0x13</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue2.input</key>
+          <status>0x93</status>
+          <midino>0x14</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue3.input</key>
+          <status>0x93</status>
+          <midino>0x15</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue4.input</key>
+          <status>0x93</status>
+          <midino>0x16</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue5.input</key>
+          <status>0x93</status>
+          <midino>0x17</midino>
+          <options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue1.input</key>
+          <status>0x94</status>
+          <midino>0x13</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue2.input</key>
+          <status>0x94</status>
+          <midino>0x14</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue3.input</key>
+          <status>0x94</status>
+          <midino>0x15</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue4.input</key>
+          <status>0x94</status>
+          <midino>0x16</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue5.input</key>
+          <status>0x94</status>
+          <midino>0x17</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue1.input</key>
+          <status>0x81</status><midino>0x13</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue2.input</key>
+          <status>0x81</status><midino>0x14</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue3.input</key>
+          <status>0x81</status><midino>0x15</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue4.input</key>
+          <status>0x81</status><midino>0x16</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].hotcuesContainer.hotCue5.input</key>
+          <status>0x81</status><midino>0x17</midino><options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue1.input</key>
+          <status>0x82</status><midino>0x13</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue2.input</key>
+          <status>0x82</status><midino>0x14</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue3.input</key>
+          <status>0x82</status><midino>0x15</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue4.input</key>
+          <status>0x82</status><midino>0x16</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].hotcuesContainer.hotCue5.input</key>
+          <status>0x82</status><midino>0x17</midino><options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue1.input</key>
+          <status>0x83</status><midino>0x13</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue2.input</key>
+          <status>0x83</status><midino>0x14</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue3.input</key>
+          <status>0x83</status><midino>0x15</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue4.input</key>
+          <status>0x83</status><midino>0x16</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].hotcuesContainer.hotCue5.input</key>
+          <status>0x83</status><midino>0x17</midino><options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue1.input</key>
+          <status>0x84</status><midino>0x13</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue2.input</key>
+          <status>0x84</status><midino>0x14</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue3.input</key>
+          <status>0x84</status><midino>0x15</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue4.input</key>
+          <status>0x84</status><midino>0x16</midino><options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].hotcuesContainer.hotCue5.input</key>
+          <status>0x84</status><midino>0x17</midino><options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].crossfaderAssignLeft.input</key>
+          <status>0x90</status>
+          <midino>0x35</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].crossfaderAssignLeft.input</key>
+          <status>0x80</status>
+          <midino>0x35</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].crossfaderAssignRight.input</key>
+          <status>0x90</status>
+          <midino>0x36</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Decks[1].crossfaderAssignRight.input</key>
+          <status>0x80</status>
+          <midino>0x36</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].crossfaderAssignLeft.input</key>
+          <status>0x90</status>
+          <midino>0x37</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].crossfaderAssignLeft.input</key>
+          <status>0x80</status>
+          <midino>0x37</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].crossfaderAssignRight.input</key>
+          <status>0x90</status>
+          <midino>0x38</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Decks[2].crossfaderAssignRight.input</key>
+          <status>0x80</status>
+          <midino>0x38</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].crossfaderAssignLeft.input</key>
+          <status>0x90</status>
+          <midino>0x39</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].crossfaderAssignLeft.input</key>
+          <status>0x80</status>
+          <midino>0x39</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].crossfaderAssignRight.input</key>
+          <status>0x90</status>
+          <midino>0x3A</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Decks[3].crossfaderAssignRight.input</key>
+          <status>0x80</status>
+          <midino>0x3A</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].crossfaderAssignLeft.input</key>
+          <status>0x90</status>
+          <midino>0x3B</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].crossfaderAssignLeft.input</key>
+          <status>0x80</status>
+          <midino>0x3B</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].crossfaderAssignRight.input</key>
+          <status>0x90</status>
+          <midino>0x3C</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Decks[4].crossfaderAssignRight.input</key>
+          <status>0x80</status>
+          <midino>0x3C</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x91</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+      
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x92</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x93</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x94</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x81</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+      
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x82</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x83</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.scratchButtonInput</key>
+        <status>0x84</status>
+        <midino>0x21</midino>
+        <options><script-binding /></options>
+      </control>
+     
+
+      <control>
+        <group>[Master]</group>
+        <key>NumarkNS6.Mixer.pflVuMeter</key>
+        <status>0xB0</status>
+        <midino>0x5C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].loadButton.input</key>
+        <status>0x91</status>
+        <midino>0x0C</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].loadButton.input</key>
+        <status>0x92</status>
+        <midino>0x0E</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].loadButton.input</key>
+        <status>0x93</status>
+        <midino>0x0C</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].loadButton.input</key>
+        <status>0x94</status>
+        <midino>0x0E</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[1].pflButton.input</key>
+        <status>0x90</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[2].pflButton.input</key>
+        <status>0x90</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].pflButton.input</key>
+        <status>0x90</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].pflButton.input</key>
+        <status>0x90</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[1].pflButton.input</key>
+        <status>0x80</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[2].pflButton.input</key>
+        <status>0x80</status>
+        <midino>0x32</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].pflButton.input</key>
+        <status>0x80</status>
+        <midino>0x33</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].pflButton.input</key>
+        <status>0x80</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].cueButton.input</key>
+        <status>0x91</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].cueButton.input</key>
+        <status>0x92</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].cueButton.input</key>
+        <status>0x93</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].cueButton.input</key>
+        <status>0x94</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].cueButton.input</key>
+        <status>0x81</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].cueButton.input</key>
+        <status>0x82</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].cueButton.input</key>
+        <status>0x83</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].cueButton.input</key>
+        <status>0x84</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+     
+      <control>
+        <group>[Mixer Profile]</group>
+        <key>NumarkNS6.Mixer.changeCrossfaderContour.input</key>
+        <status>0x90</status>
+        <midino>0x4B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Mixer Profile]</group>
+        <key>NumarkNS6.Mixer.changeCrossfaderContour.input</key>
+        <status>0x80</status>
+        <midino>0x4B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher1.input</key>
+          <status>0x90</status>
+          <midino>0x47</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel1]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher1.input</key>
+          <status>0x80</status>
+          <midino>0x47</midino>
+          <options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher2.input</key>
+          <status>0x90</status>
+          <midino>0x48</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel2]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher2.input</key>
+          <status>0x80</status>
+          <midino>0x48</midino>
+          <options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher3.input</key>
+          <status>0x90</status>
+          <midino>0x49</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel3]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher3.input</key>
+          <status>0x80</status>
+          <midino>0x49</midino>
+          <options><script-binding/></options>
+      </control>
+
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher4.input</key>
+          <status>0x90</status>
+          <midino>0x4A</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+          <group>[Channel4]</group>
+          <key>NumarkNS6.Mixer.channelInputSwitcher4.input</key>
+          <status>0x80</status>
+          <midino>0x4A</midino>
+          <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>NumarkNS6.Mixer.deckChangeL.input</key>
+        <status>0xB0</status>
+        <midino>0x50</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>handles deck assignment led feedback right</description>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>NumarkNS6.Mixer.deckChangeR.input</key>
+        <status>0xB0</status>
+        <midino>0x51</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>handles deck assignment led feedback left</description>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].playButton.input</key>
+        <status>0x91</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].playButton.input</key>
+        <status>0x92</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].playButton.input</key>
+        <status>0x93</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].playButton.input</key>
+        <status>0x94</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <!-- One shared binding repairs PLAY, CUE, or jog touch release. -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].transportMalformedRelease</key>
+        <status>0x81</status><midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].transportMalformedRelease</key>
+        <status>0x82</status><midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].transportMalformedRelease</key>
+        <status>0x83</status><midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].transportMalformedRelease</key>
+        <status>0x84</status><midino>0x7D</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].playButton.input</key>
+        <status>0x81</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].playButton.input</key>
+        <status>0x82</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].playButton.input</key>
+        <status>0x83</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].playButton.input</key>
+        <status>0x84</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].syncButton.input</key>
+        <status>0x91</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].syncButton.input</key>
+        <status>0x81</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].syncButton.input</key>
+        <status>0x92</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].syncButton.input</key>
+        <status>0x82</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].syncButton.input</key>
+        <status>0x93</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].syncButton.input</key>
+        <status>0x83</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+      <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].syncButton.input</key>
+        <status>0x94</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].syncButton.input</key>
+        <status>0x84</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x91</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x92</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x93</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x94</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x81</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x82</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x83</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.tapButtonInput</key>
+        <status>0x84</status>
+        <midino>0x1E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].keylockButton.input</key>
+        <status>0x91</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].keylockButton.input</key>
+        <status>0x92</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].keylockButton.input</key>
+        <status>0x93</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].keylockButton.input</key>
+        <status>0x94</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].keylockButton.input</key>
+        <status>0x81</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].keylockButton.input</key>
+        <status>0x82</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].keylockButton.input</key>
+        <status>0x83</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].keylockButton.input</key>
+        <status>0x84</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].pitchRange.input</key>
+        <status>0x91</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].pitchRange.input</key>
+        <status>0x92</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].pitchRange.input</key>
+        <status>0x93</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].pitchRange.input</key>
+        <status>0x94</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x91</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x81</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB1</status>
+        <midino>0x00</midino> <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB1</status>
+        <midino>0x20</midino> <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x92</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x82</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB2</status>
+        <midino>0x00</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB2</status>
+        <midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x93</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x83</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB3</status>
+        <midino>0x00</midino> <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB3</status>
+        <midino>0x20</midino>
+        <options><script-binding /></options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x94</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.jogTouch14bit</key>
+        <status>0x84</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB4</status>
+        <midino>0x00</midino> 
+        <options>
+        <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.jogMove14bit</key>
+        <status>0xB4</status>
+        <midino>0x20</midino>
+                <options>
+        <script-binding />
+        </options>
+      </control>
+
+
+    
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].shiftButton.input</key>
+        <status>0x91</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].shiftButton.input</key>
+        <status>0x81</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].shiftButton.input</key>
+        <status>0x92</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].shiftButton.input</key>
+        <status>0x82</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].shiftButton.input</key>
+        <status>0x93</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].shiftButton.input</key>
+        <status>0x83</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].shiftButton.input</key>
+        <status>0x94</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].shiftButton.input</key>
+        <status>0x84</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].pitchBendMinus.input</key>
+        <status>0x91</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus left on</description>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].pitchBendMinus.input</key>
+        <status>0x92</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus right on</description>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].pitchBendMinus.input</key>
+        <status>0x81</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus right off</description>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].pitchBendMinus.input</key>
+        <status>0x82</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus right off</description>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].pitchBendPlus.input</key>
+        <status>0x91</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus left on</description>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].pitchBendPlus.input</key>
+        <status>0x92</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus right on</description>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].pitchBendPlus.input</key>
+        <status>0x81</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus left off</description>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].pitchBendPlus.input</key>
+        <status>0x82</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus right off</description>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].pitchBendMinus.input</key>
+        <status>0x93</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus left on</description>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].pitchBendMinus.input</key>
+        <status>0x94</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus right on</description>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].pitchBendMinus.input</key>
+        <status>0x83</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus right off</description>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].pitchBendMinus.input</key>
+        <status>0x84</status>
+        <midino>0x18</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendMinus right off</description>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].pitchBendPlus.input</key>
+        <status>0x93</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus left on</description>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].pitchBendPlus.input</key>
+        <status>0x94</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus right on</description>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].pitchBendPlus.input</key>
+        <status>0x83</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus left off</description>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].pitchBendPlus.input</key>
+        <status>0x84</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>pitchBendPlus right off</description>
+      </control>
+      <!-- Faders -->
+      <control>
+          <group>[Master]</group>
+          <key>NumarkNS6.toggleFaderStartLeft</key>
+          <status>0x90</status>
+          <midino>0x02</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+
+      <control>
+          <group>[Master]</group>
+          <key>NumarkNS6.toggleFaderStartRight</key>
+          <status>0x90</status>
+          <midino>0x03</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>NumarkNS6.crossfaderMSB</key>
+        <status>0xB0</status>
+        <midino>0x07</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>NumarkNS6.crossfaderLSB</key>
+        <status>0xB0</status>
+        <midino>0x27</midino>
+        <options><script-binding/></options>
+      </control>
+      <control>
+        <group>[Mixer Profile]</group>
+        <key>NumarkNS6.setXfaderCurve</key>
+        <status>0xB0</status>
+        <midino>0x55</midino>
+        <options><script-binding/></options>
+        <description>NS6 X-Fader slope knob controls the Mixxx crossfader curve</description>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>gain</key>
+        <status>0xB0</status>
+        <midino>0x43</midino>
+        <description>NS6 MASTER knob: CC 67 controls Mixxx Master volume</description>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headGain</key>
+        <status>0xB0</status>
+        <midino>0x42</midino>
+        <description>NS6 headphone level knob: CC 66 controls Mixxx headphone volume</description>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headMix</key>
+        <status>0xB0</status>
+        <midino>0x12</midino>
+        <options><fourteen-bit-msb/></options>
+        <description>NS6 headphone CUE/MIX knob: CC 18 MSB</description>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headMix</key>
+        <status>0xB0</status>
+        <midino>0x32</midino>
+        <options><fourteen-bit-lsb/></options>
+        <description>NS6 headphone CUE/MIX knob: CC 50 LSB</description>
+      </control>
+      <!--mixer knobs-->
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>NumarkNS6.Decks[1].eqKnobs[1].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 EQ_LOW LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>NumarkNS6.Decks[1].eqKnobs[1].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 EQ_LOW MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].eqKnobs[1].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x2E</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 EQ_LOW LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].eqKnobs[1].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 EQ_LOW MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].eqKnobs[1].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x34</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 EQ_LOW LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].eqKnobs[1].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x14</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 EQ_LOW MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].eqKnobs[1].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding />
+
+        </options>
+        <description>Channel4 EQ_LOW LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].eqKnobs[1].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x19</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel4 EQ_LOW MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>NumarkNS6.Decks[1].eqKnobs[2].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 EQ_MID LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>NumarkNS6.Decks[1].eqKnobs[2].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 EQ_MID MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].eqKnobs[2].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x2F</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 EQ_MID LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].eqKnobs[2].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x0F</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 EQ_MID MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].eqKnobs[2].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x35</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 EQ_MID LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].eqKnobs[2].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 EQ_MID MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].eqKnobs[2].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel4 EQ_MID LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].eqKnobs[2].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel4 EQ_MID MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>NumarkNS6.Decks[1].eqKnobs[3].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x2B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 EQ_HIGH LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>NumarkNS6.Decks[1].eqKnobs[3].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 EQ_HIGH MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].eqKnobs[3].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x30</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 EQ_HIGH LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].eqKnobs[3].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 EQ_HIGH MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].eqKnobs[3].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x36</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 EQ_HIGH LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].eqKnobs[3].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 EQ_HIGH MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].eqKnobs[3].inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel4 EQ_HIGH LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].eqKnobs[3].inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel4 EQ_HIGH MSB</description>
+      </control>
+      <!--gain knobs-->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].gainKnob.inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x2C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 GAIN LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>NumarkNS6.Decks[1].gainKnob.inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel1 GAIN MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].gainKnob.inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x31</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 GAIN LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>NumarkNS6.Decks[2].gainKnob.inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel2 GAIN MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].gainKnob.inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x37</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 GAIN LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+        <key>NumarkNS6.Decks[3].gainKnob.inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel3 GAIN MSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].gainKnob.inputLSB</key>
+        <status>0xB0</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel4 GAIN LSB</description>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+        <key>NumarkNS6.Decks[4].gainKnob.inputMSB</key>
+        <status>0xB0</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding />
+        </options>
+        <description>Channel4 GAIN MSB</description>
+      </control>
+      <!--volume slider-->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.deck1VolumeLSB</key>
+        <status>0xB0</status>
+        <midino>0x28</midino>
+        <options><script-binding/></options>
+        <description>Channel1 Volume LSB</description>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.deck1VolumeMSB</key>
+        <status>0xB0</status>
+        <midino>0x08</midino>
+        <options><script-binding/></options>
+        <description>Channel1 Volume MSB</description>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.deck2VolumeLSB</key>
+        <status>0xB0</status>
+        <midino>0x2D</midino>
+        <options><script-binding/></options>
+        <description>Channel2 Volume LSB</description>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.deck2VolumeMSB</key>
+        <status>0xB0</status>
+        <midino>0x0D</midino>
+        <options><script-binding/></options>
+        <description>Channel2 Volume MSB</description>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.deck3VolumeLSB</key>
+        <status>0xB0</status>
+        <midino>0x33</midino>
+        <options><script-binding/></options>
+        <description>Channel3 Volume LSB</description>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.deck3VolumeMSB</key>
+        <status>0xB0</status>
+        <midino>0x13</midino>
+        <options><script-binding/></options>
+        <description>Channel3 Volume MSB</description>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.deck4VolumeLSB</key>
+        <status>0xB0</status>
+        <midino>0x38</midino>
+        <options><script-binding/></options>
+        <description>Channel4 Volume LSB</description>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.deck4VolumeMSB</key>
+        <status>0xB0</status>
+        <midino>0x18</midino>
+        <options><script-binding/></options>
+        <description>Channel4 Volume MSB</description>
+      </control>
+      <!-- Bpm Slider -->
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].bpmSlider.inputMSB</key>
+        <status>0xB1</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkNS6.Decks[1].bpmSlider.inputLSB</key>
+        <status>0xB1</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].bpmSlider.inputMSB</key>
+        <status>0xB2</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkNS6.Decks[2].bpmSlider.inputLSB</key>
+        <status>0xB2</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].bpmSlider.inputMSB</key>
+        <status>0xB3</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkNS6.Decks[3].bpmSlider.inputLSB</key>
+        <status>0xB3</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].bpmSlider.inputMSB</key>
+        <status>0xB4</status>
+        <midino>0x01</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkNS6.Decks[4].bpmSlider.inputLSB</key>
+        <status>0xB4</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+    </controls>
+  
+  </controller>
+</MixxxControllerPreset>
