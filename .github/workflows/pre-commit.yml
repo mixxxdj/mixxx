@@ -8,6 +8,12 @@ on:
       pull_request:
         type: boolean
         default: false
+      install_only:
+        # Only install the hooks and save them to the cache if it's missing.
+        # Used by push builds of the main and release branches, so pull
+        # requests targeting them can restore the cache.
+        type: boolean
+        default: false
 
 permissions:
   contents: read #  to fetch code (actions/checkout)
@@ -24,7 +30,7 @@ jobs:
           # because the Appstream Metadata hook parses the history to find the
           # latest changelog modification date. Otherwise, `fetch-depth: 2` would
           # suffice.
-          fetch-depth: 0
+          fetch-depth: ${{ inputs.install_only && 1 || 0 }}
 
       - name: "Add GitHub workspace as a safe directory"
         # Without this, git commands will fail due to mismatching permissions in
@@ -37,13 +43,37 @@ jobs:
           git config --global --add safe.directory "${GITHUB_WORKSPACE}"
           git config --global --list
 
-      # These steps are the ones of pre-commit/action, minus its cache. The
-      # action saves a cache from every pull request, which only that pull
-      # request can use again and which fills the 10 GB repository quota.
+      # These steps are the ones of pre-commit/action, but its cache is saved
+      # from every pull request, which only that pull request can use again
+      # and which fills the 10 GB repository quota. Here, only push builds of
+      # the main and release branches save it (see install_only).
       - name: "Install pre-commit"
-        run: python -m pip install pre-commit
+        id: install
+        run: |
+          python -m pip install pre-commit
+          echo "python=$(python --version | cut -d' ' -f2)" >> "${GITHUB_OUTPUT}"
+
+      - name: "Restore pre-commit cache"
+        id: cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ steps.install.outputs.python }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          lookup-only: ${{ inputs.install_only }}
+
+      - name: "Install pre-commit hooks"
+        if: inputs.install_only && steps.cache.outputs.cache-hit != 'true'
+        run: pre-commit install-hooks
+
+      - name: "Save pre-commit cache"
+        if: inputs.install_only && steps.cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - name: "Detect code style issues"
+        if: ${{ !inputs.install_only }}
         # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
         # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
         run: pre-commit run --show-diff-on-failure --color=always ${{ inputs.pull_request && '--from-ref HEAD^1 --to-ref HEAD' || '' }}
@@ -80,5 +110,5 @@ jobs:
 
       # AppStream metadata has been generated/updated by a pre-commit hook
       - name: "Validate AppStream metadata"
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && !inputs.install_only
         run: appstreamcli validate --no-net res/linux/org.mixxx.Mixxx.metainfo.xml

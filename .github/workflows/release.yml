@@ -21,6 +21,11 @@ jobs:
   checks:
     uses: ./.github/workflows/checks.yml
 
+  pre-commit:
+    uses: ./.github/workflows/pre-commit.yml
+    with:
+      install_only: true
+
   changelog:
     uses: ./.github/workflows/changelog.yml
     secrets:
