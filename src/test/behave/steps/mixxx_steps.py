@@ -1031,8 +1031,17 @@ def step_load_track_to_deck(context, deck):
     track_files = sorted(os.listdir(tracks_dir))
     if not track_files:
         raise RuntimeError(f"No track files found in {tracks_dir}")
-    idx = random.randint(0, len(track_files) - 1)
+    idx = scenario_rng(context).randint(0, len(track_files) - 1)
     filepath = os.path.join(tracks_dir, track_files[idx])
+    # Remember the loaded track as "deck N" with catalog metadata when the
+    # file is known, so later steps can pin and assert on its tags.
+    catalog = context.config.userdata.get("tracks_catalog") or []
+    entry = next(
+        (e for e in catalog if e.get("location") == filepath), None)
+    if entry is None:
+        entry = {"title": os.path.splitext(track_files[idx])[0],
+                 "location": filepath}
+    remember_track(context, entry, name=f"deck {deck}")
     _load_track(s, deck, filepath)
     time.sleep(3)
 
@@ -1719,13 +1728,58 @@ def remember_track(context, entry, name="this"):
         tags=entry.get("tags"),
     )
     context.remembered_tracks[name] = track
+    log_track_pin(context, "picked", name, track)
     return track
+
+
+def log_track_pin(context, phase, name, track):
+    """Always record which track a track-dependent step operates on — pass or
+    fail — so a failure can be pinned (title/artist/location) and the pick
+    reproduced with the scenario seed (see ``--seed``).
+
+    The line goes to stdout (captured by behave for failing steps and always
+    shown with ``--no-capture``) and, when the runner provided
+    ``picks_log_path``, to a dedicated artifact file that accumulates the
+    whole run's picks.
+    """
+    scenario = getattr(context, "scenario", None)
+    where = ""
+    if scenario is not None and scenario.feature is not None:
+        where = f" [{scenario.feature.name} > {scenario.name}]"
+    line = (
+        f"Track {phase} [{name}]{where}: "
+        f"\"{track.title}\" - \"{track.artist}\" | {track.location}"
+    )
+    print(line, flush=True)
+    # behave captures step output and only replays it for failing steps, so
+    # mirror the line on the original stdout: picks stay visible in the run
+    # log for passing scenarios too.
+    live = getattr(sys, "__stdout__", None)
+    if live is not None and live is not sys.stdout:
+        live.write(line + "\n")
+        live.flush()
+    picks_path = context.config.userdata.get("picks_log_path")
+    if picks_path:
+        try:
+            with open(picks_path, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except OSError:
+            pass
+
+
+def scenario_rng(context):
+    """The scenario's deterministic RNG (derived from the run seed in
+    environment.py), falling back to the global module if a step runs
+    without a scenario seed."""
+    rng = getattr(context, "rng", None)
+    return rng if rng is not None else random
 
 
 def _remembered_track(context, name="this"):
     """The track remembered under ``name`` (default: "this track")."""
     tracks = getattr(context, "remembered_tracks", {})
     assert name in tracks, f"No track was remembered as \"{name} track\""
+    log_track_pin(context, "using", name, tracks[name])
     return tracks[name]
 
 
@@ -1746,7 +1800,7 @@ def _remember_catalog_track(context, unique_attr=False):
     assert all(entry.get("title") for entry in pool), (
         "The catalog contains tracks without a title"
     )
-    return remember_track(context, random.choice(pool))
+    return remember_track(context, scenario_rng(context).choice(pool))
 
 
 def _this_track_field(context, field):

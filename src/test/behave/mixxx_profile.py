@@ -158,17 +158,23 @@ def available_tracks(target_dir):
     return catalog
 
 
-def ensure_track_catalog(target_dir, nb_tracks):
+def ensure_track_catalog(target_dir, nb_tracks, seed=None):
     """Download missing tracks from the manifest into target_dir.
 
     Downloads only as many tracks as needed to reach nb_tracks files, then
     returns the resulting catalog (see available_tracks): the manifest
     metadata of every track file present in target_dir, with ``location``.
+
+    ``seed`` pins which manifest entries are sampled for download, so two
+    machines (or a wiped cache) fetch the same set for the same run seed;
+    without it the selection is random. Already-present files are kept
+    regardless of the seed.
     """
     os.makedirs(target_dir, exist_ok=True)
     existing_track_count = len(glob.glob(f'{target_dir}/*.mp3'))
     if existing_track_count < nb_tracks:
-        manifest = random.sample(load_track_manifest(), nb_tracks - existing_track_count)
+        rng = random.Random(seed) if seed is not None else random
+        manifest = rng.sample(load_track_manifest(), nb_tracks - existing_track_count)
         for entry in manifest:
             url = entry.get("url")
             if not url:
