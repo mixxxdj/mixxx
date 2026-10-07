@@ -191,6 +191,74 @@ TEST_F(SearchQueriesStorageTest, ParseQueryExactQuotedValue) {
             QStringLiteral("artist:=\"A Super Artist\""));
 }
 
+TEST_F(SearchQueriesStorageTest, ParseQueryMultiExactQuotedChips) {
+    // Pastes of full queries like 'artist:="Daft Punk" album:="Alive 2007"'
+    // must become one exact-match chip per field:value word.
+    const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(
+            QStringLiteral("artist:=\"Daft Punk\" album:=\"Alive 2007\""));
+    const QVariantList tokens = parsed.value(QStringLiteral("tokens")).toList();
+    ASSERT_EQ(tokens.size(), 2);
+
+    const QVariantMap artist = tokens.at(0).toMap();
+    EXPECT_QSTRING_EQ("Artist", artist.value(QStringLiteral("name")).toString());
+    EXPECT_QSTRING_EQ("artist", artist.value(QStringLiteral("query")).toString());
+    EXPECT_QSTRING_EQ("=Daft Punk",
+            artist.value(QStringLiteral("value")).toString());
+    EXPECT_EQ(artist.value(QStringLiteral("keyId")).toInt(), 0);
+
+    const QVariantMap album = tokens.at(1).toMap();
+    EXPECT_QSTRING_EQ("Album", album.value(QStringLiteral("name")).toString());
+    EXPECT_QSTRING_EQ("=Alive 2007",
+            album.value(QStringLiteral("value")).toString());
+
+    EXPECT_TRUE(parsed.value(QStringLiteral("freeText")).toString().isEmpty());
+    EXPECT_EQ(entryToQueryString(parsed),
+            QStringLiteral("artist:=\"Daft Punk\" album:=\"Alive 2007\""));
+}
+
+TEST_F(SearchQueriesStorageTest, ParseQueryChipWithLeftoverFreeText) {
+    const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(
+            QStringLiteral("artist:\"Daft Punk\" 2007"));
+    const QVariantList tokens = parsed.value(QStringLiteral("tokens")).toList();
+    ASSERT_EQ(tokens.size(), 1);
+    EXPECT_QSTRING_EQ("Artist",
+            tokens.at(0).toMap().value(QStringLiteral("name")).toString());
+    EXPECT_QSTRING_EQ("Daft Punk",
+            tokens.at(0).toMap().value(QStringLiteral("value")).toString());
+    EXPECT_QSTRING_EQ("2007",
+            parsed.value(QStringLiteral("freeText")).toString());
+    EXPECT_EQ(entryToQueryString(parsed),
+            QStringLiteral("artist:\"Daft Punk\" 2007"));
+}
+
+TEST_F(SearchQueriesStorageTest, ParseQueryMultiMixedChips) {
+    const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(
+            QStringLiteral("bpm:127-129 album:X"));
+    const QVariantList tokens = parsed.value(QStringLiteral("tokens")).toList();
+    ASSERT_EQ(tokens.size(), 2);
+    EXPECT_QSTRING_EQ("BPM",
+            tokens.at(0).toMap().value(QStringLiteral("name")).toString());
+    EXPECT_QSTRING_EQ("127-129",
+            tokens.at(0).toMap().value(QStringLiteral("value")).toString());
+    EXPECT_QSTRING_EQ("Album",
+            tokens.at(1).toMap().value(QStringLiteral("name")).toString());
+    EXPECT_QSTRING_EQ("X",
+            tokens.at(1).toMap().value(QStringLiteral("value")).toString());
+    EXPECT_EQ(entryToQueryString(parsed),
+            QStringLiteral("bpm:127-129 album:X"));
+}
+
+TEST_F(SearchQueriesStorageTest, ParseQueryUnclosedQuoteStaysFreeText) {
+    // An unclosed quoted argument can never round-trip as a chip value, so
+    // the word stays free text instead of forming a chip with a stray quote.
+    const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(
+            QStringLiteral("artist:\"Daft"));
+    const QVariantList tokens = parsed.value(QStringLiteral("tokens")).toList();
+    ASSERT_EQ(tokens.size(), 0);
+    EXPECT_QSTRING_EQ("artist:\"Daft",
+            parsed.value(QStringLiteral("freeText")).toString());
+}
+
 TEST_F(SearchQueriesStorageTest, ParseQueryDoubleEqualsMarker) {
     const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(
             QStringLiteral("comment:=="));

@@ -1510,6 +1510,23 @@ def step_type_library_search(context, text):
     _type_into_library_search(context, text)
 
 
+@when('I paste "{query}" into the library search')
+def step_paste_library_search(context, query):
+    """Entry of a whole query in one edit; text is set via RPC and
+    tryConvertToFieldToken() is called explicitly, mirroring the sidebar
+    restore in Library.qml (setting text does not fire onTextEdited)."""
+    s = context.mixxx_rpc
+    query = re.sub(
+            r"<(\w+) of this track>",
+            lambda match: str(_this_track_field(context, match.group(1))),
+            query)
+    _activate_library_search(context)
+    _set_property(s, SEARCH_FIELD_PATH, "text", query)
+    time.sleep(0.3)
+    s.invokeMethod(SEARCH_PANE_PATH, "tryConvertToFieldToken", [])
+    time.sleep(SEARCH_APPLY_DELAY)
+
+
 @when("I clear the library search")
 def step_clear_library_search(context):
     s = context.mixxx_rpc
@@ -1710,7 +1727,7 @@ class RememberedTrack:
     tags: Optional[str]
 
     def __str__(self):
-        return f"{self.title} - {self.artist}"
+        return f"{repr(self.title)} - {repr(self.artist)} | {self.location}"
 
 
 def remember_track(context, entry, name="this"):
@@ -1728,43 +1745,8 @@ def remember_track(context, entry, name="this"):
         tags=entry.get("tags"),
     )
     context.remembered_tracks[name] = track
-    log_track_pin(context, "picked", name, track)
+    print(f"Track picked as {repr(name)}: {track}", flush=True)
     return track
-
-
-def log_track_pin(context, phase, name, track):
-    """Always record which track a track-dependent step operates on — pass or
-    fail — so a failure can be pinned (title/artist/location) and the pick
-    reproduced with the scenario seed (see ``--seed``).
-
-    The line goes to stdout (captured by behave for failing steps and always
-    shown with ``--no-capture``) and, when the runner provided
-    ``picks_log_path``, to a dedicated artifact file that accumulates the
-    whole run's picks.
-    """
-    scenario = getattr(context, "scenario", None)
-    where = ""
-    if scenario is not None and scenario.feature is not None:
-        where = f" [{scenario.feature.name} > {scenario.name}]"
-    line = (
-        f"Track {phase} [{name}]{where}: "
-        f"\"{track.title}\" - \"{track.artist}\" | {track.location}"
-    )
-    print(line, flush=True)
-    # behave captures step output and only replays it for failing steps, so
-    # mirror the line on the original stdout: picks stay visible in the run
-    # log for passing scenarios too.
-    live = getattr(sys, "__stdout__", None)
-    if live is not None and live is not sys.stdout:
-        live.write(line + "\n")
-        live.flush()
-    picks_path = context.config.userdata.get("picks_log_path")
-    if picks_path:
-        try:
-            with open(picks_path, "a", encoding="utf-8") as f:
-                f.write(line + "\n")
-        except OSError:
-            pass
 
 
 def scenario_rng(context):
@@ -1779,7 +1761,6 @@ def _remembered_track(context, name="this"):
     """The track remembered under ``name`` (default: "this track")."""
     tracks = getattr(context, "remembered_tracks", {})
     assert name in tracks, f"No track was remembered as \"{name} track\""
-    log_track_pin(context, "using", name, tracks[name])
     return tracks[name]
 
 
@@ -2001,7 +1982,7 @@ def step_search_query_is(context, query):
     expected = query
     if "title of this track" in expected:
         expected = expected.replace(
-            "<title of this track>", _remembered_track(context).title)
+                "<title of this track>", _remembered_track(context).title)
     deadline = time.time() + 5
     seen = ""
     while time.time() < deadline:
@@ -2010,7 +1991,42 @@ def step_search_query_is(context, query):
             return
         time.sleep(0.3)
     raise AssertionError(
-        f'The search query is "{seen}", expected "{expected}"')
+            f'The search query is "{seen}", expected "{expected}"')
+
+
+@then('the library search criteria should be "{fields}"')
+def step_search_criteria_equal(context, fields):
+    """Criteria token field names in insertion order."""
+    s = context.mixxx_rpc
+    expected = [field for field in fields.split(",") if field]
+    deadline = time.time() + 5
+    seen = []
+    while time.time() < deadline:
+        seen = _search_criteria_fields(s)
+        if seen == expected:
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+            f"The search criteria are {seen}, expected {expected}")
+
+
+@then('the library search free text should be "{text}"')
+@then("the library search free text should be empty")
+def step_search_free_text(context, text=None):
+    s = context.mixxx_rpc
+    expected = text or ""
+    if "title of this track" in expected:
+        expected = expected.replace(
+                "<title of this track>", _remembered_track(context).title)
+    deadline = time.time() + 5
+    seen = ""
+    while time.time() < deadline:
+        seen = _get_property(s, SEARCH_FIELD_PATH, "text") or ""
+        if seen == expected:
+            return
+        time.sleep(0.3)
+    raise AssertionError(
+            f'The library search free text is "{seen}", expected "{expected}"')
 
 
 @then("the library search bar should be empty")
@@ -2071,7 +2087,7 @@ def _wait_for_search_suggestion(context, value, timeout=15):
 
 
 def search_field_quote(value):
-    """Quote a criterion value the same way res/qml/Library.qml does."""
+    """Quote a criterion value the same way res/qml/Library/SearchPane.qml does."""
     if re.search(r"[\s\"'=~-]", value):
         return '"' + value + '"'
     return value

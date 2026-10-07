@@ -328,6 +328,10 @@ QString QmlLibraryProxy::serializeSearchQuery(
     return SearchQueriesStorage::serializeQuery(tokens, freeText);
 }
 
+QVariantMap QmlLibraryProxy::parseSearchQuery(const QString& query) const {
+    return SearchQueriesStorage::parseQuery(query);
+}
+
 QmlLibraryProxy::Result QmlLibraryProxy::addSource(
         const QUrl& newPath) {
     VERIFY_OR_DEBUG_ASSERT(s_pLibrary) {

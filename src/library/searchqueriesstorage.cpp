@@ -133,11 +133,19 @@ QVariantMap SearchQueriesStorage::parseQuery(const QString& query) {
                             exact = true;
                             value = value.mid(1);
                         }
-                        if (value.length() >= 2 && value.startsWith('"') &&
-                                value.endsWith('"')) {
-                            value = value.mid(1, value.length() - 2);
+                        bool unclosedQuote = false;
+                        if (value.startsWith('"')) {
+                            // The argument must be a complete "" pair within
+                            // this word. An unclosed quote (e.g. a query
+                            // word like artist:"Daft) can never round-trip
+                            // as a chip, so the word stays free text.
+                            if (value.length() >= 2 && value.endsWith('"')) {
+                                value = value.mid(1, value.length() - 2);
+                            } else {
+                                unclosedQuote = true;
+                            }
                         }
-                        if (!value.isEmpty()) {
+                        if (!unclosedQuote && !value.isEmpty()) {
                             if (exact) {
                                 value.prepend('=');
                             }

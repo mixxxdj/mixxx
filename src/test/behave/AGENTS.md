@@ -90,7 +90,7 @@ src/test/behave/.venv/bin/python \
 Randomness stays — tests must exercise arbitrary metadata — but every pick is
 pinnable. The runner prints at startup:
 
-    Run seed: 1234567 — reproduce this run's random track picks with --seed 1234567
+    Run seed: 1234567
 
 and `environment.py` derives a per-scenario RNG from
 `run seed | feature name | scenario name`. Replaying with the same `--seed`

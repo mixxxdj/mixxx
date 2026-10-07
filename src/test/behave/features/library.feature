@@ -210,6 +210,20 @@ Feature: Library
     And a search token "Title" should be shown in the search bar
     And the library search query should be "artist:Rockot title:Drive"
 
+  Scenario: A pasted multi-criteria query becomes exact-match criteria
+    Given no search is currently active
+    And a track available in the library with a unique title
+    When I paste "artist:="<artist of this track>" title:"<title of this track>"" into the library search
+    Then the library search criteria should be "Artist,Title"
+    And the library search free text should be empty
+
+  Scenario: Pasting a query keeps its non-criteria words as free text
+    Given no search is currently active
+    And a track available in the library with a unique title
+    When I paste "artist:"<artist of this track>" <title of this track>" into the library search
+    Then the library search criteria should be "Artist"
+    And the library search free text should be "<title of this track>"
+
   Scenario: The equals prefix enables an exact match
     Given no search is currently active
     When I activate the library search

@@ -661,8 +661,7 @@ def main():
         int(env_seed) if env_seed else random.randrange(2 ** 32))
     random.seed(run_seed)
     print(
-        f"Run seed: {run_seed} — reproduce this run's random track picks "
-        f"with --seed {run_seed}",
+        f"Run seed: {run_seed}",
         flush=True,
     )
 

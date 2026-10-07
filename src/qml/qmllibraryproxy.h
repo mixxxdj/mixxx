@@ -158,6 +158,12 @@ class QmlLibraryProxy : public QObject {
     Q_INVOKABLE QString serializeSearchQuery(
             const QVariantList& tokens, const QString& freeText) const;
 
+    /// Parses a search query string into structured search criteria
+    /// (tokens + free text) so the search bar can convert a pasted or
+    /// restored query into chips. Returns `{tokens, freeText}` where each
+    /// token has `{name, query, value, keyId}`.
+    Q_INVOKABLE QVariantMap parseSearchQuery(const QString& query) const;
+
     static void registerKeyboardEventFilter(std::shared_ptr<KeyboardEventFilter> pKeyboard) {
         s_pKeyboard = std::move(pKeyboard);
     }
