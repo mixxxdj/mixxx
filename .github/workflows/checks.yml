@@ -13,6 +13,7 @@ jobs:
     permissions:
       contents: read #  to fetch code (actions/checkout)
       checks: write #  to create new checks (coverallsapp/github-action)
+      actions: write # to delete outdated caches (gh cache delete)
 
     strategy:
       matrix:
@@ -25,6 +26,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          # The token can delete caches, keep it out of .git/config
+          persist-credentials: false
+      - name: Check out ctcache
+        if: matrix.name == 'clang-tidy'
+        uses: actions/checkout@v7
+        with:
+          repository: matus-chochlik/ctcache
+          ref: 857b14271d3ded5511c2e6a60f2dc20c1e4b5680
+          path: ctcache
+          persist-credentials: false
       - name: Install build dependencies
         run: tools/debian_buildenv.sh setup
       - name: Create build directory
@@ -63,7 +75,7 @@ jobs:
         run: |
           cmake \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DCLANG_TIDY=clang-tidy \
+            -DCLANG_TIDY="$GITHUB_WORKSPACE/ctcache/clang-tidy" \
             -DWARNINGS_FATAL=ON \
             -DQT6=ON \
             -DBATTERY=ON \
@@ -121,6 +133,41 @@ jobs:
           sudo rm -f /etc/apt/sources.list.d/ubuntu-toolchain-r-ubuntu-test-jammy.list
           sudo apt-get update
           sudo apt-get install -y --allow-downgrades libc6=2.35* libc6-dev=2.35* libstdc++6=12.3.0* libgcc-s1=12.3.0*
+      - name: Restore cache
+        # Only pushes save caches, same as in build.yml
+        id: ccache_cache
+        uses: actions/cache/restore@v6
+        with:
+          path: |
+            ~/.cache/ccache
+            ~/.cache/ctcache
+          # checks.yml is included because clazy's ccache hashes it
+          key: ubuntu-22.04-${{ matrix.name }}-${{ github.head_ref || github.ref_name }}-${{ hashFiles('src/**', 'CMakeLists.txt', 'cmake/**', '.github/workflows/checks.yml') }}
+          restore-keys: |
+            ubuntu-22.04-${{ matrix.name }}-${{ github.head_ref || github.ref_name }}
+            ubuntu-22.04-${{ matrix.name }}-${{ github.base_ref }}
+            ubuntu-22.04-${{ matrix.name }}
+      - name: Set up ccache
+        run: |
+          ccache --zero-stats
+          ccache --max-size=2G
+      - name: Set up ctcache
+        if: matrix.name == 'clang-tidy'
+        run: |
+          export CTCACHE_DIR="$HOME/.cache/ctcache"
+          echo "CTCACHE_DIR=$CTCACHE_DIR" >> "$GITHUB_ENV"
+          # Store clang-tidy's output, so cache hits still report findings
+          echo "CTCACHE_SAVE_OUTPUT=1" >> "$GITHUB_ENV"
+          python3 ctcache/src/ctcache/clang_tidy_cache.py --zero-stats
+      - name: Set up ccache for clazy
+        if: matrix.name == 'clazy'
+        run: |
+          # ccache doesn't recognize clazy as clang
+          ccache --set-config=compiler_type=clang
+          # Detect clang/clazy updates, the wrapper script doesn't change
+          ccache --set-config=compiler_check='%compiler% --version'
+          # Invalidate the cache when CLAZY_CHECKS changes
+          ccache --set-config=extra_files_to_hash="$PWD/.github/workflows/checks.yml"
       - name: Build
         # Do not abort on errors and build/check the whole project
         run: cmake --build . -j $(nproc) -- --keep-going
@@ -128,6 +175,45 @@ jobs:
         env:
           CLAZY_CHECKS: level2,container-inside-loop,heap-allocated-small-trivial-type,isempty-vs-count,qhash-with-char-pointer-key,qproperty-type-mismatch,tr-non-literal,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression
           CLAZY_IGNORE_DIRS: lib/.*
+      - name: Print cache stats
+        if: ${{ !cancelled() }}
+        run: |
+          ccache --show-stats
+          ccache --cleanup
+          if [ "${{ matrix.name }}" = clang-tidy ]; then
+            python3 ctcache/src/ctcache/clang_tidy_cache.py --show-stats
+          fi
+      - name: Save cache
+        id: ccache_save
+        if: >-
+          steps.ccache_cache.outputs.cache-hit != 'true' && !cancelled() &&
+          github.event_name == 'push' && github.ref_type == 'branch'
+        uses: actions/cache/save@v6
+        with:
+          path: |
+            ~/.cache/ccache
+            ~/.cache/ctcache
+          key: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+      - name: Delete outdated caches
+        # Every source change creates a new cache entry for this branch. Drop
+        # the older ones so they don't evict the caches of other branches.
+        if: steps.ccache_save.outcome == 'success'
+        run: |
+          # A build of a newer commit may have saved its cache already
+          if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
+            echo "$GITHUB_REF has newer commits, not deleting any caches"
+            exit 0
+          fi
+          gh cache list --ref "$GITHUB_REF" --key "$KEY_PREFIX" --limit 100 --json id,key \
+            --jq ".[] | select(.key != \"$KEY\") | .id" |
+          while read -r id; do
+            gh cache delete "$id"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEY: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+          KEY_PREFIX: ubuntu-22.04-${{ matrix.name }}-${{ github.ref_name }}-
       - name: "Test"
         if: matrix.name == 'coverage'
         run: ctest --timeout 45

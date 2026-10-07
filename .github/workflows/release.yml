@@ -19,6 +19,10 @@ permissions:
 
 jobs:
   checks:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      checks: write #  to create new checks (coverallsapp/github-action)
+      actions: write # to delete outdated caches
     uses: ./.github/workflows/checks.yml
 
   changelog:
