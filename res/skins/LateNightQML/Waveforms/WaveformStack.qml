@@ -43,7 +43,7 @@ Item {
         width: root.width
 
         Behavior on height {
-            enabled: !root.splitterResizing && !root.layoutTransitioning
+            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
 
             NumberAnimation {
                 duration: 180
@@ -51,6 +51,8 @@ Item {
             }
         }
         Behavior on opacity {
+            enabled: LateNightTheme.layoutAnimationsEnabled
+
             NumberAnimation {
                 duration: 150
             }
@@ -61,6 +63,7 @@ Item {
                 group: deck3waveform.group
 
                 Shared.FadeBehavior on visible {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
                     fadeTarget: deck3waveform
                 }
             }
@@ -75,7 +78,7 @@ Item {
         width: root.width
 
         Behavior on height {
-            enabled: !root.splitterResizing && !root.layoutTransitioning
+            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
 
             NumberAnimation {
                 duration: 180
@@ -92,7 +95,7 @@ Item {
         width: root.width
 
         Behavior on height {
-            enabled: !root.splitterResizing && !root.layoutTransitioning
+            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
 
             NumberAnimation {
                 duration: 180
@@ -112,7 +115,7 @@ Item {
         width: root.width
 
         Behavior on height {
-            enabled: !root.splitterResizing && !root.layoutTransitioning
+            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
 
             NumberAnimation {
                 duration: 180
@@ -120,6 +123,8 @@ Item {
             }
         }
         Behavior on opacity {
+            enabled: LateNightTheme.layoutAnimationsEnabled
+
             NumberAnimation {
                 duration: 150
             }
@@ -130,6 +135,7 @@ Item {
                 group: deck4waveform.group
 
                 Shared.FadeBehavior on visible {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
                     fadeTarget: deck4waveform
                 }
             }

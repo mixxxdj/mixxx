@@ -228,6 +228,8 @@ Item {
         anchors.fill: parent
 
         move: Transition {
+            enabled: LateNightTheme.layoutAnimationsEnabled
+
             NumberAnimation {
                 duration: 150
                 properties: "x,y"
@@ -293,6 +295,8 @@ Item {
                 clip: true
 
                 Behavior on paneMinimumHeight {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
+
                     NumberAnimation {
                         id: waveformsMinimumHeightAnimation
 
@@ -301,6 +305,8 @@ Item {
                     }
                 }
                 Behavior on panePreferredHeight {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
+
                     NumberAnimation {
                         id: waveformsPreferredHeightAnimation
 
@@ -309,6 +315,8 @@ Item {
                     }
                 }
                 Behavior on opacity {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
+
                     NumberAnimation {
                         id: waveformsOpacityAnimation
 
@@ -342,6 +350,8 @@ Item {
                 width: splitView.width
 
                 Behavior on visibleDeckHeight {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
+
                     NumberAnimation {
                         id: deckHeightAnimation
 
@@ -351,6 +361,8 @@ Item {
                     }
                 }
                 Behavior on deckRowExpansion {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
+
                     NumberAnimation {
                         id: deckRowExpansionAnimation
 
@@ -359,6 +371,8 @@ Item {
                     }
                 }
                 Behavior on deckSideMargin {
+                    enabled: LateNightTheme.layoutAnimationsEnabled
+
                     animation: root.bigLibraryTransition ? deckSideMarginLayoutAnimation : deckSideMarginSpringAnimation
                 }
                 NumberAnimation {
@@ -426,6 +440,8 @@ Item {
                         }
                     ]
                     transitions: Transition {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         AnchorAnimation {
                             id: deck1AnchorAnimation
 
@@ -433,6 +449,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: deck1OpacityAnimation
 
@@ -452,6 +470,8 @@ Item {
                     z: 10
 
                     Behavior on width {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: compactVuSlotWidthAnimation
 
@@ -461,6 +481,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: compactVuSlotOpacityAnimation
 
@@ -493,6 +515,8 @@ Item {
                     width: deckPane.mixerLayoutVisible ? implicitWidth : 0
 
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: mixerOpacityAnimation
 
@@ -559,6 +583,8 @@ Item {
                         }
                     ]
                     transitions: Transition {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         AnchorAnimation {
                             id: mixerAnchorAnimation
 
@@ -566,6 +592,8 @@ Item {
                         }
                     }
                     Behavior on width {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         animation: root.bigLibraryTransition ? mixerLibraryWidthAnimation : mixerWidthAnimation
                     }
                     NumberAnimation {
@@ -621,6 +649,8 @@ Item {
                         }
                     ]
                     transitions: Transition {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         AnchorAnimation {
                             id: deck2AnchorAnimation
 
@@ -628,6 +658,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: deck2OpacityAnimation
 
@@ -653,6 +685,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: deck3OpacityAnimation
 
@@ -678,6 +712,8 @@ Item {
                         }
                     ]
                     transitions: Transition {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         AnchorAnimation {
                             id: deck3AnchorAnimation
 
@@ -712,6 +748,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: deck4OpacityAnimation
 
@@ -737,6 +775,8 @@ Item {
                         }
                     ]
                     transitions: Transition {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         AnchorAnimation {
                             id: deck4AnchorAnimation
 
@@ -775,7 +815,7 @@ Item {
                     z: 2
 
                     Behavior on height {
-                        enabled: !root.bigLibraryTransition || root.bigLibraryEffectsRestoreActive
+                        enabled: LateNightTheme.layoutAnimationsEnabled && (!root.bigLibraryTransition || root.bigLibraryEffectsRestoreActive)
 
                         SpringAnimation {
                             damping: 0.2
@@ -784,6 +824,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: effectsSectionOpacityAnimation
 
@@ -814,7 +856,7 @@ Item {
                     z: 2
 
                     Behavior on height {
-                        enabled: !root.bigLibraryTransition
+                        enabled: LateNightTheme.layoutAnimationsEnabled && !root.bigLibraryTransition
 
                         SpringAnimation {
                             damping: 0.2
@@ -823,6 +865,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: samplersSectionOpacityAnimation
 
@@ -847,7 +891,7 @@ Item {
                     z: 2
 
                     Behavior on height {
-                        enabled: !root.bigLibraryTransition
+                        enabled: LateNightTheme.layoutAnimationsEnabled && !root.bigLibraryTransition
 
                         SpringAnimation {
                             damping: 0.2
@@ -856,6 +900,8 @@ Item {
                         }
                     }
                     Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         NumberAnimation {
                             id: micAuxSectionOpacityAnimation
 
@@ -906,6 +952,8 @@ Item {
                         }
                     ]
                     transitions: Transition {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
                         AnchorAnimation {
                             id: libraryAnchorAnimation
 
