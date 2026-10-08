@@ -10,6 +10,9 @@ Item {
     // All controls used by the layout are declared here before Toolbar and
     // deck children construct their proxies. Existing profile controls are
     // preserved; missing controls receive their QML defaults deterministically.
+    // Controls that Mixxx already creates in C++ (SkinControls and
+    // QmlApplication::setupSpinnyCoverControls) must not be declared here,
+    // e.g. show_mixer, show_samplers, show_effectrack or show_coverart.
     // Keep the toolbar bootstrap sentinel in the skin namespace so it can be
     // created by SkinControlCreator before toolbar proxies bind to it.
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "initialized_toolbar_defaults"; persist: true }
@@ -22,12 +25,6 @@ Item {
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_rate_controls"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_rate_control_buttons"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_key_controls"; persist: true }
-    Mixxx.SkinControlCreator { group: "[Skin]"; key: "show_vinylcontrol"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_spinnies"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_coverart"; persist: true }
-    Mixxx.SkinControlCreator { group: "[Skin]"; key: "select_big_spinny_or_cover"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_effectrack"; persist: true }
-    Mixxx.SkinControlCreator { group: "[Skin]"; key: "show_4effectunits"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_superknobs"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_eq_knobs"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_eq_kill_buttons"; persist: true }
@@ -55,12 +52,6 @@ Item {
     Mixxx.SkinControlCreator { defaultValue: -1.0; group: "[Skin]"; key: "expand_samplers_49-56"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: -1.0; group: "[Skin]"; key: "expand_samplers_57-64"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_4decks"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_mixer"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_samplers"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_microphones"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_maximized_library"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_preview_decks"; persist: true }
-    Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_library_coverart"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_rate_controls_compact"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_loop_controls_compact"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_beatjump_controls_compact"; persist: true }
