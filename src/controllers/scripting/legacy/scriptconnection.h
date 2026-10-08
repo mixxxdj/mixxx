@@ -19,6 +19,7 @@ class ScriptConnection {
     ControllerScriptInterfaceLegacy* engineJSProxy;
     ControllerScriptEngineLegacy* controllerEngine;
     bool skipSuperseded;
+    mutable  bool isExecuting =false;
 
     void executeCallback(double value) const;
 
