@@ -110,7 +110,8 @@ Feature: Library
     Given no search is currently active
     And a track available in the library with a unique title
     When I activate the library search
-    And I type the title of this track into the library search
+    And I type "title:" into the library search
+    And I type the title of this track into the library search prefixed with "="
     Then this track should be visible in the results
     And no other track should be visible in the results
 
