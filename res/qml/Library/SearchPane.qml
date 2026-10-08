@@ -84,9 +84,7 @@ Rectangle {
         return tokens;
     }
 
-    readonly property string queryFreeText: activeTokenIndex < 0 ? searchField.text : ""
-
-    readonly property string activeQuery: Mixxx.Library.serializeSearchQuery(activeTokens, queryFreeText)
+    readonly property string activeQuery: Mixxx.Library.serializeSearchQuery(activeTokens, freeSearchText)
 
     // The recent-search list replaces the suggestions while the
     // pane is expanded but idle.
@@ -401,6 +399,7 @@ Rectangle {
     }
 
     function activateSearch() {
+        selectingAll = false
         searchField.text = freeSearchText
         searchField.cursorPosition = searchField.text.length
         syncSearchUI()
@@ -416,6 +415,10 @@ Rectangle {
 
     function clearAllCriteria() {
         selectingAll = false
+        // The pane state is being wiped for a rebuild (sidebar switch,
+        // clear button): a pending "apply the wiped state" must not land
+        // on whichever sidebar is active when the debounce fires.
+        searchDebounce.stop()
         selectedCriteria.clear()
         activeTokenIndex = -1
         searchField.text = ""
@@ -443,10 +446,11 @@ Rectangle {
     }
 
     function persistSearch() {
-        if (activeTokens.length === 0 && queryFreeText.length === 0) {
+        commitCurrentEditor()
+        if (activeTokens.length === 0 && freeSearchText.length === 0) {
             return
         }
-        activeRecentIndex = searchPane.recentSearches.persist(activeTokens, queryFreeText, activeRecentIndex)
+        activeRecentIndex = searchPane.recentSearches.persist(activeTokens, freeSearchText, activeRecentIndex)
     }
 
     function applyRecentSearch(index) {
@@ -580,8 +584,10 @@ Rectangle {
 
         Keys.onPressed: (event) => {
             if (event.key == Qt.Key_Escape) {
-                searchPane.persistSearch()
+                // Deactivate first so the persist sees the committed
+                // editor state instead of the chip being edited.
                 searchPane.deactivateSearch()
+                searchPane.persistSearch()
                 event.accepted = true
             }
         }
@@ -1080,6 +1086,12 @@ Rectangle {
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhNoFullscreen
             EnterKey.type: Qt.EnterKeyReturn
 
+            // A click that lands inside the field moves the cursor
+            // and must leave the "wipe everything" armed state.
+            TapHandler {
+                onTapped: searchPane.selectingAll = false
+            }
+
             Keys.onTabPressed: (event) => {
                 if (searchPane.activeTokenIndex < 0) {
                     searchPane.acceptFieldSuggestion()
@@ -1125,6 +1137,10 @@ Rectangle {
                     event.accepted = true
                     break
                 case Qt.Key_Left:
+                    // Leaving the "wipe everything" armed state by
+                    // moving the cursor must not displace it onto the
+                    // next keystroke.
+                    searchPane.selectingAll = false
                     if (searchField.cursorPosition === 0 && searchPane.activeTokenIndex !== 0) {
                         searchPane.navigateBackward()
                         searchField.cursorPosition = searchField.text.length
@@ -1132,6 +1148,7 @@ Rectangle {
                     }
                     break
                 case Qt.Key_Right:
+                    searchPane.selectingAll = false
                     if (searchField.cursorPosition === searchField.text.length && searchPane.activeTokenIndex !== -1) {
                         searchPane.navigateForward()
                         searchField.cursorPosition = 0

@@ -18,7 +18,6 @@ Item {
 
     onActiveSidebarChanged: {
         if (!root.activeSidebar.tracklist) return;
-        print("onActiveSidebarChanged", root.activeSidebar.tracklist.search)
 
         searchPane.clearAllCriteria()
         searchPane.textField.text = root.activeSidebar.tracklist.search
@@ -28,9 +27,7 @@ Item {
     Connections {
         target: root.activeSidebar
 
-        function onTracklistChanged(){
-            print("onTracklistChanged", root.activeSidebar.tracklist.search)
-
+        function onTracklistChanged() {
             searchPane.clearAllCriteria()
             searchPane.textField.text = root.activeSidebar.tracklist.search
             searchPane.tryConvertToFieldToken()

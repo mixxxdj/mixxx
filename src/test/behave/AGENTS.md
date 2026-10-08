@@ -73,7 +73,7 @@ src/test/behave/.venv/bin/python \
 
 ### Custom retry count
 
-By default, each scenario is retried up to 3 times on failure. Override with
+By default, each scenario is run once with no retry on failure. Override with
 `--retry N`:
 
 ```bash
@@ -98,11 +98,10 @@ therefore reproduces the exact track pick of a scenario, independent of what
 ran before it; autoretry attempts reuse the same pick as well.
 `MIXXX_TEST_SEED=<n>` is the env-var alternative.
 
-Every step that picks or consumes a remembered track always logs it (pass or
-fail), on the step output and appended to `artifacts/track-picks-<label>.txt`:
+Every step that picks a remembered track logs the pick (pass or fail) on the
+step output:
 
-    Track picked [this] [Library > A committed search...]: "Title" - "Artist" | /path/file.mp3
-    Track using   [deck 1] [Deck > ...]: "Title" - "Artist" | /path/file.mp3
+    Track picked as 'this': "Title" - "Artist" | /path/file.mp3
 
 Each entry in `artifacts/results-*.json` additionally records `run_seed`,
 `scenario_seed` and the `tracks` map (name → `"title - artist"`), so a failed
@@ -130,7 +129,7 @@ MIXXX_TEST_HEADLESS=1 MIXXX_TEST_DISPLAY_BACKEND=xwayland ctest -R mixxx-behave-
 # Falling back to Xvfb (only when cage / wf-recorder are unavailable)
 MIXXX_TEST_HEADLESS=1 MIXXX_TEST_DISPLAY_BACKEND=xvfb ctest -R mixxx-behave- --output-on-failure
 
-# Custom retry count (default: 3)
+# Custom retry count (default: 1 — no retry)
 MIXXX_BEHAVE_RETRY=5 ctest -R mixxx-behave- --output-on-failure
 ```
 
@@ -444,7 +443,8 @@ Everything lands in `src\test\behave\artifacts\`:
   mangled into replacement characters when read as UTF-8. This does not affect
   Mixxx's own C++ output. Override `-Environment` if you need to.
 - **Narrow to one scenario** with `-Name`; the eight-scenario default retries
-  each scenario up to three times, which multiplies wall-clock time by up to 4x
+  each scenario up to three times (the Windows wrapper's own `--retry` default,
+  different from the runner's), which multiplies wall-clock time by up to 4x
   when things fail.
 - **Timestamps are in the log**: each `Scenario:` block is followed by
   `start_time`/`end_time` in `results-<label>.json`. A scenario that never
@@ -509,7 +509,7 @@ step definitions, add `objectName`s in QML, rebuild `mixxx-test`. Specifically:
    `steps/mixxx_steps.py`.
 4. **Autoretry**: `before_feature` patches every scenario's `run()` method with
    a custom wrapper. If a scenario fails, it is retried up to `--retry N` times
-   (default 3), except for `@xfail` scenarios which are never retried. Each
+   (default 1 — no retry), except for `@xfail` scenarios which are never retried. Each
    attempt triggers `before_scenario`/`after_scenario` hooks normally, and
    `after_scenario` appends one entry per attempt to `context.results` — a
    retried scenario therefore appears several times. Consumers score the
@@ -876,7 +876,7 @@ LOOP_BUTTONS = {
 
 - `before_all`: initiates `context._session` dict for cross-scenario state
 - `before_feature`: patches every scenario with the custom autoretry wrapper
-  (max attempts from `--retry`, default 3)
+  (max attempts from `--retry`, default 1)
 - `before_scenario`: restores `context.mixxx`, `context.mixxx_rpc`,
   `context.profile_dir`, `context.active_profile_type` from session; skips
   if `fail_early` is set and a previous scenario failed all retries

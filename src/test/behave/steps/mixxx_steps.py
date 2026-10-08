@@ -1854,7 +1854,7 @@ def step_type_this_title(context, attr_with_transform, rule=None):
     if rule and rule.startswith("prefixed with"):
         prefix = rule[len("prefixed with") + 1:]
         if prefix.startswith("\"") and prefix.endswith("\""):
-            prefix = rule[1:-1]
+            prefix = prefix[1:-1]
         assert prefix, "Prefix cannot be empty"
         transform = wrap(transform, lambda value: f"{prefix}{value}")
 

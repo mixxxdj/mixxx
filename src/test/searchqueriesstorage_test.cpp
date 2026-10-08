@@ -294,4 +294,37 @@ TEST_F(SearchQueriesStorageTest, ParseQueryEmptyValueStaysFreeText) {
             parsed.value(QStringLiteral("freeText")).toString());
 }
 
+TEST_F(SearchQueriesStorageTest, ParseQueryOrStaysVerbatimFreeText) {
+    // Serialization moves the free text behind the chips, which would
+    // turn an OR query into an AND query plus a literal "|" term. The
+    // whole query must stay free text instead.
+    const QString query = QStringLiteral("artist:a | title:b");
+    const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(query);
+    EXPECT_TRUE(parsed.value(QStringLiteral("tokens")).toList().isEmpty());
+    EXPECT_QSTRING_EQ("artist:a | title:b",
+            parsed.value(QStringLiteral("freeText")).toString());
+    EXPECT_EQ(entryToQueryString(parsed), query);
+}
+
+TEST_F(SearchQueriesStorageTest, ParseQueryQuoteInValueStaysFreeText) {
+    // A value containing a quote itself cannot be serialized without
+    // escaping, so the word stays free text. The other chip keeps its
+    // place ahead of the free text (order loss is harmless for AND
+    // queries) and the restored query parses into the same tokens again.
+    const QVariantMap parsed = mixxx::SearchQueriesStorage::parseQuery(
+            QStringLiteral("artist:foo\"bar title:X"));
+    const QVariantList tokens = parsed.value(QStringLiteral("tokens")).toList();
+    ASSERT_EQ(tokens.size(), 1);
+    EXPECT_QSTRING_EQ("title", tokens.at(0).toMap().value(QStringLiteral("query")).toString());
+    EXPECT_QSTRING_EQ("artist:foo\"bar",
+            parsed.value(QStringLiteral("freeText")).toString());
+    EXPECT_EQ(entryToQueryString(parsed),
+            QStringLiteral("title:X artist:foo\"bar"));
+    // Re-parsing the restored query serializes identically.
+    const QVariantMap reparsed = mixxx::SearchQueriesStorage::parseQuery(
+            QStringLiteral("title:X artist:foo\"bar"));
+    EXPECT_EQ(entryToQueryString(reparsed),
+            QStringLiteral("title:X artist:foo\"bar"));
+}
+
 } // namespace

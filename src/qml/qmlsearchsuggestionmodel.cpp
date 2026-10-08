@@ -17,10 +17,13 @@
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqllikewildcards.h"
+#include "util/logger.h"
 
 namespace mixxx {
 namespace qml {
 namespace {
+
+const mixxx::Logger kLogger("QmlSearchSuggestionModel");
 
 constexpr int kMaxSuggestions = 50;
 
@@ -315,6 +318,9 @@ QmlSearchSuggestionModel::runSuggestionsQuery(
             }
             suggestions.push_back({value, QString()});
         }
+    } else {
+        // Do not silently masquerade a failed query as "no matches".
+        kLogger.warning() << "execPrepared failed:" << query.lastError();
     }
     return suggestions;
 }

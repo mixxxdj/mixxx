@@ -10,8 +10,6 @@ Item {
 
     property alias valueEditorHost: valueArea
 
-    readonly property real valueAreaX: width - 5 - valueArea.width
-
     signal activated()
     signal deleted()
 

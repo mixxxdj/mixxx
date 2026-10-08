@@ -98,6 +98,25 @@ TEST_F(QmlRecentSearchTest, PersistReplacesActiveRow) {
             QStringList({QStringLiteral("artist:foo"), QStringLiteral("artist:baz")}));
 }
 
+TEST_F(QmlRecentSearchTest, PersistRemovesDuplicateBeforePrepend) {
+    mixxx::qml::QmlRecentSearchModel model(config());
+
+    model.persist({token("Artist", "artist", "foo", 0)}, QString(), -1);
+    model.persist({token("Title", "title", "bar", 0)}, QString(), -1);
+    ASSERT_EQ(model.rowCount(), 2);
+
+    // Re-persisting "artist:foo" moves it to the front instead of
+    // accumulating a duplicate until the next reload.
+    EXPECT_EQ(model.persist({token("Artist", "artist", "foo", 0)}, QString(), -1), 0);
+    EXPECT_EQ(model.rowCount(), 2);
+    EXPECT_QSTRING_EQ("artist:foo",
+            model.get(0).value(QStringLiteral("queryString")).toString());
+    EXPECT_QSTRING_EQ("title:bar",
+            model.get(1).value(QStringLiteral("queryString")).toString());
+    EXPECT_EQ(mixxx::SearchQueriesStorage::loadQueries(config()),
+            QStringList({QStringLiteral("artist:foo"), QStringLiteral("title:bar")}));
+}
+
 TEST_F(QmlRecentSearchTest, PersistCapsListSize) {
     mixxx::qml::QmlRecentSearchModel model(config());
 

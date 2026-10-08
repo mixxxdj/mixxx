@@ -826,7 +826,7 @@ def main():
         if recorder_proc:
             recorder_name_pretty = os.path.basename(recorder_name)
             _stop_recorder(recorder_proc, recorder_name_pretty)
-            _mux_chapters(video_path, getattr(runner.context, "results"), recording_start, _find_ffmpeg(args.ffmpeg_path))
+            _mux_chapters(video_path, getattr(runner.context, "results", []), recording_start, _find_ffmpeg(args.ffmpeg_path))
         if "runner" in locals() and hasattr(runner.context, "results"):
             with open(result_path, "w") as f:
                 json.dump(runner.context.results, f, indent=2)

@@ -1444,7 +1444,6 @@ add_library(
   src/library/librarycontrol.cpp
   src/library/libraryfeature.cpp
   src/library/librarytablemodel.cpp
-  src/library/searchqueriesstorage.cpp
   src/library/missing_hidden/dlghidden.cpp
   src/library/missing_hidden/dlghidden.ui
   src/library/missing_hidden/dlgmissing.cpp
@@ -1469,6 +1468,7 @@ add_library(
   src/library/scanner/libraryscannerdlg.cpp
   src/library/scanner/recursivescandirectorytask.cpp
   src/library/scanner/scannertask.cpp
+  src/library/searchqueriesstorage.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
@@ -3059,8 +3059,8 @@ if(BUILD_TESTING)
     src/test/samplebuffertest.cpp
     src/test/savitzkygolaytest.cpp
     src/test/schemamanager_test.cpp
-    src/test/searchqueryparsertest.cpp
     src/test/searchqueriesstorage_test.cpp
+    src/test/searchqueryparsertest.cpp
     src/test/seratobeatgridtest.cpp
     src/test/seratomarkerstest.cpp
     src/test/seratomarkers2test.cpp
@@ -4250,12 +4250,12 @@ if(QML)
       src/qml/qmllibrarysource.cpp
       src/qml/qmllibrarysourcetree.cpp
       src/qml/qmllibrarytracklistmodel.cpp
-      src/qml/qmlrecentsearchmodel.cpp
-      src/qml/qmlsearchsuggestionmodel.cpp
       src/qml/qmlmixxxcontrollerscreen.cpp
       src/qml/qmlplayermanagerproxy.cpp
       src/qml/qmlplayerproxy.cpp
       src/qml/qmlcoreservices.cpp
+      src/qml/qmlrecentsearchmodel.cpp
+      src/qml/qmlsearchsuggestionmodel.cpp
       src/qml/qmlsidebarmodelproxy.cpp
       src/qml/qmllibrarytracklistcolumn.cpp
       src/qml/qmltrackproxy.cpp

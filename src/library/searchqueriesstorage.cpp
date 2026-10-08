@@ -145,7 +145,11 @@ QVariantMap SearchQueriesStorage::parseQuery(const QString& query) {
                                 unclosedQuote = true;
                             }
                         }
-                        if (!unclosedQuote && !value.isEmpty()) {
+                        // A value containing a quote itself cannot survive
+                        // serialization (which does not escape quotes), so
+                        // the word stays free text.
+                        if (!unclosedQuote && !value.isEmpty() &&
+                                !value.contains('"')) {
                             if (exact) {
                                 value.prepend('=');
                             }
@@ -165,6 +169,22 @@ QVariantMap SearchQueriesStorage::parseQuery(const QString& query) {
         if (!isChip) {
             freeTextParts.append(word);
         }
+    }
+
+    // A query containing an OR operator cannot be represented as an
+    // ordered list of chips plus trailing free text: serialization would
+    // move the operator behind its operands and corrupt its meaning. Keep
+    // the whole query verbatim as free text in that case.
+    if (std::any_of(freeTextParts.cbegin(),
+                freeTextParts.cend(),
+                [](const QString& word) {
+                    // Matches kSplitOnOrOperatorRegexp in the parser.
+                    return word == QStringLiteral("|") ||
+                            word == QStringLiteral("OR");
+                })) {
+        result.insert(QStringLiteral("tokens"), QVariantList());
+        result.insert(QStringLiteral("freeText"), query);
+        return result;
     }
 
     result.insert(QStringLiteral("tokens"), tokens);

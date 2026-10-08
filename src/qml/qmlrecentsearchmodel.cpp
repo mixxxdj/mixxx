@@ -48,6 +48,16 @@ int QmlRecentSearchModel::persist(const QVariantList& tokens,
         const QModelIndex idx = index(activeRow);
         emit dataChanged(idx, idx);
     } else {
+        // Drop an equal entry before prepending, so re-persisting an
+        // older query moves it to the front instead of accumulating a
+        // duplicate until the next reload.
+        for (int row = m_searches.size() - 1; row >= 0; --row) {
+            if (m_searches.at(row).queryString == queryString) {
+                beginRemoveRows(QModelIndex(), row, row);
+                m_searches.removeAt(row);
+                endRemoveRows();
+            }
+        }
         beginInsertRows(QModelIndex(), 0, 0);
         m_searches.prepend({tokens, freeText, queryString});
         endInsertRows();
