@@ -13,6 +13,7 @@ class WVuMeterLegacy : public WWidget {
     explicit WVuMeterLegacy(QWidget* pParent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
+    void refresh();
     void setPixmapBackground(
             const PixmapSource& source,
             Paintable::DrawMode mode,
