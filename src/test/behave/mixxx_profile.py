@@ -216,8 +216,7 @@ def ensure_track_catalog(target_dir, nb_tracks, seed=None):
             candidates.remove(entry)
 
             url = entry.get("url")
-            if not url:
-                continue
+            assert url, f"Track {entry} has no URL"
             filename = track_filename(entry)
             dest = os.path.join(target_dir, filename)
             if os.path.exists(dest) and os.path.getsize(dest) > 0:
@@ -229,6 +228,7 @@ def ensure_track_catalog(target_dir, nb_tracks, seed=None):
                 _download_file(entry, dest)
                 if not os.path.exists(dest) or os.path.getsize(dest) == 0:
                     raise RuntimeError(f"Download failed, no output at {dest}")
+                manifest.append(entry)
             except Exception as e:
                 sys.stdout.write(f"  FAILED: {e}\n")
                 sys.stdout.flush()
