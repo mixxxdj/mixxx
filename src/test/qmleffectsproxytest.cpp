@@ -1,10 +1,14 @@
 #include <gtest/gtest.h>
 
+#include <QFontMetrics>
+#include <QGuiApplication>
 #include <QSignalSpy>
+#include <algorithm>
 #include <memory>
 
 #include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/parametriceqeffect.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpreset.h"
@@ -49,6 +53,21 @@ class QmlEffectsProxyTest : public MixxxTest {
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     std::unique_ptr<mixxx::qml::QmlEffectsManagerProxy> m_pProxy;
 };
+
+TEST_F(QmlEffectsProxyTest, ParameterLabelWidth) {
+    std::unique_ptr<mixxx::qml::QmlEffectSlotProxy> slot(m_pProxy->getEffectSlot(1, 1));
+    const auto* model = slot->getParametersModel();
+    QFont font(QStringLiteral("Open Sans"));
+    font.setPixelSize(10);
+    const QFontMetrics metrics(font);
+    EXPECT_EQ(metrics.size(0, QStringLiteral("Feedback")).width(),
+            model->labelWidth(QStringLiteral("Feedback"), 1, QString(), font, false));
+    EXPECT_EQ(QFontMetrics(QGuiApplication::font()).size(0, QStringLiteral("Feedback")).width(),
+            model->labelWidth(QStringLiteral("Feedback"), 1, QString(), font, true));
+    EXPECT_EQ(std::max(metrics.size(0, QStringLiteral("999.99 Hz")).width(),
+                      metrics.size(0, QStringLiteral("1000.01 Hz")).width()),
+            model->labelWidth(QStringLiteral("F"), 1000, QStringLiteral("Hz"), font, false));
+}
 
 TEST_F(QmlEffectsProxyTest, UnitLookup) {
     auto* pUnit1 = m_pProxy->getEffectUnit(1);
@@ -123,6 +142,18 @@ TEST_F(QmlEffectsProxyTest, SlotEffectAndParameterVisibility) {
 
     ASSERT_EQ(kExpectedParameterCount, pModel->rowCount({}));
     EXPECT_TRUE(pModel->roleNames().values().contains("unitString"));
+    EXPECT_TRUE(pModel->roleNames().values().contains("maximum"));
+    EXPECT_TRUE(pModel->roleNames().values().contains("neutralPoint"));
+    const auto pManifest = EchoEffect::getManifest();
+    EXPECT_DOUBLE_EQ(pManifest->metaknobDefault(), pSlot->getMetaDefault());
+    for (int row = 0; row < kExpectedParameterCount; ++row) {
+        const auto parameter = pModel->get(row).toMap();
+        EXPECT_DOUBLE_EQ(pManifest->parameters().at(row)->getMaximum(),
+                parameter.value("maximum").toDouble());
+        EXPECT_DOUBLE_EQ(pManifest->parameters().at(row)->neutralPointOnScale(),
+                parameter.value("neutralPoint").toDouble());
+    }
+    EXPECT_EQ(QString::number(-0.000001), pModel->formatNumber(-0.000001));
     EXPECT_EQ(QStringLiteral("parameter1"),
             pModel->get(kParameter1Index).toMap().value("controlKey").toString());
     EXPECT_EQ(QStringLiteral("parameter2"),
@@ -151,6 +182,8 @@ TEST_F(QmlEffectsProxyTest, SlotEffectAndParameterVisibility) {
     pSlot->setEffectId(ParametricEQEffect::getId());
     EXPECT_EQ(QStringLiteral("dB"),
             pModel->get(kParameter1Index).toMap().value("unitString").toString());
+    pSlot->setEffectId(QString());
+    EXPECT_DOUBLE_EQ(-1.0, pSlot->getMetaDefault());
 }
 
 } // namespace

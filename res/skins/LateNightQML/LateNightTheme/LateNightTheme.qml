@@ -99,6 +99,7 @@ QtObject {
     readonly property url assetFxFocusButton: lateNightAsset("buttons", "btn__fx_focus.svg")
     readonly property url assetFxKnobBackground: lateNightAsset("knobs", "knob_bg_fx.svg")
     readonly property url assetFxMixModeButton: lateNightAsset("buttons", "btn_embedded_mixmode.svg")
+    readonly property url assetFxMixModePressedButton: lateNightAsset("buttons", "btn_embedded_mixmode_active.svg")
     readonly property url assetFxMixModeDryWetButton: lateNightAsset("buttons", "btn__fx_mixmode_d-w.svg")
     readonly property url assetFxMixModeDryWetSumButton: lateNightAsset("buttons", "btn__fx_mixmode_d+w.svg")
     readonly property url assetFxParameterActiveButton: lateNightAsset("buttons", "btn_embedded_fx_parameter_active.svg")
@@ -226,6 +227,8 @@ QtObject {
     readonly property color effectsFillerColor: isClassic ? "#171717" : "#151517"
     readonly property color effectsFocusBorderColor: isClassic ? "#d08e00" : "#257b82"
     readonly property color effectsHeaderColor: isClassic ? "#1e1e1e" : "#151517"
+    readonly property color effectsHeaderInactiveTextColor: isClassic ? "#666666" : "#686666"
+    readonly property color effectsHeaderBorderTopColor: isClassic ? "transparent" : "#212123"
     readonly property color effectsMasterButtonInactiveColor: isClassic ? "#262626" : "#1e1e20"
     readonly property color effectsPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
     readonly property color effectsParameterActiveColor: "#888888"

@@ -11,18 +11,22 @@ Item {
     required property string group
     required property string label
     required property color linkColor
+    required property real maximum
+    required property real neutralPoint
+    required property Mixxx.EffectSlotParametersModel parametersModel
     property bool showParameterValue: false
     property bool skipNextValueChange: true
     required property color unitColor
     required property string unitString
+    required property bool useApplicationFont
 
     function formatParameterValue(value) {
-        const absoluteRoundedValue = Math.abs(Math.round(value));
+        const absoluteRoundedValue = Math.round(Math.abs(value));
         const decimalPlaces = absoluteRoundedValue < 100 ? 2 : (absoluteRoundedValue < 1000 ? 1 : 0);
         const decimalFactor = Math.pow(10, decimalPlaces);
-        const roundedValue = Math.round(value * decimalFactor) / decimalFactor;
+        const roundedValue = Math.sign(value) * Math.round(Math.abs(value) * decimalFactor) / decimalFactor;
         const displayValue = roundedValue === 0 ? 0 : roundedValue;
-        return displayValue.toString() + (root.unitString.length > 0 ? " " + root.unitString : "");
+        return root.parametersModel.formatNumber(displayValue) + (root.unitString.length > 0 ? " " + root.unitString : "");
     }
     function resetValueDisplay() {
         valueDisplayTimer.stop();
@@ -30,8 +34,8 @@ Item {
         root.skipNextValueChange = true;
     }
 
-    implicitHeight: 45
-    implicitWidth: buttonParameter ? 55 : 40
+    implicitHeight: buttonParameter ? 35 : 43
+    implicitWidth: Math.max(buttonParameter ? 55 : 42, Math.min(buttonParameter ? 58 : 60, parametersModel.labelWidth(label, maximum, unitString, parameterLabel.font, useApplicationFont)))
 
     EffectControlButton {
         activeColor: LateNightTheme.effectsParameterActiveColor
@@ -44,13 +48,14 @@ Item {
         normalSource: LateNightTheme.assetFxParameterButton
         visible: root.buttonParameter
         width: 35
-        y: 5
+        y: Math.floor((root.height - 32) / 2)
     }
     LateNightControls.Knob {
-        anchors.horizontalCenter: parent.horizontalCenter
         backgroundSource: LateNightTheme.assetFxKnobBackground
         displayArc: true
         displayArcColor: LateNightTheme.effectsParameterArcColor
+        displayArcOffsetY: 0
+        displayArcOrigin: root.neutralPoint
         displayArcRadius: 12
         displayArcStart: LateNightControls.Knob.ArcStart.Minimum
         group: root.group
@@ -60,31 +65,44 @@ Item {
         key: root.controlKey
         visible: !root.buttonParameter
         width: 26
+        x: Math.floor((parent.width - width + 1) / 2)
     }
     Text {
-        anchors.horizontalCenter: parent.horizontalCenter
+        id: parameterLabel
+
         color: LateNightTheme.effectsParameterTextColor
         elide: Text.ElideRight
+        font.family: "Open Sans"
         font.pixelSize: 10
+        font.weight: Font.Medium
         height: 10
         horizontalAlignment: Text.AlignHCenter
+        renderType: Text.NativeRendering
         text: root.showParameterValue ? root.formatParameterValue(parameterValue.value) : root.label
         verticalAlignment: Text.AlignVCenter
-        width: root.width
-        y: 28
+        width: Math.min(root.width, root.buttonParameter ? 58 : 60)
+        y: root.buttonParameter ? Math.floor((root.height - 32) / 2) + 22 : 26
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#151515"
+            visible: LateNightTheme.isClassic
+            z: -1
+        }
     }
     Row {
         anchors.horizontalCenter: parent.horizontalCenter
         height: 7
         spacing: 1
         visible: !root.buttonParameter
-        y: 38
+        width: 42
+        y: 37
 
         Rectangle {
             color: inverseControl.item && inverseControl.item.value > 0 ? LateNightTheme.effectsParameterInverseActiveColor : LateNightTheme.effectsParameterLinkInactiveColor
-            height: 7
+            height: 6
             radius: 3
-            width: 8
+            width: 7
 
             TapHandler {
                 onTapped: {
@@ -97,15 +115,15 @@ Item {
         Rectangle {
             id: linkBar
 
-            readonly property color backgroundColor: LateNightTheme.effectsParameterLinkInactiveColor
+            readonly property color backgroundColor: state === 0 ? LateNightTheme.effectsParameterLinkInactiveColor : "#333333"
             readonly property color leftColor: state === 1 || state === 2 || state === 4 ? root.linkColor : backgroundColor
             readonly property color middleColor: state === 1 ? root.linkColor : backgroundColor
             readonly property color rightColor: state === 1 || state === 3 || state === 4 ? root.linkColor : backgroundColor
             readonly property int state: linkControl.item ? Math.round(linkControl.item.value) : 0
 
-            height: 7
+            height: 6
             radius: 3
-            width: 34
+            width: 33
 
             gradient: Gradient {
                 orientation: Gradient.Horizontal

@@ -1,5 +1,6 @@
 #pragma once
 #include <QAbstractListModel>
+#include <QFont>
 #include <QQmlEngine>
 #include <memory>
 
@@ -30,6 +31,8 @@ class QmlEffectSlotParametersModel : public QAbstractListModel {
         ControlKeyRole,
         LoadedRole,
         UnitStringRole,
+        MaximumRole,
+        NeutralPointRole,
     };
     Q_ENUM(Roles)
 
@@ -41,6 +44,12 @@ class QmlEffectSlotParametersModel : public QAbstractListModel {
     int rowCount(const QModelIndex& parent) const override;
     QHash<int, QByteArray> roleNames() const override;
     Q_INVOKABLE QVariant get(int row) const;
+    Q_INVOKABLE QString formatNumber(double value) const;
+    Q_INVOKABLE int labelWidth(const QString& label,
+            double maximum,
+            const QString& unitString,
+            const QFont& font,
+            bool useApplicationFont) const;
 
   private:
     void resetModel();

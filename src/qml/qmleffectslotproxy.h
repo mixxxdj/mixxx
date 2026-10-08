@@ -17,6 +17,7 @@ class QmlEffectSlotProxy : public QObject {
     Q_PROPERTY(bool loaded READ isLoaded NOTIFY effectIdChanged)
     Q_PROPERTY(QString effectName READ getEffectName NOTIFY effectIdChanged)
     Q_PROPERTY(QString effectDescription READ getEffectDescription NOTIFY effectIdChanged)
+    Q_PROPERTY(double metaDefault READ getMetaDefault NOTIFY effectIdChanged)
     Q_PROPERTY(QString effectId READ getEffectId WRITE setEffectId NOTIFY effectIdChanged)
     Q_PROPERTY(mixxx::qml::QmlEffectSlotParametersModel* parametersModel
                     READ getParametersModel CONSTANT)
@@ -42,6 +43,7 @@ class QmlEffectSlotProxy : public QObject {
     bool isLoaded() const;
     QString getEffectName() const;
     QString getEffectDescription() const;
+    double getMetaDefault() const;
     QmlEffectSlotParametersModel* getParametersModel() const;
 
   public slots:

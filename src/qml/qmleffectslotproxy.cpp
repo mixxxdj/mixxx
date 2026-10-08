@@ -66,6 +66,11 @@ QString QmlEffectSlotProxy::getEffectDescription() const {
     return pManifest ? pManifest->description() : QString();
 }
 
+double QmlEffectSlotProxy::getMetaDefault() const {
+    const auto pManifest = m_pEffectSlot->getManifest();
+    return pManifest ? pManifest->metaknobDefault() : -1.0;
+}
+
 void QmlEffectSlotProxy::setEffectId(const QString& effectId) {
     const EffectManifestPointer pManifest =
             m_pEffectsManager->getBackendManager()->getManifestFromUniqueId(
