@@ -85,47 +85,67 @@ def _database_has_tables(db_path):
 
 
 def _download_file(entry, dest):
-    url = entry["url"]
+    ffmpeg = os.getenv("MIXXX_FFMPEG_BIN") or "ffmpeg"
+    metadata_args = [
+        "-metadata", f"title={entry['title']}",
+        "-metadata", f"artist={entry['artist']}",
+    ]
     req = urllib.request.Request(entry["url"], headers={"User-Agent": "MixxxTestProfile/1.0"})
     with tempfile.NamedTemporaryFile(delete_on_close=False) as f, tempfile.NamedTemporaryFile(delete_on_close=False) as c:
-        with urllib.request.urlopen(req, timeout=30) as response:
-            f.write(response.read())
-            f.close()
-        if "artwork" in entry and entry["artwork"]:
-            req = urllib.request.Request(entry["artwork"], headers={"User-Agent": "MixxxTestProfile/1.0"})
+        try:
             with urllib.request.urlopen(req, timeout=30) as response:
-                c.write(response.read())
-                c.close()
+                f.write(response.read())
+                f.close()
+            artwork = os.path.join(os.path.dirname(__file__), "../../../res/images/icons/512x512/apps/mixxx.png")
+            artwork = os.path.normpath(artwork)
+            if entry.get("artwork"):
+                req = urllib.request.Request(entry["artwork"], headers={"User-Agent": "MixxxTestProfile/1.0"})
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    c.write(response.read())
+                    c.close()
+                artwork = c.name
+            # Preferred: attach the artwork as a cover video stream.
             p = subprocess.run([
-                os.getenv("MIXXX_FFMPEG_BIN") or "ffmpeg", "-nostdin", "-hide_banner", "-loglevel", "info",
+                ffmpeg, "-nostdin", "-hide_banner", "-loglevel", "error",
                 "-i", f.name,
-                "-i", c.name,
+                "-i", artwork,
                 "-map", "0:a", "-map", "1",
                 "-c:a", "copy",
                 "-c:v", "mjpeg",
-                # No shell is involved (subprocess.run with a list of args),
-                # so the value is passed verbatim to ffmpeg's -metadata
-                # key=value. Do not use repr()/quotes: ffmpeg stores metadata
-                # values literally, so 'Foo' would embed the quotes.
-                "-metadata", f"title={entry['title']}",
-                "-metadata", f"artist={entry['artist']}",
+                *metadata_args,
                 "-metadata:s:v", "title=Album cover",
                 "-metadata:s:v", "comment=Cover (front)",
                 dest
             ], text=True, capture_output=True)
             if p.returncode:
-                print(p.returncode)
-                print(p.stdout)
-                print(p.stderr)
                 sys.stdout.write(
                     f"  ffmpeg failed to mux artwork for {entry['url']}, "
-                    f"falling back to raw MP3\n"
+                    f"falling back to metadata-only copy\n"
                 )
                 sys.stdout.flush()
+                p = None
+            if p is None or os.path.getsize(dest) == 0:
+                # Fallback: raw copy with the manifest metadata, no artwork.
+                p = subprocess.run([
+                    ffmpeg, "-nostdin", "-hide_banner", "-loglevel", "error",
+                    "-i", f.name,
+                    "-map", "0:a",
+                    "-c:a", "copy",
+                    *metadata_args,
+                    dest
+                ], text=True, capture_output=True)
+                if p.returncode:
+                    sys.stdout.write(
+                        f"  ffmpeg failed to copy audio for {entry['url']}\n"
+                        f"  stderr:\n{p.stderr}\n"
+                    )
+                    sys.stdout.flush()
+                    raise RuntimeError("Unable to set the metadata for test track")
+            if not os.path.exists(dest) or os.path.getsize(dest) == 0:
+                raise RuntimeError(f"ffmpeg produced no output at {dest}")
+        finally:
+            if os.path.exists(f.name):
                 os.unlink(f.name)
-                raise RuntimeError("Unable to set the metadata for test track")
-        else:
-            os.replace(f.name, dest)
 
 
 def track_filename(entry):
@@ -175,7 +195,7 @@ def ensure_track_catalog(target_dir, nb_tracks, seed=None):
     existing_track_count = len(glob.glob(f'{target_dir}/*.mp3'))
     if existing_track_count < nb_tracks:
         rng = random.Random(seed) if seed is not None else random
-        manifest = available_tracks(target_dir)
+        manifest = []
         catalog = load_track_manifest()
         candidates = [v for v in catalog if all(map(lambda e: e['url'] != v['url'], manifest))]
         while len(manifest) < nb_tracks:
@@ -189,6 +209,7 @@ def ensure_track_catalog(target_dir, nb_tracks, seed=None):
             filename = track_filename(entry)
             dest = os.path.join(target_dir, filename)
             if os.path.exists(dest) and os.path.getsize(dest) > 0:
+                manifest.append(entry)
                 continue
             sys.stdout.write(f"Downloading {filename}...\n")
             sys.stdout.flush()

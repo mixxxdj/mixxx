@@ -2051,21 +2051,9 @@ def step_search_bar_empty(context):
 
 @then("the library search suggestion showing the artist of this track should be visible")
 def step_artist_suggestion_visible(context):
-    location = _remembered_track(context).location
-    data = _get_track_summary_state(context.mixxx_rpc, location)
-    assert data.get("artist"), "The remembered track has no artist"
-    _wait_for_search_suggestion(context, data["artist"])
-
-
-def _get_track_summary_state(rpc, filepath):
-    """Introspection of a library track via the getTrackSummary command,
-    which reads the track through the data manager (not the test database)."""
-    rpc.command("getTrackSummary", filepath)
-    raw = rpc.getStringProperty("mainWindow", "lastTrackSummary")
-    try:
-        return json.loads(raw or "{}")
-    except (TypeError, ValueError):
-        return {}
+    track = _remembered_track(context)
+    assert track.artist, "The remembered track has no artist"
+    _wait_for_search_suggestion(context, track.artist)
 
 
 def _search_suggestion_texts(rpc):

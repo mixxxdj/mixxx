@@ -158,36 +158,6 @@ int runServeMode(int argc, char** argv) {
                     }
                     ControlObject::set(key, value);
                     qDebug() << "setControlValue:" << group << item << "=" << value;
-                } else if (command == "getTrackSummary") {
-                    // Introspection of a library track through the track
-                    // data manager: resolves the track reference by file
-                    // location via the collection manager (canonical
-                    // location lookup, database id resolution) and reports
-                    // the track's fields as JSON:
-                    // {"bpm": <bpm>, "key": "...", "artist": "...",
-                    //  "title": "..."}; empty JSON object when unknown.
-                    QString filePath =
-                            QString::fromStdString(payload).trimmed();
-                    const TrackPointer pTrack =
-                            pTrackCollectionManager->getTrackByRef(
-                                    TrackRef::fromFilePath(filePath));
-                    QJsonObject summary;
-                    if (pTrack != nullptr) {
-                        summary.insert(QStringLiteral("bpm"),
-                                pTrack->getBpm());
-                        summary.insert(QStringLiteral("key"),
-                                pTrack->getKeyText());
-                        summary.insert(QStringLiteral("artist"),
-                                pTrack->getArtist());
-                        summary.insert(QStringLiteral("title"),
-                                pTrack->getTitle());
-                    }
-                    auto windows = QGuiApplication::topLevelWindows();
-                    for (auto* w : std::as_const(windows)) {
-                        w->setProperty("lastTrackSummary",
-                                QJsonDocument(summary).toJson(
-                                        QJsonDocument::Compact));
-                    }
                 } else if (command == "getConfigValue") {
                     QString rest = QString::fromStdString(payload);
                     int comma = rest.indexOf(',');

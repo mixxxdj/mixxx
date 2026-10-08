@@ -288,9 +288,10 @@ def fetch_job_ids(repo, run_id):
 def job_links(job, repo, run_id, server_url):
     """Return the (job page, job summary) URLs for a job."""
     run_url = f"{server_url}/{repo}/actions/runs/{run_id}"
-    if job.attempt > 1:
-        run_url += f"/attempts/{job.attempt}"
-    return f"{run_url}/job/{job.id}", f"{run_url}#summary-{job.id}"
+    return (
+        f"{run_url}/job/{job.id}",
+        f"{run_url}/attempts/{job.attempt}#summary-{job.id}",
+    )
 
 
 # ---------------------------------------------------------------------------
