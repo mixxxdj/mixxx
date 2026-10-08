@@ -76,6 +76,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void slotTriggerSearch();
     void slotSaveSearch();
 
+    void slotShowSearchPopup();
+
   private:
     // TODO(XXX): This setting shouldn't be static and the widget
     // should instead define a public slot for changing the value.
