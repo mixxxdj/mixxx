@@ -6,10 +6,13 @@
 #include <cmath>
 #include <utility>
 
+#include "library/dao/segmentsdao.h"
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
+#include "track/bpmsegments.h"
 #include "track/keyfactory.h"
+#include "track/keysegments.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/time.h"
@@ -2060,3 +2063,72 @@ bool Track::updateMood(
     return true;
 }
 #endif // __EXTRA_METADATA__
+
+bool Track::setBpmSegments(const QList<BpmSegmentsPointer>& segments) {
+    auto locked = lockMutex(&m_qMutex);
+
+    m_bpmSegments = segments;
+    m_bpmSegmentsDirty = true;
+
+    markDirtyAndUnlock(&locked);
+    emit bpmSegmentsUpdated();
+
+    return true;
+}
+
+bool Track::setKeySegments(const QList<KeySegmentsPointer>& segments) {
+    auto locked = lockMutex(&m_qMutex);
+
+    m_keySegments = segments;
+    m_keySegmentsDirty = true;
+
+    markDirtyAndUnlock(&locked);
+    emit keySegmentsUpdated();
+
+    return true;
+}
+
+QList<BpmSegmentsPointer> Track::getBpmSegments() const {
+    auto locked = lockMutex(&m_qMutex);
+    return m_bpmSegments;
+}
+
+QList<KeySegmentsPointer> Track::getKeySegments() const {
+    auto locked = lockMutex(&m_qMutex);
+    return m_keySegments;
+}
+
+bool Track::deleteBpmSegments() {
+    auto locked = lockMutex(&m_qMutex);
+
+    m_bpmSegments.clear();
+    m_bpmSegmentsDirty = true;
+
+    markDirtyAndUnlock(&locked);
+    emit bpmSegmentsUpdated();
+
+    return true;
+}
+
+bool Track::deleteKeySegments() {
+    auto locked = lockMutex(&m_qMutex);
+
+    m_keySegments.clear();
+    m_keySegmentsDirty = true;
+    markDirtyAndUnlock(&locked);
+    emit keySegmentsUpdated();
+
+    return true;
+}
+
+void Track::afterBpmSegmentsUpdated(QT_RECURSIVE_MUTEX_LOCKER* pLock) {
+    DEBUG_ASSERT(pLock);
+    markDirtyAndUnlock(pLock);
+    emit bpmSegmentsUpdated();
+}
+
+void Track::afterKeySegmentsUpdated(QT_RECURSIVE_MUTEX_LOCKER* pLock) {
+    DEBUG_ASSERT(pLock);
+    markDirtyAndUnlock(pLock);
+    emit keySegmentsUpdated();
+}

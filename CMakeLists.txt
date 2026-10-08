@@ -1210,7 +1210,9 @@ add_library(
   src/analyzer/analyzertrack.cpp
   src/analyzer/analyzerwaveform.cpp
   src/analyzer/plugins/analyzerqueenmarybeats.cpp
+  src/analyzer/plugins/analyzerqueenmarybeatsextended.cpp
   src/analyzer/plugins/analyzerqueenmarykey.cpp
+  src/analyzer/plugins/analyzerqueenmarykeyextended.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
   src/analyzer/trackanalysisscheduler.cpp
@@ -1439,6 +1441,7 @@ add_library(
   src/library/dao/directorydao.cpp
   src/library/dao/libraryhashdao.cpp
   src/library/dao/playlistdao.cpp
+  src/library/dao/segmentsdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
@@ -1638,12 +1641,14 @@ add_library(
   src/track/beats.cpp
   src/track/beatutils.cpp
   src/track/bpm.cpp
+  src/track/bpmsegments.cpp
   src/track/cue.cpp
   src/track/cueinfo.cpp
   src/track/cueinfoimporter.cpp
   src/track/globaltrackcache.cpp
   src/track/keyfactory.cpp
   src/track/keys.cpp
+  src/track/keysegments.cpp
   src/track/keyutils.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
@@ -1740,6 +1745,10 @@ add_library(
   src/waveform/renderers/waveformoverviewrenderer.cpp
   src/waveform/renderers/waveformrenderbackground.cpp
   src/waveform/renderers/waveformrenderbeat.cpp
+  src/waveform/renderers/waveformrenderbpmcurve.cpp
+  src/waveform/renderers/waveformrenderbpmcurvebase.cpp
+  src/waveform/renderers/waveformrenderkeycurve.cpp
+  src/waveform/renderers/waveformrenderkeycurvebase.cpp
   src/waveform/renderers/waveformrendererabstract.cpp
   src/waveform/renderers/waveformrendererendoftrack.cpp
   src/waveform/renderers/waveformrendererfilteredsignal.cpp
@@ -2034,6 +2043,7 @@ if(QOPENGL)
       src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
       src/waveform/renderers/allshader/waveformrenderbackground.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp
+      src/waveform/renderers/allshader/waveformrenderbpmcurve.cpp
       src/waveform/renderers/allshader/waveformrenderer.cpp
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererslipmode.cpp
@@ -2044,6 +2054,7 @@ if(QOPENGL)
       src/waveform/renderers/allshader/waveformrenderertextured.cpp
       src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
       src/waveform/renderers/allshader/waveformrenderersimple.cpp
+      src/waveform/renderers/allshader/waveformrenderkeycurve.cpp
       src/waveform/renderers/allshader/waveformrendermark.cpp
       src/waveform/renderers/allshader/waveformrendermarkrange.cpp
       src/waveform/widgets/allshader/waveformwidget.cpp
