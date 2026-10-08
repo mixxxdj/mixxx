@@ -20,7 +20,7 @@ const fadercutPatternDefs = {
     "alternating": [1, 0, 1, 0, 1, 0, 1, 0], // 1 2
     "reverse_alternating": [0, 1, 0, 1, 0, 1, 0, 1], // 1 2
     "five_and_three": [1, 1, 1, 1, 1, 0, 0, 1], // 1
-    "two_step_drive": [1, 1, 0, 1, 0, 1, 0, 1],// 1 2 4
+    "two_step_drive": [1, 1, 0, 1, 0, 1, 0, 1], // 1 2 4
     "syncopated_bounce": [1, 0, 1, 0, 0, 1, 1, 1], // 2
     "final_cut": [1, 1, 1, 1, 0, 1, 0, 0] // 1 2
 };
@@ -2409,4 +2409,3 @@ NS4FX.stopFaderCuts = function(deckNum) {
         NS4FX.dbg(`[FADERCUTS] Left ${deck.currentDeck} playing.`);
     }
 };
-
