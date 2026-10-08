@@ -122,7 +122,8 @@ def _download_file(entry, dest):
                     f"falling back to raw MP3\n"
                 )
                 sys.stdout.flush()
-                os.replace(f.name, dest)
+                os.unlink(f.name)
+                raise RuntimeError("Unable to set the metadata for test track")
         else:
             os.replace(f.name, dest)
 
