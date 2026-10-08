@@ -808,9 +808,6 @@ def main():
             summary_path=os.path.join(
                 artifacts, f"behave-output-{args.label or 'default'}.txt"
             ),
-            picks_log_path=os.path.join(
-                artifacts, f"track-picks-{args.label or 'default'}.txt"
-            ),
             mixxx_output_dir=artifacts,
         )
 

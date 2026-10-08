@@ -131,16 +131,6 @@
     "artwork": "https://cdn.pixabay.com/audio/2023/07/22/17-23-51-813_200x200.jpg"
   },
   {
-    "url": "https://cdn.pixabay.com/audio/2023/07/22/audio_79e285e137.mp3",
-    "title": "Background Music",
-    "artist": "The_Mountain",
-    "tags": "Background Music, Background Music Soft",
-    "bpm": 120.0,
-    "first_beat": 21967,
-    "samplerate": 44100.0,
-    "artwork": "https://cdn.pixabay.com/audio/2023/07/22/17-23-51-813_200x200.jpg"
-  },
-  {
     "url": "https://cdn.pixabay.com/audio/2024/01/16/audio_e2b992254f.mp3",
     "title": "Better Day",
     "artist": "penguinmusic",
@@ -229,16 +219,6 @@
     "first_beat": 988,
     "samplerate": 22050.0,
     "artwork": "https://cdn.pixabay.com/audio/2026/07/07/00-48-52-234_200x200.png"
-  },
-  {
-    "url": "https://cdn.pixabay.com/audio/2024/01/15/audio_9914e58808.mp3",
-    "title": "Coverless book ( Lofi )",
-    "artist": "AmbientAUDIOVISION",
-    "tags": "Lofi, Lo-Fi, Chill, Music, Playlist",
-    "bpm": 80.0,
-    "first_beat": 382,
-    "samplerate": 44100.0,
-    "artwork": "https://cdn.pixabay.com/audio/2025/10/16/12-51-52-849_200x200.jpg"
   },
   {
     "url": "https://cdn.pixabay.com/audio/2024/09/16/audio_a10608d6cd.mp3",

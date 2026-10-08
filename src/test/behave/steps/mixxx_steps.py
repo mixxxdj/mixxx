@@ -1806,6 +1806,7 @@ def _type_this_track(context, field, transform=None):
 def step_remember_any_track(context, rule=None):
     if rule and rule.startswith("with a unique"):
         _remember_catalog_track(context, unique_attr=rule[len("with a unique"):].strip())
+        return
 
     _remember_catalog_track(context)
 

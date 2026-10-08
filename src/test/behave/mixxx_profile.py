@@ -174,11 +174,17 @@ def ensure_track_catalog(target_dir, nb_tracks, seed=None):
     existing_track_count = len(glob.glob(f'{target_dir}/*.mp3'))
     if existing_track_count < nb_tracks:
         rng = random.Random(seed) if seed is not None else random
-        manifest = rng.sample(load_track_manifest(), nb_tracks - existing_track_count)
-        for entry in manifest:
+        manifest = available_tracks(target_dir)
+        catalog = load_track_manifest()
+        candidates = [v for v in catalog if all(map(lambda e: e['url'] != v['url'], manifest))]
+        while len(manifest) < nb_tracks:
+            if not candidates:
+                raise ValueError("unable to find a new track. Has the pool starved?")
+            entry = rng.choice(candidates)
+            candidates.remove(entry)
+
             url = entry.get("url")
-            if not url:
-                continue
+            assert url, f"Track {entry} has no URL"
             filename = track_filename(entry)
             dest = os.path.join(target_dir, filename)
             if os.path.exists(dest) and os.path.getsize(dest) > 0:
@@ -189,6 +195,7 @@ def ensure_track_catalog(target_dir, nb_tracks, seed=None):
                 _download_file(entry, dest)
                 if not os.path.exists(dest) or os.path.getsize(dest) == 0:
                     raise RuntimeError(f"Download failed, no output at {dest}")
+                manifest.append(entry)
             except Exception as e:
                 sys.stdout.write(f"  FAILED: {e}\n")
                 sys.stdout.flush()
