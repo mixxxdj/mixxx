@@ -15,6 +15,7 @@
 #include "controllers/dlgprefcontrollers.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playermanager.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefsound.h"
@@ -62,6 +63,7 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
         std::shared_ptr<Library> pLibrary,
+        std::shared_ptr<PlayerManager> pPlayerManager,
         bool includeWaveformPreferences)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
@@ -194,8 +196,13 @@ DlgPreferences::DlgPreferences(
             tr("Decks"),
             "ic_preferences_decks.svg");
 
+    auto* pMixerPage = new DlgPrefMixer(this, pEffectsManager, m_pConfig);
+    connect(pMixerPage,
+            &DlgPrefMixer::eqCrossoversChanged,
+            pPlayerManager.get(),
+            &PlayerManager::reanalyzeLoadedWaveforms);
     addPageWidget(PreferencesPage(
-                          new DlgPrefMixer(this, pEffectsManager, m_pConfig),
+                          pMixerPage,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Mixer"),
             "ic_preferences_crossfader.svg");

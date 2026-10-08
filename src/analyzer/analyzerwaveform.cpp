@@ -5,6 +5,7 @@
 
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
+#include "effects/defs.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "track/track.h"
 #include "util/logger.h"
@@ -15,9 +16,14 @@ namespace {
 
 mixxx::Logger kLogger("AnalyzerWaveform");
 
-constexpr double kLowMidFreqHz = 600.0;
-
-constexpr double kMidHighFreqHz = 4000.0;
+double eqFrequency(const UserSettingsPointer& pConfig, const QString& name, double fallback) {
+    const QString precise = pConfig->getValueString(
+            ConfigKey(kMixerProfile, name + QStringLiteral("Precise")));
+    const QString coarse = pConfig->getValueString(ConfigKey(kMixerProfile, name));
+    bool ok = false;
+    const double frequency = (precise.isEmpty() ? coarse : precise).toDouble(&ok);
+    return ok && std::isfinite(frequency) ? frequency : fallback;
+}
 
 } // namespace
 
@@ -25,6 +31,7 @@ AnalyzerWaveform::AnalyzerWaveform(
         UserSettingsPointer pConfig,
         const QSqlDatabase& dbConnection)
         : m_analysisDao(pConfig),
+          m_pConfig(pConfig),
           m_waveformData(nullptr),
           m_waveformSummaryData(nullptr),
           m_stride(0, 0, 0),
@@ -45,6 +52,14 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
     if (frameLength <= 0) {
         qWarning() << "AnalyzerWaveform::initialize - no waveform/waveform summary";
         return false;
+    }
+
+    m_lowMidFrequency = eqFrequency(m_pConfig, kLowEqFrequency, 250.0);
+    m_midHighFrequency = eqFrequency(m_pConfig, kHighEqFrequency, 2500.0);
+    if (m_lowMidFrequency < 16.0 || m_midHighFrequency > 20050.0 ||
+            m_lowMidFrequency >= m_midHighFrequency) {
+        m_lowMidFrequency = 250.0;
+        m_midHighFrequency = 2500.0;
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
@@ -70,6 +85,8 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
             sampleRate, frameLength, mainWaveformSampleRate, -1, stemCount));
     m_waveformSummary = WaveformPointer(new Waveform(
             sampleRate, frameLength, mainWaveformSampleRate, summaryWaveformSamples, stemCount));
+    m_waveform->setFilterFrequencies(m_lowMidFrequency, m_midHighFrequency);
+    m_waveformSummary->setFilterFrequencies(m_lowMidFrequency, m_midHighFrequency);
 
     // Now, that the Waveform memory is initialized, we can set set them to
     // the track. Be aware that other threads of Mixxx can touch them from
@@ -109,8 +126,14 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
 #endif
 
     TrackId trackId = pTrack->getId();
-    bool missingWaveform = pTrackWaveform.isNull();
-    bool missingWavesummary = pTrackWaveformSummary.isNull();
+    bool missingWaveform = pTrackWaveform.isNull() ||
+            WaveformFactory::waveformVersionToVersionClass(
+                    pTrackWaveform->getVersion(), m_lowMidFrequency, m_midHighFrequency) !=
+                    WaveformFactory::VC_USE;
+    bool missingWavesummary = pTrackWaveformSummary.isNull() ||
+            WaveformFactory::waveformSummaryVersionToVersionClass(
+                    pTrackWaveformSummary->getVersion(), m_lowMidFrequency, m_midHighFrequency) !=
+                    WaveformFactory::VC_USE;
 
     if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
@@ -122,7 +145,8 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
             WaveformFactory::VersionClass vc;
 
             if (analysis.type == AnalysisDao::TYPE_WAVEFORM) {
-                vc = WaveformFactory::waveformVersionToVersionClass(analysis.version);
+                vc = WaveformFactory::waveformVersionToVersionClass(
+                        analysis.version, m_lowMidFrequency, m_midHighFrequency);
                 if (missingWaveform && vc == WaveformFactory::VC_USE) {
                     pLoadedTrackWaveform = ConstWaveformPointer(
                             WaveformFactory::loadWaveformFromAnalysis(analysis));
@@ -133,7 +157,8 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
                 }
             }
             if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
-                vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
+                vc = WaveformFactory::waveformSummaryVersionToVersionClass(
+                        analysis.version, m_lowMidFrequency, m_midHighFrequency);
                 if (missingWavesummary && vc == WaveformFactory::VC_USE) {
                     pLoadedTrackWaveformSummary = ConstWaveformPointer(
                             WaveformFactory::loadWaveformFromAnalysis(analysis));
@@ -173,13 +198,12 @@ bool AnalyzerWaveform::shouldAnalyze(TrackPointer pTrack) const {
 }
 
 void AnalyzerWaveform::createFilters(mixxx::audio::SampleRate sampleRate) {
-    // m_filter[Low] = new EngineFilterButterworth8Low(sampleRate, kLowMidFreqHz);
-    // m_filter[Mid] = new EngineFilterButterworth8Band(sampleRate, kLowMidFreqHz, kMidHighFreqHz);
-    // m_filter[High] = new EngineFilterButterworth8High(sampleRate, kMidHighFreqHz);
-    m_filters = {
-            std::make_unique<EngineFilterBessel4Low>(sampleRate, kLowMidFreqHz),
-            std::make_unique<EngineFilterBessel4Band>(sampleRate, kLowMidFreqHz, kMidHighFreqHz),
-            std::make_unique<EngineFilterBessel4High>(sampleRate, kMidHighFreqHz)};
+    m_filters = {std::make_unique<EngineFilterBessel4Low>(
+                         sampleRate, m_lowMidFrequency),
+            std::make_unique<EngineFilterBessel4Band>(
+                    sampleRate, m_lowMidFrequency, m_midHighFrequency),
+            std::make_unique<EngineFilterBessel4High>(
+                    sampleRate, m_midHighFrequency)};
 
     // settle filters for silence in preroll to avoids ramping (Issue #7776)
     m_filters.low->assumeSettled();
@@ -324,7 +348,8 @@ void AnalyzerWaveform::storeResults(TrackPointer pTrack) {
     if (m_waveform) {
         m_waveform->setSaveState(Waveform::SaveState::SavePending);
         m_waveform->setCompletion(m_waveform->getDataSize());
-        m_waveform->setVersion(WaveformFactory::currentWaveformVersion());
+        m_waveform->setVersion(WaveformFactory::currentWaveformVersion(
+                m_lowMidFrequency, m_midHighFrequency));
         m_waveform->setDescription(WaveformFactory::currentWaveformDescription());
     }
 
@@ -332,7 +357,8 @@ void AnalyzerWaveform::storeResults(TrackPointer pTrack) {
     if (m_waveformSummary) {
         m_waveformSummary->setSaveState(Waveform::SaveState::SavePending);
         m_waveformSummary->setCompletion(m_waveformSummary->getDataSize());
-        m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion());
+        m_waveformSummary->setVersion(WaveformFactory::currentWaveformSummaryVersion(
+                m_lowMidFrequency, m_midHighFrequency));
         m_waveformSummary->setDescription(WaveformFactory::currentWaveformSummaryDescription());
     }
 
