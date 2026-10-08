@@ -1,5 +1,7 @@
 #include "sources/soundsourceproxy.h"
 
+#include "util/cloudfilehelper.h"
+
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QRegularExpression>
@@ -883,6 +885,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
 
 bool SoundSourceProxy::openSoundSource(
         const mixxx::AudioSource::OpenParams& params) {
+    mixxx::mac::CloudFileHelper::ensureHydratedSync(getUrl());
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     int attemptCount = 0;
     while (m_pProvider && m_pSoundSource) {
