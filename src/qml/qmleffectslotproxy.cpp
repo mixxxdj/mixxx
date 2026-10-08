@@ -52,6 +52,11 @@ QString QmlEffectSlotProxy::getEffectId() const {
     return m_pEffectSlot->id();
 }
 
+QString QmlEffectSlotProxy::getUniqueEffectId() const {
+    const auto pManifest = m_pEffectSlot->getManifest();
+    return pManifest ? pManifest->uniqueId() : QString();
+}
+
 bool QmlEffectSlotProxy::isLoaded() const {
     return m_pEffectSlot->isLoaded();
 }
@@ -105,6 +110,43 @@ void QmlEffectSlotProxy::setParameterVisible(const QString& parameterId, bool vi
                 return;
             }
         }
+    }
+}
+
+void QmlEffectSlotProxy::swapParameters(
+        int parameterType, int firstSlot, int secondSlot) {
+    if (!m_pEffectSlot->isLoaded() || firstSlot < 0 || secondSlot < 0) {
+        return;
+    }
+    const auto type = static_cast<EffectParameterType>(parameterType);
+    if (type != EffectParameterType::Knob &&
+            type != EffectParameterType::Button) {
+        return;
+    }
+    const auto loadedParameters = m_pEffectSlot->getLoadedParameters().value(type);
+    if (firstSlot >= loadedParameters.size() ||
+            secondSlot >= loadedParameters.size()) {
+        return;
+    }
+    m_pEffectSlot->swapParameters(type, firstSlot, secondSlot);
+}
+
+void QmlEffectSlotProxy::queueParameterSwap(
+        int parameterType, int firstSlot, int secondSlot) {
+    m_pendingParameterType = parameterType;
+    m_pendingFirstSlot = firstSlot;
+    m_pendingSecondSlot = secondSlot;
+}
+
+void QmlEffectSlotProxy::completeParameterSwap(bool accepted) {
+    const int parameterType = m_pendingParameterType;
+    const int firstSlot = m_pendingFirstSlot;
+    const int secondSlot = m_pendingSecondSlot;
+    m_pendingParameterType = -1;
+    m_pendingFirstSlot = -1;
+    m_pendingSecondSlot = -1;
+    if (accepted) {
+        swapParameters(parameterType, firstSlot, secondSlot);
     }
 }
 

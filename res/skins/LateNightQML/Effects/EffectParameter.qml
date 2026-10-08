@@ -8,17 +8,37 @@ Item {
 
     required property bool buttonParameter
     required property string controlKey
+    required property Mixxx.EffectSlotProxy effectSlot
     required property string group
     required property string label
     required property color linkColor
     required property real maximum
     required property real neutralPoint
+    required property int parameterType
     required property Mixxx.EffectSlotParametersModel parametersModel
     property bool showParameterValue: false
     property bool skipNextValueChange: true
     required property color unitColor
     required property string unitString
     required property bool useApplicationFont
+    readonly property int parameterSlotNumber: {
+        const slotNumber = parseInt(root.controlKey.replace(/\D/g, ""));
+        return Number.isNaN(slotNumber) ? -1 : slotNumber - 1;
+    }
+
+    function draggedParameterSlotNumber(drag) {
+        if (!root.effectSlot.loaded || !drag.hasText) {
+            return -1;
+        }
+        const payload = drag.text.split(/\r?\n/);
+        if (payload.length !== 3 ||
+                payload[0] !== "Mixxx effect parameter " + root.parameterType ||
+                payload[1] !== root.effectSlot.uniqueEffectId) {
+            return -1;
+        }
+        const slotNumber = Number(payload[2]);
+        return Number.isInteger(slotNumber) && slotNumber >= 0 ? slotNumber : -1;
+    }
 
     function formatParameterValue(value) {
         const absoluteRoundedValue = Math.round(Math.abs(value));
@@ -88,6 +108,54 @@ Item {
             color: "#151515"
             visible: LateNightTheme.isClassic
             z: -1
+        }
+
+        Drag.active: parameterDragHandler.active
+        Drag.dragType: Drag.Automatic
+        Drag.mimeData: ({
+            "text/plain": "Mixxx effect parameter " + root.parameterType + "\n" +
+                    root.effectSlot.uniqueEffectId + "\n" + root.parameterSlotNumber
+        })
+        Drag.proposedAction: Qt.MoveAction
+        Drag.supportedActions: Qt.MoveAction
+
+        Drag.onDragFinished: dropAction => {
+            const effectSlot = root.effectSlot;
+            Qt.callLater(() => effectSlot.completeParameterSwap(
+                                dropAction === Qt.MoveAction));
+        }
+
+        DragHandler {
+            id: parameterDragHandler
+
+            acceptedButtons: Qt.LeftButton
+            enabled: root.effectSlot.loaded
+            target: null
+        }
+
+        HoverHandler {
+            enabled: root.effectSlot.loaded && root.parameterSlotNumber >= 0
+            cursorShape: parameterDragHandler.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+        }
+
+        DropArea {
+            anchors.fill: parent
+
+            onEntered: drag => {
+                drag.accepted = root.parameterSlotNumber >= 0 &&
+                        root.draggedParameterSlotNumber(drag) >= 0;
+            }
+            onDropped: drop => {
+                const sourceSlotNumber = root.draggedParameterSlotNumber(drop);
+                if (sourceSlotNumber < 0) {
+                    return;
+                }
+                root.effectSlot.queueParameterSwap(
+                            root.parameterType,
+                            root.parameterSlotNumber,
+                            sourceSlotNumber);
+                drop.acceptProposedAction();
+            }
         }
     }
     Row {

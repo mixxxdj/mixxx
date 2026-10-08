@@ -236,11 +236,13 @@ Item {
                     sourceComponent: EffectParameter {
                         buttonParameter: parameterLoader.modelData.type === 1
                         controlKey: parameterLoader.modelData.controlKey
+                        effectSlot: root.slot
                         group: root.slot.group
                         label: parameterLoader.modelData.shortName || parameterLoader.modelData.name
                         linkColor: root.unitDimColor
                         maximum: parameterLoader.modelData.maximum
                         neutralPoint: parameterLoader.modelData.neutralPoint
+                        parameterType: parameterLoader.modelData.type
                         parametersModel: root.slot.parametersModel
                         unitColor: root.unitColor
                         unitString: parameterLoader.modelData.unitString

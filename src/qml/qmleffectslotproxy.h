@@ -19,6 +19,7 @@ class QmlEffectSlotProxy : public QObject {
     Q_PROPERTY(QString effectDescription READ getEffectDescription NOTIFY effectIdChanged)
     Q_PROPERTY(double metaDefault READ getMetaDefault NOTIFY effectIdChanged)
     Q_PROPERTY(QString effectId READ getEffectId WRITE setEffectId NOTIFY effectIdChanged)
+    Q_PROPERTY(QString uniqueEffectId READ getUniqueEffectId NOTIFY effectIdChanged)
     Q_PROPERTY(mixxx::qml::QmlEffectSlotParametersModel* parametersModel
                     READ getParametersModel CONSTANT)
     QML_NAMED_ELEMENT(EffectSlotProxy)
@@ -40,6 +41,7 @@ class QmlEffectSlotProxy : public QObject {
     int getNumber() const;
     QString getGroup() const;
     QString getEffectId() const;
+    QString getUniqueEffectId() const;
     bool isLoaded() const;
     QString getEffectName() const;
     QString getEffectDescription() const;
@@ -51,6 +53,9 @@ class QmlEffectSlotProxy : public QObject {
 
   public:
     Q_INVOKABLE void setParameterVisible(const QString& parameterId, bool visible);
+    Q_INVOKABLE void swapParameters(int parameterType, int firstSlot, int secondSlot);
+    Q_INVOKABLE void queueParameterSwap(int parameterType, int firstSlot, int secondSlot);
+    Q_INVOKABLE void completeParameterSwap(bool accepted);
     Q_INVOKABLE void saveDefaultSnapshot();
 
   signals:
@@ -68,6 +73,9 @@ class QmlEffectSlotProxy : public QObject {
     const EffectChainPointer m_pChainSlot;
     const EffectSlotPointer m_pEffectSlot;
     QmlEffectSlotParametersModel* const m_pParametersModel;
+    int m_pendingParameterType = -1;
+    int m_pendingFirstSlot = -1;
+    int m_pendingSecondSlot = -1;
 };
 
 } // namespace qml
