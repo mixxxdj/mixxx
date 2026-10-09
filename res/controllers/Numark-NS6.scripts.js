@@ -853,6 +853,17 @@ NumarkNS6.syncLayerLEDs = function() {
 };
 
 NumarkNS6.MixerTemplate = function() {
+
+    // Original NS6 Split Cue switch: Note On/Off, channel 1, note 0.
+    // Mirror its reported state; Note On enables Split Cue and Note Off disables it.
+    this.splitCueSwitch = new components.Button({
+        midi: [0x90, 0x00], group: "[Master]",
+        outConnect: false,
+        input: function(_ch, _ctrl, value) {
+            engine.setValue("[Master]", "headSplit", value > 0 ? 1 : 0);
+        },
+        shutdown: function() {}
+    });
     
     // 🎧 Botões de Layer (Deck Change) com rastreamento para o BPM Meter
     // LADO DIREITO (Deck 2 / 4)
