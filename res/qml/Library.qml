@@ -16,6 +16,7 @@ Item {
     property var sidebar: librarySources.sidebar()
 
     function applySearch() {
+        searchDebounce.stop();
         if (root.sidebar && root.sidebar.tracklist) {
             root.sidebar.tracklist.search(searchField.text);
         }
@@ -37,7 +38,36 @@ Item {
         anchors.top: parent.top
         placeholderText: qsTranslate("WSearchLineEdit", "Search...")
 
-        onTextChanged: root.applySearch()
+        Keys.onPressed: event => {
+            switch (event.key) {
+            case Qt.Key_Escape:
+                searchField.clear();
+                root.applySearch();
+                trackList.focusView();
+                event.accepted = true;
+                break;
+            case Qt.Key_Down:
+            case Qt.Key_Enter:
+            case Qt.Key_Return:
+                root.applySearch();
+                trackList.focusView();
+                event.accepted = true;
+                break;
+            }
+        }
+
+        // Every search runs a real SQL query against the library, so wait for
+        // a pause in typing rather than querying on each keystroke. Same
+        // default delay as the legacy WSearchLineEdit.
+        onTextChanged: searchDebounce.restart()
+
+        Timer {
+            id: searchDebounce
+
+            interval: 300
+
+            onTriggered: root.applySearch()
+        }
     }
     SplitView {
         id: librarySplitView
@@ -135,6 +165,8 @@ Item {
             }
         }
         LibraryComponent.TrackList {
+            id: trackList
+
             SplitView.fillHeight: true
 
             // FIXME: this is necessary to prevent the header label to render outside of the table when horizontally scrolling: https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-3311914346
