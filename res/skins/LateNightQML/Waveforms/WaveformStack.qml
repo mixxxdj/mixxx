@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import ".." as LateNight
 import "../LateNightTheme"
 import "../../../qml" as Shared
 import QtQuick
@@ -26,7 +27,7 @@ Item {
             root.waveformContentHeight - Math.max(52, root.minimumWaveformHeight)) / root.deckCount
     readonly property int minimumContentHeight: root.bottomGutterHeight + Math.max(52, root.minimumWaveformHeight)
     implicitHeight: root.minimumContentHeight
-    readonly property int waveformContentHeight: Math.max(0, root.height - root.bottomGutterHeight)
+    readonly property real waveformContentHeight: Math.max(0, root.height - root.bottomGutterHeight)
     property bool show4decks: false
     property bool splitterResizing: false
     property bool layoutTransitioning: false
@@ -38,17 +39,15 @@ Item {
 
         active: root.show4decks || height > 0 || opacity > 0
         anchors.top: parent.top
-        height: root.show4decks ? root.deck3MinimumHeight + root.extraHeightPerDeck : 0
+        height: deck3HeightAnimation.value
         opacity: root.show4decks ? 1 : 0
         width: root.width
 
-        Behavior on height {
-            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
+        LateNight.LayoutAnimation {
+            id: deck3HeightAnimation
 
-            NumberAnimation {
-                duration: 180
-                easing.type: Easing.OutCubic
-            }
+            targetValue: root.show4decks ? root.deck3MinimumHeight + root.extraHeightPerDeck : 0
+            animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
         Behavior on opacity {
             enabled: LateNightTheme.layoutAnimationsEnabled
@@ -74,16 +73,14 @@ Item {
 
         anchors.top: deck3waveform.bottom
         group: root.deck1Group
-        height: deck1waveform.minimumHeight + root.extraHeightPerDeck
+        height: deck1HeightAnimation.value
         width: root.width
 
-        Behavior on height {
-            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
+        LateNight.LayoutAnimation {
+            id: deck1HeightAnimation
 
-            NumberAnimation {
-                duration: 180
-                easing.type: Easing.OutCubic
-            }
+            targetValue: deck1waveform.minimumHeight + root.extraHeightPerDeck
+            animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
     }
     DeckWaveform {
@@ -91,16 +88,14 @@ Item {
 
         anchors.bottom: deck4waveform.top
         group: root.deck2Group
-        height: deck2waveform.minimumHeight + root.extraHeightPerDeck
+        height: deck2HeightAnimation.value
         width: root.width
 
-        Behavior on height {
-            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
+        LateNight.LayoutAnimation {
+            id: deck2HeightAnimation
 
-            NumberAnimation {
-                duration: 180
-                easing.type: Easing.OutCubic
-            }
+            targetValue: deck2waveform.minimumHeight + root.extraHeightPerDeck
+            animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
     }
     Loader {
@@ -110,17 +105,15 @@ Item {
 
         active: root.show4decks || height > 0 || opacity > 0
         anchors.bottom: bottomGutter.top
-        height: root.show4decks ? root.deck4MinimumHeight + root.extraHeightPerDeck : 0
+        height: deck4HeightAnimation.value
         opacity: root.show4decks ? 1 : 0
         width: root.width
 
-        Behavior on height {
-            enabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
+        LateNight.LayoutAnimation {
+            id: deck4HeightAnimation
 
-            NumberAnimation {
-                duration: 180
-                easing.type: Easing.OutCubic
-            }
+            targetValue: root.show4decks ? root.deck4MinimumHeight + root.extraHeightPerDeck : 0
+            animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
         Behavior on opacity {
             enabled: LateNightTheme.layoutAnimationsEnabled

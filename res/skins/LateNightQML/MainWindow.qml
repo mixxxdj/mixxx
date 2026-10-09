@@ -281,8 +281,9 @@ Item {
                 id: waveforms
 
                 readonly property bool shouldShow: root.showWaveforms && !root.layoutMaximizedLibrary
-                property real paneMinimumHeight: shouldShow ? minimumContentHeight : 0
-                property real panePreferredHeight: shouldShow ? Math.max(120, minimumContentHeight) : 0
+                property real lastVisiblePreferredHeight: Math.max(120, minimumContentHeight)
+                readonly property real paneMinimumHeight: waveformsMinimumHeightAnimation.value
+                readonly property real panePreferredHeight: waveformsPreferredHeightAnimation.value
 
                 SplitView.fillHeight: !library.active
                 SplitView.minimumHeight: paneMinimumHeight
@@ -294,25 +295,30 @@ Item {
                 opacity: shouldShow && !root.bigLibraryTransition ? 1 : 0
                 clip: true
 
-                Behavior on paneMinimumHeight {
-                    enabled: LateNightTheme.layoutAnimationsEnabled
-
-                    NumberAnimation {
-                        id: waveformsMinimumHeightAnimation
-
-                        duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 180
-                        easing.type: Easing.OutCubic
-                    }
+                Component.onCompleted: SplitView.preferredHeight = panePreferredHeight
+                onHeightChanged: {
+                    if (shouldShow && splitterResizing)
+                        lastVisiblePreferredHeight = height;
                 }
-                Behavior on panePreferredHeight {
-                    enabled: LateNightTheme.layoutAnimationsEnabled
+                onPanePreferredHeightChanged: {
+                    if (!splitterResizing)
+                        SplitView.preferredHeight = panePreferredHeight;
+                }
 
-                    NumberAnimation {
-                        id: waveformsPreferredHeightAnimation
+                LayoutAnimation {
+                    id: waveformsMinimumHeightAnimation
 
-                        duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 180
-                        easing.type: Easing.OutCubic
-                    }
+                    targetValue: waveforms.shouldShow ? waveforms.minimumContentHeight : 0
+                    animationEnabled: LateNightTheme.layoutAnimationsEnabled && !waveforms.splitterResizing
+                    duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 180
+                }
+                LayoutAnimation {
+                    id: waveformsPreferredHeightAnimation
+
+                    targetValue: waveforms.shouldShow
+                            ? Math.max(waveforms.lastVisiblePreferredHeight, waveforms.minimumContentHeight) : 0
+                    animationEnabled: LateNightTheme.layoutAnimationsEnabled && !waveforms.splitterResizing
+                    duration: root.bigLibraryTransition ? root.bigLibraryTransitionDuration : 180
                 }
                 Behavior on opacity {
                     enabled: LateNightTheme.layoutAnimationsEnabled
