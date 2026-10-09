@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <QFile>
 #include <QString>
 
 #include "control/control.h"
@@ -12,6 +13,7 @@
 #include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "test/mixxxtest.h"
+#include "util/cmdlineargs.h"
 #include "waveform/guitick.h"
 
 namespace {
@@ -113,6 +115,32 @@ TEST_F(ControlObjectAliasTest, EngineMixer) {
     auto peakIndicatorRightLegacy = ControlProxy(
             ConfigKey(kLegacyGroup, QStringLiteral("PeakIndicatorR")));
     EXPECT_DOUBLE_EQ(peakIndicatorRight.get(), peakIndicatorRightLegacy.get());
+}
+
+TEST_F(ControlObjectAliasTest, SoundManagerInitializesSampleRate) {
+    QFile soundConfig(getTestDataDir().filePath("soundconfig.xml"));
+    ASSERT_TRUE(soundConfig.open(QIODevice::WriteOnly | QIODevice::Truncate));
+    ASSERT_GT(soundConfig.write(
+                      "<SoundManagerConfig api=\"None\" samplerate=\"48000\"/>\n"),
+            0);
+    soundConfig.close();
+
+    auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
+    auto pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
+    auto pEngineMixer = std::make_shared<EngineMixer>(
+            m_pConfig,
+            "[Master]",
+            pEffectsManager.get(),
+            pChannelHandleFactory,
+            true);
+
+    const QString previousSettingsPath = CmdlineArgs::Instance().getSettingsPath();
+    CmdlineArgs::Instance().setSettingsPath(getTestDataDir().path());
+    auto pSoundManager = std::make_shared<SoundManager>(m_pConfig, pEngineMixer.get());
+    CmdlineArgs::Instance().setSettingsPath(previousSettingsPath);
+
+    auto sampleRate = ControlProxy(ConfigKey(kAppGroup, QStringLiteral("samplerate")));
+    EXPECT_DOUBLE_EQ(48000.0, sampleRate.get());
 }
 
 TEST_F(ControlObjectAliasTest, PlayerManager) {
