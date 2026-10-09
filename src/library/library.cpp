@@ -16,6 +16,7 @@
 #endif
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
+#include "library/keyhighlightmanager.h"
 #include "library/library_prefs.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
@@ -78,6 +79,11 @@ Library::Library(
     qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
     DateFormatChangedBroadcaster::createInstance();
+    // Before the features, whose models connect to it on construction.
+    mixxx::KeyHighlightManager::createInstance();
+    setKeyHighlightBpmRange(m_pConfig->getValue(
+            kKeyHighlightBpmRangeConfigKey,
+            mixxx::KeyHighlightManager::kBpmRangePercentDefault));
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
@@ -273,6 +279,7 @@ Library::Library(
 }
 
 Library::~Library() {
+    mixxx::KeyHighlightManager::destroy();
     DateFormatChangedBroadcaster::destroy();
 }
 
@@ -757,6 +764,10 @@ void Library::setRowHeight(int rowHeight) {
 void Library::setEditMetadataSelectedClick(bool enabled) {
     m_editMetadataSelectedClick = enabled;
     emit setSelectedClick(enabled);
+}
+
+void Library::setKeyHighlightBpmRange(double percent) {
+    mixxx::KeyHighlightManager::instance()->setBpmRange(percent);
 }
 
 void Library::slotSearchInCurrentView() {

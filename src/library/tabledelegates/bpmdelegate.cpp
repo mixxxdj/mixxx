@@ -42,3 +42,27 @@ BPMDelegate::BPMDelegate(QTableView* pTableView)
 #endif
     setItemEditorFactory(m_pFactory);
 }
+
+void BPMDelegate::paintItem(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    const QColor highlightBg = paintHighlightOverSelection(painter, option, index);
+    if (!highlightBg.isValid() || !(option.state & QStyle::State_Selected)) {
+        CheckboxDelegate::paintItem(painter, option, index);
+        return;
+    }
+    // The BPM highlighter tinted this selected cell. The stock skins give
+    // #LibraryBPMButton::item:selected an opaque background, which the style
+    // sheet style paints regardless of the palette, so draw the item as if it
+    // were unselected: the skins' plain ::item rule has no background, so the
+    // tint stays visible, and the text uses palette Text, i.e. the model's
+    // contrasting ForegroundRole colour. Clear the BackgroundRole brush too, so
+    // a skin without an ::item rule doesn't paint the tint opaquely over the
+    // selection. `option` already went through initStyleOption() in
+    // TableItemDelegate::paint().
+    QStyleOptionViewItem opt = option;
+    opt.state &= ~QStyle::State_Selected;
+    opt.backgroundBrush = QBrush();
+    drawCheckboxItem(painter, opt);
+}

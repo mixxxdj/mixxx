@@ -34,6 +34,9 @@ extern const ConfigKey kBpmColumnPrecisionConfigKey;
 
 extern const ConfigKey kApplyPlayedTrackColorConfigKey;
 
+/// +/- BPM tolerance of the harmonic highlighter in percent, 0 is Off.
+extern const ConfigKey kKeyHighlightBpmRangeConfigKey;
+
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
 extern const ConfigKey kHistoryMinTracksToKeepConfigKey;
