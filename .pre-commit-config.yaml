@@ -80,7 +80,7 @@ repos:
           - eslint@^10.12.0
           - "@eslint/js"
           - typescript-eslint
-          - eslint-plugin-jsdoc@^50.4.3
+          - eslint-plugin-jsdoc@^65.1.0
           - eslint-plugin-diff@^2.1.7
         exclude: ^res/translations/.*\.ts$
   - repo: local
