@@ -1676,7 +1676,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
                 m_pCrateMenu);
         // Use a custom QCheckBox with fixed hover behavior.
         auto pCheckBox = make_parented<WMenuCheckBox>(
-                mixxx::escapeTextPropertyWithoutShortcuts(crate.getName()),
+                mixxx::escapeTextPropertyWithoutShortcuts(crate.getFullPath()),
                 m_pCrateMenu);
         pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
@@ -1754,7 +1754,7 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
         if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
             crateId = CrateFeatureHelper(
                     m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
-                              .createEmptyCrate();
+                              .createEmptyCrate(CrateId());
         }
         if (crateId.isValid()) {
             m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
@@ -1775,7 +1775,7 @@ void WTrackMenu::addSelectionToNewCrate() {
 
     CrateId crateId = CrateFeatureHelper(
             m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
-                              .createEmptyCrate();
+                              .createEmptyCrate(CrateId());
 
     if (crateId.isValid()) {
         m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
