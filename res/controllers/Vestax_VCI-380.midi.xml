@@ -76,7 +76,7 @@
         <status>0xB7</status>
         <midino>0x07</midino>
         <options>
-          <normal/>
+          <soft-takeover/>
         </options>
       </control>
       <control>
@@ -94,7 +94,7 @@
         <status>0xB8</status>
         <midino>0x07</midino>
         <options>
-          <normal/>
+          <soft-takeover/>
         </options>
       </control>
       <control>
@@ -1073,30 +1073,12 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>bpm_tap</key>
-        <status>0x97</status>
-        <midino>0x1A</midino>
-        <options>
-          <button/>
-        </options>
-      </control>
-      <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onVinyl</key>
         <status>0x98</status>
         <midino>0x1A</midino>
         <options>
           <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>bpm_tap</key>
-        <status>0x98</status>
-        <midino>0x1A</midino>
-        <options>
-          <button/>
         </options>
       </control>
       <control>
@@ -1142,7 +1124,7 @@
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>play</key>
+        <key>play_indicator</key>
         <status>0x98</status>
         <midino>0x17</midino>
         <minimum>0.5</minimum>
