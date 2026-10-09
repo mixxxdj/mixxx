@@ -544,7 +544,7 @@ def _recent_row_path(rpc, needle, timeout=5):
         count = int(_get_property(rpc, SEARCH_RECENT_LIST_PATH, "count") or 0)
         if count > 0:
             break
-        time.sleep(0.2)
+        time.sleep(0.5)
     assert count > 0, "The recent searches list is empty"
 
     row_texts = []
