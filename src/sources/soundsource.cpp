@@ -35,7 +35,7 @@ QString SoundSource::getTypeFromUrl(const QUrl& url) {
 QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix().toLower().trimmed();
 
-    if (fileSuffix == QLatin1String("opus")) {
+    if (fileSuffix == QStringLiteral("opus")) {
         // Bypass the insufficient mime type lookup from content for opus files
         // Files with "opus" suffix are of mime type "audio/x-opus+ogg" or "audio/opus".
         // In case of "audio/x-opus+ogg" only the container format "audio/ogg"
@@ -44,7 +44,7 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         // container are detected as "text/plain". They are not yet supported by Mixxx.
         return fileSuffix;
     }
-    if (fileSuffix == QLatin1String("flac")) {
+    if (fileSuffix == QStringLiteral("flac")) {
         // Bypass the insufficient mime type lookup from content for FLAC files.
         // Legacy FLAC files may contain an ID3 tag (written by ExactAudioCopy and
         // others) that causes these files to be identified as "audio/mpeg" instead
@@ -55,17 +55,6 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     }
     QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
             fileInfo, QMimeDatabase::MatchContent);
-#ifdef __STEM__
-    if (
-            // STEM files will be detected as normal MP4, so we check if the file
-            // is looking like a MP4
-            StemInfoImporter::maybeStemFile(fileInfo.filePath(), mimeType) &&
-            // If yes, we search a STEM atom and assume they are valid STEM file
-            // if they do contain one
-            StemInfoImporter::hasStemAtom(fileInfo.filePath())) {
-        return QLatin1String("stem.mp4");
-    }
-#endif
 
     // According to the documentation mimeTypeForFile always returns a valid
     // type, using the generic type application/octet-stream as a fallback.
@@ -76,13 +65,32 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         } else {
             qInfo() << "Unable to detect MIME type from not existing file" << fileInfo.filePath();
         }
+
+#ifdef __STEM__
+        if (StemInfoImporter::hasStemFileExtension(fileInfo.filePath())) {
+            return QStringLiteral("stem.mp4");
+        }
+#endif
         mimeType = QMimeDatabase().mimeTypeForFile(
                 fileInfo, QMimeDatabase::MatchExtension);
         if (!mimeType.isValid() || mimeType.isDefault()) {
+            // extension not found in the MIME database;
             return fileSuffix;
         }
     }
-    const QString fileType = SoundSourceProxy::getFileTypeByMimeType(mimeType);
+
+    QString fileType = SoundSourceProxy::getFileTypeByMimeType(mimeType);
+#ifdef __STEM__
+    // STEM files will be detected as normal MP4, so we check if the file
+    // is looking like a MP4
+    if (StemInfoImporter::isStemMimeType(mimeType)) {
+        // If yes, we search a STEM atom and assume they are valid STEM file
+        // if they do contain one
+        if (StemInfoImporter::hasStemAtom(fileInfo.filePath())) {
+            fileType = QStringLiteral("stem.mp4");
+        }
+    }
+#endif
     if (fileType.isEmpty()) {
         qWarning() << "No file type registered for MIME type" << mimeType;
         return fileSuffix;
