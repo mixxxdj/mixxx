@@ -225,6 +225,17 @@ Feature: Library
     Then the library search criteria should be "Artist"
     And the library search free text should be "<title of this track>"
 
+  # Known gap: the chip search dialect cannot represent the OR operator yet;
+  # a query mixing criteria and a bare "Or" word drops all criteria instead
+  # of keeping them (will be fixed by the advanced raw-query editor).
+  @xfail
+  Scenario: A pasted query with an OR word keeps its criteria
+    Given no search is currently active
+    And a track available in the library with a unique title and with search operator in its metadata
+    When I paste "artist:Rockot Baby Mandala | Nepalese Drill Music" into the library search
+    Then the library search criteria should be "Artist"
+    And the library search free text should be "Baby Mandala | Nepalese Drill Music"
+
   Scenario: The equals prefix enables an exact match
     Given no search is currently active
     When I activate the library search

@@ -1533,6 +1533,8 @@ def step_clear_library_search(context):
     s = context.mixxx_rpc
     _click(s, SEARCH_CLEAR_BUTTON_PATH)
     _wait_for_hidden(s, SEARCH_CLEAR_BUTTON_PATH, 5)
+    # Adding sleep to let the track table settle, as it sometime leads to Spix event loss
+    time.sleep(3)
 
 
 @when('I select the library search suggestion "{suggestion}"')
@@ -1754,7 +1756,7 @@ def _remembered_track(context, name="this"):
     return tracks[name]
 
 
-def _remember_catalog_track(context, unique_attr=False):
+def _remember_catalog_track(context, unique_attr=None, include_track_with_search_op=False):
     """Randomly remember an available track, optionally with a unique attribute
     among the available tracks.
     """
@@ -1767,6 +1769,13 @@ def _remember_catalog_track(context, unique_attr=False):
             entry for entry in catalog
             if entry.get(unique_attr) and values.count(entry[unique_attr]) == 1
         ]
+    aggregator, pred = all, lambda item: not isinstance(item[1], str) or "|" not in item[1]
+    if include_track_with_search_op:
+        aggregator, pred = any, lambda item: isinstance(item[1], str) and "|" in item[1]
+    pool = [
+        entry for entry in pool
+        if aggregator(map(pred, entry.items()))
+    ]
     assert pool, f"No tracks available in the catalog"
     assert all(entry.get("title") for entry in pool), (
         "The catalog contains tracks without a title"
@@ -1792,13 +1801,20 @@ def _type_this_track(context, field, transform=None):
 
 
 @given("a track available in the library")
-@given("a track available in the library {rule}")
-def step_remember_any_track(context, rule=None):
-    if rule and rule.startswith("with a unique"):
-        _remember_catalog_track(context, unique_attr=rule[len("with a unique"):].strip())
-        return
+@given("a track available in the library {rules}")
+def step_remember_any_track(context, rules=None):
+    unique_attr = None
+    # No by default, too many issues with it for now
+    include_track_with_search_op = False
+    if rules:
+        for rule in rules.split(" and "):
+            rule = rule.strip()
+            if rule.lower().startswith("with a unique"):
+                unique_attr=rule[len("with a unique"):].strip()
+            elif rule.lower() == "with search operator in its metadata":
+                include_track_with_search_op = True
 
-    _remember_catalog_track(context)
+    _remember_catalog_track(context, unique_attr, include_track_with_search_op)
 
 
 @given("no search is currently active")
