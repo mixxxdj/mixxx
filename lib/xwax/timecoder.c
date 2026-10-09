@@ -38,6 +38,16 @@
 
 #define ZERO_RC 0.001 /* time constant for zero/rumble filter */
 
+/*
+ * The phase difference is 2πf/fs, so it depends on the timecode and the
+ * sample rate. The gate is therefore given relative to the phase difference
+ * of the timecode at reference speed, i.e. as a pitch.
+ */
+
+/* #define DPHI_GATE 1.3 /1* max distance of the phase difference from the average (pitch) *1/ */
+/* #define DPHI_TAU_MS 2.0 /1* time constant of that average *1/ */
+/* #define DPHI_HOLD_MS 220 /1* how long to reject before giving up *1/ */
+
 #define REF_PEAKS_AVG 48 /* in wave cycles */
 
 /* The number of correct bits which come in before the timecode is
@@ -48,7 +58,7 @@
 
 #define MONITOR_DECAY_EVERY 512 /* in samples */
 
-#define SQ(x) ((x)*(x))
+#define SQ(x) ((x) * (x))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*x))
 
 /* Timecode definitions */
@@ -56,188 +66,275 @@
 #define SWITCH_PHASE 0x1 /* tone phase difference of 270 (not 90) degrees */
 #define SWITCH_PRIMARY 0x2 /* use left channel (not right) as primary */
 #define SWITCH_POLARITY 0x4 /* read bit values in negative (not positive) */
-#define TRAKTOR_MK2 0x8 /* use for Traktor MK2 timecode*/
+#define TRAKTOR_MK1 0x8 /* use for Traktor MK1 timecode */
+#define TRAKTOR_MK2 0x10 /* use for Traktor MK2 timecode */
 
 static struct timecode_def timecodes[] = {
     {
-     .name = "serato_2a",
-     .desc = "Serato 2nd Ed., side A",
-     .resolution = 1000,
-     .bits = 20,
-     .seed = 0x59017,
-     .taps = 0x361e4,
-     .length = 712000,
-     .safe = 625000,
-     .threshold = (128 << 16),
-     },
+        .name = "serato_2a",
+        .desc = "Serato 2nd Ed., side A",
+        .resolution = 1000,
+        .bits = 20,
+        .seed = 0x59017,
+        .taps = 0x361e4,
+        .length = 712000,
+        .safe = 625000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "serato_2b",
-     .desc = "Serato 2nd Ed., side B",
-     .resolution = 1000,
-     .bits = 20,
-     .seed = 0x8f3c6,
-     .taps = 0x4f0d8,
-     .length = 922000,
-     .safe = 908000,
-     .threshold = (128 << 16),
-     },
+        .name = "serato_2b",
+        .desc = "Serato 2nd Ed., side B",
+        .resolution = 1000,
+        .bits = 20,
+        .seed = 0x8f3c6,
+        .taps = 0x4f0d8,
+        .length = 922000,
+        .safe = 908000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "serato_cd",
-     .desc = "Serato CD",
-     .resolution = 1000,
-     .bits = 20,
-     .seed = 0xd8b40,
-     .taps = 0x34d54,
-     .length = 950000,
-     .safe = 890000,
-     .threshold = (128 << 16),
-     },
+        .name = "serato_cd",
+        .desc = "Serato CD",
+        .resolution = 1000,
+        .bits = 20,
+        .seed = 0xd8b40,
+        .taps = 0x34d54,
+        .length = 950000,
+        .safe = 890000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "traktor_a",
-     .desc = "Traktor Scratch, side A",
-     .resolution = 2000,
-     .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-     .bits = 23,
-     .seed = 0x134503,
-     .taps = 0x041040,
-     .length = 1500000,
-     .safe = 605000,
-     .threshold = (128 << 16),
-     },
+        .name = "traktor_a",
+        .desc = "Traktor Scratch, side A",
+        .resolution = 2000,
+        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE | TRAKTOR_MK1,
+        .bits = 23,
+        .seed = 0x134503,
+        .taps = 0x041040,
+        .length = 1500000,
+        .safe = 605000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "traktor_b",
-     .desc = "Traktor Scratch, side B",
-     .resolution = 2000,
-     .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE,
-     .bits = 23,
-     .seed = 0x32066c,
-     .taps = 0x041040,
-     .length = 2110000,
-     .safe = 907000,
-     .threshold = (128 << 16),
-     },
+        .name = "traktor_b",
+        .desc = "Traktor Scratch, side B",
+        .resolution = 2000,
+        .flags = SWITCH_PRIMARY | SWITCH_POLARITY | SWITCH_PHASE | TRAKTOR_MK1,
+        .bits = 23,
+        .seed = 0x32066c,
+        .taps = 0x041040,
+        .length = 2110000,
+        .safe = 907000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "traktor_mk2_a",
-     .desc = "Traktor Scratch MK2, side A",
-     .resolution = 2500,
-     .flags = TRAKTOR_MK2,
-     .bits = 110,
-     .seed_mk2 = {
-         .high = 0xc6007c63e,
-         .low = 0x3fc00c60f8c1f00
-     },
-     .taps_mk2 = {
-         .high = 0x400000000040,
-         .low = 0x0000010800000001
-     },
-     .length = 1845000,
-     .safe = 1795000,
-     .threshold = (128 << 16),
-     },
+        .name = "traktor_mk2_a",
+        .desc = "Traktor Scratch MK2, side A",
+        .resolution = 2500,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0xc6007c63e,
+            .low = 0x3fc00c60f8c1f00,
+        },
+        .taps_mk2 = {
+            .high = 0x400000000040,
+            .low = 0x0000010800000001,
+        },
+        .length = 1845000,
+        .safe = 1795000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.0,
+            .hold = 100,
+        },
+    },
     {
-     .name = "traktor_mk2_b",
-     .desc = "Traktor Scratch MK2, side B",
-     .resolution = 2500,
-     .flags = TRAKTOR_MK2,
-     .bits = 110,
-     .seed_mk2 = {
-         .high = 0x1ff9f00003,
-         .low = 0xe73ff00f9fe0c7c1
-     },
-     .taps_mk2 = {
-         .high = 0x400000000040,
-         .low = 0x0000010800000001
-     },
-     .length = 2590000,
-     .safe = 2540000,
-     .threshold = (128 << 16),
-     },
+        .name = "traktor_mk2_b",
+        .desc = "Traktor Scratch MK2, side B",
+        .resolution = 2500,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0x1ff9f00003,
+            .low = 0xe73ff00f9fe0c7c1,
+        },
+        .taps_mk2 = {
+            .high = 0x400000000040,
+            .low = 0x0000010800000001,
+        },
+        .length = 2590000,
+        .safe = 2540000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.0,
+            .hold = 100,
+        },
+    },
     {
-     .name = "traktor_mk2_cd",
-     .desc = "Traktor Scratch MK2, CD",
-     .resolution = 3000,
-     .flags = TRAKTOR_MK2,
-     .bits = 110,
-     .seed_mk2 = {
-         .high = 0x7ce73,
-         .low = 0xe0e0fff1fc1cf8c1
-     },
-     .taps_mk2 = {
-         .high = 0x400000000000,
-         .low = 0x1000010800000001
-     },
-     .length = 4500000,
-     .safe = 4450000,
-     .threshold = (128 << 16),
-     },
+        .name = "traktor_mk2_cd",
+        .desc = "Traktor Scratch MK2, CD",
+        .resolution = 3000,
+        .flags = TRAKTOR_MK2,
+        .bits = 110,
+        .seed_mk2 = {
+            .high = 0x7ce73,
+            .low = 0xe0e0fff1fc1cf8c1,
+        },
+        .taps_mk2 = {
+            .high = 0x400000000000,
+            .low = 0x1000010800000001,
+        },
+        .length = 4500000,
+        .safe = 4450000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.0,
+            .hold = 100,
+        },
+    },
     {
-     .name = "mixvibes_v2",
-     .desc = "MixVibes V2",
-     .resolution = 1300,
-     .flags = SWITCH_PHASE,
-     .bits = 20,
-     .seed = 0x22c90,
-     .taps = 0x00008,
-     .length = 950000,
-     .safe = 655000,
-     .threshold = (128 << 16),
-     },
+        .name = "mixvibes_v2",
+        .desc = "MixVibes V2",
+        .resolution = 1300,
+        .flags = SWITCH_PHASE,
+        .bits = 20,
+        .seed = 0x22c90,
+        .taps = 0x00008,
+        .length = 950000,
+        .safe = 655000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "mixvibes_7inch",
-     .desc = "MixVibes 7\"",
-     .resolution = 1300,
-     .flags = SWITCH_PHASE,
-     .bits = 20,
-     .seed = 0x22c90,
-     .taps = 0x00008,
-     .length = 312000,
-     .safe = 238000,
-     .threshold = (128 << 16),
-     },
+        .name = "mixvibes_7inch",
+        .desc = "MixVibes 7\"",
+        .resolution = 1300,
+        .flags = SWITCH_PHASE,
+        .bits = 20,
+        .seed = 0x22c90,
+        .taps = 0x00008,
+        .length = 312000,
+        .safe = 238000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "pioneer_a",
-     .desc = "Pioneer RekordBox DVS Control Vinyl, side A",
-     .resolution = 1000,
-     .flags = SWITCH_POLARITY,
-     .bits = 20,
-     .seed = 0x78370,
-     .taps = 0x7933a,
-     .length = 635000,
-     .safe = 614000,
-     .threshold = (128 << 16),
-     },
+        .name = "pioneer_a",
+        .desc = "Pioneer RekordBox DVS Control Vinyl, side A",
+        .resolution = 1000,
+        .flags = SWITCH_POLARITY,
+        .bits = 20,
+        .seed = 0x78370,
+        .taps = 0x7933a,
+        .length = 635000,
+        .safe = 614000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "pioneer_b",
-     .desc = "Pioneer RekordBox DVS Control Vinyl, side B",
-     .resolution = 1000,
-     .flags = SWITCH_POLARITY,
-     .bits = 20,
-     .seed = 0xf7012,
-     .taps = 0x2ef1c,
-     .length = 918500,
-     .safe = 913000,
-     .threshold = (128 << 16),
-     },
+        .name = "pioneer_b",
+        .desc = "Pioneer RekordBox DVS Control Vinyl, side B",
+        .resolution = 1000,
+        .flags = SWITCH_POLARITY,
+        .bits = 20,
+        .seed = 0xf7012,
+        .taps = 0x2ef1c,
+        .length = 918500,
+        .safe = 913000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "algoriddim_a",
-     .desc = "Algoriddim djay PRO AI 12\", side A",
-     .resolution = 1000,
-     .bits = 20,
-     .seed = 0x1ba77,
-     .taps = 0x1a0f1b,
-     .length = 600000,
-     .safe = 590000,
-     },
+        .name = "algoriddim_a",
+        .desc = "Algoriddim djay PRO AI 12\", side A",
+        .resolution = 1000,
+        .bits = 20,
+        .seed = 0x1ba77,
+        .taps = 0x1a0f1b,
+        .length = 600000,
+        .safe = 590000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
     {
-     .name = "algoriddim_b",
-     .desc = "Algoriddim djay PRO AI 12\", side B",
-     .resolution = 1000,
-     .bits = 20,
-     .seed = 0xe4606,
-     .taps = 0x1f1e7b,
-     .length = 900000,
-     .safe = 890000,
-    }
+        .name = "algoriddim_b",
+        .desc = "Algoriddim djay PRO AI 12\", side B",
+        .resolution = 1000,
+        .bits = 20,
+        .seed = 0xe4606,
+        .taps = 0x1f1e7b,
+        .length = 900000,
+        .safe = 890000,
+        .threshold = (128 << 16),
+        .phase_reject = {
+            .trigger = 1.5,
+            .gate = 1.2,
+            .tau = 1.5,
+            .hold = 100,
+        },
+    },
 };
 
 /*
@@ -303,11 +400,11 @@ static int build_lookup(struct timecode_def *def)
     if (def->lookup)
         return 0;
 
-    fprintf(stderr, "Building LUT for %d bit %dHz timecode (%s)\n",
-            def->bits, def->resolution, def->desc);
+    fprintf(stderr, "Building LUT for %d bit %dHz timecode (%s)\n", def->bits, def->resolution,
+            def->desc);
 
     if (lut_init(&def->lut, def->length) == -1)
-	return -1;
+        return -1;
 
     current = def->seed;
 
@@ -336,7 +433,7 @@ static int build_lookup(struct timecode_def *def)
  * Return: pointer to timecode definition, or NULL if not available
  */
 
-struct timecode_def* timecoder_find_definition(const char *name, const char *lut_dir_path)
+struct timecode_def *timecoder_find_definition(const char *name, const char *lut_dir_path)
 {
     unsigned int n;
 
@@ -352,7 +449,7 @@ struct timecode_def* timecoder_find_definition(const char *name, const char *lut
                     return def;
 
                 if (build_lookup_mk2(def) == -1)
-                    return NULL;  /* error */
+                    return NULL; /* error */
 
                 if (lut_store_mk2(def, lut_dir_path)) {
                     timecoder_free_lookup();
@@ -361,20 +458,21 @@ struct timecode_def* timecoder_find_definition(const char *name, const char *lut
                 }
             } else {
                 if (build_lookup(def) == -1)
-                    return NULL;  /* error */
+                    return NULL; /* error */
             }
         }
         return def;
     }
 
-    return NULL;  /* not found */
+    return NULL; /* not found */
 }
 
 /*
  * Free the timecoder lookup tables when they are no longer needed
  */
 
-void timecoder_free_lookup(void) {
+void timecoder_free_lookup(void)
+{
     unsigned int n;
 
     for (n = 0; n < ARRAY_SIZE(timecodes); n++) {
@@ -391,36 +489,17 @@ void timecoder_free_lookup(void) {
 }
 
 /*
- * Initialise a subcode decoder for the Traktor MK2
- */
-
-void mk2_subcode_init(struct mk2_subcode *sc)
-{
-    sc->valid_counter = 0;
-    sc->avg_reading = INT_MAX/2;
-    sc->avg_slope = INT_MAX/2;
-    sc->bit = U128_ZERO;
-
-    sc->readings = rb_alloc(3, sizeof(int));
-    assert(sc->readings);
-
-    /* Initialise smoothing filters */
-    ewma_init(&sc->ewma_reading, 0.01);
-    ewma_init(&sc->ewma_slope, 0.01);
-}
-
-/*
  * Initialise filter values for one channel
  */
 
 static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
-    unsigned int sample_rate)
+                         unsigned int sample_rate)
 {
     ch->positive = false;
     ch->zero = 0;
 
-    ch->deriv = INT_MAX/2;
-    ch->rms = INT_MAX/2;
+    ch->deriv = INT_MAX / 2;
+    ch->rms = INT_MAX / 2;
     ch->rms_deriv = 0;
 
     ch->delayline = rb_alloc(5, sizeof(int));
@@ -440,7 +519,7 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
      * make for a good window size. This was concluded empirically.
      */
 
-    size_t window = (size_t)ceil(sample_rate / def->resolution)/4;
+    size_t window = (size_t)ceil((double)sample_rate / def->resolution) / 4;
     if (window % 2 == 0)
         window++;
 
@@ -456,8 +535,8 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
  * Return: -1 if the timecoder could not be initialised, otherwise 0
  */
 
-void timecoder_init(struct timecoder *tc, struct timecode_def *def,
-                    double speed, unsigned int sample_rate, bool phono, bool pitch_estimator)
+void timecoder_init(struct timecoder *tc, struct timecode_def *def, double speed,
+                    unsigned int sample_rate, bool phono, bool pitch_estimator)
 {
     assert(def != NULL);
 
@@ -487,10 +566,25 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
     tc->freq = 0.0;
     tc->pitch = 0.0;
 
+    /* Variables for the phase gate filter that mitigates backspin issues */
+
+    ewma_init(&tc->dphi_filter, 1.0 - exp(-tc->dt / (tc->def->phase_reject.tau * 1e-3)));
+    tc->dphi_ref = 0.0;
+    tc->dphi_gate = tc->def->phase_reject.gate * 2.0 * M_PI * timecoder_get_resolution(tc) * tc->dt;
+    tc->dphi_hold_samples = tc->def->phase_reject.hold * sample_rate / 1000;
+    tc->dphi_rejected = 0;
+    tc->dphi_total_rejected = 0;
+
     if (tc->use_legacy_pitch_filter) {
         pitch_init(&tc->pitch_filter, tc->dt);
     } else {
-        if (tc->def->flags & TRAKTOR_MK2) {
+        if (tc->def->flags & TRAKTOR_MK1) {
+            pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
+                              KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
+                              KALMAN_COEFFS(0.0235, 1e-5), /* scratch mode */
+                              10.0, /* threshold */
+                              false);
+        } else if (tc->def->flags & TRAKTOR_MK2) {
             pitch_kalman_init(&tc->pitch_kalman_filter, tc->dt,
                               KALMAN_COEFFS(1e-16, 1e-2), /* stable mode */
                               KALMAN_COEFFS(0.0135, 8e-6), /* scratch mode */
@@ -559,7 +653,7 @@ int timecoder_monitor_init(struct timecoder *tc, int size)
 {
     assert(tc->mon == NULL);
     tc->mon_size = size;
-    tc->mon = (unsigned char*)(malloc(SQ(tc->mon_size)));
+    tc->mon = (unsigned char *)(malloc(SQ(tc->mon_size)));
     if (tc->mon == NULL) {
         perror("malloc");
         return -1;
@@ -584,8 +678,7 @@ void timecoder_monitor_clear(struct timecoder *tc)
  * Update channel information with axis-crossings
  */
 
-static void detect_zero_crossing(struct timecoder_channel *ch,
-                                 signed int v, double alpha,
+static void detect_zero_crossing(struct timecoder_channel *ch, signed int v, double alpha,
                                  signed int threshold)
 {
     ch->crossing_ticker++;
@@ -625,7 +718,7 @@ static inline void update_monitor(struct timecoder *tc, signed int x, signed int
     size = tc->mon_size;
     ref = tc->ref_level;
 
-    /* Decay the pixels already in the montior */
+    /* Decay the pixels already in the monitor */
 
     if (++tc->mon_counter % MONITOR_DECAY_EVERY == 0) {
         int p;
@@ -665,23 +758,22 @@ static void process_bitstream(struct timecoder *tc, signed int m)
      * the vinyl, regardless of the direction. */
 
     if (tc->forwards) {
-	tc->timecode = fwd(tc->timecode, tc->def);
-	tc->bitstream = (tc->bitstream >> 1)
-	    + (b << (tc->def->bits - 1));
+        tc->timecode = fwd(tc->timecode, tc->def);
+        tc->bitstream = (tc->bitstream >> 1) + (b << (tc->def->bits - 1));
 
     } else {
-	bits_t mask;
+        bits_t mask;
 
-	mask = ((1 << tc->def->bits) - 1);
-	tc->timecode = rev(tc->timecode, tc->def);
-	tc->bitstream = ((tc->bitstream << 1) & mask) + b;
+        mask = ((1 << tc->def->bits) - 1);
+        tc->timecode = rev(tc->timecode, tc->def);
+        tc->bitstream = ((tc->bitstream << 1) & mask) + b;
     }
 
     if (tc->timecode == tc->bitstream)
-	tc->valid_counter++;
+        tc->valid_counter++;
     else {
-	tc->timecode = tc->bitstream;
-	tc->valid_counter = 0;
+        tc->timecode = tc->bitstream;
+        tc->valid_counter = 0;
     }
 
     /* Take note of the last time we read a valid timecode */
@@ -693,11 +785,8 @@ static void process_bitstream(struct timecoder *tc, signed int m)
     tc->ref_level -= tc->ref_level / REF_PEAKS_AVG;
     tc->ref_level += m / REF_PEAKS_AVG;
 
-    debug("%+6d zero, %+6d (ref %+6d)\t= %d%c (%5d)",
-          tc->primary.zero,
-          m, tc->ref_level,
-	  b, tc->valid_counter == 0 ? 'x' : ' ',
-	  tc->valid_counter);
+    debug("%+6d zero, %+6d (ref %+6d)\t= %d%c (%5d)", tc->primary.zero, m, tc->ref_level, b,
+          tc->valid_counter == 0 ? 'x' : ' ', tc->valid_counter);
 }
 
 /*
@@ -705,8 +794,8 @@ static void process_bitstream(struct timecoder *tc, signed int m)
  * complex number theory in ARM Q1.31 fixed-point format for max efficiency.
  */
 
-static inline double phase_difference(const int cos0, const int sin0,
-                                      const int cos1, const int sin1)
+static inline double phase_difference(const int cos0, const int sin0, const int cos1,
+                                      const int sin1)
 {
     struct complex_q31 z0 = { .re = cos0, .im = sin0 };
     struct complex_q31 z1 = { .re = cos1, .im = sin1 };
@@ -717,16 +806,46 @@ static inline double phase_difference(const int cos0, const int sin0,
 }
 
 /*
+ * Discard a phase difference that does not check out
+ *
+ * Computes a short moving average of the phase samples and compares the
+ * measured dphi with it. If the difference is too large, it replaces
+ * the dphi value with the one from the moving average.
+ */
+
+static double reject_phase_jumps(struct timecoder *tc, double dphi)
+{
+    if (tc->pitch < -tc->def->phase_reject.trigger
+        && fabs(dphi - tc->dphi_ref) > tc->dphi_gate)
+    {
+        /* Reject phase measurements until the dphi_hold_samples is exceeded */
+
+        if (tc->dphi_rejected < tc->dphi_hold_samples) {
+            tc->dphi_rejected++;
+            tc->dphi_total_rejected++;
+            dphi = tc->dphi_ref;
+        }
+    } else {
+        tc->dphi_rejected = 0;
+    }
+
+    /* printf("total_rejected = %d\n", tc->dphi_total_rejected); */
+
+    tc->dphi_ref = ewmaf(&tc->dphi_filter, dphi);
+
+    return dphi;
+}
+
+/*
  * Various processing of the carrier wave needed for pitch detection.
  *
  * Pushes samples into a delayline, computes the derivative, filters it and
  * computes RMS values.
- * Afterards the upscaled derivative can by processed by the pitch detection
+ * Afterwards the upscaled derivative can by processed by the pitch detection
  * algorithm.
  */
 
-static void process_carrier(struct timecoder *tc, signed int primary,
-    signed int secondary)
+static void process_carrier(struct timecoder *tc, signed int primary, signed int secondary)
 {
     if (!tc) {
         errno = EINVAL;
@@ -743,10 +862,8 @@ static void process_carrier(struct timecoder *tc, signed int primary,
     secondary = rhpf_process(&tc->secondary.rumble_filter, secondary);
 
     /* Compute the discrete derivative */
-    tc->primary.deriv = derivative(&tc->primary.differentiator,
-        primary);
-    tc->secondary.deriv = derivative(&tc->secondary.differentiator,
-        secondary);
+    tc->primary.deriv = derivative(&tc->primary.differentiator, primary);
+    tc->secondary.deriv = derivative(&tc->secondary.differentiator, secondary);
 
     tc->primary.deriv = ewma(&tc->primary.ewma_filter, tc->primary.deriv);
     tc->secondary.deriv = ewma(&tc->secondary.ewma_filter, tc->secondary.deriv);
@@ -762,10 +879,8 @@ static void process_carrier(struct timecoder *tc, signed int primary,
     tc->secondary.rms = rms(&tc->secondary.rms_filter, secondary);
 
     /* Compute the smoothed RMS value for the derivative */
-    tc->primary.rms_deriv =
-        rms(&tc->primary.rms_deriv_filter, tc->primary.deriv);
-    tc->secondary.rms_deriv =
-        rms(&tc->secondary.rms_deriv_filter, tc->secondary.deriv);
+    tc->primary.rms_deriv = rms(&tc->primary.rms_deriv_filter, tc->primary.deriv);
+    tc->secondary.rms_deriv = rms(&tc->secondary.rms_deriv_filter, tc->secondary.deriv);
 
     tc->dB = 20 * log10((double)tc->secondary.rms / INT_MAX);
 
@@ -781,25 +896,25 @@ static void process_carrier(struct timecoder *tc, signed int primary,
  * of a signed int; ie. 32-bit signed.
  */
 
-static void process_sample(struct timecoder *tc,
-			   signed int primary, signed int secondary)
+static void process_sample(struct timecoder *tc, signed int primary, signed int secondary)
 {
     if (tc->def->flags & TRAKTOR_MK2) {
         detect_zero_crossing(&tc->primary, tc->primary.deriv_decoder, tc->zero_alpha,
-                tc->threshold);
+                             tc->threshold);
         detect_zero_crossing(&tc->secondary, tc->secondary.deriv_decoder, tc->zero_alpha,
-                tc->threshold);
+                             tc->threshold);
     } else {
         detect_zero_crossing(&tc->primary, primary, tc->zero_alpha, tc->threshold);
         detect_zero_crossing(&tc->secondary, secondary, tc->zero_alpha, tc->threshold);
     }
 
     if (tc->dB > -45.0) { // Ignore noise
-        tc->dphi =
-            phase_difference(*(int*)rb_at(tc->primary.delayline_deriv, 0),
-                             *(int*)rb_at(tc->secondary.delayline_deriv, 0),
-                             *(int*)rb_at(tc->primary.delayline_deriv, 1),
-                             *(int*)rb_at(tc->secondary.delayline_deriv, 1));
+        tc->dphi = phase_difference(*(int *)rb_at(tc->primary.delayline_deriv, 0),
+                                    *(int *)rb_at(tc->secondary.delayline_deriv, 0),
+                                    *(int *)rb_at(tc->primary.delayline_deriv, 1),
+                                    *(int *)rb_at(tc->secondary.delayline_deriv, 1));
+
+        tc->dphi = reject_phase_jumps(tc, tc->dphi);
 
         double ddphi = 0.0; /* Derivative of the phase difference */
 
@@ -816,6 +931,10 @@ static void process_sample(struct timecoder *tc,
     } else {
         tc->freq = 0.0;
         tc->pitch = 0.0;
+
+        /* The next phase difference is a fresh start, not to be discarded */
+
+        tc->dphi_rejected = tc->dphi_hold_samples;
     }
 
     bool forwards = tc->forwards;
@@ -837,14 +956,13 @@ static void process_sample(struct timecoder *tc,
      * it's time to read off a timecode 0 or 1 value */
 
     if (tc->def->flags & TRAKTOR_MK2) {
-        if (tc->secondary.swapped)
-        {
+        if (tc->secondary.swapped) {
             int reading = *(int *)rb_at(tc->secondary.delayline, 2);
             mk2_process_timecode(tc, reading);
         }
     } else {
-        if (tc->secondary.swapped &&
-           tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
+        if (tc->secondary.swapped
+            && tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
         {
             signed int m;
 
@@ -863,7 +981,7 @@ static void process_sample(struct timecoder *tc,
  * Return: pointer to timecode definition
  */
 
-static struct timecode_def* next_definition(struct timecode_def *def)
+static struct timecode_def *next_definition(struct timecode_def *def)
 {
     assert(def != NULL);
 
@@ -898,7 +1016,7 @@ void timecoder_cycle_definition(struct timecoder *tc)
 void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
 {
     while (npcm--) {
-	signed int left, right, primary, secondary;
+        signed int left, right, primary, secondary;
 
         left = pcm[0] << 16;
         right = pcm[1] << 16;
@@ -923,8 +1041,7 @@ void timecoder_submit(struct timecoder *tc, signed short *pcm, size_t npcm)
              * two is necessary.
              */
 
-            update_monitor(tc, tc->primary.deriv * 2,
-                    tc->secondary.deriv * 2);
+            update_monitor(tc, tc->primary.deriv * 2, tc->secondary.deriv * 2);
         } else {
             process_sample(tc, primary, secondary);
             update_monitor(tc, left, right);
