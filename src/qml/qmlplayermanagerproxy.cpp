@@ -2,10 +2,12 @@
 
 #include <QQmlEngine>
 
+#include "library/library.h"
 #include "library/library_prefs.h"
 #include "mixer/playermanager.h"
 #include "moc_qmlplayermanagerproxy.cpp"
 #include "qml/qmlconfigproxy.h"
+#include "qml/qmllibraryproxy.h"
 #include "qml/qmlplayerproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track_decl.h"
@@ -32,6 +34,16 @@ QmlPlayerProxy* QmlPlayerManagerProxy::getPlayer(const QString& group) {
     // the corresponding JS object is garbage collected.
     QmlPlayerProxy* pPlayerProxy = new QmlPlayerProxy(pPlayer);
     QQmlEngine::setObjectOwnership(pPlayerProxy, QQmlEngine::JavaScriptOwnership);
+    connect(m_pPlayerManager.get(),
+            &PlayerManager::trackAnalyzerProgress,
+            pPlayerProxy,
+            &QmlPlayerProxy::slotTrackAnalyzerProgress);
+    if (Library* pLibrary = QmlLibraryProxy::get()) {
+        connect(pLibrary,
+                &Library::onTrackAnalyzerProgress,
+                pPlayerProxy,
+                &QmlPlayerProxy::slotTrackAnalyzerProgress);
+    }
     connect(pPlayerProxy,
             &QmlPlayerProxy::loadTrackFromLocationRequested,
             this,

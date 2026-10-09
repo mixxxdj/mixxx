@@ -37,36 +37,29 @@ Item {
 
         anchors.fill: parent
         activeBackgroundSuffix: "active"
-        activeColor: LateNightTheme.activePlayCueColor
+        activeIconSuffix: root.useFullIcon && LateNightTheme.isPaleMoon ? "active" : ""
         activeOpacity: 1.0
+        activeColor: LateNightTheme.activePlayCueColor
         backgroundSource: root.backgroundSource
         displayKey: "play_latched"
         group: root.group
-        // The legacy full-deck asset is a play/pause sprite. Rendering that
-        // sprite leaves both glyphs visible, so always select one state-specific
-        // glyph for stopped/playing transport states.
-        iconSource: button.isActive ? root.pauseIcon : root.playIcon
+        iconSource: root.useFullIcon
+                ? LateNightTheme.assetDeckPlayButton
+                : (button.isActive ? root.pauseIcon : root.playIcon)
         inactiveOpacity: 0.82
         key: "play"
         releaseToZero: false
         rightClickKey: root.rightClickKey
         toggleable: true
+        visualActiveState: indicatorProxy.value > 0
     }
 
     Rectangle {
         anchors.fill: parent
+        anchors.margins: 1
         border.color: LateNightTheme.activePlayCueColor
         border.width: 3
         color: "transparent"
-        visible: previewProxy.value > 0
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        border.color: LateNightTheme.activePlayCueColor
-        border.width: 1
-        color: "transparent"
-        opacity: indicatorProxy.value > 0 ? 1 : 0
-        visible: indicatorProxy.value > 0
+        visible: previewProxy.value > 0 && !button.isActive
     }
 }

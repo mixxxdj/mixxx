@@ -171,9 +171,9 @@ DlgPreferences::DlgPreferences(
                 "ic_preferences_interface.svg");
     }
 
-    // QML has its own waveform settings page. Do not construct the native
-    // Waveforms page there while the QML preferences implementation is in
-    // progress; the QML waveform factory is still required by the renderer.
+    // The shared native page is used by both legacy and LateNightQML. In QML
+    // mode QmlApplication initializes the factory as the preferences backend
+    // before constructing this dialog.
     if (includeWaveformPreferences && WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),

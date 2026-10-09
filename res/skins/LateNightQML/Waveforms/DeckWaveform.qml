@@ -46,6 +46,11 @@ Item {
 
         onSplitStemTracksToggleRequested: splitStemTracksProxy.value = splitStemTracksProxy.value > 0 ? 0 : 1
     }
+    Mixxx.PlayerDropArea {
+        anchors.fill: parent
+        group: root.group
+        z: 100
+    }
     StemControls {
         id: stemControls
 

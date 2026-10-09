@@ -186,6 +186,9 @@ QtObject {
     readonly property color deckReadonlyTextColor: isClassic ? "#888888" : "#777777"
     readonly property color deckTimeTextColor: isClassic ? "#f0bb2b" : "#777777"
     readonly property color deckTopRowBackgroundColor: "#181818"
+    readonly property color layoutGutterColor: isClassic ? "#0f0f0f" : "#080808"
+    readonly property int deckMixerGutter: isClassic ? 4 : 3
+    readonly property int deckRowGutter: isClassic ? 4 : 3
     readonly property int deckOuterMargin: isClassic ? 2 : 1
     readonly property int fullDeckHeight: 206
     // Legacy Compact is a 110px overview row plus a 30px transport shell,
@@ -202,6 +205,9 @@ QtObject {
     readonly property int compactBigSpinnySize: 110
     readonly property color compactVuPanelColor: isClassic ? "#1e1e1e" : "#151517"
     readonly property color compactVuPanelBorderColor: isClassic ? "#333333" : "#212123"
+    readonly property color compactVuPanelBorderBottomColor: isClassic ? "#0a0a0a" : "#020202"
+    readonly property color compactVuPanelBorderLeftColor: isClassic ? "#333333" : "#191919"
+    readonly property color compactVuPanelBorderRightColor: isClassic ? "#0a0a0a" : "#111111"
     readonly property color compactVuGutterColor: isClassic ? "#040404" : "#080808"
     readonly property int compactVuMeterHeight: 96
     readonly property int compactVuDeckGroupWidth: isClassic ? 19 : 18
@@ -230,7 +236,7 @@ QtObject {
     readonly property color effectsParameterLinkInactiveColor: isClassic ? "#4b4b4b" : "#333333"
     readonly property color effectsParameterPanelColor: isClassic ? "#151515" : "#1e1e20"
     readonly property color effectsParameterTextColor: "#666666"
-    readonly property color effectsRackGutterColor: "#060606"
+    readonly property color effectsRackGutterColor: layoutGutterColor
     readonly property color effectsSlotToggleInactiveColor: isClassic ? "#262626" : "#121213"
     readonly property color effectsUnitColor12: isClassic ? "#659f08" : "#438225"
     readonly property color effectsUnitColor34: isClassic ? "#0895bc" : "#257b82"

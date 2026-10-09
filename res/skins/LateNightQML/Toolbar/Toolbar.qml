@@ -1591,6 +1591,7 @@ Rectangle {
         id: mixerSettingsPopup
 
         ToolbarMenuSectionToggle {
+            showTitle: false
             title: "Mixer"
             control: showMixerControl
 
@@ -1620,7 +1621,10 @@ Rectangle {
     ToolbarSettingsPopup {
         id: waveformSettingsPopup
 
+        minimumWidth: 0
+
         ToolbarMenuSectionToggle {
+            showTitle: false
             title: "Waveforms"
             control: showWaveformsControl
 
@@ -1639,7 +1643,7 @@ Rectangle {
     ToolbarSettingsPopup {
         id: effectSettingsPopup
 
-        minimumWidth: 185
+        minimumWidth: 120
 
         ColumnLayout {
             Layout.fillWidth: true
@@ -1651,43 +1655,17 @@ Rectangle {
 
             Item {
                 id: effectUnitsHeader
-                property bool checked: showEffectRackControl.value > 0
 
                 Layout.fillWidth: true
                 Layout.minimumWidth: implicitWidth
                 implicitHeight: 18
                 implicitWidth: effectUnitsHeaderContent.implicitWidth
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: root.menuHoverColor(effectUnitsHeaderMouseArea.containsMouse, effectUnitsHeader.enabled)
-                    radius: 1
-                }
-
-                MouseArea {
-                    id: effectUnitsHeaderMouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.ArrowCursor
-                    hoverEnabled: true
-
-                    onClicked: {
-                        showEffectRackControl.value = effectUnitsHeader.checked ? 0.0 : 1.0;
-                    }
-                }
-
                 RowLayout {
                     id: effectUnitsHeaderContent
 
                     anchors.fill: parent
                     spacing: 5
-
-                    ToolbarMenuCheckIndicator {
-                        Layout.leftMargin: 2
-                        Layout.preferredHeight: 14
-                        Layout.preferredWidth: 14
-                        checked: effectUnitsHeader.checked
-                        hovered: effectUnitsHeaderMouseArea.containsMouse
-                    }
 
                     ToolbarMenuInlineChoice {
                         checked: show4EffectUnitsControl.value === 0.0
@@ -1708,7 +1686,7 @@ Rectangle {
                         }
                     }
                     Text {
-                        color: effectUnitsHeaderMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
+                        color: LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "units"
@@ -1737,45 +1715,17 @@ Rectangle {
 
             Item {
                 id: samplersHeader
-                property bool checked: showSamplersControl.value > 0
-                readonly property bool samplerCountChoiceStripHovered: samplersHeaderMouseArea.containsMouse && samplersHeaderMouseArea.mouseX >= sampler4Choice.x && samplersHeaderMouseArea.mouseX <= sampler64Choice.x + sampler64Choice.width
 
                 Layout.fillWidth: true
                 Layout.minimumWidth: implicitWidth
                 implicitHeight: 18
                 implicitWidth: samplersHeaderContent.implicitWidth
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: root.menuHoverColor(samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered, samplersHeader.enabled)
-                    radius: 1
-                }
-
-                MouseArea {
-                    id: samplersHeaderMouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.ArrowCursor
-                    hoverEnabled: true
-
-                    onClicked: {
-                        showSamplersControl.value = samplersHeader.checked ? 0.0 : 1.0;
-                    }
-                }
-
                 RowLayout {
                     id: samplersHeaderContent
 
                     anchors.fill: parent
                     spacing: 0
-
-                    ToolbarMenuCheckIndicator {
-                        Layout.leftMargin: 2
-                        Layout.preferredHeight: 14
-                        Layout.preferredWidth: 14
-                        Layout.rightMargin: 5
-                        checked: samplersHeader.checked
-                        hovered: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered
-                    }
 
                     ToolbarMenuInlineChoice {
                         id: sampler4Choice
@@ -1856,7 +1806,7 @@ Rectangle {
                     }
                     Text {
                         Layout.leftMargin: 5
-                        color: samplersHeaderMouseArea.containsMouse && !samplersHeader.samplerCountChoiceStripHovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
+                        color: LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 13
                         text: "sample decks"
@@ -1880,6 +1830,7 @@ Rectangle {
 
                 Item {
                     id: loadBankBtn
+                    Layout.alignment: Qt.AlignVCenter
                     Layout.preferredHeight: 18
                     Layout.preferredWidth: loadBankText.implicitWidth + 8
 
@@ -1891,11 +1842,13 @@ Rectangle {
 
                     Text {
                         id: loadBankText
-                        anchors.centerIn: parent
+                        anchors.fill: parent
                         color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
                         text: "Load"
+                        verticalAlignment: Text.AlignVCenter
                     }
 
                     MouseArea {
@@ -1910,14 +1863,20 @@ Rectangle {
                 }
 
                 Text {
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredHeight: 18
+                    Layout.preferredWidth: 6
                     color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
+                    horizontalAlignment: Text.AlignHCenter
                     text: "/"
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Item {
                     id: saveBankBtn
+                    Layout.alignment: Qt.AlignVCenter
                     Layout.preferredHeight: 18
                     Layout.preferredWidth: saveBankText.implicitWidth + 8
 
@@ -1929,11 +1888,13 @@ Rectangle {
 
                     Text {
                         id: saveBankText
-                        anchors.centerIn: parent
+                        anchors.fill: parent
                         color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
                         font.pixelSize: 12
+                        horizontalAlignment: Text.AlignHCenter
                         text: "Save"
+                        verticalAlignment: Text.AlignVCenter
                     }
 
                     MouseArea {
@@ -1949,11 +1910,15 @@ Rectangle {
 
                 Text {
                     id: samplerBankText
+                    Layout.alignment: Qt.AlignVCenter
                     color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
                     font.pixelSize: 12
+                    horizontalAlignment: Text.AlignLeft
                     text: "Sampler Bank"
                     Layout.fillWidth: true
+                    Layout.preferredHeight: 18
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }
@@ -1961,9 +1926,10 @@ Rectangle {
     ToolbarSettingsPopup {
         id: librarySettingsPopup
 
-        minimumWidth: 140
+        minimumWidth: 0
 
         ToolbarMenuSection {
+            showTitle: false
             title: "Library"
 
             ToolbarMenuToggle {
@@ -2499,6 +2465,8 @@ Rectangle {
         }
     }
     component ToolbarMenuSection: ColumnLayout {
+        id: section
+        property bool showTitle: true
         required property string title
 
         Layout.fillWidth: true
@@ -2514,7 +2482,8 @@ Rectangle {
             elide: Text.ElideRight
             font.family: "Open Sans"
             font.pixelSize: 13
-            text: parent.title
+            text: section.title
+            visible: section.showTitle
         }
     }
     component ToolbarMenuCheckIndicator: Text {
@@ -2530,6 +2499,7 @@ Rectangle {
     }
     component ToolbarMenuSectionToggle: ColumnLayout {
         id: sectionToggle
+        property bool showTitle: true
         required property string title
         required property Mixxx.ControlProxy control
 
@@ -2547,6 +2517,7 @@ Rectangle {
             Layout.fillWidth: true
             implicitHeight: 18
             implicitWidth: headerText.implicitWidth + 20
+            visible: sectionToggle.showTitle
 
             Rectangle {
                 anchors.fill: parent
