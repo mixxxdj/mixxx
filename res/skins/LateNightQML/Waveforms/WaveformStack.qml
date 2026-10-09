@@ -19,9 +19,11 @@ Item {
     readonly property int deckCount: root.show4decks ? 4 : 2
     readonly property real deck3MinimumHeight: deck3waveform.item ? deck3waveform.item.minimumHeight : 30
     readonly property real deck4MinimumHeight: deck4waveform.item ? deck4waveform.item.minimumHeight : 30
-    readonly property real minimumWaveformHeight: root.show4decks
-            ? root.deck3MinimumHeight + deck1waveform.minimumHeight + deck2waveform.minimumHeight + root.deck4MinimumHeight
-            : deck1waveform.minimumHeight + deck2waveform.minimumHeight
+    readonly property real minimumDeckHeight: root.show4decks
+            ? Math.max(root.deck3MinimumHeight, deck1waveform.minimumHeight,
+                    deck2waveform.minimumHeight, root.deck4MinimumHeight)
+            : Math.max(deck1waveform.minimumHeight, deck2waveform.minimumHeight)
+    readonly property real minimumWaveformHeight: root.minimumDeckHeight * root.deckCount
     readonly property real extraHeightPerDeck: Math.max(
             0,
             root.waveformContentHeight - Math.max(52, root.minimumWaveformHeight)) / root.deckCount
@@ -46,7 +48,7 @@ Item {
         LateNight.LayoutAnimation {
             id: deck3HeightAnimation
 
-            targetValue: root.show4decks ? root.deck3MinimumHeight + root.extraHeightPerDeck : 0
+            targetValue: root.show4decks ? root.minimumDeckHeight + root.extraHeightPerDeck : 0
             animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
         Behavior on opacity {
@@ -79,7 +81,7 @@ Item {
         LateNight.LayoutAnimation {
             id: deck1HeightAnimation
 
-            targetValue: deck1waveform.minimumHeight + root.extraHeightPerDeck
+            targetValue: root.minimumDeckHeight + root.extraHeightPerDeck
             animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
     }
@@ -94,7 +96,7 @@ Item {
         LateNight.LayoutAnimation {
             id: deck2HeightAnimation
 
-            targetValue: deck2waveform.minimumHeight + root.extraHeightPerDeck
+            targetValue: root.minimumDeckHeight + root.extraHeightPerDeck
             animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
     }
@@ -112,7 +114,7 @@ Item {
         LateNight.LayoutAnimation {
             id: deck4HeightAnimation
 
-            targetValue: root.show4decks ? root.deck4MinimumHeight + root.extraHeightPerDeck : 0
+            targetValue: root.show4decks ? root.minimumDeckHeight + root.extraHeightPerDeck : 0
             animationEnabled: LateNightTheme.layoutAnimationsEnabled && !root.splitterResizing && !root.layoutTransitioning
         }
         Behavior on opacity {
