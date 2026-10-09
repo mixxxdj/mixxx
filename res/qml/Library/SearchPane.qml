@@ -982,8 +982,7 @@ Rectangle {
                             id: recentDelegate
 
                             objectName: "recent_"
-                                    + (recentDelegate.freeText
-                                    || recentDelegate.queryString)
+                                + recentDelegate.index
 
                             required property int index
                             required property var tokens

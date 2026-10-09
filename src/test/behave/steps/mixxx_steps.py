@@ -530,6 +530,37 @@ def _search_activated(rpc):
     return _get_property(rpc, SEARCH_PANE_PATH, "activated") == "true"
 
 
+def _recent_row_path(rpc, needle, timeout=5):
+    """Resolve the index-keyed path of the recent-search row displaying
+    needle (free text, or the serialized query for token rows).
+
+    The recent list is updated synchronously when a search is persisted —
+    no debounce chain — so this is a bounded wait for a non-empty list,
+    followed by a single scan; a miss is a plain failure.
+    """
+    deadline = time.time() + timeout
+    count = 0
+    while time.time() < deadline:
+        count = int(_get_property(rpc, SEARCH_RECENT_LIST_PATH, "count") or 0)
+        if count > 0:
+            break
+        time.sleep(0.2)
+    assert count > 0, "The recent searches list is empty"
+
+    row_texts = []
+    for index in range(count):
+        path = f"{SEARCH_RECENT_LIST_PATH}/recent_{index}"
+        row_text = _get_property(rpc, path, "freeText")
+        if not row_text:
+            row_text = _get_property(rpc, path, "queryString")
+        if row_text == needle:
+            return path
+        row_texts.append(row_text)
+    raise AssertionError(
+            f'The recent search "{needle}" is not listed '
+            f"({count} rows: {row_texts})")
+
+
 def _activate_library_search(context, timeout=15):
     # AGENTS.md click-retry exception: the collapsed bar opens via TapHandler
     # and spix synthetic taps on TapHandlers can be dropped silently; every
@@ -734,7 +765,7 @@ def step_open_and_ready(context):
         # A fresh instance has no mock devices registered; the sync below
         # must know that to avoid a pointless reload on device-less spawns.
         session["registered_devices"] = _mock_devices_key(None)
-        _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen")
+        _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen", timeout=30) # FIXME: First launch on Windows 10 CI runner is quite slow
         if context.active_profile_type == "library-ready":
             _library_command(context.mixxx_rpc, "addDirectory", tracks_dir, scan=True)
 
@@ -761,7 +792,7 @@ def step_open_and_ready(context):
         context._remembered = {}
 
     _wait_for_visible(context.mixxx_rpc, "mainWindow/library")
-    _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen")
+    _wait_for_hidden(context.mixxx_rpc, "mainWindow/splashScreen", timeout=30) # FIXME: First launch on Windows 10 CI runner is quite slow
     context.mixxx_rpc.setStringProperty("mainWindow", "enableDiagnosticClick", "true")
     session["ready_key"] = _session_key(context)
 
@@ -1621,7 +1652,7 @@ def step_recent_search_visible(context, needle):
     s = context.mixxx_rpc
     expected = _remembered_track(context).title if "title of this track" in needle else needle
     _wait_for_visible(s, SEARCH_RECENT_LIST_PATH)
-    recent_path = f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}"
+    recent_path = _recent_row_path(s, expected)
     _wait_for_visible(s, recent_path)
     # Verify that token labels are correctly shown (not empty strings)
     token_field_names = _get_property(s, recent_path, "tokenFieldNames")
@@ -1890,7 +1921,7 @@ def step_press_key_in_search(context, key):
 def step_click_recent_search(context, search):
     s = context.mixxx_rpc
     expected = _remembered_track(context).title if "title of this track" in search else search
-    path = f"{SEARCH_RECENT_LIST_PATH}/recent_{expected}"
+    path = _recent_row_path(s, expected)
     _wait_for_clickable(s, path)
     _click(s, path)
     time.sleep(0.5)
