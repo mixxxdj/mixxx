@@ -665,25 +665,60 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
         return nullptr;
     }
 
+    if (hasConstantTempo()) { // = m_markers.isEmpty()
+        // Constant tempo: there are no markers, scale only the BPM and
+        // keep the position of the first beat.
+        return BeatsPointer(new Beats(m_markers,
+                m_lastMarkerPosition,
+                m_lastMarkerBpm * scaleFactor,
+                m_sampleRate,
+                m_subVersion));
+    }
+
+    // Variable tempo:
+    // keep the beat counts of all markers and scale their positions relative to
+    // the position of the first beat instead. The first beat acts as the anchor
+    // and keeps its position, so the distance between two markers -- and with
+    // it the effective BPM of that section -- is scaled by exactly `scaleFactor`.
+    // (Scaling the beat counts themselves would require their product with
+    // `scaleFactor` to be a positive integer for every single marker,
+    // which cannot be satisfied for an arbitrary beat map.)
+    const audio::FramePos anchor = *cfirstmarker();
+    const auto scalePosition = [anchor, scaleFactor](audio::FramePos position) {
+        return (anchor + (position - anchor) / scaleFactor).toLowerFrameBoundary();
+    };
+
     std::vector<BeatMarker> markers;
     markers.reserve(m_markers.size());
+    audio::FramePos previousPosition = anchor;
     for (const auto& marker : std::as_const(m_markers)) {
-        const double beatsTillNextMarkerFractional = marker.beatsTillNextMarker() * scaleFactor;
-        const int beatsTillNextMarker = static_cast<int>(std::trunc(beatsTillNextMarkerFractional));
-        if (beatsTillNextMarkerFractional != beatsTillNextMarker) {
-            qWarning() << "Marker with" << marker.beatsTillNextMarker()
-                       << "beats till next marker cannot be scaled by"
+        const audio::FramePos position = scalePosition(marker.position());
+        // Rounding down to the frame boundary may let the position collide
+        // with the previous marker if their distance becomes less than one
+        // frame, e.g. when doubling a section that is only one frame long.
+        // Such a marker sequence cannot be represented.
+        if (!markers.empty() && position <= previousPosition) {
+            qWarning() << "Marker at frame position" << marker.position().value()
+                       << "would overlap with the previous marker when scaled by"
                        << scaleFactor;
             return std::nullopt;
         }
-
-        markers.push_back({marker.position(), beatsTillNextMarker});
+        previousPosition = position;
+        markers.push_back({position, marker.beatsTillNextMarker()});
     }
 
-    Bpm lastMarkerBpm = m_lastMarkerBpm * scaleFactor;
+    const audio::FramePos lastMarkerPosition = scalePosition(m_lastMarkerPosition);
+    if (!markers.empty() && lastMarkerPosition <= previousPosition) {
+        qWarning() << "Last marker at frame position" << m_lastMarkerPosition.value()
+                   << "would overlap with the previous marker when scaled by"
+                   << scaleFactor;
+        return std::nullopt;
+    }
 
-    return BeatsPointer(new Beats(markers,
-            m_lastMarkerPosition,
+    const Bpm lastMarkerBpm = m_lastMarkerBpm * scaleFactor;
+
+    return BeatsPointer(new Beats(std::move(markers),
+            lastMarkerPosition,
             lastMarkerBpm,
             m_sampleRate,
             m_subVersion));
