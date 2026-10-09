@@ -315,7 +315,7 @@ VestaxVCI380.onVinyl = function(channel, control, value, _status) {
         const group = `[Channel${deck}]`;
         const newState = !engine.getValue(group, "slip_enabled");
         VestaxVCI380.setLED(deck, VestaxVCI380.LED.VINYL, newState);
-        engine.setValue(`[Channel${  deck  }]`, "slip_enabled", newState);
+        engine.setValue(group, "slip_enabled", newState);
     }
 };
 
@@ -861,8 +861,8 @@ VestaxVCI380.onFXSelect = function(channel, control, value, _status) {
     engine.setValue(group, "chain_preset_selector", value === 0x7F ? 1 : -1);
 };
 
-VestaxVCI380.onFXSelectPush = function(channel, _control, _value, _status) {
-    if (_value === 0x7F) {
+VestaxVCI380.onFXSelectPush = function(channel, _control, value, _status) {
+    if (value === 0x7F) {
         const group=VestaxVCI380.getFXGroup(channel);
         engine.setValue(group, "loaded_chain_preset", 1);
     }
