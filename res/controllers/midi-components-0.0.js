@@ -849,8 +849,19 @@
         };
 
         this.setCurrentUnit = function(newNumber) {
+            // Clear the unit being left before this.group is reassigned.
+            // Afterwards there is no reference to it, so its show_focus and
+            // controller_input_active would stay set and every unit the user
+            // cycled through would appear focused at once.
+            const previousGroup = this.group;
+
             this.currentUnitNumber = newNumber;
             this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
+
+            if (previousGroup !== undefined && previousGroup !== this.group) {
+                engine.setValue(previousGroup, "show_focus", 0);
+                engine.setValue(previousGroup, "controller_input_active", 0);
+            }
 
             if (allowFocusWhenParametersHidden) {
                 engine.setValue(this.group, "show_focus", 0);
