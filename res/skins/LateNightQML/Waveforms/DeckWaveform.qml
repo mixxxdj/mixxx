@@ -9,8 +9,10 @@ Item {
 
     readonly property int minimumHeight: Math.max(
         30,
-        beatgridControls.visible ? beatgridControls.implicitHeight : 0,
-        stemControlsExpanded && stemControls.hasStems ? stemControls.implicitHeight : 0)
+        root.beatgridControlsExpanded || root.beatgridControlsRevealProgress > 0
+                ? beatgridControls.implicitHeight : 0,
+        (root.stemControlsExpanded || root.stemControlsRevealProgress > 0) && stemControls.hasStems
+                ? stemControls.implicitHeight : 0)
     implicitHeight: root.minimumHeight
     readonly property bool beatgridControlsExpanded: showBeatgridControlsProxy.value > 0
     property real beatgridControlsRevealProgress: beatgridControlsExpanded ? 1 : 0
