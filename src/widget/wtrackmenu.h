@@ -115,6 +115,8 @@ class WTrackMenu : public QMenu {
     void slotRemoveFromDisk();
     const QString getDeckGroup() const;
 
+    bool eventFilter(QObject* pObj, QEvent* e) override;
+
   signals:
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer pTrack,
