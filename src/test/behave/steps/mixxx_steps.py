@@ -151,6 +151,24 @@ def _wait_for_hidden(rpc, path, timeout=15):
         raise AssertionError(f"Timed out waiting for '{path}' to be hidden")
 
 
+# --- Static path resolution ---
+
+BUTTON_PATHS = {
+    "LIBRARY": "mainWindow/library",
+    "4DECKS": "mainWindow/show4DecksButton",
+    "EDIT": "mainWindow/editDeckButton",
+    "PREFERENCES": "mainWindow/showPreferencesButton",
+}
+
+LIBRARY_CONTENT = "mainWindow/libraryContent"
+TRACKLIST_PATH = f"{LIBRARY_CONTENT}/trackList"
+COLUMN_HEADER_PATH = f"{TRACKLIST_PATH}/columnHeader"
+COLUMN_PICKER_MENU_PATH = "mainWindow/columnPickerMenu"
+TRACK_TABLE_PATH = f"{TRACKLIST_PATH}/trackTableView"
+TRACK_ROW_PATH = f"{TRACK_TABLE_PATH}"
+TRACK_CONTEXT_MENU_PATH = "mainWindow/trackContextMenu"
+
+
 # --- Mouse helpers ---
 
 def _click(rpc, path):
@@ -201,7 +219,7 @@ def _get_bb(rpc, path):
     return bb
 
 
-def _scroll_tableview_to_row(rpc, row):
+def _scroll_tableview_to_row(rpc, row, table=TRACK_TABLE_PATH):
     """Scroll the track TableView so that ``row`` lies inside the visible viewport.
 
     The TableView recycles its delegates (``reuseItems: true``) and each
@@ -215,10 +233,10 @@ def _scroll_tableview_to_row(rpc, row):
     last_error = None
     while time.time() < deadline:
         try:
-            table_visible = rpc.existsAndVisible(TRACK_TABLE_PATH)
-            y = float(rpc.getStringProperty(TRACK_TABLE_PATH, "contentY"))
-            height = float(rpc.getStringProperty(TRACK_TABLE_PATH, "contentHeight"))
-            viewport = float(rpc.getStringProperty(TRACK_TABLE_PATH, "height")) or 0
+            table_visible = rpc.existsAndVisible(table)
+            y = float(rpc.getStringProperty(table, "contentY"))
+            height = float(rpc.getStringProperty(table, "contentHeight"))
+            viewport = float(rpc.getStringProperty(table, "height")) or 0
         except Exception as e:
             last_error = e
             time.sleep(0.3)
@@ -235,7 +253,7 @@ def _scroll_tableview_to_row(rpc, row):
             return
         new_y = target if target < y else target + _ROW_HEIGHT - viewport
         new_y = max(0.0, min(new_y, height - viewport))
-        rpc.setStringProperty(TRACK_TABLE_PATH, "contentY", str(new_y))
+        rpc.setStringProperty(table, "contentY", str(new_y))
         time.sleep(0.3)
     raise AssertionError(
         f"Failed to scroll track table so row {row} is in view"
@@ -343,21 +361,6 @@ def _library_command(rpc, action, path, scan=False):
 
 
 # --- Path resolution ---
-
-BUTTON_PATHS = {
-    "LIBRARY": "mainWindow/library",
-    "4DECKS": "mainWindow/show4DecksButton",
-    "EDIT": "mainWindow/editDeckButton",
-    "PREFERENCES": "mainWindow/showPreferencesButton",
-}
-
-LIBRARY_CONTENT = "mainWindow/libraryContent"
-TRACKLIST_PATH = f"{LIBRARY_CONTENT}/trackList"
-COLUMN_HEADER_PATH = f"{TRACKLIST_PATH}/columnHeader"
-COLUMN_PICKER_MENU_PATH = "mainWindow/columnPickerMenu"
-TRACK_TABLE_PATH = f"{TRACKLIST_PATH}/trackTableView"
-TRACK_ROW_PATH = f"{TRACK_TABLE_PATH}"
-TRACK_CONTEXT_MENU_PATH = "mainWindow/trackContextMenu"
 
 # TODO can we auto detect it from the QML file?
 TRACK_MENU = [
@@ -505,6 +508,7 @@ SEARCH_SUGGESTION_FIELD_LIST_PATH = f"{SEARCH_PANE_PATH}/searchSuggestionFieldLi
 SEARCH_RECENT_LIST_PATH = f"{SEARCH_PANE_PATH}/searchRecentList"
 SPLIT_VIEW_BUTTON_PATH = f"{LIBRARY_CONTENT}/tracklistMenu/splitViewButton"
 RIGHT_TRACKLIST_PATH = f"{LIBRARY_CONTENT}/rightTrackList"
+RIGHT_TRACKLIST_TABLE_PATH = f"{RIGHT_TRACKLIST_PATH}/trackTableView"
 
 def _suggestion_path(suggestion):
     """Path of a suggestion entry, based on which list shows it.
@@ -969,11 +973,11 @@ def _wait_for_context_menu(rpc, timeout=5):
     return False
 
 
-def _perform_track_action(context, action, row):
+def _perform_track_action(context, action, row, table=TRACK_TABLE_PATH):
     s = context.mixxx_rpc
-    _scroll_tableview_to_row(s, row)
-    path = _track_row_path(row)
-    _wait_for_clickable(s, path)
+    _scroll_tableview_to_row(s, row, table)
+    path = f"{table}/trackRow_{row}"
+    _wait_for_clickable(s, path, timeout=10) # Some CI platform like Windows 10 are very slow to load the table
     time.sleep(0.5)
     TRACK_ACTIONS[action](s, path)
     time.sleep(0.3)
@@ -989,8 +993,9 @@ def _perform_track_action(context, action, row):
 
 
 @when("I {action} the track at row {row:d}")
-def step_track_action(context, action, row):
-    _perform_track_action(context, action, row)
+@when("I {action} the track at row {row:d} on the {panel} track list")
+def step_track_action(context, action, row, panel="left"):
+    _perform_track_action(context, action, row, RIGHT_TRACKLIST_TABLE_PATH if panel == "right" else TRACK_TABLE_PATH)
 
 
 @when("I click a track below the fold")
@@ -1545,17 +1550,6 @@ def step_click_split_view(context):
     _click(context.mixxx_rpc, SPLIT_VIEW_BUTTON_PATH)
     time.sleep(1)
 
-
-@when("I {action} the track at row {row:d} on the right track list")
-def step_track_action_right_list(context, action, row):
-    s = context.mixxx_rpc
-    table = f"{RIGHT_TRACKLIST_PATH}/trackTableView"
-    _wait_for_visible(s, RIGHT_TRACKLIST_PATH)
-    path = f"{table}/trackRow_{row}"
-    _wait_for_clickable(s, path)
-    time.sleep(0.3)
-    TRACK_ACTIONS[action](s, path)
-    time.sleep(0.3)
 
 
 # --- Then: library search ---
