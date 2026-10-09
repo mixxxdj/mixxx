@@ -15,7 +15,7 @@ Item {
 
     required property string group
     property bool splitStemTracks: false
-    readonly property int activeWaveformType: Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Simple || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Filtered || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.HSV || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.RGB || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Stacked ? Mixxx.Config.waveformType : Mixxx.WaveformDisplay.Type.RGB
+    readonly property int activeWaveformType: Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Simple || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Filtered || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.HSV || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.RGB || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.Stacked || Mixxx.Config.waveformType === Mixxx.WaveformDisplay.Type.RGB3Band ? Mixxx.Config.waveformType : Mixxx.WaveformDisplay.Type.RGB
     // Renderer factories are created once by QmlWaveformDisplay. Keep track
     // of the type that was used for the scene-graph stack so a change from
     // the legacy preferences dialog can recreate that stack explicitly.
@@ -121,6 +121,18 @@ Item {
             lowColor: '#2154D7'
             midColor: '#97632D'
             stacked: true
+        }
+        Mixxx.WaveformRendererRGB3Band {
+            axesColor: '#a1a1a1a1'
+            enabled: root.activeWaveformType === Mixxx.WaveformDisplay.Type.RGB3Band
+            gainAll: Mixxx.Config.waveformVisualGainAll
+            gainHigh: Mixxx.Config.waveformVisualGainHigh
+            gainLow: Mixxx.Config.waveformVisualGainLow
+            gainMid: Mixxx.Config.waveformVisualGainMedium
+            highColor: '#F5EBD7'
+            lowColor: '#0054E1'
+            lowMidColor: '#B4680A'
+            midColor: '#FFA600'
         }
         Mixxx.WaveformRendererSimple {
             axesColor: '#a1a1a1a1'
