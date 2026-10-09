@@ -590,6 +590,11 @@ class Track : public QObject {
     bool mergeExtraMetadataFromSource(
             const mixxx::TrackMetadata& importedMetadata);
 
+    /// Checks if any properties that are merged lazily from file tags
+    /// are still missing and could be backfilled by
+    /// mergeExtraMetadataFromSource().
+    bool mayMergeExtraMetadataFromSource() const;
+
     bool exportSeratoMetadata();
 
     ExportTrackMetadataResult exportMetadata(

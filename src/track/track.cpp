@@ -267,6 +267,11 @@ void Track::replaceMetadataFromSource(
     }
 }
 
+bool Track::mayMergeExtraMetadataFromSource() const {
+    const auto locked = lockMutex(&m_qMutex);
+    return m_record.mayMergeExtraMetadataFromSource();
+}
+
 bool Track::mergeExtraMetadataFromSource(
         const mixxx::TrackMetadata& importedMetadata) {
     auto locked = lockMutex(&m_qMutex);
