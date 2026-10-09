@@ -7,7 +7,7 @@
 #include "control/controlobject.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/searchqueriesstorage.h"
+#include "library/searchqueries.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_qmllibraryproxy.cpp"
@@ -325,11 +325,11 @@ QmlLibraryProxy* QmlLibraryProxy::create(QQmlEngine* pQmlEngine, QJSEngine* pJsE
 
 QString QmlLibraryProxy::serializeSearchQuery(
         const QVariantList& tokens, const QString& freeText) const {
-    return SearchQueriesStorage::serializeQuery(tokens, freeText);
+    return SearchQueries::serializeQuery(tokens, freeText);
 }
 
 QVariantMap QmlLibraryProxy::parseSearchQuery(const QString& query) const {
-    return SearchQueriesStorage::parseQuery(query);
+    return SearchQueries::parseQuery(query);
 }
 
 QmlLibraryProxy::Result QmlLibraryProxy::addSource(

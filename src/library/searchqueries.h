@@ -9,7 +9,7 @@
 
 namespace mixxx {
 
-class SearchQueriesStorage final {
+class SearchQueries final {
   public:
     static constexpr int kMaxQueries = 50;
 

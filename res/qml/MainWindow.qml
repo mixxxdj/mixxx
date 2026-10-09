@@ -30,36 +30,26 @@ Item {
 
     // Used to show click interaction on the Window. Mainly relevant on automated testing
     property bool enableDiagnosticClick: false
-    // Distance to lift the whole content column up when the soft keyboard
-    // opens on mobile, so the search bar reaches the top of the screen.
-    property real searchShift: 0
-    y: -root.searchShift
+    // Pull-to-top IME shift: while the soft keyboard is up, lift the
+    // content column so the focused editor sits `imeKeyboardMargin` below
+    // the window top (desktop: no IME, stays 0). Mapping relative to this
+    // root keeps it independent of the shift and its animation.
+    readonly property real imeKeyboardMargin: 0
+    readonly property Item imeFocusItem: Window.activeFocusItem
+    // Future: let a focused item opt into another policy, e.g.
+    // imeShiftPolicy: "none" | "top" | "aboveKeyboard".
+    readonly property real imeShift: {
+        if (!Qt.inputMethod.visible || !root.imeFocusItem) {
+            return 0
+        }
+        return Math.max(0, root.imeFocusItem.mapToItem(root, 0, 0).y
+                - root.imeKeyboardMargin)
+    }
+    y: -root.imeShift
 
     Behavior on y {
         NumberAnimation {
             duration: 150
-        }
-    }
-
-    Connections {
-        target: Qt.inputMethod
-
-        function onVisibleChanged() {
-            update();
-        }
-        function onInputItemClipRectangleChanged() {
-            update();
-        }
-        function update() {
-            // print(`Qt.inputMethod.visible: ${Qt.inputMethod.visible} ${Qt.inputMethod.keyboardRectangle} ${Qt.inputMethod.inputItemClipRectangle}`)
-            // print(`Qt.inputMethod.visible: ${Qt.inputMethod.visible} ${Qt.inputMethod.inputItemClipRectangle.y}`)
-            // root.searchShift = Qt.inputMethod.visible ? Qt.inputMethod.inputItemClipRectangle.y : 0
-            if (Qt.inputMethod.visible) {
-                root.searchShift = 186
-                // root.searchShift = Qt.inputMethod.keyboardRectangle.y
-            } else {
-                root.searchShift = 0
-            }
         }
     }
 

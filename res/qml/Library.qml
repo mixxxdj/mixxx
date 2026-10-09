@@ -17,7 +17,7 @@ Item {
     property var activeSidebar: libraryLeftSources.sidebar()
 
     onActiveSidebarChanged: {
-        if (!root.activeSidebar.tracklist) return;
+        if (!root.activeSidebar?.tracklist) return;
 
         searchPane.clearAllCriteria()
         searchPane.textField.text = root.activeSidebar.tracklist.search

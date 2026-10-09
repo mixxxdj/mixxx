@@ -1,4 +1,4 @@
-#include "library/searchqueriesstorage.h"
+#include "library/searchqueries.h"
 
 #include <QHash>
 #include <QList>
@@ -41,7 +41,7 @@ const QHash<QString, QPair<const char*, const char*>> kChipFields = {
 
 } // anonymous namespace
 
-QStringList SearchQueriesStorage::loadQueries(const UserSettingsPointer& pConfig) {
+QStringList SearchQueries::loadQueries(const UserSettingsPointer& pConfig) {
     VERIFY_OR_DEBUG_ASSERT(pConfig) {
         return {};
     }
@@ -70,7 +70,7 @@ QStringList SearchQueriesStorage::loadQueries(const UserSettingsPointer& pConfig
     return queries;
 }
 
-void SearchQueriesStorage::saveQueries(
+void SearchQueries::saveQueries(
         const UserSettingsPointer& pConfig,
         const QStringList& queries) {
     VERIFY_OR_DEBUG_ASSERT(pConfig) {
@@ -95,7 +95,7 @@ void SearchQueriesStorage::saveQueries(
     }
 }
 
-QVariantMap SearchQueriesStorage::parseQuery(const QString& query) {
+QVariantMap SearchQueries::parseQuery(const QString& query) {
     QVariantMap result;
     QVariantList tokens;
     QStringList freeTextParts;
@@ -112,9 +112,15 @@ QVariantMap SearchQueriesStorage::parseQuery(const QString& query) {
                 if (ok && key != mixxx::track::io::key::INVALID) {
                     token.insert(QStringLiteral("name"), QStringLiteral("Key"));
                     token.insert(QStringLiteral("query"), QStringLiteral("key"));
-                    token.insert(QStringLiteral("value"),
-                            KeyUtils::keyToString(
-                                    key, KeyUtils::KeyNotation::OpenKey));
+                    // Display value only, so the chip follows the user's
+                    // configured key notation; serialization keeps keyId.
+                    // OpenKey is the fallback while no notation is set up.
+                    QString keyValue = KeyUtils::keyToString(key);
+                    if (keyValue.isEmpty()) {
+                        keyValue = KeyUtils::keyToString(
+                                key, KeyUtils::KeyNotation::OpenKey);
+                    }
+                    token.insert(QStringLiteral("value"), keyValue);
                     token.insert(QStringLiteral("keyId"), keyId);
                     tokens.append(token);
                     isChip = true;
@@ -192,7 +198,7 @@ QVariantMap SearchQueriesStorage::parseQuery(const QString& query) {
     return result;
 }
 
-QString SearchQueriesStorage::serializeToken(const QVariantMap& token) {
+QString SearchQueries::serializeToken(const QVariantMap& token) {
     const int keyId = token.value(QStringLiteral("keyId")).toInt();
     if (keyId > 0) {
         return QStringLiteral("key_id:%1").arg(keyId);
@@ -216,7 +222,7 @@ QString SearchQueriesStorage::serializeToken(const QVariantMap& token) {
     return token.value(QStringLiteral("query")).toString() + ":" + argument;
 }
 
-QString SearchQueriesStorage::serializeQuery(
+QString SearchQueries::serializeQuery(
         const QVariantList& tokens, const QString& freeText) {
     QStringList parts;
     parts.reserve(tokens.size() + (freeText.isEmpty() ? 0 : 1));

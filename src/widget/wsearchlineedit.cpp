@@ -11,7 +11,7 @@
 #include <QStringLiteral>
 #include <QToolButton>
 
-#include "library/searchqueriesstorage.h"
+#include "library/searchqueries.h"
 #include "moc_wsearchlineedit.cpp"
 #include "preferences/configobject.h"
 #include "skin/legacy/skincontext.h"
@@ -243,7 +243,7 @@ void WSearchLineEdit::loadQueriesFromConfig() {
     if (!m_pConfig) {
         return;
     }
-    const QStringList queries = mixxx::SearchQueriesStorage::loadQueries(m_pConfig);
+    const QStringList queries = mixxx::SearchQueries::loadQueries(m_pConfig);
     for (const QString& queryString : queries) {
         // Restore query
         addItem(queryString);
@@ -259,7 +259,7 @@ void WSearchLineEdit::saveQueriesInConfig() {
     for (int index = 0; index < count(); index++) {
         queries.append(itemText(index).trimmed());
     }
-    mixxx::SearchQueriesStorage::saveQueries(m_pConfig, queries);
+    mixxx::SearchQueries::saveQueries(m_pConfig, queries);
 }
 
 void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
@@ -552,8 +552,8 @@ void WSearchLineEdit::slotSaveSearch() {
     }
     setCurrentIndex(0);
 
-    while (count() > mixxx::SearchQueriesStorage::kMaxQueries) {
-        removeItem(mixxx::SearchQueriesStorage::kMaxQueries);
+    while (count() > mixxx::SearchQueries::kMaxQueries) {
+        removeItem(mixxx::SearchQueries::kMaxQueries);
     }
 
     if (currentText() != origText) {

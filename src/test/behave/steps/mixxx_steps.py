@@ -527,13 +527,14 @@ def _search_activated(rpc):
 
 
 def _activate_library_search(context, timeout=15):
+    # AGENTS.md click-retry exception: the collapsed bar opens via TapHandler
+    # and spix synthetic taps on TapHandlers can be dropped silently; every
+    # retry is verified against the pane's activated state.
     s = context.mixxx_rpc
     deadline = time.time() + timeout
     while time.time() < deadline:
         if _search_activated(s):
             return
-        # The collapsed search bar opens on tap (TapHandler); under load the
-        # first synthetic tap can be dropped, so re-click until activated.
         _click(s, SEARCH_PANE_PATH)
         time.sleep(0.3)
     assert _search_activated(s), "Library search bar did not open"
@@ -541,7 +542,8 @@ def _activate_library_search(context, timeout=15):
 
 def _deactivate_library_search(context, timeout=5):
     # Escape triggers persistSearch() + deactivateSearch() in the search bar's
-    # key handler, which is the deterministic way to give up focus.
+    # key handler, which is the deterministic way to give up focus. Re-Escape
+    # is needed after a dropped synthetic tap re-opened the bar.
     s = context.mixxx_rpc
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -1472,12 +1474,6 @@ def step_dump_debug(context):
         print("library state:", json.dumps(state)[:300])
     except Exception as e:
         print("library state err", e)
-
-
-# --- Gherkin: library search debug ---
-@given("I dump the library debug state")
-def step_dump_debug_given(context):
-    step_dump_debug(context)
 
 
 # --- When: library search ---

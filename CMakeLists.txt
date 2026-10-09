@@ -1468,7 +1468,7 @@ add_library(
   src/library/scanner/libraryscannerdlg.cpp
   src/library/scanner/recursivescandirectorytask.cpp
   src/library/scanner/scannertask.cpp
-  src/library/searchqueriesstorage.cpp
+  src/library/searchqueries.cpp
   src/library/searchquery.cpp
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
@@ -3059,7 +3059,7 @@ if(BUILD_TESTING)
     src/test/samplebuffertest.cpp
     src/test/savitzkygolaytest.cpp
     src/test/schemamanager_test.cpp
-    src/test/searchqueriesstorage_test.cpp
+    src/test/searchqueries_test.cpp
     src/test/searchqueryparsertest.cpp
     src/test/seratobeatgridtest.cpp
     src/test/seratomarkerstest.cpp

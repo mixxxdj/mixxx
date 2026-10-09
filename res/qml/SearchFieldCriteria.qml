@@ -1,4 +1,5 @@
 import QtQuick
+import "./Theme"
 
 Item {
     id: root
@@ -25,7 +26,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: 7
-        color: root.active ? '#3A60BE' : '#2D4EA1'
+        color: root.active ? Theme.accentColor : '#2D4EA1'
         border.color: root.active ? '#5C82D6' : 'transparent'
         border.width: 1
 
@@ -52,7 +53,7 @@ Item {
 
             height: 18
             radius: 7
-            color: '#D9D9D9'
+            color: Theme.white
 
             FontMetrics {
                 id: valueMetrics

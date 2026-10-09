@@ -631,7 +631,8 @@ result = rpc.getStringProperty("mainWindow", "myResult")
   (last 200 lines) used for startup diagnostics. Nothing is printed live.
 - On early exit or RPC-port timeout, a bounded tail (last 40 lines) plus
   the output-file path is printed to the transcript instead of the full log.
-- Waits up to 20s for port 9000 to be reachable
+- Waits up to 20s for port 9000 to be reachable (override with
+  `MIXXX_TEST_RPC_TIMEOUT=<seconds>`)
 - `stop()`: terminate with 15s grace, then kill; appends the exit banner and
   prints a `mixxx-test stopped: pid=... exit=...` line, which is how
   kill/restart cycles become visible in the behave transcript.
@@ -971,7 +972,13 @@ After the last attempt the wrapper:
     root cause in QML/spix — do not teach the steps to click twice. The
     pre-existing exceptions stay as documented: keyboard-navigating a combo
     whose delegate was never rendered, and the compacted spin
-    next/prev fallback that drives one already-known click sequence.
+    next/prev fallback that drives one already-known click sequence. Also
+    excepted are the library-search helpers `_activate_library_search` /
+    `_deactivate_library_search`: the bar opens/closes on TapHandler, which
+    swallows some spix synthetic taps outright, and each retry is verified
+    against the pane's `activated` state (conversion to single-click +
+    bounded wait was tried and made scenarios fail on the panes' own
+    collapse animation).
 
 ### Rules for `Then` steps
 

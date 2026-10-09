@@ -99,11 +99,20 @@ def _download_file(entry, dest):
             artwork = os.path.join(os.path.dirname(__file__), "../../../res/images/icons/512x512/apps/mixxx.png")
             artwork = os.path.normpath(artwork)
             if entry.get("artwork"):
-                req = urllib.request.Request(entry["artwork"], headers={"User-Agent": "MixxxTestProfile/1.0"})
-                with urllib.request.urlopen(req, timeout=30) as response:
-                    c.write(response.read())
-                    c.close()
-                artwork = c.name
+                # A remote artwork hiccup must not take the track out of the
+                # pool for the whole run: fall back to the bundled cover.
+                try:
+                    req = urllib.request.Request(entry["artwork"], headers={"User-Agent": "MixxxTestProfile/1.0"})
+                    with urllib.request.urlopen(req, timeout=30) as response:
+                        c.write(response.read())
+                        c.close()
+                    artwork = c.name
+                except (OSError, urllib.error.URLError) as e:
+                    sys.stdout.write(
+                        f"  artwork fetch failed for {entry['artwork']}, "
+                        f"falling back to bundled cover ({e})\n"
+                    )
+                    sys.stdout.flush()
             # Preferred: attach the artwork as a cover video stream.
             p = subprocess.run([
                 ffmpeg, "-nostdin", "-hide_banner", "-loglevel", "error",
@@ -340,8 +349,11 @@ class MixxxProcess:
         return f"{code} (0x{code & 0xFFFFFFFF:08X})"
 
     # Fresh profiles apply schema migrations and load the full skin at first
-    # start, which can exceed the historical 20 s on loaded systems.
-    def start(self, timeout=20):
+    # start, which can exceed the historical 20 s on loaded systems or on
+    # machines with a cold audio stack. Configurable for slower runners.
+    def start(self, timeout=None):
+        if timeout is None:
+            timeout = int(os.environ.get("MIXXX_TEST_RPC_TIMEOUT", "20"))
         env = os.environ.copy()
         if self.display:
             env["DISPLAY"] = self.display

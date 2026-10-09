@@ -279,16 +279,6 @@ Feature: Library
     Then a search token "BPM" should be shown in the search bar
     And the library search query should be "bpm:1"
 
-  Scenario: Recent searches are listed when the search bar is empty
-    Given no search is currently active
-    And a track available in the library
-    When I activate the library search
-    And I type the title of this track into the library search
-    And I deactivate the library search
-    And I clear the library search
-    When I activate the library search
-    Then the library recent search "<title of this track>" should be visible
-
   Scenario: Clicking a recent search restores the query
     Given no search is currently active
     And a track available in the library

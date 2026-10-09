@@ -4,7 +4,7 @@
 #include <QStringList>
 #include <QVariantMap>
 
-#include "library/searchqueriesstorage.h"
+#include "library/searchqueries.h"
 #include "moc_qmlrecentsearchmodel.cpp"
 
 namespace mixxx {
@@ -23,10 +23,10 @@ QmlRecentSearchModel::QmlRecentSearchModel(
         UserSettingsPointer pConfig, QObject* parent)
         : QAbstractListModel(parent),
           m_pConfig(std::move(pConfig)) {
-    const QStringList queries = SearchQueriesStorage::loadQueries(m_pConfig);
+    const QStringList queries = SearchQueries::loadQueries(m_pConfig);
     m_searches.reserve(queries.size());
     for (const QString& query : queries) {
-        const QVariantMap parsed = SearchQueriesStorage::parseQuery(query);
+        const QVariantMap parsed = SearchQueries::parseQuery(query);
         m_searches.append({parsed.value(QStringLiteral("tokens")).toList(),
                 parsed.value(QStringLiteral("freeText")).toString(),
                 query});
@@ -39,7 +39,7 @@ int QmlRecentSearchModel::persist(const QVariantList& tokens,
     if (tokens.isEmpty() && freeText.isEmpty()) {
         return -1;
     }
-    const QString queryString = SearchQueriesStorage::serializeQuery(tokens, freeText);
+    const QString queryString = SearchQueries::serializeQuery(tokens, freeText);
     if (queryString.isEmpty()) {
         return -1;
     }
@@ -61,7 +61,7 @@ int QmlRecentSearchModel::persist(const QVariantList& tokens,
         beginInsertRows(QModelIndex(), 0, 0);
         m_searches.prepend({tokens, freeText, queryString});
         endInsertRows();
-        if (m_searches.size() > SearchQueriesStorage::kMaxQueries) {
+        if (m_searches.size() > SearchQueries::kMaxQueries) {
             const int row = m_searches.size() - 1;
             beginRemoveRows(QModelIndex(), row, row);
             m_searches.removeLast();
@@ -116,7 +116,7 @@ void QmlRecentSearchModel::saveQueriesToConfig() const {
     for (const RecentSearch& search : m_searches) {
         queries.append(search.queryString);
     }
-    SearchQueriesStorage::saveQueries(m_pConfig, queries);
+    SearchQueries::saveQueries(m_pConfig, queries);
 }
 
 } // namespace qml

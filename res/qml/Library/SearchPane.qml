@@ -5,6 +5,7 @@ import QtQml
 import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Shapes 1.6
+import "../Theme"
 
 // The collapsible library search bar: a strip of committed search criteria
 // tokens, the free text editor and the decoration popups for field, value
@@ -52,7 +53,9 @@ Rectangle {
     property bool activated: false
     property int activeTokenIndex: -1
     property int highlightedIndex: -1
-    property int suggestionTotal: suggestionList.count + suggestionFieldList.count
+    property int suggestionTotal: recentShown
+            ? 0
+            : suggestionList.count + suggestionFieldList.count
     property int highlightedRecentIndex: -1
     property int activeRecentIndex: -1
     property string freeSearchText: ""
@@ -145,11 +148,14 @@ Rectangle {
 
     anchors.right: parent.right
     anchors.bottom: parent.bottom
-    color: '#D9D9D9'
+    color: Theme.white
     topLeftRadius: 16
 
     Shortcut {
         sequence: "Ctrl+F"
+        // Do not steal focus via the shortcut when the library pane
+        // itself is not visible (e.g. de-maximized behind the decks).
+        enabled: searchPane.visible
         context: Qt.WindowShortcut
         onActivated: searchPane.activateSearch()
     }
@@ -352,7 +358,7 @@ Rectangle {
         // The C++ parser implements the chip dialect of the query strings
         // (quote-aware word split, "=" exact marker, quoted arguments,
         // field aliases); unknown fields, negations and fuzzy words are
-        // returned as free text. See SearchQueriesStorage::parseQuery.
+        // returned as free text. See SearchQueries::parseQuery.
         const parsed = Mixxx.Library.parseSearchQuery(text)
         const leftover = parsed.freeText.split(' ')
                 .filter((word) => word.length > 0)
@@ -662,11 +668,7 @@ Rectangle {
 
             TapHandler {
                 onTapped: {
-                    if (searchPane.activeTokenIndex >= 0) {
-                        searchPane.setActiveToken(-1)
-                    } else {
-                        searchField.forceActiveFocus()
-                    }
+                    searchField.forceActiveFocus()
                 }
             }
 
@@ -839,7 +841,7 @@ Rectangle {
                         Rectangle {
                             anchors.fill: parent
                             color: searchPane.highlightedIndex === parent.index
-                                    ? '#B0B0B0'
+                                    ? Theme.lightGray2
                                     : (fieldSuggestionHover.hovered ? '#C6C6C6' : 'transparent')
                         }
 
@@ -895,7 +897,7 @@ Rectangle {
                         Rectangle {
                             anchors.fill: parent
                             color: searchPane.highlightedIndex - suggestionFieldList.count === suggestionDelegate.index
-                                    ? '#B0B0B0'
+                                    ? Theme.lightGray2
                                     : (suggestionHover.hovered ? '#C6C6C6' : 'transparent')
                         }
 
@@ -1001,7 +1003,7 @@ Rectangle {
                             Rectangle {
                                 anchors.fill: parent
                                 color: searchPane.highlightedRecentIndex === recentDelegate.index
-                                        ? '#B0B0B0'
+                                        ? Theme.lightGray2
                                         : (recentHover.hovered ? '#C6C6C6' : 'transparent')
                             }
 
