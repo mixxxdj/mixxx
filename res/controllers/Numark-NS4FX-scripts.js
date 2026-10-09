@@ -1183,6 +1183,17 @@ NS4FX.Deck = function(number, midi_chan) {
         });
         this.hotcues = buttons;
         this.hotcues.reconnectComponents();
+
+        if (this.padMode) {
+            this.padMode.pad_hotcue.output(padmode === "hotcue" ? 1 : 0);
+            this.padMode.pad_pitchplay.output(padmode === "pitchplay" ? 1 : 0);
+            this.padMode.pad_autoloop.output(padmode === "autoloop" ? 1 : 0);
+            this.padMode.pad_roll.output(padmode === "roll" ? 1 : 0);
+            this.padMode.pad_fadercuts.output(padmode === "fadercuts" ? 1 : 0);
+            this.padMode.pad_slicer.output((padmode === "stems" || padmode === "slicer") ? 1 : 0);
+            this.padMode.pad_sampler.output(padmode === "sampler" ? 1 : 0);
+            this.padMode.pad_scratchbanks.output(padmode === "scratchbanks" ? 1 : 0);
+        }
     };
     this.hotcues = new components.ComponentContainer();
     this.pitch = new components.Pot({
@@ -1516,17 +1527,14 @@ NS4FX.Deck = function(number, midi_chan) {
             reloop: new components.Button({
                 midi: [0x94 + midi_chan, 0x41],
                 input: function(_channel, _control, value, _status) {
+                    NS4FX.dbg(`[RELOOP/ROLL] Shift+Loop On/Off pressed on deck ${  deck.number  } with value: ${  value  } for group: ${  this.group}`);
                     if (value === 0x7F) { // Button pressed
-                        const loopEnabled = engine.getValue(this.group, "loop_enabled");
-                        if (loopEnabled) {
-                            // If the loop is active, we deactivate it
-                            engine.setValue(this.group, "loop_enabled", 0);
-                        } else {
-                            // If no loop is active, we activate the last loop
-                            engine.setValue(this.group, "reloop_toggle", 1);
-                        }
+                        // Activate loop roll over the current beatloop_size
+                        engine.setValue(this.group, "beatlooproll_activate", 1);
                         this.output(1);
                     } else if (value === 0x00) { // Button released
+                        // Deactivate loop roll and resume normal playback
+                        engine.setValue(this.group, "beatlooproll_activate", 0);
                         this.output(0);
                     }
                 },
@@ -1534,11 +1542,11 @@ NS4FX.Deck = function(number, midi_chan) {
                     this.send(value ? 0x7F : 0x01);
                 },
                 connect: function() { // NOSONAR
-                    this.connections.push(
-                        engine.connectControl(this.group, "loop_enabled", function(value) {
+                    this.connections = [
+                        engine.makeConnection(this.group, "loop_enabled", function(value) {
                             this.output(value);
                         }.bind(this))
-                    );
+                    ];
                 }
             }),
 
