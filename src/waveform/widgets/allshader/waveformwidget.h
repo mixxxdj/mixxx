@@ -30,6 +30,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     void resizeRenderer(int width, int height, float devicePixelRatio) override;
 
     // override for WaveformWidgetAbstract
+    void preRender(VSyncThread* vsyncThread) override;
     mixxx::Duration render() override;
 
     // overrides for WGLWidget
@@ -73,6 +74,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     WaveformRenderMark* m_pWaveformRenderMarkSlip;
 
     WaveformRendererSignalBase* m_pWaveformRendererSignal;
+    bool m_rendergraphResizePending = true;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformWidget);
 };
