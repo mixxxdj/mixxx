@@ -147,8 +147,9 @@ QList<QList<QString>> ParserCsv::tokenize(const QByteArray& str, char delimiter)
     return tokens;
 }
 
-bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlaylistTableModel, bool useRelativePath)
-{
+bool ParserCsv::writeCSVFile(const QString& file_str,
+        BaseSqlTableModel* pPlaylistTableModel,
+        PlaylistExportFilePathMode filePathMode) {
     /*
      * Important note:
      * On Windows \n will produce a <CR><CL> (=\r\n)
@@ -223,7 +224,11 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
                                 ->data(pPlaylistTableModel->index(j, i),
                                         BaseTrackTableModel::kDataExportRole)
                                 .toString();
-                if (useRelativePath) {
+                // FIXME add helper functions for these three types
+                if (filePathMode == PlaylistExportFilePathMode::NoPaths) {
+                    mixxx::FileInfo file(field);
+                    field = file.fileName().prepend(QStringLiteral("./"));
+                } else if (filePathMode == PlaylistExportFilePathMode::RelativePaths) {
                     field = base_dir.relativeFilePath(field);
                 }
             } else {
