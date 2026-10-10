@@ -5981,10 +5981,14 @@ include(CPack)
 if(APPLOCAL_COMPONENT_DEFINED)
   cpack_add_component(applocal HIDDEN REQUIRED)
 
-  # In order to run Mixx from the build directory install applocal components
-  add_custom_command(
-    TARGET mixxx
-    POST_BUILD
+  # Install applocal components into the build directory so Mixxx can be run
+  # from there. This is done exactly once for any target being built
+  # (previously two concurrent POST_BUILD commands on the mixxx and mixxx-test
+  # targets raced on the same build directory, causing sporadic install
+  # failures). The applocal component only contains Qt runtime files, so it
+  # does not need to run after the targets have been linked.
+  add_custom_target(
+    applocal_in_build_dir
     COMMAND
       "${CMAKE_COMMAND}" -DCOMPONENT=applocal
       -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P
@@ -5992,19 +5996,11 @@ if(APPLOCAL_COMPONENT_DEFINED)
     COMMENT
       "Install applocal components to allow Mixxx to be run from the build directory."
   )
-
-  if(BUILD_UI_TEST)
-    # In order to run mixxx-test from the build directory install applocal components
-    add_custom_command(
-      TARGET mixxx-test
-      POST_BUILD
-      COMMAND
-        "${CMAKE_COMMAND}" -DCOMPONENT=applocal
-        -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P
-        cmake_install.cmake
-      COMMENT
-        "Install applocal components to allow mixxx-test to be run from the build directory."
-    )
+  add_dependencies(mixxx applocal_in_build_dir)
+  if(BUILD_TESTING)
+    # Building mixxx-test alone (e.g. for the UI tests) in a fresh build
+    # directory must also provide the Qt runtime.
+    add_dependencies(mixxx-test applocal_in_build_dir)
   endif()
 endif()
 
