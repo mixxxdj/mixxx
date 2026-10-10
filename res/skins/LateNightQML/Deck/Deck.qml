@@ -13,6 +13,7 @@ Item {
     required property int deckState
     property bool editMode: false
     required property string group
+    readonly property bool contentReady: deckLoader.status === Loader.Ready
 
     signal toggleFocus
 

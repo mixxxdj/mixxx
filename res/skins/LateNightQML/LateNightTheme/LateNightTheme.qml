@@ -3,6 +3,8 @@ import QtQuick
 import "."
 
 QtObject {
+    property bool layoutAnimationsEnabled: true
+
     readonly property color accentColor: ColorScheme.accentColor
     readonly property color activePlayCueColor: isClassic ? "#db0000" : "#b24c12"
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")
