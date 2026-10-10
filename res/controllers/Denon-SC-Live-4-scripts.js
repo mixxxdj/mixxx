@@ -70,29 +70,6 @@ const sweepFxMix = {
     echo: 0.8,
 };
 
-/*
- * NOTE ON STEMS (not yet supported by this mapping)
- *
- * - Mixxx 2.5.x (the current full release, which this mapping targets) has
- *   no stem support.
- * - Mixxx 2.6 (in beta since May 2025, not yet a full release at the time of
- *   writing) adds stem playback with per-stem volume and quick effects, plus
- *   stem controls that mappings can use.
- *   See https://mixxx.org/news/2024-08-26-stem-mixing/
- * - Mixxx 2.6 reads stem files in the Native Instruments stem format
- *   (.stem.mp4: the full mix + 4 stems, plus "stem" metadata). Mixxx accepts
- *   more audio codecs inside that format than the original specification.
- * - Engine DJ's stems (Engine Library/Stems/*.stems) can't be used. They are
- *   MP4 files labeled as 8-channel AAC, but the audio data is encrypted with
- *   Denon's own private encryption, so ffmpeg and other decoders can't read
- *   them (as found with this project's files, September 2026). See
- *   https://github.com/danielkinahan/engine-dj-stems-research
- * - Tested September 2026: this mapping runs unchanged in the Mixxx 2.6 beta.
- *   Stem controls were not added, because there's no practical way yet for
- *   SC Live 4 users to get stem files Mixxx can play (their Engine DJ stems
- *   can't be used). To revisit if that changes.
- */
-
 // Some pots on the SC Live 4 have their unity gain point marked beyond the center of the pot
 // travel at about the point where the MIDI control reports value 80. This is to deal with that.
 const offsetPotInValueScale = function(value) {
