@@ -1831,9 +1831,19 @@ SCLive4.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
     const theContainer = this;
 
+    this.mixxHasStems = true;
+
+    try {
+        // This will throw if Mixxx was built without stems
+        engine.getValue("[Channel1]", "stem_count");
+    } catch {
+        // Stems not available:
+        this.mixxHasStems = false;
+    }
+
     // Create component containers for each pad mode
     const modes = new components.ComponentContainer({
-        "hotcue": new SCLive4.WrappingArrayView([new SCLive4.hotcueMode(deck, offset), new SCLive4.pitchPlayMode(deck, offset)], 0),
+        "hotcue": new SCLive4.WrappingArrayView(this.mixxHasStems ? [new SCLive4.hotcueMode(deck, offset), new SCLive4.stemsMode(deck, offset)] : [new SCLive4.hotcueMode(deck, offset)], 0),
         "loop": new SCLive4.WrappingArrayView([new SCLive4.savedLoopMode(deck, offset), new SCLive4.autoloopMode(deck, offset)], 0),
         "roll": new SCLive4.WrappingArrayView([new SCLive4.rollMode(deck, offset), new SCLive4.samplerMode(deck, offset)], 0),
         "slicer": new SCLive4.WrappingArrayView([new SCLive4.slicerMode(deck, offset, false), new SCLive4.slicerMode(deck, offset, true)], 0),
@@ -2049,7 +2059,60 @@ SCLive4.hotcueMode = function(deck, offset) {
 };
 SCLive4.hotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
 
-// PITCH PLAY MODE (Cue button, second layer)
+// STEMS MODE (Cue button, second layer)
+//   - Pads 1-4 mute stems 4-1. Tap to toggle, hold for temporary.
+//   - Stem order is reversed to match the standalone behavior of the SC Live 4.
+//   - PARAMETER <: instant vocal - unmute stem 4, mute 1-3
+//   - PARAMETER >: instant instrumental - mute stem 4, unmute 1-3
+SCLive4.stemsMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.offset = offset;
+    this.ledControl = SCLive4.padMode.HOTCUE;
+    this.colorUnMute = SCLive4.rgbCode.blue;
+    this.colorMute = SCLive4.rgbCode.blueDark;
+    this.colorDisabled = SCLive4.rgbCode.black;
+    this.pads = new components.ComponentContainer();
+    this.groupPrefix = `[Channel${script.deckFromGroup(deck.currentDeck)}_Stem`;
+    for (let i = 1; i <= 4; i++) {
+        this.pads[i] = new components.Button({
+            type: components.Button.prototype.types.powerWindow,
+            group: `${this.groupPrefix}${5 - i}]`,
+            key: "mute",
+            midi: [0x94 + offset, 0x0E + i],
+            sendRGB: function(colorObj) {
+                midi.sendShortMsg(0x94 + offset, 0x0E + i, SCLive4.paletteFromRGB(colorObj));
+            },
+            on: this.colorMute,
+            off: this.colorUnMute,
+            outConnect: false,
+        });
+    }
+
+    this.onEnter = function() {
+        for (let i = 5; i <= 8; i++) {
+            midi.sendShortMsg(0x94 + this.offset, 0x0E + i, SCLive4.paletteFromRGB(this.colorDisabled));
+        }
+    };
+
+    this.onParameter = function(direction, _shifted) {
+        if (direction > 0) {
+            // Instant instrumental
+            engine.setValue(`${this.groupPrefix}1]`, "mute", 0);
+            engine.setValue(`${this.groupPrefix}2]`, "mute", 0);
+            engine.setValue(`${this.groupPrefix}3]`, "mute", 0);
+            engine.setValue(`${this.groupPrefix}4]`, "mute", 1);
+        } else {
+            // Instant vocal
+            engine.setValue(`${this.groupPrefix}1]`, "mute", 1);
+            engine.setValue(`${this.groupPrefix}2]`, "mute", 1);
+            engine.setValue(`${this.groupPrefix}3]`, "mute", 1);
+            engine.setValue(`${this.groupPrefix}4]`, "mute", 0);
+        }
+    };
+};
+SCLive4.stemsMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+// PITCH PLAY MODE (not mapped)
 //   - Pads play the last hot cue you used (Mixxx's "hotcue_focus", default 1)
 //     at 8 different pitches. Pressing a pad jumps to that cue and plays it.
 //   - Default range: -4 ... +3 semitones; the root (0, original key) is pad 5
