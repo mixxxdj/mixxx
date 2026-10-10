@@ -100,6 +100,19 @@ bool WaveformRendererTextured::loadShaders() {
 }
 
 bool WaveformRendererTextured::loadTexture() {
+    // WaveformRendererTextured: guard against missing current GL context
+    if (QOpenGLContext::currentContext() == nullptr) {
+        qWarning() << "WaveformRendererTextured::loadTexture - no current GL context";
+        glDisable(GL_TEXTURE_2D);
+        return false;
+    }
+
+    for (int i = 0; i < 16; ++i) {
+        if (glGetError() == GL_NO_ERROR) {
+            break;
+        }
+    }
+
     int dataSize = 0;
     const WaveformData* data = nullptr;
 
@@ -279,6 +292,11 @@ void WaveformRendererTextured::slotWaveformUpdated() {
     if (!m_frameShaderProgram) {
         return;
     }
+    // WaveformRendererTextured: guard against missing current GL context
+    if (QOpenGLContext::currentContext() == nullptr) {
+        return;
+    }
+
     loadTexture();
 }
 
