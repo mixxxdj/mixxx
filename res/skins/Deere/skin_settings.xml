@@ -106,11 +106,60 @@
             <SetVariable name="skinsetting">[Skin],show_starrating</SetVariable>
           </Template>
 
-          <Template src="skins:Deere/skinsettings_button.xml">
-            <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="text">8 Hotcues</SetVariable>
-            <SetVariable name="skinsetting">[Skin],show_8_hotcues</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <ObjectName>HotcueCountRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <Template src="skins:Deere/skinsettings_button.xml">
+                <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
+                <SetVariable name="text">Hotcues</SetVariable>
+                <SetVariable name="skinsetting">[Skin],show_hotcues</SetVariable>
+              </Template>
+              <WidgetGroup>
+                <ObjectName>HotcueCountOptions</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Connection>
+                  <ConfigKey>[Skin],show_hotcues</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+                  <Template src="skins:Deere/skinsettings_numtoggle.xml">
+                    <SetVariable name="Text">4</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_4_hotcues</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="Width">22f</SetVariable>
+                  </Template>
+                  <Template src="skins:Deere/skinsettings_numtoggle.xml">
+                    <SetVariable name="Text">8</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="Width">22f</SetVariable>
+                  </Template>
+                  <Template src="skins:Deere/skinsettings_numtoggle.xml">
+                    <SetVariable name="Text">16</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_16_hotcues</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="Width">22f</SetVariable>
+                  </Template>
+                  <Template src="skins:Deere/skinsettings_numtoggle.xml">
+                    <SetVariable name="Text">24</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_24_hotcues</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="Width">22f</SetVariable>
+                  </Template>
+                  <Template src="skins:Deere/skinsettings_numtoggle.xml">
+                    <SetVariable name="Text">36</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_36_hotcues</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="Width">22f</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
 
           <Template src="skins:Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
