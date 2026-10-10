@@ -49,6 +49,8 @@ class AutoDJFeature : public LibraryFeature {
         return true;
     }
 
+    bool appendTracks(const QList<TrackId>& trackIds);
+
   public slots:
     void activate() override;
 
