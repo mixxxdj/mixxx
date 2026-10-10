@@ -277,12 +277,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     std::vector<std::unique_ptr<QAbstractItemDelegate>> newDelegates;
     for (int i = 0; i < pNewModel->columnCount(); ++i) {
         // Setup delegates according to what the model tells us
-        auto delegate = std::unique_ptr<QAbstractItemDelegate>(
+        auto pDelegate = std::unique_ptr<QAbstractItemDelegate>(
                 pNewTrackModel->delegateForColumn(i, this));
-        // If delegate is NULL, it will unset the delegate for the column
-        setItemDelegateForColumn(i, delegate.get());
-        if (delegate) {
-            newDelegates.push_back(std::move(delegate));
+        // If pDelegate is NULL, it will unset the delegate for the column
+        setItemDelegateForColumn(i, pDelegate.get());
+        if (pDelegate) {
+            newDelegates.push_back(std::move(pDelegate));
         }
 
         // Show or hide the column based on whether it should be shown or not.
