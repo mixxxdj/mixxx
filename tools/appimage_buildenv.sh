@@ -43,27 +43,26 @@ case "$HOST_ARCH" in
         if [ -n "${BUILDENV_RELEASE}" ]; then
             : "${VCPKG_TARGET_TRIPLET:=x64-linux-release}"
             : "${BUILDENV_BRANCH:=2.7-rel}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-9506d686}"
-            : "${BUILDENV_SHA256:=1d9d9781bd5198f8d72228ba1cdb76fe140dd515a5ca3d3b1bf4560900556364}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-c2a79b5e}"
+            : "${BUILDENV_SHA256:=b77478f14bb632dfb0dd76ad42a09f351e48431e3ebfdb2f5944d00d561393f3}"
         else
             : "${VCPKG_TARGET_TRIPLET:=x64-linux}"
             : "${BUILDENV_BRANCH:=2.7}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-332464ba}"
-            : "${BUILDENV_SHA256:=2760a1ba5e5f04a0a3e13330bcd298e1e84773169c105266aee4308599b01fa6}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-42c3d165}"
+            : "${BUILDENV_SHA256:=da3eb518cf96fdfd5238a2c0ff63a72d9f1af10b79fa3fe6354f7f9a8fa18516}"
         fi
         ;;
     aarch64)
-        VCPKG_TARGET_TRIPLET="arm64-linux"
-        : "${BUILDENV_BRANCH:=2.7}"
-        # The arm64-linux buildenv is not yet published by Mixxx, but an
-        # explicit BUILDENV_NAME / BUILDENV_URL override (e.g. a CI artifact)
-        # is still honoured.
-        if [ -z "${BUILDENV_NAME+x}" ] && [ -z "${BUILDENV_URL+x}" ]; then
-            echo "ERROR: arm64-linux buildenv is not yet published by Mixxx."
-            echo "Once a mixxx-deps-<version>-arm64-linux-XXXXXXXX.zip appears on"
-            echo "https://downloads.mixxx.org/dependencies/<version>/Linux/,"
-            echo "set BUILDENV_NAME via the environment or in this script and re-run."
-            exit 1
+        if [ -n "${BUILDENV_RELEASE}" ]; then
+            : "${VCPKG_TARGET_TRIPLET:=arm64-linux-release}"
+            : "${BUILDENV_BRANCH:=2.7-rel}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-rel-c2a79b5e}"
+            : "${BUILDENV_SHA256:=721bd3ac560f45f2810c9240f368e7fb982db3b05bd4a4918fa200bd75df84f0}"
+        else
+            : "${VCPKG_TARGET_TRIPLET:=arm64-linux}"
+            : "${BUILDENV_BRANCH:=2.7}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-42c3d165}"
+            : "${BUILDENV_SHA256:=69501c2b0af41ac3422289c45f499ff40fe74f9e6c6755a8a90f4360469a9553}"
         fi
         ;;
     *)
@@ -148,6 +147,24 @@ case "$1" in
             fi
             # XCB packages needed to link the static Qt plugin from the
             # buildenv; keep in sync with the buildenv's Qt build.
+            # binutils (readelf) feeds the appimage_floor_deps check; the
+            # libharfbuzz0b/libfontconfig1/libfreetype6/libasound2/libjack0
+            # runtime packages are the delegated floor libraries the check
+            # resolves against, and libpipewire is a delegated dependency of
+            # the AppImage that the bare runner lacks.
+            # libasound2t64/libfontconfig1t64/libfreetype6t64/libharfbuzz0bt64
+            # are the time_t-transitioned names on Ubuntu 24.04+, where the
+            # base names are virtual packages; Ubuntu 22.04 uses the base
+            # names.  Pick per library like FUSE_PKG above so local setup
+            # works on both.
+            ASOUND_PKG="libasound2t64"
+            if ! apt-cache show libasound2t64 &>/dev/null; then ASOUND_PKG="libasound2"; fi
+            FONTCONFIG_PKG="libfontconfig1t64"
+            if ! apt-cache show libfontconfig1t64 &>/dev/null; then FONTCONFIG_PKG="libfontconfig1"; fi
+            FREETYPE_PKG="libfreetype6t64"
+            if ! apt-cache show libfreetype6t64 &>/dev/null; then FREETYPE_PKG="libfreetype6"; fi
+            HARFBUZZ_PKG="libharfbuzz0bt64"
+            if ! apt-cache show libharfbuzz0bt64 &>/dev/null; then HARFBUZZ_PKG="libharfbuzz0b"; fi
             sudo apt-get install -y --no-install-recommends \
                 ccache \
                 g++ \
@@ -159,6 +176,13 @@ case "$1" in
                 "${FUSE_PKG}" \
                 unzip \
                 squashfs-tools \
+                binutils \
+                "${HARFBUZZ_PKG}" \
+                "${FONTCONFIG_PKG}" \
+                "${FREETYPE_PKG}" \
+                "${ASOUND_PKG}" \
+                libjack0 \
+                libpipewire-0.3-0 \
                 libsecret-1-dev \
                 libgcrypt20-dev \
                 libgpg-error-dev \
@@ -170,7 +194,6 @@ case "$1" in
                 libxkbcommon-dev \
                 libxkbcommon-x11-dev \
                 libegl1-mesa-dev \
-                libupower-glib-dev \
                 libsm-dev \
                 libxrandr-dev \
                 libxext-dev \
