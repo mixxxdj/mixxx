@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en" class="bg-base-100 min-h-dvh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M7 3H5v6h2zm12 0h-2v10h2zM3 13h2v8h2v-8h2v-2H3zm12-6h-2V3h-2v4H9v2h6zm-4 14h2V11h-2zm4-6v2h2v4h2v-4h2v-2z'/%3E%3C/svg%3E"
+    />
+    <title>Mixxx</title>
+
+    <!-- Dependencies -->
+    <script>
+      const base_path = document.location.pathname.substring(
+        0,
+        document.location.pathname.lastIndexOf("/"),
+      );
+      let manifestCache = null;
+
+      fetch("dist/.vite/manifest.json", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((m) => {
+          if (!manifestCache) {
+            manifestCache = m;
+          }
+          const css = m["src/styles.css"].file;
+          const link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = base_path + "/dist/" + css;
+          document.head.appendChild(link);
+
+          const js = m["src/main.js"].file;
+          const script = document.createElement("script");
+          script.type = "module";
+          script.src = base_path + "/dist/" + js;
+          document.head.appendChild(script);
+        });
+    </script>
+
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body
+    x-cloak
+    x-data="app"
+    x-bind:data-theme="$store.theme.current"
+    class="bg-base-100 min-h-dvh"
+  >
+    <!-- Header -->
+    <header class="shadow-sm navbar bg-base-300">
+      <div class="navbar-start">
+        <div class="dropdown">
+          <!-- menu here ? -->
+        </div>
+      </div>
+      <div class="navbar-center">
+        <img alt="Mixxx" src="mixxx_logo.svg" class="h-12" />
+      </div>
+      <div class="navbar-end">
+        <div class="drawer drawer-end">
+          <!-- # Settings -->
+          <input
+            id="settings-drawer"
+            type="checkbox"
+            class="drawer-toggle"
+          />
+          <div class="drawer-content">
+            <label
+              for="settings-drawer"
+              class="drawer-button btn btn-ghost btn-square"
+              ><i class="w-6 h-6 iconify mdi-light--settings"></i
+            ></label>
+          </div>
+          <div class="z-50 drawer-side">
+            <label
+              for="settings-drawer"
+              aria-label="close sidebar"
+              class="drawer-overlay"
+            ></label>
+            <ul
+              class="p-4 space-y-2 w-80 min-h-full menu bg-base-100"
+            >
+              <h2 class="mb-2 text-xl font-bold">Settings</h2>
+              <li>
+                <fieldset class="block w-full fieldset">
+                  <legend class="fieldset-legend">
+                    Decks
+                  </legend>
+
+                  <div
+                    class="flex flex-wrap gap-2 w-full"
+                    x-ref="decksOrder"
+                    x-init="$nextTick(() => { init_settings_decks_sortable() })"
+                  >
+                    <template
+                      x-for="deck in settings.decks"
+                      :key="deck.id"
+                    >
+                      <input
+                        class="btn btn-sm"
+                        type="checkbox"
+                        name="decks"
+                        x-bind:aria-label="deck.id"
+                        x-bind:checked="deck.visible"
+                        @change="settings.toggleDeckVisible(deck.id)"
+                        draggable="true"
+                      />
+                    </template>
+                  </div>
+
+                  <p
+                    class="w-full text-xs opacity-60 basis-full"
+                  >
+                    Visible decks. You can drag and sort
+                    (not Firefox).
+                  </p>
+                </fieldset>
+              </li>
+              <li>
+                <fieldset class="block w-full fieldset">
+                  <legend class="fieldset-legend">
+                    AutoDJ refresh (s)
+                  </legend>
+                  <input
+                    type="number"
+                    class="w-full input input-sm input-bordered"
+                    x-model="settings.autodjPollInterval"
+                    min="5"
+                    max="120"
+                  />
+                  <p class="w-full text-xs opacity-60">
+                    How often to refresh the AutoDJ queue (seconds).
+                  </p>
+                </fieldset>
+              </li>
+              <li>
+                <fieldset class="block w-full fieldset">
+                  <legend class="fieldset-legend">
+                    Theme
+                  </legend>
+                  <!-- # Theme switcher -->
+                  <div class="flex gap-2 items-center w-full">
+                    <i
+                      class="w-6 h-6 iconify mdi--palette-swatch-variant"
+                    ></i>
+                    <select
+                      class="flex-1 select select-sm"
+                      x-model="$store.theme.current"
+                    >
+                      <optgroup
+                        label="Select a theme"
+                      ></optgroup>
+                      <template
+                        x-for="theme in $store.theme.options"
+                      >
+                        <option
+                          :value="theme"
+                          x-text="theme"
+                          :selected="theme===$store.theme.current"
+                        ></option>
+                      </template>
+                    </select>
+                  </div>
+                </fieldset>
+              </li>
+              <li>
+                <fieldset class="block w-full fieldset">
+                  <legend class="fieldset-legend">
+                    Selected row color
+                  </legend>
+                  <div class="flex gap-2 items-center w-full">
+                    <i class="w-6 h-6 iconify mdi--palette"></i>
+                    <select
+                      class="flex-1 select select-sm"
+                      x-model="settings.selectedColor"
+                    >
+                      <option value="primary">Primary</option>
+                      <option value="secondary">Secondary</option>
+                      <option value="accent">Accent</option>
+                      <option value="neutral">Neutral</option>
+                      <option value="info">Info</option>
+                      <option value="success">Success</option>
+                      <option value="warning">Warning</option>
+                      <option value="error">Error</option>
+                    </select>
+                  </div>
+                </fieldset>
+              </li>
+              <li>
+                <!-- Test / Buttons -->
+                <div tabindex="0" class="border collapse collapse-arrow bg-base-200 border-base-300">
+                  <input type="checkbox" />
+                  <div class="font-semibold collapse-title">Colors preview</div>
+                  <div class="text-sm collapse-content">
+                    <div class="flex flex-wrap gap-2">
+                      <button class="btn btn-sm">btn</button>
+                      <button class="btn btn-sm btn-ghost">ghost</button>
+                      <button class="btn btn-sm btn-neutral">neutral</button>
+                      <button class="btn btn-sm btn-primary">primary</button>
+                      <button class="btn btn-sm btn-secondary">
+                        secondary
+                      </button>
+                      <button class="btn btn-sm btn-accent">accent</button>
+                      <button class="btn btn-sm btn-info">info</button>
+                      <button class="btn btn-sm btn-success">success</button>
+                      <button class="btn btn-sm btn-warning">warning</button>
+                      <button class="btn btn-sm btn-error">error</button>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- # Main -->
+    <main class="p-4 mx-auto space-y-6 max-w-7xl bg-base-100 min-h-[calc(100dvh-8rem)]">
+      <!-- # Mixer sections (tabs + channels + crossfader) -->
+      <div x-show="activeTab === 'mixer'"
+        class="flex flex-col gap-2"
+      >
+      <!-- # Tabs -->
+      <div
+        id="tabs"
+        x-data="{
+          tabSelected: -1,
+          tabId: $id('tabs'),
+        }"
+        class="card card-border bg-base-200"
+      >
+        <div class="gap-0 p-3 card-body">
+          <div x-ref="tabButtons" class="px-4 tabs">
+            <template x-for="(deck, pos) in settings.decks">
+              <button
+                @click="tabSelected = pos; onDeckChange(deck.id)"
+                type="button"
+                class="flex-1 rounded-t-lg tab"
+                :class="pos===tabSelected && 'tab-active tab-primary font-semibold bg-base-100'"
+                x-show="deck.visible"
+                x-text="'Deck ' + deck.id"
+              ></button>
+            </template>
+          </div>
+          <div>
+            <template x-for="(d, pos) in settings.decks">
+              <div
+                :id="$id(tabId + '-content')"
+                x-show="tabSelected === pos"
+                class="space-y-3"
+              >
+                <div class="card card-border bg-base-100">
+                  <div class="p-4 card-body">
+                    <div class="flex justify-between items-start">
+                      <div class="flex-1 min-w-0">
+                        <h3 class="text-sm card-title" x-text="'Deck ' + d.id"></h3>
+                        <div class="font-bold truncate" x-text="Decks[d.id].title || 'No track loaded'"></div>
+                        <div class="text-xs truncate opacity-75" x-text="Decks[d.id].artist || ''"></div>
+                      </div>
+                      <div class="flex gap-3 items-start ml-4 shrink-0">
+                        <div class="text-center">
+                          <div class="text-xs font-semibold uppercase opacity-60" x-text="Decks[d.id].key || '–'"></div>
+                          <div class="text-xs opacity-60" x-text="Decks[d.id].bpm ? Decks[d.id].bpm.toFixed(1) + ' BPM' : '–'"></div>
+                        </div>
+                        <button
+                          class="btn btn-sm btn-square"
+                          :class="Decks[d.id].play ? 'btn-warning' : 'btn-success'"
+                          @click="toggleDeckPlay(d.id)"
+                        >
+                          <span
+                            class="text-base"
+                            :class="Decks[d.id].play ? 'iconify mdi--pause' : 'iconify mdi--play'"
+                          ></span>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Seek bar (editable position) -->
+                    <div class="mt-3">
+                      <input
+                        type="range"
+                        min="0"
+                        max="1000"
+                        :value="Math.floor(Decks[d.id].pos * 1000)"
+                        @input="onDeckSeekInput($event.target.value)"
+                        @change="onDeckSeekCommit($event.target.value)"
+                        @mouseup="deckSeeking = false"
+                        @mousedown="deckSeeking = true"
+                        class="w-full range range-xs range-primary"
+                      />
+                      <div class="flex justify-between mt-1 text-xs opacity-60">
+                        <span class="text-xs tabular-nums whitespace-nowrap cursor-pointer select-none hover:opacity-80"
+                          title="Click to cycle time display"
+                          @click="cycleTimeDisplay(d.id)"
+                          x-text="formatDeckTime(d.id)"
+                        ></span>
+                        <span class="tabular-nums" x-text="formatTime(Decks[d.id].duration)"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- # Mixer -->
+      <div class="flex flex-wrap gap-1">
+        <template x-for="(deck, pos) in settings.decks" :key="deck.id">
+          <!-- # Channel -->
+          <div
+            class="flex-1 items-center card card-border border-primary/30 bg-base-300"
+            x-show="deck.visible"
+            x-data=""
+            :id="'Mixer_CH_' + deck.id"
+          >
+            <div class="items-center px-0 py-2 w-full card-body">
+              <h3
+                class="font-mono text-sm tracking-wider card-title"
+                x-text="'CH ' + deck.id"
+                ></h3>
+
+                <div class="pt-2 space-y-2 w-full bg-base-200">
+                  <div class="flex flex-wrap gap-1 justify-center items-center">
+                    <!-- CUE -->
+                    <button
+                      class="text-white bg-orange-700 btn btn-sm btn-square"
+                      @click="deckCue(deck.id)"
+                    >
+                      <span class="text-xs">CUE</span>
+                    </button>
+                    <!-- PLAY / PAUSE toggle -->
+                    <button
+                      class="btn btn-sm btn-square"
+                      :class="Decks[deck.id]?.play ? 'btn-warning' : 'btn-success'"
+                      @click="toggleDeckPlay(deck.id)"
+                    >
+                      <span
+                        class="text-base"
+                        :class="Decks[deck.id]?.play ? 'iconify mdi--pause' : 'iconify mdi--play'"
+                        ></span>
+                    </button>
+                    <!-- SYNC -->
+                    <button class="btn btn-sm btn-square btn-neutral">
+                      <span class="text-xs">SYNC</span>
+                    </button>
+                  </div>
+                  <div class="flex justify-center">
+                    <div
+                    :id="'ch' + deck.id + '_gain'"
+                    x-data="knob({name: 'GAIN', value: Mixer.Channels[deck.id].gain, size: 48})"
+                    x-init="$watch('value', newVal => knobChange('gain', deck.id, newVal))"
+                    ></div>
+                  </div>
+                </div>
+
+              <div
+                :id="'ch' + deck.id + '_high'"
+                x-data="knob({name: 'HI', value: Mixer.Channels[deck.id].high, size: 48})"
+                x-init="$watch('value', newVal => knobChange('high', deck.id, newVal))"
+              ></div>
+              <div
+                :id="'ch' + deck.id + '_mid'"
+                x-data="knob({name: 'MI', value: Mixer.Channels[deck.id].mid, size: 48})"
+                x-init="$watch('value', newVal => knobChange('mid', deck.id, newVal))"
+              ></div>
+              <div
+                :id="'ch' + deck.id + '_bass'"
+                x-data="knob({name: 'BA', value: Mixer.Channels[deck.id].bass, size: 48})"
+                x-init="$watch('value', newVal => knobChange('bass', deck.id, newVal))"
+              ></div>
+              <div class="flex flex-col justify-center items-center pt-2 w-full bg-base-200">
+                <div
+                  :id="'ch' + deck.id + '_super_fx'"
+                  x-data="knob({name: 'FX', value: Mixer.Channels[deck.id].super_fx, size: 48})"
+                  x-init="$watch('value', newVal => knobChange('super_fx', deck.id, newVal))"
+                ></div>
+                <div
+                  :id="'ch' + deck.id + '_volume'"
+                  x-data="knob({name: 'VOL', value: Mixer.Channels[deck.id].volume, size: 48, default: 100})"
+                  x-init="$watch('value', newVal => knobChange('volume', deck.id, newVal))"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+        <!-- # Crossfader -->
+        <div class="card card-border bg-base-200">
+        <div class="p-3 card-body">
+          <h3 class="text-sm card-title">Crossfader</h3>
+          <input
+            type="range"
+            min="-1"
+            max="1"
+            step="0.02"
+            x-model.number="Mixer.crossfader"
+            class="w-full range range-xs range-primary"
+            style="--range-fill: 0"
+            @dblclick="Mixer.crossfader=0"
+          />
+        </div>
+      </div>
+
+      <!-- # Main (Main Output Gain) -->
+      <div class="card card-border bg-base-200">
+        <div class="p-3 card-body">
+          <h3 class="text-sm card-title">Main</h3>
+          <input
+            type="range"
+            min="0"
+            max="5"
+            step="0.01"
+            x-model.number="Mixer.main"
+            class="w-full range range-xs range-primary"
+            @dblclick="Mixer.main=1.0"
+          />
+          <div class="flex justify-between text-xs opacity-60">
+            <span>0</span>
+            <span class="font-bold">1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- # AutoDJ Section -->
+      <div id="autodj-section" class="card card-border bg-base-200" x-show="activeTab === 'autodj'">
+        <!-- Sticky header with toggle + skip next -->
+        <div class="sticky top-0 z-10 p-4 backdrop-blur-sm card-body rounded-t-box bg-base-200/90">
+          <div class="px-4 pt-3 pb-1">
+            <div class="flex gap-2 items-center">
+              <span class="text-xs font-semibold opacity-60">Main</span>
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="0.01"
+                x-model.number="Mixer.main"
+                class="flex-1 range range-xs range-primary"
+                @dblclick="Mixer.main=1.0"
+              />
+              <span class="w-8 text-xs text-right" x-text="Mixer.main.toFixed(2)"></span>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 justify-between items-center">
+            <h3 class="text-lg font-bold card-title">Auto DJ</h3>
+            <div class="flex gap-2 items-center h-8">
+              <button
+                class="btn btn-sm btn-square btn-ghost"
+                x-show="AutoDJSection.autoDJ_active"
+                @click="autoDJ_fade_now()"
+                title="Skip to next track"
+              >
+                <i class="w-6 h-6 iconify mdi--skip-next"></i>
+              </button>
+              <span class="text-sm" x-text="AutoDJSection.autoDJ_active ? 'Active' : 'Inactive'"></span>
+              <input
+                type="checkbox"
+                class="toggle toggle-sm toggle-primary"
+                x-model="AutoDJSection.autoDJ_active"
+                @change="setAutoDJEnabled(AutoDJSection.autoDJ_active)"
+              />
+            </div>
+          </div>
+        </div>
+        <!-- # Now Playing — decks currently in play -->
+        <div x-show="playingDecks.length > 0" class="px-4 pb-2">
+          <ul class="list">
+            <template x-for="deck in playingDecks" :key="deck.id">
+              <li class="gap-2 rounded-none list-row bg-base-100/75">
+                <!-- Deck number badge, tall like the grip handle in queue -->
+                <div class="flex items-center self-stretch my-auto">
+                  <span class="flex flex-col justify-center items-center px-1 h-full font-bold rounded badge badge-primary">
+                    <i class="w-5 h-5 iconify mdi--record-player"></i>
+                    <span class="text-xs" x-text="deck.id"></span>
+                  </span>
+                </div>
+                <!-- Key + BPM column (like the queue list) -->
+                <div class="w-8">
+                  <div class="text-xs font-semibold text-center uppercase opacity-75" x-text="deck.key || '–'"></div>
+                  <div class="text-xs opacity-75" title="BPM" x-text="deck.bpm ? deck.bpm.toFixed(1) : '–'"></div>
+                </div>
+                <!-- Track info (no truncate) + progress bar below -->
+                <div class="flex-1 min-w-0 list-col-grow">
+                  <div class="font-semibold" x-text="deck.title || '–'" title="deck.title"></div>
+                  <div class="text-xs opacity-75" x-text="deck.artist || 'Unknown Artist'" title="deck.artist"></div>
+                  <!-- Progress bar + time as third row -->
+                  <div class="flex gap-2 items-center mt-1 w-full">
+                    <div class="flex-1 h-1.5 rounded-full bg-base-300">
+                      <div
+                        class="h-full rounded-full transition-all duration-700 ease-linear"
+                        :class="'bg-' + settings.selectedColor"
+                        :style="'width: ' + (deck.duration > 0 ? (deck.elapsed / deck.duration) * 100 : 0) + '%'"
+                      ></div>
+                    </div>
+                    <!-- Clickable time display: cycles elapsed → remaining → both -->
+                    <span
+                      class="text-xs tabular-nums whitespace-nowrap cursor-pointer select-none hover:opacity-80"
+                      title="Click to cycle time display"
+                      @click="cycleTimeDisplay(deck.id)"
+                      x-text="formatDeckTime(deck.id)"
+                    ></span>
+                  </div>
+                </div>
+              </li>
+            </template>
+          </ul>
+        </div>
+        <div class="px-4 pb-4">
+          <!-- AutoDJ Queue List (DaisyUI list) -->
+          <div x-show="AutoDJSection.queueList.length > 0">
+            <ul
+              class="list"
+              x-ref="autodjList"
+              x-init="initAutodjSortable()"
+            >
+              <template x-for="(track, idx) in AutoDJSection.queueList" :key="track.id">
+                <li
+                  class="rounded-none cursor-pointer list-row"
+                  :class="AutoDJSection.selectedTrackId === track.id ? 'bg-' + settings.selectedColor + '/75 text-' + settings.selectedColor + '-content' : 'bg-base-100/75'"
+                  @click="selectAutoDJTrack(track.id)"
+                >
+                  <!-- Generate Colors on npx vite build -->
+                  <div class="hidden">
+                    <div class="bg-primary/75"></div>
+                    <div class="bg-secondary/75"></div>
+                    <div class="bg-neutral/75"></div>
+                    <div class="bg-accent/75"></div>
+                    <div class="bg-info/75"></div>
+                    <div class="bg-success/75"></div>
+                    <div class="bg-error/75"></div>
+                    <div class="bg-warning/75"></div>
+                  </div>
+                  <!-- Drag handle -->
+                  <div class="my-auto opacity-50 drag-handle cursor-grab">
+                    <i class="w-6 h-6 iconify mdi--drag-horizontal-variant"></i>
+                  </div>
+                  <div class="w-8">
+                    <div class="text-xs font-semibold text-center uppercase opacity-75" x-text="track.key || '–'"></div>
+                    <div class="text-xs opacity-75" title="BPM" x-text="track.bpm ? track.bpm.toFixed(1) : '–'"></div>
+                  </div>
+                  <div class="flex-1 min-w-0 list-col-grow">
+                    <div class="font-semibold truncate" x-text="track.title || '–'"></div>
+                    <div class="text-xs truncate opacity-75" x-text="track.artist || 'Unknown Artist'"></div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs" x-text="formatTime(track.duration)"></div>
+                    <div class="text-xs whitespace-nowrap opacity-60" x-text="'&#9654; ' + (track.timesplayed || 0)"></div>
+                  </div>
+                </li>
+              </template>
+            </ul>
+          </div>
+          <div x-show="AutoDJSection.queueList.length === 0">
+            <p class="text-sm opacity-60">Auto DJ queue is empty. Search tracks in the Library tab and use the + button to add them.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- # Library Section -->
+      <div id="library-section" class="card card-border bg-base-200" x-show="activeTab === 'library'">
+        <div class="p-4 card-body">
+          <h3 class="text-lg font-bold card-title">Library</h3>
+
+          <!-- Search input -->
+          <label class="flex gap-2 items-center input input-bordered">
+            <i class="iconify mdi--magnify"></i>
+            <input
+              type="text"
+              class="grow"
+              placeholder="Search tracks..."
+              x-model="Library.searchQuery"
+              @input.debounce.300ms="searchTracks(Library.searchQuery)"
+            />
+            <button
+              class="btn btn-ghost btn-xs"
+              x-show="Library.searchQuery"
+              @click="Library.searchQuery = ''; Library.cleanResultList()"
+            >
+              <i class="iconify mdi--close"></i>
+            </button>
+          </label>
+
+          <!-- Search Results (DaisyUI list) -->
+          <div x-show="Library.searchResultList.length > 0" class="mt-2">
+            <ul class="list">
+              <template x-for="track in Library.searchResultList" :key="track.id">
+                <li
+                  class="rounded-none cursor-pointer list-row"
+                  :class="Library.selectedTrackId === track.id ? 'bg-' + settings.selectedColor + '/75 text-' + settings.selectedColor + '-content' : 'bg-base-100/75'"
+                  @click="selectTrack(track.id); $refs.plusFAB.focus()"
+                >
+                  <!-- Also generate solid variants for Tailwind -->
+                  <div class="hidden">
+                    <div class="bg-primary"></div>
+                    <div class="bg-secondary"></div>
+                    <div class="bg-neutral"></div>
+                    <div class="bg-accent"></div>
+                    <div class="bg-info"></div>
+                    <div class="bg-success"></div>
+                    <div class="bg-error"></div>
+                    <div class="bg-warning"></div>
+                  </div>
+                  <div class="w-8">
+                    <div class="text-xs font-semibold text-center uppercase opacity-75" x-text="track.key || '–'"></div>
+                    <div class="text-xs opacity-75" title="BPM" x-text="track.bpm ? track.bpm.toFixed(1) : '–'"></div>
+                  </div>
+                  <div class="flex-1 min-w-0 list-col-grow">
+                    <div class="font-semibold truncate" x-text="track.title || '–'"></div>
+                    <div class="text-xs truncate opacity-75" x-text="track.artist || 'Unknown Artist'"></div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-xs" x-text="formatTime(track.duration)"></div>
+                    <div class="text-xs whitespace-nowrap opacity-60" x-text="'&#9654; ' + (track.timesplayed || 0)"></div>
+                  </div>
+                </li>
+              </template>
+            </ul>
+          </div>
+          <div x-show="Library.searchQuery.length >= 2 && Library.searchResultList.length === 0" class="mt-2">
+            <p class="text-sm opacity-60">No results found for "<span x-text="Library.searchQuery"></span>".</p>
+          </div>
+          <div x-show="!Library.searchQuery" class="mt-2">
+            <p class="text-sm opacity-60">Type at least 2 characters to search your library.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- # FAB (Floating Action Button) (note: fab-flower gives bugs) -->
+      <div class="fixed right-4 bottom-20 z-40 fab"
+        x-show=" activeTab === 'library' && Library.searchResultList && Library.selectedTrackId "
+      >
+        <!-- Main FAB button -->
+        <div tabindex="0" role="button" class="btn btn-lg btn-circle btn-primary" x-ref="plusFAB">
+          <i class="text-2xl iconify mdi--plus"></i>
+        </div>
+        <!-- A! — add as next track -->
+        <div class="tooltip tooltip-left" data-tip="Add as next track">
+          <button class="btn btn-circle btn-lg btn-secondary" @click="addSelectedToAutoDJNext();$el.blur()">
+            <span class="text-sm font-bold">A!</span>
+          </button>
+        </div>
+        <!-- A... — add to end of queue -->
+        <div class="tooltip tooltip-left" data-tip="Add to end of queue">
+          <button class="btn btn-lg btn-circle" @click="addSelectedToAutoDJEnd();$el.blur()">
+            <span class="text-sm font-bold">A…</span>
+          </button>
+        </div>
+        <!-- Deck buttons — only for visible decks -->
+        <template x-for="deck in settings.visibleDecks" :key="deck.id">
+          <div class="tooltip tooltip-left" :data-tip="'Load to Deck ' + deck.id">
+            <button class="btn btn-lg btn-circle" @click="loadSelectedToDeck(deck.id)">
+              <span class="text-sm font-bold" x-text="deck.id"></span>
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <!-- # (NO-)FAB for AutoDJ — remove selected track -->
+      <div class="fixed right-4 bottom-20 z-40 fab" x-show="activeTab === 'autodj' && AutoDJSection.selectedTrackId">
+        <button class="btn btn-lg btn-circle btn-error" @click="removeSelectedAutoDJTrack()">
+          <i class="text-2xl iconify mdi--minus"></i>
+        </button>
+      </div>
+
+    </main>
+    <div class="h-16" id="space_for_dock"></div>
+    <footer class="dock bg-base-300">
+      <button class="" :class="activeTab === 'autodj' ? 'dock-active' : ''" @click="activeTab = 'autodj'">
+        <i class="iconify mdi--playlist-music"></i>
+        <span class="dock-label">AutoDJ</span>
+      </button>
+      <button class="" :class="activeTab === 'library' ? 'dock-active' : ''" @click="activeTab = 'library'">
+        <i class="iconify mdi--folder-music"></i>
+        <span class="dock-label">Library</span>
+      </button>
+      <button class="" :class="activeTab === 'mixer' ? 'dock-active' : ''" @click="activeTab = 'mixer'">
+        <i class="iconify mdi--mixer-settings-vertical"></i>
+        <span class="dock-label">Mixer</span>
+      </button>
+    </footer>
+  </body>
+</html>

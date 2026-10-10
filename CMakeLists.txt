@@ -420,11 +420,23 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+
+option(HTTP_REMOTE "Build HttpRemote support" OFF)
+
+cmake_dependent_option(
+  QML
+  "Build with QML"
+  ON
+  "QT6"
+  OFF
+)
+
 option(
   MIXXX_APPIMAGE
   "Build for AppImage distribution (install AppImage-specific desktop file)"
   OFF
 )
+
 # Auto-detect AppImage builds in both directions, so the two flags do not
 # need to be passed independently:
 #   cmake -DCPACK_GENERATOR=AppImage  -> enables the AppImage install rules
@@ -1600,7 +1612,7 @@ add_library(
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
-  src/recording/recordingmanager.cpp
+  src/recording/recordingmanager.cpp 
   src/skin/legacy/colorschemeparser.cpp
   src/skin/legacy/imgcolor.cpp
   src/skin/legacy/imginvert.cpp
@@ -2370,12 +2382,12 @@ endif()
 
 # The mixxx executable
 if(QT6)
-  find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
+  find_package(Qt6 COMPONENTS Core REQUIRED)
   # This is the first package form the environment, if this fails give hints how to install the environment
   if(NOT Qt6_FOUND)
     fatal_error_missing_env()
   endif()
-
+  
   # We need Qt 6.4 for ComponentBehavior: Bound
   cmake_dependent_option(
     QML
@@ -2384,10 +2396,24 @@ if(QT6)
     "Qt6_VERSION VERSION_GREATER_EQUAL 6.4"
     OFF
   )
+  
   if(QML)
     add_compile_definitions(MIXXX_USE_QML)
   else()
     message(STATUS "Building without QML")
+  endif()
+
+  if(HTTP_REMOTE)
+    find_package(Qt6 COMPONENTS HttpServer REQUIRED)
+
+    add_compile_definitions(HTTP_REMOTE=true)
+
+    target_sources(mixxx-lib PRIVATE
+      src/preferences/dialog/dlgprefremotecontrol.cpp
+      src/preferences/dialog/dlgprefremotecontrol.ui
+      src/remote/remote.cpp
+    )
+    target_link_libraries(mixxx-lib PRIVATE Qt6::HttpServer)
   endif()
 
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
@@ -2613,6 +2639,14 @@ if(NOT ANDROID)
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/effects"
     DESTINATION "${MIXXX_INSTALL_DATADIR}"
   )
+
+  # RemoteControl web interface
+  if(HTTP_REMOTE)
+    install(
+      DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/web"
+      DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    )
+  endif()
 
   # Translation files
   install(
