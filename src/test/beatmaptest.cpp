@@ -88,6 +88,108 @@ TEST_F(BeatMapTest, Scale) {
                     .value());
 }
 
+TEST_F(BeatMapTest, ScaleVariableTempo) {
+    // Build a beat map with two tempo sections of 3 and 5 beats each. The
+    // odd beat counts cannot be scaled to an integer number of beats, so
+    // scaling has to keep the beat counts and scale the marker positions
+    // relative to the first beat instead.
+    const auto anchor = mixxx::audio::FramePos(7);
+    const mixxx::audio::FrameDiff_t beatLengthA = 5000;
+    const mixxx::audio::FrameDiff_t beatLengthB = 3000;
+    QVector<mixxx::audio::FramePos> beats;
+    for (int i = 0; i <= 3; ++i) {
+        beats.append(anchor + i * beatLengthA);
+    }
+    for (int i = 1; i <= 5; ++i) {
+        beats.append(anchor + 3 * beatLengthA + i * beatLengthB);
+    }
+    const auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
+    ASSERT_TRUE(pMap);
+    ASSERT_FALSE(pMap->hasConstantTempo());
+    ASSERT_EQ(2u, pMap->getMarkers().size());
+    ASSERT_EQ(3, pMap->getMarkers()[0].beatsTillNextMarker());
+    ASSERT_EQ(5, pMap->getMarkers()[1].beatsTillNextMarker());
+
+    const auto& originalMarkers = pMap->getMarkers();
+    const auto originalLastMarkerPosition = pMap->getLastMarkerPosition();
+    const auto originalLastMarkerBpm = pMap->getLastMarkerBpm();
+    const auto sampleRate = pMap->getSampleRate().value();
+
+    const struct {
+        Beats::BpmScale bpmScale;
+        double factor;
+    } scales[] = {
+            {Beats::BpmScale::Halve, 0.5},
+            {Beats::BpmScale::TwoThirds, 2.0 / 3.0},
+            {Beats::BpmScale::ThreeHalves, 3.0 / 2.0},
+            {Beats::BpmScale::Double, 2.0},
+    };
+
+    for (const auto& scale : scales) {
+        const auto scaled = pMap->tryScale(scale.bpmScale);
+        ASSERT_TRUE(scaled.has_value());
+        const auto pScaledMap = scaled.value();
+        ASSERT_FALSE(pScaledMap->hasConstantTempo());
+
+        const auto& newMarkers = pScaledMap->getMarkers();
+        ASSERT_EQ(originalMarkers.size(), newMarkers.size());
+
+        // The first beat keeps its position and all beat counts are kept.
+        EXPECT_EQ(anchor, newMarkers.front().position());
+        auto originalIt = originalMarkers.cbegin();
+        auto newIt = newMarkers.cbegin();
+        for (; originalIt != originalMarkers.cend(); ++originalIt, ++newIt) {
+            EXPECT_EQ(originalIt->beatsTillNextMarker(), newIt->beatsTillNextMarker());
+            // All other marker positions are scaled relative to the first
+            // beat and rounded down to the frame boundary.
+            const auto expectedPosition =
+                    (anchor + (originalIt->position() - anchor) / scale.factor)
+                            .toLowerFrameBoundary();
+            EXPECT_EQ(expectedPosition, newIt->position());
+        }
+
+        const auto expectedLastMarkerPosition =
+                (anchor + (originalLastMarkerPosition - anchor) / scale.factor)
+                        .toLowerFrameBoundary();
+        EXPECT_EQ(expectedLastMarkerPosition, pScaledMap->getLastMarkerPosition());
+        EXPECT_DOUBLE_EQ(originalLastMarkerBpm.value() * scale.factor,
+                pScaledMap->getLastMarkerBpm().value());
+
+        // The effective BPM of both sections is scaled by the same factor,
+        // up to the error introduced by rounding to frame boundaries.
+        const auto oldLengthA =
+                originalMarkers[1].position() - originalMarkers[0].position();
+        const auto newLengthA = newMarkers[1].position() - newMarkers[0].position();
+        const auto oldLengthB = originalLastMarkerPosition - originalMarkers[1].position();
+        const auto newLengthB =
+                pScaledMap->getLastMarkerPosition() - newMarkers[1].position();
+        const double oldBpmA = 60.0 * sampleRate *
+                originalMarkers[0].beatsTillNextMarker() / oldLengthA;
+        const double newBpmA = 60.0 * sampleRate *
+                newMarkers[0].beatsTillNextMarker() / newLengthA;
+        const double oldBpmB = 60.0 * sampleRate *
+                originalMarkers[1].beatsTillNextMarker() / oldLengthB;
+        const double newBpmB = 60.0 * sampleRate *
+                newMarkers[1].beatsTillNextMarker() / newLengthB;
+        EXPECT_NEAR(newBpmA, oldBpmA * scale.factor, 0.05);
+        EXPECT_NEAR(newBpmB, oldBpmB * scale.factor, 0.05);
+    }
+}
+
+TEST_F(BeatMapTest, ScaleMarkerCollision) {
+    // Two markers that are only one frame apart would collapse onto the
+    // same frame position when scaled by 2. This cannot be represented, so
+    // the scale process must fail gracefully.
+    const auto pBeats = Beats::fromBeatMarkers(m_sampleRate,
+            {BeatMarker(mixxx::audio::FramePos(7), 1),
+                    BeatMarker(mixxx::audio::FramePos(8), 1)},
+            mixxx::audio::FramePos(9),
+            mixxx::Bpm(200));
+    ASSERT_TRUE(pBeats);
+    EXPECT_TRUE(pBeats->tryScale(Beats::BpmScale::Halve).has_value());
+    EXPECT_FALSE(pBeats->tryScale(Beats::BpmScale::Double).has_value());
+}
+
 TEST_F(BeatMapTest, TestNthBeat) {
     constexpr mixxx::Bpm bpm(60.0);
     m_pTrack->trySetBpm(bpm.value());
