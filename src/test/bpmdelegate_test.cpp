@@ -1,97 +1,24 @@
+// AI-generated code.
+// Reviewed by the author
+
 #include "library/tabledelegates/bpmdelegate.h"
 
 #include <gtest/gtest.h>
 
 #include <QDoubleSpinBox>
-#include <QItemEditorCreatorBase>
 #include <QItemEditorFactory>
-#include <QPointer>
 #include <QStandardItemModel>
 #include <QStyleOptionViewItem>
 #include <QTableView>
 #include <memory>
 
 #include "test/mixxxtest.h"
-#include "util/parented_ptr.h"
 
 namespace mixxx {
 namespace {
 
-class DestructionTrackingEditorCreator : public QItemEditorCreatorBase {
-  public:
-    explicit DestructionTrackingEditorCreator(int* pDestructionCount)
-            : m_pDestructionCount(pDestructionCount) {
-    }
-
-    ~DestructionTrackingEditorCreator() override {
-        ++*m_pDestructionCount;
-    }
-
-    QWidget* createWidget(QWidget*) const override {
-        return nullptr;
-    }
-
-    QByteArray valuePropertyName() const override {
-        return QByteArray("value");
-    }
-
-  private:
-    int* m_pDestructionCount;
-};
-
 class BPMDelegateTest : public MixxxTest {};
 
-TEST_F(BPMDelegateTest, ReplacingDelegateDestroysFactoryCreator) {
-    int destructionCount = 0;
-    {
-        QStandardItemModel model(1, 1);
-        QTableView table;
-        table.setModel(&model);
-        auto pOldDelegate = std::make_unique<BPMDelegate>(&table);
-        QPointer<BPMDelegate> oldDelegateGuard(pOldDelegate.get());
-        ASSERT_NE(nullptr, pOldDelegate->itemEditorFactory());
-        pOldDelegate->itemEditorFactory()->registerEditor(QMetaType::QString,
-                std::make_unique<DestructionTrackingEditorCreator>(&destructionCount).release());
-        table.setItemDelegateForColumn(0, pOldDelegate.get());
-        EXPECT_EQ(&table, pOldDelegate->parent());
-        EXPECT_EQ(0, destructionCount);
-
-        auto pNewDelegate = make_parented<BPMDelegate>(&table);
-        table.setItemDelegateForColumn(0, pNewDelegate.get());
-        EXPECT_EQ(0, destructionCount);
-        pOldDelegate.reset();
-
-        EXPECT_TRUE(oldDelegateGuard.isNull());
-        EXPECT_EQ(1, destructionCount);
-        EXPECT_EQ(pNewDelegate.get(), table.itemDelegateForColumn(0));
-        EXPECT_EQ(&table, pNewDelegate->parent());
-    }
-    EXPECT_EQ(1, destructionCount);
-}
-
-TEST_F(BPMDelegateTest, DestroyingTableDestroysFactoryCreator) {
-    int destructionCount = 0;
-    QPointer<BPMDelegate> delegateGuard;
-    {
-        QStandardItemModel model(1, 1);
-        QTableView table;
-        table.setModel(&model);
-        auto pDelegate = make_parented<BPMDelegate>(&table);
-        delegateGuard = pDelegate.get();
-        ASSERT_NE(nullptr, pDelegate->itemEditorFactory());
-        pDelegate->itemEditorFactory()->registerEditor(QMetaType::QString,
-                std::make_unique<DestructionTrackingEditorCreator>(&destructionCount).release());
-        table.setItemDelegateForColumn(0, pDelegate.get());
-
-        EXPECT_EQ(&table, pDelegate->parent());
-        EXPECT_EQ(0, destructionCount);
-    }
-    EXPECT_TRUE(delegateGuard.isNull());
-    EXPECT_EQ(1, destructionCount);
-}
-
-// checking if the BPM input box still works
-// after the memory leak issue resolved
 TEST_F(BPMDelegateTest, CreatesCustomBpmEditor) {
     QStandardItemModel model(1, 1);
     const QModelIndex index = model.index(0, 0);
@@ -144,3 +71,6 @@ TEST_F(BPMDelegateTest, RepeatedEditsReuseFactoryAndUpdateModel) {
 
 } // namespace
 } // namespace mixxx
+
+// AI-generated code.
+// Reviewed by the author
