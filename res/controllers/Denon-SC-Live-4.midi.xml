@@ -1,0 +1,2368 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.5.0+">
+    <info>
+        <name>Denon SC Live 4</name>
+        <author>Jammes Luckett (pka Sister Transistor) // Art Mechanix</author>
+        <description>Mapping for Denon SC Live 4 integration with Mixxx. Includes core functions such as decks and mixer channels 1-4, pad modes, Sweep and BPM FX, beatjumps, active loops, meters, and library navigation. Also includes additional features from the controller's screen and helpful enhancements. See the Mixxx manual for the full feature guide. Code adapted from Denon Prime 4 mapping by Levi Williams (Whanake / whanake-music) and RattyDAVE.</description>
+        <forums>https://mixxx.discourse.group/t/denon-sc-live-4-mapping-tested-in-2-5-6-2-6-beta/34288</forums>
+        <manual>denon_sc_live_4</manual>
+    </info>
+    <settings>
+        <group label="Deck Buttons">
+            <option variable="skipButtonBehavior" type="enum" label="What should the Track Skip buttons do?">
+                <description>
+                    Choose what the |&lt;&lt; and &gt;&gt;| buttons do when pressed.
+                </description>
+                <value label="Load previous / next track (Denon)" default="true">denon</value>
+                <value label="Jump to start / end of track">skip</value>
+                <value label="Hold to rewind / fast-forward">seek</value>
+            </option>
+            <option variable="shiftSyncBehavior" type="enum" label="What should Shift + Sync do?">
+                <description>
+                    Should this combination turn off Sync or turn Quantize on/off?
+                </description>
+                <value label="Turn sync off (Denon)" default="true">off</value>
+                <value label="Turn quantize on / off">quantize</value>
+            </option>
+        </group>
+        <group label="When Mixxx Starts">
+            <option variable="quantizeOnStartup" type="boolean" default="true" label="Turn on quantize for all decks">
+                <description>
+                    Snaps cues, loops and beat jumps to the beat.
+                </description>
+            </option>
+            <option variable="channelVolumesToZeroOnStartup" type="boolean" default="true" label="Start with channel volumes at 0">
+                <description>
+                    A safety net so nothing plays at full volume by surprise.
+                </description>
+            </option>
+        </group>
+        <group label="Loops">
+            <option variable="loopAnchor" type="enum" label="When resizing loops, which end locks in place?">
+                <description>
+                    Choose which point stays put when a loop gets longer or shorter.
+                </description>
+                <value label="Loop In point (Denon)" default="true">start</value>
+                <value label="Loop Out point">end</value>
+                <value label="Each deck's own Mixxx setting">mixxx</value>
+            </option>
+        </group>
+        <group label="Jog Wheels and Tempo">
+            <option variable="wheelSensitivity" type="real" min="0.1" max="2.0" default="0.5" label="Jog wheel sensitivity">
+                <description>
+                    Larger numbers move the track further.
+                </description>
+            </option>
+            <option variable="rateRanges" type="enum" label="Tempo Range Preference">
+                <description>
+                    Choose a range group for the tempo faders.
+                </description>
+                <value label="Denon: 4, 8, 10, 20, 50, 100%" default="true">denon</value>
+                <value label="Narrow: 4, 6, 8, 10, 16%">narrow</value>
+                <value label="Wide: 8, 16, 50, 100%">wide</value>
+            </option>
+        </group>
+        <group label="Sweep FX">
+            <option variable="sweepFxMode" type="enum" label="Which presets have you assigned to the four Sweep FX buttons via the Quick Effects list?">
+                <description>
+                    This may determine the behavior of some effects.
+                </description>
+                <value label="Default SCL4 Sweep FX" default="true">default</value>
+                <value label="Custom Sweep FX">custom</value>
+            </option>
+        </group>
+        <group label="Fader Echo">
+            <option variable="faderEchoMode" type="enum" label="Fader Echo Style (when activated)">
+                <description>
+                    Default uses Mixxx's Echo. Custom uses your own effect's settings.
+                </description>
+                <value label="Default SCL4 Fader Echo" default="true">default</value>
+                <value label="Custom Fader Echo">custom</value>
+            </option>
+            <option variable="faderEchoTailBars" type="integer" min="1" max="8" default="1" label="How many bars should Fader Echo last">
+                <description>
+                    Counted from when the fader reaches zero.
+                </description>
+            </option>
+        </group>
+        <group label="Lighting Button">
+            <option variable="lightingButtonAction" type="enum" label="What should the Lighting button do?">
+                <description>
+                    Make sure your recording or live broadcast settings are set up in Mixxx's Preferences. Auto DJ needs tracks in its queue.
+                </description>
+                <value label="Nothing" default="true">none</value>
+                <value label="Record on / off">record</value>
+                <value label="Auto DJ on / off">autodj</value>
+                <value label="Live broadcast on / off">broadcast</value>
+            </option>
+        </group>
+        <group label="Microphones">
+            <option variable="talkoverDucking" type="enum" label="What style of Talkover or mic ducking do you prefer?">
+                <description>
+                    When activating Shift + Mic 1 ON/Talkover, which Mixxx mode should be used? Manual - constant ducking or Auto - listens for audio.
+                </description>
+                <value label="Man" default="true">manual</value>
+                <value label="Auto">auto</value>
+            </option>
+        </group>
+    </settings>
+    <controller id="denonsclive4">
+        <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file filename="Denon-SC-Live-4-scripts.js" functionprefix="SCLive4"/>
+        </scriptfiles>
+        <controls>
+            <!-- MASTER SECTION -->
+            <control>
+                <!-- Master Gain Knob -->
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>SC Live 4 master volume knob (0xBF 0x14, captured).</description>
+                <status>0xBF</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <!-- Headphones level knob (0xBF 0x13): not mapped. In testing, the unit appears to apply it to its own headphone output, so mapping it to Mixxx's headGain would turn the headphones down twice. The Main knob appears to only send MIDI, so it is mapped above. -->
+            <!-- MIDDLE MIXER SECTION -->
+            <control>
+                <!-- Library Scroll Encoder -->
+                <group>[Library]</group>
+                <key>MoveVertical</key>
+                <description>Library Scroll Encoder</description>
+                <status>0xBF</status>
+                <midino>0x05</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+            <control>
+                <!-- Library Scroll Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.encoderLoad.input</key>
+                <description>Library Scroll Button</description>
+                <status>0x9F</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Library Scroll Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.encoderLoad.input</key>
+                <description>Library Scroll Button (release)</description>
+                <status>0x8F</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- BACK Button -->
+                <group/>
+                <key>SCLive4.moveBack.input</key>
+                <description>BACK Button</description>
+                <status>0x9F</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- FWD Button -->
+                <group/>
+                <key>SCLive4.moveForward.input</key>
+                <description>FWD Button</description>
+                <status>0x9F</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- BACK Button -->
+                <group/>
+                <key>SCLive4.moveBack.input</key>
+                <description>BACK Button (release)</description>
+                <status>0x8F</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- FWD Button -->
+                <group/>
+                <key>SCLive4.moveForward.input</key>
+                <description>FWD Button (release)</description>
+                <status>0x8F</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Load to Right Deck Button -->
+                <group/>
+                <key>SCLive4.rightDeck.deckLoad.input</key>
+                <description>Load to Right Deck Button</description>
+                <status>0x9F</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Load to Left Deck Button -->
+                <group/>
+                <key>SCLive4.leftDeck.deckLoad.input</key>
+                <description>Load to Left Deck Button (release)</description>
+                <status>0x8F</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Load to Left Deck Button -->
+                <group/>
+                <key>SCLive4.leftDeck.deckLoad.input</key>
+                <description>Load to Left Deck Button</description>
+                <status>0x9F</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Load to Right Deck Button -->
+                <group/>
+                <key>SCLive4.rightDeck.deckLoad.input</key>
+                <description>Load to Right Deck Button (release)</description>
+                <status>0x8F</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- VIEW Button -->
+                <group>[Master]</group>
+                <key>SCLive4.maxView.input</key>
+                <description>Maximize Mixxx Library View</description>
+                <status>0x9F</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>SCLive4.maxView.input</key>
+                <description>Maximize Mixxx Library View</description>
+                <status>0x8F</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Headphone PFL/Master Mix Knob -->
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>SC Live 4 headphone cue/mix knob (0xBF 0x12, captured).</description>
+                <status>0xBF</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <!-- Headphone Split Button -->
+                <group/>
+                <key>SCLive4.split.input</key>
+                <description>Headphone Split Button</description>
+                <status>0x9F</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Headphone Split Button -->
+                <group/>
+                <key>SCLive4.split.input</key>
+                <description>Headphone Split Button (release)</description>
+                <status>0x8F</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Crossfader (through the script for Fader Echo) -->
+                <group>[Master]</group>
+                <key>SCLive4.crossfader.input</key>
+                <description>Crossfader</description>
+                <status>0xBF</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Filter -->
+                <group/>
+                <key>SCLive4.sweepFx.filter.input</key>
+                <description>Sweep FX - Filter</description>
+                <status>0x9F</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Echo -->
+                <group/>
+                <key>SCLive4.sweepFx.echo.input</key>
+                <description>Sweep FX - Echo</description>
+                <status>0x9F</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Wash -->
+                <group/>
+                <key>SCLive4.sweepFx.wash.input</key>
+                <description>Sweep FX - Wash</description>
+                <status>0x9F</status>
+                <midino>0x18</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Noise -->
+                <group/>
+                <key>SCLive4.sweepFx.noise.input</key>
+                <description>Sweep FX - Noise</description>
+                <status>0x9F</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Filter -->
+                <group/>
+                <key>SCLive4.sweepFx.filter.input</key>
+                <description>Sweep FX - Filter (release)</description>
+                <status>0x8F</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Echo -->
+                <group/>
+                <key>SCLive4.sweepFx.echo.input</key>
+                <description>Sweep FX - Echo (release)</description>
+                <status>0x8F</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Wash -->
+                <group/>
+                <key>SCLive4.sweepFx.wash.input</key>
+                <description>Sweep FX - Wash (release)</description>
+                <status>0x8F</status>
+                <midino>0x18</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Sweep FX - Noise -->
+                <group/>
+                <key>SCLive4.sweepFx.noise.input</key>
+                <description>Sweep FX - Noise (release)</description>
+                <status>0x8F</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - Crossfader Assign Switch -->
+                <group>[Channel1]</group>
+                <key>SCLive4.mixerA.xFaderSwitch.input</key>
+                <description>Entered manually with Emacs</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - Crossfader Assign Switch -->
+                <group>[Channel2]</group>
+                <key>SCLive4.mixerB.xFaderSwitch.input</key>
+                <description>Entered manually with Emacs</description>
+                <status>0x91</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - Crossfader Assign Switch -->
+                <group>[Channel3]</group>
+                <key>SCLive4.mixerC.xFaderSwitch.input</key>
+                <description>Entered manually with Emacs</description>
+                <status>0x92</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - Crossfader Assign Switch -->
+                <group>[Channel4]</group>
+                <key>SCLive4.mixerD.xFaderSwitch.input</key>
+                <description>Entered manually with Emacs</description>
+                <status>0x93</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - Gain Knob -->
+                <group/>
+                <key>SCLive4.mixerA.gain.input</key>
+                <description>Deck 1 - Gain Knob</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - EQ High Knob -->
+                <group/>
+                <key>SCLive4.mixerA.eqHigh.input</key>
+                <description>Deck 1 - EQ High Knob</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - EQ Mid Knob -->
+                <group/>
+                <key>SCLive4.mixerA.eqMid.input</key>
+                <description>Deck 1 - EQ Mid Knob</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - EQ Low Knob -->
+                <group/>
+                <key>SCLive4.mixerA.eqLow.input</key>
+                <description>Deck 1 - EQ Low Knob</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - Sweep FX Knob -->
+                <group/>
+                <key>SCLive4.mixerA.filterKnob.input</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - PFL Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.mixerA.headphoneCue.input</key>
+                <description>Deck 1 - PFL Button</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - PFL Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.mixerA.headphoneCue.input</key>
+                <description>Deck 1 - PFL Button (release)</description>
+                <status>0x80</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 1 - Volume Fader -->
+                <group/>
+                <key>SCLive4.mixerA.volumeFader.input</key>
+                <description>Deck 1 Volume Slider</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - Gain Knob -->
+                <group/>
+                <key>SCLive4.mixerB.gain.input</key>
+                <description>Deck 2 - Gain Knob</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - EQ High Knob -->
+                <group/>
+                <key>SCLive4.mixerB.eqHigh.input</key>
+                <description>Deck 2 - EQ High Knob</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - EQ Mid Knob -->
+                <group/>
+                <key>SCLive4.mixerB.eqMid.input</key>
+                <description>Deck 2 - EQ Mid Knob</description>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - EQ Low Knob -->
+                <group/>
+                <key>SCLive4.mixerB.eqLow.input</key>
+                <description>Deck 2 - EQ Low Knob</description>
+                <status>0xB1</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - Sweep FX Knob -->
+                <group/>
+                <key>SCLive4.mixerB.filterKnob.input</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - PFL Button -->
+                <group>[Channel2]</group>
+                <key>SCLive4.mixerB.headphoneCue.input</key>
+                <description>Deck 2 - PFL Button</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - PFL Button -->
+                <group>[Channel2]</group>
+                <key>SCLive4.mixerB.headphoneCue.input</key>
+                <description>Deck 2 - PFL Button (release)</description>
+                <status>0x81</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 2 - Volume Fader -->
+                <group/>
+                <key>SCLive4.mixerB.volumeFader.input</key>
+                <description>Deck 2 Volume Slider</description>
+                <status>0xB1</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - Gain Knob -->
+                <group/>
+                <key>SCLive4.mixerC.gain.input</key>
+                <description>Deck 3 - Gain Knob</description>
+                <status>0xB2</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - EQ High Knob -->
+                <group/>
+                <key>SCLive4.mixerC.eqHigh.input</key>
+                <description>Deck 3 - EQ High Knob</description>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - EQ Mid Knob -->
+                <group/>
+                <key>SCLive4.mixerC.eqMid.input</key>
+                <description>Deck 3 - EQ Mid Knob</description>
+                <status>0xB2</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - EQ Low Knob -->
+                <group/>
+                <key>SCLive4.mixerC.eqLow.input</key>
+                <description>Deck 3 - EQ Low Knob</description>
+                <status>0xB2</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - Sweep FX Knob -->
+                <group/>
+                <key>SCLive4.mixerC.filterKnob.input</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB2</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - PFL Button -->
+                <group>[Channel3]</group>
+                <key>SCLive4.mixerC.headphoneCue.input</key>
+                <description>Deck 3 - PFL Button</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - PFL Button -->
+                <group>[Channel3]</group>
+                <key>SCLive4.mixerC.headphoneCue.input</key>
+                <description>Deck 3 - PFL Button (release)</description>
+                <status>0x82</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 3 - Volume Fader -->
+                <group/>
+                <key>SCLive4.mixerC.volumeFader.input</key>
+                <description>Deck 3 Volume Slider</description>
+                <status>0xB2</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - Gain Knob -->
+                <group/>
+                <key>SCLive4.mixerD.gain.input</key>
+                <description>Deck 4 - Gain Knob</description>
+                <status>0xB3</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - EQ High Knob -->
+                <group/>
+                <key>SCLive4.mixerD.eqHigh.input</key>
+                <description>Deck 4 - EQ High Knob</description>
+                <status>0xB3</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - EQ Mid Knob -->
+                <group/>
+                <key>SCLive4.mixerD.eqMid.input</key>
+                <description>Deck 4 - EQ Mid Knob</description>
+                <status>0xB3</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - EQ Low Knob -->
+                <group/>
+                <key>SCLive4.mixerD.eqLow.input</key>
+                <description>Deck 4 - EQ Low Knob</description>
+                <status>0xB3</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - Sweep FX Knob -->
+                <group/>
+                <key>SCLive4.mixerD.filterKnob.input</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB3</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - PFL Button -->
+                <group>[Channel4]</group>
+                <key>SCLive4.mixerD.headphoneCue.input</key>
+                <description>Deck 4 - PFL Button</description>
+                <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - PFL Button -->
+                <group>[Channel4]</group>
+                <key>SCLive4.mixerD.headphoneCue.input</key>
+                <description>Deck 4 - PFL Button (release)</description>
+                <status>0x83</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck 4 - Volume Fader -->
+                <group/>
+                <key>SCLive4.mixerD.volumeFader.input</key>
+                <description>Deck 4 Volume Slider</description>
+                <status>0xB3</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- SC LIVE 4 DECK LAYER TOGGLES -->
+            <control>
+                <!-- Left side - Deck layer toggle (SC Live 4) -->
+                <group/>
+                <key>SCLive4.deckToggle.left.input</key>
+                <description>Switches the left side between decks 1 and 3.</description>
+                <status>0x94</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Left side - Deck layer toggle (SC Live 4) -->
+                <group/>
+                <key>SCLive4.deckToggle.left.input</key>
+                <description>Switches the left side between decks 1 and 3.</description>
+                <status>0x84</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Right side - Deck layer toggle (SC Live 4) -->
+                <group/>
+                <key>SCLive4.deckToggle.right.input</key>
+                <description>Switches the right side between decks 2 and 4.</description>
+                <status>0x95</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Right side - Deck layer toggle (SC Live 4) -->
+                <group/>
+                <key>SCLive4.deckToggle.right.input</key>
+                <description>Switches the right side between decks 2 and 4.</description>
+                <status>0x85</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- SC LIVE 4 BEAT FX STRIP. (The Prime 4's Deck 1-4 buttons on
+			     0x9F 0x1C-0x1F were removed: the SC Live 4 has no such buttons,
+			     and 0x9F 0x1E - the BPM FX knob push - switched the left side
+			     to deck 3.) -->
+            <control>
+                <key>SCLive4.beatFx.selectInput</key>
+                <description>BPM FX knob (turn): choose the effect</description>
+                <status>0xBF</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>SCLive4.beatFx.selectPushInput</key>
+                <description>BPM FX knob (push)</description>
+                <status>0x9F</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>SCLive4.beatFx.assignInput</key>
+                <description>Channel Assign knob: 3 / 1 / 2 / 4 / M</description>
+                <status>0x9F</status>
+                <midino>0x28</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>SCLive4.beatFx.timeInput</key>
+                <description>Time/Parameter knob (turn)</description>
+                <status>0xBF</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>SCLive4.beatFx.timePushInput</key>
+                <description>Time/Parameter knob (push): switch setting</description>
+                <status>0x9F</status>
+                <midino>0x19</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>SCLive4.beatFx.amountInput</key>
+                <description>FX Amount knob: effect wet/dry</description>
+                <status>0xBF</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <key>SCLive4.beatFx.onOffInput</key>
+                <description>FX On/Off button</description>
+                <status>0x9F</status>
+                <midino>0x1A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- LEFT DECK (Deck A) -->
+            <control>
+                <!-- Deck A - Loop In Button -->
+                <group/>
+                <key>SCLive4.leftDeck.loopInButton.input</key>
+                <description>Deck 1-3 Loop In</description>
+                <status>0x94</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop In Button -->
+                <group/>
+                <key>SCLive4.leftDeck.loopInButton.input</key>
+                <description>Deck 1-3 Loop In</description>
+                <status>0x84</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop Out Button -->
+                <group/>
+                <key>SCLive4.leftDeck.loopOutButton.input</key>
+                <description>Deck 1-3 Loop Out</description>
+                <status>0x94</status>
+                <midino>0x26</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop Out Button -->
+                <group/>
+                <key>SCLive4.leftDeck.loopOutButton.input</key>
+                <description>Deck 1-3 Loop Out</description>
+                <status>0x84</status>
+                <midino>0x26</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop Encoder -->
+                <group/>
+                <key>SCLive4.leftDeck.loopEncoder.input</key>
+                <description/>
+                <status>0xB4</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop Encoder Button On -->
+                <group/>
+                <key>SCLive4.leftDeck.beatLoopTrigger.input</key>
+                <description/>
+                <status>0x94</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop Encoder Button Off -->
+                <group/>
+                <key>SCLive4.leftDeck.beatLoopTrigger.input</key>
+                <description/>
+                <status>0x84</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Censor Button ON -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.censorButton.input</key>
+                <description>Censor + Reverse button for left deck</description>
+                <status>0x94</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Censor Button OFF -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.censorButton.input</key>
+                <description>Censor + Reverse button for left deck</description>
+                <status>0x84</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Track Skip Back Button -->
+                <group/>
+                <key>SCLive4.leftDeck.skipBackButton.input</key>
+                <description>Previous Track</description>
+                <status>0x94</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Track Skip Forward Button -->
+                <group/>
+                <key>SCLive4.leftDeck.skipFwdButton.input</key>
+                <description>Next Track</description>
+                <status>0x94</status>
+                <midino>0x05</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Track Skip Back Button -->
+                <group/>
+                <key>SCLive4.leftDeck.skipBackButton.input</key>
+                <description>Previous Track</description>
+                <status>0x84</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Track Skip Forward Button -->
+                <group/>
+                <key>SCLive4.leftDeck.skipFwdButton.input</key>
+                <description>Next Track</description>
+                <status>0x84</status>
+                <midino>0x05</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Beat Jump Back Button -->
+                <group/>
+                <key>SCLive4.leftDeck.bjumpBackButton.input</key>
+                <description>Beat-Jump Back</description>
+                <status>0x94</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group/>
+                <key>SCLive4.leftDeck.bjumpBackButton.input</key>
+                <description>Beat-Jump Back</description>
+                <status>0x84</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Beat Jump Forward Button -->
+                <group/>
+                <key>SCLive4.leftDeck.bjumpFwdButton.input</key>
+                <description>Beat-Jump Forward</description>
+                <status>0x94</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group/>
+                <key>SCLive4.leftDeck.bjumpFwdButton.input</key>
+                <description>Beat-Jump Forward</description>
+                <status>0x84</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Sync Button -->
+                <group/>
+                <key>SCLive4.leftDeck.syncButton.input</key>
+                <description>Sync</description>
+                <status>0x94</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Sync Button Release -->
+                <group/>
+                <key>SCLive4.leftDeck.syncButton.input</key>
+                <description>Sync</description>
+                <status>0x84</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Cue Button ON -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.cueButton.input</key>
+                <description>Deck A - Cue Button</description>
+                <status>0x94</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Cue Button OFF -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.cueButton.input</key>
+                <description>Deck A - Cue Button</description>
+                <status>0x84</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Play/Stop Button / Stutter Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.playButton.input</key>
+                <description>Deck A - Play/Stop Button</description>
+                <status>0x94</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Play/Stop Button / Stutter Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.playButton.input</key>
+                <description>Deck A - Play/Stop Button</description>
+                <status>0x84</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Jog Wheel Surface Touch -->
+                <group/>
+                <key>SCLive4.leftDeck.jogWheel.inputTouch</key>
+                <description/>
+                <status>0x94</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Jog Wheel Surface Touch -->
+                <group/>
+                <key>SCLive4.leftDeck.jogWheel.inputTouch</key>
+                <description/>
+                <status>0x84</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Jog Wheel -->
+                <group/>
+                <key>SCLive4.leftDeck.jogWheel.inputWheelMSB</key>
+                <description/>
+                <status>0xB4</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Jog Wheel -->
+                <group/>
+                <key>SCLive4.leftDeck.jogWheel.inputWheelLSB</key>
+                <description/>
+                <status>0xB4</status>
+                <midino>0x31</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Parameter Left Button -->
+                <group/>
+                <key>SCLive4.leftDeck.paramLeftButton.input</key>
+                <description>Parameter Left</description>
+                <status>0x94</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Parameter Right Button -->
+                <group/>
+                <key>SCLive4.leftDeck.paramRightButton.input</key>
+                <description>Parameter Right</description>
+                <status>0x94</status>
+                <midino>0x18</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Shift Button -->
+                <group>[Shift]</group>
+                <key>SCLive4.shiftState</key>
+                <description>Shift Button</description>
+                <status>0x94</status>
+                <midino>0x1C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Shift Button -->
+                <group>[Shift]</group>
+                <key>SCLive4.shiftState</key>
+                <description>Shift Button</description>
+                <status>0x84</status>
+                <midino>0x1C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Pitch Fader LSB -->
+                <key>SCLive4.leftDeck.tempoFader.inputLSB</key>
+                <status>0xB4</status>
+                <midino>0x4B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Pitch Fader MSB -->
+                <key>SCLive4.leftDeck.tempoFader.inputMSB</key>
+                <status>0xB4</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
+                <group/>
+                <key>SCLive4.leftDeck.pitchBendDown.input</key>
+                <description>Pitch Bend Down / Pitch Bend Range Down</description>
+                <status>0x94</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Pitch Bend Up Button / Pitch Range Increase Button -->
+                <group/>
+                <key>SCLive4.leftDeck.pitchBendUp.input</key>
+                <description>Pitch Bend Up / Pitch Bend Range Up</description>
+                <status>0x94</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
+                <group/>
+                <key>SCLive4.leftDeck.pitchBendDown.input</key>
+                <description>Pitch Bend Down / Pitch Bend Range Down</description>
+                <status>0x84</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Pitch Bend Up Button / Pitch Range Increase Button -->
+                <group/>
+                <key>SCLive4.leftDeck.pitchBendUp.input</key>
+                <description>Pitch Bend Up / Pitch Bend Range Up</description>
+                <status>0x84</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Key Lock Button / Reset Key Button / Key Sync Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.keylockButton.input</key>
+                <description>Key Lock / Reset Keylock (Key Sync)</description>
+                <status>0x94</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Vinyl Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.vinylButton.input</key>
+                <description>Vinyl Mode</description>
+                <status>0x94</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Slip Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.slipButton.input</key>
+                <description>Slip Mode</description>
+                <status>0x94</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Slip Button -->
+                <group>[Channel1]</group>
+                <key>SCLive4.leftDeck.slipButton.input</key>
+                <description>Slip Mode</description>
+                <status>0x84</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Hot Cue Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>HOT CUE</description>
+                <status>0x94</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop Pad / Autoloop Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>LOOP / AUTOLOOP</description>
+                <status>0x94</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Roll Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>ROLL</description>
+                <status>0x94</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Slicer Pad / Slicer Loop Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>SLICER / SLICER LOOP</description>
+                <status>0x94</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Hot Cue Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>HOT CUE</description>
+                <status>0x84</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Loop Pad / Autoloop Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>LOOP / AUTOLOOP</description>
+                <status>0x84</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Roll Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>ROLL</description>
+                <status>0x84</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Slicer Pad / Slicer Loop Pad -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.padModeButtonPressed</key>
+                <description>SLICER / SLICER LOOP</description>
+                <status>0x84</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 1 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 1</description>
+                <status>0x94</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 2 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 2</description>
+                <status>0x94</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 3 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 3</description>
+                <status>0x94</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 4 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 4</description>
+                <status>0x94</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 5 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 5</description>
+                <status>0x94</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 6 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 6</description>
+                <status>0x94</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 7 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 7</description>
+                <status>0x94</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 8 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 8</description>
+                <status>0x94</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 1 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 1</description>
+                <status>0x84</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 2 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 2</description>
+                <status>0x84</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 3 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 3</description>
+                <status>0x84</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 4 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 4</description>
+                <status>0x84</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 5 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 5</description>
+                <status>0x84</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 6 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 6</description>
+                <status>0x84</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 7 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 7</description>
+                <status>0x84</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck A - Performance Pad 8 -->
+                <group/>
+                <key>SCLive4.leftDeck.padGrid.performancePad</key>
+                <description>Hotcue 8</description>
+                <status>0x84</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- RIGHT DECK (Deck B)-->
+            <control>
+                <!-- Deck B - Loop In Button -->
+                <group/>
+                <key>SCLive4.rightDeck.loopInButton.input</key>
+                <description>Deck 2-4 Loop In</description>
+                <status>0x95</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop Out Button -->
+                <group/>
+                <key>SCLive4.rightDeck.loopOutButton.input</key>
+                <description>Deck 2-4 Loop Out</description>
+                <status>0x95</status>
+                <midino>0x26</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop In Button -->
+                <group/>
+                <key>SCLive4.rightDeck.loopInButton.input</key>
+                <description>Deck 2-4 Loop In</description>
+                <status>0x85</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop Out Button -->
+                <group/>
+                <key>SCLive4.rightDeck.loopOutButton.input</key>
+                <description>Deck 2-4 Loop Out</description>
+                <status>0x85</status>
+                <midino>0x26</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop Encoder -->
+                <group/>
+                <key>SCLive4.rightDeck.loopEncoder.input</key>
+                <description/>
+                <status>0xB5</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop Encoder Button On -->
+                <group/>
+                <key>SCLive4.rightDeck.beatLoopTrigger.input</key>
+                <description/>
+                <status>0x95</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop Encoder Button Off -->
+                <group/>
+                <key>SCLive4.rightDeck.beatLoopTrigger.input</key>
+                <description/>
+                <status>0x85</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Censor Button ON -->
+                <group>[Channel2]</group>
+                <key>SCLive4.rightDeck.censorButton.input</key>
+                <description>Censor + Reverse button for left deck</description>
+                <status>0x95</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Censor Button OFF -->
+                <group>[Channel2]</group>
+                <key>SCLive4.rightDeck.censorButton.input</key>
+                <description>Censor + Reverse button for left deck</description>
+                <status>0x85</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Track Skip Back Button -->
+                <group/>
+                <key>SCLive4.rightDeck.skipBackButton.input</key>
+                <description>Previous Track</description>
+                <status>0x95</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Track Skip Forward Button -->
+                <group/>
+                <key>SCLive4.rightDeck.skipFwdButton.input</key>
+                <description>Next Track</description>
+                <status>0x95</status>
+                <midino>0x05</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Track Skip Back Button -->
+                <group/>
+                <key>SCLive4.rightDeck.skipBackButton.input</key>
+                <description>Previous Track</description>
+                <status>0x85</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Track Skip Forward Button -->
+                <group/>
+                <key>SCLive4.rightDeck.skipFwdButton.input</key>
+                <description>Next Track</description>
+                <status>0x85</status>
+                <midino>0x05</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Beat Jump Back Button -->
+                <group/>
+                <key>SCLive4.rightDeck.bjumpBackButton.input</key>
+                <description>Beat-Jump Back</description>
+                <status>0x95</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group/>
+                <key>SCLive4.rightDeck.bjumpBackButton.input</key>
+                <description>Beat-Jump Back</description>
+                <status>0x85</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Beat Jump Forward Button -->
+                <group/>
+                <key>SCLive4.rightDeck.bjumpFwdButton.input</key>
+                <description>Beat-Jump Forward</description>
+                <status>0x95</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group/>
+                <key>SCLive4.rightDeck.bjumpFwdButton.input</key>
+                <description>Beat-Jump Forward</description>
+                <status>0x85</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Sync Button -->
+                <group/>
+                <key>SCLive4.rightDeck.syncButton.input</key>
+                <description>Sync</description>
+                <status>0x95</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Sync Button -->
+                <group/>
+                <key>SCLive4.rightDeck.syncButton.input</key>
+                <description>Sync</description>
+                <status>0x85</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Cue Button ON -->
+                <group>[Channel2]</group>
+                <key>SCLive4.rightDeck.cueButton.input</key>
+                <description>Cue</description>
+                <status>0x95</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Cue Button OFF -->
+                <group>[Channel2]</group>
+                <key>SCLive4.rightDeck.cueButton.input</key>
+                <description>Cue</description>
+                <status>0x85</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Play/Stop Button / Stutter Button -->
+                <group>[Channel2]</group>
+                <key>SCLive4.rightDeck.playButton.input</key>
+                <description>Play/Stop</description>
+                <status>0x95</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Jog Wheel Surface Touch -->
+                <group/>
+                <key>SCLive4.rightDeck.jogWheel.inputTouch</key>
+                <description/>
+                <status>0x95</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Jog Wheel Surface Touch -->
+                <group/>
+                <key>SCLive4.rightDeck.jogWheel.inputTouch</key>
+                <description/>
+                <status>0x85</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Jog Wheel -->
+                <group/>
+                <key>SCLive4.rightDeck.jogWheel.inputWheelMSB</key>
+                <description/>
+                <status>0xB5</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Jog Wheel -->
+                <group/>
+                <key>SCLive4.rightDeck.jogWheel.inputWheelLSB</key>
+                <description/>
+                <status>0xB5</status>
+                <midino>0x31</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Parameter Left Button -->
+                <group/>
+                <key>SCLive4.rightDeck.paramLeftButton.input</key>
+                <description>Parameter Left</description>
+                <status>0x95</status>
+                <midino>0x17</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Parameter Right Button -->
+                <group/>
+                <key>SCLive4.rightDeck.paramRightButton.input</key>
+                <description>Parameter Right</description>
+                <status>0x95</status>
+                <midino>0x18</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Shift Button -->
+                <group/>
+                <key>SCLive4.shiftState</key>
+                <description>Shift Button</description>
+                <status>0x95</status>
+                <midino>0x1C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Shift Button -->
+                <group/>
+                <key>SCLive4.shiftState</key>
+                <description>Shift Button</description>
+                <status>0x85</status>
+                <midino>0x1C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Pitch Fader LSB -->
+                <key>SCLive4.rightDeck.tempoFader.inputLSB</key>
+                <status>0xB5</status>
+                <midino>0x4B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Pitch Fader MSB -->
+                <key>SCLive4.rightDeck.tempoFader.inputMSB</key>
+                <status>0xB5</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
+                <group/>
+                <key>SCLive4.rightDeck.pitchBendDown.input</key>
+                <description>Pitch Bend Down / Pitch Bend Range Down</description>
+                <status>0x95</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- D"eck B - Pitch Bend Up Button / Pitch Range Increase Button -->
+                <group/>
+                <key>SCLive4.rightDeck.pitchBendUp.input</key>
+                <description>Pitch Bend Up / Pitch Bend Range Up</description>
+                <status>0x95</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
+                <group/>
+                <key>SCLive4.rightDeck.pitchBendDown.input</key>
+                <description>Pitch Bend Down / Pitch Bend Range Down</description>
+                <status>0x85</status>
+                <midino>0x1D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Pitch Bend Up Button / Pitch Range Increase Button -->
+                <group/>
+                <key>SCLive4.rightDeck.pitchBendUp.input</key>
+                <description>Pitch Bend Up / Pitch Bend Range Up</description>
+                <status>0x85</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Key Lock Button / Reset Key Button / Key Sync Button -->
+                <group/>
+                <key>SCLive4.rightDeck.keylockButton.input</key>
+                <description>Key Lock / Reset Keylock (Key Sync)</description>
+                <status>0x95</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Vinyl Button -->
+                <group/>
+                <key>SCLive4.rightDeck.vinylButton.input</key>
+                <description>Vinyl Mode</description>
+                <status>0x95</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Slip Button -->
+                <group>[Channel2]</group>
+                <key>SCLive4.rightDeck.slipButton.input</key>
+                <description>Slip Mode</description>
+                <status>0x95</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Hot Cue Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>HOT CUE</description>
+                <status>0x95</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop Pad / Autoloop Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>LOOP / AUTOLOOP</description>
+                <status>0x95</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Roll Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>ROLL</description>
+                <status>0x95</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Slicer Pad / Slicer Loop Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>SLICER / SLICER LOOP</description>
+                <status>0x95</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Hot Cue Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>HOT CUE</description>
+                <status>0x85</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Loop Pad / Autoloop Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>LOOP / AUTOLOOP</description>
+                <status>0x85</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Roll Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>ROLL</description>
+                <status>0x85</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Slicer Pad / Slicer Loop Pad -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.padModeButtonPressed</key>
+                <description>SLICER / SLICER LOOP</description>
+                <status>0x85</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 1 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 1</description>
+                <status>0x95</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 2 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 2</description>
+                <status>0x95</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 3 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 3</description>
+                <status>0x95</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 4 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 4</description>
+                <status>0x95</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 5 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 5</description>
+                <status>0x95</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 6 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 6</description>
+                <status>0x95</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 7 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 7</description>
+                <status>0x95</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 8 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 8</description>
+                <status>0x95</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 1 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 1</description>
+                <status>0x85</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 2 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 2</description>
+                <status>0x85</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 3 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 3</description>
+                <status>0x85</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 4 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 4</description>
+                <status>0x85</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 5 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 5</description>
+                <status>0x85</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 6 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 6</description>
+                <status>0x85</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 7 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 7</description>
+                <status>0x85</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <!-- Deck B - Performance Pad 8 -->
+                <group/>
+                <key>SCLive4.rightDeck.padGrid.performancePad</key>
+                <description>Hotcue 8</description>
+                <status>0x85</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- Mic 1 and Aux/Mic 2 level knobs (0xBF 0x10, 0xBF 0x11): not mapped. In testing, the unit appears to apply them before its outputs and before the signal reaches the computer, so mapping them to Mixxx's mic gain would apply them twice. -->
+            <!-- MENU Button: effects panel, SHIFT = microphone panel -->
+            <control>
+                <group>[Master]</group>
+                <key>SCLive4.menuButton.input</key>
+                <description>Menu button: show / hide Mixxx's effects panel (SHIFT: microphone panel)</description>
+                <status>0x9F</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- LIGHTING Button: the Mixxx feature chosen in Preferences -->
+            <control>
+                <group>[Master]</group>
+                <key>SCLive4.lightingButton.input</key>
+                <description>Lighting button: the Mixxx feature chosen in Preferences</description>
+                <status>0x9F</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- MICROPHONE BUTTONS: Mixxx talkover -->
+            <control>
+                <group>[Master]</group>
+                <key>SCLive4.mics.buttonInput</key>
+                <description>Mic 1 button: Microphone 1 talkover</description>
+                <status>0x9F</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>SCLive4.mics.buttonInput</key>
+                <description>Aux/Mic 2 button: Microphone 2 talkover</description>
+                <status>0x9F</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>SCLive4.mics.inputSelect</key>
+                <description>Mic 2 / Aux switch</description>
+                <status>0x9F</status>
+                <midino>0x2A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+        </controls>
+        <outputs>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
