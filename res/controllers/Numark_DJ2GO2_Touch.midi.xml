@@ -295,7 +295,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[1].input</key>
         <status>0x84</status>
         <midino>0x21</midino>
         <options>
@@ -304,7 +304,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[1].input</key>
         <status>0x94</status>
         <midino>0x21</midino>
         <options>
@@ -313,7 +313,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[2].input</key>
         <status>0x84</status>
         <midino>0x22</midino>
         <options>
@@ -322,7 +322,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[2].input</key>
         <status>0x94</status>
         <midino>0x22</midino>
         <options>
@@ -331,7 +331,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[4].input</key>
         <status>0x84</status>
         <midino>0x24</midino>
         <options>
@@ -340,7 +340,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.reLoopStop.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[4].input</key>
         <status>0x94</status>
         <midino>0x24</midino>
         <options>
@@ -394,7 +394,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[3].input</key>
         <status>0x84</status>
         <midino>0x23</midino>
         <options>
@@ -403,7 +403,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>DJ2GO2Touch.leftDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.leftDeck.stemMuteButtons[3].input</key>
         <status>0x94</status>
         <midino>0x23</midino>
         <options>
@@ -718,7 +718,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[1].input</key>
         <status>0x85</status>
         <midino>0x21</midino>
         <options>
@@ -727,7 +727,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopIn.input</key>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[1].input</key>
         <status>0x95</status>
         <midino>0x21</midino>
         <options>
@@ -736,7 +736,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[2].input</key>
         <status>0x85</status>
         <midino>0x22</midino>
         <options>
@@ -745,7 +745,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.loopOut.input</key>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[2].input</key>
         <status>0x95</status>
         <midino>0x22</midino>
         <options>
@@ -754,8 +754,8 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.reLoopStop.input</key>
-        <status>0x95</status>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[4].input</key>
+        <status>0x85</status>
         <midino>0x24</midino>
         <options>
           <script-binding/>
@@ -763,7 +763,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.reLoopStop.input</key>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[4].input</key>
         <status>0x95</status>
         <midino>0x24</midino>
         <options>
@@ -817,7 +817,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[3].input</key>
         <status>0x85</status>
         <midino>0x23</midino>
         <options>
@@ -826,7 +826,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>DJ2GO2Touch.rightDeck.LoopToggleButton.input</key>
+        <key>DJ2GO2Touch.rightDeck.stemMuteButtons[3].input</key>
         <status>0x95</status>
         <midino>0x23</midino>
         <options>
