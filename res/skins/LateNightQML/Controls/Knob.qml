@@ -10,6 +10,7 @@ Skin.ControlKnob {
     property bool displayArc: false
     property color displayArcColor: "transparent"
     property real displayArcOffsetY: 1.998
+    property real displayArcOrigin: -1
     property real displayArcRadius: 12.5
     property int displayArcStart: 1 // Knob.ArcStart.Center
     property real displayArcWidth: 2
@@ -35,6 +36,7 @@ Skin.ControlKnob {
     }
     foreground: Item {
         anchors.fill: parent
+        z: 2
 
         Image {
             anchors.fill: parent
@@ -48,6 +50,7 @@ Skin.ControlKnob {
 
         readonly property color renderedColor: root.displayArcColor
         readonly property real renderedOffsetY: root.displayArcOffsetY
+        readonly property real renderedOrigin: root.displayArcOrigin
         readonly property real renderedRadius: root.displayArcRadius
         readonly property int renderedStart: root.displayArcStart
         readonly property real renderedValue: root.value
@@ -73,8 +76,9 @@ Skin.ControlKnob {
             }
 
             const renderScale = root.arcRenderScale;
-            const startAngle = root.angleFrom(root.arcStartValue - root.valueCenter) - 90;
-            const sweepAngle = root.angleFrom(root.value - root.arcStartValue);
+            const origin = root.displayArcOrigin >= 0 && root.displayArcOrigin <= 1 ? root.displayArcOrigin : root.arcStartValue;
+            const startAngle = root.angleFrom(origin - root.valueCenter) - 90;
+            const sweepAngle = root.angleFrom(root.value - origin);
             const startRadians = startAngle * Math.PI / 180;
             const endRadians = (startAngle + sweepAngle) * Math.PI / 180;
 
@@ -87,6 +91,7 @@ Skin.ControlKnob {
         }
         onRenderedColorChanged: requestPaint()
         onRenderedOffsetYChanged: requestPaint()
+        onRenderedOriginChanged: requestPaint()
         onRenderedRadiusChanged: requestPaint()
         onRenderedStartChanged: requestPaint()
         onRenderedValueChanged: requestPaint()
