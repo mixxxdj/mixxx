@@ -217,7 +217,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     // Now that the EffectProcessor has been sent the intermediate enabling/disabling
     // signal, set the channel state to fully enabled/disabled for the next engine callback.
     EffectEnableState& effectOnChannelState = m_effectEnableStateForChannelMatrix[inputHandle][outputHandle];
-    if (effectOnChannelState == EffectEnableState::Disabling) {
+    if (effectOnChannelState == EffectEnableState::Disabling && m_pProcessor->isReadyForDisable()) {
         effectOnChannelState = EffectEnableState::Disabled;
     } else if (effectOnChannelState == EffectEnableState::Enabling) {
         effectOnChannelState = EffectEnableState::Enabled;
