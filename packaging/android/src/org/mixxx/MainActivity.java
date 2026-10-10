@@ -2,8 +2,8 @@ package org.mixxx;
 
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import androidx.core.view.ViewCompat;
@@ -11,99 +11,207 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 import org.qtproject.qt.android.QtActivityBase;
 
 public class MainActivity extends QtActivityBase {
-    private final Set<View> m_noExtractUiPatched = Collections.synchronizedSet(new HashSet<View>());
+    private static final String TAG = "MixxxMainActivity";
+    private static final String QT_EDIT_TEXT = "org.qtproject.qt.android.QtEditText";
+
+    private int m_lastLoggedInputType = Integer.MIN_VALUE;
+    private int m_lastLoggedImeOptions = Integer.MIN_VALUE;
 
     @Override
+    @SuppressWarnings("deprecation") // Qt sets FLAG_FULLSCREEN/FLAG_LAYOUT_NO_LIMITS;
+                                     // clearing them is still required for adjustResize.
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Disable drawing over cutout - isn't working
+        // Never draw into the display cutout.
         WindowManager.LayoutParams lp = this.getWindow().getAttributes();
         lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
 
-        // Remove FLAG_FULLSCREEN so the soft keyboard can use adjustResize and
-        // stays in inline mode instead of the fullscreen "extract" view that
-        // covers the app on landscape. Immersive look is kept via the insets
-        // controller below.
+        // Keep the soft keyboard inline (adjustResize) instead of the fullscreen
+        // extract view, while the app stays edge-to-edge.
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
-        // Disable system and navigation bar to prevent accidental back or app switch
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        WindowInsetsControllerCompat windowInsetsController =
-            WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setSystemBarsBehavior(
-            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        windowInsetsController.hide(WindowInsetsCompat.Type.statusBars());
-        windowInsetsController.hide(WindowInsetsCompat.Type.navigationBars());
 
-        // The IME opening (adjustResize) can cause the system bars to reappear.
-        // Re-hide them on every decor layout pass so the app stays fullscreen.
-        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        // Hide the system/navigation bars to prevent accidental back or app switch.
+        final View decor = getWindow().getDecorView();
+        WindowInsetsControllerCompat controller =
+            WindowCompat.getInsetsController(getWindow(), decor);
+        controller.setSystemBarsBehavior(
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        controller.hide(WindowInsetsCompat.Type.statusBars());
+        controller.hide(WindowInsetsCompat.Type.navigationBars());
+
+        // The IME can make the system bars reappear; re-hide them on every layout pass.
+        decor.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             WindowInsetsControllerCompat c =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+                WindowCompat.getInsetsController(getWindow(), decor);
             c.hide(WindowInsetsCompat.Type.statusBars());
             c.hide(WindowInsetsCompat.Type.navigationBars());
         });
 
-        enforceInlineIme();
+        installImeOptionsHook();
     }
 
-    // Qt never exposes a compact-keyboard toggle: for Qt < 6.8.8 / 6.11.1 /
-    // 6.12 it doesn't even set IME_FLAG_NO_EXTRACT_UI, and the IME action it
-    // computes (IME_ACTION_DONE by default) makes GBoard render a wide action
-    // bar above the keys. Overwriting imeOptions alone is not enough - GBoard
-    // keeps its toolbar strip for plain TYPE_CLASS_TEXT inputs regardless.
-    // This patch overwrites QtEditText.m_imeOptions with a maximally quiet
-    // combination (no action button, no fullscreen extract view, no
-    // clipboard/accessory strip) and forces the inputType to the URI text
-    // variation, which GBoard renders without any top strip while still
-    // allowing full Unicode input. Qt recomputes these options on every
-    // keyboard show, so we re-apply the values on each layout pass.
-    private void enforceInlineIme() {
+    // Qt derives the IME inputType/imeOptions from the QML inputMethodHints
+    // (e.g. Qt.ImhUrlCharactersOnly -> TYPE_TEXT_VARIATION_URI). We log what Qt
+    // chose and, for URI inputs with an explicit action key, strip the extract UI
+    // and the accessory strip while keeping the action.
+    private void installImeOptionsHook() {
         final View decor = getWindow().getDecorView();
         decor.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> {
-            if (newFocus == null || !"org.qtproject.qt.android.QtEditText".equals(newFocus.getClass().getName())) {
-                return;
+            if (isQtEditText(newFocus)) {
+                handleImeOptions(newFocus);
             }
-            applyNoExtractUi(newFocus);
+        });
+        decor.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            View focused = decor.findFocus();
+            if (isQtEditText(focused)) {
+                handleImeOptions(focused);
+            }
         });
     }
 
-    private void applyNoExtractUi(final View editText) {
-        if (m_noExtractUiPatched.contains(editText)) {
-            return;
-        }
+    private static boolean isQtEditText(View view) {
+        return view != null && QT_EDIT_TEXT.equals(view.getClass().getName());
+    }
+
+    private void handleImeOptions(View editText) {
         try {
-            final Field imeOptions = editText.getClass().getDeclaredField("m_imeOptions");
-            imeOptions.setAccessible(true);
-            final Field inputType = editText.getClass().getDeclaredField("m_inputType");
-            inputType.setAccessible(true);
-            setCompactIme(imeOptions, inputType, editText);
-            editText.getViewTreeObserver().addOnGlobalLayoutListener(() -> setCompactIme(imeOptions, inputType, editText));
-            m_noExtractUiPatched.add(editText);
-        } catch (Exception ignored) {
-            // Qt version too old/renamed internally; fall back to default behavior.
+            int inputType = readIntField(editText, "m_inputType");
+            int imeOptions = readIntField(editText, "m_imeOptions");
+
+            if (inputType != m_lastLoggedInputType || imeOptions != m_lastLoggedImeOptions) {
+                m_lastLoggedInputType = inputType;
+                m_lastLoggedImeOptions = imeOptions;
+                Log.i(TAG, "QtEditText inputType=" + describeInputType(inputType) + ", imeOptions=" + describeImeOptions(imeOptions) + ", URI variation=" + hasUriVariation(inputType));
+            }
+
+            if (!hasUriVariation(inputType) || !hasPatchableAction(imeOptions)) {
+                return;
+            }
+            int patched = imeOptions | EditorInfo.IME_FLAG_NO_EXTRACT_UI
+                | EditorInfo.IME_FLAG_NO_ACCESSORY_ACTION;
+            if (patched == imeOptions) {
+                return;
+            }
+            writeIntField(editText, "m_imeOptions", patched);
+            Log.i(TAG, "Patched imeOptions " + describeImeOptions(imeOptions) + " -> " + describeImeOptions(patched));
+        } catch (Exception e) {
+            Log.w(TAG, "Unable to access QtEditText IME state (Qt internals changed?)", e);
         }
     }
 
-    private static void setCompactIme(Field imeOptions, Field inputType, View editText) {
-        try {
-            imeOptions.setInt(editText,
-                EditorInfo.IME_ACTION_NONE
-                    | EditorInfo.IME_FLAG_NO_EXTRACT_UI
-                    | EditorInfo.IME_FLAG_NO_ACCESSORY_ACTION);
-        } catch (Exception ignored) {
+    private static boolean hasUriVariation(int inputType) {
+        return (inputType & InputType.TYPE_MASK_VARIATION) == InputType.TYPE_TEXT_VARIATION_URI;
+    }
+
+    // Done/Send/Search/Next/Previous only; EnterKeyDefault/Go (both IME_ACTION_GO)
+    // and EnterKeyReturn (no action) are left as Qt produced them.
+    private static boolean hasPatchableAction(int imeOptions) {
+        switch (imeOptions & EditorInfo.IME_MASK_ACTION) {
+            case EditorInfo.IME_ACTION_DONE:
+            case EditorInfo.IME_ACTION_SEND:
+            case EditorInfo.IME_ACTION_SEARCH:
+            case EditorInfo.IME_ACTION_NEXT:
+            case EditorInfo.IME_ACTION_PREVIOUS:
+                return true;
+            default:
+                return false;
         }
-        try {
-            inputType.setInt(editText, InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
-        } catch (Exception ignored) {
+    }
+
+    private static int readIntField(Object target, String name) throws Exception {
+        Field field = target.getClass().getDeclaredField(name);
+        field.setAccessible(true);
+        return field.getInt(target);
+    }
+
+    private static void writeIntField(Object target, String name, int value) throws Exception {
+        Field field = target.getClass().getDeclaredField(name);
+        field.setAccessible(true);
+        field.setInt(target, value);
+    }
+
+    private static String describeInputType(int inputType) {
+        String inputClass;
+        switch (inputType & InputType.TYPE_MASK_CLASS) {
+            case InputType.TYPE_CLASS_TEXT:
+                inputClass = "TEXT";
+                break;
+            case InputType.TYPE_CLASS_NUMBER:
+                inputClass = "NUMBER";
+                break;
+            case InputType.TYPE_CLASS_PHONE:
+                inputClass = "PHONE";
+                break;
+            case InputType.TYPE_CLASS_DATETIME:
+                inputClass = "DATETIME";
+                break;
+            default:
+                inputClass = "0x" + Integer.toHexString(inputType & InputType.TYPE_MASK_CLASS);
+        }
+
+        String variation;
+        switch (inputType & InputType.TYPE_MASK_VARIATION) {
+            case InputType.TYPE_TEXT_VARIATION_URI:
+                variation = "URI";
+                break;
+            case InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS:
+                variation = "EMAIL";
+                break;
+            case InputType.TYPE_TEXT_VARIATION_PASSWORD:
+                variation = "PASSWORD";
+                break;
+            case InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD:
+                variation = "VISIBLE_PASSWORD";
+                break;
+            default:
+                variation = "0x" + Integer.toHexString(inputType & InputType.TYPE_MASK_VARIATION);
+        }
+
+        return "0x" + Integer.toHexString(inputType)
+            + " (class=" + inputClass + ", variation=" + variation + ")";
+    }
+
+    private static String describeImeOptions(int imeOptions) {
+        StringBuilder result = new StringBuilder("0x" + Integer.toHexString(imeOptions));
+        result.append(" action=").append(describeAction(imeOptions & EditorInfo.IME_MASK_ACTION));
+        if ((imeOptions & EditorInfo.IME_FLAG_NO_EXTRACT_UI) != 0) {
+            result.append(" NO_EXTRACT_UI");
+        }
+        if ((imeOptions & EditorInfo.IME_FLAG_NO_ACCESSORY_ACTION) != 0) {
+            result.append(" NO_ACCESSORY_ACTION");
+        }
+        if ((imeOptions & EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0) {
+            result.append(" NO_ENTER_ACTION");
+        }
+        return result.toString();
+    }
+
+    private static String describeAction(int action) {
+        switch (action) {
+            case EditorInfo.IME_ACTION_UNSPECIFIED:
+                return "UNSPECIFIED";
+            case EditorInfo.IME_ACTION_NONE:
+                return "NONE";
+            case EditorInfo.IME_ACTION_GO:
+                return "GO";
+            case EditorInfo.IME_ACTION_SEARCH:
+                return "SEARCH";
+            case EditorInfo.IME_ACTION_SEND:
+                return "SEND";
+            case EditorInfo.IME_ACTION_NEXT:
+                return "NEXT";
+            case EditorInfo.IME_ACTION_DONE:
+                return "DONE";
+            case EditorInfo.IME_ACTION_PREVIOUS:
+                return "PREVIOUS";
+            default:
+                return "0x" + Integer.toHexString(action);
         }
     }
 }

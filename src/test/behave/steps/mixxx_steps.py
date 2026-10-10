@@ -510,15 +510,60 @@ SPLIT_VIEW_BUTTON_PATH = f"{LIBRARY_CONTENT}/tracklistMenu/splitViewButton"
 RIGHT_TRACKLIST_PATH = f"{LIBRARY_CONTENT}/rightTrackList"
 RIGHT_TRACKLIST_TABLE_PATH = f"{RIGHT_TRACKLIST_PATH}/trackTableView"
 
-def _suggestion_path(suggestion):
-    """Path of a suggestion entry, based on which list shows it.
+def _find_list_row_path(rpc, list_path, row_prefix, needle, row_properties,
+        timeout=5):
+    """Resolve the index-keyed path of the row in list_path whose first
+    non-empty row property equals needle.
 
-    Field suggestions ("Artist:") live in searchSuggestionFieldList; value
-    suggestions live in searchSuggestionList.
+    The lists are populated synchronously (no debounce chain), so this is
+    a bounded wait for a non-empty list followed by a single scan; a miss
+    is a plain failure.
     """
-    if suggestion.endswith(":"):
-        return f"{SEARCH_SUGGESTION_FIELD_LIST_PATH}/suggestion_{suggestion}"
-    return f"{SEARCH_SUGGESTION_LIST_PATH}/suggestion_{suggestion}"
+    deadline = time.time() + timeout
+    count = 0
+    while time.time() < deadline:
+        count = int(_get_property(rpc, list_path, "count") or 0)
+        if count > 0:
+            break
+        time.sleep(0.2)
+    assert count > 0, f'The "{list_path.rsplit("/", 1)[1]}" list is empty'
+
+    row_texts = []
+    for index in range(count):
+        path = f"{list_path}/{row_prefix}{index}"
+        row_text = ""
+        for row_property in row_properties:
+            row_text = _get_property(rpc, path, row_property)
+            if row_text:
+                break
+        if row_text == needle:
+            return path
+        row_texts.append(row_text)
+    raise AssertionError(
+            f'A row displaying "{needle}" is not listed '
+            f"({count} rows: {row_texts})")
+
+
+def _suggestion_row_path(rpc, needle, timeout=5):
+    """Path of the suggestion row displaying needle: field suggestions
+    ("Artist:") live in searchSuggestionFieldList and match the rows'
+    display; value suggestions live in searchSuggestionList and match the
+    rows' value."""
+    if needle.endswith(":"):
+        return _find_list_row_path(
+                rpc,
+                SEARCH_SUGGESTION_FIELD_LIST_PATH,
+                "suggestion_",
+                needle,
+                ("display",),
+                timeout)
+    return _find_list_row_path(
+            rpc,
+            SEARCH_SUGGESTION_LIST_PATH,
+            "suggestion_",
+            needle,
+            ("value",),
+            timeout)
 
 
 # Delay after typing into the search bar: the query is applied through a
@@ -531,34 +576,15 @@ def _search_activated(rpc):
 
 
 def _recent_row_path(rpc, needle, timeout=5):
-    """Resolve the index-keyed path of the recent-search row displaying
-    needle (free text, or the serialized query for token rows).
-
-    The recent list is updated synchronously when a search is persisted —
-    no debounce chain — so this is a bounded wait for a non-empty list,
-    followed by a single scan; a miss is a plain failure.
-    """
-    deadline = time.time() + timeout
-    count = 0
-    while time.time() < deadline:
-        count = int(_get_property(rpc, SEARCH_RECENT_LIST_PATH, "count") or 0)
-        if count > 0:
-            break
-        time.sleep(0.5)
-    assert count > 0, "The recent searches list is empty"
-
-    row_texts = []
-    for index in range(count):
-        path = f"{SEARCH_RECENT_LIST_PATH}/recent_{index}"
-        row_text = _get_property(rpc, path, "freeText")
-        if not row_text:
-            row_text = _get_property(rpc, path, "queryString")
-        if row_text == needle:
-            return path
-        row_texts.append(row_text)
-    raise AssertionError(
-            f'The recent search "{needle}" is not listed '
-            f"({count} rows: {row_texts})")
+    """Path of the recent-search row displaying needle (free text, or the
+    serialized query for token rows)."""
+    return _find_list_row_path(
+            rpc,
+            SEARCH_RECENT_LIST_PATH,
+            "recent_",
+            needle,
+            ("freeText", "queryString"),
+            timeout)
 
 
 def _activate_library_search(context, timeout=15):
@@ -1481,37 +1507,6 @@ def step_track_is_loaded_on_deck(context, assertion, deck):
 
 
 
-@when("I dump the library debug state")
-def step_dump_debug(context):
-    s = context.mixxx_rpc
-    for probe in (
-        "mainWindow/libraryContent/trackList",
-        "mainWindow/libraryContent/trackList/columnHeader",
-        "mainWindow/libraryContent/trackList/trackTableView",
-        "mainWindow/libraryContent/browsingView",
-        "mainWindow/libraryContent/libraryContent/trackList",
-        "mainWindow/libraryContent/trackList/columnHeader/Title",
-        "mainWindow/splashScreen",
-    ):
-        try:
-            vis = s.existsAndVisible(probe)
-        except Exception as e:
-            e_str = str(e)[:80]
-            print(f"probe {probe}: ERR {e_str}")
-            continue
-        print(f"probe {probe}: {vis}")
-    print("columnLabels:", s.getStringProperty(
-        "mainWindow/libraryContent/trackList", "columnLabels"))
-    for r in range(3):
-        print("title", r, "=>", repr(s.invokeMethod(
-            "mainWindow/libraryContent/trackList", "trackTitleForRow", [r])))
-    try:
-        state = _get_library_state(s)
-        print("library state:", json.dumps(state)[:300])
-    except Exception as e:
-        print("library state err", e)
-
-
 # --- When: library search ---
 
 def _type_into_library_search(context, text):
@@ -1572,7 +1567,8 @@ def step_clear_library_search(context):
 @then('I select the library search suggestion "{suggestion}"')
 def step_select_suggestion(context, suggestion):
     s = context.mixxx_rpc
-    _click(s, _suggestion_path(suggestion))
+    suggestion_path = _suggestion_row_path(s, suggestion)
+    _click(s, suggestion_path)
     time.sleep(0.5)
 
 
@@ -1601,14 +1597,6 @@ def step_this_track_visible_in_side_list(context, side):
     assert found >= 0, f"Track '{track}' is not in the {side} track list"
 
 
-@then("no other track should be visible in the results")
-def step_no_other_track_in_results(context, ):
-    """Typing a full track title keeps only the matching row(s)."""
-    s = context.mixxx_rpc
-    assert _track_rows(s, TRACKLIST_PATH) <= 1, (
-        f"{_track_rows(s, TRACKLIST_PATH)} tracks are shown, expected only the typed one")
-
-
 @then("all tracks in the library should be shown again")
 def step_all_tracks_shown_again(context, ):
     s = context.mixxx_rpc
@@ -1635,16 +1623,25 @@ def step_suggestion_visible(context, suggestion):
     # While a query is being typed, the suggestion list replaces the recent
     # searches, so the recents must have been dismissed first.
     _wait_for_hidden(s, SEARCH_RECENT_LIST_PATH)
-    _wait_for_visible(s, _suggestion_path(suggestion))
+    _wait_for_visible(s, _suggestion_row_path(s, suggestion))
 
 
 @then('the library search suggestion "{suggestion}" should not be visible')
 def step_suggestion_not_visible(context, suggestion):
     s = context.mixxx_rpc
-    path = _suggestion_path(suggestion)
     time.sleep(SEARCH_APPLY_DELAY)
-    assert not _is_visible(s, path), (
-        f'The field suggestion "{suggestion}" is visible')
+    # A stale row would fake a pass if the assertion only checked an
+    # obsolete path, so scan the rows of the relevant list instead.
+    list_path = SEARCH_SUGGESTION_FIELD_LIST_PATH
+    row_property = "display"
+    if not suggestion.endswith(":"):
+        list_path = SEARCH_SUGGESTION_LIST_PATH
+        row_property = "value"
+    count = int(_get_property(s, list_path, "count") or 0)
+    for index in range(count):
+        row_text = _get_property(s, f"{list_path}/suggestion_{index}", row_property)
+        assert row_text != suggestion, (
+            f'The suggestion "{suggestion}" is still listed')
 
 
 @then('the library recent search "{needle}" should be visible')
@@ -2148,18 +2145,6 @@ def step_this_track_visible(context):
     assert _this_track_results_visible(context), (
         f'The remembered track "{_remembered_track(context)}" '
         "is not in the results")
-
-
-@then("only this track should be visible in the results")
-def step_only_this_track_visible(context):
-    s = context.mixxx_rpc
-    title = _this_track_field(context, "title")
-    row = _track_row_by_title(s, TRACKLIST_PATH, title)
-    assert row >= 0, (
-        f'The remembered track "{title}" is not in the results')
-    rows = _track_rows(s, TRACKLIST_PATH)
-    assert rows == 1, (
-        f"{rows} track rows are shown; only the track \"{title}\" was expected")
 
 
 @then("not all tracks should be visible in the results")

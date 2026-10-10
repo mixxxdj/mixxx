@@ -540,6 +540,7 @@ The `--serve` mode registers a custom handler via
 | `setControlValue` | `"[Group],key,value"` | Sets a ControlObject value                                             | None                                                      |
 | `loadTrack`       | `"deck,filepath"`     | Loads a track file onto the specified deck                             | None                                                      |
 | `library`         | JSON (see below)      | Adds/removes library directories, optionally triggers a scan           | None                                                      |
+| `getLibraryState` | (empty)               | Returns a JSON snapshot of the library state (see below)               | `rpc.getStringProperty("mainWindow", "lastLibraryState")` |
 | `reloadQml`       | (empty)               | Tears down and rebuilds the QML engine                                 | None                                                      |
 
 ### `library` command
@@ -558,6 +559,15 @@ JSON payload:
   skips if the directory is already watched (`AlreadyWatching`).
 - `removeDirectory`: calls `TrackCollectionManager::removeDirectory()`.
 - `scan`: when `true`, calls `startLibraryScan()` after the operation.
+
+### `getLibraryState` command
+
+No payload needed. Returns a JSON document in `mainWindow.lastLibraryState`
+with `sources` (each watch path with `trackCount`/`totalSecond`),
+`visibleTrackCount`, `hiddenTrackCount`, `scanInProgress` and the monotonic
+`scanGeneration` counter. `_get_library_state` reads it in one command/read
+pair, and `_wait_for_library_scan` polls the counter/flag pair so tests can
+wait for library scans without blocking the app's main thread.
 
 ### `reloadQml` command
 
@@ -765,6 +775,16 @@ LOOP_BUTTONS = {
   generic `I {direction} the "{component}" size on deck {deck:d}` step.
 
 ## Step DSL (`steps/mixxx_steps.py`)
+
+### Wait timeouts are performance thresholds, not buffers
+
+`_wait_for_visible` / `_wait_for_hidden` (15 s) and `_wait_for_library_scan`
+(20 s) are deliberately tight: if a button does not appear within 15 s or a
+library of 50 tracks takes longer than 20 s to scan, that is an application
+regression the suite must report, not harness slowness to paper over. Do not
+re-widen them; when they start failing, suspect the app, not the test. The
+only escape hatch is `MIXXX_TEST_RPC_TIMEOUT`, which covers process startup
+(skin load, schema migration, cold audio stacks) and not UI responsiveness.
 
 ### Constants
 

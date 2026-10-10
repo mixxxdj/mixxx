@@ -4,7 +4,6 @@
 #include <QColor>
 #include <QObject>
 #include <QQmlEngine>
-#include <QStringList>
 #include <QVariantList>
 #include <type_traits>
 

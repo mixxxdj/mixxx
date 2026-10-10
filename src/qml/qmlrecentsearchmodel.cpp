@@ -6,6 +6,7 @@
 
 #include "library/searchqueries.h"
 #include "moc_qmlrecentsearchmodel.cpp"
+#include "qml/qmlconfigproxy.h"
 
 namespace mixxx {
 namespace qml {
@@ -19,11 +20,9 @@ const QHash<int, QByteArray> kRoleNames = {
 
 } // anonymous namespace
 
-QmlRecentSearchModel::QmlRecentSearchModel(
-        UserSettingsPointer pConfig, QObject* parent)
-        : QAbstractListModel(parent),
-          m_pConfig(std::move(pConfig)) {
-    const QStringList queries = SearchQueries::loadQueries(m_pConfig);
+QmlRecentSearchModel::QmlRecentSearchModel(QObject* parent)
+        : QAbstractListModel(parent) {
+    const QStringList queries = SearchQueries::loadQueries(QmlConfigProxy::get());
     m_searches.reserve(queries.size());
     for (const QString& query : queries) {
         const QVariantMap parsed = SearchQueries::parseQuery(query);
@@ -116,7 +115,7 @@ void QmlRecentSearchModel::saveQueriesToConfig() const {
     for (const RecentSearch& search : m_searches) {
         queries.append(search.queryString);
     }
-    SearchQueries::saveQueries(m_pConfig, queries);
+    SearchQueries::saveQueries(QmlConfigProxy::get(), queries);
 }
 
 } // namespace qml

@@ -6,6 +6,7 @@
 #include <QVariantMap>
 
 #include "library/searchqueries.h"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmlrecentsearchmodel.h"
 #include "test/mixxxtest.h"
 
@@ -31,7 +32,8 @@ TEST_F(QmlRecentSearchTest, LoadBuildsRowsFromConfig) {
             {QStringLiteral("artist:\"A Super Artist\" bpm:120"),
                     QStringLiteral("hello world")});
 
-    mixxx::qml::QmlRecentSearchModel model(config());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    mixxx::qml::QmlRecentSearchModel model;
     EXPECT_EQ(model.rowCount(), 2);
 
     const QVariantMap entry = model.get(0);
@@ -54,7 +56,8 @@ TEST_F(QmlRecentSearchTest, LoadBuildsRowsFromConfig) {
 }
 
 TEST_F(QmlRecentSearchTest, PersistInsertsAtFrontAndSavesConfig) {
-    mixxx::qml::QmlRecentSearchModel model(config());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    mixxx::qml::QmlRecentSearchModel model;
 
     const int row = model.persist({token("Artist", "artist", "foo", 0)},
             QStringLiteral("hello world"),
@@ -67,7 +70,8 @@ TEST_F(QmlRecentSearchTest, PersistInsertsAtFrontAndSavesConfig) {
 }
 
 TEST_F(QmlRecentSearchTest, PersistSerializesKeyTokens) {
-    mixxx::qml::QmlRecentSearchModel model(config());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    mixxx::qml::QmlRecentSearchModel model;
 
     model.persist({token("Key", "key", "11d", 11)}, QString(), -1);
 
@@ -89,7 +93,8 @@ TEST_F(QmlRecentSearchTest, PersistReplacesActiveRow) {
     mixxx::SearchQueries::saveQueries(config(),
             {QStringLiteral("artist:foo"), QStringLiteral("title:bar")});
 
-    mixxx::qml::QmlRecentSearchModel model(config());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    mixxx::qml::QmlRecentSearchModel model;
     ASSERT_EQ(model.rowCount(), 2);
 
     EXPECT_EQ(model.persist({token("Artist", "artist", "baz", 0)}, QString(), 1), 1);
@@ -99,7 +104,8 @@ TEST_F(QmlRecentSearchTest, PersistReplacesActiveRow) {
 }
 
 TEST_F(QmlRecentSearchTest, PersistRemovesDuplicateBeforePrepend) {
-    mixxx::qml::QmlRecentSearchModel model(config());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    mixxx::qml::QmlRecentSearchModel model;
 
     model.persist({token("Artist", "artist", "foo", 0)}, QString(), -1);
     model.persist({token("Title", "title", "bar", 0)}, QString(), -1);
@@ -118,7 +124,8 @@ TEST_F(QmlRecentSearchTest, PersistRemovesDuplicateBeforePrepend) {
 }
 
 TEST_F(QmlRecentSearchTest, PersistCapsListSize) {
-    mixxx::qml::QmlRecentSearchModel model(config());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    mixxx::qml::QmlRecentSearchModel model;
 
     for (int i = 0; i < mixxx::SearchQueries::kMaxQueries + 5; ++i) {
         model.persist({token("Artist", "artist", QString("v%1").arg(i), 0)},
@@ -138,7 +145,8 @@ TEST_F(QmlRecentSearchTest, PersistCapsListSize) {
 }
 
 TEST_F(QmlRecentSearchTest, PersistEmptyDoesNotStore) {
-    mixxx::qml::QmlRecentSearchModel model(config());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(config());
+    mixxx::qml::QmlRecentSearchModel model;
 
     EXPECT_EQ(model.persist({}, QString(), 0), -1);
     EXPECT_EQ(model.rowCount(), 0);

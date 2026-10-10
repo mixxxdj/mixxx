@@ -1,4 +1,3 @@
-import ".."
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQml
@@ -382,6 +381,10 @@ Rectangle {
             }
         }
         if (tokens.length === 0) {
+            // Programmatic text assignment skips onTextEdited, so the
+            // restore and paste paths rely on this branch keeping the
+            // free text in sync.
+            freeSearchText = searchField.text
             return false
         }
         for (let i = 0; i < tokens.length; i++) {
@@ -705,7 +708,7 @@ Rectangle {
                             x = Math.max(item.x - gradientWidth, item.x + item.width - width)
                         } else if (item.x + item.width > x + width) {
                             // Hidden at the right edge: scroll to the left.
-                            x = item.x + item.width
+                            x = item.x + item.width - width
                         }
                         return Math.min(Math.max(x, 0), searchPane.criteriaMaxContentX)
                     }
@@ -824,7 +827,7 @@ Rectangle {
 
                     delegate: Item {
                         objectName: "suggestion_"
-                                + display
+                                + index
 
                         required property int index
                         required property string display
@@ -879,7 +882,7 @@ Rectangle {
                         id: suggestionDelegate
 
                         objectName: "suggestion_"
-                                + suggestionDelegate.value
+                                + suggestionDelegate.index
 
                         required property int index
                         required property string value
@@ -1084,8 +1087,13 @@ Rectangle {
             font.pixelSize: 14
             horizontalAlignment: TextInput.AlignLeft
             verticalAlignment: TextInput.AlignVCenter
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhNoFullscreen
-            EnterKey.type: Qt.EnterKeyReturn
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                              | Qt.ImhNoFullscreen | Qt.ImhUrlCharactersOnly
+            // Note: this is explicitly needed to trigger the Java patch that prevent the extract UI mode (mode where the keyboard renders its own input and fully hide the app below)
+            EnterKey.type: Qt.EnterKeySearch
+
+            // Property consumed by the MainWindow's ime shift handler to bind invalidation and recompute when updated
+            readonly property var imeLayoutSideEffect: searchPane.height
 
             // A click that lands inside the field moves the cursor
             // and must leave the "wipe everything" armed state.

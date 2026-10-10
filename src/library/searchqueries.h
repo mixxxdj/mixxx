@@ -23,6 +23,11 @@ class SearchQueries final {
     // a token keeps a leading '=' marker for exact matches.
     static QVariantMap parseQuery(const QString& query);
 
+    /// The search field aliases the chip round-trip supports. Exposed for
+    /// the test verifying they stay a subset of the SearchQueryParser
+    /// grammar.
+    static QStringList chipFieldAliases();
+
     // Serializes a structured token (name, query, value, keyId) back into
     // its query-string form: key_id:N for key tokens, otherwise query:value
     // (quoted if the value contains whitespace, '='-prefixed for exact

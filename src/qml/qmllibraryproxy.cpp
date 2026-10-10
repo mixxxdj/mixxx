@@ -113,8 +113,7 @@ QmlLibraryProxy::QmlLibraryProxy(
                   m_pLibrary->trackCollectionManager()->scanner(), this)),
           m_pSearchSuggestions(new QmlSearchSuggestionModel(
                   m_pLibrary->dbConnectionPool(), this)),
-          m_pRecentSearches(new QmlRecentSearchModel(
-                  m_pLibrary->userSettings(), this)) {
+          m_pRecentSearches(new QmlRecentSearchModel(this)) {
 }
 
 QmlLibraryScannerProxy::QmlLibraryScannerProxy(LibraryScanner* libraryScanner, QObject* parent)

@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "library/searchqueries.h"
 #include "library/searchquery.h"
 #include "library/searchqueryparser.h"
 #include "library/trackset/crate/crate.h"
@@ -1396,4 +1397,23 @@ TEST_F(SearchQueryParserTest, QuotedOrOperator) {
     pTrackI->setTitle("a | contrived|example and more");
     pTrackI->setComment("house");
     EXPECT_TRUE(pQuery->match(pTrackI));
+}
+
+TEST_F(SearchQueryParserTest, RecognizesSearchQueriesChipAliases) {
+    // The chip round-trip in SearchQueries must not fall behind this
+    // parser: an alias the parser accepts but the chips cannot represent
+    // degrades a token to free text when a query is restored, silently.
+    const QHash<QString, QStringList>& parserFields = m_parser.fieldToSqlColumns();
+    const QStringList chipAliases = mixxx::SearchQueries::chipFieldAliases();
+    for (const QString& alias : chipAliases) {
+        EXPECT_TRUE(parserFields.contains(alias))
+                << "chip field alias not recognized by the parser: "
+                << alias.toStdString();
+        const QStringList columns = parserFields.value(alias);
+        for (const QString& column : columns) {
+            EXPECT_TRUE(parserFields.contains(column))
+                    << "chip field query name not recognized by the parser: "
+                    << column.toStdString();
+        }
+    }
 }

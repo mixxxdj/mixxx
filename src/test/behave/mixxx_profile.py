@@ -155,6 +155,8 @@ def _download_file(entry, dest):
         finally:
             if os.path.exists(f.name):
                 os.unlink(f.name)
+            if os.path.exists(c.name):
+                os.unlink(c.name)
 
 
 def track_filename(entry):

@@ -1,8 +1,5 @@
 #include "qml/qmllibrarytracklistmodel.h"
 
-#include <qcontainerfwd.h>
-#include <qnamespace.h>
-
 #include <QObject>
 #include <QQmlEngine>
 #include <QSortFilterProxyModel>

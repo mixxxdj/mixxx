@@ -27,8 +27,7 @@ class QmlRecentSearchModel : public QAbstractListModel {
     };
     Q_ENUM(Roles);
 
-    explicit QmlRecentSearchModel(
-            UserSettingsPointer pConfig, QObject* parent = nullptr);
+    explicit QmlRecentSearchModel(QObject* parent = nullptr);
     ~QmlRecentSearchModel() override = default;
 
     /// Stores the given criteria as a recent search, replacing the entry at
@@ -53,7 +52,6 @@ class QmlRecentSearchModel : public QAbstractListModel {
 
     void saveQueriesToConfig() const;
 
-    UserSettingsPointer m_pConfig;
     QVector<RecentSearch> m_searches;
 };
 

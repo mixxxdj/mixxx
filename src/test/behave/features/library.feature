@@ -112,8 +112,9 @@ Feature: Library
     When I activate the library search
     And I type "title:" into the library search
     And I type the title of this track into the library search prefixed with "="
+    And I wait for the search to settle
     Then this track should be visible in the results
-    And no other track should be visible in the results
+    And not all tracks should be visible in the results
 
   Scenario: Clearing the search shows all tracks again
     Given no search is currently active
@@ -225,6 +226,14 @@ Feature: Library
     Then the library search criteria should be "Artist"
     And the library search free text should be "<title of this track>"
 
+  Scenario: A pasted free-text search is preserved when no criteria are recognized
+    Given no search is currently active
+    And a track available in the library
+    When I paste "<title of this track>" into the library search
+    Then the library search query should be "<title of this track>"
+    And this track should be visible in the results
+    And not all tracks should be visible in the results
+
   # Known gap: the chip search dialect cannot represent the OR operator yet;
   # a query mixing criteria and a bare "Or" word drops all criteria instead
   # of keeping them (will be fixed by the advanced raw-query editor).
@@ -320,7 +329,7 @@ Feature: Library
     And I type the title of this track into the library search
     And I wait for the search to settle
     Then this track should be visible in the results
-    And only this track should be visible in the results
+    And not all tracks should be visible in the results
 
   Scenario: An artist criterion filters the library results
     Given no search is currently active

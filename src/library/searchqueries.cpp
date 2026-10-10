@@ -95,6 +95,10 @@ void SearchQueries::saveQueries(
     }
 }
 
+QStringList SearchQueries::chipFieldAliases() {
+    return kChipFields.keys();
+}
+
 QVariantMap SearchQueries::parseQuery(const QString& query) {
     QVariantMap result;
     QVariantList tokens;

@@ -42,6 +42,9 @@ Item {
         if (!Qt.inputMethod.visible || !root.imeFocusItem) {
             return 0
         }
+        // The discarded geometric arithmetic registers
+        // geometry changes as binding dependencies;
+        root.imeFocusItem?.imeLayoutSideEffect;
         return Math.max(0, root.imeFocusItem.mapToItem(root, 0, 0).y
                 - root.imeKeyboardMargin)
     }

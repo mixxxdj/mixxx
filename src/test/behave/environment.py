@@ -207,6 +207,11 @@ def after_scenario(context, scenario):
         },
     })
 
+    # Drop this scenario's picks so a later one reading stale remembered
+    # tracks fails loudly instead of recording unrelated entries into its
+    # results JSON.
+    context.remembered_tracks = {}
+
 
 def after_all(context):
     session = context._session

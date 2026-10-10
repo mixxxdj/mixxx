@@ -26,7 +26,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: 7
-        color: root.active ? Theme.accentColor : '#2D4EA1'
+        color: root.active ? Theme.accentColor : Theme.searchTokenInactiveColor
         border.color: root.active ? '#5C82D6' : 'transparent'
         border.width: 1
 

@@ -67,6 +67,7 @@ QtObject {
     property color pflActiveButtonColor: blue
     property color red: "#ea2a4e"
     property color samplerColor: blue
+    property color searchTokenInactiveColor: "#2d4ea1"
     property color sunkenBackgroundColor: "#0C0C0C"
     property color textColor: lightGray2
     property int textFontPixelSize: 14
