@@ -115,14 +115,14 @@
         <controls>
             <!-- MASTER SECTION -->
             <control>
-                <!-- Master Gain Knob -->
+                <!-- Master Gain Knob (through the script to correct where unity gain is) -->
                 <group>[Master]</group>
-                <key>gain</key>
+                <key>SCLive4.masterGain.input</key>
                 <description>SC Live 4 master volume knob (0xBF 0x14, captured).</description>
                 <status>0xBF</status>
                 <midino>0x14</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <!-- Headphones level knob (0xBF 0x13): not mapped. In testing, the unit appears to apply it to its own headphone output, so mapping it to Mixxx's headGain would turn the headphones down twice. The Main knob appears to only send MIDI, so it is mapped above. -->

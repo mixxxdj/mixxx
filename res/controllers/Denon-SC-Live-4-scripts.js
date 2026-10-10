@@ -93,6 +93,17 @@ const sweepFxMix = {
  *   can't be used). To revisit if that changes.
  */
 
+// Some pots on the SC Live 4 have their unity gain point marked beyond the center of the pot
+// travel at about the point where the MIDI control reports value 80. This is to deal with that.
+const offsetPotInValueScale = function(value) {
+    if (value > 80) {
+        return 0.5 + 0.5 * ((value - 80) / (127 - 80));
+    } else {
+        return 0.5 * value / (80);
+    }
+};
+
+
 // Convert user-preference for `skipButtonBehavior` into appropriate keys for components
 let trackSkipMode = [];
 if (skipButtonBehavior === "denon") {
@@ -1039,6 +1050,7 @@ const mixerStrip = function(deckNumber, midiOffset) {
         midi: [0xB0 + midiOffset, 0x03],
         group: `[Channel${deckNumber}]`,
         inKey: "pregain",
+        inValueScale: offsetPotInValueScale,
     });
 
     // High EQ Knob
@@ -1489,7 +1501,7 @@ SCLive4.Deck = function(deckNumbers, midiChannel) {
     this.tempoFader = new components.Pot({
         midi: [0xB0 + midiChannel, 0x1F],
         inKey: "rate",
-        invert: true,
+        invert: false,
         // As in Engine OS, there's no snap zone: only the fader's exact center
         // (8192, which Components scales to exactly 0.5) gives 0% tempo and
         // lights the center light.
@@ -2658,6 +2670,14 @@ SCLive4.faderEcho = {
         this.ringing = false;
     },
 };
+
+// Master gain goes through the script because the unity gain marker is not in the center of the pot.
+SCLive4.masterGain = new components.Pot({
+    group: "[Master]",
+    inKey: "gain",
+    softTakeover: false,
+    inValueScale: offsetPotInValueScale,
+});
 
 // Crossfader: goes through the script so Fader Echo can react to it.
 SCLive4.crossfader = new components.Pot({
