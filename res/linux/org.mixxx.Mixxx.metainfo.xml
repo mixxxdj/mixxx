@@ -54,6 +54,7 @@
     <modalias>usb:v200Cp*</modalias>
     <modalias>usb:v0582p*</modalias>
     <modalias>usb:v054Cp*</modalias>
+    <modalias>usb:v2982p*</modalias>
   </provides>
   <screenshots>
     <screenshot type="default">
