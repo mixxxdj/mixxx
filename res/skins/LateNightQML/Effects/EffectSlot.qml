@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Mixxx 1.0 as Mixxx
 import QtQuick
-import QtQuick.Layouts
+import "../../../qml/Effects" as SharedEffects
 import "../Controls" as LateNightControls
 import "../LateNightTheme"
 
@@ -33,7 +33,7 @@ Item {
         let buttons = 0;
         for (let index = 0; index < parameterRepeater.count; ++index) {
             const loader = parameterRepeater.itemAt(index);
-            minimums.push(loader && loader.item ? loader.item.implicitWidth : (root.parameterData[index].type === 1 ? 55 : 42));
+            minimums[loader ? loader.index : index] = loader && loader.item ? loader.item.implicitWidth : (root.parameterData[index].type === 1 ? 55 : 42);
             buttons += root.parameterData[index].type === 1 ? 1 : 0;
         }
         root.parameterMinimumWidth = minimums.reduce((sum, value) => sum + value, 0);
@@ -73,7 +73,7 @@ Item {
                 parameters.push(parameter);
             }
         }
-        parameters.sort((left, right) => right.type - left.type || parseInt(left.controlKey.replace(/\D/g, "")) - parseInt(right.controlKey.replace(/\D/g, "")));
+        parameters.sort((left, right) => left.displayOrder - right.displayOrder);
         root.initialParameterLayout = false;
         root.parameterData = parameters;
         Qt.callLater(root.recountActiveParameters);
@@ -208,7 +208,7 @@ Item {
         visible: root.expanded
         width: Math.max(0, root.parameterAreaWidth - (LateNightTheme.isClassic ? 4 : 0))
 
-        RowLayout {
+        Row {
             id: parameterRow
 
             height: parent.height
@@ -216,10 +216,24 @@ Item {
             width: Math.max(root.parameterMinimumWidth, Math.min(parametersContainer.width, (root.activeButtonParameterCount + root.activeKnobParameterCount) * 60))
             x: Math.max(0, parametersContainer.width - width)
 
+            move: Transition {
+                NumberAnimation {
+                    duration: 120
+                    properties: "x"
+                }
+            }
+
             Repeater {
                 id: parameterRepeater
 
-                model: root.parameterData
+                model: parameterVisualModel
+
+                onCountChanged: Qt.callLater(root.recountActiveParameters)
+            }
+            SharedEffects.EffectParameterReorderModel {
+                id: parameterVisualModel
+
+                sourceModel: root.parameterData
 
                 delegate: Loader {
                     id: parameterLoader
@@ -227,21 +241,21 @@ Item {
                     required property int index
                     required property var modelData
 
-                    Layout.alignment: Qt.AlignTop
-                    Layout.maximumWidth: Layout.minimumWidth
-                    Layout.minimumWidth: root.parameterWidths[index] || 0
-                    Layout.preferredHeight: parameterRow.height
-                    Layout.preferredWidth: Layout.minimumWidth
+                    height: parameterRow.height
+                    width: root.parameterWidths[index] || 0
 
                     sourceComponent: EffectParameter {
                         buttonParameter: parameterLoader.modelData.type === 1
                         controlKey: parameterLoader.modelData.controlKey
+                        effectSlot: root.slot
                         group: root.slot.group
                         label: parameterLoader.modelData.shortName || parameterLoader.modelData.name
                         linkColor: root.unitDimColor
                         maximum: parameterLoader.modelData.maximum
                         neutralPoint: parameterLoader.modelData.neutralPoint
+                        parameterType: parameterLoader.modelData.type
                         parametersModel: root.slot.parametersModel
+                        reorderModel: parameterVisualModel
                         unitColor: root.unitColor
                         unitString: parameterLoader.modelData.unitString
                         useApplicationFont: parameterLoader.modelData.useApplicationFont
@@ -251,8 +265,6 @@ Item {
 
                     onLoaded: Qt.callLater(root.recountActiveParameters)
                 }
-
-                onCountChanged: Qt.callLater(root.recountActiveParameters)
             }
         }
     }

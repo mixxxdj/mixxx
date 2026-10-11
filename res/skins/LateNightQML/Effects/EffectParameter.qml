@@ -1,5 +1,6 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick
+import "../../../qml/Effects" as SharedEffects
 import "../Controls" as LateNightControls
 import "../LateNightTheme"
 
@@ -8,12 +9,15 @@ Item {
 
     required property bool buttonParameter
     required property string controlKey
+    required property Mixxx.EffectSlotProxy effectSlot
     required property string group
     required property string label
     required property color linkColor
     required property real maximum
     required property real neutralPoint
+    required property int parameterType
     required property Mixxx.EffectSlotParametersModel parametersModel
+    required property SharedEffects.EffectParameterReorderModel reorderModel
     property bool showParameterValue: false
     property bool skipNextValueChange: true
     required property color unitColor
@@ -36,6 +40,7 @@ Item {
 
     implicitHeight: buttonParameter ? 35 : 43
     implicitWidth: Math.max(buttonParameter ? 55 : 42, Math.min(buttonParameter ? 58 : 60, parametersModel.labelWidth(label, maximum, unitString, parameterLabel.font, useApplicationFont)))
+    opacity: root.reorderModel.draggedKey === root.controlKey ? 0 : 1
 
     EffectControlButton {
         activeColor: LateNightTheme.effectsParameterActiveColor
@@ -88,6 +93,14 @@ Item {
             color: "#151515"
             visible: LateNightTheme.isClassic
             z: -1
+        }
+        SharedEffects.EffectParameterDragArea {
+            anchors.fill: parent
+            controlKey: root.controlKey
+            dragItem: root
+            effectSlot: root.effectSlot
+            parameterType: root.parameterType
+            reorderModel: root.reorderModel
         }
     }
     Row {

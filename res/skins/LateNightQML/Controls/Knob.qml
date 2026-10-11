@@ -1,3 +1,4 @@
+import Mixxx 1.0 as Mixxx
 import QtQuick
 import "../../../qml" as Skin
 import "../LateNightTheme"

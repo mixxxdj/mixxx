@@ -24,6 +24,7 @@ const QHash<int, QByteArray> kRoleNames = {
         {QmlEffectSlotParametersModel::UnitStringRole, "unitString"},
         {QmlEffectSlotParametersModel::MaximumRole, "maximum"},
         {QmlEffectSlotParametersModel::NeutralPointRole, "neutralPoint"},
+        {QmlEffectSlotParametersModel::DisplayOrderRole, "displayOrder"},
 };
 }
 
@@ -32,6 +33,9 @@ QmlEffectSlotParametersModel::QmlEffectSlotParametersModel(
         QObject* parent)
         : QAbstractListModel(parent),
           m_pEffectSlot(std::move(pEffectSlot)) {
+    m_orderedModel.setSourceModel(this);
+    m_orderedModel.setSortRole(DisplayOrderRole);
+    m_orderedModel.sort(0);
     connect(m_pEffectSlot.get(),
             &EffectSlot::effectChanged,
             this,
@@ -54,7 +58,7 @@ void QmlEffectSlotParametersModel::updateParameterState() {
     }
     emit dataChanged(index(0, 0),
             index(parameterCount - 1, 0),
-            {ControlKeyRole, LoadedRole});
+            {ControlKeyRole, LoadedRole, DisplayOrderRole});
 }
 
 EffectParameterPointer QmlEffectSlotParametersModel::loadedParameterForRow(
@@ -111,6 +115,10 @@ QVariant QmlEffectSlotParametersModel::data(const QModelIndex& index, int role) 
         return (isButton ? QStringLiteral("button_parameter%1")
                          : QStringLiteral("parameter%1"))
                 .arg(QString::number(keyNumber));
+    }
+    case QmlEffectSlotParametersModel::DisplayOrderRole: {
+        const auto parameter = loadedParameterForRow(index.row());
+        return parameter ? parameter->displayOrder() : rowCount({});
     }
     case QmlEffectSlotParametersModel::LoadedRole:
         return static_cast<bool>(loadedParameterForRow(index.row()));

@@ -2,6 +2,7 @@ import Mixxx 1.0 as Mixxx
 import QtQml 2.12
 import QtQuick 2.12
 import QtQuick.Shapes 1.12
+import QtQuick.Window 2.12
 
 Item {
     id: root
@@ -12,6 +13,7 @@ Item {
         Maximum
     }
 
+    property bool inputEnabled: true
     property real angle: 130
     property bool arc: false
     property alias arcColor: arcPath.strokeColor
@@ -97,65 +99,58 @@ Item {
             }
         }
     }
-    DragHandler {
-        id: dragHandler
-
-        property vector2d lastTranslation: Qt.vector2d(0, 0)
-        property real value
-
-        target: null
-
-        onActiveChanged: {
-            dragHandler.value = root.value;
-            lastTranslation = Qt.vector2d(0, 0);
-        }
-        onTranslationChanged: {
-            const diff_x = (translation.x - lastTranslation.x);
-            const diff_y = (translation.y - lastTranslation.y);
-            this.lastTranslation = translation;
-            const y_dominant = Math.abs(diff_y) > Math.abs(diff_x);
-            let dist = Math.sqrt(diff_x * diff_x + diff_y * diff_y);
-            // If y is dominant, then treat an increase in dy as negative (y is
-            // pointed downward). Otherwise, if y is not dominant and x has
-            // decreased, then treat it as negative.
-            if ((y_dominant && diff_y > 0) || (!y_dominant && diff_x < 0))
-                dist = -dist;
-
-            let value = root.value + dist / root.wheelSteps;
-            // Clamp to [0.0, 1.0].
-            value = Mixxx.MathUtils.clamp(value, 0, 1);
-            root.turned(value);
-            dragHandler.value = value;
-        }
-    }
-    Binding {
-        property: "value"
-        target: root
-        value: dragHandler.value
-        when: dragHandler.active
-    }
-
-    // TODO: Replace this with a WheelHandler once we switch to Qt >= 5.14.
     MouseArea {
-        id: wheelHandler
+        id: input
 
-        property real value
+        property point previousPosition
 
-        acceptedButtons: Qt.NoButton
         anchors.fill: parent
+        enabled: root.inputEnabled && (!root.Window.window || root.Window.window.active)
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        hoverEnabled: true
+        preventStealing: true
+        cursorShape: pressed || wheelCursorTimer.running ? Qt.BlankCursor : Qt.ArrowCursor
 
-        onWheel: event => {
-            const wheelAdjustment = event.angleDelta.y / root.wheelDeltaStep * root.wheelStepSize;
-            const value = Mixxx.MathUtils.clamp(root.value + wheelAdjustment, root.min, root.max);
-            root.turned(value);
-            event.accepted = true;
-            wheelHandler.value = value;
+        onPressed: mouse => {
+            previousPosition = Qt.point(mouse.x, mouse.y);
+            wheelCursorTimer.stop();
         }
+        onPositionChanged: mouse => {
+            if (!pressed) {
+                return;
+            }
+            const dx = mouse.x - previousPosition.x;
+            const dy = mouse.y - previousPosition.y;
+            previousPosition = Qt.point(mouse.x, mouse.y);
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            if (Math.abs(dy) > Math.abs(dx) ? dy > 0 : dx < 0) {
+                distance = -distance;
+            }
+            root.turned(Mixxx.MathUtils.clamp(root.value + distance / root.wheelSteps,
+                    root.min, root.max));
+        }
+        onWheel: event => {
+            const adjustment = event.angleDelta.y / root.wheelDeltaStep * root.wheelStepSize;
+            root.turned(Mixxx.MathUtils.clamp(root.value + adjustment, root.min, root.max));
+            wheelCursorTimer.restart();
+            event.accepted = true;
+        }
+        onExited: wheelCursorTimer.stop()
     }
-    Binding {
-        property: "value"
-        target: root
-        value: wheelHandler.value
-        when: wheelHandler.drag.active
+    Timer {
+        id: wheelCursorTimer
+
+        interval: 800
+    }
+    MouseArea {
+        parent: root.Window.window ? root.Window.window.contentItem : null
+        anchors.fill: parent
+        z: 1000000
+        visible: input.pressed
+        acceptedButtons: Qt.NoButton
+        hoverEnabled: true
+        cursorShape: Qt.BlankCursor
+
+        onWheel: event => event.accepted = false
     }
 }

@@ -52,6 +52,11 @@ QString QmlEffectSlotProxy::getEffectId() const {
     return m_pEffectSlot->id();
 }
 
+QString QmlEffectSlotProxy::getUniqueEffectId() const {
+    const auto pManifest = m_pEffectSlot->getManifest();
+    return pManifest ? pManifest->uniqueId() : QString();
+}
+
 bool QmlEffectSlotProxy::isLoaded() const {
     return m_pEffectSlot->isLoaded();
 }
@@ -104,6 +109,60 @@ void QmlEffectSlotProxy::setParameterVisible(const QString& parameterId, bool vi
                 }
                 return;
             }
+        }
+    }
+}
+
+void QmlEffectSlotProxy::swapParameters(
+        int parameterType, int firstSlot, int secondSlot, int secondType) {
+    if (!m_pEffectSlot->isLoaded()) {
+        return;
+    }
+    if (secondType == -1) {
+        secondType = parameterType;
+    }
+    m_pEffectSlot->swapParameters(static_cast<EffectParameterType>(parameterType),
+            firstSlot,
+            static_cast<EffectParameterType>(secondType),
+            secondSlot);
+}
+
+void QmlEffectSlotProxy::queueParameterSwap(
+        int parameterType, int firstSlot, int secondSlot, int secondType) {
+    m_pendingMove = false;
+    m_pendingParameterType = parameterType;
+    m_pendingFirstSlot = firstSlot;
+    m_pendingSecondSlot = secondSlot;
+    m_pendingSecondType = secondType;
+}
+
+void QmlEffectSlotProxy::queueParameterMove(
+        int parameterType, int slot, int targetType, int targetSlot, bool after) {
+    queueParameterSwap(parameterType, slot, targetSlot, targetType);
+    m_pendingMove = true;
+    m_pendingAfter = after;
+}
+
+void QmlEffectSlotProxy::completeParameterSwap(bool accepted) {
+    const bool move = m_pendingMove;
+    m_pendingMove = false;
+    const int parameterType = m_pendingParameterType;
+    const int firstSlot = m_pendingFirstSlot;
+    const int secondSlot = m_pendingSecondSlot;
+    const int secondType = m_pendingSecondType;
+    m_pendingParameterType = -1;
+    m_pendingFirstSlot = -1;
+    m_pendingSecondSlot = -1;
+    m_pendingSecondType = -1;
+    if (accepted && m_pEffectSlot->isLoaded()) {
+        if (move) {
+            m_pEffectSlot->moveParameter(static_cast<EffectParameterType>(parameterType),
+                    firstSlot,
+                    static_cast<EffectParameterType>(secondType),
+                    secondSlot,
+                    m_pendingAfter);
+        } else {
+            swapParameters(parameterType, firstSlot, secondSlot, secondType);
         }
     }
 }
