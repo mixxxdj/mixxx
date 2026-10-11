@@ -1,6 +1,7 @@
 import Mixxx 1.0 as Mixxx
 import QtQml 2.12
 import QtQuick 2.12
+import QtQuick.Window 2.12
 import QtQuick.Shapes 1.12
 
 Item {
@@ -13,6 +14,7 @@ Item {
     }
 
     property real angle: 130
+    property bool hideCursorWhileDragging: false
     property bool arc: false
     property alias arcColor: arcPath.strokeColor
     property real arcOffsetX: 0
@@ -103,6 +105,7 @@ Item {
         property vector2d lastTranslation: Qt.vector2d(0, 0)
         property real value
 
+        acceptedButtons: root.hideCursorWhileDragging ? Qt.LeftButton | Qt.MiddleButton : Qt.LeftButton
         target: null
 
         onActiveChanged: {
@@ -133,6 +136,17 @@ Item {
         target: root
         value: dragHandler.value
         when: dragHandler.active
+    }
+
+    MouseArea {
+        parent: root.Window.window ? root.Window.window.contentItem : null
+        acceptedButtons: Qt.NoButton
+        anchors.fill: parent
+        cursorShape: Qt.BlankCursor
+        enabled: root.hideCursorWhileDragging && dragHandler.active
+        hoverEnabled: true
+        visible: enabled
+        z: 2147483647
     }
 
     // TODO: Replace this with a WheelHandler once we switch to Qt >= 5.14.
