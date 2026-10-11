@@ -947,7 +947,7 @@ TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
 #ifdef __STEM__
 TEST_F(SoundSourceProxyTest, getTypeFromMissingNIStemFile) {
     const QFileInfo missingFileWithUppercaseSuffix(
-            getTestDir().filePath(QStringLiteral("id3-test-data/missing_file.stem.mp4")));
+            getTestDir().filePath(QStringLiteral("id3-test-data/missing_file.stem.MP4")));
 
     ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
 
