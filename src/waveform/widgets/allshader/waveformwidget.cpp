@@ -17,6 +17,7 @@
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
@@ -149,11 +150,17 @@ mixxx::Duration WaveformWidget::render() {
 }
 
 void WaveformWidget::preRender(VSyncThread* vsyncThread) {
+    m_pVSyncThread = vsyncThread;
     resizeRenderer(width(), height(), static_cast<float>(devicePixelRatioF()));
     WaveformWidgetAbstract::preRender(vsyncThread);
+    m_preRenderPending = false;
 }
 
 void WaveformWidget::paintGL() {
+    if (m_preRenderPending && m_pVSyncThread) {
+        WaveformWidgetAbstract::preRender(m_pVSyncThread);
+        m_preRenderPending = false;
+    }
     if (m_rendergraphResizePending) {
         m_pEngine->resize(getWidth(), getHeight());
         m_rendergraphResizePending = false;
@@ -190,6 +197,7 @@ void WaveformWidget::resizeRenderer(int width, int height, float devicePixelRati
     }
     WaveformWidgetRenderer::resizeRenderer(width, height, devicePixelRatio);
     m_rendergraphResizePending = true;
+    m_preRenderPending = true;
 }
 
 void WaveformWidget::resizeGL(int, int) {
