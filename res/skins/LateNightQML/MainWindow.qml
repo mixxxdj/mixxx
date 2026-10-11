@@ -842,12 +842,6 @@ Item {
                         id: effectsRack
 
                         anchors.fill: parent
-                        leftUnitEnd: deckPane.mixerLayoutVisible || mixer.width > 0 || root.showCompactVuMeters
-                                ? Math.round((effectsRack.width - effectsRack.unitSpacing) / 2)
-                                : deck1.x + deck1.width
-                        rightUnitStart: deckPane.mixerLayoutVisible || mixer.width > 0 || root.showCompactVuMeters
-                                ? Math.round((effectsRack.width + effectsRack.unitSpacing) / 2)
-                                : deck2.x
                     }
                 }
                 Item {
