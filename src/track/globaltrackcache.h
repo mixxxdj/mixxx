@@ -1,12 +1,12 @@
 #pragma once
 
+#include <QMutex>
 #include <QWaitCondition>
 #include <map>
 #include <unordered_map>
 
 #include "track/track_decl.h"
 #include "track/trackref.h"
-#include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 
 // forward declaration(s)

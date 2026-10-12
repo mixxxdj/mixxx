@@ -3,13 +3,13 @@
 #include <QDir>
 #include <QHash>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QRegularExpression>
 #include <QSet>
 #include <QSharedPointer>
 #include <QStringList>
 
 #include "util/cache.h"
-#include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/performancetimer.h"
 #include "util/task.h"
@@ -57,7 +57,7 @@ class ScannerGlobal {
 
     bool testAndMarkDirectoryScanned(const QDir& dir) {
         const QString canonicalPath(dir.canonicalPath());
-        const auto locker = lockMutex(&m_directoriesScannedMutex);
+        const auto locker = QMutexLocker(&m_directoriesScannedMutex);
         if (m_directoriesScanned.contains(canonicalPath)) {
             return true;
         } else {
@@ -67,7 +67,7 @@ class ScannerGlobal {
     }
 
     void addUnhashedDir(const mixxx::FileAccess& dirAccess) {
-        const auto locker = lockMutex(&m_directoriesUnhashedMutex);
+        const auto locker = QMutexLocker(&m_directoriesUnhashedMutex);
         m_directoriesUnhashed.append(dirAccess);
     }
 
@@ -79,7 +79,7 @@ class ScannerGlobal {
 
     // TODO(rryan) test whether tasks should create their own QRegularExpression.
     bool isAudioFileSupported(const QString& fileName) const {
-        const auto locker = lockMutex(&m_supportedExtensionsMatcherMutex);
+        const auto locker = QMutexLocker(&m_supportedExtensionsMatcherMutex);
         QRegularExpressionMatch match = m_supportedCoverExtensionsMatcher.match(fileName);
         return match.hasMatch();
     }
@@ -90,7 +90,7 @@ class ScannerGlobal {
 
     // TODO(rryan) test whether tasks should create their own QRegularExpression.
     bool isCoverFileSupported(const QString& fileName) const {
-        const auto locker = lockMutex(&m_supportedCoverExtensionsMatcherMutex);
+        const auto locker = QMutexLocker(&m_supportedCoverExtensionsMatcherMutex);
         QRegularExpressionMatch match = m_supportedCoverExtensionsMatcher.match(fileName);
         return match.hasMatch();
     }

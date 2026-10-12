@@ -7,27 +7,15 @@
 
 #include "track/track_decl.h"
 
-#ifdef MIXXX_USE_QOPENGL
 class QOpenGLFramebufferObject;
 class QOpenGLShader;
 class QOpenGLShaderProgram;
-#else
-class QGLFramebufferObject;
-class QGLShader;
-class QGLShaderProgram;
-#endif
 
 class GLSLWaveformRendererSignal : public QObject,
                                    public GLWaveformRendererSignal {
-#ifdef MIXXX_USE_QOPENGL
     using FrameBufferObject = QOpenGLFramebufferObject;
     using Shader = QOpenGLShader;
     using ShaderProgram = QOpenGLShaderProgram;
-#else
-    using FrameBufferObject = QGLFramebufferObject;
-    using Shader = QGLShader;
-    using ShaderProgram = QGLShaderProgram;
-#endif
     Q_OBJECT
   public:
     enum class ColorType {

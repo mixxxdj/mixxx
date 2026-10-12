@@ -10,7 +10,7 @@
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wcuemenupopup.h"
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,
@@ -103,11 +103,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackCueGroup(currentTrack, cueAtClickPos, m_group);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 m_pCueMenuPopup->popup(event->globalPosition().toPoint());
-#else
-                m_pCueMenuPopup->popup(event->globalPos());
-#endif
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't
@@ -302,7 +298,6 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
                     m_waveformWidget = nullptr;
                 });
         m_waveformWidget->getWidget()->setMouseTracking(true);
-#ifdef MIXXX_USE_QOPENGL
         if (m_waveformWidget->getGLWidget()) {
             // The OpenGLWindow used to display the waveform widget interferes with the
             // normal Qt tooltip mechanism and uses it's own mechanism. We set the tooltip
@@ -313,7 +308,6 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
             // Tell the WGLWidget that this is its drag&drop target
             m_waveformWidget->getGLWidget()->setTrackDropTarget(this);
         }
-#endif
         // Make connection to show "Passthrough" label on the waveform, except for
         // "Empty" waveform type
         if (m_waveformWidget->getType() == WaveformWidgetType::Empty) {
