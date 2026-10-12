@@ -57,7 +57,7 @@ jobs:
             -DKEYFINDER=ON \
             -DLOCALECOMPARE=ON \
             -DMAD=ON \
-            -DMODPLUG=ON \
+            -DOPENMPT=ON \
             -DWAVPACK=ON \
             ..
         working-directory: build
@@ -87,7 +87,7 @@ jobs:
             -DKEYFINDER=ON \
             -DLOCALECOMPARE=ON \
             -DMAD=ON \
-            -DMODPLUG=ON \
+            -DOPENMPT=ON \
             -DWAVPACK=ON \
             -DCMAKE_CXX_FLAGS="-Wno-nan-infinity-disabled" \
             ..
@@ -119,7 +119,7 @@ jobs:
             -DKEYFINDER=ON \
             -DLOCALECOMPARE=ON \
             -DMAD=ON \
-            -DMODPLUG=ON \
+            -DOPENMPT=ON \
             -DWAVPACK=ON \
             ..
         working-directory: build
