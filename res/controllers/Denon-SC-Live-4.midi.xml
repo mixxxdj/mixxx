@@ -24,6 +24,13 @@
                 <value label="Turn sync off (Denon)" default="true">off</value>
                 <value label="Turn quantize on / off">quantize</value>
             </option>
+            <option variable="slipBehavior" type="enum" label="How should slip behave?">
+                <description>
+                    Choose how slip ends
+                </description>
+                <value label="Resume after scratching and re-arm (Denon)" default="true">denon</value>
+                <value label="Manual end of slip">mixxx</value>
+            </option>
         </group>
         <group label="When Mixxx Starts">
             <option variable="quantizeOnStartup" type="boolean" default="true" label="Turn on quantize for all decks">

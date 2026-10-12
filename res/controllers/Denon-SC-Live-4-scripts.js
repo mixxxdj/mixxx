@@ -31,6 +31,7 @@ const channelVolumesToZeroOnStartup = engine.getSetting("channelVolumesToZeroOnS
 // Loop resizing keeps: "start", "end" or "mixxx" (each deck's own setting)
 const loopAnchor = engine.getSetting("loopAnchor");
 const wheelSensitivity = engine.getSetting("wheelSensitivity");
+const slipBehavior = engine.getSetting("slipBehavior");
 // The tempo ranges SHIFT + PITCH BEND - / + steps through (0.04 = 4%)
 const rateRangeSets = {
     denon: [0.04, 0.08, 0.10, 0.20, 0.50, 1.00],
@@ -1165,6 +1166,23 @@ SCLive4.Deck = function(deckNumbers, midiChannel) {
             this.inKey = "reverse";
             this.outKey = this.inKey;
         },
+        input: function(channel, control, value, status, group) {
+            // reverseroll drives slip internally (on while held, off on release to seek
+            // back), which would clobber a slip mode the DJ had on. Save it on press and
+            // re-arm it on release, as in Engine OS.
+            if (this.inKey === "reverseroll") {
+                if (this.isPress(channel, control, value, status)) {
+                    this.slipWasOn = engine.getValue(this.group, "slip_enabled") === 1;
+                } else if (this.slipWasOn) {
+                    this.slipWasOn = false;
+                    // Re-arm slip after the seek so it's still in the DJ's expected state.
+                    engine.beginTimer(50, () => {
+                        engine.setValue(this.group, "slip_enabled", 1);
+                    }, true);
+                }
+            }
+            components.Button.prototype.input.call(this, channel, control, value, status, group);
+        },
     });
 
     // Track Skip buttons, "denon" mode (SC Live 4 manual):
@@ -1602,6 +1620,24 @@ SCLive4.Deck = function(deckNumbers, midiChannel) {
                 engine.scratchTick(this.deck, value);
             } else {
                 this.inSetValue(this.jogScale(value));
+            }
+        },
+        inputTouch: function(channel, control, value, status, _group) {
+            const wasScratching = engine.isScratching(this.deck);
+            components.JogWheelBasic.prototype.inputTouch.call(this, channel, control, value, status, _group);
+            if (slipBehavior === "denon") {
+                // Engine OS slip: on lift-off the deck re-syncs to where the track would
+                // have been, and slip stays on so the next scratch also slips. The engine
+                // only seeks back to the slip position when slip_enabled goes 1 -> 0, so
+                // briefly turn it off and back on. The delay lets the engine do the seek
+                // before slip is re-armed
+                if (!this.isPress(channel, control, value, status) && wasScratching &&
+                        engine.getValue(this.group, "slip_enabled")) {
+                    engine.setValue(this.group, "slip_enabled", 0);
+                    engine.beginTimer(50, () => {
+                        engine.setValue(this.group, "slip_enabled", 1);
+                    }, true);
+                }
             }
         },
     });
