@@ -23,6 +23,21 @@
         </description>
       </option>
     </group>
+    <group label="Jog">
+      <option
+        variable="scratchSensitivity"
+        type="real"
+        default="50"
+        min="25"
+        max="100"
+        step="5"
+        precision="0"
+        label="Scratch Sensitivity">
+        <description>
+          Adjusts how much the track moves while touching the jog wheel or scrubbing a stopped deck. 50% matches the current djay-like response. Lower values require more platter rotation; higher values are more responsive. Fast forward and backward throws follow the jog after release. During playback they return to normal speed; while paused they slow to zero without starting the deck.
+        </description>
+      </option>
+    </group>
   </settings>
   <controller id="NS6 MIDI 1">
     <scriptfiles>
@@ -2540,8 +2555,17 @@
       <!-- Faders -->
       <control>
           <group>[Master]</group>
-          <key>NumarkNS6.toggleFaderStartLeft</key>
+          <key>NumarkNS6.setFaderStartLeft</key>
           <status>0x90</status>
+          <midino>0x02</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Master]</group>
+          <key>NumarkNS6.setFaderStartLeft</key>
+          <status>0x80</status>
           <midino>0x02</midino>
           <options>
               <script-binding/>
@@ -2550,8 +2574,17 @@
 
       <control>
           <group>[Master]</group>
-          <key>NumarkNS6.toggleFaderStartRight</key>
+          <key>NumarkNS6.setFaderStartRight</key>
           <status>0x90</status>
+          <midino>0x03</midino>
+          <options>
+              <script-binding/>
+          </options>
+      </control>
+      <control>
+          <group>[Master]</group>
+          <key>NumarkNS6.setFaderStartRight</key>
+          <status>0x80</status>
           <midino>0x03</midino>
           <options>
               <script-binding/>
