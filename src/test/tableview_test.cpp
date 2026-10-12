@@ -69,3 +69,58 @@ TEST_F(HeaderViewStateTest, BadHeaderState) {
     HeaderViewState view_state("BLAHBLAHBLAHBAD");
     ASSERT_FALSE(view_state.healthy());
 }
+
+TEST_F(HeaderViewStateTest, EmptyHeaderState) {
+    HeaderViewState view_state{mixxx::library::HeaderViewState()};
+    ASSERT_FALSE(view_state.healthy());
+    QString saved = view_state.saveState();
+    HeaderViewState loaded(saved);
+    ASSERT_EQ(saved, loaded.saveState());
+}
+
+TEST_F(HeaderViewStateTest, AllColumnsHidden) {
+    mixxx::library::HeaderViewState headerViewState_pb;
+    auto* header_state_pb = headerViewState_pb.add_header_state();
+    header_state_pb->set_hidden(true);
+    header_state_pb->set_column_name("Col1");
+    header_state_pb = headerViewState_pb.add_header_state();
+    header_state_pb->set_hidden(true);
+    header_state_pb->set_column_name("Col2");
+
+    HeaderViewState view_state(headerViewState_pb);
+    ASSERT_FALSE(view_state.healthy());
+}
+
+TEST_F(HeaderViewStateTest, SortIndicatorRoundTrip) {
+    mixxx::library::HeaderViewState headerViewState_pb;
+    auto* header_state_pb = headerViewState_pb.add_header_state();
+    header_state_pb->set_hidden(false);
+    header_state_pb->set_column_name("Artist");
+    headerViewState_pb.set_sort_indicator_shown(true);
+    headerViewState_pb.set_sort_indicator_section(2);
+    headerViewState_pb.set_sort_order(Qt::AscendingOrder);
+
+    HeaderViewState view_state(headerViewState_pb);
+    QString saved = view_state.saveState();
+    HeaderViewState loaded(saved);
+    ASSERT_EQ(saved, loaded.saveState());
+    ASSERT_TRUE(loaded.healthy());
+}
+
+TEST_F(HeaderViewStateTest, SortIndicatorNotShownRoundTrip) {
+    mixxx::library::HeaderViewState headerViewState_pb;
+    auto* header_state_pb = headerViewState_pb.add_header_state();
+    header_state_pb->set_hidden(false);
+    header_state_pb->set_column_name("Title");
+
+    HeaderViewState view_state(headerViewState_pb);
+    ASSERT_TRUE(view_state.healthy());
+    QString saved = view_state.saveState();
+    HeaderViewState loaded(saved);
+    ASSERT_EQ(saved, loaded.saveState());
+}
+
+TEST_F(HeaderViewStateTest, EmptyStringDeserialization) {
+    HeaderViewState view_state{QString()};
+    ASSERT_FALSE(view_state.healthy());
+}
