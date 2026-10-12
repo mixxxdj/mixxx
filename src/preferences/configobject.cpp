@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QIODevice>
+#include <QRegularExpression>
 #include <QTextStream>
 #include <QtDebug>
 
@@ -205,8 +206,15 @@ bool ConfigObject<ValueType>::parse() {
         // qDebug() << "ConfigObject: Parse" << m_filename;
         //  Parse the file
         int group = 0;
+        bool ignoreGroup = false;
         QString groupStr, line;
         QTextStream text(&configfile);
+        // Regex to catch group lines
+        // a-zA-Z0-9_ valid chars are alphanumerics or _ or space (for [Auto DJ] )
+        // (?1) tells the engine to recurse the first capturing group in case
+        // it's not matching valid chars in order to catch groups like
+        // [QuickEffectRack1_[Channel3_Stem4]]
+        static const QRegularExpression kCfgGroupRegex("^(\\[(?:[a-zA-Z0-9_ ]|(?1))*\\])$");
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         DEBUG_ASSERT(text.encoding() == QStringConverter::Utf8);
 #else
@@ -216,11 +224,16 @@ bool ConfigObject<ValueType>::parse() {
         while (!text.atEnd()) {
             line = text.readLine().trimmed();
             if (line.length() != 0) {
-                if (line.startsWith("[") && line.endsWith("]")) {
+                QRegularExpressionMatch cfgGroupMatcher = kCfgGroupRegex.match(line);
+                if (cfgGroupMatcher.hasMatch()) {
+                    ignoreGroup = false;
                     group++;
-                    groupStr = line;
-                    // qDebug() << "Group :" << groupStr;
-                } else if (group > 0) {
+                    groupStr = cfgGroupMatcher.captured();
+                } else if (line.startsWith('[') || line.endsWith(']')) {
+                    qWarning() << "ConfigObject: ignoring invalid group" << line
+                               << "and all following keys in file" << m_filename;
+                    ignoreGroup = true;
+                } else if (!ignoreGroup && group > 0) {
                     QString key;
                     QTextStream(&line) >> key;
                     QString val = line.right(line.length() - key.length()); // finds the value string
