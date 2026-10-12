@@ -108,7 +108,7 @@ bool AnalyzerKeyFinder::finalize() {
     m_keyFinder.finalChromagram(m_workspace);
     ChromaticKey finalKey = chromaticKeyFromKeyFinderKeyT(
             m_keyFinder.keyOfChromagram(m_workspace));
-    m_resultKeys.push_back(qMakePair(finalKey, m_currentFrame));
+    m_resultKeys.push_back({finalKey, 0.0, mixxx::audio::FramePos(m_currentFrame)});
     return true;
 }
 
