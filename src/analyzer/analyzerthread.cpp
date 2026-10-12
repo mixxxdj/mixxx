@@ -3,6 +3,7 @@
 #include <mutex>
 
 #include "analyzer/analyzerbeats.h"
+#include "analyzer/analyzerchromaprint.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerkey.h"
@@ -93,16 +94,34 @@ void AnalyzerThread::doRun() {
     // before returning from this function.
     mixxx::DbConnectionPooler dbConnectionPooler;
 
-    if (m_modeFlags & AnalyzerModeFlags::WithWaveform) {
-        dbConnectionPooler = mixxx::DbConnectionPooler(m_dbConnectionPool); // move assignment
+    // Both AnalyzerWaveform and AnalyzerChromaprint require a database connection.
+    // Create it once and share it — both analyzers run on the same worker thread.
+    const bool needsDbConnection =
+            (m_modeFlags & AnalyzerModeFlags::WithWaveform) ||
+            (m_modeFlags & AnalyzerModeFlags::WithFingerprint);
+    if (needsDbConnection) {
+        dbConnectionPooler = mixxx::DbConnectionPooler(m_dbConnectionPool);
         if (!dbConnectionPooler.isPooling()) {
             kLogger.warning()
                     << "Failed to obtain database connection for analyzer thread";
             return;
         }
         QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_dbConnectionPool);
-        m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerWaveform>(m_pConfig, dbConnection)));
+
+        if (m_modeFlags & AnalyzerModeFlags::WithWaveform) {
+            m_analyzers.push_back(AnalyzerWithState(
+                    std::make_unique<AnalyzerWaveform>(m_pConfig, dbConnection)));
+        }
+
+        // Only run fingerprint analysis when explicitly requested.
+        // WithFingerprint is excluded from All — it is an opt-in mode
+        // that can run independently of waveform analysis.
+        if (m_modeFlags & AnalyzerModeFlags::WithFingerprint) {
+            m_analyzers.push_back(AnalyzerWithState(
+                    std::make_unique<AnalyzerChromaprint>(m_pConfig, dbConnection)));
+        }
     }
+
     if (AnalyzerGain::isEnabled(ReplayGainSettings(m_pConfig))) {
         m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerGain>(m_pConfig)));
     }

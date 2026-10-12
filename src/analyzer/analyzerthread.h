@@ -22,7 +22,12 @@ enum AnalyzerModeFlags {
     WithBeats = 0x01,
     WithWaveform = 0x02,
     LowPriority = 0x04,
+    // WithFingerprint is intentionally excluded from All — it is an
+    // opt-in mode that runs independently of the standard pipeline.
+    WithFingerprint = 0x08,
     All = WithBeats | WithWaveform,
+    // Use AllWithFingerprint when you want the full suite including fingerprinting.
+    AllWithFingerprint = WithBeats | WithWaveform | WithFingerprint,
 };
 
 enum class AnalyzerThreadState {
