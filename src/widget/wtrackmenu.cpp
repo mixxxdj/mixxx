@@ -581,6 +581,12 @@ void WTrackMenu::createActions() {
         m_pReanalyzeAction = make_parented<QAction>(tr("Reanalyze"), this);
         connect(m_pReanalyzeAction, &QAction::triggered, this, &WTrackMenu::slotReanalyze);
 
+        m_pReanalyzeSegmentsAction = make_parented<QAction>(tr("Reanalyze Segments"), this);
+        connect(m_pReanalyzeSegmentsAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotReanalyzeSegments);
+
         m_pReanalyzeConstBpmAction = make_parented<QAction>(tr("Reanalyze (constant BPM)"), this);
         connect(m_pReanalyzeConstBpmAction,
                 &QAction::triggered,
@@ -765,6 +771,7 @@ void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu->addAction(m_pAnalyzeAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeAction);
+        m_pAnalyzeMenu->addAction(m_pReanalyzeSegmentsAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
         addMenu(m_pAnalyzeMenu);
@@ -1807,6 +1814,12 @@ void WTrackMenu::slotAnalyze() {
 
 void WTrackMenu::slotReanalyze() {
     clearBeats();
+    addToAnalysis();
+}
+
+void WTrackMenu::slotReanalyzeSegments() {
+    clearBeats();
+    slotClearKey();
     addToAnalysis();
 }
 

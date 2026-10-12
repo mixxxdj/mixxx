@@ -7,7 +7,9 @@
 #include <QPaintEvent>
 #include <QPainter>
 #include <QPen>
+#include <QStandardPaths>
 #include <QVBoxLayout>
+#include <utility>
 
 #include "analyzer/analyzerprogress.h"
 #include "control/controlproxy.h"
@@ -32,6 +34,7 @@ namespace {
 // Horizontal and vertical margin around the widget where we accept play pos dragging.
 constexpr int kDragOutsideLimitX = 100;
 constexpr int kDragOutsideLimitY = 50;
+constexpr bool showDebugWOverview = false;
 } // anonymous namespace
 
 // for mixxx::OverviewType
@@ -129,6 +132,21 @@ WOverview::WOverview(
     m_pReplayGainDefaultBoost = make_parented<ControlProxy>(
             QStringLiteral("[ReplayGain]"), QStringLiteral("DefaultBoost"), this);
 
+    m_pShowBpmCurve = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"), QStringLiteral("overview_show_bpm_curve"), this);
+    m_pShowBpmCurve->connectValueChanged(this, &WOverview::slotShowBpmCurveChanged);
+    slotShowBpmCurveChanged(static_cast<bool>(m_pShowBpmCurve->get()));
+
+    m_pShowBpmMarkers = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"), QStringLiteral("overview_show_bpm_markers"), this);
+    m_pShowBpmMarkers->connectValueChanged(this, &WOverview::slotShowBpmMarkersChanged);
+    slotShowBpmMarkersChanged(static_cast<bool>(m_pShowBpmMarkers->get()));
+
+    m_pShowKeyMarkers = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"), QStringLiteral("overview_show_key_markers"), this);
+    m_pShowKeyMarkers->connectValueChanged(this, &WOverview::slotShowKeyMarkersChanged);
+    slotShowKeyMarkersChanged(static_cast<bool>(m_pShowKeyMarkers->get()));
+
     m_pReplayGain->connectValueChanged(this, &WOverview::slotScalingChanged);
     m_pReplayGainBoost->connectValueChanged(this, &WOverview::slotScalingChanged);
     m_pReplayGainEnabled->connectValueChanged(this, &WOverview::slotScalingChanged);
@@ -140,8 +158,10 @@ WOverview::WOverview(
 
     setMouseTracking(true);
 
-    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
-            this, &WOverview::onTrackAnalyzerProgress);
+    connect(pPlayerManager,
+            &PlayerManager::trackAnalyzerProgress,
+            this,
+            &WOverview::onTrackAnalyzerProgress);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -295,6 +315,528 @@ void WOverview::initWithTrack(TrackPointer pTrack) {
     }
 }
 
+// Load BPM curve from DB
+void WOverview::loadBpmCurveForTrack(TrackPointer pTrack) {
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-BPM] loadBpmCurveForTrack called for track:"
+                 << (pTrack ? pTrack->getTitle() : "null");
+    }
+
+    if (!pTrack) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-BPM] No track pointer";
+        }
+        m_bpmCurvePoints.clear();
+        m_bpmCurveLoaded = false;
+        return;
+    }
+
+    // Get track ID
+    if (!pTrack->getId().isValid()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-BPM] Track has no valid ID";
+        }
+        m_bpmCurvePoints.clear();
+        m_bpmCurveLoaded = false;
+        return;
+    }
+
+    // Skip if already loaded
+    if (m_bpmCurveLoaded && !m_bpmCurvePoints.isEmpty()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-BPM] BPM curve already loaded, skipping";
+        }
+        return;
+    }
+
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-BPM] Loading BPM curve for track:"
+                 << pTrack->getTitle()
+                 << "ID:" << pTrack->getId().toString();
+    }
+
+    // Load from database via Track object
+    QList<BpmSegmentsPointer> segments = pTrack->getBpmSegments();
+
+    if (segments.isEmpty()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-BPM] No BPM segments in database for track:"
+                     << pTrack->getTitle()
+                     << "ID:" << pTrack->getId().toString();
+        }
+        m_bpmCurvePoints.clear();
+        return;
+    }
+
+    m_bpmCurvePoints.clear();
+
+    for (const auto& pSegment : std::as_const(segments)) {
+        OverviewBpmPoint pt;
+
+        pt.position = pSegment->getStartTime();
+        pt.duration = pSegment->getDuration();
+        pt.bpm_start = pSegment->getBpmStart();
+        pt.bpm_end = pSegment->getBpmEnd();
+        pt.range_start = pSegment->getRangeStart();
+        pt.range_end = pSegment->getRangeEnd();
+        pt.type = pSegment->getType();
+
+        m_bpmCurvePoints.append(pt);
+    }
+
+    m_bpmCurveLoaded = true;
+
+    if (m_bpmCurvePoints.isEmpty()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-BPM] No valid BPM points in database for track:"
+                     << pTrack->getTitle()
+                     << "ID:" << pTrack->getId().toString();
+        }
+        return;
+    }
+
+    // calculate BPM range for Y-axis
+    calculateBpmRange();
+
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-BPM] Loaded" << m_bpmCurvePoints.size()
+                 << "BPM segments for track:"
+                 << pTrack->getTitle()
+                 << "ID:" << pTrack->getId().toString();
+    }
+
+    update();
+}
+
+// Check if BPM curve data exists in the DB for the track,
+// if not emit signal to request analysis
+void WOverview::checkAndRequestBpmCurve(TrackPointer pTrack) {
+    if (!pTrack) {
+        return;
+    }
+
+    // Get track ID
+    if (!pTrack->getId().isValid()) {
+        return;
+    }
+
+    // Check if BPM segments exist in database
+    QList<BpmSegmentsPointer> segments = pTrack->getBpmSegments();
+
+    if (!segments.isEmpty()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-BPM] BPM segments exist in database for track:"
+                     << pTrack->getTitle()
+                     << "ID:" << pTrack->getId().toString();
+        }
+        return;
+    }
+
+    // No segments in database -> request analysis
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-BPM] No BPM segments in database for track:"
+                 << pTrack->getTitle()
+                 << "ID:" << pTrack->getId().toString()
+                 << "----> requesting analysis";
+    }
+    emit requestBeatsAnalysis(pTrack);
+}
+
+void WOverview::drawBpmCurve(QPainter* painter, const QRect& widgetRect) {
+    if (m_bpmCurvePoints.isEmpty()) {
+        return;
+    }
+
+    // Get track information for mapping
+    ControlProxy trackSamplesControl(m_group, "track_samples");
+    ControlProxy trackSampleRateControl(m_group, "track_samplerate");
+
+    double totalTrackSamples = trackSamplesControl.get() / 2;
+    double sampleRate = trackSampleRateControl.get();
+
+    if (totalTrackSamples <= 0 || sampleRate <= 0) {
+        return;
+    }
+
+    double trackLengthSeconds = totalTrackSamples / sampleRate;
+    const int width = widgetRect.width();
+    const int height = widgetRect.height();
+
+    PainterScope scope(painter);
+    painter->setRenderHint(QPainter::Antialiasing);
+
+    // curve lines
+    if (m_showBpmCurve) {
+        painter->setPen(QPen(QColor(0, 255, 0, 180), 2));
+
+        QVector<QLineF> curveLines;
+
+        for (const OverviewBpmPoint& seg : std::as_const(m_bpmCurvePoints)) {
+            // Skip invalid segments
+            if (seg.duration <= 0.001) {
+                continue;
+            }
+
+            double startTime = seg.position;
+            double endTime = seg.range_end;
+
+            // Clamp times to track bounds
+            startTime = qMax(0.0, qMin(startTime, trackLengthSeconds));
+            endTime = qMax(0.0, qMin(endTime, trackLengthSeconds));
+
+            if (endTime <= startTime) {
+                continue;
+            }
+
+            double startBpm = seg.bpm_start;
+            double endBpm = seg.bpm_end;
+
+            // Calculate X positions
+            double x1 = (startTime / trackLengthSeconds) * width;
+            double x2 = (endTime / trackLengthSeconds) * width;
+            double y1 = mapBpmToOverviewY(startBpm, height);
+            double y2 = mapBpmToOverviewY(endBpm, height);
+
+            // Clamp to widget bounds
+            x1 = qBound(0.0, x1, (double)width);
+            x2 = qBound(0.0, x2, (double)width);
+            y1 = qBound(0.0, y1, (double)height);
+            y2 = qBound(0.0, y2, (double)height);
+
+            curveLines.append(QLineF(x1, y1, x2, y2));
+        }
+
+        if (!curveLines.isEmpty()) {
+            painter->drawLines(curveLines);
+        }
+    }
+
+    // markers at segment bpmchangepoints
+    if (m_showBpmMarkers) {
+        painter->setPen(QPen(QColor(255, 0, 0, 150), 1, Qt::DashLine));
+
+        QVector<QLineF> markerLines;
+
+        for (const OverviewBpmPoint& seg : std::as_const(m_bpmCurvePoints)) {
+            double startTime = seg.position;
+            startTime = qMax(0.0, qMin(startTime, trackLengthSeconds));
+            double x = (startTime / trackLengthSeconds) * width;
+
+            if (x >= 0 && x <= width) {
+                markerLines.append(QLineF(x, 0, x, height));
+            }
+        }
+
+        if (!markerLines.isEmpty()) {
+            painter->drawLines(markerLines);
+        }
+
+        // diamond symbol at markers
+        painter->setPen(Qt::NoPen);
+        painter->setBrush(QColor(255, 0, 0, 200));
+
+        int diamondCount = 0;
+        for (const OverviewBpmPoint& seg : std::as_const(m_bpmCurvePoints)) {
+            double startTime = seg.position;
+            startTime = qMax(0.0, qMin(startTime, trackLengthSeconds));
+            double x = (startTime / trackLengthSeconds) * width;
+
+            if (showDebugWOverview) {
+                qDebug() << "[WOverview] Diamond at time:" << startTime << "s -> x:" << x;
+            }
+
+            if (x >= 0 && x <= width) {
+                QPolygonF diamond;
+                diamond << QPointF(x, 0) << QPointF(x + 3, 4)
+                        << QPointF(x, 8) << QPointF(x - 3, 4);
+                painter->drawPolygon(diamond);
+                diamondCount++;
+            } else {
+                if (showDebugWOverview) {
+                    qDebug() << "[WOverview] Diamond at x:" << x << "outside bounds";
+                }
+            }
+        }
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview] Drew" << diamondCount << "diamonds out of"
+                     << m_bpmCurvePoints.size() << "segments";
+        }
+
+        // diamond symbol at end of last segment
+        if (!m_bpmCurvePoints.isEmpty()) {
+            const OverviewBpmPoint& lastSeg = m_bpmCurvePoints.last();
+            double endTime = lastSeg.range_end;
+            double x = (endTime / trackLengthSeconds) * width;
+
+            if (x >= 0 && x <= width) {
+                painter->setPen(Qt::NoPen);
+                painter->setBrush(QColor(255, 0, 0, 200));
+
+                QPolygonF diamond;
+                diamond << QPointF(x, 0) << QPointF(x + 4, 6)
+                        << QPointF(x, 12) << QPointF(x - 4, 6);
+                painter->drawPolygon(diamond);
+
+                // vertical line at the end of last segment
+                painter->setPen(QPen(QColor(255, 0, 0, 150), 1, Qt::DashLine));
+                // painter->drawLine(x, 0, x, height);
+                painter->drawLine(static_cast<int>(x),
+                        0,
+                        static_cast<int>(x),
+                        static_cast<int>(height));
+            }
+        }
+    }
+}
+
+void WOverview::calculateBpmRange() {
+    if (m_bpmCurvePoints.isEmpty()) {
+        return;
+    }
+
+    // Find min/max BPM
+    m_minBpm = m_bpmCurvePoints[0].bpm_start;
+    m_maxBpm = m_bpmCurvePoints[0].bpm_start;
+
+    for (const auto& pt : std::as_const(m_bpmCurvePoints)) {
+        if (pt.bpm_start < m_minBpm) {
+            m_minBpm = pt.bpm_start;
+        }
+        if (pt.bpm_start > m_maxBpm) {
+            m_maxBpm = pt.bpm_start;
+        }
+        if (pt.bpm_end < m_minBpm) {
+            m_minBpm = pt.bpm_end;
+        }
+        if (pt.bpm_end > m_maxBpm) {
+            m_maxBpm = pt.bpm_end;
+        }
+    }
+
+    // Ensure minimum Y-axis range of 25 BPM
+    double bpmRange = m_maxBpm - m_minBpm;
+
+    // Minimum 25 BPM difference on screen
+    double minRange = 25.0;
+
+    if (bpmRange < minRange) {
+        // Center the range around the middle
+        double midBpm = (m_minBpm + m_maxBpm) / 2.0;
+        m_yMinBpm = midBpm - (minRange / 2.0);
+        m_yMaxBpm = midBpm + (minRange / 2.0);
+    } else {
+        // Add 10% padding for larger ranges
+        double padding = bpmRange * 0.1;
+        if (padding < 0.5) {
+            padding = 0.5;
+        }
+        m_yMinBpm = m_minBpm - padding;
+        m_yMaxBpm = m_maxBpm + padding;
+    }
+
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview] BPM range:" << m_minBpm << "-" << m_maxBpm;
+        qDebug() << "[WOverview] Y-axis range:" << m_yMinBpm << "-" << m_yMaxBpm;
+    }
+}
+
+double WOverview::mapBpmToOverviewY(double bpm, double height) {
+    double bpmRange = m_yMaxBpm - m_yMinBpm;
+    if (bpmRange <= 0.001) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview] Invalid BPM range:" << m_yMinBpm << "-" << m_yMaxBpm;
+        }
+        return height / 2;
+    }
+
+    double normalized = (bpm - m_yMinBpm) / bpmRange;
+    normalized = qBound(0.0, normalized, 1.0);
+    return height - (normalized * height);
+}
+
+// Load key curve from DB
+void WOverview::loadKeyCurveForTrack(TrackPointer pTrack) {
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-KEY] loadKeyCurveForTrack called for track:"
+                 << (pTrack ? pTrack->getTitle() : "null");
+    }
+
+    if (!pTrack) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-KEY] No track pointer";
+        }
+        m_keyCurvePoints.clear();
+        m_keyCurveLoaded = false;
+        return;
+    }
+
+    // Get track ID
+    if (!pTrack->getId().isValid()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-KEY] Track has no valid ID";
+        }
+        m_keyCurvePoints.clear();
+        m_keyCurveLoaded = false;
+        return;
+    }
+
+    // Skip if already loaded
+    if (m_keyCurveLoaded && !m_keyCurvePoints.isEmpty()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-KEY] Key curve already loaded, skipping";
+        }
+        return;
+    }
+
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-KEY] Loading key curve for track:"
+                 << pTrack->getTitle()
+                 << "ID:" << pTrack->getId().toString();
+    }
+
+    // Load from database via Track object
+    QList<KeySegmentsPointer> segments = pTrack->getKeySegments();
+
+    if (segments.isEmpty()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-KEY] No key segments in database for track:"
+                     << pTrack->getTitle()
+                     << "ID:" << pTrack->getId().toString();
+        }
+        m_keyCurvePoints.clear();
+        m_keyCurveLoaded = false;
+        return;
+    }
+
+    m_keyCurvePoints.clear();
+
+    for (const auto& pSegment : std::as_const(segments)) {
+        OverviewKeyPoint pt;
+
+        pt.position = pSegment->getStartTime();
+        pt.duration = pSegment->getDuration();
+        pt.range_start = pSegment->getRangeStart();
+        pt.range_end = pSegment->getRangeEnd();
+        pt.type = pSegment->getType();
+        pt.confidence = pSegment->getConfidence();
+
+        m_keyCurvePoints.append(pt);
+    }
+
+    m_keyCurveLoaded = true;
+
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-KEY] Loaded" << m_keyCurvePoints.size()
+                 << "key segments for track:"
+                 << pTrack->getTitle()
+                 << "ID:" << pTrack->getId().toString();
+    }
+
+    update();
+}
+
+// Check if KEY curve data exists in the DB for the track,
+// if not emit signal to request analysis
+void WOverview::checkAndRequestKeyCurve(TrackPointer pTrack) {
+    if (!pTrack || !pTrack->getId().isValid()) {
+        return;
+    }
+
+    QString trackIdStr = pTrack->getId().toString();
+    if (trackIdStr.isEmpty()) {
+        return;
+    }
+
+    // Check if key segments exist in database
+    QList<KeySegmentsPointer> segments = pTrack->getKeySegments();
+
+    if (!segments.isEmpty()) {
+        if (showDebugWOverview) {
+            qDebug() << "[WOverview-KEY] Key segments exist in database for track:"
+                     << pTrack->getTitle()
+                     << "ID:" << pTrack->getId().toString();
+        }
+        return;
+    }
+
+    // No segments in database -> request analysis
+    if (showDebugWOverview) {
+        qDebug() << "[WOverview-KEY] No key segments in database for track:"
+                 << pTrack->getTitle()
+                 << "ID:" << pTrack->getId().toString()
+                 << "----> requesting analysis";
+    }
+
+    emit requestKeyAnalysis(pTrack);
+}
+
+void WOverview::drawKeyMarkers(QPainter* painter, const QRect& widgetRect) {
+    if (!m_showKeyMarkers || m_keyCurvePoints.isEmpty()) {
+        return;
+    }
+
+    ControlProxy trackSamplesControl(m_group, "track_samples");
+    ControlProxy trackSampleRateControl(m_group, "track_samplerate");
+
+    double totalTrackSamples = trackSamplesControl.get() / 2;
+    double sampleRate = trackSampleRateControl.get();
+
+    if (totalTrackSamples <= 0 || sampleRate <= 0) {
+        return;
+    }
+
+    double trackLengthSeconds = totalTrackSamples / sampleRate;
+    const int width = widgetRect.width();
+    const int height = widgetRect.height();
+
+    PainterScope scope(painter);
+    painter->setRenderHint(QPainter::Antialiasing);
+
+    // Draw markers at key change points (orange)
+    painter->setPen(QPen(QColor(255, 165, 0, 150), 1, Qt::DashLine));
+
+    for (const OverviewKeyPoint& seg : std::as_const(m_keyCurvePoints)) {
+        double startTime = seg.position;
+        startTime = qMax(0.0, qMin(startTime, trackLengthSeconds));
+        double x = (startTime / trackLengthSeconds) * width;
+
+        if (x >= 0 && x <= width) {
+            painter->drawLine(QLineF(x, 0, x, height));
+        }
+    }
+
+    // Draw diamonds at key change points (orange)
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(QColor(255, 165, 0, 200));
+
+    for (const OverviewKeyPoint& seg : std::as_const(m_keyCurvePoints)) {
+        double startTime = seg.position;
+        startTime = qMax(0.0, qMin(startTime, trackLengthSeconds));
+        double x = (startTime / trackLengthSeconds) * width;
+
+        if (x >= 0 && x <= width) {
+            QPolygonF diamond;
+            diamond << QPointF(x, 0) << QPointF(x + 3, 4)
+                    << QPointF(x, 8) << QPointF(x - 3, 4);
+            painter->drawPolygon(diamond);
+        }
+    }
+
+    // Draw diamond at end of last segment
+    if (!m_keyCurvePoints.isEmpty()) {
+        const OverviewKeyPoint& lastSeg = m_keyCurvePoints.last();
+        double endTime = lastSeg.range_end;
+        double x = (endTime / trackLengthSeconds) * width;
+
+        if (x >= 0 && x <= width) {
+            QPolygonF diamond;
+            diamond << QPointF(x, 0) << QPointF(x + 4, 6)
+                    << QPointF(x, 12) << QPointF(x - 4, 6);
+            painter->drawPolygon(diamond);
+        }
+    }
+}
+
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
@@ -331,7 +873,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
 }
 
 void WOverview::slotWaveformSummaryUpdated() {
-    //qDebug() << "WOverview::slotWaveformSummaryUpdated()";
+    // qDebug() << "WOverview::slotWaveformSummaryUpdated()";
 
     TrackPointer pTrack(m_pCurrentTrack);
     if (!pTrack) {
@@ -367,23 +909,43 @@ void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyz
     if (updateNeeded || (m_analyzerProgress != analyzerProgress)) {
         m_analyzerProgress = analyzerProgress;
         update();
+
+        // If progress is over 95%, try to load the curve (loadBpmCurveForTrack will retry)
+        if (analyzerProgress > 0.95) {
+            QTimer::singleShot(3000, this, [this]() {
+                loadBpmCurveForTrack(m_pCurrentTrack);
+                loadKeyCurveForTrack(m_pCurrentTrack);
+            });
+        }
     }
 }
 
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     Q_UNUSED(pTrack); // only used in DEBUG_ASSERT
-    //qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
+    // qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
     m_trackLoaded = true;
     if (m_pCurrentTrack) {
         updateCues(m_pCurrentTrack->getCuePoints());
     }
+
+    m_bpmCurveLoaded = false;
+    m_keyCurveLoaded = false;
+
+    if (pTrack) {
+        loadBpmCurveForTrack(pTrack);
+        loadKeyCurveForTrack(pTrack);
+    } else {
+        m_bpmCurvePoints.clear();
+        m_keyCurvePoints.clear();
+    }
+
     update();
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
-    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
+    // qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(),
@@ -424,6 +986,11 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 this,
                 &WOverview::receiveCuesUpdated,
                 Qt::QueuedConnection);
+
+        m_bpmCurvePoints.clear();
+        m_keyCurvePoints.clear();
+        checkAndRequestBpmCurve(pNewTrack);
+        checkAndRequestKeyCurve(pNewTrack);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -432,14 +999,14 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 }
 
 void WOverview::onEndOfTrackChange(double v) {
-    //qDebug() << "WOverview::onEndOfTrackChange()" << v;
+    // qDebug() << "WOverview::onEndOfTrackChange()" << v;
     m_endOfTrack = v > 0.0;
     update();
 }
 
 void WOverview::onMarkChanged(double v) {
     Q_UNUSED(v);
-    //qDebug() << "WOverview::onMarkChanged()" << v;
+    // qDebug() << "WOverview::onMarkChanged()" << v;
     if (m_pCurrentTrack) {
         updateCues(m_pCurrentTrack->getCuePoints());
         update();
@@ -448,7 +1015,7 @@ void WOverview::onMarkChanged(double v) {
 
 void WOverview::onMarkRangeChange(double v) {
     Q_UNUSED(v);
-    //qDebug() << "WOverview::onMarkRangeChange()" << v;
+    // qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
 }
 
@@ -507,12 +1074,27 @@ void WOverview::slotScalingChanged() {
     update();
 }
 
-void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
+void WOverview::slotShowBpmCurveChanged(double value) {
+    m_showBpmCurve = value > 0.5;
+    update();
+}
+
+void WOverview::slotShowBpmMarkersChanged(double value) {
+    m_showBpmMarkers = value > 0.5;
+    update();
+}
+
+void WOverview::slotShowKeyMarkersChanged(double value) {
+    m_showKeyMarkers = value > 0.5;
+    update();
+}
+
+void WOverview::updateCues(const QList<CuePointer>& loadedCues) {
     for (const CuePointer& currentCue : loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
-        if (pMark != nullptr && pMark->isValid() && pMark->isVisible()
-            && pMark->getSamplePosition() != Cue::kNoPosition) {
+        if (pMark != nullptr && pMark->isValid() && pMark->isVisible() &&
+                pMark->getSamplePosition() != Cue::kNoPosition) {
             QColor newColor = mixxx::RgbColor::toQColor(currentCue->getColor());
             if (newColor != pMark->fillColor() || newColor != pMark->m_textColor) {
                 pMark->setBaseColor(newColor, m_dimBrightThreshold);
@@ -599,7 +1181,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
         unsetCursor();
         return;
     }
-    //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
+    // qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << dValue;
 
     if (e->button() == Qt::LeftButton) {
         if (m_bLeftClickDragging) {
@@ -626,7 +1208,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void WOverview::mousePressEvent(QMouseEvent* e) {
-    //qDebug() << "WOverview::mousePressEvent" << e->pos();
+    // qDebug() << "WOverview::mousePressEvent" << e->pos();
     mouseMoveEvent(e);
     if (m_bPassthroughEnabled) {
         m_bLeftClickDragging = false;
@@ -745,6 +1327,10 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawWaveformPixmap(&painter);
         drawPlayedOverlay(&painter);
         drawMinuteMarkers(&painter);
+        // BPM curve
+        drawBpmCurve(&painter, rect());
+        // KEY Markers
+        drawKeyMarkers(&painter, rect());
         drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
