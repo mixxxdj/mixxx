@@ -23,10 +23,11 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void keyPressEvent(QKeyEvent* pEvent) override;
     void mousePressEvent(QMouseEvent* pEvent) override;
     void focusInEvent(QFocusEvent* pEvent) override;
-    void timerEvent(QTimerEvent* pEvent) override;
     void toggleSelectedItem();
     void renameSelectedItem();
     bool isLeafNodeSelected();
+    void setChildIndexExpanded(const QModelIndex& index, bool expand);
+    bool isChildIndexExpanded(const QModelIndex& index);
     bool isChildIndexSelected(const QModelIndex& index);
     bool isFeatureRootIndexSelected(LibraryFeature* pFeature);
 
@@ -51,10 +52,8 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     QModelIndex selectedIndex();
 
     void toggleDragHoverPropertyAndUpdateStyle(bool enabled);
-    void resetHoverIndexAndDragMoveResult();
+    void setSourceOfCurrentDragDropEvent(QObject* pSource);
 
-    QBasicTimer m_expandTimer;
     int m_hoverExpandDelay;
-    QModelIndex m_hoverIndex;
-    bool m_lastDragMoveAccepted;
+    QModelIndex m_autoExpandIndex;
 };
