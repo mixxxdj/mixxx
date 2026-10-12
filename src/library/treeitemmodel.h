@@ -10,8 +10,9 @@ class TreeItem;
 class TreeItemModel : public QAbstractItemModel {
     Q_OBJECT
   public:
-    static const int kDataRole = Qt::UserRole;
-    static const int kBoldRole = Qt::UserRole + 1;
+    static constexpr int kDataRole = Qt::UserRole;
+    static constexpr int kBoldRole = Qt::UserRole + 1;
+    static constexpr int kUrlRole = Qt::UserRole + 2;
 
     explicit TreeItemModel(QObject* parent = nullptr);
     ~TreeItemModel() override;
