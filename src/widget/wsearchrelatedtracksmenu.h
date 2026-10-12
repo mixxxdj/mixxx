@@ -37,7 +37,8 @@ class WSearchRelatedTracksMenu : public QMenu {
     ~WSearchRelatedTracksMenu() override = default;
 
     void addActionsForTrack(
-            const Track& track);
+            const Track& track,
+            const QStringList& crateNames = QStringList());
     bool eventFilter(QObject* pObj, QEvent* e) override;
 
   signals:
