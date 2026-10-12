@@ -10,6 +10,7 @@
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/dateformatbroadcaster.h"
+#include "library/keyhighlightmanager.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/checkboxdelegate.h"
@@ -31,6 +32,7 @@
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/clipboard.h"
+#include "util/color/color.h"
 #include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/datetime.h"
@@ -42,6 +44,19 @@
 namespace {
 
 const mixxx::Logger kLogger("BaseTrackTableModel");
+
+// Returns a text colour with enough contrast to read on the given highlight
+// background, e.g. white on the default dark green and black on its yellow.
+QColor highlightForeground(const QColor& background) {
+    return QColor(Color::isDimColor(background) ? Qt::white : Qt::black);
+}
+
+// nullptr without a Library, e.g. in tests that only construct models.
+mixxx::KeyHighlightManager* keyHighlightManager() {
+    return mixxx::KeyHighlightManager::isCreated()
+            ? mixxx::KeyHighlightManager::instance()
+            : nullptr;
+}
 
 constexpr double kRelativeHeightOfCoverartToolTip =
         0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
@@ -160,7 +175,11 @@ BaseTrackTableModel::BaseTrackTableModel(
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity),
           m_trackPlayedColor(QColor(WTrackTableView::kDefaultTrackPlayedColor)),
-          m_trackMissingColor(QColor(WTrackTableView::kDefaultTrackMissingColor)) {
+          m_trackMissingColor(QColor(WTrackTableView::kDefaultTrackMissingColor)),
+          m_keyHighlightMatchColor(WTrackTableView::kDefaultKeyHighlightMatchColor),
+          m_keyHighlightNeighbourColor(WTrackTableView::kDefaultKeyHighlightNeighbourColor),
+          m_keyHighlightShiftColor(WTrackTableView::kDefaultKeyHighlightShiftColor),
+          m_keyHighlightPlayedColor(WTrackTableView::kDefaultKeyHighlightPlayedColor) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
             &TrackDAO::tracksRemoved,
             this,
@@ -182,6 +201,28 @@ BaseTrackTableModel::BaseTrackTableModel(
             &DateFormatChangedBroadcaster::dateFormatChanged,
             this,
             &BaseTrackTableModel::slotEmitDataChangedForDateColumns);
+
+    auto* pKeyHighlightManager = keyHighlightManager();
+    if (pKeyHighlightManager) {
+        connect(pKeyHighlightManager,
+                &mixxx::KeyHighlightManager::keyHighlightChanged,
+                this,
+                &BaseTrackTableModel::slotKeyHighlightChanged);
+        connect(pKeyHighlightManager,
+                &mixxx::KeyHighlightManager::bpmHighlightChanged,
+                this,
+                &BaseTrackTableModel::slotBpmHighlightChanged);
+        connect(pKeyHighlightManager,
+                &mixxx::KeyHighlightManager::referenceTrackChanged,
+                this,
+                &BaseTrackTableModel::slotKeyHighlightReferenceTrackChanged);
+        // doGetTrackId() may only find the track among the current rows, and
+        // the model may be created after the reference track was loaded.
+        connect(this,
+                &QAbstractItemModel::rowsInserted,
+                this,
+                &BaseTrackTableModel::updateKeyHighlightTrackId);
+    }
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -395,6 +436,35 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
             [this](QColor col) {
                 m_trackMissingColor = col;
             });
+    // And the harmonic key highlighter's backgrounds for the Key and BPM cells
+    m_keyHighlightMatchColor = pTableView->getKeyHighlightMatchColor();
+    connect(pTableView,
+            &WTrackTableView::keyHighlightMatchColorChanged,
+            this,
+            [this](QColor col) {
+                m_keyHighlightMatchColor = col;
+            });
+    m_keyHighlightNeighbourColor = pTableView->getKeyHighlightNeighbourColor();
+    connect(pTableView,
+            &WTrackTableView::keyHighlightNeighbourColorChanged,
+            this,
+            [this](QColor col) {
+                m_keyHighlightNeighbourColor = col;
+            });
+    m_keyHighlightShiftColor = pTableView->getKeyHighlightShiftColor();
+    connect(pTableView,
+            &WTrackTableView::keyHighlightShiftColorChanged,
+            this,
+            [this](QColor col) {
+                m_keyHighlightShiftColor = col;
+            });
+    m_keyHighlightPlayedColor = pTableView->getKeyHighlightPlayedColor();
+    connect(pTableView,
+            &WTrackTableView::keyHighlightPlayedColorChanged,
+            this,
+            [this](QColor col) {
+                m_keyHighlightPlayedColor = col;
+            });
     if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
@@ -449,6 +519,16 @@ QVariant BaseTrackTableModel::data(
     }
 
     if (role == Qt::BackgroundRole) {
+        // While the harmonic highlighter is active it colours only the Key and
+        // BPM cells of matches and played tracks. A cell with neither stays
+        // neutral instead of showing the track colour, which could pass for a
+        // match. Other cells fall through to the track colour below.
+        if (const auto highlightBg = keyHighlightBackground(index)) {
+            if (highlightBg->isValid()) {
+                return QBrush(*highlightBg);
+            }
+            return QVariant();
+        }
         const auto rgbColorValue = rawSiblingValue(
                 index,
                 ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
@@ -466,30 +546,25 @@ QVariant BaseTrackTableModel::data(
         // Custom text color for missing tracks
         // Visible in playlists, crates and Missing feature.
         // Check this first so played, missing tracks (unlikely case, but possible)
-        // get the 'missing' color.
+        // get the 'missing' color. This also takes precedence over the key
+        // highlighter, since a missing file is a more important warning.
         // Note: this is not helpful in Tracks -> Missing, so override it with
         // the regular track color (WTrackTableView { color: #xxx; }) like this:
         // #DlgMissing WTrackTableView { qproperty-trackMissingColor: #xxx; }
-        auto missingRaw = rawSiblingValue(
-                index,
-                ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED);
-        if (!missingRaw.isNull() &&
-                missingRaw.canConvert<bool>() &&
-                missingRaw.toBool()) {
+        if (isTrackMissing(index)) {
             return QVariant::fromValue(m_trackMissingColor);
         }
-        if (s_bApplyPlayedTrackColor) {
-            // Custom text color for played tracks
-            auto playedRaw = rawSiblingValue(
-                    index,
-                    ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
-            if (!playedRaw.isNull() &&
-                    playedRaw.canConvert<bool>() &&
-                    playedRaw.toBool()) {
-                // TODO Maybe adjust color for bright track colors?
-                // Here or in DefaultDelegate
-                return QVariant::fromValue(m_trackPlayedColor);
-            }
+        // A text colour that contrasts with the highlighter's background.
+        // Neutral cells and other cells fall through to the colours below.
+        const auto highlightBg = keyHighlightBackground(index);
+        if (highlightBg && highlightBg->isValid()) {
+            return QVariant::fromValue(highlightForeground(*highlightBg));
+        }
+        // Custom text color for played tracks
+        if (s_bApplyPlayedTrackColor && isTrackPlayed(index)) {
+            // TODO Maybe adjust color for bright track colors?
+            // Here or in DefaultDelegate
+            return QVariant::fromValue(m_trackPlayedColor);
         }
     }
 
@@ -510,6 +585,41 @@ QVariant BaseTrackTableModel::data(
             return rawSiblingValue(
                     index,
                     ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY);
+        }
+        return QVariant();
+    }
+
+    // The key highlighter's match, from which the delegate draws the
+    // semitone shift hint beside the key.
+    if (role == kKeyMatchRole) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+            return static_cast<int>(keyMatchForIndex(index));
+        }
+        return QVariant();
+    }
+
+    // The highlighter's tint alone, without the track-colour fallback of
+    // BackgroundRole, so delegates can keep it on selected rows.
+    if (role == kHighlightBackgroundRole) {
+        const auto highlightBg = keyHighlightBackground(index);
+        if (highlightBg && highlightBg->isValid()) {
+            return QBrush(*highlightBg);
+        }
+        return QVariant();
+    }
+
+    // The key the reference deck plays its track in, which the delegate shows
+    // beside the stored key. Not part of DisplayRole, which other code parses.
+    if (role == kPlayingKeyRole) {
+        const auto* pKeyHighlightManager = keyHighlightManager();
+        if (pKeyHighlightManager &&
+                mapColumn(index.column()) == ColumnCache::COLUMN_LIBRARYTABLE_KEY &&
+                isKeyHighlightReferenceRow(index)) {
+            const auto pitchedKey = pKeyHighlightManager->pitchedKey();
+            if (pitchedKey != mixxx::track::io::key::INVALID) {
+                return KeyUtils::keyToString(pitchedKey);
+            }
         }
         return QVariant();
     }
@@ -545,6 +655,130 @@ QVariant BaseTrackTableModel::rawSiblingValue(
     }
     const QModelIndex siblingIndex = index.sibling(index.row(), siblingColumn);
     return rawValue(siblingIndex);
+}
+
+mixxx::track::io::key::ChromaticKey BaseTrackTableModel::keyFromIndex(
+        const QModelIndex& index) const {
+    const QVariant keyCodeValue = rawSiblingValue(
+            index,
+            ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+    if (keyCodeValue.isNull()) {
+        return mixxx::track::io::key::INVALID;
+    }
+    bool ok;
+    const int keyCode = keyCodeValue.toInt(&ok);
+    if (!ok) {
+        return mixxx::track::io::key::INVALID;
+    }
+    return KeyUtils::keyFromNumericValue(keyCode);
+}
+
+mixxx::KeyHighlightManager::KeyMatch BaseTrackTableModel::keyMatchForIndex(
+        const QModelIndex& index) const {
+    const auto* pKeyHighlightManager = keyHighlightManager();
+    if (!pKeyHighlightManager || !pKeyHighlightManager->isKeyActive()) {
+        return mixxx::KeyHighlightManager::KeyMatch::None;
+    }
+    // The reference deck plays its track in the reference key, whatever the
+    // pitch fader did to its stored key. A shift hint would ask for a shift
+    // the deck already applies.
+    if (isKeyHighlightReferenceRow(index)) {
+        return mixxx::KeyHighlightManager::KeyMatch::Perfect;
+    }
+    return pKeyHighlightManager->keyMatch(keyFromIndex(index));
+}
+
+bool BaseTrackTableModel::isKeyHighlightReferenceRow(const QModelIndex& index) const {
+    return m_keyHighlightTrackId.isValid() &&
+            getTrackRows(m_keyHighlightTrackId).contains(index.row());
+}
+
+bool BaseTrackTableModel::isTrackMissing(const QModelIndex& index) const {
+    const auto missingRaw = rawSiblingValue(
+            index,
+            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED);
+    return !missingRaw.isNull() &&
+            missingRaw.canConvert<bool>() &&
+            missingRaw.toBool();
+}
+
+bool BaseTrackTableModel::isTrackPlayed(const QModelIndex& index) const {
+    const auto playedRaw = rawSiblingValue(
+            index,
+            ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
+    return !playedRaw.isNull() &&
+            playedRaw.canConvert<bool>() &&
+            playedRaw.toBool();
+}
+
+QColor BaseTrackTableModel::keyMatchBackground(
+        mixxx::KeyHighlightManager::KeyMatch match) const {
+    switch (match) {
+    case mixxx::KeyHighlightManager::KeyMatch::Perfect:
+        return m_keyHighlightMatchColor;
+    case mixxx::KeyHighlightManager::KeyMatch::Neighbour:
+        return m_keyHighlightNeighbourColor;
+    case mixxx::KeyHighlightManager::KeyMatch::ShiftUp:
+    case mixxx::KeyHighlightManager::KeyMatch::ShiftDown:
+    case mixxx::KeyHighlightManager::KeyMatch::ShiftEither:
+        return m_keyHighlightShiftColor;
+    case mixxx::KeyHighlightManager::KeyMatch::None:
+        return QColor();
+    }
+    return QColor();
+}
+
+QColor BaseTrackTableModel::bpmMatchBackground(
+        mixxx::KeyHighlightManager::BpmMatch match) const {
+    switch (match) {
+    case mixxx::KeyHighlightManager::BpmMatch::Direct:
+        return m_keyHighlightMatchColor;
+    case mixxx::KeyHighlightManager::BpmMatch::HalfDouble:
+        return m_keyHighlightNeighbourColor;
+    case mixxx::KeyHighlightManager::BpmMatch::None:
+        return QColor();
+    }
+    return QColor();
+}
+
+std::optional<QColor> BaseTrackTableModel::keyHighlightBackground(
+        const QModelIndex& index) const {
+    const auto* pKeyHighlightManager = keyHighlightManager();
+    if (!pKeyHighlightManager) {
+        return std::nullopt;
+    }
+    const auto field = mapColumn(index.column());
+    const bool isKeyCell = field == ColumnCache::COLUMN_LIBRARYTABLE_KEY &&
+            pKeyHighlightManager->isKeyActive();
+    const bool isBpmCell = field == ColumnCache::COLUMN_LIBRARYTABLE_BPM &&
+            pKeyHighlightManager->isBpmActive();
+    if (!isKeyCell && !isBpmCell) {
+        return std::nullopt;
+    }
+    // A missing file is a more important warning than the highlighter hint,
+    // and keeps the "missing" text colour.
+    if (isTrackMissing(index)) {
+        return std::nullopt;
+    }
+    // You usually don't want to replay a track.
+    if (s_bApplyPlayedTrackColor && isTrackPlayed(index)) {
+        return m_keyHighlightPlayedColor;
+    }
+    // The track on the reference deck matches itself, even when the pitch
+    // fader has moved its key and tempo away from the stored ones.
+    if (isKeyHighlightReferenceRow(index)) {
+        return m_keyHighlightMatchColor;
+    }
+    if (isKeyCell) {
+        return keyMatchBackground(
+                pKeyHighlightManager->keyMatch(keyFromIndex(index)));
+    }
+    bool ok;
+    const double bpm = rawValue(index).toDouble(&ok);
+    if (!ok) {
+        return QColor();
+    }
+    return bpmMatchBackground(pKeyHighlightManager->bpmMatch(bpm));
 }
 
 bool BaseTrackTableModel::setData(
@@ -1180,6 +1414,61 @@ void BaseTrackTableModel::slotRefreshOverviewRows(const QList<int>& rows) {
 
 void BaseTrackTableModel::slotRefreshAllRows() {
     select();
+}
+
+void BaseTrackTableModel::slotKeyHighlightChanged() {
+    const int rows = rowCount();
+    if (rows <= 0) {
+        return;
+    }
+    // The key classification only affects the Key cell, so repaint just that
+    // column; slotBpmHighlightChanged() handles the BPM cell. Only the
+    // background/foreground, the highlighter's tint, the shift hint and the
+    // playing key depend on it, so restrict the notification to those roles
+    // to avoid unnecessary re-layout. This does not re-query the database.
+    const int keyColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
+    if (keyColumn < 0) {
+        return;
+    }
+    emit dataChanged(index(0, keyColumn),
+            index(rows - 1, keyColumn),
+            {Qt::BackgroundRole,
+                    Qt::ForegroundRole,
+                    kKeyMatchRole,
+                    kHighlightBackgroundRole,
+                    kPlayingKeyRole});
+}
+
+void BaseTrackTableModel::slotKeyHighlightReferenceTrackChanged() {
+    updateKeyHighlightTrackId();
+    // The reference track's row matches itself in both columns.
+    slotKeyHighlightChanged();
+    slotBpmHighlightChanged();
+}
+
+void BaseTrackTableModel::updateKeyHighlightTrackId() {
+    const auto* pKeyHighlightManager = keyHighlightManager();
+    m_keyHighlightTrackId = pKeyHighlightManager
+            ? doGetTrackId(pKeyHighlightManager->referenceTrack())
+            : TrackId();
+}
+
+void BaseTrackTableModel::slotBpmHighlightChanged() {
+    const int rows = rowCount();
+    if (rows <= 0) {
+        return;
+    }
+    // Only the BPM cell's colours depend on the reference BPM. This does not
+    // re-query the database.
+    const int bpmColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
+    if (bpmColumn < 0) {
+        return;
+    }
+    emit dataChanged(index(0, bpmColumn),
+            index(rows - 1, bpmColumn),
+            {Qt::BackgroundRole,
+                    Qt::ForegroundRole,
+                    kHighlightBackgroundRole});
 }
 
 void BaseTrackTableModel::slotTracksRemoved(const QSet<TrackId>& trackIds) {

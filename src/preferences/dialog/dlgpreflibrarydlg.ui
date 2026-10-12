@@ -342,6 +342,48 @@
        </layout>
       </item>
 
+      <item row="12" column="0">
+       <widget class="QLabel" name="label_key_highlight_bpm_range">
+        <property name="text">
+         <string>Harmonic highlighter BPM tolerance:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>spinBox_key_highlight_bpm_range</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="1" colspan="2">
+       <widget class="QDoubleSpinBox" name="spinBox_key_highlight_bpm_range">
+        <property name="toolTip">
+         <string>While a deck's harmonic highlighter is on, tracks within this range of the deck's current BPM are highlighted in the BPM column, and tracks at half or double that tempo in a lighter colour.</string>
+        </property>
+        <property name="specialValueText">
+         <string>Off</string>
+        </property>
+        <property name="prefix">
+         <string>± </string>
+        </property>
+        <property name="suffix">
+         <string> %</string>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="minimum">
+         <double>0.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.500000000000000</double>
+        </property>
+        <property name="value">
+         <double>6.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item><!-- Track Table View -->
@@ -784,6 +826,7 @@
   <tabstop>spinbox_bpm_precision</tabstop>
   <tabstop>checkbox_played_track_color</tabstop>
   <tabstop>comboBox_dateFormat</tabstop>
+  <tabstop>spinBox_key_highlight_bpm_range</tabstop>
   <tabstop>spinBox_search_debouncing_timeout</tabstop>
   <tabstop>checkBox_enable_search_completions</tabstop>
   <tabstop>checkBox_enable_search_history_shortcuts</tabstop>

@@ -1,9 +1,15 @@
 // Tests for tableview-related things
-// Right now it's just testing the serialize-unserialize of the header state code.
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
+#include <QCheckBox>
+#include <QImage>
+#include <QPainter>
+#include <QStandardItemModel>
+#include <QTableView>
 #include <QtDebug>
+
+#include "library/tabledelegates/checkboxdelegate.h"
 #include "proto/headers.pb.h"
 #include "widget/wtracktableviewheader.h"
 
@@ -68,4 +74,28 @@ TEST_F(HeaderViewStateTest, GoodHeaderState) {
 TEST_F(HeaderViewStateTest, BadHeaderState) {
     HeaderViewState view_state("BLAHBLAHBLAHBAD");
     ASSERT_FALSE(view_state.healthy());
+}
+
+TEST(CheckboxDelegateTest, DeletesHiddenCheckBoxes) {
+    QTableView view;
+    QStandardItemModel model(1, 1);
+    view.setModel(&model);
+    auto* pDelegate = new CheckboxDelegate(&view, QStringLiteral("LibraryPlayedCheckbox"));
+
+    // Paint the cell with two text colours, so the delegate adds a styled
+    // checkbox for each next to its unstyled one.
+    QImage image(100, 20, QImage::Format_ARGB32);
+    QPainter painter(&image);
+    QStyleOptionViewItem option;
+    option.rect = image.rect();
+    const QModelIndex index = model.index(0, 0);
+    option.palette.setColor(QPalette::Text, Qt::white);
+    pDelegate->paint(&painter, option, index);
+    option.palette.setColor(QPalette::Text, Qt::red);
+    pDelegate->paint(&painter, option, index);
+    EXPECT_EQ(3, view.findChildren<QCheckBox*>().size());
+
+    // The view outlives its delegates, so they must not leave checkboxes behind.
+    delete pDelegate;
+    EXPECT_TRUE(view.findChildren<QCheckBox*>().isEmpty());
 }

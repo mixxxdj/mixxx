@@ -947,6 +947,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Load Track and Play"),
             tr("Load selected track and play"),
             pLibraryMenu);
+    addDeckControl("key_highlight",
+            tr("Highlight Compatible Tracks"),
+            tr("Highlight tracks that match the key and tempo of this deck"),
+            pLibraryMenu);
     pLibraryMenu->addSeparator();
     // Auto DJ
     addLibraryControl("AutoDjAddBottom",

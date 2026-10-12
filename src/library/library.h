@@ -98,6 +98,8 @@ class Library: public QObject {
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMetadataSelectedClick(bool enable);
+    /// Sets the harmonic highlighter's +/- BPM tolerance in percent, 0 is Off.
+    void setKeyHighlightBpmRange(double percent);
 
     /// Switches to the internal track collection view
     /// and focuses the search box.
