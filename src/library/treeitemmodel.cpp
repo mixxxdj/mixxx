@@ -152,6 +152,16 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
     return pParentItem->childRows();
 }
 
+bool TreeItemModel::hasChildren(const QModelIndex& parent) const {
+    TreeItem* parentItem;
+    if (parent.isValid()) {
+        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+    } else {
+        parentItem = getRootItem();
+    }
+    return parentItem->isForceExpandable() || QAbstractItemModel::hasChildren(parent);
+}
+
 // Populates the model and notifies the view.
 // Call this method first, before you do call any other methods.
 TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
