@@ -34,6 +34,7 @@
 #define CLM_PLAYCOUNT "timesplayed"
 #define CLM_COMPOSER "composer"
 #define CLM_PREVIEW "preview"
+#define CLM_LOADED_DECK "loaded_deck"
 #define CLM_CRATE "crate"
 
 namespace {
@@ -60,6 +61,7 @@ const QString kComment = QStringLiteral(CLM_COMMENT);
 const QString kPlaycount = QStringLiteral(CLM_PLAYCOUNT);
 const QString kComposer = QStringLiteral(CLM_COMPOSER);
 const QString kPreview = QStringLiteral(CLM_PREVIEW);
+const QString kLoadedDeck = QStringLiteral(CLM_LOADED_DECK);
 const QString kCrate = QStringLiteral(CLM_CRATE);
 
 } // namespace
@@ -122,8 +124,9 @@ void BansheePlaylistModel::selectPlaylist(int playlistId) {
                     CLM_COMMENT " TEXT, "                  //
                     CLM_PLAYCOUNT " INTEGER, "             //
                     CLM_COMPOSER " TEXT, "                 //
-                    CLM_PREVIEW " TEXT)")
-                                .arg(m_tempTableName))) {
+                    CLM_PREVIEW " TEXT, "                  //
+                    CLM_LOADED_DECK " TEXT)")
+                            .arg(m_tempTableName))) {
             LOG_FAILED_QUERY(query);
         }
 
@@ -198,7 +201,8 @@ void BansheePlaylistModel::selectPlaylist(int playlistId) {
     QStringList tableColumns = {
             kTrackId,
             kViewOrder,
-            kPreview};
+            kPreview,
+            kLoadedDeck};
 
     QStringList trackSourceColumns = {
             kTrackId,
@@ -261,11 +265,28 @@ TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
             const QUrl rowUrl(getFieldString(index(row, 0),
                     ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION));
             if (mixxx::FileInfo::fromQUrl(rowUrl) == pTrack->getFileInfo()) {
-                return TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
+                return TrackId(getFieldVariant(index(row, 0), CLM_TRACK_ID));
             }
         }
     }
     return TrackId();
+}
+
+QString BansheePlaylistModel::normalizeTrackLocationForLoadedDecks(
+        const QString& location) const {
+    const auto url = QUrl(location);
+    if (!url.isValid()) {
+        return {};
+    }
+
+    if (url.isLocalFile()) {
+        const QString location = mixxx::FileInfo::fromQUrl(url).location();
+        if (!location.isEmpty()) {
+            return location;
+        }
+    }
+
+    return {};
 }
 
 TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
