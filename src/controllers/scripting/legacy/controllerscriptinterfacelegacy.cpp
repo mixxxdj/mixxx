@@ -1,5 +1,7 @@
 #include "controllerscriptinterfacelegacy.h"
 
+#include <cmath>
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -804,7 +806,9 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
             // or if we brake, spin back or softstart and have crossed over the desired value,
-            (m_brakeActive[deck] && newRate < m_rampTo[deck]) ||
+            (m_brakeActive[deck] &&
+                    (m_rampTo[deck] > 0 ? newRate < m_rampTo[deck]
+                                        : newRate > m_rampTo[deck])) ||
             ((m_spinbackActive[deck] || m_softStartActive[deck]) && newRate > m_rampTo[deck]) ||
             // or if the deck was stopped manually during brake or softStart
             ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group))) ||
@@ -919,7 +923,6 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
         }
         m_brakeActive[deck] = true;
         m_spinbackActive[deck] = false;
-        m_rampTo[deck] = kBrakeRampToRate;
         // Let's fetch the current rate to create a seamless brake process
         initRate = getDeckRate(group);
         // If we are currently softStart'ing adopt the current scratch rate
@@ -930,6 +933,8 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
                 initRate = filter->predictedVelocity();
             }
         }
+        // Brake towards zero from the current direction (negative in reverse)
+        m_rampTo[deck] = std::copysign(kBrakeRampToRate, initRate);
     } else { // -kBrakeRampToRate <= rate <= kBrakeRampToRate
         // This filters stopped deck and rare case of very low initial rates
         m_brakeActive[deck] = false;
