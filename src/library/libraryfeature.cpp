@@ -66,21 +66,21 @@ QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {
 bool LibraryFeature::exportPlaylistItemsIntoFile(
         QString playlistFilePath,
         const QList<QString>& playlistItemLocations,
-        bool useRelativePath)    {
+        PlaylistExportFilePathMode filePathMode) {
     if (playlistFilePath.endsWith(
             QStringLiteral(".pls"),
             Qt::CaseInsensitive)) {
         return ParserPls::writePLSFile(
                 playlistFilePath,
                 playlistItemLocations,
-                useRelativePath);
+                filePathMode);
     } else if (playlistFilePath.endsWith(
             QStringLiteral(".m3u8"),
             Qt::CaseInsensitive)) {
         return ParserM3u::writeM3U8File(
                 playlistFilePath,
                 playlistItemLocations,
-                useRelativePath);
+                filePathMode);
     } else {
         //default export to M3U if file extension is missing
         if (!playlistFilePath.endsWith(
@@ -106,6 +106,6 @@ bool LibraryFeature::exportPlaylistItemsIntoFile(
         return ParserM3u::writeM3UFile(
                 playlistFilePath,
                 playlistItemLocations,
-                useRelativePath);
+                filePathMode);
     }
 }

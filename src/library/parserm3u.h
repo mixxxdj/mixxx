@@ -15,6 +15,7 @@
 #include <QList>
 #include <QString>
 
+#include "library/library_decl.h"
 #include "library/parser.h"
 
 class ParserM3u : public Parser {
@@ -22,7 +23,17 @@ class ParserM3u : public Parser {
     static bool isPlaylistFilenameSupported(const QString& fileName);
     static QList<QString> parseAllLocations(const QString& playlistFile);
     /// Playlist Export
-    static bool writeM3UFile(const QString &file_str, const QList<QString> &items, bool useRelativePath, bool useUtf8);
-    static bool writeM3UFile(const QString &file, const QList<QString> &items, bool useRelativePath);
-    static bool writeM3U8File(const QString &file_str, const QList<QString> &items, bool useRelativePath);
+    static bool writeM3UFile(
+            const QString& file_str,
+            const QList<QString>& items,
+            PlaylistExportFilePathMode filePathMode,
+            bool useUtf8);
+    static bool writeM3UFile(
+            const QString& file,
+            const QList<QString>& items,
+            PlaylistExportFilePathMode filePathMode);
+    static bool writeM3U8File(
+            const QString& file_str,
+            const QList<QString>& items,
+            PlaylistExportFilePathMode filePathMode);
 };
