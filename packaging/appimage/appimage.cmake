@@ -111,10 +111,14 @@ install(
     # versioned JACK library delegated so it matches the host's sound server.
     "^libjack\\.so\\.[0-9].*"
     "^libpipewire.*"
-    # Low-level font stack and other system essentials
+    # fontconfig is delegated so it matches the host's font cache and
+    # configuration (bundling a different fontconfig version makes it read
+    # cache files written by other applications, which can crash).  freetype
+    # and harfbuzz are bundled instead: the 2.6 buildenv builds Qt against
+    # their current versions, and the glibc-2.28 target systems ship older
+    # libraries that do not export the symbols Qt references (e.g.
+    # FT_Get_Color_Glyph_Paint), so delegating them would break at runtime.
     "^libfontconfig\\.so.*"
-    "^libfreetype\\.so.*"
-    "^libharfbuzz\\.so.*"
     "^libICE\\.so.*"
     "^libSM\\.so.*"
     "^libuuid\\.so.*"
