@@ -37,6 +37,31 @@ int findOrCreateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
     }
     return playlistId;
 }
+
+/// Create a title for the Auto DJ node
+QString createAutoDjTitle(const QString& name,
+        int count,
+        mixxx::Duration duration,
+        bool showCountRemaining,
+        bool showTimeRemaining) {
+    QString result(name);
+
+    // Show duration and track count only if Auto DJ queue has tracks
+    if (count > 0 && showCountRemaining) {
+        result.append(QStringLiteral(" ("));
+        result.append(QString::number(count));
+        result.append(QStringLiteral(")"));
+    }
+
+    if (count > 0 && showTimeRemaining) {
+        result.append(QStringLiteral(" "));
+        result.append(mixxx::Duration::formatTime(
+                duration.toDoubleSeconds(),
+                mixxx::Duration::Precision::SECONDS));
+    }
+
+    return result;
+}
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
@@ -65,6 +90,13 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             this,
             &LibraryFeature::loadTrackToPlayer,
             Qt::QueuedConnection);
+
+    // Update the title of the "Auto DJ" node when the
+    // list of queued tracks or their properties have changed.
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::queueDurationChanged,
+            this,
+            &AutoDJFeature::slotRemainingQueueDurationChanged);
 
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
@@ -135,7 +167,20 @@ AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
-    return tr("Auto DJ");
+    return createAutoDjTitle(tr("Auto DJ"),
+            m_pAutoDJProcessor->getQueueTrackCount(),
+            m_pAutoDJProcessor->getQueueDuration(),
+            true,
+            true);
+}
+
+void AutoDJFeature::slotRemainingQueueDurationChanged(int numTracks, mixxx::Duration duration) {
+    Q_UNUSED(numTracks);
+    Q_UNUSED(duration);
+
+    // As documented by the code docs for featureIsLoading,
+    // it is intended to indicate when the title() has changed.
+    emit featureIsLoading(this, false);
 }
 
 void AutoDJFeature::bindLibraryWidget(
