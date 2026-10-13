@@ -49,8 +49,16 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
     bool isColumnHiddenByDefault(int column) override;
     bool isColumnInternal(int column) override;
 
+  public slots:
+    void onPlayingTrackChanged(TrackPointer pTrack);
+
   protected:
     void initSortColumnMapping() override;
+    QVariant rawValue(
+            const QModelIndex& index) const override;
+
+  private:
+    QSet<int> m_played_track_ids;
 };
 
 class RekordboxFeature : public BaseExternalLibraryFeature {
