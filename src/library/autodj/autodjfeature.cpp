@@ -190,9 +190,9 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 }
 
 void AutoDJFeature::activate() {
-    //qDebug() << "AutoDJFeature::activate()";
+    // qDebug() << "AutoDJFeature::activate()";
     emit switchToView(m_viewName);
-    emit disableSearch();
+    emit restoreSearch(m_pAutoDJView->currentSearch());
     emit enableCoverArtDisplay(true);
 }
 

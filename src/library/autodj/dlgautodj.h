@@ -30,6 +30,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void setFocus() override;
     void pasteFromSidebar() override;
     void onSearch(const QString& text) override;
+    QString currentSearch();
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
 

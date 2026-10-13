@@ -2991,6 +2991,13 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #2c454f;
 }
+/* If the Auto DJ queue is filtered we add a red line pattern background
+   to indicate the active filter. */
+#DlgAutoDJ WTrackTableView[filtered="true"] {
+  /* Try to achieve same look as with #0a0a0a, just with transparency */
+  alternate-background-color: rgba(0, 0, 0, 180);
+  background-image: url(skins:LateNight/palemoon/style/filtered_pattern.svg) repeat top left;
+}
 WLibrarySidebar {
   outline: none;
 }

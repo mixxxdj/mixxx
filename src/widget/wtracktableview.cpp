@@ -49,6 +49,7 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
+          m_filtered(false),
           // Default color for the focus border of TableItemDelegates
           m_focusBorderColor(kDefaultFocusBorderColor),
           m_trackPlayedColor(kDefaultTrackPlayedColor),
@@ -380,6 +381,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
         restoreCurrentViewState();
     }
     initTrackMenu();
+
+    setFiltered(!pNewTrackModel->currentSearch().isEmpty());
 }
 
 void WTrackTableView::initTrackMenu() {
@@ -678,6 +681,7 @@ void WTrackTableView::onSearch(const QString& text) {
     if (!pTrackModel) {
         return;
     }
+    // qDebug() << "----------- onSearch" << text;
 
     saveCurrentViewState();
     bool queryIsLessSpecific = SearchQueryParser::queryIsLessSpecific(
@@ -686,6 +690,17 @@ void WTrackTableView::onSearch(const QString& text) {
     TrackId prevTrack = getCurrentTrackId();
     saveCurrentIndex();
     pTrackModel->search(text);
+
+    setFiltered(!text.isEmpty());
+    // FIXME Alternatively, have two levels of `filtered`:
+    // 0 unfiltered
+    // 1 filtered, has matches --> info
+    // 2 filtered, no matches  --> warning
+    // lter yields no matches:
+    // setFiltered(text.isEmpty()
+    //             ? 0
+    //             : (model()->rowCount() > 0 ? 1 : 2));
+
     if (queryIsLessSpecific) {
         // If the user removed query terms, we try to select the same
         // tracks as before
