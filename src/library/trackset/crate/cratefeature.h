@@ -30,9 +30,7 @@ class CrateFeature : public BaseTrackSetFeature {
 
     QVariant title() override;
 
-    bool dropAcceptChild(const QModelIndex& index,
-            const QList<QUrl>& urls,
-            QObject* pSource) override;
+    bool dropAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
     bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
@@ -40,6 +38,8 @@ class CrateFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+
+    QList<QUrl> collectTrackUrls(const QModelIndex& index) override;
 
   public slots:
     void activate() override;

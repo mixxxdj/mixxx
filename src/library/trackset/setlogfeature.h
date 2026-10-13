@@ -22,6 +22,8 @@ class SetlogFeature : public BasePlaylistFeature {
             KeyboardEventFilter* keyboard) override;
     void activatePlaylist(int playlistId) override;
 
+    QList<QUrl> collectTrackUrls(const QModelIndex& index) override;
+
   public slots:
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
