@@ -48,7 +48,10 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
+if(
+  (DEFINED ENV{BUILDENV_URL} OR (APPLE AND NOT IOS) OR WIN32)
+  AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}"
+)
   if(NOT DEFINED BUILDENV_BASEPATH)
     if(DEFINED ENV{BUILDENV_BASEPATH})
       set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
@@ -350,6 +353,11 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(
+  MIXXX_APPIMAGE
+  "Build for AppImage distribution (install AppImage-specific desktop file)"
+  OFF
+)
 
 # Because of multiple concurrent definition of symbols caused by the rendergraph
 # compile definition we need to disable QML by default. This avoids the risk of
@@ -2473,6 +2481,19 @@ if(UNIX AND NOT APPLE)
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   )
+
+  # AppImage desktop file (simplified Exec=mixxx)
+  if(MIXXX_APPIMAGE)
+    set(MIXXX_APPIMAGE_DESKTOP_FILE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-appimage.desktop")
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop" MIXXX_APPIMAGE_DESKTOP_CONTENT)
+    string(REGEX REPLACE "\nExec=[^\n]*" "\nExec=mixxx" MIXXX_APPIMAGE_DESKTOP_CONTENT "${MIXXX_APPIMAGE_DESKTOP_CONTENT}")
+    file(WRITE "${MIXXX_APPIMAGE_DESKTOP_FILE}" "${MIXXX_APPIMAGE_DESKTOP_CONTENT}")
+    install(
+      FILES "${MIXXX_APPIMAGE_DESKTOP_FILE}"
+      DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+      RENAME "mixxx-appimage.desktop"
+    )
+  endif()
 
   # Icon files for menu entry
   install(
