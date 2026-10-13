@@ -107,6 +107,7 @@ class Library: public QObject {
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
     void showAutoDJ();
+    void appendTracksToAutoDJ(const QList<TrackId>& trackIds);
 
     static const QString kAutoDJViewName;
 

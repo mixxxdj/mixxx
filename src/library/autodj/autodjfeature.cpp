@@ -243,7 +243,10 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     if (trackIds.isEmpty()) {
         return false;
     }
+    return appendTracks(trackIds);
+}
 
+bool AutoDJFeature::appendTracks(const QList<TrackId>& trackIds) {
     // Return whether appendTracksToPlaylist succeeded.
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
