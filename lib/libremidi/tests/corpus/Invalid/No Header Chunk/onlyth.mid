@@ -1,0 +1,137 @@
+<HTML>
+<HEAD>
+        <TITLE>GeoCities - Oops!  We couldn't find that file.</TITLE>
+</HEAD>
+<BODY BGCOLOR="#ffffff">
+<MAP NAME="navmap">
+<AREA SHAPE=RECT COORDS="0,0,120,21" HREF="/neighborhoods/" ALT="Neighborhoods">
+<AREA SHAPE=RECT COORDS="53,0,242,21" HREF="/members/" ALT="Members">
+<AREA SHAPE=RECT COORDS="175,0,355,21" HREF="/marketplace/" ALT="Marketplace">
+<AREA SHAPE=RECT COORDS="311,0,440,21" HREF="/search/" ALT="Search">
+</MAP>
+<MAP NAME="joinmap">
+<AREA SHAPE=RECT COORDS="0,0,108,20" HREF="/join/" ALT="Join GeoCities">
+<AREA SHAPE=RECT COORDS="0,20,108,86" HREF="/" ALT="Home">
+</MAP>
+<TABLE WIDTH="600" BORDER="0" CELLSPACING="0" CELLPADDING="0">
+<TR>
+<TD WIDTH="108" ALIGN="CENTER" VALIGN="TOP">
+<A HREF="/"><IMG SRC="/images/main/geo_logo.gif" WIDTH=128 HEIGHT=84 ALT="GeoCities Logo" BORDER=0 ALIGN="left" USEMAP="#joinmap"></A>
+</TD><TD ALIGN="RIGHT" VALIGN="TOP">
+<IMG SRC="/images/navbar/navbar.gif" WIDTH=440 HEIGHT=21 ALT="Navbar - See below for links" BORDER="0" USEMAP="#navmap">
+<BR>
+<A HREF="/join/freehp.html"><IMG SRC="/images/oops.gif" WIDTH=430 HEIGHT=60 ALT="Click Here" BORDER="0"></a>
+</TD>
+</TR>
+</TABLE>
+<P>
+<TABLE WIDTH="600" BORDER="0" CELLSPACING="0" CELLPADDING="4">
+<TR>
+	<TD WIDTH="60" ROWSPAN=6><img src="/images/pixel.gif" height="1" width="60">
+	</TD>
+	<TD><img src="/images/welcome_geo.gif">
+	</TD>
+	<TD ALIGN=CENTER><FONT FACE="arial, helvetica" SIZE="2"><A HREF="/join/freehp.html"><FONT COLOR="#FF0000">Sign up for a FREE Home Page and E-mail account.</A></FONT> </FONT>
+	</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2 bgcolor="#FFFFCC">
+	<FONT FACE="arial, helvetica" SIZE="2">We are sorry. The page you were looking for, <b>http://www.geocities.com/Heartland/8169/duffie2/onlyth.mid,</b> does not exist.
+
+	</TD>
+</TR>
+<TR>
+	<TD colspan="2">
+	<hr size=1>
+	</TD>
+</TR>
+<TR>
+	<TD colspan=2>
+	<FONT FACE="arial, helvetica" SIZE="2">Click on one of the GeoAvenues below and explore our members' great pages.</FONT>
+	</TD>
+</TR>
+<TR>
+	<TD COLSPAN=2>
+	<TABLE WIDTH="500" BORDER="0" CELLSPACING="1" CELLPADDING="4">
+	<TR>
+	  <TD WIDTH="240" valign="top"><A HREF="/Avenues/Arts_and_Literature/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Arts &amp; Literature</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">A quiet corner for people who appreciate the fine arts.</FONT><BR></TD>
+	  <TD WIDTH="240" valign="top">
+		<A HREF="/Avenues/Home_and_Living/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Home &amp; Living</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Improve your life, your health, and your home.</FONT><BR>
+	  </TD>
+	</TR>
+	<TR>
+	  <TD valign="top"><A HREF="/Avenues/Autos/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Autos</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">From restoring to racing to buying - everything for the auto enthusiast.</FONT><BR>
+		</TD>
+	  <TD valign="top"><A HREF="/Avenues/People_and_Chat/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>People &amp; Chat</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Talk about relationships and dating with people just like you.</FONT><BR>
+		</TD>
+	</TR>
+	<TR>
+	  <TD valign="top"><A HREF="/Avenues/Business_and_Money/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Business &amp; Money</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">The financial and investing capital of GeoCities.</FONT><BR>
+		</TD>
+	  <TD valign="top"><A HREF="/Avenues/Shopping/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Shopping</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Whether you're a bargain-hunter or a big spender, stop by here.</FONT><BR>
+		</TD>
+	</TR>
+	<TR>
+	  <TD valign="top"><A HREF="/Avenues/Campus_Life/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Campus Life</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">The college student's one-stop resource for learning and lounging.</FONT><BR>
+		</TD>
+	  <TD valign="top"><A HREF="/Avenues/Society/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Society</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Endless varieties of world views, cultures, tastes, and traditions.</FONT><BR>
+		</TD>
+	</TR>
+	<TR>
+	  <TD valign="top"><A HREF="/Avenues/Computers_and_Technology/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Computers &amp; Technology</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Geek out with all the latest in tech, science, and the Web.</FONT><BR>
+		</TD>
+	  <TD valign="top"><A HREF="/Avenues/Sports_and_Recreation/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Sports</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Where sports and outdoor enthusiasts replenish their lifeblood.</FONT><BR>
+		</TD>
+	</TR>
+	<TR>
+	  <TD valign="top"><A HREF="/Avenues/Entertainment/"><FONT FACE="Arial,Helvetica" SIZE="-1"><B>Entertainment</B></FONT></A><BR>
+	<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Home to TV junkies, movie buffs, music lovers, and games maniacs.</FONT><BR>
+		</TD>
+	  <TD valign="top"><A HREF="/Avenues/Travel/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Travel</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Ahh... escapism. Travel tips and fabulous getaways.</FONT><BR>
+		</TD>
+	</TR>
+	<TR>
+	  <TD valign="top"><A HREF="/Avenues/Family_and_Kids/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Family &amp; Kids</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Home sweet home for parents, kids and pets.</FONT><BR>
+		</TD>
+	  <TD valign="top"><A HREF="/Avenues/Women/"><FONT FACE="Arial,Helvetica" SIZE="-1" ><B>Women</B></FONT></A><BR>
+		<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#333333">Empower yourself with info on careers, family, and fashion.</FONT><BR>
+		</TD>
+	</TR>
+	</TABLE>
+	</TD>
+</TR>
+<TR>
+	<TD COLSPAN="2">
+	<CENTER>
+	<HR SIZE=1>
+	<A HREF="/join/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Join]</FONT></A>
+	<A HREF="/main/help/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Help]</FONT></A>
+	<A HREF="/main/info/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Info]</FONT></A>
+	<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">
+	<BR>
+	<A HREF="/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Home]</FONT></A>
+	<A HREF="/Avenues/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Avenues]</FONT></A>
+	<A HREF="/neighborhoods/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Neighborhoods]</FONT></A>
+	<A HREF="/members/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Members]</FONT></A>
+	<A HREF="/marketplace/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Marketplace]</FONT></A>
+	<A HREF="/search/"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">[Search]</FONT></A>
+	<BR>
+	<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">&copy; 1995 - 1998</FONT><A HREF="/">
+	<FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">GeoCities.</FONT></A>
+	<A HREF="/main/info/rights.html"><FONT FACE="Arial,Helvetica" SIZE="-2" COLOR="#000000">All rights reserved</FONT></A>
+	</TD>
+</TR>
+</TABLE>
+
