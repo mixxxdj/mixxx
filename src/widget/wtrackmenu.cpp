@@ -119,6 +119,7 @@ WTrackMenu::WTrackMenu(
           m_bFindOnWebMenuLoaded(false),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
+          m_bLoadToMenuLoaded(false),
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
     // Warn if any of the chosen features depend on a TrackModel
@@ -178,6 +179,7 @@ void WTrackMenu::createMenus() {
         m_pDeckMenu->setTitle(tr("Deck"));
         m_pSamplerMenu = make_parented<QMenu>(m_pLoadToMenu);
         m_pSamplerMenu->setTitle(tr("Sampler"));
+        connect(m_pLoadToMenu, &QMenu::aboutToShow, this, &WTrackMenu::slotPopulateLoadToMenu);
     }
 
     if (featureIsEnabled(Feature::Playlist)) {
@@ -1002,17 +1004,12 @@ void WTrackMenu::updateMenus() {
         return;
     }
 
-    if (m_pLoadToMenu) {
-        m_pLoadToMenu->clear();
-    }
-
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
 
-    auto pTrack = getFirstTrackPointer();
-    VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return;
-    }
+    // Do not load a Track (which may open the audio file) just to show this
+    // menu. Playlist/crate actions only need TrackIds from the table model.
+    // Load-to, Search Related, and Find on Web populate on hover.
 
     if (featureIsEnabled(Feature::SearchRelated)) {
         m_bSearchRelatedMenuLoaded = false;
@@ -1023,86 +1020,7 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        // Enable menus only for single track
-        int iNumDecks = static_cast<int>(m_pNumDecks.get());
-        m_pDeckMenu->clear();
-        m_pDeckMenu->setEnabled(singleTrackSelected);
-        if (singleTrackSelected && iNumDecks > 0) {
-            for (int i = 1; i <= iNumDecks; ++i) {
-                // PlayerManager::groupForDeck is 0-indexed.
-                QString deckGroup = PlayerManager::groupForDeck(i - 1);
-                bool deckPlaying = ControlObject::get(
-                                           ConfigKey(deckGroup, "play")) > 0.0;
-                bool allowLoadTrackIntoPlayingDeck = false;
-                if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
-                    int loadWhenDeckPlaying =
-                            m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
-                    switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
-                    case LoadWhenDeckPlaying::Allow:
-                    case LoadWhenDeckPlaying::AllowButStopDeck:
-                        allowLoadTrackIntoPlayingDeck = true;
-                        break;
-                    case LoadWhenDeckPlaying::Reject:
-                        break;
-                    }
-                } else {
-                    // support older version of this flag
-                    allowLoadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
-                            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
-                }
-                bool deckEnabled =
-                        (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
-                        singleTrackSelected;
-                generateTrackLoadMenu(deckGroup,
-                        tr("Deck %1").arg(i),
-                        pTrack,
-                        m_pDeckMenu,
-                        true,
-                        deckEnabled);
-            }
-        }
-        m_pLoadToMenu->addMenu(m_pDeckMenu);
-
-        int iNumSamplers = static_cast<int>(m_pNumSamplers.get());
-        const int maxSamplersPerMenu = 16;
-        m_pSamplerMenu->clear();
-        m_pSamplerMenu->setEnabled(singleTrackSelected);
-        if (singleTrackSelected && iNumSamplers > 0) {
-            QMenu* pMenu = m_pSamplerMenu;
-            int samplersInMenu = 0;
-            for (int i = 1; i <= iNumSamplers; ++i) {
-                if (samplersInMenu == maxSamplersPerMenu) {
-                    samplersInMenu = 0;
-                    int limit = iNumSamplers > i + 15 ? i + 15 : iNumSamplers;
-                    const QString label = samplerTrString(i) + QStringLiteral("- %1").arg(limit);
-                    pMenu = make_parented<QMenu>(label, m_pSamplerMenu);
-                    m_pSamplerMenu->addMenu(pMenu);
-                }
-                samplersInMenu++;
-                // PlayerManager::groupForSampler is 0-indexed.
-                QString samplerGroup = PlayerManager::groupForSampler(i - 1);
-                bool samplerPlaying = ControlObject::get(
-                                              ConfigKey(samplerGroup, "play")) > 0.0;
-                bool samplerEnabled = !samplerPlaying && singleTrackSelected;
-
-                generateTrackLoadMenu(samplerGroup,
-                        samplerTrString(i),
-                        pTrack,
-                        pMenu,
-                        false,
-                        samplerEnabled);
-            }
-        }
-        m_pLoadToMenu->addMenu(m_pSamplerMenu);
-
-        if (m_pNumPreviewDecks.get() > 0.0) {
-            // currently there is only one preview deck so just map it here.
-            generateTrackLoadMenu(PlayerManager::groupForPreviewDeck(0),
-                    tr("Preview Deck"),
-                    pTrack,
-                    m_pLoadToMenu,
-                    false);
-        }
+        m_bLoadToMenuLoaded = false;
     }
 
     if (featureIsEnabled(Feature::Playlist)) {
@@ -1168,13 +1086,25 @@ void WTrackMenu::updateMenus() {
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
             m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
-            m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
+            // Skip canUndoBeatsChange() for library tables: it loads Track
+            // objects and may open files. Enable Undo whenever BPM is unlocked.
+            m_pBpmUndoAction->setEnabled(!anyBpmLocked &&
+                    (m_pTrackModel || canUndoBeatsChange()));
 
             // Append scaled BPM preview for single selection
             // TODO ... and multiple tracks with same BPM.
             // See DlgTrackInfoMulti
             if (singleTrackSelected) {
-                const double bpm = pTrack->getBpm();
+                double bpm = 0;
+                if (m_pTrackModel) {
+                    const int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM);
+                    bpm = m_trackIndexList.first()
+                                  .sibling(m_trackIndexList.first().row(), column)
+                                  .data(Qt::EditRole)
+                                  .toDouble();
+                } else if (m_pTrack) {
+                    bpm = m_pTrack->getBpm();
+                }
                 appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
                 appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
                 appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
@@ -1255,17 +1185,10 @@ void WTrackMenu::updateMenus() {
         m_pPropertiesAct->setEnabled(true);
     }
 
+    // Find on Web is populated on hover so we do not load a Track object
+    // just to enable the menu.
     if (featureIsEnabled(Feature::FindOnWeb)) {
-        m_pFindOnWebMenu->clear();
-        m_pFindOnWebLastAct->setVisible(false);
-        const bool enableMenu = WFindOnWebMenu::hasEntriesForTrack(*pTrack);
-        if (enableMenu) {
-            mixxx::library::createFindOnWebSubmenus(
-                    m_pFindOnWebMenu.toWeakRef(),
-                    m_pFindOnWebLastAct.toWeakRef(),
-                    *pTrack);
-        }
-        m_pFindOnWebMenu->setEnabled(!m_pFindOnWebMenu->isEmpty());
+        m_pFindOnWebMenu->setEnabled(true);
     }
 }
 
@@ -1561,6 +1484,98 @@ void WTrackMenu::slotUpdateExternalTrackCollection(
     }
 
     externalTrackCollection->updateTracks(getTrackRefs());
+}
+
+void WTrackMenu::slotPopulateLoadToMenu() {
+    if (m_bLoadToMenuLoaded || !m_pLoadToMenu) {
+        return;
+    }
+    m_pLoadToMenu->clear();
+
+    const bool singleTrackSelected = getTrackCount() == 1;
+    // Loading a Track may open the audio file (STEM detection). Only do this
+    // when the user actually opens the Load to submenu.
+    const auto pTrack = getFirstTrackPointer();
+
+    int iNumDecks = static_cast<int>(m_pNumDecks.get());
+    m_pDeckMenu->clear();
+    m_pDeckMenu->setEnabled(singleTrackSelected);
+    if (singleTrackSelected && iNumDecks > 0) {
+        for (int i = 1; i <= iNumDecks; ++i) {
+            // PlayerManager::groupForDeck is 0-indexed.
+            QString deckGroup = PlayerManager::groupForDeck(i - 1);
+            bool deckPlaying = ControlObject::get(
+                    ConfigKey(deckGroup, "play")) > 0.0;
+            bool allowLoadTrackIntoPlayingDeck = false;
+            if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
+                int loadWhenDeckPlaying =
+                        m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+                switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
+                case LoadWhenDeckPlaying::Allow:
+                case LoadWhenDeckPlaying::AllowButStopDeck:
+                    allowLoadTrackIntoPlayingDeck = true;
+                    break;
+                case LoadWhenDeckPlaying::Reject:
+                    break;
+                }
+            } else {
+                // support older version of this flag
+                allowLoadTrackIntoPlayingDeck = m_pConfig->getValue<bool>(
+                        ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"));
+            }
+            bool deckEnabled =
+                    (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
+                    singleTrackSelected;
+            generateTrackLoadMenu(deckGroup,
+                    tr("Deck %1").arg(i),
+                    pTrack,
+                    m_pDeckMenu,
+                    true,
+                    deckEnabled);
+        }
+    }
+    m_pLoadToMenu->addMenu(m_pDeckMenu);
+
+    int iNumSamplers = static_cast<int>(m_pNumSamplers.get());
+    const int maxSamplersPerMenu = 16;
+    m_pSamplerMenu->clear();
+    m_pSamplerMenu->setEnabled(singleTrackSelected);
+    if (singleTrackSelected && iNumSamplers > 0) {
+        QMenu* pMenu = m_pSamplerMenu;
+        int samplersInMenu = 0;
+        for (int i = 1; i <= iNumSamplers; ++i) {
+            if (samplersInMenu == maxSamplersPerMenu) {
+                samplersInMenu = 0;
+                int limit = iNumSamplers > i + 15 ? i + 15 : iNumSamplers;
+                const QString label = samplerTrString(i) + QStringLiteral("- %1").arg(limit);
+                pMenu = make_parented<QMenu>(label, m_pSamplerMenu);
+                m_pSamplerMenu->addMenu(pMenu);
+            }
+            samplersInMenu++;
+            // PlayerManager::groupForSampler is 0-indexed.
+            QString samplerGroup = PlayerManager::groupForSampler(i - 1);
+            bool samplerPlaying = ControlObject::get(
+                    ConfigKey(samplerGroup, "play")) > 0.0;
+            bool samplerEnabled = !samplerPlaying && singleTrackSelected;
+
+            generateTrackLoadMenu(samplerGroup,
+                    samplerTrString(i),
+                    pTrack,
+                    pMenu,
+                    false,
+                    samplerEnabled);
+        }
+    }
+    m_pLoadToMenu->addMenu(m_pSamplerMenu);
+
+    if (m_pNumPreviewDecks.get() > 0.0) {
+        generateTrackLoadMenu(PlayerManager::groupForPreviewDeck(0),
+                tr("Preview Deck"),
+                pTrack,
+                m_pLoadToMenu,
+                false);
+    }
+    m_bLoadToMenuLoaded = true;
 }
 
 void WTrackMenu::slotPopulatePlaylistMenu() {
