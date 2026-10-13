@@ -232,6 +232,10 @@ void ControllerScriptInterfaceLegacy::reset(const QString& group, const QString&
     }
 }
 
+bool ControllerScriptInterfaceLegacy::loadTrack(const QString& group, const QString& path) {
+    return ControllerScriptEngineBase::loadTrackToPlayer(group, path);
+}
+
 double ControllerScriptInterfaceLegacy::getDefaultValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
