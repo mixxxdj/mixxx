@@ -1,8 +1,11 @@
 #include "preferences/dialog/dlgprefmixer.h"
 
 #include <QButtonGroup>
+#include <QGraphicsView>
+#include <QMouseEvent>
 #include <QPainterPath>
 #include <QStandardItemModel>
+#include <QStyle>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -19,6 +22,7 @@
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 #include "util/rescaler.h"
+#include "util/widgethelper.h"
 
 namespace {
 const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
@@ -65,6 +69,131 @@ bool isMainEQ(EffectManifest* pManifest) {
 }
 } // anonymous namespace
 
+DlgXfaderCurve::DlgXfaderCurve(QWidget* pParent)
+        : QDialog(pParent),
+          m_mousePressed(false),
+          m_moved(false) {
+    setupUi(this);
+    setWindowTitle(tr("Crossfader Curve"));
+    // Prohibit resize
+    layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    // Timer to allow dragging the window with longpress
+    m_clickTimer.setSingleShot(true);
+    m_clickTimer.setInterval(500);
+
+    // Hide the window 3 seconds after showing or last mouse interaction
+    m_hideTimer.setSingleShot(true);
+    m_hideTimer.setInterval(3000);
+    m_hideTimer.callOnTimeout(this, [this]() { close(); });
+
+    graphicsViewXfader->setRenderHint(QPainter::Antialiasing);
+
+    // Install event filter for dragging with left mouse button and close on click.
+    // Tracking the mouse on the transparent overlay widget is much easier than
+    // dealing with the complex QGraphicsView/QGraphicsScene mouse event handling.
+    // Leave mousetracking() off to receive mouse moves only when a button is pressed.
+    mouseCatcher->installEventFilter(this);
+}
+
+void DlgXfaderCurve::setScene(QGraphicsScene* pScene) {
+    graphicsViewXfader->setScene(pScene);
+    layout()->update();
+    adjustSize();
+}
+
+void DlgXfaderCurve::show(bool autoHide) {
+    if (graphicsViewXfader->scene() == nullptr) {
+        return;
+    }
+    // This saves us from resetting pressed on close.
+    m_mousePressed = false;
+    QDialog::show();
+    if (autoHide) {
+        m_hideTimer.start();
+    }
+
+    // If we've already moved the window we don't center it on the screen again
+    // in order to keep the previous position.
+    if (m_moved) {
+        return;
+    }
+
+    QWidget* centerOverWidget = parentWidget();
+    VERIFY_OR_DEBUG_ASSERT(centerOverWidget) {
+        qWarning() << "DlgXfaderCurve does not have a parent widget";
+        centerOverWidget = this;
+    }
+
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*centerOverWidget);
+    QRect screenGeometry;
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        qWarning() << "DlgXfaderCurve: No screen could be found. "
+                      "Assuming screen size of 800x600px.";
+        screenGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        screenGeometry = pScreen->geometry();
+    }
+
+    // Center the window
+    setGeometry(QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            size(),
+            screenGeometry));
+}
+
+bool DlgXfaderCurve::eventFilter(QObject* pObj, QEvent* pEvent) {
+    switch (pEvent->type()) {
+    case QEvent::MouseButtonPress: {
+        QMouseEvent* pME = static_cast<QMouseEvent*>(pEvent);
+        if (!pME->buttons().testFlag(Qt::LeftButton)) {
+            break;
+        }
+
+        m_mousePressed = true;
+        m_clickTimer.start();
+        m_hideTimer.start();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        const QPoint eventPosition = pME->globalPosition().toPoint();
+#else
+        const QPoint eventPosition = pME->globalPos();
+#endif
+        m_dragStartPosition = eventPosition - frameGeometry().topLeft();
+        break;
+    }
+    case QEvent::MouseMove: {
+        if (m_mousePressed) {
+            QMouseEvent* pME = static_cast<QMouseEvent*>(pEvent);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            const QPoint eventPosition = pME->globalPosition().toPoint();
+#else
+            const QPoint eventPosition = pME->globalPos();
+#endif
+            move(eventPosition - m_dragStartPosition);
+            m_moved = true;
+        }
+        break;
+    }
+    case QEvent::MouseButtonRelease: {
+        m_mousePressed = false;
+        if (m_clickTimer.isActive()) {
+            // short press
+            close();
+            break;
+        }
+        // long press
+        m_hideTimer.stop();
+        m_hideTimer.start();
+        break;
+    }
+    default:
+        break;
+    }
+    return QDialog::eventFilter(pObj, pEvent);
+}
+
 DlgPrefMixer::DlgPrefMixer(
         QWidget* pParent,
         std::shared_ptr<EffectsManager> pEffectsManager,
@@ -100,6 +229,7 @@ DlgPrefMixer::DlgPrefMixer(
 #endif
           m_eqBypass(false),
           m_initializing(true),
+          m_updatingGui(false),
           m_updatingMainEQ(false),
           m_applyingDeckEQs(false),
           m_applyingQuickEffects(false) {
@@ -769,6 +899,7 @@ void DlgPrefMixer::storeEqShelves() {
 }
 
 void DlgPrefMixer::slotUpdate() {
+    m_updatingGui = true;
     slotUpdateXFader();
 
     // EQs & QuickEffects //////////////////////////////////////////////////////
@@ -833,6 +964,7 @@ void DlgPrefMixer::slotUpdate() {
     }
 
     updateMainEQ();
+    m_updatingGui = false;
 }
 
 void DlgPrefMixer::slotUpdateXFader() {
@@ -893,14 +1025,14 @@ void DlgPrefMixer::updateXFaderWidgets() {
 
 void DlgPrefMixer::drawXfaderDisplay() {
     // Initialize or clear scene
+    int sizeX = graphicsViewXfader->width() - 2;
+    int sizeY = graphicsViewXfader->height() - 2;
     if (m_pxfScene) {
         m_pxfScene->clear();
     } else {
         m_pxfScene = make_parented<QGraphicsScene>(this);
         // The size of the QGraphicsView doesn't change so we need to do this only once
         graphicsViewXfader->setLineWidth(1); // frame width
-        int sizeX = graphicsViewXfader->width() - 2;
-        int sizeY = graphicsViewXfader->height() - 2;
         m_pxfScene->setSceneRect(0, 0, sizeX, sizeY);
         m_pxfScene->setBackgroundBrush(Qt::black);
         graphicsViewXfader->setRenderHints(QPainter::Antialiasing);
@@ -980,6 +1112,25 @@ void DlgPrefMixer::drawXfaderDisplay() {
 
     graphicsViewXfader->show();
     graphicsViewXfader->repaint();
+
+    if (!isVisible() && !m_initializing && !m_updatingGui) {
+        showXfaderCurvePopup();
+    }
+}
+
+void DlgPrefMixer::showXfaderCurvePopup(bool autoHide) {
+    if (m_pDlgXfaderCurve.get() == nullptr) {
+        VERIFY_OR_DEBUG_ASSERT(m_pxfScene) {
+            return;
+        }
+        m_pDlgXfaderCurve = make_parented<DlgXfaderCurve>(this);
+        m_pDlgXfaderCurve->setScene(m_pxfScene);
+    }
+    m_pDlgXfaderCurve->show(autoHide);
+}
+
+void DlgPrefMixer::slotShowXfaderPopupPersist() {
+    showXfaderCurvePopup(false);
 }
 
 void DlgPrefMixer::slotXFaderReverseBoxToggled() {
