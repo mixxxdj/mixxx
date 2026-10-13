@@ -2,6 +2,7 @@
 
 #include <QJSValue>
 #include <QUuid>
+#include <memory>
 
 #include "preferences/configobject.h"
 
@@ -29,4 +30,10 @@ class ScriptConnection {
     inline bool operator!=(const ScriptConnection& other) const {
         return !(*this == other);
     }
+
+  private:
+    struct CallbackState {
+        bool isExecuting = false;
+    };
+    std::shared_ptr<CallbackState> m_pCallbackState = std::make_shared<CallbackState>();
 };
