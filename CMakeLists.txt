@@ -2388,6 +2388,7 @@ if(WIN32)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY true)
   endif()
+  set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
   include(InstallRequiredSystemLibraries)
 endif()
 
