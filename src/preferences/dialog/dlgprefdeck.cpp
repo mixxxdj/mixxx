@@ -220,12 +220,22 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     // Double-tap Load to clone a deck via keyboard or controller ([ChannelN],LoadSelectedTrack)
     m_bCloneDeckOnLoadDoubleTap = m_pConfig->getValue(
-            ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")), true);
+            ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")),
+            kDefaultCloneDeckOnLoad);
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_bCloneDeckOnLoadDoubleTap);
     connect(checkBoxCloneDeckOnLoadDoubleTap,
             &QCheckBox::toggled,
             this,
             &DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox);
+
+    m_bBeatjumpLoopmove = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("BeatjumpDoesLoopmove")),
+            kDefaultBeatjumpDoesLoopmove);
+    checkboxBeatjumpLoopmove->setChecked(m_bBeatjumpLoopmove);
+    connect(checkboxBeatjumpLoopmove,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotBeatjumpLoopmove);
 
     m_bRateDownIncreasesSpeed = m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("RateDir")), kDefaultRateDirectionInverted);
@@ -448,7 +458,12 @@ void DlgPrefDeck::slotUpdate() {
     slotSetTrackTimeDisplay(m_pControlTrackTimeDisplay->get());
 
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
-            ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")), true));
+            ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")),
+            kDefaultCloneDeckOnLoad));
+
+    checkboxBeatjumpLoopmove->setChecked(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("BeatjumpDoesLoopmove")),
+            kDefaultBeatjumpDoesLoopmove));
 
     double rateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
@@ -535,6 +550,8 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     // Clone decks by double-tapping Load button.
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
+
+    checkboxBeatjumpLoopmove->setChecked(kDefaultBeatjumpDoesLoopmove);
 
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
@@ -694,6 +711,10 @@ void DlgPrefDeck::slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex) {
             comboBoxLoadWhenDeckPlaying->itemData(comboboxIndex).toInt());
 }
 
+void DlgPrefDeck::slotBeatjumpLoopmove(bool checked) {
+    m_bBeatjumpLoopmove = checked;
+}
+
 void DlgPrefDeck::slotApply() {
     m_pConfig->set(ConfigKey(kControlsGroup, QStringLiteral("SetIntroStartAtMainCue")),
             ConfigValue(m_bSetIntroStartAtMainCue));
@@ -719,6 +740,9 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CueRecall")), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")),
             m_bCloneDeckOnLoadDoubleTap);
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("BeatjumpDoesLoopmove")),
+            m_bBeatjumpLoopmove);
 
     // Set rate range
     // Set the config value before setting the CO values in setRateRangeForAllDecks()
