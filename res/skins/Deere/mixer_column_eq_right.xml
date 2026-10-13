@@ -10,6 +10,10 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <Template src="skin:equalizer_rack_parameter_right.xml">
+        <SetVariable name="parameter">4</SetVariable>
+      </Template>
+
+      <Template src="skin:equalizer_rack_parameter_right.xml">
         <SetVariable name="parameter">3</SetVariable>
       </Template>
 

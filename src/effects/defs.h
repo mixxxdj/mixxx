@@ -44,6 +44,7 @@ const QString kNoEffectString = QStringLiteral("---");
 
 const QString kMixerProfile = QStringLiteral("[Mixer Profile]");
 const QString kHighEqFrequency = QStringLiteral("HiEQFrequency");
+const QString kMidEqFrequency = QStringLiteral("MidEQFrequency");
 const QString kLowEqFrequency = QStringLiteral("LoEQFrequency");
 
 // NOTE: Setting this to true will enable string manipulation and calls to
