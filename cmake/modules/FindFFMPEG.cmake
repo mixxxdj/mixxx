@@ -157,6 +157,16 @@ foreach(component ${FFMPEG_FIND_COMPONENTS})
   endif()
 endforeach()
 
+# When libavcodec is static it may have been built with --enable-libfdk-aac.
+# Add the fdk-aac library so the final linker resolves the aacEnc*/aacDec*
+# symbols (mirrors the 2.7 FindFFmpeg module handling).
+if(FFMPEG_libavcodec_LIBRARIES MATCHES "\.a")
+  find_package(fdk-aac QUIET)
+  if(TARGET FDK-AAC::fdk-aac)
+    list(APPEND FFMPEG_LIBRARIES FDK-AAC::fdk-aac)
+  endif()
+endif()
+
 # Build the include path with duplicates removed.
 if(FFMPEG_INCLUDE_DIRS)
   list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)

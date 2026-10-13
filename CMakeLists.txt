@@ -2713,7 +2713,20 @@ if(FFMPEG)
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  # Static FFmpeg libraries have circular cross-references (e.g. libavformat
+  # references libavcodec); wrap the resolved library paths in a single
+  # LINK_GROUP:RESCAN so the GNU linker resolves them.  fdk-aac (for a
+  # static libavcodec built with --enable-libfdk-aac) is added by
+  # FindFFMPEG.cmake above; a static libavcodec built with --enable-libopus
+  # is resolved via the Opus targets linked below.
+  if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE "$<LINK_GROUP:RESCAN,${FFMPEG_LIBRARIES}>"
+    )
+  else()
+    target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  endif()
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
@@ -4895,7 +4908,18 @@ if(OPUS)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
   if(BUILD_TESTING)
-    target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    # The static buildenv links libsndfile (whose ogg_opus encoder pulls in
+    # libopus), libopusfile and libopus; wrap them in a rescan group so the
+    # single-pass link resolves the order dependency.
+    if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+      target_link_libraries(
+        mixxx-test
+        PRIVATE
+          "$<LINK_GROUP:RESCAN,SndFile::sndfile;OpusFile::OpusFile;Opus::Opus>"
+      )
+    else()
+      target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    endif()
   endif()
 endif()
 
