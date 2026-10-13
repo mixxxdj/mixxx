@@ -2,6 +2,7 @@
 """
 Small qmlformat wrapper that warns the user if the tool is not installed.
 """
+
 import argparse
 import shutil
 import subprocess
