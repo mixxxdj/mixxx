@@ -1,6 +1,7 @@
 #include "library/analysis/analysisfeature.h"
 
 #include <QList>
+#include <QMenu>
 #include <QtDebug>
 
 #include "analyzer/analyzerscheduledtrack.h"
@@ -13,6 +14,7 @@
 #include "util/dnd.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 namespace {
 
@@ -118,7 +120,18 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     // Let the DlgAnalysis know whether or not analysis is active.
     emit analysisActive(static_cast<bool>(m_pTrackAnalysisScheduler));
 
+    m_pStopAnalysisAction = make_parented<QAction>(tr("Stop Analysis"), this);
+    connect(m_pStopAnalysisAction.get(),
+            &QAction::triggered,
+            m_pAnalysisView,
+            &DlgAnalysis::stopAnalysis);
+
     libraryWidget->registerView(kViewName, m_pAnalysisView);
+}
+
+void AnalysisFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
 }
 
 TreeItemModel* AnalysisFeature::sidebarModel() const {
@@ -138,6 +151,13 @@ void AnalysisFeature::activate() {
         emit restoreSearch(m_pAnalysisView->currentSearch());
     }
     emit enableCoverArtDisplay(true);
+}
+
+void AnalysisFeature::onRightClick(const QPoint& globalPos) {
+    QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pStopAnalysisAction.get());
+    m_pStopAnalysisAction->setEnabled(m_pAnalysisView->isAnalysisActive());
+    menu.exec(globalPos);
 }
 
 void AnalysisFeature::analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks) {

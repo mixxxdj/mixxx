@@ -32,6 +32,10 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void saveCurrentViewState() override;
     bool restoreCurrentViewState() override;
 
+    bool isAnalysisActive() {
+        return m_bAnalysisActive;
+    };
+
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
             const QItemSelection& deselected);
