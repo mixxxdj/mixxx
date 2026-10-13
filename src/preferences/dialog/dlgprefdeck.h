@@ -63,6 +63,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
+    void slotUpdateLoopsizeAutoReset(bool);
 
   private:
     // Because the CueDefault list is out of order, we have to set the combo
@@ -104,6 +105,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
+    bool m_loopsizeAutoReset;
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
     SeekOnLoadMode m_seekOnLoadMode;

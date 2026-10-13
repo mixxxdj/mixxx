@@ -121,6 +121,16 @@ class FramePos final {
         return util_isfinite(m_framePosition);
     }
 
+    // returns true if a is valid and is fairly close to target (within +/- 1 frame).
+    bool isNear(mixxx::audio::FramePos target) const {
+        VERIFY_OR_DEBUG_ASSERT(isValid()) {
+            return false;
+        }
+        return target.isValid() &&
+                value() > target.value() - 1.0 &&
+                value() < target.value() + 1.0;
+    };
+
     void setValue(value_t framePosition) {
         m_framePosition = framePosition;
     }

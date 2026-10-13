@@ -338,6 +338,14 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
 
+    checkboxLoopsizeReset->setChecked(m_pConfig->getValue(
+            ConfigKey(QStringLiteral("[Controls]"), QStringLiteral("LoopAutoReset")),
+            false));
+    connect(checkboxLoopsizeReset,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotUpdateLoopsizeAutoReset);
+
     //
     // Ramping Temporary Rate Change configuration
     //
@@ -507,6 +515,10 @@ void DlgPrefDeck::slotUpdate() {
         checkBoxResetSpeed->setChecked(false);
     }
 
+    checkboxLoopsizeReset->setChecked(m_pConfig->getValue(
+            ConfigKey(QStringLiteral("[Controls]"), QStringLiteral("LoopAutoReset")),
+            false));
+
     if (m_bRateRamping == RateControl::RampMode::Linear) {
         radioButtonRateRampModeLinear->setChecked(true);
     } else {
@@ -559,6 +571,8 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     checkBoxResetSpeed->setChecked(false);
     checkBoxResetPitch->setChecked(true);
+
+    checkboxLoopsizeReset->setChecked(false);
 
     radioButtonSoftLeader->setChecked(true);
 
@@ -867,6 +881,10 @@ void DlgPrefDeck::slotUpdateSpeedAutoReset(bool b) {
 
 void DlgPrefDeck::slotUpdatePitchAutoReset(bool b) {
     m_pitchAutoReset = b;
+}
+
+void DlgPrefDeck::slotUpdateLoopsizeAutoReset(bool checked) {
+    m_loopsizeAutoReset = checked;
 }
 
 int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
