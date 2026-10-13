@@ -28,6 +28,8 @@ const ConfigKey kEnableEqsKey = ConfigKey(kMixerProfile, QStringLiteral("EnableE
 const ConfigKey kEqsOnlyKey = ConfigKey(kMixerProfile, QStringLiteral("EQsOnly"));
 const ConfigKey kSingleEqKey = ConfigKey(kMixerProfile, QStringLiteral("SingleEQEffect"));
 const ConfigKey kEqAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("EqAutoReset"));
+const ConfigKey kEqKillAutoResetKey =
+        ConfigKey(kMixerProfile, QStringLiteral("EqKillAutoReset"));
 const ConfigKey kGainAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("GainAutoReset"));
 #ifdef __STEM__
 const ConfigKey kStemAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("stem_auto_reset"));
@@ -94,6 +96,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_singleEq(true),
           m_eqEffectsOnly(true),
           m_eqAutoReset(false),
+          m_eqKillAutoReset(false),
           m_gainAutoReset(false),
 #ifdef __STEM__
           m_stemAutoReset(true),
@@ -155,6 +158,14 @@ DlgPrefMixer::DlgPrefMixer(
 #endif
             this,
             &DlgPrefMixer::slotEqAutoResetToggled);
+    connect(CheckBoxEqKillAutoReset,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefMixer::slotEqKillAutoResetToggled);
     connect(CheckBoxGainAutoReset,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
             &QCheckBox::checkStateChanged,
@@ -520,6 +531,7 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxEqOnly->setChecked(true);
     CheckBoxSingleEqEffect->setChecked(true);
     CheckBoxEqAutoReset->setChecked(false);
+    CheckBoxEqKillAutoReset->setChecked(false);
     CheckBoxGainAutoReset->setChecked(false);
 #ifdef __STEM__
     CheckBoxStemAutoReset->setChecked(true);
@@ -734,6 +746,7 @@ void DlgPrefMixer::slotApply() {
     m_pConfig->set(kSingleEqKey, ConfigValue(m_singleEq ? 1 : 0));
     m_pConfig->set(kEqsOnlyKey, ConfigValue(m_eqEffectsOnly ? 1 : 0));
     m_pConfig->set(kEqAutoResetKey, ConfigValue(m_eqAutoReset ? 1 : 0));
+    m_pConfig->set(kEqKillAutoResetKey, ConfigValue(m_eqKillAutoReset ? 1 : 0));
     m_pConfig->set(kGainAutoResetKey, ConfigValue(m_gainAutoReset ? 1 : 0));
 #ifdef __STEM__
     m_pConfig->set(kStemAutoResetKey, ConfigValue(m_stemAutoReset ? 1 : 0));
@@ -788,7 +801,9 @@ void DlgPrefMixer::slotUpdate() {
     }
 
     m_eqAutoReset = m_pConfig->getValue<bool>(kEqAutoResetKey, false);
+    m_eqKillAutoReset = m_pConfig->getValue<bool>(kEqKillAutoResetKey, false);
     CheckBoxEqAutoReset->setChecked(m_eqAutoReset);
+    updateEqKillAutoResetState();
 
     m_gainAutoReset = m_pConfig->getValue<bool>(kGainAutoResetKey, false);
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
@@ -1048,6 +1063,22 @@ void DlgPrefMixer::slotXFaderReverseControlChanged(double v) {
 
 void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
     m_eqAutoReset = checked;
+    updateEqKillAutoResetState();
+}
+
+void DlgPrefMixer::slotEqKillAutoResetToggled(bool checked) {
+    // Ignore programmatic changes made while the checkbox is disabled (i.e.
+    // forced on by the equalizer reset option), so the user's own preference
+    // is preserved and restored once equalizer reset is turned off again.
+    if (CheckBoxEqKillAutoReset->isEnabled()) {
+        m_eqKillAutoReset = checked;
+    }
+}
+
+void DlgPrefMixer::updateEqKillAutoResetState() {
+    const bool eqReset = CheckBoxEqAutoReset->isChecked();
+    CheckBoxEqKillAutoReset->setEnabled(!eqReset);
+    CheckBoxEqKillAutoReset->setChecked(eqReset || m_eqKillAutoReset);
 }
 
 void DlgPrefMixer::slotGainAutoResetToggled(bool checked) {
