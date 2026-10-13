@@ -25,9 +25,9 @@ class WaveformWidgetType {
             WaveformWidgetType::Simple,
             WaveformWidgetType::Filtered,
             WaveformWidgetType::HSV,
-            WaveformWidgetType::VSyncTest,
             WaveformWidgetType::RGB,
             WaveformWidgetType::Stacked,
+            WaveformWidgetType::VSyncTest,
     };
 };
 
