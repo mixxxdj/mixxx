@@ -571,6 +571,20 @@ jobs:
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
 
+      - name: "[AppImage] Check floor dependencies"
+        # The AppImage delegates fontconfig, alsa and the base system stack to
+        # the host (freetype and harfbuzz are bundled), so the shipped binary
+        # must not reference symbols or symbol versions the floor (the Rocky 8
+        # build host, glibc 2.28) cannot provide.  Headers from newer vcpkg
+        # ports can introduce them; walk the packaged AppImage's
+        # dynamic-linking closure against its bundled libraries and the build
+        # host's own libraries and fail on anything unsatisfiable.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Checking ${APPIMAGE}"
+          python3 tools/check_appimage_floor_deps.py "${APPIMAGE}"
+
       - name: "[AppImage] Smoke test"
         # Run the packaged AppImage once.  This catches loader-level failures
         # (e.g. the ld.so assertion a broken linker produces, or missing
