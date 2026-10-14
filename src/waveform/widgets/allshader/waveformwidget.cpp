@@ -157,6 +157,7 @@ void WaveformWidget::preRender(VSyncThread* vsyncThread) {
 }
 
 void WaveformWidget::paintGL() {
+    resizeRenderer(width(), height(), static_cast<float>(devicePixelRatioF()));
     if (m_preRenderPending && m_pVSyncThread) {
         WaveformWidgetAbstract::preRender(m_pVSyncThread);
         m_preRenderPending = false;
