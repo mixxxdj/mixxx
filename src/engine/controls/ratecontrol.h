@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <atomic>
 
 #include "control/pollingcontrolproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -78,6 +79,12 @@ public:
           mixxx::audio::FramePos targetPos);
   void notifySeek(mixxx::audio::FramePos position) override;
   void resetPositionScratchController();
+
+  static void setRampUpEnabled(bool enabled);
+  static void setRampDownEnabled(bool enabled);
+  static void setRampRpmMode(int mode); // 0 = 33 RPM, 1 = 45 RPM
+  static void setRampIncludePitch(bool includePitch);
+  static void setRampDownMode(int mode); // 0 = brake, 1 = power cut
 
 public slots:
   void slotRateRangeChanged(double);
@@ -174,4 +181,18 @@ private:
   double m_tempRateRatio;
   // Speed for temporary rate change
   double m_dRateTempRampChange;
+
+  // Physical spin-up / spin-down
+  std::unique_ptr<PollingControlProxy> m_pPlayLatched;
+  double m_platterSpeed;   // 0.0 = standstill, 1.0 = target speed reached
+  double m_lastTargetRate; // speed the platter was ramping to / running at
+  bool m_spinningDown;
+  bool m_seekedSinceLastBuffer;
+  bool m_prevPaused;
+  bool m_latchedPlay;
+  static std::atomic<bool> m_rampUpEnabled;
+  static std::atomic<bool> m_rampDownEnabled;
+  static std::atomic<int> m_rampMode; // 0 = 33 RPM, 1 = 45 RPM
+  static std::atomic<bool> m_rampIncludePitch;
+  static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
 };

@@ -429,6 +429,43 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
+    // --- Physical Spin-up Ramp initialization ---
+    bool rampUpEnabled = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpEnabled")), false);
+    bool rampDownEnabled = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampDownEnabled")), false);
+    int rampMode = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")), 0);
+    bool rampIncludePitch = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")), true);
+
+    checkBoxRampUpEnabled->setChecked(rampUpEnabled);
+    checkBoxRampDownEnabled->setChecked(rampDownEnabled);
+    const int rampDownMode = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")), 0);
+    if (rampDownMode == 1) {
+        radioButtonRampDownPowerCut->setChecked(true);
+    } else {
+        radioButtonRampDownBrake->setChecked(true);
+    }
+
+    // Spin-down type is only relevant if spin-down is enabled
+    const auto updateRampDownModeEnabled = [this](bool enabled) {
+        labelRampDownMode->setEnabled(enabled);
+        radioButtonRampDownBrake->setEnabled(enabled);
+        radioButtonRampDownPowerCut->setEnabled(enabled);
+    };
+    connect(checkBoxRampDownEnabled, &QCheckBox::toggled, this, updateRampDownModeEnabled);
+    updateRampDownModeEnabled(checkBoxRampDownEnabled->isChecked());
+    comboBoxRampUpMode->setCurrentIndex(rampMode);
+    checkBoxRampUpIncludePitch->setChecked(rampIncludePitch);
+
+    RateControl::setRampUpEnabled(checkBoxRampUpEnabled->isChecked());
+    RateControl::setRampDownEnabled(checkBoxRampDownEnabled->isChecked());
+    RateControl::setRampDownMode(radioButtonRampDownPowerCut->isChecked() ? 1 : 0);
+    RateControl::setRampRpmMode(comboBoxRampUpMode->currentIndex());
+    RateControl::setRampIncludePitch(checkBoxRampUpIncludePitch->isChecked());
+
     slotUpdate();
 }
 
@@ -521,6 +558,15 @@ void DlgPrefDeck::slotUpdate() {
     spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
     spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
     spinBoxPermanentRateFine->setValue(RateControl::getPermanentRateChangeFineAmount());
+
+    checkBoxRampUpEnabled->setChecked(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpEnabled")), false));
+    checkBoxRampDownEnabled->setChecked(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampDownEnabled")), false));
+    comboBoxRampUpMode->setCurrentIndex(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")), 0));
+    checkBoxRampUpIncludePitch->setChecked(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")), true));
 }
 
 void DlgPrefDeck::slotResetToDefaults() {
@@ -564,6 +610,11 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+
+    checkBoxRampUpEnabled->setChecked(false);
+    checkBoxRampDownEnabled->setChecked(false);
+    checkBoxRampUpIncludePitch->setChecked(false);
+    radioButtonRampDownBrake->setChecked(true);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -792,6 +843,29 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(
             ConfigKey(kControlsGroup, QStringLiteral("RatePermRight")),
             m_dRatePermFine);
+
+    const int rampDownMode = radioButtonRampDownPowerCut->isChecked() ? 1 : 0;
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")),
+            rampDownMode);
+    RateControl::setRampDownMode(rampDownMode);
+
+    // Save Physical Spin-up Spin-Down Ramp settings
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpEnabled")),
+            checkBoxRampUpEnabled->isChecked());
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampDownEnabled")),
+            checkBoxRampDownEnabled->isChecked());
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")),
+            comboBoxRampUpMode->currentIndex());
+
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")),
+            checkBoxRampUpIncludePitch->isChecked());
+
+    RateControl::setRampUpEnabled(checkBoxRampUpEnabled->isChecked());
+    RateControl::setRampDownEnabled(checkBoxRampDownEnabled->isChecked());
+    RateControl::setRampRpmMode(comboBoxRampUpMode->currentIndex());
+    RateControl::setRampIncludePitch(checkBoxRampUpIncludePitch->isChecked());
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {

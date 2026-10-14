@@ -638,6 +638,108 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </spacer>
         </item>
+         <!-- New Physical Spin-up Ramp Settings -->
+         <item row="12" column="0">
+           <widget class="QLabel" name="labelPhysicalRamp">
+             <property name="text">
+               <string>Physical spin-up/spin-down ramp</string>
+             </property>
+             <property name="buddy">
+               <cstring>checkBoxRampUpEnabled</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="12" column="1" colspan="2">
+           <widget class="QCheckBox" name="checkBoxRampUpEnabled">
+             <property name="text">
+               <string>Enable physical spin-up ramp</string>
+             </property>
+           </widget>
+         </item>
+         <item row="13" column="1" colspan="2">
+           <widget class="QCheckBox" name="checkBoxRampDownEnabled">
+             <property name="text">
+               <string>Enable physical spin-down ramp</string>
+             </property>
+           </widget>
+         </item>
+         <item row="14" column="0">
+           <widget class="QLabel" name="labelRampDownMode">
+             <property name="text">
+               <string>Spin-down type</string>
+             </property>
+             <property name="buddy">
+               <cstring>radioButtonRampDownBrake</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="14" column="1">
+           <widget class="QRadioButton" name="radioButtonRampDownBrake">
+             <property name="toolTip">
+               <string>Stop button: the electronic brake stops the platter quickly</string>
+             </property>
+             <property name="text">
+               <string>Brake</string>
+             </property>
+             <attribute name="buttonGroup">
+               <string notr="true">buttonGroupRampDownMode</string>
+             </attribute>
+           </widget>
+         </item>
+         <item row="14" column="2">
+           <widget class="QRadioButton" name="radioButtonRampDownPowerCut">
+             <property name="toolTip">
+               <string>Power switch off: no brake, the platter coasts slowly to a standstill</string>
+             </property>
+             <property name="text">
+               <string>Power cut</string>
+             </property>
+             <attribute name="buttonGroup">
+               <string notr="true">buttonGroupRampDownMode</string>
+             </attribute>
+           </widget>
+         </item>
+         <item row="15" column="0">
+           <widget class="QLabel" name="labelRampMode">
+             <property name="text">
+               <string>Platter type</string>
+             </property>
+             <property name="buddy">
+               <cstring>comboBoxRampUpMode</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="15" column="1" colspan="2">
+           <widget class="QComboBox" name="comboBoxRampUpMode">
+             <item>
+               <property name="text">
+                 <string>33 RPM (Heavier)</string>
+               </property>
+             </item>
+             <item>
+               <property name="text">
+                 <string>45 RPM (Lighter)</string>
+               </property>
+             </item>
+           </widget>
+         </item>
+         <item row="16" column="0">
+           <widget class="QLabel" name="labelRampPitchRange">
+             <property name="text">
+               <string>Target range</string>
+             </property>
+             <property name="buddy">
+               <cstring>checkBoxRampUpIncludePitch</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="16" column="1" colspan="2">
+           <widget class="QCheckBox" name="checkBoxRampUpIncludePitch">
+             <property name="text">
+               <string>Ramp up to RPM + Pitch Slider</string>
+             </property>
+           </widget>
+         </item>
        </layout>
       </item>
      </layout>
@@ -685,6 +787,9 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>spinBoxTemporaryRateCoarse</tabstop>
   <tabstop>spinBoxPermanentRateFine</tabstop>
   <tabstop>spinBoxPermanentRateCoarse</tabstop>
+  <tabstop>checkBoxRampUpEnabled</tabstop>
+  <tabstop>comboBoxRampUpMode</tabstop>
+  <tabstop>checkBoxRampUpIncludePitch</tabstop>
  </tabstops>
  <resources/>
  <buttongroups>
@@ -693,5 +798,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <buttongroup name="buttonGroupKeyLockMode"/>
   <buttongroup name="buttonGroupSpeedBendBehavior"/>
   <buttongroup name="buttonGroupSyncMode"/>
+  <buttongroup name="buttonGroupRampDownMode"/>
  </buttongroups>
 </ui>
