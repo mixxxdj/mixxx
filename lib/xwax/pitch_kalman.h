@@ -68,6 +68,11 @@ struct pitch_kalman_filter {
 
     struct kalman_coeffs stable;
     struct kalman_coeffs scratch;
+
+    /* Whether this Kalman filter should print debug output */
+
+    bool kalman_debug_state;
+
 };
 
 void pitch_kalman_init(struct pitch_kalman_filter *p, double dt, struct kalman_coeffs stable,

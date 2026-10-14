@@ -1,0 +1,109 @@
+# clang-format configuration for xwax <https://xwax.org>
+#
+# Linux kernel style, with the differences found in xwax:
+#
+#   - 4-space indentation, never tabs
+#   - a control statement whose condition spans several lines puts
+#     its opening '{' on a line of its own
+#   - long arithmetic/bitwise expressions break before the operator
+#   - #include order is left exactly as written
+#
+# Requires clang-format 20 or later (see "Macros" below).
+
+BasedOnStyle: LLVM
+Language: Cpp
+ColumnLimit: 100
+
+# Indentation
+IndentWidth: 4
+ContinuationIndentWidth: 4
+UseTab: Never
+TabWidth: 8
+IndentCaseLabels: false
+IndentGotoLabels: false
+IndentPPDirectives: None
+
+# Braces: functions on their own line, everything else attached,
+# except after a multi-line if/for/while condition
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterControlStatement: MultiLine
+  AfterEnum: false
+  AfterFunction: true
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeElse: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+
+# No short constructs squeezed onto one line
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+
+# Line wrapping
+AlignAfterOpenBracket: Align
+AlignOperands: DontAlign
+BinPackArguments: true
+BinPackParameters: true
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: false
+BreakStringLiterals: false
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 100
+
+# xwax does not column-align declarations, assignments or comments
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+AlignConsecutiveMacros: None
+AlignEscapedNewlines: DontAlign
+AlignTrailingComments: false
+SpacesBeforeTrailingComments: 1
+
+# Spacing
+PointerAlignment: Right
+SpaceAfterCStyleCast: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true
+  AfterForeachMacros: false
+  AfterFunctionDeclarationName: false
+  AfterFunctionDefinitionName: false
+  AfterIfMacros: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+Cpp11BracedListStyle: false
+
+# Blank lines and comments
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+ReflowComments: false
+
+# Includes: system headers first, then local, in the author's order
+SortIncludes: Never
+IncludeBlocks: Preserve
+
+# Project macros
+ForEachMacros:
+  - list_for_each
+  - list_for_each_safe
+
+StatementMacros:
+  - debug
+
+# alsa.c: CHECK(name, r) is used both as a statement and as the head
+# of a block ("CHECK(...) { ... }"). Treating it as empty keeps the
+# brace attached in both cases. Needs clang-format >= 20; remove these
+# two lines on older versions.
+Macros:
+  - CHECK(name, r)=
+
