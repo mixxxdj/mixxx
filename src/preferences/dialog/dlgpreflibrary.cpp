@@ -145,8 +145,8 @@ DlgPrefLibrary::DlgPrefLibrary(
 #ifdef __OPUS__
     builtInFormatsStr += ", Opus";
 #endif
-#ifdef __MODPLUG__
-    builtInFormatsStr += ", ModPlug";
+#ifdef __OPENMPT__
+    builtInFormatsStr += ", OpenMPT";
 #endif
 #ifdef __WV__
     builtInFormatsStr += ", WavPack";
