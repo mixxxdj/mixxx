@@ -12,6 +12,17 @@
 
 namespace {
 
+/// Column of the color swatch, holding a plain QStandardItem.
+constexpr int kColorColumn = 0;
+/// Column of the hotcue number assignment, holding a HotcueIndexListItem.
+constexpr int kHotcueIndexColumn = 1;
+
+/// Mime type used to remember the row a drag operation was started at.
+/// QStandardItemModel's own mime data only encodes the item contents, not
+/// their position in the model.
+const QString kDragSourceRowMimeType =
+        QStringLiteral("application/x-mixxx-color-palette-editor-drag-row");
+
 QIcon toQIcon(const QColor& color) {
     QPixmap pixmap(50, 50);
     pixmap.fill(color);
@@ -19,6 +30,12 @@ QIcon toQIcon(const QColor& color) {
 }
 
 HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* pFrom) {
+    // QStandardItem::item() returns nullptr for empty cells and
+    // QStandardItem::type() is a virtual function, i.e. it dereferences the
+    // (null) pointer before the assertion could be evaluated.
+    if (!pFrom) {
+        return nullptr;
+    }
     VERIFY_OR_DEBUG_ASSERT(pFrom->type() == QStandardItem::UserType) {
         return nullptr;
     }
@@ -59,15 +76,94 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
             });
 }
 
+QMimeData* ColorPaletteEditorModel::mimeData(const QModelIndexList& indexes) const {
+    QMimeData* pMimeData = QStandardItemModel::mimeData(indexes);
+    if (pMimeData && !indexes.isEmpty()) {
+        // Rows are always dragged as a whole (see selectionBehavior() of the
+        // view), so all indexes belong to the same row.
+        pMimeData->setData(
+                kDragSourceRowMimeType,
+                QByteArray::number(indexes.first().row()));
+    }
+    return pMimeData;
+}
+
 bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
     // Always move the entire row, and don't allow column "shifting"
     Q_UNUSED(column);
-    return QStandardItemModel::dropMimeData(data, action, row, 0, parent);
+
+    // Rows can only be reordered, never copied or dropped into another item.
+    if (action != Qt::MoveAction || !data ||
+            !data->hasFormat(kDragSourceRowMimeType)) {
+        return false;
+    }
+
+    bool bSourceRowValid = false;
+    const int sourceRow = data->data(kDragSourceRowMimeType).toInt(&bSourceRowValid);
+    if (!bSourceRowValid || sourceRow < 0 || sourceRow >= rowCount()) {
+        return false;
+    }
+
+    // The row is inserted above `destinationRow`; the source row is removed
+    // afterwards by QAbstractItemViewPrivate::clearOrRemove(), which is why the
+    // row is inserted here and not moved.
+    int destinationRow = row;
+    if (destinationRow < 0) {
+        // The view passes row == -1 if the row was dropped onto another item
+        // or onto the empty area below the last row. Note that a valid parent
+        // index must not be forwarded to QStandardItemModel::insertRows(),
+        // otherwise the row would be inserted below the item instead of being
+        // added to the list of colors.
+        destinationRow = parent.isValid() ? parent.row() : rowCount();
+    }
+    destinationRow = std::clamp(destinationRow, 0, rowCount());
+
+    // QStandardItemModel::dropMimeData() must not be used here: it recreates
+    // the dragged items via QStandardItemModelPrivate::createItem(), which
+    // returns plain QStandardItem objects because no item prototype is set.
+    // The inserted row would therefore lose its HotcueIndexListItem including
+    // the hotcue index list. Moreover insertRows() pre-fills the new row with
+    // null items and dropMimeData() only replaces those cells for which it can
+    // compute a valid index, which may leave a row with a missing hotcue index
+    // item behind. Essentially, when saving the palette  toHotcueIndexListItem()
+    // would return early due to a null item and the color row would be lost.
+    insertRow(destinationRow, cloneRow(sourceRow));
+    return true;
+}
+
+QList<QStandardItem*> ColorPaletteEditorModel::cloneRow(int row) const {
+    QList<QStandardItem*> items;
+    items.reserve(columnCount());
+    for (int column = 0; column < columnCount(); ++column) {
+        items.append(cloneItem(item(row, column), column));
+    }
+    return items;
+}
+
+QStandardItem* ColorPaletteEditorModel::cloneItem(QStandardItem* pSource, int column) const {
+    if (column == kHotcueIndexColumn) {
+        // Copying a HotcueIndexListItem with QStandardItem::clone() would
+        // return a plain QStandardItem, dropping both the item type and the
+        // hotcue index list.
+        HotcueIndexListItem* pHotcueIndexItem = new HotcueIndexListItem();
+        if (const auto* pSourceHotcueIndexItem = toHotcueIndexListItem(pSource)) {
+            pHotcueIndexItem->setHotcueIndexList(
+                    pSourceHotcueIndexItem->getHotcueIndexList());
+        }
+        pHotcueIndexItem->setEditable(true);
+        pHotcueIndexItem->setDropEnabled(false);
+        return pHotcueIndexItem;
+    }
+
+    QStandardItem* pClone = pSource ? pSource->clone() : new QStandardItem();
+    pClone->setEditable(false);
+    pClone->setDropEnabled(false);
+    return pClone;
 }
 
 bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVariant& value, int role) {
     setDirty(true);
-    if (modelIndex.isValid() && modelIndex.column() == 1) {
+    if (modelIndex.isValid() && modelIndex.column() == kHotcueIndexColumn) {
         const bool initialAttemptSuccessful = QStandardItemModel::setData(modelIndex, value, role);
 
         const auto* pHotcueIndexListItem = toHotcueIndexListItem(itemFromIndex(modelIndex));
@@ -87,7 +183,7 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
         constErase(&hotcueIndexList, hotcueIndexList.constBegin(), endLower);
 
         for (int i = 0; i < rowCount(); ++i) {
-            auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
+            auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, kHotcueIndexColumn));
 
             if (pHotcueIndexListItem == nullptr) {
                 continue;
@@ -106,7 +202,7 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
 }
 
 void ColorPaletteEditorModel::setColor(int row, const QColor& color) {
-    QStandardItem* pItem = item(row, 0);
+    QStandardItem* pItem = item(row, kColorColumn);
     if (pItem) {
         pItem->setIcon(toQIcon(color));
         pItem->setText(color.name());
@@ -154,10 +250,10 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
     QList<mixxx::RgbColor> colors;
     QMap<int, int> hotcueColorIndices;
     for (int i = 0; i < rowCount(); i++) {
-        QStandardItem* pColorItem = item(i, 0);
+        QStandardItem* pColorItem = item(i, kColorColumn);
+        const auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, kHotcueIndexColumn));
 
-        const auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, 1));
-        if (!pHotcueIndexItem) {
+        if (!pColorItem || !pHotcueIndexItem) {
             continue;
         }
 
@@ -182,6 +278,13 @@ HotcueIndexListItem::HotcueIndexListItem(const QList<int>& hotcueList)
         : QStandardItem(), m_hotcueIndexList(hotcueList) {
     std::sort(m_hotcueIndexList.begin(), m_hotcueIndexList.end());
 }
+
+HotcueIndexListItem* HotcueIndexListItem::clone() const {
+    // QStandardItem::clone() would return a plain QStandardItem, losing both
+    // the item type and the hotcue index list.
+    return new HotcueIndexListItem(m_hotcueIndexList);
+}
+
 QVariant HotcueIndexListItem::data(int role) const {
     switch (role) {
     case Qt::DisplayRole:
