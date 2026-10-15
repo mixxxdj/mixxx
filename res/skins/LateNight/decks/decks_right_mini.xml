@@ -7,7 +7,7 @@
     <Children>
 
       <SingletonContainer>
-        <ObjectName>Deck2_Mini</ObjectName>
+        <ObjectName>Deck3_Mini</ObjectName>
       </SingletonContainer>
 
       <WidgetGroup>
