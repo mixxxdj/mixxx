@@ -6,6 +6,8 @@
  * Code adapted from the Denon Prime 4 mapping by Levi Williams
  * (Whanake / whanake-music) and RattyDAVE.
  *
+ * Linux testing and some tweaks by Phil Willoughby (DJ WillerZ, github @willerz).
+ *
  * Free and open source under the GNU General Public License v2 or later, like
  * Mixxx itself: you're welcome to use it, change it and share it. If you share
  * changes, please keep them open source too.
@@ -58,6 +60,7 @@ const lightingButtonAction = engine.getSetting("lightingButtonAction");
 // Wash built from Echo) or "custom" (each button sweeps the effect at its
 // position with the channel knob)
 const sweepFxCustom = engine.getSetting("sweepFxMode") === "custom";
+const sweepFxCanDisable = engine.getSetting("sweepFxCanDisable") === "disable";
 
 // Hotcue pad layers:
 const wantsStemsLayer = engine.getSetting("hotCueStemsLayer");
@@ -574,9 +577,10 @@ SCLive4.init = function(_id, _debug) {
     });
 
     // Sweep FX buttons (Filter, Noise, Echo, Wash): choose what every
-    // channel's filter knob sweeps. One is active at a time (bright); press
-    // the active one again to turn it off (no sweep effect; the filter knobs
-    // then do nothing until another is chosen).
+    // channel's filter knob sweeps. One is active at a time (bright);
+    // Optionally, if the preference is enabled: press the active one
+    // again to turn it off (no sweep effect; the filter knobs then do
+    // nothing until another is chosen).
     SCLive4.sweepFx = {};
     const sweepFxCodes = {filter: 0x15, echo: 0x16, noise: 0x17, wash: 0x18};
     Object.keys(sweepFxCodes).forEach(name => {
@@ -584,7 +588,11 @@ SCLive4.init = function(_id, _debug) {
             midi: [0x9F, sweepFxCodes[name]],
             input: function(channel, control, value, status, _group) {
                 if (this.isPress(channel, control, value, status)) {
-                    SCLive4.selectSweepFx(name === SCLive4.activeSweepFx ? null : name);
+                    if (sweepFxCanDisable) {
+                        SCLive4.selectSweepFx(name === SCLive4.activeSweepFx ? null : name);
+                    } else {
+                        SCLive4.selectSweepFx(name);
+                    }
                 }
             },
         });

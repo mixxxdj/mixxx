@@ -87,6 +87,13 @@
                 <value label="Default SCL4 Sweep FX" default="true">default</value>
                 <value label="Custom Sweep FX">custom</value>
             </option>
+            <option variable="sweepFxDisable" type="enum" label="Should pressing the active sweep FX button disable all sweep FX or do nothing?">
+                <description>
+                    Default follows Engine OS behavior; there's always a sweep effect enabled.
+                </description>
+                <value label="No (Denon)" default="true">nothing</value>
+                <value label="Yes">disable</value>
+            </option>
         </group>
         <group label="Fader Echo">
             <option variable="faderEchoMode" type="enum" label="Fader Echo Style (when activated)">
