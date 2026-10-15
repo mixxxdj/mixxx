@@ -695,6 +695,16 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     const bool updateMetadataFromSource =
             shouldUpdateTrackMetadataFromSource(sourceSyncStatus, mode);
 
+    // Parsing the file tags below is expensive and requires read
+    // access to the file which might reside on slow storage. Skip it
+    // if the track is already synchronized and all properties that
+    // could be merged lazily are already present anyway.
+    if (sourceSyncStatus == mixxx::TrackRecord::SourceSyncStatus::Synchronized &&
+            !updateMetadataFromSource &&
+            !m_pTrack->mayMergeExtraMetadataFromSource()) {
+        return UpdateTrackFromSourceResult::NotUpdated;
+    }
+
     // Decide if cover art needs to be re-imported
     if (updateMetadataFromSource) {
         const auto coverInfo = m_pTrack->getCoverInfo();
