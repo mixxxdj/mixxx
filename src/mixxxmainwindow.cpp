@@ -23,6 +23,10 @@
 #include "widget/winitialglwidget.h"
 #endif
 
+#ifdef MIXXX_USE_QML
+#include "qml/qmlapplicationproxy.h"
+#endif
+
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "coreservices.h"
 #include "defs_urls.h"
@@ -46,8 +50,10 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
+#include "skin/defaultstylesheet.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/skinloader.h"
+#include "soundio/audiodeviceassistant.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
@@ -392,6 +398,27 @@ void MixxxMainWindow::initialize() {
     // The user has either reconfigured devices or accepted no outputs,
     // so it's now safe to write the new config to disk.
     m_pCoreServices->getSoundManager()->getConfig().writeToDisk();
+
+    // Watch for devices that are connected or disconnected while Mixxx is
+    // running, so that e.g. the sound card of a DJ controller can be used
+    // without restarting Mixxx.
+    m_pAudioDeviceAssistant =
+            std::make_unique<mixxx::AudioDeviceAssistant>(this, m_pCoreServices.get());
+    connect(m_pMenuBar,
+            &WMainMenuBar::checkAudioDevices,
+            this,
+            [this]() {
+                if (m_pAudioDeviceAssistant) {
+                    m_pAudioDeviceAssistant->checkForDevicesNow(true);
+                }
+            });
+#ifdef MIXXX_USE_QML
+    mixxx::qml::QmlApplicationProxy::registerAudioDeviceCheckCallback([this]() {
+        if (m_pAudioDeviceAssistant) {
+            m_pAudioDeviceAssistant->checkForDevicesNow(true);
+        }
+    });
+#endif
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
@@ -1101,6 +1128,14 @@ void MixxxMainWindow::slotDeveloperToolsClosed() {
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
+#ifdef MIXXX_USE_QML
+    // QML skins are shown in the window created by the QML application engine,
+    // so apply the state there instead of this (hidden) widget window.
+    if (mixxx::qml::QmlApplicationProxy::setWindowFullScreen(toggle)) {
+        m_pMenuBar->onFullScreenStateChange(toggle);
+        return;
+    }
+#endif
     if (isFullScreen() == toggle) {
         return;
     }
@@ -1416,15 +1451,8 @@ bool MixxxMainWindow::loadConfiguredSkin() {
 
 /// Try to load default styles that can be overridden by skins
 void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
-    const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
-    QFile file(resPath + "/skins/default.qss");
-    if (file.open(QIODevice::ReadOnly)) {
-        QByteArray fileBytes = file.readAll();
-        QString style = QString::fromUtf8(fileBytes);
-        setStyleSheet(style);
-    } else {
-        qWarning() << "Failed to load default skin styles /skins/default.qss!";
-    }
+    setStyleSheet(mixxx::skin::loadDefaultStyleSheet(
+            m_pCoreServices->getSettings()->getResourcePath()));
 }
 
 /// Catch ToolTip and WindowStateChange events

@@ -43,6 +43,7 @@ Item {
     readonly property string preferencesDefaultShortcut: Qt.platform.os === "osx" ? "Ctrl+," : "Ctrl+P"
     property int shortcutRevision: 0
     property alias viewFullScreen: viewFullScreenAction
+    property alias viewAudioSetup: viewAudioSetupAction
     property alias viewMaximizeLibrary: viewMaximizeLibraryAction
     property alias viewShowAutoDJ: viewShowAutoDJAction
     property alias viewShowCoverArt: viewShowCoverArtAction
@@ -54,6 +55,15 @@ Item {
     signal focusLibrarySearchRequested
 
     function configuredMenuShortcut(command, defaultShortcut, revision) {
+        // While the user is typing, no shortcut may be armed: Qt resolves them
+        // before the key reaches the focused item, so a key that is also a
+        // shortcut would be swallowed instead of being typed, e.g. the Space of
+        // "Maximize Library". Qt registers the shortcut of the Action as well as
+        // the one of the Shortcut objects of the skins, so it is cleared here,
+        // in the single place where all of them are set.
+        if (Mixxx.Application.textInputFocused) {
+            return "";
+        }
         return Mixxx.Application.menuShortcut(command, defaultShortcut);
     }
 
@@ -227,6 +237,16 @@ Item {
         text: qsTranslate("WMainMenuBar", "Show Auto DJ")
 
         onTriggered: Mixxx.Library.showAutoDJ()
+    }
+    Action {
+        id: viewAudioSetupAction
+
+        // Looks for connected devices again, which is what the assistant does on
+        // its own when it notices that a device was connected.
+        shortcut: root.configuredMenuShortcut("ViewMenu_AudioSetup", "Ctrl+8", root.shortcutRevision)
+        text: qsTranslate("WMainMenuBar", "&Audio Setup Assistant")
+
+        onTriggered: Mixxx.Application.checkAudioDevices()
     }
     Action {
         id: viewFullScreenAction

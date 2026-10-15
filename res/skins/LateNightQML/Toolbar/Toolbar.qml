@@ -1,4 +1,4 @@
-pragma ComponentBehavior: Bound
+﻿pragma ComponentBehavior: Bound
 
 import "../LateNightTheme"
 import "../../../qml" as Shared
@@ -44,6 +44,64 @@ Rectangle {
     property ToolbarSettingsPopup recentlyClosedPopup: null
     property MouseArea recentlyClosedPopupButton: null
     property double recentlyClosedPopupTimestamp: 0
+
+    property alias showTrackAdvisor: showTrackAdvisorButton.checked
+
+    /// The stem generator, exposed through Mixxx.Core because it lives in the
+    /// engine library and not in the QML module, see
+    /// QmlCoreServices::stemGenerator.
+    readonly property var stemGenerator: Mixxx.Core.stemGenerator
+    /// Snapshot of the stem queue. The generator reports when it changes, so the
+    /// snapshot is rebuilt then instead of reading the model roles directly.
+    property var stemJobs: []
+    readonly property var runningStemJob: {
+        for (const job of root.stemJobs) {
+            // StemQueueModel::State::Running
+            if (job.state === 1) {
+                return job;
+            }
+        }
+        return null;
+    }
+    readonly property int failedStemCount: {
+        let failed = 0;
+        for (const job of root.stemJobs) {
+            // StemQueueModel::State::Failed
+            if (job.state === 3) {
+                failed++;
+            }
+        }
+        return failed;
+    }
+    readonly property string stemStatusText: {
+        if (root.runningStemJob) {
+            return "generando " + root.runningStemJob.progress + " %";
+        }
+        if (root.stemGenerator.waitingForPlayback) {
+            return "en espera";
+        }
+        if (root.stemGenerator.pendingCount > 0) {
+            return root.stemGenerator.pendingCount + " en cola";
+        }
+        return "";
+    }
+
+    function refreshStemJobs() {
+        const queue = root.stemGenerator.queue;
+        const jobs = [];
+        const rowCount = queue ? queue.rowCount() : 0;
+        for (let row = 0; row < rowCount; row++) {
+            jobs.push(queue.get(row));
+        }
+        root.stemJobs = jobs;
+    }
+
+    function openStemsPopup(button) {
+        closeSettingsPopups();
+        stemsPopup.anchorButton = button;
+        positionPopupForButton(stemsPopup, button);
+        stemsPopup.open();
+    }
 
     signal focusLibrarySearchRequested
 
@@ -136,6 +194,7 @@ Rectangle {
         showEffectRackControl.value = 1.0;
         showMicAuxControl.value = 0.0;
         showSamplersControl.value = 0.0;
+        showTrackAdvisorControl.value = 0.0;
         setControlValueIfInitialized(show4DecksControl, 0.0);
         showMaximizedLibraryControl.value = 0.0;
         maxLibraryDecksControl.value = 1.0;
@@ -289,6 +348,33 @@ Rectangle {
         return actionText.replace(/&&/g, "\u0000").replace(/&/g, "").replace(/\u0000/g, "&").replace(/\u200c/g, "");
     }
 
+    Connections {
+        function onQueueChanged() {
+            root.refreshStemJobs();
+        }
+
+        target: root.stemGenerator
+    }
+
+    Connections {
+        // Progress is reported through dataChanged, which does not change the
+        // number of jobs and therefore does not emit queueChanged.
+        function onDataChanged() {
+            root.refreshStemJobs();
+        }
+
+        target: root.stemGenerator ? root.stemGenerator.queue : null
+    }
+
+    Component.onCompleted: {
+        root.refreshStemJobs();
+        // Knowing whether a CUDA GPU is there decides if starting a job needs a
+        // confirmation, so the environment is checked once at startup.
+        if (!root.stemGenerator.ready && !root.stemGenerator.probing) {
+            root.stemGenerator.probe();
+        }
+    }
+
     color: LateNightTheme.toolbarRootBackgroundColor
     height: 26
 
@@ -349,6 +435,16 @@ Rectangle {
 
         onValueChanged: {
             showSamplersButton.checked = value > 0;
+        }
+    }
+    Mixxx.ControlProxy {
+        id: showTrackAdvisorControl
+
+        group: "[Skin]"
+        key: "show_track_advisor"
+
+        onValueChanged: {
+            showTrackAdvisorButton.checked = value > 0;
         }
     }
     Mixxx.ControlProxy {
@@ -558,6 +654,12 @@ Rectangle {
 
         group: "[Skin]"
         key: "show_4effectunits"
+    }
+    Mixxx.ControlProxy {
+        id: showBeatgridControlsControl
+
+        group: "[Skin]"
+        key: "show_beatgrid_controls"
     }
     Mixxx.ControlProxy {
         id: showSuperKnobsControl
@@ -879,6 +981,74 @@ Rectangle {
                     }
                 }
             }
+            RowLayout {
+                Layout.alignment: Qt.AlignVCenter
+                spacing: -2
+
+                LateNightToolbarButton {
+                    id: showTrackAdvisorButton
+
+                    buttonWidth: 89
+                    text: "ADVISOR"
+
+                    Component.onCompleted: {
+                        checked = showTrackAdvisorControl.value > 0;
+                    }
+
+                    onActivated: {
+                        showTrackAdvisorControl.value = checked ? 1.0 : 0.0;
+                    }
+                }
+            }
+            RowLayout {
+                Layout.alignment: Qt.AlignVCenter
+                spacing: -2
+
+                LateNightToolbarButton {
+                    id: stemsButton
+
+                    buttonWidth: 72
+                    text: "STEMS"
+
+                    Component.onCompleted: {
+                        checked = root.stemGenerator.enabled;
+                    }
+
+                    Connections {
+                        function onEnabledChanged() {
+                            stemsButton.checked = root.stemGenerator.enabled;
+                        }
+
+                        target: root.stemGenerator
+                    }
+
+                    onActivated: {
+                        // The button always opens the panel: it shows whether the
+                        // separation would run on the GPU or on the CPU and what
+                        // is in the queue, and it holds the enable switch.
+                        checked = root.stemGenerator.enabled;
+                        root.openStemsPopup(stemsButton);
+                    }
+                }
+                Text {
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.leftMargin: 5
+                    color: root.stemGenerator.waitingForPlayback ? LateNightTheme.mixerAccentOrange : LateNightTheme.toolbarButtonInactiveTextColor
+                    font.family: LateNightTheme.fontFamily
+                    font.pixelSize: 10
+                    text: root.stemStatusText
+                    visible: text.length > 0
+                }
+                Text {
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.leftMargin: 5
+                    color: LateNightTheme.mixerAccentRed
+                    font.family: LateNightTheme.fontFamily
+                    font.pixelSize: 10
+                    text: root.failedStemCount + " error"
+                    visible: root.failedStemCount > 0
+                }
+            }
         }
         RowLayout {
             Layout.alignment: Qt.AlignVCenter
@@ -1190,6 +1360,10 @@ Rectangle {
             }
             ToolbarAppMenuAction {
                 action: root.applicationMenuActions.viewFullScreen
+                visible: root.activeAppMenuSection === "View"
+            }
+            ToolbarAppMenuAction {
+                action: root.applicationMenuActions.viewAudioSetup
                 visible: root.activeAppMenuSection === "View"
             }
             ToolbarAppMenuAction {
@@ -1629,8 +1803,13 @@ Rectangle {
             control: showWaveformsControl
 
             ToolbarMenuToggle {
-                control: hotcueTimingShiftControl
+                control: showBeatgridControlsControl
                 enabled: showWaveformsControl.value > 0
+                text: "Beatgrid Buttons"
+            }
+            ToolbarMenuToggle {
+                control: hotcueTimingShiftControl
+                enabled: showBeatgridControlsControl.value > 0
                 text: "Hotcue Shift Buttons"
             }
             ToolbarMenuToggle {
@@ -1697,6 +1876,160 @@ Rectangle {
             ToolbarMenuToggle {
                 control: showSuperKnobsControl
                 text: "Super Knobs"
+            }
+        }
+    }
+    ToolbarSettingsPopup {
+        id: stemsPopup
+
+        minimumWidth: 470
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.bottomMargin: 7
+            Layout.leftMargin: 7
+            Layout.rightMargin: 7
+            Layout.topMargin: 4
+            spacing: 6
+
+            Text {
+                color: LateNightTheme.toolbarSettingsTextColor
+                font.family: LateNightTheme.fontFamily
+                font.pixelSize: 13
+                font.weight: Font.DemiBold
+                text: "GENERACIÓN DE STEMS"
+            }
+            Text {
+                Layout.fillWidth: true
+                color: root.stemGenerator.gpuAvailable ? LateNightTheme.mixerQuickEffectActiveColor : LateNightTheme.mixerAccentOrange
+                font.family: LateNightTheme.fontFamily
+                font.pixelSize: 12
+                text: {
+                    const generator = root.stemGenerator;
+                    if (generator.probing) {
+                        return "Comprobando el entorno…";
+                    }
+                    if (generator.gpuAvailable) {
+                        return "GPU lista" + (generator.gpuName.length > 0 ? " (" + generator.gpuName + ")" : "") + ": la separación va a unas 10× el tiempo real, unos 20 s por canción de 4 minutos. Con la CPU tardaría unas 2,4× el tiempo real, unos 100 s de esa misma canción.";
+                    }
+                    if (generator.ready) {
+                        return "Sin GPU CUDA: la separación usaría la CPU (unas 2,4× el tiempo real, unos 100 s por canción de 4 minutos) y se pospone mientras suena música. Se pide confirmación antes de arrancar un trabajo.";
+                    }
+                    return "Entorno sin verificar: pulsa COMPROBAR para saber si hay GPU.";
+                }
+                wrapMode: Text.WordWrap
+            }
+            Text {
+                Layout.fillWidth: true
+                color: LateNightTheme.mixerAccentOrange
+                font.family: LateNightTheme.fontFamily
+                font.pixelSize: 12
+                text: "Falta configurar el entorno:\n• " + root.stemGenerator.probeErrors.join("\n• ")
+                visible: root.stemGenerator.probeErrors.length > 0
+                wrapMode: Text.WordWrap
+            }
+            Text {
+                Layout.fillWidth: true
+                color: LateNightTheme.toolbarMenuDisabledTextColor
+                elide: Text.ElideMiddle
+                font.family: LateNightTheme.fontFamily
+                font.pixelSize: 11
+                text: "Intérprete: " + (root.stemGenerator.pythonPath.length > 0 ? root.stemGenerator.pythonPath : "(automático)")
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 6
+
+                ToolbarMenuInlineChoice {
+                    checked: root.stemGenerator.enabled
+                    minimumWidth: 96
+                    text: (root.stemGenerator.enabled ? "\u2714" : "\u2610") + " ACTIVAR"
+
+                    onClicked: {
+                        root.stemGenerator.enabled = !root.stemGenerator.enabled;
+                    }
+                }
+                ToolbarMenuInlineChoice {
+                    minimumWidth: 88
+                    text: "COMPROBAR"
+
+                    onClicked: root.stemGenerator.probe()
+                }
+                ToolbarMenuInlineChoice {
+                    enabled: root.stemGenerator.pendingCount > 0
+                    minimumWidth: 78
+                    text: "CANCELAR"
+
+                    onClicked: root.stemGenerator.cancel()
+                }
+                ToolbarMenuInlineChoice {
+                    minimumWidth: 92
+                    text: "ABRIR CARPETA"
+
+                    onClicked: root.stemGenerator.openCacheFolder()
+                }
+            }
+            Text {
+                Layout.fillWidth: true
+                color: LateNightTheme.toolbarSettingsTextColor
+                font.family: LateNightTheme.fontFamily
+                font.pixelSize: 12
+                text: root.stemGenerator.queueStatus
+                visible: text.length > 0
+                wrapMode: Text.WordWrap
+            }
+            ListView {
+                id: stemsJobList
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: Math.min(132, contentHeight)
+                clip: true
+                model: root.stemGenerator.queue
+                spacing: 3
+                visible: count > 0
+
+                delegate: ColumnLayout {
+                    id: stemJob
+
+                    required property string error
+                    required property int progress
+                    required property int state
+                    required property string status
+                    required property string title
+
+                    width: stemsJobList.width
+                    spacing: 1
+
+                    Text {
+                        Layout.fillWidth: true
+                        color: stemJob.state === 3 ? LateNightTheme.mixerAccentRed : LateNightTheme.toolbarSettingsTextColor
+                        elide: Text.ElideRight
+                        font.family: LateNightTheme.fontFamily
+                        font.pixelSize: 11
+                        text: stemJob.title + "  ·  " + stemJob.status
+                    }
+                    Rectangle {
+                        Layout.fillWidth: true
+                        color: LateNightTheme.toolbarButtonInactiveBackgroundColor
+                        height: 4
+                        visible: stemJob.state === 1
+
+                        Rectangle {
+                            color: LateNightTheme.mixerAccentCyan
+                            height: parent.height
+                            width: parent.width * Math.min(1, Math.max(0, stemJob.progress / 100))
+                        }
+                    }
+                    Text {
+                        Layout.fillWidth: true
+                        color: LateNightTheme.mixerAccentOrange
+                        elide: Text.ElideRight
+                        font.family: LateNightTheme.fontFamily
+                        font.pixelSize: 11
+                        text: stemJob.error
+                        visible: text.length > 0
+                    }
+                }
             }
         }
     }

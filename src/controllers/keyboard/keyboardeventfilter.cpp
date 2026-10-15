@@ -44,7 +44,9 @@ QKeySequence safeKeySequence(const QString& str) {
 
 mixxx::Logger kLogger("KeyboardEventFilter");
 
-bool isEditableTextInput(QObject* object) {
+} // anonymous namespace
+
+bool KeyboardEventFilter::isEditableTextInput(QObject* object) {
     for (QObject* current = object; current; current = current->parent()) {
         if (auto* spinBox = qobject_cast<QAbstractSpinBox*>(current)) {
             return !spinBox->isReadOnly();
@@ -60,7 +62,16 @@ bool isEditableTextInput(QObject* object) {
 
     return false;
 }
-} // anonymous namespace
+
+bool KeyboardEventFilter::isTextInputFocused() {
+    return isEditableTextInput(QGuiApplication::focusObject()) ||
+            (s_embeddedTextInputFocusQuery && s_embeddedTextInputFocusQuery());
+}
+
+void KeyboardEventFilter::registerEmbeddedTextInputFocusQuery(
+        std::function<bool()> query) {
+    s_embeddedTextInputFocusQuery = std::move(query);
+}
 
 KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
         const QLocale& locale,
@@ -107,7 +118,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     } else if (e->type() == QEvent::KeyPress) {
         QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
 
-        if (isEditableTextInput(QGuiApplication::focusObject())) {
+        if (isTextInputFocused()) {
             return false;
         }
 
@@ -479,7 +490,8 @@ void KeyboardEventFilter::createKeyboardConfig() {
             kLogger.debug() << "Found and will use default keyboard mapping" << keyboardFile;
         } else {
             kLogger.debug() << keyboardFile << " not found, trying en_US.kbd.cfg";
-            keyboardFile = mappingFilePath(resourcePath, QStringLiteral("en_US"));
+            keyboardFile = mappingFilePath(
+                    QString(resourcePath).append("keyboard/"), QStringLiteral("en_US"));
             if (!QFile::exists(keyboardFile)) {
                 kLogger.warning() << keyboardFile << " not found, starting without shortcuts";
                 keyboardFile = "";

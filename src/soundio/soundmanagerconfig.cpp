@@ -104,6 +104,8 @@ bool SoundManagerConfig::readFromDisk() {
 bool SoundManagerConfig::validateDevices() {
     clearOutputs();
     clearInputs();
+    m_substitutedDevices.clear();
+    m_fallbackDevices.clear();
 
     if (m_doc.isNull()) {
         return false;
@@ -118,6 +120,13 @@ bool SoundManagerConfig::validateDevices() {
 
     const QList<SoundDevicePointer> soundDevices =
             m_pSoundManager->getDeviceList(m_api, true, true);
+
+    // Routing of configured devices that are not connected right now. It is only
+    // added to the configuration if there is no other device left to play
+    // through, see the fallback after this loop.
+    QMultiHash<SoundDeviceId, AudioOutput> disconnectedOutputs;
+    QMultiHash<SoundDeviceId, AudioInput> disconnectedInputs;
+    bool anyConnectedOutputDevice = false;
 
     for (int i = 0; i < devElements.count(); ++i) {
         QDomElement devElement(devElements.at(i).toElement());
@@ -152,9 +161,9 @@ bool SoundManagerConfig::validateDevices() {
         QDomNodeList outElements(devElement.elementsByTagName(xmlElementOutput));
         QDomNodeList inElements(devElement.elementsByTagName(xmlElementInput));
 
-        if (devicesMatchingByName == 0) {
-            continue;
-        } else if (devicesMatchingByName == 1) {
+        const bool deviceConnected = devicesMatchingByName > 0;
+
+        if (deviceConnected && devicesMatchingByName == 1) {
             // There is only one device with this name, so it is unambiguous
             // which it is. Neither the alsaHwDevice nor deviceIndex are
             // very reliable as persistent identifiers across restarts of Mixxx.
@@ -167,7 +176,7 @@ bool SoundManagerConfig::validateDevices() {
                     deviceIdFromFile.deviceIndex = hardwareDeviceId.deviceIndex;
                 }
             }
-        } else {
+        } else if (deviceConnected) {
             // It is not clear which hardwareDeviceId corresponds to the device
             // listed in the configuration file using only the name.
             if (!deviceIdFromFile.alsaHwDevice.isEmpty()) {
@@ -203,6 +212,10 @@ bool SoundManagerConfig::validateDevices() {
             }
         }
 
+        if (deviceConnected && outElements.count() > 0) {
+            anyConnectedOutputDevice = true;
+        }
+
         for (int j = 0; j < outElements.count(); ++j) {
             QDomElement outElement(outElements.at(j).toElement());
             if (outElement.isNull()) {
@@ -224,7 +237,11 @@ bool SoundManagerConfig::validateDevices() {
                 continue;
             }
 
-            addOutput(deviceIdFromFile, out);
+            if (deviceConnected) {
+                addOutput(deviceIdFromFile, out);
+            } else {
+                disconnectedOutputs.insert(deviceIdFromFile, out);
+            }
         }
         for (int j = 0; j < inElements.count(); ++j) {
             QDomElement inElement(inElements.at(j).toElement());
@@ -246,8 +263,56 @@ bool SoundManagerConfig::validateDevices() {
             if (dupe) {
                 continue;
             }
-            addInput(deviceIdFromFile, in);
+
+            if (deviceConnected) {
+                addInput(deviceIdFromFile, in);
+            } else {
+                disconnectedInputs.insert(deviceIdFromFile, in);
+            }
         }
+    }
+
+    if (!anyConnectedOutputDevice) {
+        // Nothing that can play is configured: either the configured output
+        // device is not connected, e.g. a DJ controller with a built-in sound
+        // card that has been unplugged, or no output device is configured at all.
+        // Fall back to the output device the operating system uses by default so
+        // Mixxx keeps playing instead of running silently, the way other DJ
+        // software does.
+        SoundDevicePointer pFallbackDevice = m_pSoundManager->getDefaultOutputDevice();
+        if (pFallbackDevice) {
+            if (disconnectedOutputs.isEmpty()) {
+                qWarning() << "No output device configured, using the default"
+                           << pFallbackDevice->getDisplayName();
+            } else {
+                qWarning() << "Configured output device is not connected, using the default"
+                           << pFallbackDevice->getDisplayName();
+            }
+            // Only the main output is added: almost every device has two output
+            // channels, while e.g. a separate headphone output may not fit.
+            addOutput(pFallbackDevice->getDeviceId(),
+                    AudioOutput(AudioPathType::Main,
+                            0,
+                            mixxx::audio::ChannelCount::stereo()));
+            m_fallbackDevices.insert(pFallbackDevice->getDeviceId());
+
+            // The device the user configured keeps its routing, so it is used
+            // again as soon as it is connected.
+            for (auto it = disconnectedOutputs.constBegin();
+                    it != disconnectedOutputs.constEnd();
+                    ++it) {
+                addOutput(it.key(), it.value());
+                m_substitutedDevices.insert(it.key());
+            }
+            for (auto it = disconnectedInputs.constBegin();
+                    it != disconnectedInputs.constEnd();
+                    ++it) {
+                addInput(it.key(), it.value());
+                m_substitutedDevices.insert(it.key());
+            }
+        }
+        // Without a default output device there is nothing to fall back to, so
+        // the previous behaviour is kept and the user is asked to pick a device.
     }
     return true;
 }
@@ -265,6 +330,10 @@ bool SoundManagerConfig::writeToDisk() const {
 
     const QSet<SoundDeviceId> deviceIds = getDevices();
     for (const auto& deviceId : deviceIds) {
+        if (m_fallbackDevices.contains(deviceId)) {
+            // Only used for this session, see validateDevices().
+            continue;
+        }
         QDomElement devElement(doc.createElement(xmlElementSoundDevice));
         devElement.setAttribute(xmlAttributeDeviceName, deviceId.name);
         devElement.setAttribute(xmlAttributeDeviceIndex, deviceId.deviceIndex);
@@ -357,9 +426,61 @@ void SoundManagerConfig::setForceNetworkClock(bool force) {
  * @returns false if the sample rate is not found in SoundManager's list,
  *          otherwise true
  */
-bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
-    if (!soundManager.getSampleRates(m_api).contains(m_sampleRate)) {
-        return false;
+bool SoundManagerConfig::checkSampleRate(const SoundManager& soundManager) {
+    const QList<mixxx::audio::SampleRate> apiSampleRates =
+            soundManager.getSampleRates(m_api);
+
+    // The sample rate is a setting for the whole engine, while a device may only
+    // support some rates. A device that is asked to play at a rate it cannot
+    // handle fails to open and Mixxx stays silent, e.g. a Windows WASAPI
+    // endpoint that is configured for 48 kHz in the sound control panel rejects
+    // 44.1 kHz. Prefer the configured rate, then the defaults of the configured
+    // devices, then the rates the API offers.
+    QList<mixxx::audio::SampleRate> candidates;
+    if (apiSampleRates.contains(m_sampleRate)) {
+        candidates.append(m_sampleRate);
+    }
+    const QSet<SoundDeviceId> deviceIds = getDevices();
+    for (const auto& deviceId : deviceIds) {
+        if (m_outputs.count(deviceId) == 0) {
+            continue;
+        }
+        const SoundDevicePointer pDevice = soundManager.getDevice(deviceId);
+        if (pDevice) {
+            candidates.append(pDevice->getDefaultSampleRate());
+        }
+    }
+    candidates.append(apiSampleRates);
+
+    for (const auto& sampleRate : std::as_const(candidates)) {
+        if (!sampleRate.isValid()) {
+            continue;
+        }
+        if (isSampleRateSupportedByDevices(soundManager, sampleRate)) {
+            if (sampleRate != m_sampleRate) {
+                qWarning() << "The configured output devices cannot play"
+                           << m_sampleRate << "Hz, using" << sampleRate << "Hz";
+                setSampleRate(sampleRate);
+            }
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool SoundManagerConfig::isSampleRateSupportedByDevices(
+        const SoundManager& soundManager,
+        mixxx::audio::SampleRate sampleRate) const {
+    const QSet<SoundDeviceId> deviceIds = getDevices();
+    for (const auto& deviceId : deviceIds) {
+        if (m_outputs.count(deviceId) == 0) {
+            continue;
+        }
+        const SoundDevicePointer pDevice = soundManager.getDevice(deviceId);
+        if (pDevice && !pDevice->isSampleRateSupported(sampleRate)) {
+            return false;
+        }
     }
     return true;
 }
@@ -467,10 +588,17 @@ void SoundManagerConfig::setAudioBufferSizeIndex(unsigned int sizeIndex) {
 }
 
 void SoundManagerConfig::addOutput(const SoundDeviceId &device, const AudioOutput &out) {
+    // The device is used because it was asked for, so it is not a temporary
+    // substitute of a device that is not connected. (validateDevices() marks the
+    // devices it substitutes after adding them, so its marks are not affected.)
+    m_fallbackDevices.remove(device);
+    m_substitutedDevices.remove(device);
     m_outputs.insert(device, out);
 }
 
 void SoundManagerConfig::addInput(const SoundDeviceId &device, const AudioInput &in) {
+    m_fallbackDevices.remove(device);
+    m_substitutedDevices.remove(device);
     m_inputs.insert(device, in);
     if (in.getType() == AudioPathType::Microphone) {
         m_iNumMicInputs++;
@@ -606,4 +734,8 @@ QSet<SoundDeviceId> SoundManagerConfig::getDevices() const {
         devices.insert(it.key());
     }
     return devices;
+}
+
+QSet<SoundDeviceId> SoundManagerConfig::getSubstitutedDevices() const {
+    return m_substitutedDevices;
 }

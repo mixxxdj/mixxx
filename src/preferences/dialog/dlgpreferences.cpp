@@ -26,12 +26,15 @@
 #include "preferences/dialog/dlgprefvinyl.h"
 #endif // __VINYLCONTROL__
 
+#include "preferences/dialog/dlgprefai.h"
 #include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefcolors.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
+#include "preferences/dialog/dlgprefosc.h"
+#include "preferences/dialog/dlgprefstems.h"
 #include "preferences/dialog/dlgprefwaveform.h"
 #include "util/cmdlineargs.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -132,6 +135,18 @@ DlgPreferences::DlgPreferences(
             tr("Controllers"),
             "ic_preferences_controllers.svg");
 
+    addPageWidget(PreferencesPage(
+                          new DlgPrefOsc(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("OSC"),
+            "ic_preferences_controllers.svg");
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefAi(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("AI Assistant"),
+            "ic_preferences_controllers.svg");
+
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
     // TODO(rryan) determine why/if this is still true
@@ -211,6 +226,12 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Auto DJ"),
             "ic_preferences_autodj.svg");
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefStems(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Stem Generation"),
+            "ic_preferences_waveforms.svg");
 
 #ifdef __BROADCAST__
     addPageWidget(PreferencesPage(

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefOscDlg</class>
+ <widget class="QWidget" name="DlgPrefOscDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>658</width>
+    <height>239</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>OSC Control</string>
+  </property>
+  <layout class="QVBoxLayout" name="OscLayout">
+
+   <item>
+    <widget class="QGroupBox" name="OscOptions">
+      <property name="title">
+       <string>Open Sound Control (OSC)</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <layout class="QGridLayout" name="OscGridLayout">
+
+       <item row="0" column="0">
+        <widget class="QLabel" name="OscEnabledLabel">
+         <property name="text">
+          <string>Enable OSC control</string>
+         </property>
+         <property name="buddy">
+          <cstring>OscEnabledCheckBox</cstring>
+         </property>
+        </widget>
+       </item>
+
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="OscEnabledCheckBox">
+         <property name="toolTip">
+          <string>Let external tools and AI agents drive Mixxx over OSC. Requires a restart of Mixxx to take effect.</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="1" column="0">
+        <widget class="QLabel" name="OscInputPortLabel">
+         <property name="text">
+          <string>Command port (incoming)</string>
+         </property>
+         <property name="buddy">
+          <cstring>OscInputPortSpinBox</cstring>
+         </property>
+        </widget>
+       </item>
+
+       <item row="1" column="1">
+        <widget class="QSpinBox" name="OscInputPortSpinBox">
+         <property name="toolTip">
+          <string>UDP port Mixxx listens on for OSC commands, e.g. "/Channel1/play 1.0".</string>
+         </property>
+         <property name="minimum">
+          <number>1024</number>
+         </property>
+         <property name="maximum">
+          <number>65535</number>
+         </property>
+         <property name="value">
+          <number>11119</number>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+
+       <item row="2" column="0">
+        <widget class="QLabel" name="OscOutputPortLabel">
+         <property name="text">
+          <string>Feedback port (outgoing)</string>
+         </property>
+         <property name="buddy">
+          <cstring>OscOutputPortSpinBox</cstring>
+         </property>
+        </widget>
+       </item>
+
+       <item row="2" column="1">
+        <widget class="QSpinBox" name="OscOutputPortSpinBox">
+         <property name="toolTip">
+          <string>UDP port the state of the controlled decks is reported to.</string>
+         </property>
+         <property name="minimum">
+          <number>1024</number>
+         </property>
+         <property name="maximum">
+          <number>65535</number>
+         </property>
+         <property name="value">
+          <number>11118</number>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>80</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+
+       <item row="3" column="0">
+        <widget class="QLabel" name="OscOutputHostLabel">
+         <property name="text">
+          <string>Feedback host</string>
+         </property>
+         <property name="buddy">
+          <cstring>OscOutputHostLineEdit</cstring>
+         </property>
+        </widget>
+       </item>
+
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="OscOutputHostLineEdit">
+         <property name="toolTip">
+          <string>Host that receives the feedback messages, usually 127.0.0.1.</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="4" column="0">
+        <widget class="QLabel" name="OscBindAddressLabel">
+         <property name="text">
+          <string>Bind address</string>
+         </property>
+         <property name="buddy">
+          <cstring>OscBindAddressLineEdit</cstring>
+         </property>
+        </widget>
+       </item>
+
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="OscBindAddressLineEdit">
+         <property name="toolTip">
+          <string>Interface to listen on. Keep 127.0.0.1 to accept commands from this machine only.</string>
+         </property>
+        </widget>
+       </item>
+
+       <item row="5" column="0" colspan="2">
+        <widget class="QLabel" name="OscHintText">
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Addresses follow the Mixxx control names, for example "/Channel1/play", "/Channel1/rate" or "/Master/crossfader".</string>
+         </property>
+        </widget>
+       </item>
+
+      </layout>
+    </widget>
+   </item>
+
+   <item>
+    <spacer name="verticalSpacerOsc">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+    </spacer>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

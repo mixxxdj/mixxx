@@ -1,9 +1,12 @@
 #include "library/autodj/dlgautodj.h"
 
+#include <QHBoxLayout>
 #include <QKeyEvent>
+#include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
 
+#include "ai/aimixplanner.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/playlisttablemodel.h"
@@ -74,6 +77,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pTrackTableView);
+        setupAiMixBar(box);
     }
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
@@ -234,6 +238,79 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pTrackTableView;
 }
 
+void DlgAutoDJ::setupAiMixBar(QBoxLayout* pLayout) {
+    auto* pAiBar = new QWidget(this);
+    auto* pAiBarLayout = new QHBoxLayout(pAiBar);
+    pAiBarLayout->setContentsMargins(0, 0, 0, 0);
+    pAiBarLayout->setSpacing(6);
+
+    m_pAiInstructionLineEdit = new QLineEdit(pAiBar);
+    m_pAiInstructionLineEdit->setObjectName(QStringLiteral("AiInstructionLineEdit"));
+    m_pAiInstructionLineEdit->setClearButtonEnabled(true);
+    m_pAiInstructionLineEdit->setPlaceholderText(
+            tr("Describe the set you want, for example \"one hour of techno\""));
+    pAiBarLayout->addWidget(m_pAiInstructionLineEdit, 1);
+
+    m_pAiMixButton = new QPushButton(tr("Build set"), pAiBar);
+    m_pAiMixButton->setObjectName(QStringLiteral("AiMixButton"));
+    pAiBarLayout->addWidget(m_pAiMixButton);
+
+    m_pAiStatusLabel = new QLabel(pAiBar);
+    m_pAiStatusLabel->setObjectName(QStringLiteral("AiMixStatusLabel"));
+    pAiBarLayout->addWidget(m_pAiStatusLabel);
+
+    // Above the queue, below the transport buttons.
+    pLayout->insertWidget(1, pAiBar);
+
+    connect(m_pAiMixButton, &QPushButton::clicked, this, &DlgAutoDJ::slotAiMixButtonClicked);
+    connect(m_pAiInstructionLineEdit,
+            &QLineEdit::returnPressed,
+            this,
+            &DlgAutoDJ::slotAiMixButtonClicked);
+}
+
+void DlgAutoDJ::slotAiMixButtonClicked() {
+    const QString instruction = m_pAiInstructionLineEdit->text().trimmed();
+    if (instruction.isEmpty()) {
+        setAiStatusMessage(tr("Describe the set you want first."), true);
+        return;
+    }
+    setAiStatusMessage(QString(), false);
+    emit aiMixRequested(instruction);
+}
+
+void DlgAutoDJ::setAiMixAvailable(bool available) {
+    if (m_pAiMixButton == nullptr) {
+        return;
+    }
+    m_pAiMixButton->setEnabled(available);
+    m_pAiInstructionLineEdit->setEnabled(available);
+    setAiStatusMessage(available
+                    ? QString()
+                    : tr("The AI assistant is switched off in the preferences."),
+            false);
+}
+
+void DlgAutoDJ::setAiMixBusy(bool busy) {
+    if (m_pAiMixButton == nullptr) {
+        return;
+    }
+    m_pAiMixButton->setEnabled(!busy);
+    m_pAiInstructionLineEdit->setEnabled(!busy);
+    if (busy) {
+        setAiStatusMessage(tr("Asking the AI assistant..."), false);
+    }
+}
+
+void DlgAutoDJ::setAiStatusMessage(const QString& message, bool isError) {
+    if (m_pAiStatusLabel == nullptr) {
+        return;
+    }
+    m_pAiStatusLabel->setText(message);
+    m_pAiStatusLabel->setStyleSheet(isError ? QStringLiteral("color: #ff6b6b;")
+                                            : QString());
+}
+
 void DlgAutoDJ::setupActionButton(QPushButton* pButton,
         void (DlgAutoDJ::*pSlot)(bool),
         const QString& fallbackText) {
@@ -245,6 +322,9 @@ void DlgAutoDJ::setupActionButton(QPushButton* pButton,
 
 void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
+    // The AI assistant can be switched on or off between two visits of this
+    // view, so the row is refreshed every time it is shown.
+    setAiMixAvailable(mixxx::ai::AiMixSettings::fromUserSettings(*m_pConfig).enabled);
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {

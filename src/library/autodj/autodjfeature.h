@@ -1,11 +1,13 @@
 #pragma once
 
+#include <QJsonArray>
 #include <QList>
 #include <QObject>
 #include <QPointer>
 #include <QUrl>
 #include <QVariant>
 
+#include "library/autodj/harmonicmixing.h"
 #include "library/dao/autodjcratesdao.h"
 #include "library/libraryfeature.h"
 #include "library/trackset/crate/crate.h"
@@ -21,6 +23,12 @@ class WLibrarySidebar;
 class QAction;
 class QModelIndex;
 class QPoint;
+
+namespace mixxx {
+namespace ai {
+class AiMixPlanner;
+} // namespace ai
+} // namespace mixxx
 
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
@@ -71,6 +79,22 @@ class AutoDJFeature : public LibraryFeature {
     void constructCrateChildModel();
     void removeCrateFromAutoDj(CrateId crateId = CrateId());
 
+    // Determine the keys and the tempo windows that a newly added track has to
+    // match in order to mix harmonically with the track at the end of the Auto
+    // DJ queue. The windows are ordered from the configured tolerance to
+    // progressively wider ones, so the caller can fall back to mixing by key
+    // only instead of giving up on harmonic mixing. Returns false if harmonic
+    // mixing is disabled or if the reference track carries no usable tempo or
+    // key information.
+    bool getHarmonicSelectionConstraints(
+            QList<int>* pCompatibleKeyIds,
+            QList<mixxx::HarmonicMixing::BpmRange>* pBpmRanges) const;
+
+    // Collects up to AiMixSettings::maxCandidateTracks tracks from the library
+    // and describes them for the AI service. The matching track ids are kept in
+    // m_aiCandidateTrackIds, indexed exactly like the candidates sent out.
+    QJsonArray buildAiCandidateTracks();
+
     // The "Crates" tree-item under the "Auto DJ" tree-item.
     TreeItem* m_pCratesTreeItem;
 
@@ -81,6 +105,13 @@ class AutoDJFeature : public LibraryFeature {
 
     // How we access the auto-DJ-crates database.
     AutoDJCratesDAO m_autoDjCratesDao;
+
+    // Optional AI set planner. Only used when it is enabled in the preferences
+    // and when the build provides secure API key storage.
+    mixxx::ai::AiMixPlanner* m_pAiMixPlanner = nullptr;
+    // Candidate tracks that were sent to the AI service, indexed like the
+    // candidates themselves so that the returned indices can be resolved.
+    QList<TrackId> m_aiCandidateTrackIds;
 
     parented_ptr<QAction> m_pEnableAutoDJAction;
     parented_ptr<QAction> m_pDisableAutoDJAction;
@@ -107,4 +138,9 @@ class AutoDJFeature : public LibraryFeature {
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
+
+    // Asks the AI assistant for a set list and loads it into the queue.
+    void slotAiMixRequested(const QString& instruction);
+    void slotAiMixSucceeded(const QList<int>& trackOrder);
+    void slotAiMixFailed(const QString& errorMessage);
 };

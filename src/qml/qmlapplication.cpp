@@ -1,13 +1,17 @@
 #include "qmlapplication.h"
 
+#include <QApplication>
 #include <QCoreApplication>
 #include <QEventLoop>
+#include <QFont>
 #include <QLocale>
 #include <QMessageBox>
 #include <QMetaEnum>
+#include <QPalette>
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 #include <QQuickWindow>
+#include <QStyleFactory>
 #include <QTextDocument>
 #include <memory>
 #include <utility>
@@ -25,6 +29,7 @@
 #include "qml/qmlcoreservices.h"
 #include "qml/qmldlgpreferencesproxy.h"
 #include "qml/qmlrecordingproxy.h"
+#include "soundio/audiodeviceassistant.h"
 #include "soundio/soundmanager.h"
 #include "util/versionstore.h"
 #include "waveform/guitick.h"
@@ -167,6 +172,38 @@ QmlApplication::QmlApplication(
             &QmlCoreServices::setInitializationProgress);
 
     m_pCoreServices->initialize(app);
+    // The library, the menus and the dialogs are native Qt widgets, so they do
+    // not pick up the font the skin sets in QML. Give them the same family as
+    // the skin, which keeps the console consistent. Keep this in sync with
+    // LateNightTheme.fontFamily of the NeonDeck skin.
+    QFont applicationFont = QApplication::font();
+    applicationFont.setFamily(QStringLiteral("Rajdhani"));
+    QApplication::setFont(applicationFont);
+
+    // The preferences pages and the widget based menus are native Qt widgets and
+    // they do not follow the skin, so a QML skin used to open bright dialogs in
+    // the middle of a dark console. Fusion honours a custom palette (the native
+    // Windows style paints with the system colours instead), so use Fusion with
+    // a dark palette that matches the skin.
+    QApplication::setStyle(QStyleFactory::create(QStringLiteral("Fusion")));
+    QPalette darkPalette = QApplication::palette();
+    darkPalette.setColor(QPalette::Window, QColor(0x1c1c1c));
+    darkPalette.setColor(QPalette::WindowText, QColor(0xf2f2f2));
+    darkPalette.setColor(QPalette::Base, QColor(0x121212));
+    darkPalette.setColor(QPalette::AlternateBase, QColor(0x181818));
+    darkPalette.setColor(QPalette::ToolTipBase, QColor(0x242424));
+    darkPalette.setColor(QPalette::ToolTipText, QColor(0xf2f2f2));
+    darkPalette.setColor(QPalette::Text, QColor(0xf2f2f2));
+    darkPalette.setColor(QPalette::Button, QColor(0x2a2a2a));
+    darkPalette.setColor(QPalette::ButtonText, QColor(0xf2f2f2));
+    darkPalette.setColor(QPalette::BrightText, QColor(0xff5555));
+    darkPalette.setColor(QPalette::Link, QColor(0x0096f3));
+    darkPalette.setColor(QPalette::Highlight, QColor(0x0096f3));
+    darkPalette.setColor(QPalette::HighlightedText, QColor(0xffffff));
+    darkPalette.setColor(QPalette::Disabled, QPalette::Text, QColor(0x8c8c8c));
+    darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(0x8c8c8c));
+    darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(0x8c8c8c));
+    QApplication::setPalette(darkPalette);
     app->installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
     registerImageProvider();
 
@@ -229,6 +266,17 @@ QmlApplication::QmlApplication(
 #endif
     }
 
+    // Watch for devices that are connected or disconnected while Mixxx is
+    // running, so that e.g. the sound card of a DJ controller can be used
+    // without restarting Mixxx.
+    m_pAudioDeviceAssistant =
+            std::make_unique<AudioDeviceAssistant>(nullptr, m_pCoreServices.get());
+    QmlApplicationProxy::registerAudioDeviceCheckCallback([this]() {
+        if (m_pAudioDeviceAssistant) {
+            m_pAudioDeviceAssistant->checkForDevicesNow(true);
+        }
+    });
+    qDebug() << "AudioDeviceAssistant: menu callback registered";
     setupSpinnyCoverControls();
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
@@ -320,6 +368,14 @@ QmlApplication::QmlApplication(
             loadQml(m_mainFilePath);
         });
     });
+    // The fullscreen menu action lives on the QWidget window of MixxxMainWindow,
+    // so route it to the window the QML skin actually shows.
+    QmlApplicationProxy::registerSetFullScreenCallback([this](bool fullScreen) {
+        if (!m_pWindow) {
+            return;
+        }
+        m_pWindow->setVisibility(fullScreen ? QWindow::FullScreen : QWindow::Windowed);
+    });
 
     const QStringList visualGroups =
             m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
@@ -378,6 +434,7 @@ QmlApplication::QmlApplication(
 }
 
 void QmlApplication::slotWindowChanged(QQuickWindow* window) {
+    m_pWindow = window;
     if (window) {
         connect(window,
                 &QQuickWindow::afterFrameEnd,
@@ -411,6 +468,7 @@ void QmlApplication::slotFrameSwapped() {
 
 QmlApplication::~QmlApplication() {
     QmlApplicationProxy::registerReloadCallback({});
+    QmlApplicationProxy::registerSetFullScreenCallback({});
     // Destroy the QML engine before the waveform factory. Scene-graph nodes
     // owned by the engine may still reference QML waveform renderers and the
     // factory while the engine is tearing down its object tree.

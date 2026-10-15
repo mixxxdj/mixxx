@@ -384,6 +384,35 @@ void WMainMenuBar::initialize() {
             ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
+    QString trackAdvisorTitle = tr("Show Track Advisor");
+    QString trackAdvisorText = tr("Show a panel with the tracks that mix harmonically with the one that is playing.") +
+            " " + mayNotBeSupported;
+    auto* pViewShowTrackAdvisor = new QAction(trackAdvisorTitle, this);
+    pViewShowTrackAdvisor->setCheckable(true);
+    m_pKeyboard->registerMenuBarActionSetShortcut(
+            pViewShowTrackAdvisor,
+            ConfigKey(kKbdShortcutsGroup, QStringLiteral("ViewMenu_ShowTrackAdvisor")),
+            QStringLiteral("Ctrl+7"));
+    pViewShowTrackAdvisor->setStatusTip(trackAdvisorText);
+    pViewShowTrackAdvisor->setWhatsThis(buildWhatsThis(trackAdvisorTitle, trackAdvisorText));
+    createVisibilityControl(pViewShowTrackAdvisor,
+            ConfigKey(kSkinGroup, QStringLiteral("show_track_advisor")));
+    pViewMenu->addAction(pViewShowTrackAdvisor);
+
+    QString audioSetupTitle = tr("Audio Setup Assistant");
+    QString audioSetupText = tr("Look for connected devices again and offer to use the "
+                                "sound card of a DJ controller that has been connected.") +
+            " " + mayNotBeSupported;
+    auto* pViewAudioSetup = new QAction(audioSetupTitle, this);
+    m_pKeyboard->registerMenuBarActionSetShortcut(
+            pViewAudioSetup,
+            ConfigKey(kKbdShortcutsGroup, QStringLiteral("ViewMenu_AudioSetup")),
+            QStringLiteral("Ctrl+8"));
+    pViewAudioSetup->setStatusTip(audioSetupText);
+    pViewAudioSetup->setWhatsThis(buildWhatsThis(audioSetupTitle, audioSetupText));
+    connect(pViewAudioSetup, &QAction::triggered, this, &WMainMenuBar::checkAudioDevices);
+    pViewMenu->addAction(pViewAudioSetup);
+
     pViewMenu->addSeparator();
 
     QString autoDJTitle = tr("Show Auto DJ");

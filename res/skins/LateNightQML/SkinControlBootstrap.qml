@@ -33,8 +33,11 @@ Item {
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_eq_kill_buttons"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_xfader"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_main_head_mixer"; persist: true }
-    Mixxx.SkinControlCreator { group: "[Skin]"; key: "equal_4deck_waveforms"; persist: true }
-    Mixxx.SkinControlCreator { group: "[Skin]"; key: "timing_shift_buttons"; persist: true }
+    // These two are read by proxies that are built before the persisted value
+    // arrives, so give them an explicit default: the control then exists from
+    // the start instead of logging "does not exist, resetting...".
+    Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "equal_4deck_waveforms"; persist: true }
+    Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "timing_shift_buttons"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_beatgrid_controls"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_stem_controls"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 0.0; group: "[Skin]"; key: "show_sampler_fx"; persist: true }

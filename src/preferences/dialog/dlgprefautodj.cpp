@@ -4,6 +4,7 @@
 #include <QTimeZone>
 #endif
 
+#include "library/autodj/harmonicmixing.h"
 #include "moc_dlgprefautodj.cpp"
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
@@ -31,6 +32,16 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
 #endif
             this,
             &DlgPrefAutoDJ::slotToggleRandomQueue);
+
+    // Auto DJ harmonic mixing
+    connect(HarmonicMixingCheckBox,
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+            &QCheckBox::checkStateChanged,
+#else
+            &QCheckBox::stateChanged,
+#endif
+            this,
+            &DlgPrefAutoDJ::slotToggleHarmonicMixing);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -80,6 +91,15 @@ void DlgPrefAutoDJ::slotUpdate() {
     // Re-center the crossfader instantly when AutoDJ is disabled
     CenterXfaderCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "center_xfader_when_disabling"), false));
+
+    // Harmonic mixing
+    const bool harmonicMixing = m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "HarmonicMixing"), false);
+    HarmonicMixingCheckBox->setChecked(harmonicMixing);
+    HarmonicBpmToleranceSpinBox->setValue(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "HarmonicBpmTolerance"),
+            static_cast<int>(mixxx::HarmonicMixing::kDefaultBpmTolerancePercent)));
+    HarmonicBpmToleranceSpinBox->setEnabled(harmonicMixing);
 }
 
 void DlgPrefAutoDJ::slotApply() {
@@ -100,6 +120,11 @@ void DlgPrefAutoDJ::slotApply() {
 
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "center_xfader_when_disabling"),
             CenterXfaderCheckBox->isChecked());
+
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "HarmonicMixing"),
+            HarmonicMixingCheckBox->isChecked());
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "HarmonicBpmTolerance"),
+            HarmonicBpmToleranceSpinBox->value());
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -115,6 +140,11 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     RandomQueueMinimumSpinBox->setValue(5);
 
     CenterXfaderCheckBox->setChecked(false);
+
+    HarmonicMixingCheckBox->setChecked(false);
+    HarmonicBpmToleranceSpinBox->setValue(
+            static_cast<int>(mixxx::HarmonicMixing::kDefaultBpmTolerancePercent));
+    HarmonicBpmToleranceSpinBox->setEnabled(false);
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -135,4 +165,12 @@ void DlgPrefAutoDJ::slotToggleRandomQueue(Qt::CheckState buttonState) {
 void DlgPrefAutoDJ::slotToggleRandomQueue(int buttonState) {
 #endif
     RandomQueueMinimumSpinBox->setEnabled(buttonState == Qt::Checked);
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+void DlgPrefAutoDJ::slotToggleHarmonicMixing(Qt::CheckState buttonState) {
+#else
+void DlgPrefAutoDJ::slotToggleHarmonicMixing(int buttonState) {
+#endif
+    HarmonicBpmToleranceSpinBox->setEnabled(buttonState == Qt::Checked);
 }

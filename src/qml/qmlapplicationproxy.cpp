@@ -1,6 +1,7 @@
 #include "qml/qmlapplicationproxy.h"
 
 #include <QDir>
+#include <QGuiApplication>
 
 #include "config.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -33,6 +34,16 @@ QmlApplicationProxy::QmlApplicationProxy(QObject* pParent)
             &KeyboardEventFilter::keyboardConfigReloaded,
             this,
             &QmlApplicationProxy::menuShortcutsChanged);
+    // A focus change is the only thing that can turn typing on or off, apart
+    // from the widgets painted into the QML scene, which call
+    // notifyTextInputFocusChanged().
+    connect(qApp,
+            &QGuiApplication::focusObjectChanged,
+            this,
+            &QmlApplicationProxy::textInputFocusedChanged);
+    s_textInputFocusChangedCallback = [this]() {
+        emit textInputFocusedChanged();
+    };
 #if !defined(Q_OS_MACOS)
     connect(s_pKeyboardEventFilter.get(),
             &KeyboardEventFilter::altPressedWithoutKeys,
@@ -53,6 +64,16 @@ void QmlApplicationProxy::setKeyboardShortcutsEnabled(bool enabled) {
         return;
     }
     s_pKeyboardEventFilter->setEnabled(enabled);
+}
+
+bool QmlApplicationProxy::textInputFocused() const {
+    return KeyboardEventFilter::isTextInputFocused();
+}
+
+void QmlApplicationProxy::notifyTextInputFocusChanged() {
+    if (s_textInputFocusChangedCallback) {
+        s_textInputFocusChangedCallback();
+    }
 }
 
 bool QmlApplicationProxy::developerMode() const {

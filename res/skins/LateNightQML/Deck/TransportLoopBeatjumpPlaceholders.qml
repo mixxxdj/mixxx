@@ -387,8 +387,6 @@ Item {
                 preferredWidth: 60
                 group: root.group
                 key: "beatjump_size"
-                decrementKey: "beatjump_size_halve"
-                incrementKey: "beatjump_size_double"
             }
             LateNightControlButton {
                 Layout.minimumWidth: 0

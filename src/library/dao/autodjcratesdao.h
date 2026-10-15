@@ -26,6 +26,19 @@ class AutoDJCratesDAO : public QObject {
     // Get random track Id from library
     TrackId getRandomTrackIdFromLibrary(int iPlaylistId);
 
+    // Get the ID of a random track that mixes harmonically with a reference
+    // track, i.e. whose key is one of compatibleKeyIds and whose BPM lies within
+    // [bpmMin, bpmMax]. Tracks without key information are never selected. Pass a
+    // non positive bpmMin to select by key only. Set fromCrates to pick from the
+    // tracks of the loaded Auto DJ crates instead of the whole library. Returns
+    // an invalid TrackId if there is no harmonically compatible candidate.
+    TrackId getRandomTrackIdHarmonic(
+            bool fromCrates,
+            int iPlaylistId,
+            const QList<int>& compatibleKeyIds,
+            double bpmMin,
+            double bpmMax);
+
   private:
     // Disallow copy and assign.
     // (Isn't that normal for QObject subclasses?)

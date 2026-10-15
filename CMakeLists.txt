@@ -1200,6 +1200,7 @@ add_library(
   mixxx-lib
   STATIC
   EXCLUDE_FROM_ALL
+  src/ai/aimixplanner.cpp
   src/analyzer/analyzerbeats.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
@@ -1269,6 +1270,7 @@ add_library(
   src/controllers/midi/midimessage.cpp
   src/controllers/midi/midioutputhandler.cpp
   src/controllers/midi/midiutils.cpp
+  src/controllers/osc/oscserver.cpp
   src/controllers/scripting/colormapper.cpp
   src/controllers/scripting/colormapperjsproxy.cpp
   src/controllers/scripting/controllerscriptenginebase.cpp
@@ -1415,6 +1417,7 @@ add_library(
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
+  src/library/autodj/harmonicmixing.cpp
   src/library/banshee/bansheedbconnection.cpp
   src/library/banshee/bansheefeature.cpp
   src/library/banshee/bansheeplaylistmodel.cpp
@@ -1579,15 +1582,20 @@ add_library(
   src/preferences/dialog/dlgprefinterface.cpp
   src/preferences/dialog/dlgprefinterfacedlg.ui
   src/preferences/dialog/dlgprefkey.cpp
+  src/preferences/dialog/dlgprefai.cpp
+  src/preferences/dialog/dlgprefai.ui
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
+  src/preferences/dialog/dlgprefosc.cpp
+  src/preferences/dialog/dlgprefosc.ui
   src/preferences/dialog/dlgprefmixer.cpp
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
   src/preferences/dialog/dlgprefreplaygaindlg.ui
+  src/preferences/dialog/dlgprefstems.cpp
   src/preferences/dialog/dlgprefsound.cpp
   src/preferences/dialog/dlgprefsounddlg.ui
   src/preferences/dialog/dlgprefsounditem.cpp
@@ -1612,7 +1620,9 @@ add_library(
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
+  src/skin/defaultstylesheet.cpp
   src/skin/skinloader.cpp
+  src/soundio/audiodeviceassistant.cpp
   src/soundio/portaudioenumerator.cpp
   src/soundio/sounddeviceenumerator.cpp
   src/soundio/sounddevice.cpp
@@ -1633,6 +1643,8 @@ add_library(
   src/sources/soundsourceproviderregistry.cpp
   src/sources/soundsourceproxy.cpp
   src/sources/soundsourcesndfile.cpp
+  src/stems/stemgenerator.cpp
+  src/stems/stemqueuemodel.cpp
   src/track/albuminfo.cpp
   src/track/beatfactory.cpp
   src/track/beats.cpp
@@ -1713,6 +1725,7 @@ add_library(
   src/util/safelywritablefile.cpp
   src/util/sample.cpp
   src/util/sandbox.cpp
+  src/util/systemdevices.cpp
   src/util/screensaver.cpp
   src/util/screensavermanager.cpp
   src/util/semanticversion.cpp
@@ -1998,6 +2011,7 @@ set(
   src/util/statsmanager.h
   src/util/string.h
   src/util/stringformat.h
+  src/util/systemdevices.h
   src/util/tapfilter.h
   src/util/task.h
   src/util/taskmonitor.h
@@ -2513,6 +2527,13 @@ endif()
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PRIVATE mixxx-lib mixxx-gitinfostore)
 
+if(WIN32)
+  # The multimedia library is used to list the MIDI devices of the system, see
+  # mixxx::systemConnectedDeviceNames(). It is linked to mixxx-lib as well, but a
+  # static library does not carry its dependencies over to the executables.
+  target_link_libraries(mixxx PRIVATE winmm)
+endif()
+
 #
 # Installation and Packaging
 #
@@ -2608,6 +2629,14 @@ if(NOT ANDROID)
     DESTINATION "${MIXXX_INSTALL_DATADIR}"
   )
 
+  # Stem generation worker (Python, run as a child process)
+  install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/stems"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    FILES_MATCHING
+    PATTERN "*.py"
+  )
+
   # Effect presets
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/effects"
@@ -2637,6 +2666,17 @@ if(APPLE OR WIN32)
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
     DESTINATION "${MIXXX_INSTALL_DATADIR}"
+  )
+else()
+  # Rajdhani and Font Awesome 6 Free (typography and icons of the QML skins) are
+  # not packaged by most distros, so they ship with Mixxx. Open Sans and Ubuntu
+  # keep coming from the package manager as described above.
+  install(
+    DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    FILES_MATCHING
+    PATTERN "Rajdhani*"
+    PATTERN "FontAwesomeFree*"
   )
 endif()
 
@@ -2924,6 +2964,7 @@ endif()
 if(BUILD_TESTING)
   set(
     src-mixxx-test
+    src/test/aimixplanner_test.cpp
     src/test/analyserwaveformtest.cpp
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
@@ -2975,6 +3016,7 @@ if(BUILD_TESTING)
     src/test/fileinfo_test.cpp
     src/test/frametest.cpp
     src/test/globaltrackcache_test.cpp
+    src/test/harmonicmixing_test.cpp
     src/test/hotcuecontrol_test.cpp
     src/test/hotcueorderbyposition_test.cpp
     src/test/imageutils_test.cpp
@@ -3069,6 +3111,10 @@ if(BUILD_TESTING)
   else()
     add_executable(mixxx-test ${src-mixxx-test})
   endif()
+  if(WIN32)
+    # See the note about winmm next to the mixxx executable.
+    target_link_libraries(mixxx-test PRIVATE winmm)
+  endif()
   target_compile_definitions(
     mixxx-test
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
@@ -3087,6 +3133,8 @@ if(BUILD_TESTING)
       PRIVATE
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
+        src/test/neondeckskin_test.cpp
+        src/test/pulsedeck_skin_test.cpp
         src/test/qml/qmlstartupsmoketest.cpp
         src/test/qmlcontrolproxytest.cpp
         src/test/qmldurationformattertest.cpp

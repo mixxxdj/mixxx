@@ -122,6 +122,11 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     void setTrackValueForColumn(
             TrackPointer pTrack, int column, QVariant value);
 
+    /// True when a stem file exists for the given track location, either next
+    /// to the track or in the stem cache. The result is remembered so painting
+    /// the library does not touch the file system on every repaint.
+    bool hasStemFileForLocation(const QString& trackLocation) const;
+
     // Set the columns used for searching. Names must correspond to the column
     // names in the table provided to setTable. Must be called after setTable is
     // called.
@@ -178,6 +183,9 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QString m_currentSearchFilter;
     QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
+    /// Whether a track has stems is not stored in the database, so the answer
+    /// is looked up in the file system once per track location.
+    mutable QHash<QString, bool> m_stemFileByLocation;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);
 };

@@ -152,6 +152,39 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
 SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
+bool SoundDevicePortAudio::isSampleRateSupported(
+        mixxx::audio::SampleRate sampleRate) const {
+    if (!m_deviceInfo || !sampleRate.isValid()) {
+        return true;
+    }
+
+    PaStreamParameters outputParams;
+    memset(&outputParams, 0, sizeof(outputParams));
+    outputParams.device = m_deviceId.deviceIndex;
+    // The check asks for the channels the device exposes: a Windows WASAPI
+    // endpoint only accepts one channel count in shared mode, so requesting
+    // fewer channels would fail for a reason unrelated to the sample rate.
+    if (m_deviceInfo->maxOutputChannels <= 0) {
+        // Output only configuration: nothing to check here.
+        return true;
+    }
+    outputParams.channelCount = m_deviceInfo->maxOutputChannels;
+    outputParams.sampleFormat = paFloat32;
+    outputParams.suggestedLatency = m_deviceInfo->defaultLowOutputLatency;
+    outputParams.hostApiSpecificStreamInfo = nullptr;
+
+    // Only an explicit "unsupported" answer is treated as such, any other error
+    // (e.g. the device being in use) must not change the configured rate.
+    const PaError err = Pa_IsFormatSupported(
+            nullptr, &outputParams, sampleRate.toDouble());
+    if (err == paInvalidSampleRate) {
+        qDebug() << "Device" << m_strDisplayName << "does not support"
+                 << sampleRate << "Hz";
+        return false;
+    }
+    return true;
+}
+
 SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers) {
     qDebug() << "SoundDevicePortAudio::open()" << m_deviceId;
     PaError err;

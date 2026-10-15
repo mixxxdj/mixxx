@@ -95,6 +95,9 @@ MenuBar {
         MenuItem {
             action: root.actions.viewFullScreen
         }
+        MenuItem {
+            action: root.actions.viewAudioSetup
+        }
     }
     Menu {
         title: qsTranslate("WMainMenuBar", "&Options")

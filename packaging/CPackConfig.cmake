@@ -41,6 +41,13 @@ endif()
 
 if(CPACK_GENERATOR STREQUAL "DEB")
   set(CPACK_INSTALL_SCRIPT ${CPACK_DEBIAN_INSTALL_SCRIPT})
+  # Accept the FFmpeg "-extra" libraries that Linux Mint and other
+  # distributions install by default (see the script for details).
+  list(
+    APPEND
+    CPACK_POST_BUILD_SCRIPTS
+    "${CPACK_SOURCE_DIR}/packaging/CPackDebFfmpegExtraAlternatives.cmake"
+  )
 endif()
 
 if(CPACK_GENERATOR STREQUAL "External")

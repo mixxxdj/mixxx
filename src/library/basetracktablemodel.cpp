@@ -1097,6 +1097,11 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
 
 Qt::ItemFlags BaseTrackTableModel::flags(
         const QModelIndex& index) const {
+    if (index.column() == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_STEMS)) {
+        // The stems column is derived from the file system, so it cannot be
+        // edited like the other columns.
+        return readWriteFlags(index) & ~Qt::ItemIsEditable;
+    }
     return readWriteFlags(index);
 }
 

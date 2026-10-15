@@ -54,6 +54,10 @@ const QString LIBRARYTABLE_COVERART_COLOR = QStringLiteral("coverart_color");
 const QString LIBRARYTABLE_COVERART_DIGEST = QStringLiteral("coverart_digest");
 const QString LIBRARYTABLE_COVERART_HASH = QStringLiteral("coverart_hash");
 const QString LIBRARYTABLE_CRATE = QStringLiteral("crate");
+// Not a database column: the library view exposes it as an empty literal and
+// the table model fills it from the file system, see
+// BaseSqlTableModel::hasStemFileForLocation.
+const QString LIBRARYTABLE_STEMS = QStringLiteral("stems");
 
 const QString TRACKLOCATIONSTABLE_ID = QStringLiteral("id");
 const QString TRACKLOCATIONSTABLE_LOCATION = QStringLiteral("location");

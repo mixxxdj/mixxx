@@ -1,6 +1,7 @@
 #include "library/dao/autodjcratesdao.h"
 
 #include <QRandomGenerator>
+#include <QStringList>
 #include <QtDebug>
 
 #include "library/dao/trackschema.h"
@@ -1257,4 +1258,88 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
         qDebug() << "No random track available for Auto DJ in playlist" << iPlaylistId;
         return TrackId();
     }
+}
+
+TrackId AutoDJCratesDAO::getRandomTrackIdHarmonic(
+        bool fromCrates,
+        int iPlaylistId,
+        const QList<int>& compatibleKeyIds,
+        double bpmMin,
+        double bpmMax) {
+    if (compatibleKeyIds.isEmpty()) {
+        return TrackId();
+    }
+
+    // A non positive bpmMin means the tempo must not constrain the selection,
+    // which is how the caller asks for a keys only fallback.
+    const bool constrainBpm = bpmMin > 0.0;
+    if (constrainBpm && bpmMax < bpmMin) {
+        return TrackId();
+    }
+
+    // Bind the compatible keys as a parameter list so the query works for any
+    // number of keys.
+    QStringList keyPlaceholders;
+    keyPlaceholders.reserve(compatibleKeyIds.size());
+    for (int i = 0; i < compatibleKeyIds.size(); ++i) {
+        keyPlaceholders.append(QStringLiteral(":key") + QString::number(i));
+    }
+    QString harmonicFilter = LIBRARYTABLE_KEY_ID +
+            QStringLiteral(" IN (") + keyPlaceholders.join(QLatin1Char(',')) +
+            QStringLiteral(")");
+    if (constrainBpm) {
+        harmonicFilter += QStringLiteral(" AND ") + LIBRARYTABLE_BPM +
+                QStringLiteral(" BETWEEN :bpmMin AND :bpmMax");
+    }
+
+    QString strQuery;
+    if (fromCrates) {
+        // Same candidate set as getRandomTrackId(), restricted to the tracks
+        // that mix harmonically with the reference track.
+        createAndConnectAutoDjCratesDatabase();
+        strQuery = QStringLiteral("SELECT activetracks.") +
+                AUTODJCRATESTABLE_TRACKID +
+                QStringLiteral(" FROM ") + AUTODJACTIVETRACKS_TABLE +
+                QStringLiteral(" AS activetracks INNER JOIN ") + LIBRARY_TABLE +
+                QStringLiteral(" AS lib ON lib.") + LIBRARYTABLE_ID +
+                QStringLiteral(" = activetracks.") + AUTODJCRATESTABLE_TRACKID +
+                QStringLiteral(" WHERE ") + harmonicFilter +
+                QStringLiteral(" ORDER BY RANDOM() LIMIT 1");
+    } else {
+        strQuery = QStringLiteral("SELECT ") + LIBRARYTABLE_ID +
+                QStringLiteral(" FROM ") + LIBRARY_TABLE +
+                QStringLiteral(" WHERE ") + harmonicFilter +
+                QStringLiteral(" AND ") + LIBRARYTABLE_ID +
+                QStringLiteral(" NOT IN ( SELECT ") + PLAYLISTTRACKSTABLE_TRACKID +
+                QStringLiteral(" FROM ") + PLAYLIST_TRACKS_TABLE +
+                QStringLiteral(" WHERE ") + PLAYLISTTRACKSTABLE_PLAYLISTID +
+                QStringLiteral(" = :playlistId )"
+                               " AND location NOT IN ( SELECT id FROM ") +
+                TRACKLOCATIONS_TABLE +
+                QStringLiteral(" WHERE fs_deleted = 1 )"
+                               " AND mixxx_deleted != 1"
+                               " ORDER BY RANDOM() LIMIT 1");
+    }
+
+    QSqlQuery oQuery(m_database);
+    oQuery.prepare(strQuery);
+    if (constrainBpm) {
+        oQuery.bindValue(":bpmMin", bpmMin);
+        oQuery.bindValue(":bpmMax", bpmMax);
+    }
+    for (int i = 0; i < compatibleKeyIds.size(); ++i) {
+        oQuery.bindValue(keyPlaceholders.at(i), compatibleKeyIds.at(i));
+    }
+    if (!fromCrates) {
+        oQuery.bindValue(":playlistId", iPlaylistId);
+    }
+    if (!oQuery.exec()) {
+        LOG_FAILED_QUERY(oQuery);
+        DEBUG_ASSERT(!"failed query");
+        return TrackId();
+    }
+    if (oQuery.next()) {
+        return TrackId(oQuery.value(0));
+    }
+    return TrackId();
 }

@@ -5,9 +5,14 @@
 #include <QtGlobal>
 
 #include "moc_qmlcoreservices.cpp"
+#include "stems/stemgenerator.h"
 
 namespace mixxx {
 namespace qml {
+
+QObject* QmlCoreServices::stemGenerator() const {
+    return StemGenerator::instance();
+}
 
 void QmlCoreServices::setReady() {
     if (m_ready) {

@@ -1,5 +1,7 @@
 #include "widget/wtrackmenu.h"
 
+#include "stems/stemgenerator.h"
+
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QInputDialog>
@@ -234,6 +236,11 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Analyze)) {
         m_pAnalyzeMenu = make_parented<QMenu>(this);
         m_pAnalyzeMenu->setTitle(tr("Analyze"));
+    }
+
+    if (featureIsEnabled(Feature::Stems)) {
+        m_pStemsMenu = make_parented<QMenu>(this);
+        m_pStemsMenu->setTitle(tr("Stems"));
     }
 
     if (featureIsEnabled(Feature::SearchRelated)) {
@@ -594,6 +601,20 @@ void WTrackMenu::createActions() {
                 &WTrackMenu::slotReanalyzeWithVariableTempo);
     }
 
+    if (featureIsEnabled(Feature::Stems)) {
+        m_pGenerateStemsAction = make_parented<QAction>(tr("Generate stems"), this);
+        connect(m_pGenerateStemsAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotGenerateStems);
+
+        m_pRegenerateStemsAction = make_parented<QAction>(tr("Regenerate stems"), this);
+        connect(m_pRegenerateStemsAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotRegenerateStems);
+    }
+
     // This action is only usable when m_deckGroup is set. That is true only
     // for WTrackmenu instantiated by WTrackProperty and other deck widgets, thus
     // don't create it if a track model is set.
@@ -768,6 +789,12 @@ void WTrackMenu::setupActions() {
         m_pAnalyzeMenu->addAction(m_pReanalyzeConstBpmAction);
         m_pAnalyzeMenu->addAction(m_pReanalyzeVarBpmAction);
         addMenu(m_pAnalyzeMenu);
+    }
+
+    if (featureIsEnabled(Feature::Stems)) {
+        m_pStemsMenu->addAction(m_pGenerateStemsAction);
+        m_pStemsMenu->addAction(m_pRegenerateStemsAction);
+        addMenu(m_pStemsMenu);
     }
 
     // This action is created only for menus instantiated by deck widgets (e.g.
@@ -1136,6 +1163,29 @@ void WTrackMenu::updateMenus() {
         // We use the last selected track for the cover art context to be
         // consistent with selectionChanged above.
         m_pCoverMenu->setCoverArt(getCoverInfoOfLastTrack());
+    }
+
+    if (featureIsEnabled(Feature::Stems)) {
+        StemGenerator* pStemGenerator = StemGenerator::instance();
+        bool anyWithoutStems = false;
+        bool anyWithStems = false;
+        const TrackPointerList stemTracks = getTrackPointers();
+        for (const TrackPointer& pTrack : stemTracks) {
+            if (!pTrack) {
+                continue;
+            }
+            const QString location = pTrack->getLocation();
+            if (location.isEmpty()) {
+                continue;
+            }
+            if (pStemGenerator && pStemGenerator->hasStems(location)) {
+                anyWithStems = true;
+            } else {
+                anyWithoutStems = true;
+            }
+        }
+        m_pGenerateStemsAction->setEnabled(anyWithoutStems);
+        m_pRegenerateStemsAction->setEnabled(anyWithStems);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -1822,6 +1872,48 @@ void WTrackMenu::slotReanalyzeWithVariableTempo() {
     AnalyzerTrack::Options options;
     options.useFixedTempo = false;
     addToAnalysis(options);
+}
+
+void WTrackMenu::slotGenerateStems() {
+    enqueueStems(false);
+}
+
+void WTrackMenu::slotRegenerateStems() {
+    enqueueStems(true);
+}
+
+void WTrackMenu::enqueueStems(bool regenerate) {
+    StemGenerator* pStemGenerator = StemGenerator::instance();
+    if (!pStemGenerator) {
+        QMessageBox::information(this,
+                tr("Stems"),
+                tr("Stem generation is not available in this build."));
+        return;
+    }
+    QList<TrackId> trackIds;
+    const TrackPointerList tracks = getTrackPointers();
+    for (const TrackPointer& pTrack : tracks) {
+        if (pTrack) {
+            trackIds.append(pTrack->getId());
+        }
+    }
+    if (trackIds.isEmpty()) {
+        return;
+    }
+    pStemGenerator->enqueueTracks(trackIds, regenerate);
+
+    // Stem generation runs in the background, so confirm what is queued and
+    // where the progress shows up instead of leaving the user guessing.
+    const int pending = pStemGenerator->pendingCount();
+    if (pending > 0) {
+        QMessageBox::information(this,
+                tr("Stems"),
+                tr("%n track(s) queued for stem generation. The progress is shown next "
+                   "to the STEMS button in the toolbar, and the jobs wait while a deck "
+                   "is playing.",
+                        "",
+                        pending));
+    }
 }
 
 void WTrackMenu::slotLockBpm() {
@@ -3031,6 +3123,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::FileBrowser:
         return true;
     case Feature::FindOnWeb:
+        return true;
+    case Feature::Stems:
         return true;
     case Feature::Properties:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::Properties);

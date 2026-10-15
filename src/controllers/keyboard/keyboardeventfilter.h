@@ -5,6 +5,7 @@
 #include <QMultiHash>
 #include <QObject>
 #include <QPointer>
+#include <functional>
 
 #include "control/controlobject.h"
 #include "preferences/configobject.h"
@@ -38,6 +39,21 @@ class KeyboardEventFilter : public QObject {
 
     // Returns a valid QString with modifier keys from a QKeyEvent
     static QKeySequence getKeySeq(QKeyEvent* e);
+
+    /// True if the object, or one of its parents, is an editable text input.
+    static bool isEditableTextInput(QObject* pObject);
+
+    /// True if the user is typing, either in a real text input or in one hosted
+    /// by a widget that is painted outside the window hierarchy, see
+    /// registerEmbeddedTextInputFocusQuery(). Shortcuts must not be triggered
+    /// while this is true, otherwise the keys would not reach the text input.
+    static bool isTextInputFocused();
+
+    /// Widgets that are painted outside the window hierarchy, e.g. the library
+    /// painted into a QML item, cannot be seen by
+    /// QGuiApplication::focusObject(). Their host registers a query here so the
+    /// keys typed in a text input of theirs are not taken for shortcuts.
+    static void registerEmbeddedTextInputFocusQuery(std::function<bool()> query);
 
     bool isEnabled() {
         return m_enabled;
@@ -116,6 +132,9 @@ class KeyboardEventFilter : public QObject {
     bool m_showOnlyKeyboardShortcuts;
 
     AutoFileReloader m_autoReloader;
+
+    /// See registerEmbeddedTextInputFocusQuery().
+    static inline std::function<bool()> s_embeddedTextInputFocusQuery;
 
     // Actions in the menu bar with the associated ConfigKey and
     // the default QKeySequence (as QString).

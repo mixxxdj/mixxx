@@ -4,12 +4,14 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QString>
+#include <QVariantList>
 #include <Qt>
 #include <memory>
 
 #include "library/dao/directorydao.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollectionmanager.h"
+#include "preferences/usersettings.h"
 #include "qml/qmllibrarysource.h"
 #include "qml/qmllibrarytracklistmodel.h"
 #include "util/parented_ptr.h"
@@ -144,6 +146,10 @@ class QmlLibraryProxy : public QObject {
         s_pLibrary = std::move(pLibrary);
     }
 
+    static void registerUserSettings(UserSettingsPointer pConfig) {
+        s_pConfig = std::move(pConfig);
+    }
+
     static Library* get() {
         return s_pLibrary.get();
     }
@@ -186,6 +192,17 @@ class QmlLibraryProxy : public QObject {
     bool enginePrimeExportAvailable() const;
 
     Q_INVOKABLE void analyze(const mixxx::qml::QmlTrackProxy* track) const;
+
+    /// Returns up to maxResults library tracks that mix harmonically with
+    /// referenceTrack: the keys of the circle of fifths and the tempo windows
+    /// around the reference tempo, its half and its double, which are mixed the
+    /// same way. Returns a list of plain maps (no track proxies), each carrying
+    /// the artist, title, tempo, numeric key, play count and location URL, so
+    /// that the skin can render the list and load a track by location. Returns
+    /// an empty list when there is no usable reference track or nothing matches.
+    Q_INVOKABLE QVariantList findCompatibleTracks(
+            mixxx::qml::QmlTrackProxy* referenceTrack,
+            int maxResults);
     Q_INVOKABLE void createCrate();
     Q_INVOKABLE void createPlaylist();
     Q_INVOKABLE void exportLibrary();
@@ -224,6 +241,7 @@ class QmlLibraryProxy : public QObject {
   private:
     void deliverPendingLibraryScanSummary();
     static inline std::shared_ptr<Library> s_pLibrary;
+    static inline UserSettingsPointer s_pConfig;
 
     QString m_waveformCacheDiskUsage;
 

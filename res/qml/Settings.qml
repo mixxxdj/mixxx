@@ -288,6 +288,8 @@ Popup {
                     }
                     Settings.AutoDJ {
                     }
+                    Settings.Stems {
+                    }
                     Settings.Broadcast {
                     }
                     Settings.Recording {

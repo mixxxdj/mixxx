@@ -19,14 +19,19 @@ Controls.Panel {
     bottomBorderColor: LateNightTheme.isPaleMoon ? "#020202" : "#111111"
     clip: true
     color: LateNightTheme.waveformOverlayColor
-    implicitHeight: root.hasStems ? stemChannelHeight * stemChannelCount : 0
-    implicitWidth: 240
+    implicitHeight: root.hasStems ? root.stemChannelHeight * root.stemChannelCount : 0
+    implicitWidth: 234
     leftBorderColor: LateNightTheme.isPaleMoon ? "#1c1c1c" : "#222222"
     rightBorderColor: "#111111"
     topBorderColor: LateNightTheme.isPaleMoon ? "#1c1c1c" : "#222222"
 
-    readonly property int stemChannelCount: 4
-    readonly property int stemChannelHeight: 26
+    /// Number of stems of the loaded file, so a two stem file does not leave
+    /// empty rows behind the real ones.
+    readonly property int stemChannelCount: stemCountProxy.value > 0 ? stemCountProxy.value : 4
+    readonly property int stemChannelHeight: 24
+    /// Stem that is currently soloed, -1 when none is.
+    property int soloStemIndex: -1
+    property var muteValuesBeforeSolo: [0, 0, 0, 0]
 
     function refreshStemInfos() {
         const infos = [];
@@ -36,15 +41,61 @@ Controls.Panel {
         root.stemInfos = infos;
     }
 
+    /// Solo mutes the other stems of the deck and, when it is switched off
+    /// again, puts back the mutes that were in place before.
+    function toggleSolo(stemIndex) {
+        if (root.soloStemIndex === stemIndex) {
+            for (let stemIdx = 0; stemIdx < root.stemChannelCount; stemIdx++) {
+                const proxy = stemMutes.objectAt(stemIdx);
+                if (proxy) {
+                    proxy.value = root.muteValuesBeforeSolo[stemIdx];
+                }
+            }
+            root.soloStemIndex = -1;
+            return;
+        }
+        if (root.soloStemIndex < 0) {
+            const saved = [];
+            for (let stemIdx = 0; stemIdx < root.stemChannelCount; stemIdx++) {
+                const proxy = stemMutes.objectAt(stemIdx);
+                saved.push(proxy ? proxy.value : 0);
+            }
+            root.muteValuesBeforeSolo = saved;
+        }
+        for (let stemIdx = 0; stemIdx < root.stemChannelCount; stemIdx++) {
+            const proxy = stemMutes.objectAt(stemIdx);
+            if (proxy) {
+                proxy.value = stemIdx === stemIndex ? 0 : 1;
+            }
+        }
+        root.soloStemIndex = stemIndex;
+    }
+
     Mixxx.ControlProxy {
         id: stemCountProxy
 
         group: root.group
         key: "stem_count"
     }
+    // One proxy per stem so solo can drive the mutes of the whole deck.
+    // ControlProxy is not an Item, so this needs an Instantiator rather than a
+    // Repeater.
+    Instantiator {
+        id: stemMutes
+
+        model: root.stemChannelCount
+
+        delegate: Mixxx.ControlProxy {
+            required property int index
+
+            group: `${root.group.substring(0, root.group.length - 1)}_Stem${index + 1}]`
+            key: "mute"
+        }
+    }
     Connections {
         function onStemsChanged() {
             root.refreshStemInfos();
+            root.soloStemIndex = -1;
         }
 
         target: root.currentTrack
@@ -52,6 +103,7 @@ Controls.Panel {
     Connections {
         function onTrackChanged() {
             root.refreshStemInfos();
+            root.soloStemIndex = -1;
         }
 
         target: root.deckPlayer
@@ -65,7 +117,7 @@ Controls.Panel {
     Text {
         anchors.centerIn: parent
         color: LateNightTheme.waveformNoStemLabelColor
-        font.family: "Open Sans"
+        font.family: LateNightTheme.fontFamily
         font.pixelSize: 13
         font.weight: Font.DemiBold
         text: qsTr("Track has no STEMs")
@@ -104,11 +156,11 @@ Controls.Panel {
 
                     Text {
                         Layout.fillHeight: true
-                        Layout.preferredWidth: 50
+                        Layout.preferredWidth: 46
                         color: stem.stemColor
                         elide: Text.ElideRight
-                        font.family: "Open Sans"
-                        font.pixelSize: 13
+                        font.family: LateNightTheme.fontFamily
+                        font.pixelSize: 12
                         font.weight: Font.DemiBold
                         text: stem.label
                         verticalAlignment: Text.AlignVCenter
@@ -121,9 +173,19 @@ Controls.Panel {
                     Item {
                         Layout.preferredWidth: 2
                     }
+                    StemSoloButton {
+                        Layout.preferredHeight: 18
+                        Layout.preferredWidth: 18
+                        active: root.soloStemIndex === stem.index
+
+                        onToggled: root.toggleSolo(stem.index)
+                    }
+                    Item {
+                        Layout.preferredWidth: 4
+                    }
                     Controls.Knob {
-                        Layout.preferredHeight: 26
-                        Layout.preferredWidth: 26
+                        Layout.preferredHeight: 22
+                        Layout.preferredWidth: 22
                         backgroundSource: LateNightTheme.assetFxKnobBackground
                         color: stem.stemColor
                         displayArc: true
@@ -138,7 +200,7 @@ Controls.Panel {
                     }
                     Mixer.QuickEffectSelector {
                         Layout.preferredHeight: 18
-                        Layout.preferredWidth: 85
+                        Layout.preferredWidth: 74
                         arrowOnRight: true
                         group: stem.stemGroup
                         popupWidth: 160
@@ -148,16 +210,16 @@ Controls.Panel {
                         Layout.preferredWidth: 2
                     }
                     Mixer.QuickEffectEnableButton {
-                        Layout.preferredHeight: 18
-                        Layout.preferredWidth: 18
+                        Layout.preferredHeight: 16
+                        Layout.preferredWidth: 16
                         quickEffectGroup: stem.quickEffectGroup
                     }
                     Item {
                         Layout.preferredWidth: 2
                     }
                     Controls.Knob {
-                        Layout.preferredHeight: 26
-                        Layout.preferredWidth: 26
+                        Layout.preferredHeight: 22
+                        Layout.preferredWidth: 22
                         backgroundSource: LateNightTheme.assetFxKnobBackground
                         color: stem.stemColor
                         displayArc: true

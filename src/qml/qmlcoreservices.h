@@ -19,6 +19,10 @@ class QmlCoreServices : public QObject, public Singleton<QmlCoreServices> {
     Q_PROPERTY(QString initializationService READ initializationService NOTIFY
                     initializationServiceChanged)
     Q_PROPERTY(QString colorScheme READ colorScheme CONSTANT)
+    /// The stem generator, so the skin can show what this machine can do and
+    /// what is in the queue. Exposed as a plain QObject because the generator
+    /// lives in the engine library and not in the QML module.
+    Q_PROPERTY(QObject* stemGenerator READ stemGenerator CONSTANT)
     QML_NAMED_ELEMENT(Core)
     QML_SINGLETON
   public:
@@ -45,6 +49,8 @@ class QmlCoreServices : public QObject, public Singleton<QmlCoreServices> {
     QString colorScheme() const {
         return m_colorScheme;
     }
+
+    QObject* stemGenerator() const;
 
     void setReady();
     void setInitializationProgress(int progress, const QString& service);

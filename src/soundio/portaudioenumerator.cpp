@@ -278,6 +278,35 @@ std::vector<SoundDevicePointer> PortAudioEnumerator::queryDevices() const {
     return devices;
 }
 
+SoundDevicePointer PortAudioEnumerator::getDefaultOutputDevice(const QString& api) const {
+    if (!m_initialized) {
+        return {};
+    }
+
+    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); ++i) {
+        const PaHostApiInfo* pApiInfo = Pa_GetHostApiInfo(i);
+        if (!pApiInfo || pApiInfo->name == nullptr ||
+                api != QString::fromUtf8(pApiInfo->name)) {
+            continue;
+        }
+        // Each host API reports the device the operating system uses by default,
+        // which is what the user expects to hear from when the configured device
+        // is not connected.
+        const PaDeviceIndex defaultOutputDevice = pApiInfo->defaultOutputDevice;
+        if (defaultOutputDevice == paNoDevice) {
+            return {};
+        }
+        for (const auto& pDevice : m_devices) {
+            if (pDevice->getDeviceId().deviceIndex == defaultOutputDevice) {
+                return pDevice;
+            }
+        }
+        return {};
+    }
+
+    return {};
+}
+
 void PortAudioEnumerator::setJACKName() const {
 #ifdef Q_OS_LINUX
     typedef PaError (*SetJackClientName)(const char* name);

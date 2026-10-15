@@ -162,6 +162,40 @@ QList<QString> SoundManager::getHostAPIList() const {
     return m_pEnumerator->getAPIs();
 }
 
+SoundDevicePointer SoundManager::getDefaultOutputDevice() const {
+    return m_pEnumerator->getDefaultOutputDevice(m_config.getAPI());
+}
+
+SoundDevicePointer SoundManager::getDevice(const SoundDeviceId& deviceId) const {
+    for (const auto& pDevice : m_pEnumerator->queryDevices()) {
+        if (pDevice->getDeviceId() == deviceId) {
+            return pDevice;
+        }
+    }
+    return {};
+}
+
+void SoundManager::reinitializeDevices() {
+    // The backend caches the list of devices, so it has to be shut down and
+    // started again to notice a device that was connected while Mixxx was
+    // running. The streams are closed for that, which interrupts the sound.
+    const bool sleepAfterClosing = true;
+    closeDevices(sleepAfterClosing);
+
+    m_pEnumerator->deinitialize();
+    m_pEnumerator->initialize();
+
+    // Read the configuration again and match its devices against the list that
+    // was just enumerated: it may have been changed while Mixxx was running.
+    if (m_config.readFromDisk()) {
+        devicesEnumerated();
+    } else {
+        m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::DEVICES);
+    }
+
+    emit devicesUpdated();
+}
+
 void SoundManager::closeDevices(
         [[maybe_unused]] bool sleepAfterClosing, [[maybe_unused]] bool async) {
     // sleepAfterClosing and async maybe unused depending on platform support
@@ -325,6 +359,13 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // load with all configured devices.
     // all found devices are removed below
     QSet<SoundDeviceId> devicesNotFound = m_config.getDevices();
+
+    // Devices that are not connected right now were substituted with the default
+    // output device by SoundManagerConfig::validateDevices(), so they are not an
+    // error the user has to be bothered with.
+    for (const auto& deviceId : m_config.getSubstitutedDevices()) {
+        devicesNotFound.remove(deviceId);
+    }
 
     // pair is isInput, isOutput
     QVector<DeviceMode> toOpen;

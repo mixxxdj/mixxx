@@ -14,7 +14,7 @@
 // ************* Script now is Only for 1.11.0 and above *************
 //
 //	Delete + Effect: Brake Effect (maintain pressed).
-//			 Flanger Delay (2nd knob of effect section): Adjust the speed of Brake.
+//			 2nd FX knob (of effect section): Adjust the speed of Brake.
 //
 //	Delete + Hotcues: Clear Hotcues (First press Delete, then Hotcue).
 //	Delete + Reloop:  Clear Loop.
@@ -25,7 +25,7 @@
 //
 //  	Gain: 	The 3rd knob of the "effect" section is "Gain" (up to clip).
 //
-//	Effect:	Flanger. 1st and 2nd knob modify Depth and Delay.
+//	Effect:	First effect slot of the deck's effect unit. 1st and 2nd knob modify its parameters; the button enables it.
 //
 //	Cue: 	Don't set Cue accidentally at the end of the song (return to the latest cue).
 //		LED ON when stopped. LED OFF when playing.
@@ -276,11 +276,20 @@ NumarkMixTrackPro.LoadTrack = function(channel, control, value, status, group) {
 
 }
 
+// The deck's effect unit is the one its channel is assigned to by default:
+// unit 1 for channel 1 and unit 2 for channel 2. The [Flanger] group and the
+// per-channel "flanger" control of Mixxx 1.x no longer exist.
+NumarkMixTrackPro.fxSlotForDeck = function(deck) {
+	return "[EffectRack1_EffectUnit" + (deck == 2 ? 2 : 1) + "_Effect1]";
+}
+
 NumarkMixTrackPro.flanger = function(channel, control, value, status, group) {
 
 // 	if (!value) return;
 
 	var deck = NumarkMixTrackPro.groupToDeck(group);
+
+	var fxSlot = NumarkMixTrackPro.fxSlotForDeck(deck);
 
 	var speed = 1;
 
@@ -288,22 +297,20 @@ NumarkMixTrackPro.flanger = function(channel, control, value, status, group) {
 
 	// Delete + Effect = Brake
 
-//	print ("Delay: " + engine.getValue("[Flanger]","lfoDelay"));
+		// The speed follows the 2nd FX knob: gentle at the bottom of its range
+		// and fast from a quarter up. While the effect slot is empty there is no
+		// parameter2 control, which reads as 0 and keeps a gentle brake.
+		var knob = engine.getValue(fxSlot, "parameter2");
 
-		if (engine.getValue("[Flanger]","lfoDelay") < 5026) {
+		if (knob >= 0.25) {
 
-			speed = engine.getValue("[Flanger]","lfoDelay") / 5025;
+			speed = 300;
 
-			if (speed < 0) speed = 0;
+		} else if (knob > 0) {
 
-		} else {
+			speed = knob * 4;
 
-			speed = (engine.getValue("[Flanger]","lfoDelay") - 5009)/ 16,586666667
-
-			if (speed > 300) speed = 300;
 		}
-
-//	print ("Speed: " + speed);
 
 		engine.brake(deck, value, speed);
 
@@ -311,11 +318,8 @@ NumarkMixTrackPro.flanger = function(channel, control, value, status, group) {
 
 	} else {
 		if (!value) return;
-		if (engine.getValue(group, "flanger")) {
-			engine.setValue(group, "flanger", 0);
-		}else{
-			engine.setValue(group, "flanger", 1);
-		}
+		// Enables the first effect slot of the deck's effect unit.
+		engine.setValue(fxSlot, "enabled", engine.getValue(fxSlot, "enabled") ? 0 : 1);
 	}
 
 }
@@ -596,7 +600,7 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 		if (!NumarkMixTrackPro.touch[deck-1]){
 
 			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
-			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, () => { NumarkMixTrackPro.jogWheelStopScratch(); }, true);
+			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, () => { NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
 		}
 
 	}
@@ -617,6 +621,9 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 
 
 NumarkMixTrackPro.jogWheelStopScratch = function(deck) {
+	// engine.scratchDisable() asserts on a deck that is not a channel, and a
+	// failing assertion closes Mixxx, so bail out instead.
+	if (!(deck >= 1)) return;
 	NumarkMixTrackPro.scratchTimer[deck-1] = -1;
 	engine.scratchDisable(deck);
 }

@@ -3,11 +3,14 @@
 #include <QMenu>
 #include <QtDebug>
 
+#include "ai/aimixplanner.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
+#include "library/autodj/harmonicmixing.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
+#include "library/librarytablemodel.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -15,6 +18,7 @@
 #include "library/treeitem.h"
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/clipboard.h"
 #include "util/defs.h"
@@ -161,6 +165,10 @@ void AutoDJFeature::bindLibraryWidget(
             &DlgAutoDJ::trackSelected,
             this,
             &AutoDJFeature::trackSelected);
+    connect(m_pAutoDJView,
+            &DlgAutoDJ::aiMixRequested,
+            this,
+            &AutoDJFeature::slotAiMixRequested);
 
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJProcessor,
@@ -317,16 +325,42 @@ void AutoDJFeature::slotAddRandomTrack() {
         for (int failedRetrieveAttempts = 0;
                 !pRandomTrack && (failedRetrieveAttempts < 2 * kMaxRetrieveAttempts); // 2 rounds
                 ++failedRetrieveAttempts) {
+            const bool fromCrates = !m_crateList.isEmpty();
+
+            // If harmonic mixing is enabled, first try to continue with a track
+            // that mixes harmonically with the track currently at the end of
+            // the queue, then fall back to the plain random selection if there
+            // is no compatible candidate.
             TrackId randomTrackId;
-            if (m_crateList.isEmpty()) {
-                // Fetch Track from Library since we have no assigned crates
-                randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(
-                        m_iAutoDJPlaylistId);
-            } else {
-                // Fetch track from crates.
-                // We do not fall back to Library if this fails because this
-                // may add banned tracks
-                randomTrackId = m_autoDjCratesDao.getRandomTrackId();
+            QList<int> compatibleKeyIds;
+            QList<mixxx::HarmonicMixing::BpmRange> bpmRanges;
+            if (getHarmonicSelectionConstraints(&compatibleKeyIds, &bpmRanges)) {
+                // Try the configured tempo window first and widen it before
+                // dropping the tempo constraint, so that the key compatibility
+                // is kept even when nothing matches the tempo.
+                for (const auto& bpmRange : bpmRanges) {
+                    randomTrackId = m_autoDjCratesDao.getRandomTrackIdHarmonic(
+                            fromCrates,
+                            m_iAutoDJPlaylistId,
+                            compatibleKeyIds,
+                            bpmRange.isValid() ? bpmRange.min : 0.0,
+                            bpmRange.isValid() ? bpmRange.max : 0.0);
+                    if (randomTrackId.isValid()) {
+                        break;
+                    }
+                }
+            }
+            if (!randomTrackId.isValid()) {
+                if (fromCrates) {
+                    // Fetch track from crates.
+                    // We do not fall back to Library if this fails because this
+                    // may add banned tracks
+                    randomTrackId = m_autoDjCratesDao.getRandomTrackId();
+                } else {
+                    // Fetch Track from Library since we have no assigned crates
+                    randomTrackId = m_autoDjCratesDao.getRandomTrackIdFromLibrary(
+                            m_iAutoDJPlaylistId);
+                }
             }
 
             if (randomTrackId.isValid()) {
@@ -352,6 +386,53 @@ void AutoDJFeature::slotAddRandomTrack() {
         }
     }
     qWarning() << "Could not load random track.";
+}
+
+bool AutoDJFeature::getHarmonicSelectionConstraints(
+        QList<int>* pCompatibleKeyIds,
+        QList<mixxx::HarmonicMixing::BpmRange>* pBpmRanges) const {
+    VERIFY_OR_DEBUG_ASSERT(pCompatibleKeyIds && pBpmRanges) {
+        return false;
+    }
+
+    if (!m_pConfig->getValue<bool>(ConfigKey("[Auto DJ]", "HarmonicMixing"))) {
+        return false;
+    }
+
+    // The new track is mixed with the track that is currently at the end of the
+    // Auto DJ queue, i.e. the one queued most recently.
+    const QList<TrackId> queuedTrackIds =
+            m_playlistDao.getTrackIdsInPlaylistOrder(m_iAutoDJPlaylistId);
+    if (queuedTrackIds.isEmpty()) {
+        return false;
+    }
+    const TrackPointer pReferenceTrack =
+            m_pLibrary->trackCollectionManager()->getTrackById(queuedTrackIds.constLast());
+    if (!pReferenceTrack) {
+        return false;
+    }
+
+    const auto bpmRanges = mixxx::HarmonicMixing::bpmFallbackRanges(
+            pReferenceTrack->getBpm(),
+            m_pConfig->getValue(
+                    ConfigKey("[Auto DJ]", "HarmonicBpmTolerance"),
+                    static_cast<int>(mixxx::HarmonicMixing::kDefaultBpmTolerancePercent)));
+    if (bpmRanges.isEmpty()) {
+        return false;
+    }
+    const auto compatibleKeys =
+            mixxx::HarmonicMixing::compatibleKeys(pReferenceTrack->getKey());
+    if (compatibleKeys.isEmpty()) {
+        return false;
+    }
+
+    pCompatibleKeyIds->clear();
+    pCompatibleKeyIds->reserve(compatibleKeys.size());
+    for (const auto key : compatibleKeys) {
+        pCompatibleKeyIds->append(static_cast<int>(key));
+    }
+    *pBpmRanges = bpmRanges;
+    return true;
 }
 
 void AutoDJFeature::constructCrateChildModel() {
@@ -411,4 +492,105 @@ void AutoDJFeature::slotRandomQueue(int numTracksToAdd) {
     for (int addCount = 0; addCount < numTracksToAdd; ++addCount) {
         slotAddRandomTrack();
     }
+}
+
+QJsonArray AutoDJFeature::buildAiCandidateTracks() {
+    m_aiCandidateTrackIds.clear();
+
+    LibraryTableModel* pTrackTableModel = m_pLibrary->trackTableModel();
+    if (pTrackTableModel == nullptr) {
+        return QJsonArray();
+    }
+
+    const mixxx::ai::AiMixSettings settings =
+            mixxx::ai::AiMixSettings::fromUserSettings(*m_pConfig);
+    const int rowCount = qMin(pTrackTableModel->rowCount(), settings.maxCandidateTracks);
+
+    QJsonArray candidates;
+    m_aiCandidateTrackIds.reserve(rowCount);
+    for (int row = 0; row < rowCount; ++row) {
+        const TrackPointer pTrack = pTrackTableModel->getTrack(
+                pTrackTableModel->index(row, 0));
+        if (pTrack == nullptr) {
+            continue;
+        }
+
+        mixxx::ai::AiCandidateTrack candidate;
+        candidate.index = candidates.size();
+        candidate.title = pTrack->getTitle();
+        candidate.artist = pTrack->getArtist();
+        candidate.genre = pTrack->getGenre();
+        candidate.bpm = pTrack->getBpm();
+        const mixxx::track::io::key::ChromaticKey key = pTrack->getKey();
+        if (key != mixxx::track::io::key::INVALID) {
+            // Camelot notation, which is what the system prompt refers to.
+            candidate.key = KeyUtils::keyToString(key, KeyUtils::KeyNotation::Lancelot);
+        }
+        candidate.durationSeconds = static_cast<int>(pTrack->getDuration());
+
+        candidates.append(candidate.toJson());
+        m_aiCandidateTrackIds.append(pTrack->getId());
+    }
+    return candidates;
+}
+
+void AutoDJFeature::slotAiMixRequested(const QString& instruction) {
+    if (m_pAutoDJView == nullptr) {
+        return;
+    }
+
+    // Created on demand: setting up the planner during start-up is not only
+    // unnecessary, it also runs before Auto DJ itself is ready.
+    if (m_pAiMixPlanner == nullptr) {
+        m_pAiMixPlanner = new mixxx::ai::AiMixPlanner(this, m_pConfig);
+        connect(m_pAiMixPlanner,
+                &mixxx::ai::AiMixPlanner::succeeded,
+                this,
+                &AutoDJFeature::slotAiMixSucceeded);
+        connect(m_pAiMixPlanner,
+                &mixxx::ai::AiMixPlanner::failed,
+                this,
+                &AutoDJFeature::slotAiMixFailed);
+    }
+
+    const QJsonArray candidates = buildAiCandidateTracks();
+    QString error;
+    if (!m_pAiMixPlanner->requestSetList(instruction, candidates, &error)) {
+        m_pAutoDJView->setAiStatusMessage(error, true);
+        return;
+    }
+    m_pAutoDJView->setAiMixBusy(true);
+}
+
+void AutoDJFeature::slotAiMixSucceeded(const QList<int>& trackOrder) {
+    if (m_pAutoDJView == nullptr) {
+        return;
+    }
+    m_pAutoDJView->setAiMixBusy(false);
+
+    QList<TrackId> trackIds;
+    trackIds.reserve(trackOrder.size());
+    for (const int index : trackOrder) {
+        if (index >= 0 && index < m_aiCandidateTrackIds.size()) {
+            trackIds.append(m_aiCandidateTrackIds.at(index));
+        }
+    }
+    if (trackIds.isEmpty()) {
+        m_pAutoDJView->setAiStatusMessage(
+                tr("The AI assistant did not pick any track from the library."), true);
+        return;
+    }
+
+    m_playlistDao.addTracksToAutoDJQueue(trackIds, PlaylistDAO::AutoDJSendLoc::REPLACE);
+    m_pAutoDJView->setAiStatusMessage(
+            tr("The AI assistant built a set of %n track(s).", "", trackIds.size()),
+            false);
+}
+
+void AutoDJFeature::slotAiMixFailed(const QString& errorMessage) {
+    if (m_pAutoDJView == nullptr) {
+        return;
+    }
+    m_pAutoDJView->setAiMixBusy(false);
+    m_pAutoDJView->setAiStatusMessage(errorMessage, true);
 }

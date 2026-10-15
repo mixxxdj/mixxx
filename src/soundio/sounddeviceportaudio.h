@@ -57,6 +57,8 @@ class SoundDevicePortAudio : public SoundDevice {
                             : SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
+    bool isSampleRateSupported(mixxx::audio::SampleRate sampleRate) const override;
+
   private:
     void updateCallbackEntryToDacTime(
             SINT framesPerBuffer, const PaStreamCallbackTimeInfo* timeInfo);

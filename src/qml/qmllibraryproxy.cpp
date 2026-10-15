@@ -1,14 +1,21 @@
 #include "qml/qmllibraryproxy.h"
 
 #include <QAbstractItemModel>
+#include <QDebug>
 #include <QLocale>
 #include <QQmlEngine>
 #include <QSqlDatabase>
+#include <QSqlError>
+#include <QSqlQuery>
 #include <QStringList>
+#include <QUrl>
+#include <QVariantMap>
 #include <cmath>
 
 #include "control/controlobject.h"
+#include "library/autodj/harmonicmixing.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/librarytablemodel.h"
@@ -34,6 +41,10 @@ namespace {
 const ConfigKey kHotcueDefaultColorIndexConfigKey("[Controls]", "HotcueDefaultColorIndex");
 const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorIndex");
 const ConfigKey kJumpDefaultColorIndexConfigKey("[Controls]", "jump_default_color_index");
+
+// Read by Auto DJ too, when it looks for the next harmonically compatible track.
+const QString kAutoDjGroup = QStringLiteral("[Auto DJ]");
+const QString kHarmonicBpmToleranceKey = QStringLiteral("HarmonicBpmTolerance");
 
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
 
@@ -303,6 +314,131 @@ void QmlLibraryProxy::analyze(const QmlTrackProxy* track) const {
         return;
     }
     emit s_pLibrary->analyzeTracks({track->internal()->getId()});
+}
+
+QVariantList QmlLibraryProxy::findCompatibleTracks(
+        QmlTrackProxy* pReferenceTrack, int maxResults) {
+    QVariantList compatibleTracks;
+    if (pReferenceTrack == nullptr || maxResults <= 0 ||
+            m_pTrackCollectionManager == nullptr) {
+        return compatibleTracks;
+    }
+
+    const TrackPointer pReferenceTrackInternal = pReferenceTrack->internal();
+    if (!pReferenceTrackInternal) {
+        return compatibleTracks;
+    }
+
+    const QList<mixxx::track::io::key::ChromaticKey> compatibleKeys =
+            mixxx::HarmonicMixing::compatibleKeys(pReferenceTrackInternal->getKey());
+    if (compatibleKeys.isEmpty()) {
+        return compatibleTracks;
+    }
+
+    // Share the tolerance with Auto DJ, so both agree on what counts as a
+    // compatible tempo.
+    const int tolerancePercent = s_pConfig
+            ? s_pConfig->getValue(ConfigKey(kAutoDjGroup, kHarmonicBpmToleranceKey),
+                      static_cast<int>(mixxx::HarmonicMixing::kDefaultBpmTolerancePercent))
+            : static_cast<int>(mixxx::HarmonicMixing::kDefaultBpmTolerancePercent);
+
+    // Half and double tempo are mixed the same way, so they are accepted too.
+    // An unknown reference tempo leaves the list empty, which mixes by key only.
+    const double referenceBpm = pReferenceTrackInternal->getBpm();
+    QList<mixxx::HarmonicMixing::BpmRange> bpmRanges;
+    for (const double tempoFactor : {1.0, 2.0, 0.5}) {
+        const mixxx::HarmonicMixing::BpmRange range =
+                mixxx::HarmonicMixing::bpmRange(
+                        referenceBpm * tempoFactor,
+                        static_cast<double>(tolerancePercent));
+        if (range.isValid()) {
+            bpmRanges.append(range);
+        }
+    }
+
+    QStringList keyPlaceholders;
+    keyPlaceholders.reserve(compatibleKeys.size());
+    for (int i = 0; i < compatibleKeys.size(); ++i) {
+        keyPlaceholders.append(QStringLiteral(":key%1").arg(i));
+    }
+
+    QString bpmFilter;
+    for (int i = 0; i < bpmRanges.size(); ++i) {
+        if (!bpmFilter.isEmpty()) {
+            bpmFilter += QStringLiteral(" OR ");
+        }
+        bpmFilter += QStringLiteral("l.") + LIBRARYTABLE_BPM +
+                QStringLiteral(" BETWEEN :bpm%1Min AND :bpm%2Max").arg(i).arg(i);
+    }
+    if (!bpmFilter.isEmpty()) {
+        bpmFilter = QStringLiteral(" AND (") + bpmFilter + QLatin1Char(')');
+    }
+
+    const QString strQuery = QStringLiteral("SELECT l.") +
+            LIBRARYTABLE_ARTIST + QStringLiteral(", l.") +
+            LIBRARYTABLE_TITLE + QStringLiteral(", l.") +
+            LIBRARYTABLE_BPM + QStringLiteral(", l.") +
+            LIBRARYTABLE_KEY_ID + QStringLiteral(", l.") +
+            LIBRARYTABLE_TIMESPLAYED + QStringLiteral(", tl.") +
+            TRACKLOCATIONSTABLE_LOCATION +
+            QStringLiteral(" FROM ") + LIBRARY_TABLE + QStringLiteral(" l") +
+            QStringLiteral(" INNER JOIN ") + TRACKLOCATIONS_TABLE +
+            QStringLiteral(" tl ON l.") + LIBRARYTABLE_LOCATION +
+            QStringLiteral(" = tl.") + LIBRARYTABLE_ID +
+            QStringLiteral(" WHERE l.") + LIBRARYTABLE_KEY_ID +
+            QStringLiteral(" IN (") +
+            keyPlaceholders.join(QLatin1Char(',')) + QLatin1Char(')') +
+            bpmFilter +
+            QStringLiteral(" AND l.") + LIBRARYTABLE_ID +
+            QStringLiteral(" != :referenceId") +
+            // Columns that predate a default are nullable, and NULL means "not
+            // deleted", so they must not hide the track.
+            QStringLiteral(" AND IFNULL(l.") + LIBRARYTABLE_MIXXXDELETED +
+            QStringLiteral(", 0) != 1") +
+            QStringLiteral(" AND IFNULL(tl.fs_deleted, 0) != 1") +
+            QStringLiteral(" ORDER BY l.") + LIBRARYTABLE_TIMESPLAYED +
+            QStringLiteral(" DESC, RANDOM() LIMIT :limit");
+
+    QSqlQuery sqlQuery(
+            m_pTrackCollectionManager->internalCollection()->database());
+    if (!sqlQuery.prepare(strQuery)) {
+        qWarning() << "QmlLibraryProxy: could not prepare the compatibility query:"
+                   << sqlQuery.lastError();
+        return compatibleTracks;
+    }
+
+    for (int i = 0; i < compatibleKeys.size(); ++i) {
+        sqlQuery.bindValue(QStringLiteral(":key%1").arg(i),
+                static_cast<int>(compatibleKeys.at(i)));
+    }
+    for (int i = 0; i < bpmRanges.size(); ++i) {
+        sqlQuery.bindValue(QStringLiteral(":bpm%1Min").arg(i), bpmRanges.at(i).min);
+        sqlQuery.bindValue(QStringLiteral(":bpm%1Max").arg(i), bpmRanges.at(i).max);
+    }
+    sqlQuery.bindValue(QStringLiteral(":referenceId"),
+            pReferenceTrackInternal->getId().toVariant());
+    sqlQuery.bindValue(QStringLiteral(":limit"), maxResults);
+
+    if (!sqlQuery.exec()) {
+        qWarning() << "QmlLibraryProxy: the compatibility query failed:"
+                   << sqlQuery.lastError();
+        return compatibleTracks;
+    }
+
+    while (sqlQuery.next()) {
+        QVariantMap compatibleTrack;
+        compatibleTrack.insert(QStringLiteral("artist"), sqlQuery.value(0).toString());
+        compatibleTrack.insert(QStringLiteral("title"), sqlQuery.value(1).toString());
+        compatibleTrack.insert(QStringLiteral("bpm"), sqlQuery.value(2).toDouble());
+        // Numeric key, fed to Mixxx.KeyUtils.keyToString() by the skin so that
+        // the user's key notation is respected.
+        compatibleTrack.insert(QStringLiteral("key"), sqlQuery.value(3).toDouble());
+        compatibleTrack.insert(QStringLiteral("timesPlayed"), sqlQuery.value(4).toInt());
+        compatibleTrack.insert(QStringLiteral("locationUrl"),
+                QUrl::fromLocalFile(sqlQuery.value(5).toString()).toString());
+        compatibleTracks.append(compatibleTrack);
+    }
+    return compatibleTracks;
 }
 
 void QmlLibraryProxy::createCrate() {

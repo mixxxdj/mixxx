@@ -24,20 +24,20 @@ Item {
         group: "[Skin]"
         key: "show_4effectunits"
     }
+    // The +/- arrows step through the standard beat sizes, the way the C++
+    // BeatSpinBox does. Naming a step control here is optional, and the
+    // beatloop_size_*/beatjump_size_* controls do not exist in Mixxx, so the
+    // arrows used to do nothing.
     SharedDeck.BeatSizeSpinBoxBehavior {
         id: loopSizeBehavior
 
-        decrementKey: "beatloop_size_halve"
         group: root.group
-        incrementKey: "beatloop_size_double"
         key: "beatloop_size"
     }
     SharedDeck.BeatSizeSpinBoxBehavior {
         id: beatjumpSizeBehavior
 
-        decrementKey: "beatjump_size_halve"
         group: root.group
-        incrementKey: "beatjump_size_double"
         key: "beatjump_size"
     }
     DeckControlsBackground {}

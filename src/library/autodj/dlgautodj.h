@@ -14,6 +14,9 @@ class WLibrary;
 class WTrackTableView;
 class Library;
 class KeyboardEventFilter;
+class QBoxLayout;
+class QLabel;
+class QLineEdit;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
@@ -24,6 +27,14 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
             AutoDJProcessor* pProcessor,
             KeyboardEventFilter* pKeyboard);
     ~DlgAutoDJ() override;
+
+    /// Enables or disables the AI set planner row. It stays disabled while the
+    /// AI assistant is switched off in the preferences.
+    void setAiMixAvailable(bool available);
+    /// Shows a status message next to the AI instruction field.
+    void setAiStatusMessage(const QString& message, bool isError);
+    /// Disables the AI controls while a request is in flight.
+    void setAiMixBusy(bool busy);
 
     void onShow() override;
     bool hasFocus() const override;
@@ -45,9 +56,12 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void updateSelectionInfo();
     void slotTransitionModeChanged(int comboboxIndex);
     void slotRepeatPlaylistChanged(bool checked);
+    void slotAiMixButtonClicked();
 
   signals:
     void addRandomTrackButton(bool buttonChecked);
+    /// Emitted when the user asks the AI assistant to build a set list.
+    void aiMixRequested(const QString& instruction);
     void loadTrack(TrackPointer tio);
 #ifdef __STEM__
     void loadTrackToPlayer(TrackPointer tio,
@@ -63,6 +77,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void setupActionButton(QPushButton* pButton,
             void (DlgAutoDJ::*pSlot)(bool),
             const QString& fallbackText);
+    /// Creates the "describe the set" row and inserts it above the queue.
+    void setupAiMixBar(QBoxLayout* pLayout);
     void keyPressEvent(QKeyEvent* pEvent) override;
 
     const UserSettingsPointer m_pConfig;
@@ -75,4 +91,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
 
     QString m_enableBtnTooltip;
     QString m_disableBtnTooltip;
+
+    QLineEdit* m_pAiInstructionLineEdit = nullptr;
+    QPushButton* m_pAiMixButton = nullptr;
+    QLabel* m_pAiStatusLabel = nullptr;
 };

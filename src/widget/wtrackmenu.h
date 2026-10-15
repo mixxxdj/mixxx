@@ -59,11 +59,12 @@ class WTrackMenu : public QMenu {
         SelectInLibrary = 1 << 15,
         Analyze = 1 << 16,
         FindOnWeb = 1 << 17,
+        Stems = 1 << 18,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
-                FindOnWeb
+                FindOnWeb | Stems
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -83,6 +84,7 @@ class WTrackMenu : public QMenu {
             WTrackMenu::Feature::Properties |
             WTrackMenu::Feature::UpdateReplayGainFromPregain |
             WTrackMenu::Feature::FindOnWeb |
+            WTrackMenu::Feature::Stems |
             WTrackMenu::Feature::SelectInLibrary};
 
     WTrackMenu(QWidget* parent,
@@ -162,6 +164,11 @@ class WTrackMenu : public QMenu {
     void slotReanalyze();
     void slotReanalyzeWithFixedTempo();
     void slotReanalyzeWithVariableTempo();
+
+    // Stems
+    void slotGenerateStems();
+    void slotRegenerateStems();
+    void enqueueStems(bool regenerate);
 
     // BPM
     void slotLockBpm();
@@ -294,6 +301,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QMenu> m_pHotcueMenu;
     parented_ptr<QMenu> m_pClearMetadataMenu;
     parented_ptr<QMenu> m_pAnalyzeMenu;
+    parented_ptr<QMenu> m_pStemsMenu;
     parented_ptr<QMenu> m_pBPMMenu;
     parented_ptr<QMenu> m_pColorMenu;
     parented_ptr<WCoverArtMenu> m_pCoverMenu;
@@ -361,6 +369,10 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pReanalyzeAction;
     parented_ptr<QAction> m_pReanalyzeConstBpmAction;
     parented_ptr<QAction> m_pReanalyzeVarBpmAction;
+
+    // Stem generation actions
+    parented_ptr<QAction> m_pGenerateStemsAction;
+    parented_ptr<QAction> m_pRegenerateStemsAction;
 
     // Clear track metadata actions
     parented_ptr<QAction> m_pClearBeatsAction;

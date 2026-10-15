@@ -38,6 +38,12 @@ class SoundDevice {
     virtual void writeProcess(SINT framesPerBuffer) = 0;
     virtual QString getError() const = 0;
     virtual mixxx::audio::SampleRate getDefaultSampleRate() const = 0;
+    /// Whether the device accepts the given sample rate. Backends that cannot
+    /// tell return true, so an explicitly configured rate is kept.
+    virtual bool isSampleRateSupported(mixxx::audio::SampleRate sampleRate) const {
+        Q_UNUSED(sampleRate);
+        return true;
+    }
     virtual QString getChannelString(ChannelGroup channelGroup, bool input) const;
     mixxx::audio::ChannelCount getNumOutputChannels() const;
     mixxx::audio::ChannelCount getNumInputChannels() const;

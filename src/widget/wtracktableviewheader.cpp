@@ -17,6 +17,26 @@
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
+namespace {
+
+/// Logical index of the column with this internal name, or -1 when the model has
+/// no such column (playlists and crates do not define the stems column).
+int columnIndexByHeaderName(QHeaderView* pHeader, const QString& name) {
+    if (!pHeader->model()) {
+        return -1;
+    }
+    for (int column = 0; column < pHeader->count(); ++column) {
+        if (pHeader->model()
+                        ->headerData(column, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                        .toString() == name) {
+            return column;
+        }
+    }
+    return -1;
+}
+
+} // namespace
+
 HeaderViewState::HeaderViewState(const WTrackTableViewHeader& headers) {
     QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
@@ -154,6 +174,25 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
         pHeaders->setSortIndicator(
                 m_view_state.sort_indicator_section(),
                 static_cast<Qt::SortOrder>(m_view_state.sort_order()));
+    }
+
+    // The stem marker is placed right after the cover art, where it is easy to
+    // spot. A column the saved layout does not know about ends up at the far
+    // right, so it is moved once per profile and the user can drag it anywhere
+    // afterwards.
+    TrackModel* pTrackModel = dynamic_cast<TrackModel*>(pHeaders->model());
+    if (pTrackModel &&
+            pTrackModel->getModelSetting(QStringLiteral("stems_column_placed")).isEmpty()) {
+        const int stemsColumn = columnIndexByHeaderName(pHeaders, QStringLiteral("stems"));
+        if (stemsColumn >= 0) {
+            pTrackModel->setModelSetting(QStringLiteral("stems_column_placed"),
+                    QStringLiteral("1"));
+            const int coverColumn = columnIndexByHeaderName(pHeaders, QStringLiteral("coverart"));
+            const int from = pHeaders->visualIndex(stemsColumn);
+            if (coverColumn >= 0 && from >= 0) {
+                pHeaders->moveSection(from, pHeaders->visualIndex(coverColumn) + 1);
+            }
+        }
     }
 }
 

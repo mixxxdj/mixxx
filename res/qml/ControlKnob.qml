@@ -10,7 +10,9 @@ Skin.Knob {
 
     value: control.parameter
 
-    onTurned: control.parameter = value
+    onTurned: function (value) {
+        control.parameter = value;
+    }
 
     Mixxx.ControlProxy {
         id: control

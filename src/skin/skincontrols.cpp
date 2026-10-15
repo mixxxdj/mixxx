@@ -42,6 +42,9 @@ SkinControls::SkinControls()
                   true),
           m_showVinylControl(ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
                   true,
+                  false),
+          m_showTrackAdvisor(ConfigKey(kSkinGroup, QStringLiteral("show_track_advisor")),
+                  true,
                   false) {
     m_showEffectRack.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showLibraryCoverArt.setButtonMode(mixxx::control::ButtonMode::Toggle);
@@ -55,6 +58,7 @@ SkinControls::SkinControls()
     m_showSettings.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showSpinnies.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showVinylControl.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_showTrackAdvisor.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_showEffectRack.addAlias(ConfigKey(QStringLiteral("[EffectRack1]"), QStringLiteral("show")));
     m_showLibraryCoverArt.addAlias(ConfigKey(

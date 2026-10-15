@@ -85,8 +85,8 @@ Modify by Darío José Freije 06/27/2012-->
            <control>
                 <status>0xb0</status>
                 <midino>0x1b</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>parameter1</key>
                 <options>
                     <diff/>
                 </options>
@@ -94,8 +94,8 @@ Modify by Darío José Freije 06/27/2012-->
             <control>
                 <status>0xb0</status>
                 <midino>0x1c</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>parameter2</key>
                 <options>
                     <diff/>
                 </options>
@@ -354,8 +354,8 @@ Modify by Darío José Freije 06/27/2012-->
            <control>
                 <status>0xb0</status>
                 <midino>0x1e</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>parameter1</key>
                 <options>
                     <diff/>
                 </options>
@@ -363,8 +363,8 @@ Modify by Darío José Freije 06/27/2012-->
             <control>
                 <status>0xb0</status>
                 <midino>0x1f</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>parameter2</key>
                 <options>
                     <diff/>
                 </options>
@@ -705,8 +705,8 @@ Modify by Darío José Freije 06/27/2012-->
                 <off>0x64</off>
             </output>
             <output>
-                <group>[Channel1]</group>
-                <key>flanger</key>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
                 <options>
                     <normal/>
                 </options>
@@ -816,8 +816,8 @@ Modify by Darío José Freije 06/27/2012-->
                 <off>0x64</off>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>flanger</key>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
                 <options>
                     <normal/>
                 </options>

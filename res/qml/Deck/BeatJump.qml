@@ -26,12 +26,13 @@ Rectangle {
         group: root.group
         key: "track_loaded"
     }
+    // The +/- arrows step through the standard beat sizes, the way the C++
+    // BeatSpinBox does. Naming a step control here is optional, and there is no
+    // beatjump_size_double/halve control in Mixxx, so the arrows did nothing.
     BeatSizeSpinBoxBehavior {
         id: beatjumpSize
 
-        decrementKey: "beatjump_size_halve"
         group: root.group
-        incrementKey: "beatjump_size_double"
         key: "beatjump_size"
     }
     Skin.ControlButton {

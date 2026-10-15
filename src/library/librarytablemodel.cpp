@@ -24,6 +24,9 @@ void LibraryTableModel::setTableModel() {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "'' AS " + LIBRARYTABLE_PREVIEW
+            // Answered by the table model from the file system, see
+            // BaseSqlTableModel::hasStemFileForLocation.
+            << "'' AS " + LIBRARYTABLE_STEMS
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
             << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
@@ -43,6 +46,7 @@ void LibraryTableModel::setTableModel() {
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
+    tableColumns << LIBRARYTABLE_STEMS;
     tableColumns << LIBRARYTABLE_COVERART;
     setTable(tableName,
             LIBRARYTABLE_ID,

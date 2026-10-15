@@ -84,13 +84,15 @@ class SoundManagerConfig {
     mixxx::audio::SampleRate getSampleRate() const;
     void setSampleRate(mixxx::audio::SampleRate sampleRate);
     bool checkSampleRate(const SoundManager& soundManager);
-
     // Record the number of decks configured with this setup so they can
     // be created and configured.
     unsigned int getDeckCount() const;
     void setDeckCount(unsigned int deckCount);
     void setCorrectDeckCount(int configuredDeckCount);
     QSet<SoundDeviceId> getDevices() const;
+    /// Devices from the configuration that are not connected but keep their
+    /// routing, see validateDevices(). They must not be reported as missing.
+    QSet<SoundDeviceId> getSubstitutedDevices() const;
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
@@ -112,6 +114,10 @@ class SoundManagerConfig {
     void loadDefaults(SoundManager* soundManager, unsigned int flags);
 
   private:
+    bool isSampleRateSupportedByDevices(
+            const SoundManager& soundManager,
+            mixxx::audio::SampleRate sampleRate) const;
+
     QFileInfo m_configFile;
     QString m_api;
     // none of our sample rates are actually decimals, this avoids
@@ -127,6 +133,12 @@ class SoundManagerConfig {
     bool m_forceNetworkClock;
     QMultiHash<SoundDeviceId, AudioOutput> m_outputs;
     QMultiHash<SoundDeviceId, AudioInput> m_inputs;
+    // Configured devices that were not connected when validateDevices() ran.
+    // The entries of m_substitutedDevices keep their routing in m_outputs, so
+    // they are used again once the device is connected; m_fallbackDevices are
+    // only used for this session and are not written to disk.
+    QSet<SoundDeviceId> m_substitutedDevices;
+    QSet<SoundDeviceId> m_fallbackDevices;
     int m_iNumMicInputs;
     bool m_bExternalRecordBroadcastConnected;
     SoundManager* m_pSoundManager;

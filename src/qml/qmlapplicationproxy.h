@@ -19,6 +19,7 @@ class QmlApplicationProxy : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool keyboardShortcutsEnabled READ keyboardShortcutsEnabled WRITE
                     setKeyboardShortcutsEnabled NOTIFY keyboardShortcutsEnabledChanged)
+    Q_PROPERTY(bool textInputFocused READ textInputFocused NOTIFY textInputFocusedChanged)
     Q_PROPERTY(bool developerMode READ developerMode CONSTANT)
     Q_PROPERTY(bool experimentStatsEnabled READ experimentStatsEnabled NOTIFY statsModeChanged)
     Q_PROPERTY(bool baseStatsEnabled READ baseStatsEnabled NOTIFY statsModeChanged)
@@ -43,6 +44,17 @@ class QmlApplicationProxy : public QObject {
 
     bool keyboardShortcutsEnabled() const;
     void setKeyboardShortcutsEnabled(bool enabled);
+    /// True while the user is typing in a text input.
+    ///
+    /// The shortcuts of the skins are QML Shortcut objects, which Qt resolves
+    /// before the key reaches the focused item and which do not go through
+    /// KeyboardEventFilter. They have to be disabled while this is true,
+    /// otherwise a key that is also a shortcut is typed into nothing, e.g. the
+    /// Space of "Maximize Library".
+    bool textInputFocused() const;
+    /// Called by the hosts of widgets that are painted outside the window
+    /// hierarchy when the focus of their embedded widgets changes.
+    static void notifyTextInputFocusChanged();
     bool developerMode() const;
     bool experimentStatsEnabled() const;
     bool baseStatsEnabled() const;
@@ -83,10 +95,34 @@ class QmlApplicationProxy : public QObject {
     static void registerReloadCallback(std::function<void()> reloadCallback) {
         s_reloadCallback = std::move(reloadCallback);
     }
+    static void registerSetFullScreenCallback(std::function<void(bool)> callback) {
+        s_setFullScreenCallback = std::move(callback);
+    }
+    static void registerAudioDeviceCheckCallback(std::function<void()> callback) {
+        s_audioDeviceCheckCallback = std::move(callback);
+    }
+    /// Looks for connected audio devices again and offers to use the sound card
+    /// of a controller that has just been connected, see AudioDeviceAssistant.
+    Q_INVOKABLE void checkAudioDevices() const {
+        if (s_audioDeviceCheckCallback) {
+            s_audioDeviceCheckCallback();
+        }
+    }
+    /// Applies the fullscreen state to the window owned by the QML application
+    /// engine and returns true. Returns false when no such window exists, so the
+    /// caller can fall back to the QWidget window used by the legacy skins.
+    static bool setWindowFullScreen(bool fullScreen) {
+        if (!s_setFullScreenCallback) {
+            return false;
+        }
+        s_setFullScreenCallback(fullScreen);
+        return true;
+    }
 
   signals:
     void applicationMenuRequested();
     void keyboardShortcutsEnabledChanged();
+    void textInputFocusedChanged();
     void menuShortcutsChanged();
     void statsModeChanged();
     void debuggerEnabledChanged();
@@ -98,6 +134,10 @@ class QmlApplicationProxy : public QObject {
     static inline std::shared_ptr<KeyboardEventFilter> s_pKeyboardEventFilter;
     static inline VinylControlManager* s_pVinylControlManager{nullptr};
     static inline std::function<void()> s_reloadCallback;
+    static inline std::function<void(bool)> s_setFullScreenCallback;
+    static inline std::function<void()> s_audioDeviceCheckCallback;
+    /// Set in the constructor, called by notifyTextInputFocusChanged().
+    static inline std::function<void()> s_textInputFocusChangedCallback;
 };
 
 } // namespace qml

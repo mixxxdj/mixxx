@@ -1,5 +1,6 @@
 import "../../qml" as Skin
 import "LateNightTheme"
+import "Advisor" as LateNightAdvisor
 import "Deck" as LateNightDeck
 import "Effects" as LateNightEffects
 import "MicAux" as LateNightMicAux
@@ -66,6 +67,7 @@ Item {
     readonly property bool showMaximizedDecks: toolbar.showMaximizedDecks
     readonly property bool showMixer: toolbar.showMixer
     property alias showSamplers: toolbar.showSamplers
+    property alias showTrackAdvisor: toolbar.showTrackAdvisor
     readonly property bool showWaveforms: toolbar.showWaveforms
 
     onMaximizeLibraryChanged: {
@@ -914,11 +916,52 @@ Item {
                         anchors.fill: parent
                     }
                 }
+                Item {
+                    // Suggests what to mix next: the library tracks that fit
+                    // harmonically and in tempo with the deck that is playing.
+                    // It shares the library area and takes the right hand side,
+                    // so the track table keeps the rest of the width.
+                    id: advisorSection
+
+                    readonly property bool advisorVisible: root.showTrackAdvisor && !root.layoutMaximizedLibrary
+
+                    anchors.bottom: parent.bottom
+                    anchors.right: parent.right
+                    anchors.top: micAuxSection.bottom
+                    clip: true
+                    opacity: root.bigLibraryTransition || root.deckModeTransition ? 0 : 1
+                    visible: width > 0
+                    width: advisorVisible ? Math.min(320, parent.width * 0.3) : 0
+                    z: 3
+
+                    Behavior on width {
+                        enabled: LateNightTheme.layoutAnimationsEnabled && !root.bigLibraryTransition
+
+                        SpringAnimation {
+                            damping: 0.2
+                            duration: 500
+                            spring: 2
+                        }
+                    }
+                    Behavior on opacity {
+                        enabled: LateNightTheme.layoutAnimationsEnabled
+
+                        NumberAnimation {
+                            id: advisorSectionOpacityAnimation
+
+                            duration: 60
+                        }
+                    }
+                    LateNightAdvisor.TrackAdvisor {
+                        id: advisor
+
+                        anchors.fill: parent
+                    }
+                }
                 Loader {
                     id: library
 
                     active: true
-                    width: parent.width
 
                     sourceComponent: Component {
                         Library {
@@ -964,6 +1007,10 @@ Item {
 
                     anchors {
                         bottom: parent.bottom
+                        left: parent.left
+                        // The advisor panel pushes the library out of the way.
+                        right: parent.right
+                        rightMargin: advisorSection.width
                         top: micAuxSection.bottom
                     }
                 }

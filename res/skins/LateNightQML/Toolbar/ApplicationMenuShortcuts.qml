@@ -1,4 +1,4 @@
-pragma ComponentBehavior: Bound
+﻿pragma ComponentBehavior: Bound
 
 import Mixxx 1.0 as Mixxx
 import QtQuick
@@ -30,6 +30,7 @@ Item {
         actions.viewMaximizeLibrary,
         actions.viewShowAutoDJ,
         actions.viewFullScreen,
+        actions.viewAudioSetup,
         actions.optionsEnableVinyl1,
         actions.optionsEnableVinyl2,
         actions.optionsEnableVinyl3,

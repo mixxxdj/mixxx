@@ -18,6 +18,7 @@
 #include "moc_playermanager.cpp"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "soundio/soundmanager.h"
+#include "stems/stemgenerator.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility/qatomic.h"
@@ -624,6 +625,17 @@ void PlayerManager::slotLoadTrackToPlayer(
         kLogger.warning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
         return;
     }
+
+#ifdef __STEM__
+    if (isDeckGroup(group)) {
+        // A track that has a stem file next to it is played as its stems, so the
+        // deck can remix it stem by stem without the user having to pick the
+        // stem file in the library. Tracks without stems are loaded unchanged.
+        if (StemGenerator* pStemGenerator = StemGenerator::instance()) {
+            pTrack = pStemGenerator->stemTrackFor(pTrack);
+        }
+    }
+#endif
 
     bool clone = false;
     if (isDeckGroup(group)) {

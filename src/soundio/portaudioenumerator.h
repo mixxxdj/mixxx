@@ -17,6 +17,8 @@ class PortAudioEnumerator : public SoundDeviceEnumerator {
 
     std::vector<SoundDevicePointer> queryDevices() const override;
 
+    SoundDevicePointer getDefaultOutputDevice(const QString& api) const override;
+
     QList<QString> getAPIs() const override {
         return m_apis;
     }

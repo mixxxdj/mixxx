@@ -208,6 +208,9 @@ NumarkMixTrackII.jogWheel = function(channel, control, value, status, group) {
 }
 
 NumarkMixTrackII.jogWheelStopScratch = function(deck) {
+    // engine.scratchDisable() asserts on a deck that is not a channel, and a
+    // failing assertion closes Mixxx, so bail out instead.
+    if (!(deck >= 1)) return;
     NumarkMixTrackII.scratch_timer[deck - 1] = -1;
     engine.scratchDisable(deck);
 }

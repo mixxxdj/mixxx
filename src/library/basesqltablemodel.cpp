@@ -11,6 +11,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_basesqltablemodel.cpp"
+#include "stems/stemgenerator.h"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"
@@ -209,6 +210,10 @@ void BaseSqlTableModel::select() {
     if (sDebug) {
         qDebug() << this << "select()";
     }
+
+    // The stems column is answered from the file system, so a fresh query may
+    // bring in tracks whose stem files were created after the last one.
+    m_stemFileByLocation.clear();
 
     PerformanceTimer time;
     time.start();
@@ -667,6 +672,14 @@ QVariant BaseSqlTableModel::rawValue(
         if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
             return previewDeckTrackId() == trackId;
         }
+        // Special case for the stems column. The library does not store whether
+        // a track has stems, so the sibling stem file is looked up in the file
+        // system instead.
+        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_STEMS)) {
+            return hasStemFileForLocation(getTrackLocation(index))
+                    ? QVariant(QStringLiteral("STEMS"))
+                    : QVariant();
+        }
 
         const QVector<QVariant>& columnValues = rowInfo.columnValues;
         if (sDebug) {
@@ -791,6 +804,20 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     QString nativeLocation = getFieldString(
             index, ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     return QDir::fromNativeSeparators(nativeLocation);
+}
+
+bool BaseSqlTableModel::hasStemFileForLocation(const QString& trackLocation) const {
+    if (trackLocation.isEmpty()) {
+        return false;
+    }
+    const auto cached = m_stemFileByLocation.constFind(trackLocation);
+    if (cached != m_stemFileByLocation.constEnd()) {
+        return cached.value();
+    }
+    StemGenerator* pStemGenerator = StemGenerator::instance();
+    const bool hasStemFile = pStemGenerator && pStemGenerator->hasStems(trackLocation);
+    m_stemFileByLocation.insert(trackLocation, hasStemFile);
+    return hasStemFile;
 }
 
 QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {

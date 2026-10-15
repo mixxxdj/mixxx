@@ -21,6 +21,7 @@ struct LibraryScanResultSummary;
 
 namespace mixxx {
 
+class AudioDeviceAssistant;
 class CoreServices;
 
 namespace skin {
@@ -151,6 +152,10 @@ class MixxxMainWindow : public QMainWindow {
 
     DlgPreferences* m_pPrefDlg;
     parented_ptr<DlgKeywheel> m_pKeywheel;
+
+    // Watches for devices that are connected or disconnected while Mixxx is
+    // running, see AudioDeviceAssistant.
+    std::unique_ptr<mixxx::AudioDeviceAssistant> m_pAudioDeviceAssistant;
 
 #ifdef __ENGINEPRIME__
     // Library exporter

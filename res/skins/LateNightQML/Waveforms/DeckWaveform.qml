@@ -20,7 +20,11 @@ Item {
     readonly property real beatgridControlsWidth: beatgridControlsClip.width
     readonly property real beatgridControlsX: beatgridControlsClip.x
     required property string group
-    readonly property bool stemControlsExpanded: showStemControlsProxy.value > 0
+    readonly property bool deckHasStems: stemCountProxy.value > 0
+    /// The per-stem controls belong to the loaded track: they show up as soon as
+    /// a track with stems is loaded. The deck gutter button can also force them
+    /// for a track without stems, which then shows the "no STEMs" placeholder.
+    readonly property bool stemControlsExpanded: showStemControlsProxy.value > 0 || root.deckHasStems
     property real stemControlsRevealProgress: stemControlsExpanded ? 1 : 0
     readonly property bool stemControlsVisible: stemControlsClip.visible
     readonly property real stemControlsWidth: stemControlsClip.width
@@ -61,10 +65,20 @@ Item {
         group: "[Waveform]"
         key: "stem_split_tracks"
     }
+    Mixxx.ControlProxy {
+        id: stemCountProxy
+
+        group: root.group
+        key: "stem_count"
+    }
     LateNightWaveformDisplay {
         id: waveformDisplay
 
-        anchors.fill: parent
+        anchors.bottom: parent.bottom
+        // The stem rows reserve their own width instead of covering the wave.
+        anchors.left: stemControlsClip.right
+        anchors.right: parent.right
+        anchors.top: parent.top
         group: root.group
         splitStemTracks: splitStemTracksProxy.value > 0
 

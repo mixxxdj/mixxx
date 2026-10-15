@@ -14,6 +14,7 @@
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/osc/oscserver.h"
 #include "controllers/scripting/controllerscriptenginebase.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
@@ -52,6 +53,7 @@
 #endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
+#include "stems/stemgenerator.h"
 #include "util/clipboard.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
@@ -627,6 +629,10 @@ void CoreServices::initialize(QApplication* pApp) {
             m_pPlayerManager.get(),
             m_pRecordingManager.get());
 
+    m_pStemGenerator = std::make_shared<StemGenerator>(pConfig);
+    m_pStemGenerator->registerDependencies(this);
+    StemGenerator::registerInstance(m_pStemGenerator.get());
+
     OverviewCache* pOverviewCache = OverviewCache::createInstance(pConfig, m_pDbConnectionPool);
     connect(&(m_pTrackCollectionManager->internalCollection()->getTrackDAO()),
             &TrackDAO::waveformSummaryUpdated,
@@ -719,6 +725,10 @@ void CoreServices::initialize(QApplication* pApp) {
     // (long)
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
+
+    // Optional OSC endpoint so external tools and AI agents can drive Mixxx.
+    m_pOscServer = std::make_shared<OscServer>(pConfig);
+    m_pOscServer->start();
 
     // Scan the library for new files and directories
     bool rescan = m_cmdlineArgs.getRescanLibrary() ||
@@ -817,6 +827,7 @@ void CoreServices::initializeQMLSingletons() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+    mixxx::qml::QmlLibraryProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
     mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
     mixxx::qml::QmlControllerManagerProxy::registerManager(
@@ -922,6 +933,7 @@ void CoreServices::finalize() {
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+    mixxx::qml::QmlLibraryProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(nullptr);
     mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
     mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);

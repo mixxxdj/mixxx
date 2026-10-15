@@ -5,6 +5,12 @@ import "."
 QtObject {
     property bool layoutAnimationsEnabled: true
 
+    /// Font of the panels that draw their own text: the track advisor, the stem
+    /// controls and the toolbar popups.
+    readonly property string fontFamily: "Open Sans"
+    /// Accent of the deck panels, e.g. the BPM column of the track advisor.
+    readonly property color deckAColor: accentColor
+
     readonly property color accentColor: ColorScheme.accentColor
     readonly property color activePlayCueColor: isClassic ? "#db0000" : "#b24c12"
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")

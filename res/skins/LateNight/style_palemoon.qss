@@ -2976,20 +2976,20 @@ WLibrary QPlainTextEdit,
 #spinBoxTransition,
 #spinBoxRecentDays,
 #LibraryBPMSpinBox {
-  background-color: #0f0f0f;
+  background-color: #111111;
 }
 
 WTrackTableView,
 WLibraryTextBrowser,
 WLibrarySidebar {
-  alternate-background-color: #0a0a0a;
+  alternate-background-color: #0d0d0d;
 /* In selected library rows this sets the color of
   * shapes in star rating delegate
   * focus border of Cover Art and Color delegates
    > See src/library/coverartdelegate.cpp: "option.palette.highlightedText().color();" */
   selection-color: #fff;
   /* background of Color delegate in selected row */
-  selection-background-color: #2c454f;
+  selection-background-color: #1d3b4d;
 }
 WLibrarySidebar {
   outline: none;
@@ -3005,7 +3005,7 @@ WTrackTableView::item:selected,
    color: #fff;*/
   /* This is not required for painting the background,
      but it is for applying the focus outline. */
-  background-color: #2c454f;
+  background-color: #1d3b4d;
   }
   /* Highlight currentIndex which can be moved with Ctrl + arrow keys */
   WTrackTableView::item:!selected:focus {
@@ -3369,7 +3369,7 @@ WLibrarySidebar::branch:closed:has-children:has-siblings:!selected {
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
     border-image: none;
     image: url(skins:LateNight/palemoon/style/library_branch_closed_selected.svg);
-    background-color: #2c454f;
+    background-color: #1d3b4d;
   }
 /* open */
 WLibrarySidebar::branch:open:has-children:!has-siblings,
@@ -3382,7 +3382,7 @@ WLibrarySidebar::branch:open:has-children:has-siblings {
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
     image: url(skins:LateNight/palemoon/style/library_branch_open_selected.svg);
-    background-color: #2c454f;
+    background-color: #1d3b4d;
     }
   /* space left of selected child item */
   WLibrarySidebar::branch:closed:!has-children:!has-siblings:selected,
@@ -3493,7 +3493,7 @@ WSearchLineEdit::item:selected,
 #SkinSettingsNumToggleHeader[hover="true"],
 #SkinSettingsMixerToggle[hover="true"],
 #SkinSettingsLabelButton[hover="true"] {
-  background-color: #2c454f;
+  background-color: #1d3b4d;
   border-radius: 1px;
   color: #fff;
   /* remove OS focus indicator */
@@ -3503,7 +3503,7 @@ WSearchLineEdit::item:selected,
   WEffectChainPresetSelector QAbstractItemView,
   WSearchLineEdit QAbstractItemView {
     selection-color: #fff;
-    selection-background-color: #2c454f;
+    selection-background-color: #1d3b4d;
     border-radius: 1px;
     border: 0px;
     outline: none;

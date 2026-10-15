@@ -41,6 +41,21 @@ class SoundManager : public QObject {
     QList<SoundDevicePointer> getDeviceList(
             const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const;
 
+    // Returns the device the operating system uses by default for output on the
+    // configured API, or a null pointer if it cannot be determined. Used to keep
+    // output working when the configured device is not connected.
+    SoundDevicePointer getDefaultOutputDevice() const;
+
+    // Returns the enumerated device with the given id, or a null pointer if it
+    // is not connected right now.
+    SoundDevicePointer getDevice(const SoundDeviceId& deviceId) const;
+
+    // Shuts the backend down and starts it again so that devices that were
+    // connected or disconnected while Mixxx is running are seen. This closes the
+    // streams, so setConfig() has to be called afterwards to set up the devices
+    // again.
+    void reinitializeDevices();
+
     // Creates a list of sound devices
     void clearAndQueryDevices();
     void queryDevices();

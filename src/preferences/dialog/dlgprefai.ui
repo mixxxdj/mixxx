@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefAiDlg</class>
+ <widget class="QWidget" name="DlgPrefAiDlg">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>430</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCheckBox" name="AiEnabledCheckBox">
+     <property name="text">
+      <string>Let the AI assistant build Auto DJ set lists</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="AiConnectionGroupBox">
+     <property name="title">
+      <string>Service</string>
+     </property>
+     <layout class="QFormLayout" name="connectionFormLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="ProviderLabel">
+        <property name="text">
+         <string>Provider</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="AiProviderComboBox"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="BaseUrlLabel">
+        <property name="text">
+         <string>API address</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="AiBaseUrlLineEdit"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="ModelLabel">
+        <property name="text">
+         <string>Model</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="AiModelLineEdit"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="ApiKeyLabel">
+        <property name="text">
+         <string>API key</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="AiApiKeyLineEdit">
+        <property name="echoMode">
+         <enum>QLineEdit::Password</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="MaxTracksLabel">
+        <property name="text">
+         <string>Tracks sent to the service</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QSpinBox" name="AiMaxTracksSpinBox">
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>5000</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="TimeoutLabel">
+        <property name="text">
+         <string>Timeout</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QSpinBox" name="AiTimeoutSpinBox">
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>600</number>
+        </property>
+        <property name="suffix">
+         <string> seconds</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QPushButton" name="AiTestButton">
+        <property name="text">
+         <string>Save and test connection</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="AiStatusLabel">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="AiKeychainWarningLabel">
+     <property name="text">
+      <string>This build of Mixxx was compiled without QtKeychain support, so the API key cannot be stored and the AI assistant cannot be used.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="AiPrivacyNoteLabel">
+     <property name="text">
+      <string>The assistant only decides which track is played when; Auto DJ still performs the transitions. The metadata of your tracks is sent to the service selected above.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

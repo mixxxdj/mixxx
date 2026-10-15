@@ -66,7 +66,9 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 #ifdef MIXXX_USE_QML
     QString mainQmlFilePath;
     bool loadQml = args.isQml();
-    if (!loadQml && args.getDeveloper()) {
+    if (!loadQml) {
+        // QML skins ship as regular skins, so honour the configured one without
+        // requiring the user to start Mixxx in developer mode.
         mixxx::skin::SkinLoader skinLoader(pCoreServices->getSettings());
         const mixxx::skin::SkinPointer pSkin = skinLoader.getConfiguredSkin();
         if (pSkin && pSkin->type() == mixxx::skin::SkinType::QML) {

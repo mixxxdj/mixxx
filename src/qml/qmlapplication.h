@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QApplication>
+#include <QPointer>
 #include <QQmlApplicationEngine>
 #include <QString>
 #include <QTimer>
@@ -15,12 +16,16 @@ class ControlPushButton;
 class GuiTick;
 class VisualsManager;
 class QQuickWindow;
+
+namespace mixxx {
+
+class AudioDeviceAssistant;
+
+namespace qml {
+
 #if defined(Q_OS_ANDROID)
 class APerformanceHintSession;
 #endif
-
-namespace mixxx {
-namespace qml {
 
 class QmlApplication : public QObject {
     Q_OBJECT
@@ -63,6 +68,12 @@ class QmlApplication : public QObject {
     QString m_mainFilePath;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
+    // Watches for devices that are connected or disconnected while Mixxx is
+    // running, see AudioDeviceAssistant.
+    std::unique_ptr<AudioDeviceAssistant> m_pAudioDeviceAssistant;
+    // The window created by the QML engine. This is the visible window of the
+    // QML skins, unlike the QWidget window of MixxxMainWindow.
+    QPointer<QQuickWindow> m_pWindow;
     bool m_ownsWaveformWidgetFactory{false};
     bool m_loadSucceeded;
     QmlAutoReload m_autoReload;
