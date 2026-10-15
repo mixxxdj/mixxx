@@ -13,7 +13,8 @@
                 <description>
                     The DDJ-1000 blends the cue mix (outputs 3-4) with main (outputs 1-2) using its
                     HEADPHONES MIX knob. When on, Mixxx's own headphone mix is set to cue only so the
-                    knob on the controller behaves as labelled.
+                    knob on the controller behaves as labelled. It is put back when the controller is
+                    disconnected.
                 </description>
             </option>
             <option variable="tempoRange" type="enum" label="Tempo range when the mapping starts">

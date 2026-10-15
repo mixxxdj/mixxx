@@ -13,10 +13,20 @@
 //   * Deck controls arrive on MIDI channels 1-4 for decks 1-4; the unit
 //     switches channel itself when DECK 1/3 or 2/4 is pressed.
 //   * The unit sends LOOP 1/2X and 2X instead of LOOP IN/OUT once it is told a
-//     loop is running (note 0x04+deck on MIDI channel 16).
+//     loop is running (PioneerDDJ1000.unitNote.loopRunning).
+//   * Every pad mode has its own pad notes, and the unit shows a mode's pad
+//     colours by itself as soon as it switches to it, so the colours of all
+//     modes are kept up to date, not only those of the mode on screen.
 //   * Pad LEDs take a colour number on a hue wheel: 1 blue, 21 green,
 //     29 yellow, 41 red, 61 purple; 127 is near-white and 0 dims the pad.
 //     (Palette first charted for the DDJ-FLX10 by Veezuhz.)
+//
+// Changes to Mixxx's own state: Mixxx's headphone mix (setting
+// hardwareHeadphoneMix), the tempo range (setting tempoRange), effect unit 1's
+// routing (BEAT FX CH SELECT) and the Quick Effect switches (setting
+// colorFxNeedsButton) are put back in shutdown(), unless they were changed
+// again meanwhile; see PioneerDDJ1000.override(). Memory cues are stored as hot
+// cues 17-36.
 
 // eslint-disable-next-line no-var
 var PioneerDDJ1000 = {};
@@ -47,6 +57,8 @@ PioneerDDJ1000.config = {
     tempoRanges: [0.06, 0.10, 0.16, 1.00],
     doublePressMs: 400,
     slipReverseBeats: 8,
+    // At most this many sampler banks of 8 pads. Only banks of samplers that
+    // exist in Mixxx are used; the mapping never adds samplers.
     samplerBanks: 8,
     beatValues: [1 / 16, 1 / 8, 1 / 4, 1 / 2, 3 / 4, 1, 2, 4, 8, 16, 32],
     defaultBeatIndex: 5,
@@ -55,6 +67,73 @@ PioneerDDJ1000.config = {
     displayIntervalMs: 20,
     blinkMs: 250,
 };
+
+// ---------------------------------------------------------------------------
+// MIDI addresses
+// ---------------------------------------------------------------------------
+
+// Note status bytes. Control changes on the same MIDI channel are 0x20 higher.
+PioneerDDJ1000.midiStatus = {
+    deck: 0x90, // MIDI channels 1-4, one per deck
+    beatFx: 0x94, // channel 5
+    mixer: 0x96, // channel 7: SOUND COLOR FX, sampler, browser
+    pads: 0x97, // channels 8-15: two per deck, the second one with SHIFT
+    unit: 0x9F, // channel 16: states the mapping reports to the unit
+};
+PioneerDDJ1000.ccOffset = 0x20;
+
+// Deck buttons. A SHIFT combination has a note (and LED) of its own.
+PioneerDDJ1000.deckNote = {
+    play: 0x0B, playShift: 0x47,
+    cue: 0x0C, cueShift: 0x48,
+    loopIn: 0x10, loopInShift: 0x4C,
+    loopOut: 0x11, loopOutShift: 0x4D,
+    beatLoop4: 0x14, beatLoop4Shift: 0x50,
+    slipReverse: 0x15, reverse: 0x38, // REVERSE is SHIFT + SLIP REVERSE
+    vinyl: 0x17, // SHIFT + SLIP
+    masterTempo: 0x1A, tempoRange: 0x60, // TEMPO RANGE is SHIFT + MASTER TEMPO
+    quantize: 0x35, monoSplit: 0x39, // mono split is SHIFT + QUANTIZE
+    slip: 0x40,
+    headphoneCue: 0x54,
+    beatSync: 0x58, syncLeader: 0x5C, // sync leader is SHIFT + BEAT SYNC
+    keySync: 0x65,
+};
+
+PioneerDDJ1000.deckCc = {
+    levelMeter: 0x02,
+};
+
+// Channel 16 notes, one per deck: the first deck's note + deck - 1.
+PioneerDDJ1000.unitNote = {
+    loadAnimation: 0x00, // plays the jog ring's track load animation
+    loopRunning: 0x04, // LOOP IN / OUT send LOOP 1/2X / 2X while it is on
+    slipOn: 0x24,
+};
+
+PioneerDDJ1000.beatFxNote = {
+    beatDown: 0x4A, beatUp: 0x4B,
+    auto: 0x66, tap: 0x6B, // SHIFT + BEAT < / >
+    on: 0x47,
+    release: 0x43, // RELEASE FX is SHIFT + BEAT FX ON/OFF
+};
+
+PioneerDDJ1000.mixerNote = {
+    colorFx: 0x00, // DUB ECHO, PITCH, NOISE, FILTER are 0x00-0x03
+    colorFxShift: 0x08, // the same with SHIFT
+    samplerCue: 0x69,
+};
+
+// Jog dial display. Position bar, BPM, speed and cue marker are 14-bit
+// control changes; the others are notes.
+PioneerDDJ1000.display = {
+    positionBar: 0x14, bpm: 0x15, speed: 0x16, cueMarker: 0x17,
+    minutes: 0x42, seconds: 0x43, timeMode: 0x44, key: 0x49, keyShift: 0x4A,
+    syncMaster: 0x59, syncOn: 0x5A, ring: 0x5B, info: 0x5D,
+};
+
+PioneerDDJ1000.modeButtons = [0x1B, 0x1E, 0x20, 0x22, 0x69, 0x6B, 0x6D, 0x6F];
+PioneerDDJ1000.pagePrevNotes = [0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B];
+PioneerDDJ1000.pageNextNotes = [0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33];
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -78,9 +157,8 @@ PioneerDDJ1000.mode = {
     keyboard: 4, padFx2: 5, beatLoop: 6, keyShift: 7,
 };
 
-PioneerDDJ1000.modeButtons = [0x1B, 0x1E, 0x20, 0x22, 0x69, 0x6B, 0x6D, 0x6F];
-PioneerDDJ1000.pagePrevNotes = [0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B];
-PioneerDDJ1000.pageNextNotes = [0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33];
+// Hot cues on the pads (two pages of 8).
+PioneerDDJ1000.padHotCues = 16;
 
 // Pads 0-3 are the top row, 4-7 the bottom row.
 PioneerDDJ1000.beatJumpBeats = [-1, 1, -2, 2, -4, 4, -8, 8];
@@ -93,8 +171,12 @@ PioneerDDJ1000.semitones = [
     [-4, -3, -2, -1, -8, -7, -6, -5],
 ];
 
-// PAD FX pads. "slot" holds one effect of an effect unit on the deck, "unit"
-// holds the whole unit; both hand the unit back as it was on release.
+// What each PAD FX pad does, per mode and page:
+//   {unit, slot}  hold one effect of an effect unit on this deck
+//   {unit}        hold the whole effect unit on this deck
+//   {roll}        loop roll of that many beats (slip)
+//   {brake}, {spinback}, {reverse}  deck tricks
+// All of them act only while the pad is held; see padEffect().
 PioneerDDJ1000.padFx = (function() {
     const c = PioneerDDJ1000.color;
     const unitRow = (unit, colour) => [
@@ -128,12 +210,6 @@ PioneerDDJ1000.beatFxPositions = [
     "FLANGER", "PHASER", "PITCH", "SLIP ROLL", "ROLL", "MOBIUS SAW", "MOBIUS TRI",
 ];
 
-PioneerDDJ1000.display = {
-    positionBar: 0x14, bpm: 0x15, speed: 0x16, cueMarker: 0x17,
-    minutes: 0x42, seconds: 0x43, timeMode: 0x44, key: 0x49, keyShift: 0x4A,
-    syncMaster: 0x59, syncOn: 0x5A, ring: 0x5B, info: 0x5D,
-};
-
 // Memory cues (MEMORY / CUE/LOOP CALL) use hot cues 17-36; pads use 1-16.
 PioneerDDJ1000.memoryFirst = 17;
 PioneerDDJ1000.memoryLast = 36;
@@ -145,22 +221,34 @@ PioneerDDJ1000.memoryColor = 0xE8201E;
 
 PioneerDDJ1000.decks = [1, 2, 3, 4];
 PioneerDDJ1000.deck = {};
+// Connections that show Mixxx's state; refreshAll() replays them.
 PioneerDDJ1000.connections = [];
+// Connections that react to a change (a track load, a pad colour); they are
+// never replayed.
+PioneerDDJ1000.listeners = [];
 PioneerDDJ1000.timer = 0;
 PioneerDDJ1000.opened = false;
 PioneerDDJ1000.blink = false;
 PioneerDDJ1000.blinkAt = 0;
-PioneerDDJ1000.padRefreshAt = 0;
-PioneerDDJ1000.padRefreshDeck = 0;
+// Pad modes still to draw after a full refresh, one per timer tick, so the
+// unit never receives a burst of pad messages.
+PioneerDDJ1000.padQueue = [];
+// Set while a pad colour is worked out if that colour blinks.
+PioneerDDJ1000.padBlinks = false;
 PioneerDDJ1000.sent = {};
 PioneerDDJ1000.highRes = {};
+PioneerDDJ1000.overrides = {};
+PioneerDDJ1000.samplersConnected = 0;
 
 PioneerDDJ1000.beatFx = {
     position: 1,
     beatIndex: PioneerDDJ1000.config.defaultBeatIndex,
-    target: "master",
+    // CH SELECT position, or null until it is first moved: the unit does not
+    // report it at startup, so effect unit 1 keeps the routing set in Mixxx.
+    target: null,
     on: false,
     rolling: [],
+    rollSlip: false,
 };
 
 PioneerDDJ1000.colorFx = 0;
@@ -178,6 +266,8 @@ PioneerDDJ1000.newDeckState = function() {
         samplerBank: 0,
         keyboardCue: 1,
         pressed: {},
+        // Pads whose colour blinks, by pad note: [mode, page, pad].
+        blinking: {},
         loopAdjust: null,
         search: null,
         searchHeld: false,
@@ -185,7 +275,9 @@ PioneerDDJ1000.newDeckState = function() {
         reverseTimer: 0,
         gridMode: null,
         gridRemainder: 0,
-        padFxSlip: 0,
+        // The deck's play and slip state from before a PAD FX brake or
+        // backspin, put back when the pad is released.
+        trickRestore: null,
         lastLoad: 0,
         loadTimer: 0,
     };
@@ -199,13 +291,39 @@ PioneerDDJ1000.group = (deck) => `[Channel${deck}]`;
 
 PioneerDDJ1000.deckFromGroup = (group) => script.deckFromGroup(group);
 
-PioneerDDJ1000.padStatus = (deck, shifted) => 0x97 + (deck - 1) * 2 + (shifted ? 1 : 0);
+PioneerDDJ1000.deckStatus = (deck) => PioneerDDJ1000.midiStatus.deck + deck - 1;
+
+PioneerDDJ1000.deckCcStatus = (deck) => PioneerDDJ1000.deckStatus(deck) + PioneerDDJ1000.ccOffset;
+
+PioneerDDJ1000.padStatus = (deck, shifted) =>
+    PioneerDDJ1000.midiStatus.pads + (deck - 1) * 2 + (shifted ? 1 : 0);
 
 PioneerDDJ1000.clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 
 PioneerDDJ1000.setting = function(name, fallback) {
     const value = engine.getSetting(name);
     return value === undefined ? fallback : value;
+};
+
+// Change a Mixxx control the user did not touch, remembering how it was.
+// restoreOverrides() puts it back unless it was changed again meanwhile.
+PioneerDDJ1000.override = function(group, key, value) {
+    const id = `${group},${key}`;
+    if (!(id in PioneerDDJ1000.overrides)) {
+        PioneerDDJ1000.overrides[id] = {group: group, key: key, original: engine.getValue(group, key)};
+    }
+    PioneerDDJ1000.overrides[id].value = value;
+    engine.setValue(group, key, value);
+};
+
+PioneerDDJ1000.restoreOverrides = function() {
+    Object.keys(PioneerDDJ1000.overrides).forEach((id) => {
+        const changed = PioneerDDJ1000.overrides[id];
+        if (engine.getValue(changed.group, changed.key) === changed.value) {
+            engine.setValue(changed.group, changed.key, changed.original);
+        }
+    });
+    PioneerDDJ1000.overrides = {};
 };
 
 // Send a MIDI message unless the same value was the last one sent there.
@@ -226,7 +344,12 @@ PioneerDDJ1000.led = function(status, data1, on) {
 };
 
 PioneerDDJ1000.deckLed = function(deck, note, on) {
-    PioneerDDJ1000.led(0x90 + deck - 1, note, on);
+    PioneerDDJ1000.led(PioneerDDJ1000.deckStatus(deck), note, on);
+};
+
+// Report a deck's state to the unit (see PioneerDDJ1000.unitNote).
+PioneerDDJ1000.sendUnit = function(note, deck, on, force) {
+    PioneerDDJ1000.send(PioneerDDJ1000.midiStatus.unit, note + deck - 1, on ? 0x7F : 0x00, force);
 };
 
 PioneerDDJ1000.send14 = function(status, msb, value) {
@@ -242,13 +365,18 @@ PioneerDDJ1000.send14 = function(status, msb, value) {
     }
 };
 
-// 14-bit knobs arrive as MSB then LSB. Returns 0..1.
+// 14-bit knobs arrive as MSB then LSB. Returns 0..1 when the LSB completes the
+// pair, and undefined for the MSB: combined with the previous LSB it would
+// make the value jump until the new LSB arrives.
 PioneerDDJ1000.readHighRes = function(status, control, value) {
     const isLsb = control >= 0x20 && control < 0x40;
     const key = `${status}:${isLsb ? control - 0x20 : control}`;
-    const pair = PioneerDDJ1000.highRes[key] || (PioneerDDJ1000.highRes[key] = {msb: 0, lsb: 0});
-    pair[isLsb ? "lsb" : "msb"] = value;
-    return ((pair.msb << 7) | pair.lsb) / 0x3FFF;
+    const pair = PioneerDDJ1000.highRes[key] || (PioneerDDJ1000.highRes[key] = {msb: 0});
+    if (!isLsb) {
+        pair.msb = value;
+        return undefined;
+    }
+    return ((pair.msb << 7) | value) / 0x3FFF;
 };
 
 // Jog and outer ring count from 0x40; the browse encoder counts from 0.
@@ -259,6 +387,14 @@ PioneerDDJ1000.connect = function(group, key, callback) {
     const connection = engine.makeConnection(group, key, callback);
     if (connection) {
         PioneerDDJ1000.connections.push(connection);
+    }
+    return connection;
+};
+
+PioneerDDJ1000.listen = function(group, key, callback) {
+    const connection = engine.makeConnection(group, key, callback);
+    if (connection) {
+        PioneerDDJ1000.listeners.push(connection);
     }
     return connection;
 };
@@ -280,7 +416,33 @@ PioneerDDJ1000.seekSamples = function(group, samples) {
     }
 };
 
-PioneerDDJ1000.numSamplers = () => engine.getValue("[App]", "num_samplers") || 16;
+PioneerDDJ1000.numSamplers = () => engine.getValue("[App]", "num_samplers");
+
+PioneerDDJ1000.numberedGroups = function(count, name) {
+    const groups = [];
+    for (let i = 1; i <= count; i++) {
+        groups.push(name(i));
+    }
+    return groups;
+};
+
+PioneerDDJ1000.samplerGroups = () =>
+    PioneerDDJ1000.numberedGroups(PioneerDDJ1000.numSamplers(), (i) => `[Sampler${i}]`);
+
+PioneerDDJ1000.microphoneGroups = () =>
+    PioneerDDJ1000.numberedGroups(engine.getValue("[App]", "num_microphones"),
+        (i) => (i === 1 ? "[Microphone]" : `[Microphone${i}]`));
+
+// Every group an effect unit can be routed to.
+PioneerDDJ1000.routingGroups = () =>
+    PioneerDDJ1000.decks.map(PioneerDDJ1000.group)
+        .concat(["[Master]", "[Headphone]"])
+        .concat(PioneerDDJ1000.samplerGroups())
+        .concat(PioneerDDJ1000.microphoneGroups())
+        .concat(PioneerDDJ1000.numberedGroups(engine.getValue("[App]", "num_auxiliaries"),
+            (i) => `[Auxiliary${i}]`))
+        .concat(PioneerDDJ1000.numberedGroups(engine.getValue("[App]", "num_preview_decks"),
+            (i) => `[PreviewDeck${i}]`));
 
 PioneerDDJ1000.hueToRgb = function(hue) {
     const x = 1 - Math.abs((hue / 60) % 2 - 1);
@@ -309,7 +471,7 @@ PioneerDDJ1000.init = function() {
         const group = PioneerDDJ1000.group(deck);
         PioneerDDJ1000.deck[deck] = PioneerDDJ1000.newDeckState();
         if (tempoRange !== "preferences") {
-            engine.setValue(group, "rateRange", Number(tempoRange) / 100);
+            PioneerDDJ1000.override(group, "rateRange", Number(tempoRange) / 100);
         }
         engine.softTakeover(group, "rate", true);
         PioneerDDJ1000.connectDeck(deck);
@@ -318,11 +480,10 @@ PioneerDDJ1000.init = function() {
     if (PioneerDDJ1000.setting("hardwareHeadphoneMix", true)) {
         // The HEADPHONES MIX knob blends cue and main in hardware, so Mixxx
         // sends the cue mix alone to outputs 3-4.
-        engine.setValue("[Master]", "headMix", -1);
+        PioneerDDJ1000.override("[Master]", "headMix", -1);
     }
 
     PioneerDDJ1000.connectGlobal();
-    PioneerDDJ1000.routeBeatFx();
     PioneerDDJ1000.applyColorFx();
     PioneerDDJ1000.timer = engine.beginTimer(PioneerDDJ1000.config.displayIntervalMs, PioneerDDJ1000.tick);
 };
@@ -332,8 +493,15 @@ PioneerDDJ1000.shutdown = function() {
         engine.stopTimer(PioneerDDJ1000.timer);
         PioneerDDJ1000.timer = 0;
     }
-    PioneerDDJ1000.connections.forEach((connection) => connection.disconnect());
+    PioneerDDJ1000.decks.forEach((deck) => {
+        const state = PioneerDDJ1000.deck[deck];
+        [state.loadTimer, state.reverseTimer].filter((id) => id).forEach((id) => engine.stopTimer(id));
+    });
+    Object.keys(PioneerDDJ1000.heldUnits).forEach((unit) => PioneerDDJ1000.releaseUnit(unit));
+    PioneerDDJ1000.connections.concat(PioneerDDJ1000.listeners).forEach((connection) => connection.disconnect());
     PioneerDDJ1000.connections = [];
+    PioneerDDJ1000.listeners = [];
+    PioneerDDJ1000.restoreOverrides();
     if (!PioneerDDJ1000.opened) {
         return;
     }
@@ -344,33 +512,37 @@ PioneerDDJ1000.shutdown = function() {
         }
     });
     PioneerDDJ1000.decks.forEach((deck) => {
-        midi.sendShortMsg(0x90 + deck - 1, PioneerDDJ1000.display.info, 0x7F);
-        midi.sendShortMsg(0x90 + deck - 1, PioneerDDJ1000.display.ring, 0x00);
+        midi.sendShortMsg(PioneerDDJ1000.deckStatus(deck), PioneerDDJ1000.display.info, 0x7F);
+        midi.sendShortMsg(PioneerDDJ1000.deckStatus(deck), PioneerDDJ1000.display.ring, 0x00);
     });
 };
 
 PioneerDDJ1000.open = function() {
     PioneerDDJ1000.opened = true;
     PioneerDDJ1000.decks.forEach((deck) => {
-        midi.sendShortMsg(0x90 + deck - 1, PioneerDDJ1000.display.info, 0x00);
-        midi.sendShortMsg(0x90 + deck - 1, PioneerDDJ1000.display.ring, 0x01);
+        midi.sendShortMsg(PioneerDDJ1000.deckStatus(deck), PioneerDDJ1000.display.info, 0x00);
+        midi.sendShortMsg(PioneerDDJ1000.deckStatus(deck), PioneerDDJ1000.display.ring, 0x01);
     });
     PioneerDDJ1000.refreshAll();
 };
 
 // Forget what was sent and light everything again (also after a deck switch).
+// Only redraws: the track load reaction (KEY SYNC reset, jog ring animation)
+// is a listener and is not replayed.
 PioneerDDJ1000.refreshAll = function() {
     PioneerDDJ1000.sent = {};
     PioneerDDJ1000.connections.forEach((connection) => connection.trigger());
     PioneerDDJ1000.decks.forEach((deck) => {
+        const state = PioneerDDJ1000.deck[deck];
         PioneerDDJ1000.updateModeLeds(deck);
         PioneerDDJ1000.updateLoopLeds(deck);
-        PioneerDDJ1000.deckLed(deck, 0x17, PioneerDDJ1000.deck[deck].vinyl);
-        PioneerDDJ1000.deckLed(deck, 0x65, PioneerDDJ1000.deck[deck].keySync);
-        PioneerDDJ1000.renderPads(deck, false);
+        PioneerDDJ1000.deckLed(deck, PioneerDDJ1000.deckNote.vinyl, state.vinyl);
+        PioneerDDJ1000.deckLed(deck, PioneerDDJ1000.deckNote.keySync, state.keySync);
+        PioneerDDJ1000.updateClock(deck);
     });
-    PioneerDDJ1000.led(0x94, 0x47, PioneerDDJ1000.beatFx.on);
+    PioneerDDJ1000.led(PioneerDDJ1000.midiStatus.beatFx, PioneerDDJ1000.beatFxNote.on, PioneerDDJ1000.beatFx.on);
     PioneerDDJ1000.updateColorFxLeds();
+    PioneerDDJ1000.queueAllPads();
 };
 
 PioneerDDJ1000.tick = function() {
@@ -383,22 +555,17 @@ PioneerDDJ1000.tick = function() {
         PioneerDDJ1000.blinkAt = now;
         PioneerDDJ1000.decks.forEach((deck) => {
             PioneerDDJ1000.updateLoopLeds(deck);
-            PioneerDDJ1000.updateModeLeds(deck);
+            PioneerDDJ1000.renderBlinkingPads(deck);
         });
     }
-    // Pads of the modes not on screen are refreshed one deck at a time so the
-    // unit never receives a burst of pad messages.
-    let refreshDeck = 0;
-    if (now - PioneerDDJ1000.padRefreshAt >= 250) {
-        PioneerDDJ1000.padRefreshAt = now;
-        PioneerDDJ1000.padRefreshDeck = PioneerDDJ1000.padRefreshDeck % 4 + 1;
-        refreshDeck = PioneerDDJ1000.padRefreshDeck;
+    const queued = PioneerDDJ1000.padQueue.shift();
+    if (queued) {
+        PioneerDDJ1000.renderMode(queued[0], queued[1]);
     }
     PioneerDDJ1000.decks.forEach((deck) => {
         PioneerDDJ1000.watchFreeSpin(deck, now);
         PioneerDDJ1000.updateSearch(deck, now);
-        PioneerDDJ1000.updateDisplay(deck);
-        PioneerDDJ1000.renderPads(deck, deck === refreshDeck);
+        PioneerDDJ1000.updateClock(deck);
     });
 };
 
@@ -408,77 +575,116 @@ PioneerDDJ1000.tick = function() {
 
 PioneerDDJ1000.connectDeck = function(deck) {
     const group = PioneerDDJ1000.group(deck);
-    const status = 0x90 + deck - 1;
+    const n = PioneerDDJ1000.deckNote;
     const light = function(key, notes, isOn) {
         PioneerDDJ1000.connect(group, key, (value) => {
-            notes.forEach((note) => PioneerDDJ1000.led(status, note, isOn ? isOn(value) : value > 0));
+            notes.forEach((note) => PioneerDDJ1000.deckLed(deck, note, isOn ? isOn(value) : value > 0));
         });
     };
 
-    light("play_indicator", [0x0B, 0x47]);
-    light("cue_indicator", [0x0C, 0x48]);
-    light("sync_enabled", [0x58]);
-    light("sync_mode", [0x5C], (value) => value === 2);
-    light("keylock", [0x1A, 0x60]);
-    light("loop_enabled", [0x14, 0x50]);
-    light("quantize", [0x35]);
-    light("slip_enabled", [0x40]);
-    light("reverse", [0x38]);
-    light("reverseroll", [0x15]);
-    light("pfl", [0x54]);
+    light("play_indicator", [n.play, n.playShift]);
+    light("cue_indicator", [n.cue, n.cueShift]);
+    light("sync_enabled", [n.beatSync]);
+    light("sync_mode", [n.syncLeader], (value) => value === 2);
+    light("keylock", [n.masterTempo, n.tempoRange]);
+    light("loop_enabled", [n.beatLoop4, n.beatLoop4Shift]);
+    light("quantize", [n.quantize]);
+    light("slip_enabled", [n.slip]);
+    light("reverse", [n.reverse]);
+    light("reverseroll", [n.slipReverse]);
+    light("pfl", [n.headphoneCue]);
 
     PioneerDDJ1000.connect(group, "loop_enabled", (value) => {
-        // Makes the unit send LOOP 1/2X and 2X while the loop runs.
-        PioneerDDJ1000.send(0x9F, 0x03 + deck, value > 0 ? 0x7F : 0x00);
+        PioneerDDJ1000.sendUnit(PioneerDDJ1000.unitNote.loopRunning, deck, value > 0);
         PioneerDDJ1000.updateLoopLeds(deck);
     });
     PioneerDDJ1000.connect(group, "slip_enabled", (value) => {
-        PioneerDDJ1000.send(0x9F, 0x23 + deck, value > 0 ? 0x7F : 0x00);
+        PioneerDDJ1000.sendUnit(PioneerDDJ1000.unitNote.slipOn, deck, value > 0);
     });
     PioneerDDJ1000.connect(group, "playposition", (value) => {
         PioneerDDJ1000.deck[deck].position = {value: value, at: Date.now()};
     });
     PioneerDDJ1000.connect(group, "vu_meter", (value) => {
-        PioneerDDJ1000.send(0xB0 + deck - 1, 0x02, Math.round(value * 127));
+        PioneerDDJ1000.send(PioneerDDJ1000.deckCcStatus(deck), PioneerDDJ1000.deckCc.levelMeter, Math.round(value * 127));
     });
-    PioneerDDJ1000.connect(group, "track_loaded", (value) => PioneerDDJ1000.onLoad(deck, value > 0));
+    ["track_loaded", "track_samplerate", "cue_point", "bpm", "rate_ratio", "key", "pitch", "sync_mode", "sync_enabled"]
+        .forEach((key) => PioneerDDJ1000.connect(group, key, () => PioneerDDJ1000.updateDisplayInfo(deck)));
+
+    // Mixxx sets track_loaded on every load, also when one track replaces
+    // another. A listener, so a redraw does not count as a load.
+    PioneerDDJ1000.listen(group, "track_loaded", (value) => PioneerDDJ1000.onLoad(deck, value > 0));
+    PioneerDDJ1000.connectPads(deck);
+};
+
+// Pad colours are redrawn when the Mixxx controls they show change.
+PioneerDDJ1000.connectPads = function(deck) {
+    const group = PioneerDDJ1000.group(deck);
+    const m = PioneerDDJ1000.mode;
+    for (let number = 1; number <= PioneerDDJ1000.padHotCues; number++) {
+        const page = number > 8 ? 2 : 1;
+        const pad = (number - 1) % 8;
+        ["status", "color", "type"].forEach((property) => {
+            PioneerDDJ1000.listen(group, `hotcue_${number}_${property}`, () => {
+                PioneerDDJ1000.renderPad(deck, m.hotCue, page, pad);
+            });
+        });
+    }
+    PioneerDDJ1000.listen(group, "pitch_adjust", () => {
+        PioneerDDJ1000.renderMode(deck, m.keyboard);
+        PioneerDDJ1000.renderMode(deck, m.keyShift);
+    });
+    ["loop_enabled", "beatloop_size"].forEach((key) => {
+        PioneerDDJ1000.listen(group, key, () => PioneerDDJ1000.renderMode(deck, m.beatLoop));
+    });
 };
 
 PioneerDDJ1000.connectGlobal = function() {
     PioneerDDJ1000.connect("[Master]", "headSplit", (value) => {
-        PioneerDDJ1000.decks.forEach((deck) => PioneerDDJ1000.deckLed(deck, 0x39, value > 0));
+        PioneerDDJ1000.decks.forEach((deck) => PioneerDDJ1000.deckLed(deck, PioneerDDJ1000.deckNote.monoSplit, value > 0));
     });
-    PioneerDDJ1000.connect("[EffectRack1_EffectUnit1]", "enabled", () => {
-        PioneerDDJ1000.led(0x94, 0x47, PioneerDDJ1000.beatFx.on);
+    PioneerDDJ1000.connect(PioneerDDJ1000.beatFxUnit, "enabled", () => {
+        PioneerDDJ1000.led(PioneerDDJ1000.midiStatus.beatFx, PioneerDDJ1000.beatFxNote.on, PioneerDDJ1000.beatFx.on);
     });
-    for (let i = 1; i <= PioneerDDJ1000.numSamplers(); i++) {
-        PioneerDDJ1000.connect(`[Sampler${i}]`, "pfl", PioneerDDJ1000.updateSamplerCueLed);
+    // Samplers can be added later (by the skin); connect those too.
+    PioneerDDJ1000.listen("[App]", "num_samplers", PioneerDDJ1000.connectSamplers);
+    PioneerDDJ1000.connectSamplers();
+};
+
+// Connect the samplers added since the last call.
+PioneerDDJ1000.connectSamplers = function() {
+    const count = PioneerDDJ1000.numSamplers();
+    if (count <= PioneerDDJ1000.samplersConnected) {
+        return;
     }
+    for (let i = PioneerDDJ1000.samplersConnected + 1; i <= count; i++) {
+        const group = `[Sampler${i}]`;
+        PioneerDDJ1000.connect(group, "pfl", PioneerDDJ1000.updateSamplerCueLed);
+        PioneerDDJ1000.listen(group, "track_loaded", () => PioneerDDJ1000.renderSamplerPad(i));
+        PioneerDDJ1000.listen(group, "play", () => PioneerDDJ1000.renderSamplerPad(i));
+    }
+    PioneerDDJ1000.samplersConnected = count;
+    PioneerDDJ1000.decks.forEach((deck) => PioneerDDJ1000.renderMode(deck, PioneerDDJ1000.mode.sampler));
 };
 
 PioneerDDJ1000.updateSamplerCueLed = function() {
-    let cued = false;
-    for (let i = 1; i <= PioneerDDJ1000.numSamplers() && !cued; i++) {
-        cued = engine.getValue(`[Sampler${i}]`, "pfl") > 0;
-    }
-    PioneerDDJ1000.led(0x96, 0x69, cued);
+    const cued = PioneerDDJ1000.samplerGroups().some((group) => engine.getValue(group, "pfl") > 0);
+    PioneerDDJ1000.led(PioneerDDJ1000.midiStatus.mixer, PioneerDDJ1000.mixerNote.samplerCue, cued);
 };
 
 PioneerDDJ1000.onLoad = function(deck, loaded) {
     const state = PioneerDDJ1000.deck[deck];
     state.keySync = false;
-    PioneerDDJ1000.deckLed(deck, 0x65, false);
+    PioneerDDJ1000.deckLed(deck, PioneerDDJ1000.deckNote.keySync, false);
     if (!loaded || !PioneerDDJ1000.opened) {
         return;
     }
-    // Plays the jog ring's load animation.
-    PioneerDDJ1000.send(0x9F, deck - 1, 0x7F, true);
+    PioneerDDJ1000.sendUnit(PioneerDDJ1000.unitNote.loadAnimation, deck, true, true);
     if (state.loadTimer) {
         engine.stopTimer(state.loadTimer);
     }
     state.loadTimer = engine.beginTimer(1000, () => {
         state.loadTimer = 0;
-        PioneerDDJ1000.send(0x9F, deck - 1, 0x00, true);
+        PioneerDDJ1000.sendUnit(PioneerDDJ1000.unitNote.loadAnimation, deck, false, true);
     }, true);
 };
 
@@ -520,33 +726,23 @@ PioneerDDJ1000.estimateElapsed = function(deck, group, duration) {
     return PioneerDDJ1000.clamp(PioneerDDJ1000.clamp(sample.value, 0, 1) * duration + seconds * speed, 0, duration);
 };
 
-PioneerDDJ1000.updateDisplay = function(deck) {
+// Display values that change only with the track, the tempo or a button.
+PioneerDDJ1000.updateDisplayInfo = function(deck) {
     const group = PioneerDDJ1000.group(deck);
-    const note = 0x90 + deck - 1;
-    const cc = 0xB0 + deck - 1;
+    const note = PioneerDDJ1000.deckStatus(deck);
+    const cc = PioneerDDJ1000.deckCcStatus(deck);
     const d = PioneerDDJ1000.display;
 
     PioneerDDJ1000.send(note, d.syncMaster, engine.getValue(group, "sync_mode") === 2 ? 0x7F : 0);
     PioneerDDJ1000.send(note, d.syncOn, engine.getValue(group, "sync_enabled") ? 0x7F : 0);
 
     if (!engine.getValue(group, "track_loaded")) {
-        PioneerDDJ1000.send(note, d.minutes, 0);
-        PioneerDDJ1000.send(note, d.seconds, 0);
         PioneerDDJ1000.send14(cc, d.bpm, 0);
         PioneerDDJ1000.send14(cc, d.cueMarker, 0x3FFF);
         PioneerDDJ1000.send(note, d.key, 0);
         PioneerDDJ1000.send(note, d.keyShift, 0x0D);
         return;
     }
-
-    const duration = engine.getValue(group, "duration");
-    const elapsed = PioneerDDJ1000.estimateElapsed(deck, group, duration);
-    const remaining = engine.getValue("[Controls]", "ShowDurationRemaining") !== 0;
-    const shown = remaining ? Math.max(0, duration - elapsed) : elapsed;
-    PioneerDDJ1000.send(note, d.timeMode, remaining ? 0x7F : 0);
-    PioneerDDJ1000.send(note, d.minutes, Math.min(99, Math.floor(shown / 60)));
-    PioneerDDJ1000.send(note, d.seconds, Math.floor(shown % 60));
-    PioneerDDJ1000.send14(cc, d.positionBar, PioneerDDJ1000.platterAngle(elapsed));
 
     const cue = engine.getValue(group, "cue_point");
     PioneerDDJ1000.send14(cc, d.cueMarker, cue >= 0
@@ -561,6 +757,27 @@ PioneerDDJ1000.updateDisplay = function(deck) {
     PioneerDDJ1000.send(note, d.key, PioneerDDJ1000.keyCode(engine.getValue(group, "key")));
     const shift = PioneerDDJ1000.clamp(Math.round(engine.getValue(group, "pitch")), -12, 12);
     PioneerDDJ1000.send(note, d.keyShift, 0x0D + shift);
+};
+
+// From the timer: the time and the position bar.
+PioneerDDJ1000.updateClock = function(deck) {
+    const group = PioneerDDJ1000.group(deck);
+    const note = PioneerDDJ1000.deckStatus(deck);
+    const d = PioneerDDJ1000.display;
+
+    if (!engine.getValue(group, "track_loaded")) {
+        PioneerDDJ1000.send(note, d.minutes, 0);
+        PioneerDDJ1000.send(note, d.seconds, 0);
+        return;
+    }
+    const duration = engine.getValue(group, "duration");
+    const elapsed = PioneerDDJ1000.estimateElapsed(deck, group, duration);
+    const remaining = engine.getValue("[Controls]", "ShowDurationRemaining") !== 0;
+    const shown = remaining ? Math.max(0, duration - elapsed) : elapsed;
+    PioneerDDJ1000.send(note, d.timeMode, remaining ? 0x7F : 0);
+    PioneerDDJ1000.send(note, d.minutes, Math.min(99, Math.floor(shown / 60)));
+    PioneerDDJ1000.send(note, d.seconds, Math.floor(shown % 60));
+    PioneerDDJ1000.send14(PioneerDDJ1000.deckCcStatus(deck), d.positionBar, PioneerDDJ1000.platterAngle(elapsed));
 };
 
 // ---------------------------------------------------------------------------
@@ -585,8 +802,10 @@ PioneerDDJ1000.jumpToStart = function(_channel, _control, value, _status, group)
 
 // Top of the TEMPO slider is "-" (MSB 0x00).
 PioneerDDJ1000.tempo = function(_channel, control, value, status, group) {
-    const position = PioneerDDJ1000.readHighRes(status, control, value) * 2 - 1;
-    engine.setValue(group, "rate", position * (engine.getValue(group, "rate_dir") || 1));
+    const position = PioneerDDJ1000.readHighRes(status, control, value);
+    if (position !== undefined) {
+        engine.setValue(group, "rate", (position * 2 - 1) * (engine.getValue(group, "rate_dir") || 1));
+    }
 };
 
 PioneerDDJ1000.masterTempo = function(_channel, _control, value, _status, group) {
@@ -628,7 +847,7 @@ PioneerDDJ1000.keySync = function(_channel, _control, value, _status, group) {
     if (state.keySync) {
         engine.setValue(group, "sync_key", 1);
     }
-    PioneerDDJ1000.deckLed(deck, 0x65, state.keySync);
+    PioneerDDJ1000.deckLed(deck, PioneerDDJ1000.deckNote.keySync, state.keySync);
 };
 
 PioneerDDJ1000.keyReset = function(_channel, _control, value, _status, group) {
@@ -638,7 +857,7 @@ PioneerDDJ1000.keyReset = function(_channel, _control, value, _status, group) {
     const deck = PioneerDDJ1000.deckFromGroup(group);
     engine.setValue(group, "reset_key", 1);
     PioneerDDJ1000.deck[deck].keySync = false;
-    PioneerDDJ1000.deckLed(deck, 0x65, false);
+    PioneerDDJ1000.deckLed(deck, PioneerDDJ1000.deckNote.keySync, false);
 };
 
 // ---------------------------------------------------------------------------
@@ -698,6 +917,7 @@ PioneerDDJ1000.updateLoopLeds = function(deck) {
     if (!state) {
         return;
     }
+    const n = PioneerDDJ1000.deckNote;
     const looping = engine.getValue(PioneerDDJ1000.group(deck), "loop_enabled") > 0;
     const lit = (end) => {
         if (state.loopAdjust === end) {
@@ -705,10 +925,10 @@ PioneerDDJ1000.updateLoopLeds = function(deck) {
         }
         return state.loopAdjust ? true : looping;
     };
-    PioneerDDJ1000.deckLed(deck, 0x10, lit("in"));
-    PioneerDDJ1000.deckLed(deck, 0x4C, lit("in"));
-    PioneerDDJ1000.deckLed(deck, 0x11, lit("out"));
-    PioneerDDJ1000.deckLed(deck, 0x4D, lit("out"));
+    PioneerDDJ1000.deckLed(deck, n.loopIn, lit("in"));
+    PioneerDDJ1000.deckLed(deck, n.loopInShift, lit("in"));
+    PioneerDDJ1000.deckLed(deck, n.loopOut, lit("out"));
+    PioneerDDJ1000.deckLed(deck, n.loopOutShift, lit("out"));
 };
 
 PioneerDDJ1000.moveLoopPoint = function(deck, ticks) {
@@ -785,7 +1005,7 @@ PioneerDDJ1000.vinylState = function(_channel, _control, value, _status, group) 
 
 PioneerDDJ1000.setVinyl = function(deck, on) {
     PioneerDDJ1000.deck[deck].vinyl = on;
-    PioneerDDJ1000.deckLed(deck, 0x17, on);
+    PioneerDDJ1000.deckLed(deck, PioneerDDJ1000.deckNote.vinyl, on);
 };
 
 // SLIP REVERSE: reverse while held; lets go by itself after 8 beats.
@@ -959,7 +1179,8 @@ PioneerDDJ1000.cueCall = function(direction) {
         const target = direction < 0 ? Math.max.apply(null, candidates) : Math.min.apply(null, candidates);
         PioneerDDJ1000.seekSamples(group, target);
         if (!engine.getValue(group, "play")) {
-            // A called cue becomes the CUE point, as on a CDJ.
+            // A called cue becomes the CUE point, as on a CDJ. This replaces
+            // the track's stored cue point (noted in the manual).
             engine.setValue(group, "cue_set", 1);
         }
     };
@@ -1249,8 +1470,8 @@ PioneerDDJ1000.viewLong = function(_channel, _control, value) {
 
 PioneerDDJ1000.samplerVolume = function(_channel, control, value, status) {
     const level = PioneerDDJ1000.readHighRes(status, control, value);
-    for (let i = 1; i <= PioneerDDJ1000.numSamplers(); i++) {
-        engine.setParameter(`[Sampler${i}]`, "volume", level);
+    if (level !== undefined) {
+        PioneerDDJ1000.samplerGroups().forEach((group) => engine.setParameter(group, "volume", level));
     }
 };
 
@@ -1259,9 +1480,7 @@ PioneerDDJ1000.samplerCue = function(_channel, _control, value) {
         return;
     }
     const on = engine.getValue("[Sampler1]", "pfl") ? 0 : 1;
-    for (let i = 1; i <= PioneerDDJ1000.numSamplers(); i++) {
-        engine.setValue(`[Sampler${i}]`, "pfl", on);
-    }
+    PioneerDDJ1000.samplerGroups().forEach((group) => engine.setValue(group, "pfl", on));
     PioneerDDJ1000.updateSamplerCueLed();
 };
 
@@ -1305,16 +1524,17 @@ PioneerDDJ1000.applyColorFx = function() {
             engine.setValue(unit, "loaded_chain_preset", preset);
         }
         if (needsButton) {
-            engine.setValue(unit, "enabled", which ? 1 : 0);
+            PioneerDDJ1000.override(unit, "enabled", which ? 1 : 0);
         }
     });
     PioneerDDJ1000.updateColorFxLeds();
 };
 
 PioneerDDJ1000.updateColorFxLeds = function() {
+    const mixer = PioneerDDJ1000.midiStatus.mixer;
     for (let i = 0; i < 4; i++) {
-        PioneerDDJ1000.led(0x96, i, PioneerDDJ1000.colorFx === i + 1);
-        PioneerDDJ1000.led(0x96, 0x08 + i, PioneerDDJ1000.colorFx === i + 1);
+        PioneerDDJ1000.led(mixer, PioneerDDJ1000.mixerNote.colorFx + i, PioneerDDJ1000.colorFx === i + 1);
+        PioneerDDJ1000.led(mixer, PioneerDDJ1000.mixerNote.colorFxShift + i, PioneerDDJ1000.colorFx === i + 1);
     }
 };
 
@@ -1323,6 +1543,10 @@ PioneerDDJ1000.updateColorFxLeds = function() {
 // ---------------------------------------------------------------------------
 
 PioneerDDJ1000.beatFxUnit = "[EffectRack1_EffectUnit1]";
+
+PioneerDDJ1000.beatFxLed = function(note, on) {
+    PioneerDDJ1000.led(PioneerDDJ1000.midiStatus.beatFx, note, on);
+};
 
 PioneerDDJ1000.rollType = function() {
     const name = PioneerDDJ1000.beatFxPositions[PioneerDDJ1000.beatFx.position];
@@ -1334,32 +1558,39 @@ PioneerDDJ1000.rollType = function() {
 
 PioneerDDJ1000.beatValue = () => PioneerDDJ1000.config.beatValues[PioneerDDJ1000.beatFx.beatIndex];
 
-PioneerDDJ1000.routeBeatFx = function() {
-    const unit = PioneerDDJ1000.beatFxUnit;
-    const target = PioneerDDJ1000.beatFx.target;
-    PioneerDDJ1000.decks.forEach((deck) => {
-        engine.setValue(unit, `group_[Channel${deck}]_enable`, target === deck ? 1 : 0);
-    });
-    engine.setValue(unit, "group_[Master]_enable", target === "master" ? 1 : 0);
-    for (let i = 1; i <= PioneerDDJ1000.numSamplers(); i++) {
-        engine.setValue(unit, `group_[Sampler${i}]_enable`, target === "sampler" ? 1 : 0);
+// CH SELECT: route effect unit 1 to the selected source alone. MIC is
+// Mixxx's microphone channels.
+PioneerDDJ1000.routeBeatFx = function(target) {
+    let routed;
+    if (typeof target === "number") {
+        routed = [PioneerDDJ1000.group(target)];
+    } else if (target === "master") {
+        routed = ["[Master]"];
+    } else if (target === "mic") {
+        routed = PioneerDDJ1000.microphoneGroups();
+    } else {
+        routed = PioneerDDJ1000.samplerGroups();
     }
+    PioneerDDJ1000.routingGroups().forEach((group) => {
+        PioneerDDJ1000.override(PioneerDDJ1000.beatFxUnit, `group_${group}_enable`, routed.includes(group) ? 1 : 0);
+    });
 };
 
-// The decks a roll plays on: the selected channel, or every playing deck on MASTER.
+// The decks a roll plays on: the decks effect unit 1 is routed to, or every
+// playing deck when it is routed to Main.
 PioneerDDJ1000.rollDecks = function() {
-    const target = PioneerDDJ1000.beatFx.target;
-    if (typeof target === "number") {
-        return [target];
-    }
-    if (target === "master") {
-        return PioneerDDJ1000.decks.filter((deck) => engine.getValue(PioneerDDJ1000.group(deck), "play") > 0);
-    }
-    return [];
+    const unit = PioneerDDJ1000.beatFxUnit;
+    const onMain = engine.getValue(unit, "group_[Master]_enable") > 0;
+    return PioneerDDJ1000.decks.filter((deck) => {
+        const group = PioneerDDJ1000.group(deck);
+        return onMain ? engine.getValue(group, "play") > 0 : engine.getValue(unit, `group_${group}_enable`) > 0;
+    });
 };
 
 // FX SELECT: position N loads effect unit 1's chain preset N (the order is
 // set in Preferences > Effects); SLIP ROLL and ROLL use the deck's loops.
+// Preset 0 is always Mixxx's empty "---" preset, so LOW CUT ECHO loads the
+// first preset of the list.
 PioneerDDJ1000.beatFxSelect = function(_channel, control, value) {
     const position = control - 0x20;
     if (!value || position === PioneerDDJ1000.beatFx.position) {
@@ -1388,12 +1619,15 @@ PioneerDDJ1000.beatFxChannel = function(_channel, control, value) {
     const wasOn = PioneerDDJ1000.beatFx.on;
     PioneerDDJ1000.setBeatFx(false);
     PioneerDDJ1000.beatFx.target = target;
-    PioneerDDJ1000.routeBeatFx();
+    PioneerDDJ1000.routeBeatFx(target);
     PioneerDDJ1000.setBeatFx(wasOn);
 };
 
 PioneerDDJ1000.beatFxLevel = function(_channel, control, value, status) {
-    engine.setParameter(PioneerDDJ1000.beatFxUnit, "mix", PioneerDDJ1000.readHighRes(status, control, value));
+    const level = PioneerDDJ1000.readHighRes(status, control, value);
+    if (level !== undefined) {
+        engine.setParameter(PioneerDDJ1000.beatFxUnit, "mix", level);
+    }
 };
 
 PioneerDDJ1000.beatFxOn = function(_channel, _control, value) {
@@ -1414,7 +1648,7 @@ PioneerDDJ1000.setBeatFx = function(on) {
     }
     fx.on = on;
     engine.setValue(PioneerDDJ1000.beatFxUnit, "enabled", on && !roll ? 1 : 0);
-    PioneerDDJ1000.led(0x94, 0x47, on);
+    PioneerDDJ1000.beatFxLed(PioneerDDJ1000.beatFxNote.on, on);
 };
 
 PioneerDDJ1000.startRoll = function(deck, beats, slip) {
@@ -1427,13 +1661,17 @@ PioneerDDJ1000.stopRoll = function(deck, slip) {
     engine.setValue(PioneerDDJ1000.group(deck), slip ? "beatlooproll_activate" : "loop_enabled", 0);
 };
 
-// SHIFT + BEAT FX ON/OFF: RELEASE FX, Beat FX off with a vinyl brake.
+// SHIFT + BEAT FX ON/OFF: RELEASE FX switches the Beat FX off. With CH SELECT
+// on one deck (CH1-CH4) that deck also stops with a vinyl brake; MASTER, MIC
+// and SAMPLER never stop a deck.
 PioneerDDJ1000.releaseFx = function(_channel, _control, value) {
-    PioneerDDJ1000.led(0x94, 0x43, value > 0);
+    PioneerDDJ1000.beatFxLed(PioneerDDJ1000.beatFxNote.release, value > 0);
     if (value) {
-        const decks = PioneerDDJ1000.rollDecks();
+        const target = PioneerDDJ1000.beatFx.target;
         PioneerDDJ1000.setBeatFx(false);
-        decks.forEach((deck) => engine.brake(deck, true));
+        if (typeof target === "number") {
+            engine.brake(target, true);
+        }
     }
 };
 
@@ -1441,7 +1679,7 @@ PioneerDDJ1000.releaseFx = function(_channel, _control, value) {
 // time for echo, flanger, phaser and similar effects).
 PioneerDDJ1000.beatStep = function(direction, note) {
     return function(_channel, _control, value) {
-        PioneerDDJ1000.led(0x94, note, value > 0);
+        PioneerDDJ1000.beatFxLed(note, value > 0);
         if (!value) {
             return;
         }
@@ -1459,21 +1697,21 @@ PioneerDDJ1000.beatStep = function(direction, note) {
     };
 };
 
-PioneerDDJ1000.beatDown = PioneerDDJ1000.beatStep(-1, 0x4A);
-PioneerDDJ1000.beatUp = PioneerDDJ1000.beatStep(1, 0x4B);
+PioneerDDJ1000.beatDown = PioneerDDJ1000.beatStep(-1, PioneerDDJ1000.beatFxNote.beatDown);
+PioneerDDJ1000.beatUp = PioneerDDJ1000.beatStep(1, PioneerDDJ1000.beatFxNote.beatUp);
 
 // SHIFT + BEAT < / > (AUTO / TAP in rekordbox): Mixxx effects follow the deck
 // tempo on their own, so these only light up.
 PioneerDDJ1000.beatAuto = function(_channel, _control, value) {
-    PioneerDDJ1000.led(0x94, 0x66, value > 0);
+    PioneerDDJ1000.beatFxLed(PioneerDDJ1000.beatFxNote.auto, value > 0);
 };
 
 PioneerDDJ1000.beatTap = function(_channel, _control, value) {
-    PioneerDDJ1000.led(0x94, 0x6B, value > 0);
+    PioneerDDJ1000.beatFxLed(PioneerDDJ1000.beatFxNote.tap, value > 0);
 };
 
 // ---------------------------------------------------------------------------
-// Performance pads
+// Performance pads: modes and pages
 // ---------------------------------------------------------------------------
 
 PioneerDDJ1000.padMode = function(_channel, control, value, _status, group) {
@@ -1522,16 +1760,14 @@ PioneerDDJ1000.bankStep = function(direction) {
 PioneerDDJ1000.bankPrev = PioneerDDJ1000.bankStep(-1);
 PioneerDDJ1000.bankNext = PioneerDDJ1000.bankStep(1);
 
+// Banks of 8 samplers that exist in Mixxx.
+PioneerDDJ1000.samplerBankCount = () =>
+    PioneerDDJ1000.clamp(Math.ceil(PioneerDDJ1000.numSamplers() / 8), 1, PioneerDDJ1000.config.samplerBanks);
+
 PioneerDDJ1000.stepSamplerBank = function(deck, direction) {
     const state = PioneerDDJ1000.deck[deck];
-    state.samplerBank = PioneerDDJ1000.clamp(state.samplerBank + direction, 0, PioneerDDJ1000.config.samplerBanks - 1);
-    PioneerDDJ1000.ensureSamplers((state.samplerBank + 1) * 8);
-};
-
-PioneerDDJ1000.ensureSamplers = function(count) {
-    if (PioneerDDJ1000.numSamplers() < count) {
-        engine.setValue("[App]", "num_samplers", count);
-    }
+    state.samplerBank = PioneerDDJ1000.clamp(state.samplerBank + direction, 0, PioneerDDJ1000.samplerBankCount() - 1);
+    PioneerDDJ1000.renderMode(deck, PioneerDDJ1000.mode.sampler);
 };
 
 PioneerDDJ1000.updateModeLeds = function(deck) {
@@ -1541,49 +1777,53 @@ PioneerDDJ1000.updateModeLeds = function(deck) {
     }
     // Lighting a mode button tells the unit to switch to that mode, so only
     // the active mode is lit, never blinked; PAGE lights are left to the unit.
-    const status = 0x90 + deck - 1;
     PioneerDDJ1000.modeButtons.forEach((note, mode) => {
-        PioneerDDJ1000.led(status, note, mode === state.mode);
+        PioneerDDJ1000.deckLed(deck, note, mode === state.mode);
     });
 };
 
+// ---------------------------------------------------------------------------
+// Performance pads: what a press does
+// ---------------------------------------------------------------------------
+
 // Pads: note = mode * 16 + (page - 1) * 8 + pad; SHIFT uses the next channel.
 PioneerDDJ1000.pad = function(_channel, control, value, status) {
-    const deck = (((status & 0x0F) - 7) >> 1) + 1;
-    const shifted = (((status & 0x0F) - 7) & 1) === 1;
+    const channelOffset = (status & 0x0F) - (PioneerDDJ1000.midiStatus.pads & 0x0F);
+    const deck = (channelOffset >> 1) + 1;
+    const shifted = (channelOffset & 1) === 1;
     const mode = control >> 4;
     const page = control & 0x08 ? 2 : 1;
     const pad = control & 0x07;
     const state = PioneerDDJ1000.deck[deck];
-    const group = PioneerDDJ1000.group(deck);
-    const m = PioneerDDJ1000.mode;
 
-    state.mode = mode;
+    // The unit changes mode by itself; a pad of another mode means it did.
+    if (state.mode !== mode) {
+        state.mode = mode;
+        PioneerDDJ1000.updateModeLeds(deck);
+    }
     state.pressed[mode] = state.pressed[mode] || {};
     state.pressed[mode][pad] = value > 0;
+    PioneerDDJ1000.padActions[mode](deck, page, pad, value, shifted);
+    PioneerDDJ1000.renderMode(deck, mode);
+};
 
-    if (mode === m.hotCue) {
-        PioneerDDJ1000.padHotCue(deck, pad + 1 + (page - 1) * 8, value, shifted);
-    } else if (mode === m.padFx1 || mode === m.padFx2) {
-        PioneerDDJ1000.padEffect(deck, PioneerDDJ1000.padFx[mode][page - 1][pad], value);
-    } else if (mode === m.beatJump) {
-        if (value) {
-            engine.setValue(group, "beatjump", PioneerDDJ1000.beatJumpBeats[pad] * state.jumpScale);
-        }
-    } else if (mode === m.sampler) {
-        PioneerDDJ1000.padSampler(state.samplerBank * 8 + pad + 1, value, shifted);
-    } else if (mode === m.keyboard) {
-        PioneerDDJ1000.padKeyboard(deck, PioneerDDJ1000.semitones[page - 1][pad], pad, value, shifted);
-    } else if (mode === m.beatLoop) {
-        if (value && !shifted) {
-            PioneerDDJ1000.padBeatLoop(group, PioneerDDJ1000.beatLoopBeats[page - 1][pad]);
-        }
-    } else if (mode === m.keyShift && value) {
-        const semitones = PioneerDDJ1000.semitones[page - 1][pad];
-        const current = Math.round(engine.getValue(group, "pitch_adjust"));
-        engine.setValue(group, "pitch_adjust", current === semitones ? 0 : semitones);
-    }
-    PioneerDDJ1000.renderPads(deck, false);
+PioneerDDJ1000.padActions = {
+    [PioneerDDJ1000.mode.hotCue]: (deck, page, pad, value, shifted) =>
+        PioneerDDJ1000.padHotCue(deck, pad + 1 + (page - 1) * 8, value, shifted),
+    [PioneerDDJ1000.mode.padFx1]: (deck, page, pad, value) =>
+        PioneerDDJ1000.padEffect(deck, PioneerDDJ1000.padFx[PioneerDDJ1000.mode.padFx1][page - 1][pad], value),
+    [PioneerDDJ1000.mode.padFx2]: (deck, page, pad, value) =>
+        PioneerDDJ1000.padEffect(deck, PioneerDDJ1000.padFx[PioneerDDJ1000.mode.padFx2][page - 1][pad], value),
+    [PioneerDDJ1000.mode.beatJump]: (deck, page, pad, value) =>
+        PioneerDDJ1000.padBeatJump(deck, pad, value),
+    [PioneerDDJ1000.mode.sampler]: (deck, page, pad, value, shifted) =>
+        PioneerDDJ1000.padSampler(PioneerDDJ1000.deck[deck].samplerBank * 8 + pad + 1, value, shifted),
+    [PioneerDDJ1000.mode.keyboard]: (deck, page, pad, value, shifted) =>
+        PioneerDDJ1000.padKeyboard(deck, PioneerDDJ1000.semitones[page - 1][pad], pad, value, shifted),
+    [PioneerDDJ1000.mode.beatLoop]: (deck, page, pad, value, shifted) =>
+        PioneerDDJ1000.padBeatLoop(deck, PioneerDDJ1000.beatLoopBeats[page - 1][pad], value && !shifted),
+    [PioneerDDJ1000.mode.keyShift]: (deck, page, pad, value) =>
+        PioneerDDJ1000.padKeyShift(deck, PioneerDDJ1000.semitones[page - 1][pad], value),
 };
 
 PioneerDDJ1000.padHotCue = function(deck, number, value, shifted) {
@@ -1602,35 +1842,16 @@ PioneerDDJ1000.padHotCue = function(deck, number, value, shifted) {
     }
 };
 
-// PAD FX: rolls and deck tricks, or effect units held on this deck. A held
-// unit is routed to the deck alone and handed back as it was on release.
+// PAD FX (see PioneerDDJ1000.padFx). Each acts only while its pad is held and
+// leaves the deck or effect unit as it found it when the pad is released.
 PioneerDDJ1000.padEffect = function(deck, entry, value) {
-    const group = PioneerDDJ1000.group(deck);
-    const state = PioneerDDJ1000.deck[deck];
     if (entry.roll !== undefined) {
-        if (value) {
-            PioneerDDJ1000.startRoll(deck, entry.roll, true);
-        } else {
-            PioneerDDJ1000.stopRoll(deck, true);
-        }
+        PioneerDDJ1000.padRoll(deck, entry.roll, value);
     } else if (entry.brake || entry.spinback) {
-        // Slip keeps the track running underneath, so release drops back in
-        // where it would have been.
-        if (value) {
-            state.padFxSlip = engine.getValue(group, "slip_enabled");
-            engine.setValue(group, "slip_enabled", 1);
-        }
-        if (entry.brake) {
-            engine.brake(deck, value > 0);
-        } else {
-            engine.spinback(deck, value > 0);
-        }
-        if (!value) {
-            engine.setValue(group, "play", 1);
-            engine.setValue(group, "slip_enabled", state.padFxSlip);
-        }
+        PioneerDDJ1000.padTrick(deck, entry.spinback, value);
     } else if (entry.reverse) {
-        engine.setValue(group, "reverseroll", value ? 1 : 0);
+        // Mixxx's slip reverse returns to where the track would have been.
+        engine.setValue(PioneerDDJ1000.group(deck), "reverseroll", value ? 1 : 0);
     } else if (value) {
         PioneerDDJ1000.holdUnit(deck, entry.unit, entry.slot);
     } else {
@@ -1638,16 +1859,61 @@ PioneerDDJ1000.padEffect = function(deck, entry, value) {
     }
 };
 
+// A slip loop roll while held.
+PioneerDDJ1000.padRoll = function(deck, beats, value) {
+    if (value) {
+        PioneerDDJ1000.startRoll(deck, beats, true);
+    } else {
+        PioneerDDJ1000.stopRoll(deck, true);
+    }
+};
+
+// Vinyl brake or backspin while held. Slip keeps the track running
+// underneath, so a deck that was playing carries on where it would have been;
+// a deck that was paused stays paused, where it was.
+PioneerDDJ1000.padTrick = function(deck, spinback, value) {
+    const group = PioneerDDJ1000.group(deck);
+    const state = PioneerDDJ1000.deck[deck];
+    if (value) {
+        // With two trick pads held, keep the state from before the first.
+        if (!state.trickRestore) {
+            state.trickRestore = {
+                play: engine.getValue(group, "play"),
+                slip: engine.getValue(group, "slip_enabled"),
+            };
+        }
+        engine.setValue(group, "slip_enabled", 1);
+    }
+    if (spinback) {
+        engine.spinback(deck, value > 0);
+    } else {
+        engine.brake(deck, value > 0);
+    }
+    if (!value && state.trickRestore) {
+        // Play first: switching slip off then jumps to the slip position.
+        if (state.trickRestore.play) {
+            engine.setValue(group, "play", 1);
+        }
+        engine.setValue(group, "slip_enabled", state.trickRestore.slip);
+        state.trickRestore = null;
+    }
+};
+
+// Hold an effect unit, or one effect of it (slot), on this deck alone.
+// Everything changed here is saved and put back by releaseUnit().
 PioneerDDJ1000.holdUnit = function(deck, unitNumber, slot) {
     const unit = `[EffectRack1_EffectUnit${unitNumber}]`;
+    const deckGroup = PioneerDDJ1000.group(deck);
     if (PioneerDDJ1000.heldUnits[unitNumber]) {
         PioneerDDJ1000.releaseUnit(unitNumber);
     }
-    const saved = {enabled: engine.getValue(unit, "enabled"), groups: {}, slots: {}};
-    PioneerDDJ1000.decks.forEach((d) => {
-        const key = `group_[Channel${d}]_enable`;
-        saved.groups[key] = engine.getValue(unit, key);
-        engine.setValue(unit, key, d === deck ? 1 : 0);
+    const saved = {enabled: engine.getValue(unit, "enabled"), routing: {}, slots: {}};
+    // Every route, not just the decks': a unit also routed to Main or to the
+    // samplers would otherwise still reach the whole mix.
+    PioneerDDJ1000.routingGroups().forEach((group) => {
+        const key = `group_${group}_enable`;
+        saved.routing[key] = engine.getValue(unit, key);
+        engine.setValue(unit, key, group === deckGroup ? 1 : 0);
     });
     if (slot) {
         for (let i = 1; i <= 3; i++) {
@@ -1667,18 +1933,24 @@ PioneerDDJ1000.releaseUnit = function(unitNumber) {
     }
     const unit = `[EffectRack1_EffectUnit${unitNumber}]`;
     engine.setValue(unit, "enabled", saved.enabled);
-    Object.keys(saved.groups).forEach((key) => engine.setValue(unit, key, saved.groups[key]));
+    Object.keys(saved.routing).forEach((key) => engine.setValue(unit, key, saved.routing[key]));
     Object.keys(saved.slots).forEach((slotGroup) => engine.setValue(slotGroup, "enabled", saved.slots[slotGroup]));
     delete PioneerDDJ1000.heldUnits[unitNumber];
 };
 
+PioneerDDJ1000.padBeatJump = function(deck, pad, value) {
+    if (value) {
+        engine.setValue(PioneerDDJ1000.group(deck), "beatjump",
+            PioneerDDJ1000.beatJumpBeats[pad] * PioneerDDJ1000.deck[deck].jumpScale);
+    }
+};
+
 // SAMPLER: play the slot from the start; SHIFT stops it; an empty slot loads
-// the selected track.
+// the selected track. Pads past the last sampler do nothing.
 PioneerDDJ1000.padSampler = function(number, value, shifted) {
-    if (!value) {
+    if (!value || number > PioneerDDJ1000.numSamplers()) {
         return;
     }
-    PioneerDDJ1000.ensureSamplers(Math.ceil(number / 8) * 8);
     const group = `[Sampler${number}]`;
     if (shifted) {
         engine.setValue(group, "cue_gotoandstop", 1);
@@ -1710,7 +1982,12 @@ PioneerDDJ1000.padKeyboard = function(deck, semitones, pad, value, shifted) {
     }
 };
 
-PioneerDDJ1000.padBeatLoop = function(group, beats) {
+// BEAT LOOP: a loop of that size; the lit pad again leaves it.
+PioneerDDJ1000.padBeatLoop = function(deck, beats, pressed) {
+    if (!pressed) {
+        return;
+    }
+    const group = PioneerDDJ1000.group(deck);
     const sameSize = Math.abs(engine.getValue(group, "beatloop_size") - beats) < 1e-6;
     if (engine.getValue(group, "loop_enabled") && sameSize) {
         engine.setValue(group, "loop_enabled", 0);
@@ -1720,77 +1997,170 @@ PioneerDDJ1000.padBeatLoop = function(group, beats) {
     }
 };
 
-// Send pad colours that changed: the mode on screen, or every mode.
-PioneerDDJ1000.renderPads = function(deck, allModes) {
+// KEY SHIFT: shift the key; the lit pad again returns to 0.
+PioneerDDJ1000.padKeyShift = function(deck, semitones, value) {
+    if (value) {
+        const group = PioneerDDJ1000.group(deck);
+        const current = Math.round(engine.getValue(group, "pitch_adjust"));
+        engine.setValue(group, "pitch_adjust", current === semitones ? 0 : semitones);
+    }
+};
+
+// ---------------------------------------------------------------------------
+// Performance pads: colours
+// ---------------------------------------------------------------------------
+
+// Pad colours are sent when something they show changes (see connectPads()
+// and connectSamplers()), when a pad is pressed, and on the blink for the
+// pads that blink. send() skips colours the unit already has.
+
+// Send one pad's colour on both its channels (with and without SHIFT).
+PioneerDDJ1000.renderPad = function(deck, mode, page, pad) {
     const state = PioneerDDJ1000.deck[deck];
     if (!state || !PioneerDDJ1000.opened) {
         return;
     }
-    for (let mode = 0; mode < 8; mode++) {
-        if (!allModes && mode !== state.mode) {
-            continue;
-        }
-        for (let page = 1; page <= 2; page++) {
-            for (let pad = 0; pad < 8; pad++) {
-                const colour = PioneerDDJ1000.padColor(deck, mode, page, pad);
-                const note = mode * 16 + (page - 1) * 8 + pad;
-                PioneerDDJ1000.send(PioneerDDJ1000.padStatus(deck, false), note, colour);
-                PioneerDDJ1000.send(PioneerDDJ1000.padStatus(deck, true), note, colour);
-            }
+    const note = mode * 16 + (page - 1) * 8 + pad;
+    PioneerDDJ1000.padBlinks = false;
+    const colour = PioneerDDJ1000.padColors[mode](deck, page, pad);
+    if (PioneerDDJ1000.padBlinks) {
+        state.blinking[note] = [mode, page, pad];
+    } else {
+        delete state.blinking[note];
+    }
+    PioneerDDJ1000.send(PioneerDDJ1000.padStatus(deck, false), note, colour);
+    PioneerDDJ1000.send(PioneerDDJ1000.padStatus(deck, true), note, colour);
+};
+
+PioneerDDJ1000.renderMode = function(deck, mode) {
+    for (let page = 1; page <= 2; page++) {
+        for (let pad = 0; pad < 8; pad++) {
+            PioneerDDJ1000.renderPad(deck, mode, page, pad);
         }
     }
 };
 
-PioneerDDJ1000.padColor = function(deck, mode, page, pad) {
-    const group = PioneerDDJ1000.group(deck);
-    const state = PioneerDDJ1000.deck[deck];
-    const c = PioneerDDJ1000.color;
-    const m = PioneerDDJ1000.mode;
-    const pressed = state.pressed[mode] && state.pressed[mode][pad];
+PioneerDDJ1000.renderBlinkingPads = function(deck) {
+    const blinking = PioneerDDJ1000.deck[deck].blinking;
+    Object.keys(blinking).forEach((note) => {
+        const [mode, page, pad] = blinking[note];
+        PioneerDDJ1000.renderPad(deck, mode, page, pad);
+    });
+};
 
-    if (mode === m.hotCue) {
-        const number = pad + 1 + (page - 1) * 8;
-        const status = engine.getValue(group, `hotcue_${number}_status`);
-        if (!status) {
-            return c.off;
+// Every pad of every deck: the modes on screen now, the rest from the timer.
+PioneerDDJ1000.queueAllPads = function() {
+    PioneerDDJ1000.padQueue = [];
+    PioneerDDJ1000.decks.forEach((deck) => {
+        const onScreen = PioneerDDJ1000.deck[deck].mode;
+        PioneerDDJ1000.renderMode(deck, onScreen);
+        for (let mode = 0; mode < 8; mode++) {
+            if (mode !== onScreen) {
+                PioneerDDJ1000.padQueue.push([deck, mode]);
+            }
         }
-        const colour = PioneerDDJ1000.colorMapper.getValueForNearestColor(
-            engine.getValue(group, `hotcue_${number}_color`));
-        // A saved loop that is running blinks.
-        const runningLoop = engine.getValue(group, `hotcue_${number}_type`) === 4 && status === 2;
-        return runningLoop && !PioneerDDJ1000.blink ? c.off : colour;
-    }
-    if (mode === m.padFx1 || mode === m.padFx2) {
-        return pressed ? c.white : PioneerDDJ1000.padFx[mode][page - 1][pad].color;
-    }
-    if (mode === m.beatJump) {
-        if (pressed) {
-            return c.white;
+    });
+};
+
+// A sampler changed: redraw its pad on the decks showing its bank.
+PioneerDDJ1000.renderSamplerPad = function(number) {
+    const bank = Math.floor((number - 1) / 8);
+    const pad = (number - 1) % 8;
+    PioneerDDJ1000.decks.forEach((deck) => {
+        if (PioneerDDJ1000.deck[deck].samplerBank === bank) {
+            PioneerDDJ1000.renderPad(deck, PioneerDDJ1000.mode.sampler, 1, pad);
+            PioneerDDJ1000.renderPad(deck, PioneerDDJ1000.mode.sampler, 2, pad);
         }
-        return PioneerDDJ1000.beatJumpBeats[pad] < 0 ? c.azure : c.cyan;
+    });
+};
+
+// A blinking colour: `on` on the blink, `off` in between. Marks the pad so
+// the timer redraws it on every blink.
+PioneerDDJ1000.blinkColor = function(on, off) {
+    PioneerDDJ1000.padBlinks = true;
+    return PioneerDDJ1000.blink ? on : off;
+};
+
+PioneerDDJ1000.isPressed = function(deck, mode, pad) {
+    const pressed = PioneerDDJ1000.deck[deck].pressed[mode];
+    return !!(pressed && pressed[pad]);
+};
+
+PioneerDDJ1000.hotCueColor = function(deck, number) {
+    const group = PioneerDDJ1000.group(deck);
+    const status = engine.getValue(group, `hotcue_${number}_status`);
+    if (!status) {
+        return PioneerDDJ1000.color.off;
     }
-    if (mode === m.sampler) {
-        const sampler = `[Sampler${state.samplerBank * 8 + pad + 1}]`;
-        if (!engine.getValue(sampler, "track_loaded")) {
-            return c.off;
-        }
-        return engine.getValue(sampler, "play") && PioneerDDJ1000.blink ? c.white : c.magenta;
+    const colour = PioneerDDJ1000.colorMapper.getValueForNearestColor(
+        engine.getValue(group, `hotcue_${number}_color`));
+    // A saved loop that is running blinks.
+    if (status === 2 && engine.getValue(group, `hotcue_${number}_type`) === 4) {
+        return PioneerDDJ1000.blinkColor(colour, PioneerDDJ1000.color.off);
     }
-    if (mode === m.keyboard || mode === m.keyShift) {
-        const semitones = PioneerDDJ1000.semitones[page - 1][pad];
-        if (Math.round(engine.getValue(group, "pitch_adjust")) === semitones) {
-            return c.white;
-        }
-        if (semitones === 0) {
-            return c.yellow;
-        }
-        return mode === m.keyboard ? c.purple : c.pink;
+    return colour;
+};
+
+PioneerDDJ1000.padFxColor = function(deck, mode, page, pad) {
+    return PioneerDDJ1000.isPressed(deck, mode, pad)
+        ? PioneerDDJ1000.color.white
+        : PioneerDDJ1000.padFx[mode][page - 1][pad].color;
+};
+
+PioneerDDJ1000.beatJumpColor = function(deck, pad) {
+    const c = PioneerDDJ1000.color;
+    if (PioneerDDJ1000.isPressed(deck, PioneerDDJ1000.mode.beatJump, pad)) {
+        return c.white;
     }
-    if (mode === m.beatLoop) {
-        const beats = PioneerDDJ1000.beatLoopBeats[page - 1][pad];
-        const active = engine.getValue(group, "loop_enabled")
-            && Math.abs(engine.getValue(group, "beatloop_size") - beats) < 1e-6;
-        return active && PioneerDDJ1000.blink ? c.white : c.green;
+    return PioneerDDJ1000.beatJumpBeats[pad] < 0 ? c.azure : c.cyan;
+};
+
+PioneerDDJ1000.samplerColor = function(deck, pad) {
+    const c = PioneerDDJ1000.color;
+    const number = PioneerDDJ1000.deck[deck].samplerBank * 8 + pad + 1;
+    if (number > PioneerDDJ1000.numSamplers()) {
+        return c.off;
     }
-    return c.off;
+    const sampler = `[Sampler${number}]`;
+    if (!engine.getValue(sampler, "track_loaded")) {
+        return c.off;
+    }
+    return engine.getValue(sampler, "play") ? PioneerDDJ1000.blinkColor(c.white, c.magenta) : c.magenta;
+};
+
+// KEYBOARD and KEY SHIFT: the current key shift is white, no shift yellow.
+PioneerDDJ1000.semitoneColor = function(deck, mode, page, pad) {
+    const c = PioneerDDJ1000.color;
+    const semitones = PioneerDDJ1000.semitones[page - 1][pad];
+    if (Math.round(engine.getValue(PioneerDDJ1000.group(deck), "pitch_adjust")) === semitones) {
+        return c.white;
+    }
+    if (semitones === 0) {
+        return c.yellow;
+    }
+    return mode === PioneerDDJ1000.mode.keyboard ? c.purple : c.pink;
+};
+
+PioneerDDJ1000.beatLoopColor = function(deck, page, pad) {
+    const c = PioneerDDJ1000.color;
+    const group = PioneerDDJ1000.group(deck);
+    const beats = PioneerDDJ1000.beatLoopBeats[page - 1][pad];
+    const active = engine.getValue(group, "loop_enabled")
+        && Math.abs(engine.getValue(group, "beatloop_size") - beats) < 1e-6;
+    return active ? PioneerDDJ1000.blinkColor(c.white, c.green) : c.green;
+};
+
+PioneerDDJ1000.padColors = {
+    [PioneerDDJ1000.mode.hotCue]: (deck, page, pad) => PioneerDDJ1000.hotCueColor(deck, pad + 1 + (page - 1) * 8),
+    [PioneerDDJ1000.mode.padFx1]: (deck, page, pad) =>
+        PioneerDDJ1000.padFxColor(deck, PioneerDDJ1000.mode.padFx1, page, pad),
+    [PioneerDDJ1000.mode.padFx2]: (deck, page, pad) =>
+        PioneerDDJ1000.padFxColor(deck, PioneerDDJ1000.mode.padFx2, page, pad),
+    [PioneerDDJ1000.mode.beatJump]: (deck, page, pad) => PioneerDDJ1000.beatJumpColor(deck, pad),
+    [PioneerDDJ1000.mode.sampler]: (deck, page, pad) => PioneerDDJ1000.samplerColor(deck, pad),
+    [PioneerDDJ1000.mode.keyboard]: (deck, page, pad) =>
+        PioneerDDJ1000.semitoneColor(deck, PioneerDDJ1000.mode.keyboard, page, pad),
+    [PioneerDDJ1000.mode.beatLoop]: (deck, page, pad) => PioneerDDJ1000.beatLoopColor(deck, page, pad),
+    [PioneerDDJ1000.mode.keyShift]: (deck, page, pad) =>
+        PioneerDDJ1000.semitoneColor(deck, PioneerDDJ1000.mode.keyShift, page, pad),
 };
