@@ -3,7 +3,7 @@
     <info>
         <name>Roland DJ-505</name>
         <author>Jan Holthuis</author>
-        <description>4-deck mapping for Roland DJ-505 controller</description>
+        <description>4-deck mapping for Roland DJ-505 controller. Make sure you setup audio outputs and inputs correctly (see manual)</description>
         <forums>https://mixxx.discourse.group/t/roland-dj-505/17916</forums>
         <manual>roland_dj_505</manual>
     </info>
