@@ -1,21 +1,20 @@
 #include "waveform/visualsmanager.h"
 
-#include "control/controlobject.h"
 #include "waveform/visualplayposition.h"
 
 DeckVisuals::DeckVisuals(const QString& group)
         : m_group(group),
           m_SlowTickCnt(0),
           m_trackLoaded(false),
-          m_pPlayButton(std::make_unique<ControlProxy>(ConfigKey(group, "play"))),
-          m_pLoopEnabled(std::make_unique<ControlProxy>(ConfigKey(group, "loop_enabled"))),
-          m_pEngineBpm(std::make_unique<ControlProxy>(ConfigKey(group, "bpm"))),
-          m_pVisualBpm(std::make_unique<ControlProxy>(ConfigKey(m_group, "visual_bpm"))),
-          m_pEngineKey(std::make_unique<ControlProxy>(ConfigKey(group, "key"))),
-          m_pVisualKey(std::make_unique<ControlProxy>(ConfigKey(m_group, "visual_key"))),
-          m_pTimeElapsed(std::make_unique<ControlProxy>(ConfigKey(m_group, "time_elapsed"))),
-          m_pTimeRemaining(std::make_unique<ControlProxy>(ConfigKey(m_group, "time_remaining"))),
-          m_pEndOfTrack(std::make_unique<ControlProxy>(ConfigKey(m_group, "end_of_track"))) {
+          m_playButton(ConfigKey(m_group, QStringLiteral("play"))),
+          m_loopEnabled(ConfigKey(m_group, QStringLiteral("loop_enabled"))),
+          m_engineBpm(ConfigKey(m_group, QStringLiteral("bpm"))),
+          m_visualBpm(ConfigKey(m_group, QStringLiteral("visual_bpm"))),
+          m_engineKey(ConfigKey(m_group, QStringLiteral("key"))),
+          m_visualKey(ConfigKey(m_group, QStringLiteral("visual_key"))),
+          m_timeElapsed(ConfigKey(m_group, QStringLiteral("time_elapsed"))),
+          m_timeRemaining(ConfigKey(m_group, QStringLiteral("time_remaining"))),
+          m_endOfTrack(ConfigKey(m_group, QStringLiteral("end_of_track"))) {
     // Control used to communicate ratio playpos to GUI thread
     m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
 }
@@ -31,25 +30,33 @@ void DeckVisuals::process(double remainingTimeTriggerSeconds) {
         return;
     }
 
-    double timeRemaining = (1.0 - playPosition) * tempoTrackSeconds;
-    m_pTimeRemaining->set(timeRemaining);
-    m_pTimeElapsed->set(tempoTrackSeconds - timeRemaining);
+    const double playPosSeconds = playPosition * tempoTrackSeconds;
+    double timeRemaining = tempoTrackSeconds - playPosSeconds;
+    m_timeRemaining.set(timeRemaining);
+    m_timeElapsed.set(playPosSeconds);
 
-    if (!m_pPlayButton->toBool() ||                             // not playing
-            m_pLoopEnabled->toBool() ||                         // in loop
+    // get position of outro end and use it as remaining time
+    // for end-of-track warning if it's valid
+    const double outroEndPosSeconds = m_pVisualPlayPos->getTrackEndSeconds();
+    if (outroEndPosSeconds > 0) {
+        timeRemaining = outroEndPosSeconds - playPosSeconds;
+    }
+
+    if (!m_playButton.toBool() ||                               // not playing
+            m_loopEnabled.toBool() ||                           // in loop
             tempoTrackSeconds <= remainingTimeTriggerSeconds || // track too short
             timeRemaining > remainingTimeTriggerSeconds) {      // before the trigger
-        m_pEndOfTrack->set(0.0);
+        m_endOfTrack.set(0.0);
     } else {
-        m_pEndOfTrack->set(1.0);
+        m_endOfTrack.set(1.0);
     }
 
     // Update the BPM even more slowly
     m_SlowTickCnt = (m_SlowTickCnt + 1) % kSlowUpdateDivider;
     if (m_SlowTickCnt == 0 || !trackLoaded) {
-        m_pVisualBpm->set(m_pEngineBpm->get());
+        m_visualBpm.set(m_engineBpm.get());
     }
-    m_pVisualKey->set(m_pEngineKey->get());
+    m_visualKey.set(m_engineKey.get());
 
     m_trackLoaded = trackLoaded;
 }
