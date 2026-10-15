@@ -23,6 +23,8 @@ class TableItemDelegate : public DefaultDelegate {
             const QColor borderColor,
             const QRect& rect);
 
+    static bool isEndMarkerRow(const QModelIndex& index);
+
   protected:
     // Only used by LocationDelegate's text elide.
     // Having this here avoids including QTableView there.

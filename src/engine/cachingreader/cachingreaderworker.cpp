@@ -136,11 +136,11 @@ void CachingReaderWorker::run() {
                 m_newTrackAvailable.storeRelease(0);
             } // implicitly unlocks the mutex
 #ifdef __STEM__
-            if (pLoadTrack.track) {
+            if (pLoadTrack.track && pLoadTrack.track->getFileInfo().hasLocation()) {
                 // in this case the engine is still running with the old track
                 loadTrack(pLoadTrack.track, pLoadTrack.stemMask);
 #else
-            if (pLoadTrack) {
+            if (pLoadTrack && pLoadTrack->getFileInfo().hasLocation()) {
                 // in this case the engine is still running with the old track
                 loadTrack(pLoadTrack);
 #endif
