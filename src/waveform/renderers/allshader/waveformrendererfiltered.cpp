@@ -107,15 +107,15 @@ bool WaveformRendererFiltered::preprocessInner() {
 
     QVector3D rgb[3];
     if (m_bRgbStacked) {
-        rgb[0] = QVector3D(static_cast<float>(m_rgbLowColor_r),
-                static_cast<float>(m_rgbLowColor_g),
-                static_cast<float>(m_rgbLowColor_b));
-        rgb[1] = QVector3D(static_cast<float>(m_rgbMidColor_r),
-                static_cast<float>(m_rgbMidColor_g),
-                static_cast<float>(m_rgbMidColor_b));
-        rgb[2] = QVector3D(static_cast<float>(m_rgbHighColor_r),
-                static_cast<float>(m_rgbHighColor_g),
-                static_cast<float>(m_rgbHighColor_b));
+        rgb[0] = QVector3D(static_cast<float>(m_stackedLowColor_r),
+                static_cast<float>(m_stackedLowColor_g),
+                static_cast<float>(m_stackedLowColor_b));
+        rgb[1] = QVector3D(static_cast<float>(m_stackedMidColor_r),
+                static_cast<float>(m_stackedMidColor_g),
+                static_cast<float>(m_stackedMidColor_b));
+        rgb[2] = QVector3D(static_cast<float>(m_stackedHighColor_r),
+                static_cast<float>(m_stackedHighColor_g),
+                static_cast<float>(m_stackedHighColor_b));
     } else {
         rgb[0] = QVector3D(static_cast<float>(m_lowColor_r),
                 static_cast<float>(m_lowColor_g),

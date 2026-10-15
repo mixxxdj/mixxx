@@ -364,22 +364,38 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
         if (m_colorType == ColorType::RGBFiltered) {
             m_frameShaderProgram->setUniformValue("lowFilteredColor",
-                    QVector4D(static_cast<GLfloat>(m_rgbLowFilteredColor_r),
-                            static_cast<GLfloat>(m_rgbLowFilteredColor_g),
-                            static_cast<GLfloat>(m_rgbLowFilteredColor_b),
+                    QVector4D(static_cast<GLfloat>(m_stackedLowFilteredColor_r),
+                            static_cast<GLfloat>(m_stackedLowFilteredColor_g),
+                            static_cast<GLfloat>(m_stackedLowFilteredColor_b),
                             1.0));
             m_frameShaderProgram->setUniformValue("midFilteredColor",
-                    QVector4D(static_cast<GLfloat>(m_rgbMidFilteredColor_r),
-                            static_cast<GLfloat>(m_rgbMidFilteredColor_g),
-                            static_cast<GLfloat>(m_rgbMidFilteredColor_b),
+                    QVector4D(static_cast<GLfloat>(m_stackedMidFilteredColor_r),
+                            static_cast<GLfloat>(m_stackedMidFilteredColor_g),
+                            static_cast<GLfloat>(m_stackedMidFilteredColor_b),
                             1.0));
             m_frameShaderProgram->setUniformValue("highFilteredColor",
-                    QVector4D(static_cast<GLfloat>(m_rgbHighFilteredColor_r),
-                            static_cast<GLfloat>(m_rgbHighFilteredColor_g),
-                            static_cast<GLfloat>(m_rgbHighFilteredColor_b),
+                    QVector4D(static_cast<GLfloat>(m_stackedHighFilteredColor_r),
+                            static_cast<GLfloat>(m_stackedHighFilteredColor_g),
+                            static_cast<GLfloat>(m_stackedHighFilteredColor_b),
                             1.0));
         }
-        if (m_colorType == ColorType::RGB || m_colorType == ColorType::RGBFiltered) {
+        if (m_colorType == ColorType::RGBFiltered) {
+            m_frameShaderProgram->setUniformValue("lowColor",
+                    QVector4D(static_cast<GLfloat>(m_stackedLowColor_r),
+                            static_cast<GLfloat>(m_stackedLowColor_g),
+                            static_cast<GLfloat>(m_stackedLowColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("midColor",
+                    QVector4D(static_cast<GLfloat>(m_stackedMidColor_r),
+                            static_cast<GLfloat>(m_stackedMidColor_g),
+                            static_cast<GLfloat>(m_stackedMidColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("highColor",
+                    QVector4D(static_cast<GLfloat>(m_stackedHighColor_r),
+                            static_cast<GLfloat>(m_stackedHighColor_g),
+                            static_cast<GLfloat>(m_stackedHighColor_b),
+                            1.0));
+        } else if (m_colorType == ColorType::RGB) {
             m_frameShaderProgram->setUniformValue("lowColor",
                     QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
                             static_cast<GLfloat>(m_rgbLowColor_g),
