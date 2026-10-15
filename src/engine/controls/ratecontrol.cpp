@@ -600,7 +600,9 @@ double RateControl::calculateSpeed(double baserate,
         m_spinningDown = false;
     } else if (!paused) {
         if (m_prevPaused) {
-            if (playLatched && m_rampUpEnabled) {
+            if (playLatched && m_rampUpEnabled &&
+                    !getGroup().contains("Sampler") &&
+                    !getGroup().contains("Preview")) {
                 // Started by a latched Play: spin up. If the platter is still
                 // spinning down, continue from its current speed.
                 if (!m_spinningDown) {
@@ -631,7 +633,7 @@ double RateControl::calculateSpeed(double baserate,
 
     const double dt = static_cast<double>(samplesPerBuffer) / m_pSampleRate.get() / 2;
 
-    if (m_spinningDown) {
+    if (m_spinningDown && !getGroup().contains("Sampler") && !getGroup().contains("Preview")) {
         if (m_rampDownMode == 1) {
             // Power cut: the platter coasts without brake
             const double friction = (m_rampMode == 0) ? kCoastFriction33 : kCoastFriction45;
