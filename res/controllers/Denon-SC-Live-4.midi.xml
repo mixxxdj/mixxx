@@ -31,6 +31,16 @@
                 <value label="Resume after scratching and re-arm (Denon)" default="true">denon</value>
                 <value label="Manual end of slip">mixxx</value>
             </option>
+            <option variable="hotCueStemsLayer" type="boolean" default="false" label="Second layer of hotcues pads will be stem mutes">
+                <description>
+                    Enable the stems layer for the cue pads (requires Mixxx 2.6+)
+                </description>
+            </option>
+            <option variable="hotCuePitchPlayLayer" type="boolean" default="true" label="Second (or third) layer of hotcues pads will be pitch play">
+                <description>
+                    Enable the pitch play layer for the cue pads
+                </description>
+            </option>
         </group>
         <group label="When Mixxx Starts">
             <option variable="quantizeOnStartup" type="boolean" default="true" label="Turn on quantize for all decks">

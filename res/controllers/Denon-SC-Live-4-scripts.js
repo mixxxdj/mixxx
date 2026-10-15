@@ -17,6 +17,14 @@
 // eslint-disable-next-line no-var
 var SCLive4 = {};
 
+// KNOWN ISSUES: erase from the list if you resolve anything:
+// 1. Noise sweep FX is very different to Engine OS:
+//  a. It's pre-fader on Engine OS; post-fader here.
+//  b. It has a one-cycle max volume burst of noise when engaged.
+//  c. Sweeping on Engine OS sounds to me like it moves a filter (instead of/as well as?)
+//     adjusting noise volume.
+//  d. On Engine OS it sounds like white noise one direction and pink the other
+
 
 // USER SETTINGS: chosen in Mixxx > Preferences > Controllers > SC LIVE 4
 // (declared in the XML file's <settings>). Each one is explained there and in
@@ -50,6 +58,10 @@ const lightingButtonAction = engine.getSetting("lightingButtonAction");
 // Wash built from Echo) or "custom" (each button sweeps the effect at its
 // position with the channel knob)
 const sweepFxCustom = engine.getSetting("sweepFxMode") === "custom";
+
+// Hotcue pad layers:
+const wantsStemsLayer = engine.getSetting("hotCueStemsLayer");
+const wantsPitchPlayLayer = engine.getSetting("hotCuePitchPlayLayer");
 
 // Not settings: the effects the mapping uses, by position in Mixxx's lists
 // (Preferences > Effects), counting the top entry as 1. Sweep FX use the
@@ -1844,19 +1856,27 @@ SCLive4.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
     const theContainer = this;
 
-    this.mixxHasStems = true;
+    this.mixxxHasStems = true;
 
     try {
         // This will throw if Mixxx was built without stems
         engine.getValue("[Channel1]", "stem_count");
     } catch {
         // Stems not available:
-        this.mixxHasStems = false;
+        this.mixxxHasStems = false;
+    }
+
+    const hotcueLayers = [new SCLive4.hotcueMode(deck, offset)];
+    if (this.mixxxHasStems && wantsStemsLayer) {
+        hotcueLayers.push(new SCLive4.stemsMode(deck, offset));
+    }
+    if (wantsPitchPlayLayer) {
+        hotcueLayers.push(new SCLive4.pitchPlayMode(deck, offset));
     }
 
     // Create component containers for each pad mode
     const modes = new components.ComponentContainer({
-        "hotcue": new SCLive4.WrappingArrayView(this.mixxHasStems ? [new SCLive4.hotcueMode(deck, offset), new SCLive4.stemsMode(deck, offset)] : [new SCLive4.hotcueMode(deck, offset)], 0),
+        "hotcue": new SCLive4.WrappingArrayView(hotcueLayers, 0),
         "loop": new SCLive4.WrappingArrayView([new SCLive4.savedLoopMode(deck, offset), new SCLive4.autoloopMode(deck, offset)], 0),
         "roll": new SCLive4.WrappingArrayView([new SCLive4.rollMode(deck, offset), new SCLive4.samplerMode(deck, offset)], 0),
         "slicer": new SCLive4.WrappingArrayView([new SCLive4.slicerMode(deck, offset, false), new SCLive4.slicerMode(deck, offset, true)], 0),
