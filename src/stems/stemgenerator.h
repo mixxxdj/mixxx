@@ -15,6 +15,11 @@
 
 #if defined(MIXXX_USE_QML)
 #include <QtQml/qqmlregistration.h>
+
+// Only used as pointers here, so the full headers stay out of this file;
+// stemgenerator.cpp includes them where they are actually needed.
+class QJSEngine;
+class QQmlEngine;
 #endif
 
 namespace mixxx {

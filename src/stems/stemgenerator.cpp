@@ -20,6 +20,11 @@
 #include "util/cmdlineargs.h"
 #include "util/logger.h"
 
+#if defined(MIXXX_USE_QML)
+#include <QJSEngine>
+#include <QQmlEngine>
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("StemGenerator");
