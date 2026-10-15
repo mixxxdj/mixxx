@@ -22,7 +22,7 @@ var SCLive4 = {};
 // KNOWN ISSUES: erase from the list if you resolve anything:
 // 1. Noise sweep FX is very different to Engine OS:
 //  a. It's pre-fader on Engine OS; post-fader here.
-//  b. It has a one-cycle max volume burst of noise when engaged.
+//  b. It has a brief burst of noise when selected, even if the sweep is in the center.
 //  c. Sweeping on Engine OS sounds to me like it moves a filter (instead of/as well as?)
 //     adjusting noise volume.
 //  d. On Engine OS it sounds like white noise one direction and pink the other
