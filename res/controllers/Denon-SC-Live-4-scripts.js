@@ -60,7 +60,7 @@ const lightingButtonAction = engine.getSetting("lightingButtonAction");
 // Wash built from Echo) or "custom" (each button sweeps the effect at its
 // position with the channel knob)
 const sweepFxCustom = engine.getSetting("sweepFxMode") === "custom";
-const sweepFxCanDisable = engine.getSetting("sweepFxCanDisable") === "disable";
+const sweepFxCanDisable = engine.getSetting("sweepFxDisable") === "disable";
 
 // Hotcue pad layers:
 const wantsStemsLayer = engine.getSetting("hotCueStemsLayer");
@@ -1869,9 +1869,9 @@ SCLive4.PadSection = function(deck, offset) {
     try {
         // This will throw if Mixxx was built without stems
         engine.getValue("[Channel1]", "stem_count");
-    } catch {
-        // Stems not available:
-        this.mixxxHasStems = false;
+    } catch (error) {
+        // Stems not available (and use `error` to keep the linter happy):
+        this.mixxxHasStems = error !== null;
     }
 
     const hotcueLayers = [new SCLive4.hotcueMode(deck, offset)];
