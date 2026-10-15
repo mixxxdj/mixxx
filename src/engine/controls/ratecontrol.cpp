@@ -141,7 +141,8 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_spinningDown(false),
           m_seekedSinceLastBuffer(false),
           m_prevPaused(true),
-          m_latchedPlay(false) {
+          m_latchedPlay(false),
+          m_rampAllowed(PlayerManager::isDeckGroup(group)) {
     // Vinyl control COs are only created for main decks
     if (PlayerManager::isDeckGroup(getGroup())) {
         m_pVCEnabled = ControlObject::getControl(
@@ -569,22 +570,18 @@ double RateControl::calculateSpeed(double baserate,
         }
     }
 
-    // Physical SL1200 spin-up / spin-down ramp
-    // EngineBuffer passes paused = !play, and play is also 1 during cue
-    // preview, so play can't tell a Play press from a cue preview.
-    // play_latched is 1 only for a latched play.
-    if (!m_pPlayLatched) {
-        m_pPlayLatched = std::make_unique<PollingControlProxy>(getGroup(),
-                QStringLiteral("play_latched"),
-                ControlFlag::AllowMissingOrInvalid);
+    if (!m_rampAllowed) {
+        return rate;
     }
-    const bool playLatched = m_pPlayLatched->toBool();
+    // Physical SL1200 spin-up / spin-down ramp
+    const bool playLatched = m_pPlayLatched && m_pPlayLatched->toBool();
     const bool seeked = m_seekedSinceLastBuffer;
     m_seekedSinceLastBuffer = false;
 
     // Speed set by hand: scratching (spinny, waveform, controller platter),
-    // searching or vinyl control
+    // jog/wheel scrubbing while paused, searching or vinyl control
     const bool manualSpeed = searching != 0 || *pReportScratching ||
+            (paused && rate != 0.0) ||
             m_pScratch2Enable->toBool() ||
             (m_pVCEnabled && m_pVCEnabled->toBool());
 
@@ -600,9 +597,7 @@ double RateControl::calculateSpeed(double baserate,
         m_spinningDown = false;
     } else if (!paused) {
         if (m_prevPaused) {
-            if (playLatched && m_rampUpEnabled &&
-                    !getGroup().contains("Sampler") &&
-                    !getGroup().contains("Preview")) {
+            if (playLatched && m_rampUpEnabled) {
                 // Started by a latched Play: spin up. If the platter is still
                 // spinning down, continue from its current speed.
                 if (!m_spinningDown) {
@@ -633,7 +628,7 @@ double RateControl::calculateSpeed(double baserate,
 
     const double dt = static_cast<double>(samplesPerBuffer) / m_pSampleRate.get() / 2;
 
-    if (m_spinningDown && !getGroup().contains("Sampler") && !getGroup().contains("Preview")) {
+    if (m_spinningDown) {
         if (m_rampDownMode == 1) {
             // Power cut: the platter coasts without brake
             const double friction = (m_rampMode == 0) ? kCoastFriction33 : kCoastFriction45;
@@ -808,4 +803,14 @@ void RateControl::resetPositionScratchController() {
     // reported on track load while scratching.
     // https://github.com/mixxxdj/mixxx/issues/15082
     m_pScratchController->reset();
+}
+
+void RateControl::setEngineMixer(EngineMixer* pEngineMixer) {
+    EngineControl::setEngineMixer(pEngineMixer);
+    // play_latched is owned by CueControl, which EngineBuffer creates after
+    // RateControl. EngineBuffer calls setEngineMixer() once all controls
+    // exist, outside the audio callback.
+    m_pPlayLatched = std::make_unique<PollingControlProxy>(getGroup(),
+            QStringLiteral("play_latched"),
+            ControlFlag::AllowMissingOrInvalid);
 }

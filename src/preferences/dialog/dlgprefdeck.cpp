@@ -567,6 +567,12 @@ void DlgPrefDeck::slotUpdate() {
             ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")), 0));
     checkBoxRampUpIncludePitch->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")), true));
+    if (m_pConfig->getValue(
+                ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")), 0) == 1) {
+        radioButtonRampDownPowerCut->setChecked(true);
+    } else {
+        radioButtonRampDownBrake->setChecked(true);
+    }
 }
 
 void DlgPrefDeck::slotResetToDefaults() {
@@ -613,8 +619,9 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     checkBoxRampUpEnabled->setChecked(false);
     checkBoxRampDownEnabled->setChecked(false);
-    checkBoxRampUpIncludePitch->setChecked(false);
     radioButtonRampDownBrake->setChecked(true);
+    comboBoxRampUpMode->setCurrentIndex(0); // 33 RPM
+    checkBoxRampUpIncludePitch->setChecked(true);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {

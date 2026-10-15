@@ -78,6 +78,7 @@ public:
   void notifyWrapAround(mixxx::audio::FramePos triggerPos,
           mixxx::audio::FramePos targetPos);
   void notifySeek(mixxx::audio::FramePos position) override;
+  void setEngineMixer(EngineMixer* pEngineMixer) override;
   void resetPositionScratchController();
 
   static void setRampUpEnabled(bool enabled);
@@ -195,4 +196,5 @@ private:
   static std::atomic<int> m_rampMode; // 0 = 33 RPM, 1 = 45 RPM
   static std::atomic<bool> m_rampIncludePitch;
   static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
+  bool m_rampAllowed;                     // only main decks, not samplers / preview deck
 };
