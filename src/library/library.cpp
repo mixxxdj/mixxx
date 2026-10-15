@@ -291,7 +291,12 @@ class TrackAnalysisSchedulerEnvironmentImpl final : public TrackAnalysisSchedule
     ~TrackAnalysisSchedulerEnvironmentImpl() final = default;
 
     TrackPointer loadTrackById(TrackId trackId) const final {
-        return m_pLibrary->trackCollectionManager()->getTrackById(trackId);
+        // Accessing the source file while loading a track might stall
+        // the GUI thread on slow storage. The deferred metadata import
+        // is performed on the analyzer worker thread before decoding.
+        return m_pLibrary->trackCollectionManager()->getTrackById(
+                trackId,
+                /*updateTrackFromSource*/ false);
     }
 
   private:

@@ -52,7 +52,8 @@ class TrackCollectionManager : public QObject,
     }
 
     TrackPointer getTrackById(
-            TrackId trackId) const;
+            TrackId trackId,
+            bool updateTrackFromSource = true) const;
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
     QList<TrackId> resolveTrackIds(
