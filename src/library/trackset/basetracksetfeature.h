@@ -13,13 +13,11 @@ class BaseTrackSetFeature : public LibraryFeature {
             UserSettingsPointer pConfig,
             const QString& rootViewName,
             const QString& iconName);
-
+    void activate() override;
     void pasteChild(const QModelIndex& index) override;
+
   signals:
     void analyzeTracks(const QList<AnalyzerScheduledTrack>&);
-
-  public slots:
-    void activate() override;
 
   protected:
     const QString m_rootViewName;
