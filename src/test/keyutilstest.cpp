@@ -307,3 +307,17 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
                     mixxx::track::io::key::A_MINOR,
                     mixxx::track::io::key::G_MINOR));
 }
+
+TEST_F(KeyUtilsTest, ShortestPitchDiff) {
+    // test no pitch difference in octaves
+    double diff = KeyUtils::shortestPitchDiff(12.0, 24.0);
+    EXPECT_EQ(0.0, diff);
+    // test for symmetry
+    diff = KeyUtils::shortestPitchDiff(6.0, 19.0);
+    EXPECT_EQ(1.0, diff);
+    diff = KeyUtils::shortestPitchDiff(19.0, 6.0);
+    EXPECT_EQ(1.0, diff);
+    // test that the difference is wrapped around boundaries
+    diff = KeyUtils::shortestPitchDiff(1.0, 23.0);
+    EXPECT_EQ(2.0, diff);
+}
