@@ -2,6 +2,9 @@
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QtDebug>
+#include <cctype>
+#include <string>
+#include <vector>
 
 #include "analyzer/analyzersilence.h"
 #include "sources/audiosourcestereoproxy.h"
@@ -36,45 +39,53 @@ const SINT kMaxReadFrameCount = kBufferSizes[sizeof(kBufferSizes) / sizeof(kBuff
 
 const CSAMPLE kMaxDecodingError = 0.01f;
 
+// Must not query the registered SoundSource providers, because it is also used
+// to instantiate the parametrized tests during static initialization.
+std::vector<std::string> availableFileNameSuffixes() {
+    return {
+            ".aiff",
+            "-alac.caf",
+            ".flac",
+            // Files encoded with iTunes 12.3.0 caused issues when
+            // decoding with FFMpeg 3.x, because their start_time
+            // was not correctly handled. The actual FFmpeg version
+            // that fixed this bug is unknown.
+            "-itunes-12.3.0-aac.m4a",
+#ifndef __WINDOWS__
+            // These tests always fail on Windows11/Windows Server 2022,
+            // due to a bug in the MediaFoundation AAC decoder shipped with Windows.
+            // See https://bugs.mixxx.org/issues/11094
+            "-itunes-12.7.0-aac.m4a",
+            "-ffmpeg-aac.m4a",
+#endif
+#if defined(__FFMPEG__) || defined(__COREAUDIO__)
+            "-itunes-12.7.0-alac.m4a",
+#endif
+            "-png.mp3",
+            "-vbr.mp3",
+#ifdef __STEM__
+            ".stem.mp4",
+            ".stem.m4a",
+#endif
+            ".ogg",
+            ".opus",
+            ".wav",
+            ".wma",
+            ".wv",
+    };
+}
+
 } // anonymous namespace
 
 class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     static QStringList getFileNameSuffixes() {
-        QStringList availableFileNameSuffixes;
-        availableFileNameSuffixes
-                << ".aiff"
-                << "-alac.caf"
-                << ".flac"
-                // Files encoded with iTunes 12.3.0 caused issues when
-                // decoding with FFMpeg 3.x, because their start_time
-                // was not correctly handled. The actual FFmpeg version
-                // that fixed this bug is unknown.
-                << "-itunes-12.3.0-aac.m4a"
-#ifndef __WINDOWS__
-                // These tests always fail on Windows11/Windows Server 2022,
-                // due to a bug in the MediaFoundation AAC decoder shipped with Windows.
-                // See https://bugs.mixxx.org/issues/11094
-                << "-itunes-12.7.0-aac.m4a"
-                << "-ffmpeg-aac.m4a"
-#endif
-#if defined(__FFMPEG__) || defined(__COREAUDIO__)
-                << "-itunes-12.7.0-alac.m4a"
-#endif
-                << "-png.mp3"
-                << "-vbr.mp3"
-#ifdef __STEM__
-                << ".stem.mp4"
-                << ".stem.m4a"
-#endif
-                << ".ogg"
-                << ".opus"
-                << ".wav"
-                << ".wma"
-                << ".wv";
+        const std::vector<std::string> availableFileNameSuffixes =
+                ::availableFileNameSuffixes();
 
         QStringList supportedFileNameSuffixes;
-        for (const auto& fileNameSuffix : std::as_const(availableFileNameSuffixes)) {
+        for (const auto& suffix : availableFileNameSuffixes) {
+            const auto fileNameSuffix = QString::fromStdString(suffix);
             // We need to check for the whole file name here!
             if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
                 supportedFileNameSuffixes << fileNameSuffix;
@@ -210,6 +221,44 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
     mixxx::SampleBuffer m_skipSampleBuffer;
 };
 
+// Runs a test for a single test file. This keeps the tests that decode
+// whole files short and shows which file failed or timed out.
+class SoundSourceProxyFileTest
+        : public SoundSourceProxyTest,
+          public ::testing::WithParamInterface<std::string> {
+  protected:
+    void SetUp() override {
+        if (!SoundSourceProxy::isFileNameSupported(getFileNameSuffix())) {
+            GTEST_SKIP() << "Unsupported file type" << GetParam();
+        }
+    }
+
+    QString getFileNameSuffix() const {
+        return QString::fromStdString(GetParam());
+    }
+
+    QString getFilePath() const {
+        return getTestFile(getFileNameSuffix());
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+        SoundSourceProxyTest,
+        SoundSourceProxyFileTest,
+        ::testing::ValuesIn(availableFileNameSuffixes()),
+        [](const testing::TestParamInfo<SoundSourceProxyFileTest::ParamType>& info) {
+            // Test names may only contain alphanumeric characters and underscores
+            std::string name;
+            for (const char c : info.param) {
+                if (std::isalnum(static_cast<unsigned char>(c))) {
+                    name += c;
+                } else if (!name.empty() && name.back() != '_') {
+                    name += '_';
+                }
+            }
+            return name;
+        });
+
 TEST_F(SoundSourceProxyTest, open) {
     // This test piggy-backs off of the cover-test files.
     const QStringList filePaths = getFilePaths();
@@ -344,13 +393,101 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     EXPECT_TRUE(trackMetadata.getTrackInfo().getComment().isNull());
 }
 
-TEST_F(SoundSourceProxyTest, seekForwardBackward) {
+TEST_P(SoundSourceProxyFileTest, seekForwardBackward) {
     constexpr SINT kReadFrameCount = 10000;
 
-    const QStringList filePaths = getFilePaths();
-    for (const auto& filePath : filePaths) {
+    const QString filePath = getFilePath();
+    ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+    qDebug() << "Seek forward/backward test:" << filePath;
+
+    const auto fileUrl = QUrl::fromLocalFile(filePath);
+    const auto providerRegistrations =
+            SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+    for (const auto& providerRegistration : providerRegistrations) {
+        mixxx::AudioSourcePointer pContReadSource = openAudioSource(
+                filePath,
+                providerRegistration.getProvider());
+
+        // Obtaining an AudioSource may fail for unsupported file formats,
+        // even if the corresponding file extension is supported, e.g.
+        // AAC vs. ALAC in .m4a files
+        if (!pContReadSource) {
+            // skip test file
+            continue;
+        }
+        mixxx::SampleBuffer contReadData(
+                pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+        mixxx::SampleBuffer seekReadData(
+                pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+
+        SINT contFrameIndex = pContReadSource->frameIndexMin();
+        while (pContReadSource->frameIndexRange().containsIndex(contFrameIndex)) {
+            const auto readFrameIndexRange =
+                    mixxx::IndexRange::forward(contFrameIndex, kReadFrameCount);
+            qDebug() << "Seeking and reading" << readFrameIndexRange;
+
+            // Read next chunk of frames for Cont source without seeking
+            const auto contSampleFrames =
+                    pContReadSource->readSampleFrames(
+                            mixxx::WritableSampleFrames(
+                                    readFrameIndexRange,
+                                    mixxx::SampleBuffer::WritableSlice(contReadData)));
+            ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
+            ASSERT_TRUE(contSampleFrames.frameIndexRange().isSubrangeOf(readFrameIndexRange));
+            ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
+            contFrameIndex += contSampleFrames.frameLength();
+
+            const SINT sampleCount =
+                    pContReadSource->getSignalInfo().frames2samples(contSampleFrames.frameLength());
+
+            mixxx::AudioSourcePointer pSeekReadSource = openAudioSource(
+                    filePath,
+                    providerRegistration.getProvider());
+
+            ASSERT_FALSE(!pSeekReadSource);
+            ASSERT_EQ(
+                    pContReadSource->getSignalInfo().getChannelCount(),
+                    pSeekReadSource->getSignalInfo().getChannelCount());
+            ASSERT_EQ(pContReadSource->frameIndexRange(), pSeekReadSource->frameIndexRange());
+
+            // Seek source to next chunk and read it
+            auto seekSampleFrames =
+                    pSeekReadSource->readSampleFrames(
+                            mixxx::WritableSampleFrames(
+                                    readFrameIndexRange,
+                                    mixxx::SampleBuffer::WritableSlice(seekReadData)));
+
+            // Both buffers should be equal
+            ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking forward");
+
+            // Seek backwards to beginning of chunk and read again
+            seekSampleFrames =
+                    pSeekReadSource->readSampleFrames(
+                            mixxx::WritableSampleFrames(
+                                    readFrameIndexRange,
+                                    mixxx::SampleBuffer::WritableSlice(seekReadData)));
+
+            // Both buffers should again be equal
+            ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
+            expectDecodedSamplesEqual(
+                    sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    "Decoding mismatch after seeking backward");
+        }
+    }
+}
+
+TEST_P(SoundSourceProxyFileTest, skipAndRead) {
+    const QString filePath = getFilePath();
+    for (auto kReadFrameCount : kBufferSizes) {
         ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
-        qDebug() << "Seek forward/backward test:" << filePath;
+        qDebug() << "Skip and read test:" << filePath;
 
         const auto fileUrl = QUrl::fromLocalFile(filePath);
         const auto providerRegistrations =
@@ -359,7 +496,6 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
             mixxx::AudioSourcePointer pContReadSource = openAudioSource(
                     filePath,
                     providerRegistration.getProvider());
-
             // Obtaining an AudioSource may fail for unsupported file formats,
             // even if the corresponding file extension is supported, e.g.
             // AAC vs. ALAC in .m4a files
@@ -367,306 +503,213 @@ TEST_F(SoundSourceProxyTest, seekForwardBackward) {
                 // skip test file
                 continue;
             }
+            SINT contFrameIndex = pContReadSource->frameIndexMin();
+
+            mixxx::AudioSourcePointer pSkipReadSource = openAudioSource(
+                    filePath,
+                    providerRegistration.getProvider());
+            ASSERT_FALSE(!pSkipReadSource);
+            ASSERT_EQ(
+                    pContReadSource->getSignalInfo().getChannelCount(),
+                    pSkipReadSource->getSignalInfo().getChannelCount());
+            ASSERT_EQ(pContReadSource->frameIndexRange(), pSkipReadSource->frameIndexRange());
+            SINT skipFrameIndex = pSkipReadSource->frameIndexMin();
+
             mixxx::SampleBuffer contReadData(
                     pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
-            mixxx::SampleBuffer seekReadData(
-                    pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+            mixxx::SampleBuffer skipReadData(
+                    pSkipReadSource->getSignalInfo().frames2samples(kReadFrameCount));
 
-            SINT contFrameIndex = pContReadSource->frameIndexMin();
-            while (pContReadSource->frameIndexRange().containsIndex(contFrameIndex)) {
+            SINT minFrameIndex = pContReadSource->frameIndexMin();
+            SINT skipCount = 1;
+            while (pContReadSource->frameIndexRange().containsIndex(
+                    minFrameIndex += skipCount)) {
+                skipCount = minFrameIndex / 4 + 1; // for next iteration
+
+                qDebug() << "Skipping to:" << minFrameIndex;
+
                 const auto readFrameIndexRange =
-                        mixxx::IndexRange::forward(contFrameIndex, kReadFrameCount);
-                qDebug() << "Seeking and reading" << readFrameIndexRange;
+                        mixxx::IndexRange::forward(minFrameIndex, kReadFrameCount);
 
-                // Read next chunk of frames for Cont source without seeking
+                // Read (and discard samples) until reaching the desired frame index
+                // and read next chunk
+                ASSERT_LE(contFrameIndex, minFrameIndex);
+                while (contFrameIndex < minFrameIndex) {
+                    auto skippingFrameIndexRange =
+                            mixxx::IndexRange::forward(
+                                    contFrameIndex,
+                                    std::min(minFrameIndex - contFrameIndex, kReadFrameCount));
+                    auto const skippedSampleFrames =
+                            pContReadSource->readSampleFrames(
+                                    mixxx::WritableSampleFrames(
+                                            skippingFrameIndexRange,
+                                            mixxx::SampleBuffer::WritableSlice(contReadData)));
+                    ASSERT_FALSE(skippedSampleFrames.frameIndexRange().empty());
+                    ASSERT_EQ(skippedSampleFrames.frameIndexRange().start(), contFrameIndex);
+                    contFrameIndex += skippedSampleFrames.frameLength();
+                }
+                ASSERT_EQ(minFrameIndex, contFrameIndex);
                 const auto contSampleFrames =
                         pContReadSource->readSampleFrames(
                                 mixxx::WritableSampleFrames(
                                         readFrameIndexRange,
                                         mixxx::SampleBuffer::WritableSlice(contReadData)));
                 ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
-                ASSERT_TRUE(contSampleFrames.frameIndexRange().isSubrangeOf(readFrameIndexRange));
-                ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
+                ASSERT_TRUE(contSampleFrames.frameIndexRange()
+                                .isSubrangeOf(readFrameIndexRange));
+                ASSERT_EQ(contSampleFrames.frameIndexRange().start(),
+                        readFrameIndexRange.start());
                 contFrameIndex += contSampleFrames.frameLength();
 
                 const SINT sampleCount =
-                        pContReadSource->getSignalInfo().frames2samples(contSampleFrames.frameLength());
+                        pContReadSource->getSignalInfo().frames2samples(
+                                contSampleFrames.frameLength());
 
-                mixxx::AudioSourcePointer pSeekReadSource = openAudioSource(
-                        filePath,
-                        providerRegistration.getProvider());
-
-                ASSERT_FALSE(!pSeekReadSource);
-                ASSERT_EQ(
-                        pContReadSource->getSignalInfo().getChannelCount(),
-                        pSeekReadSource->getSignalInfo().getChannelCount());
-                ASSERT_EQ(pContReadSource->frameIndexRange(), pSeekReadSource->frameIndexRange());
-
-                // Seek source to next chunk and read it
-                auto seekSampleFrames =
-                        pSeekReadSource->readSampleFrames(
+                // Skip until reaching the frame index and read next chunk
+                ASSERT_LE(skipFrameIndex, minFrameIndex);
+                while (skipFrameIndex < minFrameIndex) {
+                    auto const skippedFrameIndexRange =
+                            skipSampleFrames(pSkipReadSource,
+                                    mixxx::IndexRange::between(skipFrameIndex, minFrameIndex));
+                    ASSERT_FALSE(skippedFrameIndexRange.empty());
+                    ASSERT_EQ(skippedFrameIndexRange.start(), skipFrameIndex);
+                    skipFrameIndex += skippedFrameIndexRange.length();
+                }
+                ASSERT_EQ(minFrameIndex, skipFrameIndex);
+                const auto skippedSampleFrames =
+                        pSkipReadSource->readSampleFrames(
                                 mixxx::WritableSampleFrames(
                                         readFrameIndexRange,
-                                        mixxx::SampleBuffer::WritableSlice(seekReadData)));
+                                        mixxx::SampleBuffer::WritableSlice(skipReadData)));
+
+                skipFrameIndex += skippedSampleFrames.frameLength();
 
                 // Both buffers should be equal
-                ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
+                ASSERT_EQ(contSampleFrames.frameIndexRange(),
+                        skippedSampleFrames.frameIndexRange());
                 expectDecodedSamplesEqual(
                         sampleCount,
                         &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking forward");
+                        &skipReadData[0],
+                        "Decoding mismatch after skipping");
 
-                // Seek backwards to beginning of chunk and read again
-                seekSampleFrames =
-                        pSeekReadSource->readSampleFrames(
-                                mixxx::WritableSampleFrames(
-                                        readFrameIndexRange,
-                                        mixxx::SampleBuffer::WritableSlice(seekReadData)));
-
-                // Both buffers should again be equal
-                ASSERT_EQ(contSampleFrames.frameIndexRange(), seekSampleFrames.frameIndexRange());
-                expectDecodedSamplesEqual(
-                        sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        "Decoding mismatch after seeking backward");
+                minFrameIndex = contFrameIndex;
             }
         }
     }
 }
 
-TEST_F(SoundSourceProxyTest, skipAndRead) {
-    for (auto kReadFrameCount : kBufferSizes) {
-        const QStringList filePaths = getFilePaths();
-        for (const auto& filePath : filePaths) {
-            ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
-            qDebug() << "Skip and read test:" << filePath;
-
-            const auto fileUrl = QUrl::fromLocalFile(filePath);
-            const auto providerRegistrations =
-                    SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
-            for (const auto& providerRegistration : providerRegistrations) {
-                mixxx::AudioSourcePointer pContReadSource = openAudioSource(
-                        filePath,
-                        providerRegistration.getProvider());
-                // Obtaining an AudioSource may fail for unsupported file formats,
-                // even if the corresponding file extension is supported, e.g.
-                // AAC vs. ALAC in .m4a files
-                if (!pContReadSource) {
-                    // skip test file
-                    continue;
-                }
-                SINT contFrameIndex = pContReadSource->frameIndexMin();
-
-                mixxx::AudioSourcePointer pSkipReadSource = openAudioSource(
-                        filePath,
-                        providerRegistration.getProvider());
-                ASSERT_FALSE(!pSkipReadSource);
-                ASSERT_EQ(
-                        pContReadSource->getSignalInfo().getChannelCount(),
-                        pSkipReadSource->getSignalInfo().getChannelCount());
-                ASSERT_EQ(pContReadSource->frameIndexRange(), pSkipReadSource->frameIndexRange());
-                SINT skipFrameIndex = pSkipReadSource->frameIndexMin();
-
-                mixxx::SampleBuffer contReadData(
-                        pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
-                mixxx::SampleBuffer skipReadData(
-                        pSkipReadSource->getSignalInfo().frames2samples(kReadFrameCount));
-
-                SINT minFrameIndex = pContReadSource->frameIndexMin();
-                SINT skipCount = 1;
-                while (pContReadSource->frameIndexRange().containsIndex(
-                        minFrameIndex += skipCount)) {
-                    skipCount = minFrameIndex / 4 + 1; // for next iteration
-
-                    qDebug() << "Skipping to:" << minFrameIndex;
-
-                    const auto readFrameIndexRange =
-                            mixxx::IndexRange::forward(minFrameIndex, kReadFrameCount);
-
-                    // Read (and discard samples) until reaching the desired frame index
-                    // and read next chunk
-                    ASSERT_LE(contFrameIndex, minFrameIndex);
-                    while (contFrameIndex < minFrameIndex) {
-                        auto skippingFrameIndexRange =
-                                mixxx::IndexRange::forward(
-                                        contFrameIndex,
-                                        std::min(minFrameIndex - contFrameIndex, kReadFrameCount));
-                        auto const skippedSampleFrames =
-                                pContReadSource->readSampleFrames(
-                                        mixxx::WritableSampleFrames(
-                                                skippingFrameIndexRange,
-                                                mixxx::SampleBuffer::WritableSlice(contReadData)));
-                        ASSERT_FALSE(skippedSampleFrames.frameIndexRange().empty());
-                        ASSERT_EQ(skippedSampleFrames.frameIndexRange().start(), contFrameIndex);
-                        contFrameIndex += skippedSampleFrames.frameLength();
-                    }
-                    ASSERT_EQ(minFrameIndex, contFrameIndex);
-                    const auto contSampleFrames =
-                            pContReadSource->readSampleFrames(
-                                    mixxx::WritableSampleFrames(
-                                            readFrameIndexRange,
-                                            mixxx::SampleBuffer::WritableSlice(contReadData)));
-                    ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
-                    ASSERT_TRUE(contSampleFrames.frameIndexRange()
-                                        .isSubrangeOf(readFrameIndexRange));
-                    ASSERT_EQ(contSampleFrames.frameIndexRange().start(),
-                            readFrameIndexRange.start());
-                    contFrameIndex += contSampleFrames.frameLength();
-
-                    const SINT sampleCount =
-                            pContReadSource->getSignalInfo().frames2samples(
-                                    contSampleFrames.frameLength());
-
-                    // Skip until reaching the frame index and read next chunk
-                    ASSERT_LE(skipFrameIndex, minFrameIndex);
-                    while (skipFrameIndex < minFrameIndex) {
-                        auto const skippedFrameIndexRange =
-                                skipSampleFrames(pSkipReadSource,
-                                        mixxx::IndexRange::between(skipFrameIndex, minFrameIndex));
-                        ASSERT_FALSE(skippedFrameIndexRange.empty());
-                        ASSERT_EQ(skippedFrameIndexRange.start(), skipFrameIndex);
-                        skipFrameIndex += skippedFrameIndexRange.length();
-                    }
-                    ASSERT_EQ(minFrameIndex, skipFrameIndex);
-                    const auto skippedSampleFrames =
-                            pSkipReadSource->readSampleFrames(
-                                    mixxx::WritableSampleFrames(
-                                            readFrameIndexRange,
-                                            mixxx::SampleBuffer::WritableSlice(skipReadData)));
-
-                    skipFrameIndex += skippedSampleFrames.frameLength();
-
-                    // Both buffers should be equal
-                    ASSERT_EQ(contSampleFrames.frameIndexRange(),
-                            skippedSampleFrames.frameIndexRange());
-                    expectDecodedSamplesEqual(
-                            sampleCount,
-                            &contReadData[0],
-                            &skipReadData[0],
-                            "Decoding mismatch after skipping");
-
-                    minFrameIndex = contFrameIndex;
-                }
-            }
-        }
-    }
-}
-
-TEST_F(SoundSourceProxyTest, seekBoundaries) {
+TEST_P(SoundSourceProxyFileTest, seekBoundaries) {
     constexpr SINT kReadFrameCount = 1000;
-    const QStringList filePaths = getFilePaths();
-    for (const auto& filePath : filePaths) {
-        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
-        qDebug() << "Seek boundaries test:" << filePath;
+    const QString filePath = getFilePath();
+    ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+    qDebug() << "Seek boundaries test:" << filePath;
 
-        const auto fileUrl = QUrl::fromLocalFile(filePath);
-        const auto providerRegistrations =
-                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
-        for (const auto& providerRegistration : providerRegistrations) {
-            mixxx::AudioSourcePointer pSeekReadSource = openAudioSource(
+    const auto fileUrl = QUrl::fromLocalFile(filePath);
+    const auto providerRegistrations =
+            SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+    for (const auto& providerRegistration : providerRegistrations) {
+        mixxx::AudioSourcePointer pSeekReadSource = openAudioSource(
+                filePath,
+                providerRegistration.getProvider());
+        // Obtaining an AudioSource may fail for unsupported file formats,
+        // even if the corresponding file extension is supported, e.g.
+        // AAC vs. ALAC in .m4a files
+        if (!pSeekReadSource) {
+            // skip test file
+            continue;
+        }
+        mixxx::SampleBuffer seekReadData(
+                pSeekReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+
+        std::vector<SINT> seekFrameIndices;
+        // Seek to boundaries (alternating)...
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMin());
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMax() - 1);
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() + 1);
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMax());
+        // ...seek to middle of the stream...
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMin() +
+                pSeekReadSource->frameLength() / 2);
+        // ...and to the boundaries again in opposite order...
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMax());
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() + 1);
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMax() - 1);
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMin());
+        // ...near the end and back to middle of the stream...
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMax() - 4 * kReadFrameCount);
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMin() + pSeekReadSource->frameLength() / 2);
+        // ...before the middle and then near the end of the stream...
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() +
+                pSeekReadSource->frameLength() / 2 - 4 * kReadFrameCount);
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMax() - 4 * kReadFrameCount);
+        // ...to the moddle of the stream and then skipping kReadFrameCount samples.
+        seekFrameIndices.push_back(
+                pSeekReadSource->frameIndexMin() + pSeekReadSource->frameLength() / 2);
+        seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() +
+                pSeekReadSource->frameLength() / 2 + 2 * kReadFrameCount);
+
+        // Read and verify results
+        for (SINT seekFrameIndex : seekFrameIndices) {
+            const auto readFrameIndexRange =
+                    mixxx::IndexRange::forward(seekFrameIndex, kReadFrameCount);
+            qDebug() << "Reading and verifying" << readFrameIndexRange;
+
+            const auto expectedFrameIndexRange = intersect(
+                    readFrameIndexRange,
+                    pSeekReadSource->frameIndexRange());
+
+            mixxx::AudioSourcePointer pContReadSource = openAudioSource(
                     filePath,
                     providerRegistration.getProvider());
-            // Obtaining an AudioSource may fail for unsupported file formats,
-            // even if the corresponding file extension is supported, e.g.
-            // AAC vs. ALAC in .m4a files
-            if (!pSeekReadSource) {
-                // skip test file
-                continue;
+            ASSERT_FALSE(!pContReadSource);
+            ASSERT_EQ(
+                    pSeekReadSource->getSignalInfo().getChannelCount(),
+                    pContReadSource->getSignalInfo().getChannelCount());
+            ASSERT_EQ(pSeekReadSource->frameIndexRange(), pContReadSource->frameIndexRange());
+            const auto skipFrameIndexRange =
+                    skipSampleFrames(pContReadSource,
+                            mixxx::IndexRange::between(
+                                    pContReadSource->frameIndexMin(),
+                                    seekFrameIndex));
+            ASSERT_TRUE(skipFrameIndexRange.empty() ||
+                    (skipFrameIndexRange.end() == seekFrameIndex));
+            mixxx::SampleBuffer contReadData(
+                    pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+            const auto contSampleFrames =
+                    pContReadSource->readSampleFrames(
+                            mixxx::WritableSampleFrames(
+                                    readFrameIndexRange,
+                                    mixxx::SampleBuffer::WritableSlice(contReadData)));
+            ASSERT_EQ(expectedFrameIndexRange, contSampleFrames.frameIndexRange());
+
+            const auto seekSampleFrames =
+                    pSeekReadSource->readSampleFrames(
+                            mixxx::WritableSampleFrames(
+                                    readFrameIndexRange,
+                                    mixxx::SampleBuffer::WritableSlice(seekReadData)));
+            ASSERT_EQ(expectedFrameIndexRange, seekSampleFrames.frameIndexRange());
+
+            if (seekSampleFrames.frameIndexRange().empty()) {
+                continue; // nothing to do
             }
-            mixxx::SampleBuffer seekReadData(
-                    pSeekReadSource->getSignalInfo().frames2samples(kReadFrameCount));
 
-            std::vector<SINT> seekFrameIndices;
-            // Seek to boundaries (alternating)...
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMin());
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMax() - 1);
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() + 1);
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMax());
-            // ...seek to middle of the stream...
-            seekFrameIndices.push_back(
-                    pSeekReadSource->frameIndexMin() +
-                    pSeekReadSource->frameLength() / 2);
-            // ...and to the boundaries again in opposite order...
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMax());
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() + 1);
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMax() - 1);
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMin());
-            // ...near the end and back to middle of the stream...
-            seekFrameIndices.push_back(
-                    pSeekReadSource->frameIndexMax() - 4 * kReadFrameCount);
-            seekFrameIndices.push_back(
-                    pSeekReadSource->frameIndexMin() + pSeekReadSource->frameLength() / 2);
-            // ...before the middle and then near the end of the stream...
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() +
-                    pSeekReadSource->frameLength() / 2 - 4 * kReadFrameCount);
-            seekFrameIndices.push_back(
-                    pSeekReadSource->frameIndexMax() - 4 * kReadFrameCount);
-            // ...to the moddle of the stream and then skipping kReadFrameCount samples.
-            seekFrameIndices.push_back(
-                    pSeekReadSource->frameIndexMin() + pSeekReadSource->frameLength() / 2);
-            seekFrameIndices.push_back(pSeekReadSource->frameIndexMin() +
-                    pSeekReadSource->frameLength() / 2 + 2 * kReadFrameCount);
-
-            // Read and verify results
-            for (SINT seekFrameIndex : seekFrameIndices) {
-                const auto readFrameIndexRange =
-                        mixxx::IndexRange::forward(seekFrameIndex, kReadFrameCount);
-                qDebug() << "Reading and verifying" << readFrameIndexRange;
-
-                const auto expectedFrameIndexRange = intersect(
-                        readFrameIndexRange,
-                        pSeekReadSource->frameIndexRange());
-
-                mixxx::AudioSourcePointer pContReadSource = openAudioSource(
-                        filePath,
-                        providerRegistration.getProvider());
-                ASSERT_FALSE(!pContReadSource);
-                ASSERT_EQ(
-                        pSeekReadSource->getSignalInfo().getChannelCount(),
-                        pContReadSource->getSignalInfo().getChannelCount());
-                ASSERT_EQ(pSeekReadSource->frameIndexRange(), pContReadSource->frameIndexRange());
-                const auto skipFrameIndexRange =
-                        skipSampleFrames(pContReadSource,
-                                mixxx::IndexRange::between(
-                                        pContReadSource->frameIndexMin(),
-                                        seekFrameIndex));
-                ASSERT_TRUE(skipFrameIndexRange.empty() ||
-                        (skipFrameIndexRange.end() == seekFrameIndex));
-                mixxx::SampleBuffer contReadData(
-                        pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
-                const auto contSampleFrames =
-                        pContReadSource->readSampleFrames(
-                                mixxx::WritableSampleFrames(
-                                        readFrameIndexRange,
-                                        mixxx::SampleBuffer::WritableSlice(contReadData)));
-                ASSERT_EQ(expectedFrameIndexRange, contSampleFrames.frameIndexRange());
-
-                const auto seekSampleFrames =
-                        pSeekReadSource->readSampleFrames(
-                                mixxx::WritableSampleFrames(
-                                        readFrameIndexRange,
-                                        mixxx::SampleBuffer::WritableSlice(seekReadData)));
-                ASSERT_EQ(expectedFrameIndexRange, seekSampleFrames.frameIndexRange());
-
-                if (seekSampleFrames.frameIndexRange().empty()) {
-                    continue; // nothing to do
-                }
-
-                const SINT sampleCount =
-                        pSeekReadSource->getSignalInfo().frames2samples(
-                                seekSampleFrames.frameLength());
-                expectDecodedSamplesEqual(sampleCount,
-                        &contReadData[0],
-                        &seekReadData[0],
-                        QString("Decoding mismatch after seeking [%1 -> %2]")
-                                .arg(QString::number(
-                                             readFrameIndexRange.start()),
-                                        QString::number(
-                                                readFrameIndexRange.end()))
-                                .toLatin1());
-            }
+            const SINT sampleCount =
+                    pSeekReadSource->getSignalInfo().frames2samples(
+                            seekSampleFrames.frameLength());
+            expectDecodedSamplesEqual(sampleCount,
+                    &contReadData[0],
+                    &seekReadData[0],
+                    QString("Decoding mismatch after seeking [%1 -> %2]")
+                            .arg(QString::number(
+                                         readFrameIndexRange.start()),
+                                    QString::number(
+                                            readFrameIndexRange.end()))
+                            .toLatin1());
         }
     }
 }
