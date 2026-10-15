@@ -26,6 +26,9 @@
         <SignalRGBHighColor></SignalRGBHighColor>
         <SignalRGBMidColor></SignalRGBMidColor>
         <SignalRGBLowColor></SignalRGBLowColor>
+        <SignalStackedHighColor>#8833FF</SignalStackedHighColor>
+        <SignalStackedMidColor>#00CC88</SignalStackedMidColor>
+        <SignalStackedLowColor>#FF6600</SignalStackedLowColor>
         <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#00FF00</PlayPosColor>
