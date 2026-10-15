@@ -1844,14 +1844,12 @@ SCLive4.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
     const theContainer = this;
 
-    this.mixxHasStems = true;
-
-    try {
-        // This will throw if Mixxx was built without stems
-        engine.getValue("[Channel1]", "stem_count");
-    } catch {
-        // Stems not available:
-        this.mixxHasStems = false;
+    // Stems are only available in Mixxx 2.6 and later. Connecting to a control
+    // that doesn't exist returns nothing, so this tells the versions apart.
+    const stemConnection = engine.makeConnection("[Channel1]", "stem_count", function() {});
+    this.mixxHasStems = stemConnection !== undefined;
+    if (stemConnection) {
+        stemConnection.disconnect();
     }
 
     // Create component containers for each pad mode
