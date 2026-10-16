@@ -204,10 +204,12 @@ Item {
         anchors.leftMargin: LateNightTheme.isClassic ? 2 : 0
         anchors.top: parent.top
         anchors.topMargin: LateNightTheme.isClassic ? 4 : 5
+        boundsBehavior: Flickable.StopAtBounds
         clip: true
         contentHeight: height
         contentWidth: Math.max(width, parameterRow.width)
         flickableDirection: Flickable.HorizontalFlick
+        interactive: contentWidth > width
         visible: root.expanded
         width: Math.max(0, root.parameterAreaWidth - (LateNightTheme.isClassic ? 4 : 0))
 
@@ -220,6 +222,8 @@ Item {
             x: Math.max(0, parametersContainer.width - width)
 
             move: Transition {
+                enabled: LateNightTheme.layoutAnimationsEnabled && parameterVisualModel.draggedKey !== ""
+
                 NumberAnimation {
                     duration: 120
                     properties: "x"
