@@ -195,7 +195,7 @@ Item {
             y: Math.floor((parent.height - height) / 2)
         }
     }
-    Item {
+    Flickable {
         id: parametersContainer
 
         anchors.bottom: parent.bottom
@@ -205,6 +205,9 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: LateNightTheme.isClassic ? 4 : 5
         clip: true
+        contentHeight: height
+        contentWidth: Math.max(width, parameterRow.width)
+        flickableDirection: Flickable.HorizontalFlick
         visible: root.expanded
         width: Math.max(0, root.parameterAreaWidth - (LateNightTheme.isClassic ? 4 : 0))
 
