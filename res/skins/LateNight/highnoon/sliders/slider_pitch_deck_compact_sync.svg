@@ -1,0 +1,53 @@
+<svg width="40" height="79" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#050505">
+    <path d="m6 6.5004h10v0.999596h-10z" color="#000000" stroke-width=".999798"/>
+    <path d="m4 38.5002 12 2.02e-4v0.999596l-12-2.02e-4z" color="#000000" stroke-width=".95327"/>
+    <g stroke-width=".999798">
+      <path d="m6 46.5004h10v0.999596h-10z" color="#000000"/>
+      <path d="m6 54.5004h10v0.999596h-10z" color="#000000"/>
+      <path d="m6 62.5004h10v0.999596h-10z" color="#000000"/>
+      <path d="m36 38.5004h-12v0.999596h12z" color="#000000"/>
+      <path d="m34 46.5004h-10v0.999596h10z" color="#000000"/>
+      <path d="m34 54.5004h-10v0.999596h10z" color="#000000"/>
+      <path d="m34 62.5004h-10v0.999596h10z" color="#000000"/>
+      <path d="m6 70.5003h10v0.9996h-10z" color="#000000"/>
+      <path d="m32 70.5003h-8v0.9996h8z" color="#000000"/>
+    </g>
+  </g>
+  <path d="m4 39.0002 12 1.3e-4v0.999596l-12-1.3e-4z" color="#000000" fill="#636363" stroke-width=".95327"/>
+  <path d="m36 39.0003h-12v0.999596h12z" color="#000000" fill="#636363" stroke-width=".999798"/>
+  <g fill="#404040" stroke-width=".999798">
+    <path d="m6 7.0004h10v0.999596h-10z" color="#000000"/>
+    <path d="m6 47.0003h10v0.999596h-10z" color="#000000"/>
+    <path d="m6 55.0003h10v0.999596h-10z" color="#000000"/>
+    <path d="m6 63.0003h10v0.999596h-10z" color="#000000"/>
+    <path d="m34 47.0004h-10v0.999596h10z" color="#000000"/>
+    <path d="m34 55.0004h-10v0.999596h10z" color="#000000"/>
+    <path d="m34 63.0004h-10v0.999596h10z" color="#000000"/>
+    <path d="m6 71.0003h10v0.9996h-10z" color="#000000"/>
+    <path d="m32 71.0003h-8v0.9996h8z" color="#000000"/>
+  </g>
+  <path d="m19.2228 6.22282h1.55436v66.5544h-1.55436z" color="#000000" stroke="#000" stroke-linejoin="round" stroke-width="1.44564"/>
+  <g fill="#050505" stroke-width=".999798">
+    <path d="m6 14.5004h10v0.999596h-10z" color="#000000"/>
+    <path d="m6 22.5005h10v0.999596h-10z" color="#000000"/>
+    <path d="m6 30.5004h10v0.999596h-10z" color="#000000"/>
+  </g>
+  <g fill="#404040" stroke-width=".999798">
+    <path d="m6 15.0004h10v0.999596h-10z" color="#000000"/>
+    <path d="m6 23.0004h10v0.999596h-10z" color="#000000"/>
+    <path d="m6 31.0004h10v0.999596h-10z" color="#000000"/>
+  </g>
+  <path d="m24 6.5004h8v0.999596h-8z" color="#000000" fill="#050505" stroke-width=".999798"/>
+  <path d="m24 7.0004h8v0.999596h-8z" color="#000000" fill="#404040" stroke-width=".999798"/>
+  <g fill="#050505" stroke-width=".999798">
+    <path d="m24 14.5004h10v0.999596h-10z" color="#000000"/>
+    <path d="m24 22.5005h10v0.999596h-10z" color="#000000"/>
+    <path d="m24 30.5004h10v0.999596h-10z" color="#000000"/>
+  </g>
+  <g fill="#404040" stroke-width=".999798">
+    <path d="m24 15.0004h10v0.999596h-10z" color="#000000"/>
+    <path d="m24 23.0004h10v0.999596h-10z" color="#000000"/>
+    <path d="m24 31.0004h10v0.999596h-10z" color="#000000"/>
+  </g>
+</svg>
