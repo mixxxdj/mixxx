@@ -337,15 +337,40 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 
     PaStream *pStream;
+    const auto openStream = [&]() {
+        return Pa_OpenStream(&pStream,
+                pInputParams,
+                pOutputParams,
+                m_sampleRate.toDouble(),
+                framesPerBuffer,
+                paClipOff, // Stream flags
+                pCallback,
+                (void*)this); // pointer passed to the callback function
+    };
     // Try open device using iChannelMax
-    err = Pa_OpenStream(&pStream,
-            pInputParams,
-            pOutputParams,
-            m_sampleRate.toDouble(),
-            framesPerBuffer,
-            paClipOff, // Stream flags
-            pCallback,
-            (void*)this); // pointer passed to the callback function
+    err = openStream();
+
+#ifdef __WINDOWS__
+    if (m_deviceTypeId == paWASAPI &&
+            (err == paInvalidChannelCount || err == paInvalidSampleRate)) {
+        // In shared mode WASAPI only accepts the channel count and sample
+        // rate of the device's mix format, so opening just the Main pair of
+        // a 4-channel DJ controller fails with "Invalid number of channels".
+        // Retry and let Windows insert its channel mixer and sample rate
+        // converter. This is only done after a refusal, so a configuration
+        // that opens as it is keeps exactly the format it had.
+        qInfo() << "WASAPI refused the stream format:" << Pa_GetErrorText(err)
+                << "- retrying with Windows' format conversion";
+        m_wasapiStreamInfo = {};
+        m_wasapiStreamInfo.size = sizeof(m_wasapiStreamInfo);
+        m_wasapiStreamInfo.hostApiType = paWASAPI;
+        m_wasapiStreamInfo.version = 1;
+        m_wasapiStreamInfo.flags = paWinWasapiAutoConvert;
+        m_outputParams.hostApiSpecificStreamInfo = &m_wasapiStreamInfo;
+        m_inputParams.hostApiSpecificStreamInfo = &m_wasapiStreamInfo;
+        err = openStream();
+    }
+#endif
 
     if (err != paNoError) {
         qWarning() << "Error opening stream:" << Pa_GetErrorText(err);
@@ -409,33 +434,6 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
 
 bool SoundDevicePortAudio::isOpen() const {
     return m_pStream.load() != nullptr;
-}
-
-bool SoundDevicePortAudio::isUsable() const {
-    if (!m_deviceInfo || m_deviceInfo->maxOutputChannels < 1) {
-        return false;
-    }
-    PaStreamParameters outputParams;
-    outputParams.device = m_deviceId.portAudioIndex;
-    outputParams.channelCount = math_min(2, m_deviceInfo->maxOutputChannels);
-    outputParams.sampleFormat = paFloat32;
-    outputParams.suggestedLatency = m_deviceInfo->defaultHighOutputLatency;
-    outputParams.hostApiSpecificStreamInfo = nullptr;
-
-    // Accept the device if it supports its own default rate or any of the
-    // rates Mixxx offers. A device that rejects all of them (seen with the
-    // Realtek ASIO driver, which fails every open with "Invalid sample
-    // rate") would only produce a broken configuration.
-    const double candidateRates[] = {
-            m_deviceInfo->defaultSampleRate, 44100.0, 48000.0, 96000.0};
-    for (const double rate : candidateRates) {
-        if (rate > 0.0 &&
-                Pa_IsFormatSupported(nullptr, &outputParams, rate) ==
-                        paFormatIsSupported) {
-            return true;
-        }
-    }
-    return false;
 }
 
 void paFinishedCallback(void* soundDevice) {
