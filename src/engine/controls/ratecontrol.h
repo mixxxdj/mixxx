@@ -80,6 +80,8 @@ public:
   void notifySeek(mixxx::audio::FramePos position) override;
   void setEngineMixer(EngineMixer* pEngineMixer) override;
   void resetPositionScratchController();
+  // Thread-safe: request a fresh motor state, applied in calculateSpeed()
+  void requestRampReset();
 
   static void setRampUpEnabled(bool enabled);
   static void setRampDownEnabled(bool enabled);

@@ -467,6 +467,9 @@ double RateControl::calculateSpeed(double baserate,
     processTempRate(samplesPerBuffer);
 
     double rate;
+    // Rate slider contribution to rate. The ramp subtracts it when it
+    // targets the nominal 33/45 RPM speed, keeping nudges and pitch bend
+    double sliderOffset = 0.0;
     const double searching = m_pRateSearch->get();
     if (searching != 0) {
         // If searching is in progress, it overrides everything else
@@ -519,6 +522,7 @@ double RateControl::calculateSpeed(double baserate,
                     // add temp rate, but don't go backwards
                     rate = math_max(speed + getTempRate(), 0.0);
                     rate += wheelFactor;
+                    sliderOffset = speed - 1.0;
                 }
                 rate += jogFactor;
             }
@@ -556,6 +560,8 @@ double RateControl::calculateSpeed(double baserate,
                     userTweak = getTempRate() + wheelFactor + jogFactor;
                 }
                 rate = m_pBpmControl->calcSyncedRate(userTweak);
+                // Sync lock dictates the target speed, including during a ramp
+                sliderOffset = 0.0;
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.
@@ -621,6 +627,7 @@ double RateControl::calculateSpeed(double baserate,
             }
             m_spinningDown = false;
         } else if (seeked) {
+            // qDebug() << "RateControl -> spin-up cut by seek, platter was" << m_platterSpeed;
             // Jump while playing (hotcue, cue preview, beatjump, ...):
             // a running spin-up is cut, playback continues at full speed
             m_platterSpeed = 1.0;
@@ -673,10 +680,11 @@ double RateControl::calculateSpeed(double baserate,
         }
         if (m_platterSpeed < 1.0) {
             // Ramp to the pitched speed, or to the nominal 33/45 RPM speed
-            // (1.0) without the rate slider. Keep the sign for reverse.
+            // without the rate slider. Nudges and pitch bend are kept.
+            // rate is already negated for reverse.
             m_lastTargetRate = m_rampIncludePitch
                     ? rate
-                    : (rate < 0 ? -1.0 : 1.0);
+                    : rate - (*pReportReverse ? -sliderOffset : sliderOffset);
             return m_lastTargetRate * m_platterSpeed;
         }
         m_platterSpeed = 1.0;
@@ -808,6 +816,7 @@ void RateControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
 }
 
 void RateControl::notifySeek(mixxx::audio::FramePos position) {
+    // qDebug() << "RateControl::notifySeek" << getGroup() << position;
     m_pScratchController->notifySeek(position);
     // A pause combined with a jump (cue, start_stop, track load) must not
     // spin down from the new position
@@ -821,7 +830,7 @@ void RateControl::resetPositionScratchController() {
     m_pScratchController->reset();
     // Track changed: start the next track with a fresh motor state.
     // This runs in a worker thread, so calculateSpeed() applies it.
-    m_resetRampRequested = true;
+    requestRampReset();
 }
 
 void RateControl::setEngineMixer(EngineMixer* pEngineMixer) {
@@ -832,4 +841,8 @@ void RateControl::setEngineMixer(EngineMixer* pEngineMixer) {
     m_pPlayLatched = std::make_unique<PollingControlProxy>(getGroup(),
             QStringLiteral("play_latched"),
             ControlFlag::AllowMissingOrInvalid);
+}
+
+void RateControl::requestRampReset() {
+    m_resetRampRequested = true;
 }
