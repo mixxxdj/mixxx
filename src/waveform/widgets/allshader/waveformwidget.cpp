@@ -179,6 +179,20 @@ void WaveformWidget::resizeRenderer(int width, int height, qreal devicePixelRati
     makeCurrentIfNeeded();
     WaveformWidgetRenderer::resizeRenderer(width, height, devicePixelRatio);
     onPreRender();
+
+    if (isContextValid()) { // During startup the context is not yet valid
+        // clear old no longer fitting texture (ignores glVieport)
+        glClearColor(0, 0, 0, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Paint immediately the new waveform
+        // Disabled, because this shows a shifted version for unknown reasons
+        // m_pEngine->resize(width, height);
+        // paintGL();
+
+        swapBuffers();
+        glFlush();
+    }
     doneCurrent();
 }
 
