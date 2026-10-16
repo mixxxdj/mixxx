@@ -23,10 +23,10 @@
 //
 // Changes to Mixxx's own state: Mixxx's headphone mix (setting
 // hardwareHeadphoneMix), the tempo range (setting tempoRange), effect unit 1's
-// routing (BEAT FX CH SELECT) and the Quick Effect switches (setting
-// colorFxNeedsButton) are put back in shutdown(), unless they were changed
-// again meanwhile; see PioneerDDJ1000.override(). Memory cues are stored as hot
-// cues 17-36.
+// routing and mix (BEAT FX, see prepareBeatFx()) and the Quick Effect switches
+// (setting colorFxNeedsButton) are put back in shutdown(), unless they were
+// changed again meanwhile; see PioneerDDJ1000.override(). Memory cues are
+// stored as hot cues 17-36.
 
 // eslint-disable-next-line no-var
 var PioneerDDJ1000 = {};
@@ -240,12 +240,16 @@ PioneerDDJ1000.highRes = {};
 PioneerDDJ1000.overrides = {};
 PioneerDDJ1000.samplersConnected = 0;
 
+// The unit reports FX SELECT, CH SELECT and LEVEL/DEPTH only when they move,
+// not at startup; see prepareBeatFx() for what BEAT FX ON does until then.
 PioneerDDJ1000.beatFx = {
-    position: 1,
+    // FX SELECT position, or null until it is first moved.
+    position: null,
     beatIndex: PioneerDDJ1000.config.defaultBeatIndex,
-    // CH SELECT position, or null until it is first moved: the unit does not
-    // report it at startup, so effect unit 1 keeps the routing set in Mixxx.
+    // CH SELECT position, or null until it is first moved.
     target: null,
+    // Whether LEVEL/DEPTH has been moved yet.
+    levelMoved: false,
     on: false,
     rolling: [],
     rollSlip: false,
@@ -1626,6 +1630,7 @@ PioneerDDJ1000.beatFxChannel = function(_channel, control, value) {
 PioneerDDJ1000.beatFxLevel = function(_channel, control, value, status) {
     const level = PioneerDDJ1000.readHighRes(status, control, value);
     if (level !== undefined) {
+        PioneerDDJ1000.beatFx.levelMoved = true;
         engine.setParameter(PioneerDDJ1000.beatFxUnit, "mix", level);
     }
 };
@@ -1636,9 +1641,35 @@ PioneerDDJ1000.beatFxOn = function(_channel, _control, value) {
     }
 };
 
+// Until the knobs are first moved, effect unit 1 keeps Mixxx's effects, routing
+// and mix. Where those would leave BEAT FX ON silent (Mixxx starts every unit
+// with no effects, routed nowhere, mix fully dry), load the first chain
+// preset, route the unit to Main and set the mix halfway.
+PioneerDDJ1000.prepareBeatFx = function() {
+    const fx = PioneerDDJ1000.beatFx;
+    const unit = PioneerDDJ1000.beatFxUnit;
+    if (fx.position === null && engine.getValue(unit, "num_chain_presets") > 1) {
+        const slots = PioneerDDJ1000.numberedGroups(engine.getValue(unit, "num_effectslots"),
+            (i) => `[EffectRack1_EffectUnit1_Effect${i}]`);
+        if (!slots.some((slot) => engine.getValue(slot, "loaded") > 0)) {
+            engine.setValue(unit, "loaded_chain_preset", 1);
+        }
+    }
+    if (fx.target === null
+            && !PioneerDDJ1000.routingGroups().some((group) => engine.getValue(unit, `group_${group}_enable`) > 0)) {
+        PioneerDDJ1000.routeBeatFx("master");
+    }
+    if (!fx.levelMoved && engine.getValue(unit, "mix") === 0) {
+        PioneerDDJ1000.override(unit, "mix", 0.5);
+    }
+};
+
 PioneerDDJ1000.setBeatFx = function(on) {
     const fx = PioneerDDJ1000.beatFx;
     const roll = PioneerDDJ1000.rollType();
+    if (on) {
+        PioneerDDJ1000.prepareBeatFx();
+    }
     fx.rolling.forEach((deck) => PioneerDDJ1000.stopRoll(deck, fx.rollSlip));
     fx.rolling = [];
     if (roll && on) {
