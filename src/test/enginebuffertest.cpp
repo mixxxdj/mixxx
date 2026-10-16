@@ -883,3 +883,25 @@ TEST_F(RateControlRampTest, PowerCutTimeFollowsPreference) {
             buffers * bufferSeconds(),
             2 * bufferSeconds());
 }
+
+TEST_F(RateControlRampTest, DisablingRampLetsRunningRampFinish) {
+    playAtFullSpeed();
+    RateControl::setRampDownEnabled(true);
+    RateControl::setRampDownMode(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    processSeconds(0.2);
+    const double coasting = speed();
+    ASSERT_GT(coasting, 0.0);
+    // Switching spin-down off does not cut the audible coast
+    RateControl::setRampDownEnabled(false);
+    ProcessBuffer();
+    EXPECT_GT(speed(), 0.0);
+    EXPECT_LT(speed(), coasting);
+    // The next pause stops instantly
+    processSeconds(10.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ProcessBuffer();
+    EXPECT_EQ(0.0, speed());
+}
