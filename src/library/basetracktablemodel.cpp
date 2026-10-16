@@ -9,6 +9,7 @@
 #include "base/Pitch.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
+#include "library/dateformatbroadcaster.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/checkboxdelegate.h"
@@ -111,8 +112,42 @@ void BaseTrackTableModel::setKeyColorPalette(const ColorPalette& palette) {
 bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
         kApplyPlayedTrackColorDefault;
 
+// static
 void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
+}
+
+const QString BaseTrackTableModel::kDateFormatDefault = QString();
+QString BaseTrackTableModel::s_dateFormat = BaseTrackTableModel::kDateFormatDefault;
+
+// static
+void BaseTrackTableModel::setDateFormat(const QString& format) {
+    if (format != s_dateFormat) {
+        s_dateFormat = format;
+        auto* broadcaster = DateFormatChangedBroadcaster::instance();
+        emit broadcaster->dateFormatChanged();
+    }
+}
+
+void BaseTrackTableModel::slotEmitDataChangedForDateColumns() {
+    // Notify the view to update.
+    // These are the columns that use s_dateFormat
+    QList<int> columns;
+    columns.append(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED));
+    columns.append(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED));
+    columns.append(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT));
+    const QVector<int> roles{Qt::DisplayRole};
+    QModelIndex topLeft;
+    QModelIndex bottomRight;
+    for (int i : columns) {
+        if (i == -1) {
+            // Skip if a certain model doesn't have this column
+            continue;
+        }
+        topLeft = index(0, i);
+        bottomRight = index(rowCount() - 1, i);
+        emit dataChanged(topLeft, bottomRight, roles);
+    }
 }
 
 BaseTrackTableModel::BaseTrackTableModel(
@@ -141,6 +176,12 @@ BaseTrackTableModel::BaseTrackTableModel(
                 this,
                 &BaseTrackTableModel::slotCoverFound);
     }
+
+    auto* dateFormatBroadcaster = DateFormatChangedBroadcaster::instance();
+    connect(dateFormatBroadcaster,
+            &DateFormatChangedBroadcaster::dateFormatChanged,
+            this,
+            &BaseTrackTableModel::slotEmitDataChangedForDateColumns);
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -360,7 +401,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new BPMDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
         return new CheckboxDelegate(pTableView, QStringLiteral("LibraryPlayedCheckbox"));
-    } else if (PlayerManager::numPreviewDecks() > 0 &&
+    } else if (PlayerInfo::instance().numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {
@@ -689,10 +730,10 @@ QVariant BaseTrackTableModel::roleValue(
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
                 // Timestamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
-                return mixxx::displayLocalDateTime(dt);
+                return mixxx::displayLocalDateTime(dt, s_dateFormat);
             }
             // For Date Added, use just the date: "5/20/98"
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
@@ -718,7 +759,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
                 return dt;
             }
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
@@ -899,6 +940,7 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE:
         case ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER:
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION:
         case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN:
         case ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY: {
             // We need to cast to int due to a bug similar to

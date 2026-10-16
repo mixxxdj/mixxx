@@ -65,6 +65,17 @@ void QuantizeControl::setFrameInfo(mixxx::audio::FramePos currentPosition,
 
 void QuantizeControl::playPosChanged(mixxx::audio::FramePos position) {
     DEBUG_ASSERT(position.isValid());
+    // kInitialPlayPosition is used during track loading to indicate
+    // that no valid playback position has been set yet.
+    // It may happen this is called before we have valid position, so
+    // skip processing to avoid passing an extreme value to the beat
+    // lookup functions.
+    // The correct position will be set once the track is fully loaded and
+    // the engine processes the initial seek (e.g. to the cue point).
+    if (position == kInitialPlayPosition) {
+        return;
+    }
+
     // We only need to update the prev or next if the current sample is
     // out of range of the existing beat positions or if we've been forced to
     // do so.

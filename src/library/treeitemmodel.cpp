@@ -217,4 +217,9 @@ void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
     emit dataChanged(left, right);
+
+    // Also include the root item in case this has been called in order to
+    // enforce FontRole updates via TreeItem::isBold()
+    QModelIndex rootIdx = getRootIndex();
+    emit dataChanged(rootIdx, rootIdx);
 }

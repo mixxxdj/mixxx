@@ -12,7 +12,7 @@ namespace qml {
 class QmlLibraryTrackListModel : public QIdentityProxyModel {
     Q_OBJECT
     QML_NAMED_ELEMENT(LibraryTrackListModel)
-    Q_PROPERTY(QQmlListProperty<QmlLibraryTrackListColumn> columns READ columns FINAL)
+    Q_PROPERTY(QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns READ columns FINAL)
     QML_UNCREATABLE("Only accessible via Mixxx.Library")
 
   public:
@@ -55,7 +55,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
             QObject* pParent = nullptr);
     ~QmlLibraryTrackListModel() = default;
 
-    QQmlListProperty<QmlLibraryTrackListColumn> columns() {
+    QQmlListProperty<mixxx::qml::QmlLibraryTrackListColumn> columns() {
         return {this,
                 &m_columns,
                 parent_qlist_append,
@@ -70,6 +70,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
     Q_INVOKABLE mixxx::qml::QmlTrackProxy* getTrack(int row) const;
     Q_INVOKABLE TrackModel::Capabilities getCapabilities() const;
     Q_INVOKABLE bool hasCapabilities(TrackModel::Capabilities caps) const;
+    Q_INVOKABLE void search(const QString& searchText);
     QHash<int, QByteArray> roleNames() const override;
     Q_INVOKABLE QVariant headerData(int section,
             Qt::Orientation orientation,

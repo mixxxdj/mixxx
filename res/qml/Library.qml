@@ -15,14 +15,37 @@ Item {
 
     property var sidebar: librarySources.sidebar()
 
+    function applySearch() {
+        if (root.sidebar && root.sidebar.tracklist) {
+            root.sidebar.tracklist.search(searchField.text);
+        }
+    }
+    function focusSearch() {
+        root.applySearch();
+        searchField.forceActiveFocus(Qt.ShortcutFocusReason);
+        searchField.selectAll();
+    }
+
     LibraryComponent.SourceTree {
         id: librarySources
+    }
+    TextField {
+        id: searchField
 
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        placeholderText: qsTranslate("WSearchLineEdit", "Search...")
+
+        onTextChanged: root.applySearch()
     }
     SplitView {
         id: librarySplitView
 
-        anchors.fill: parent
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: searchField.bottom
         orientation: Qt.Horizontal
 
         handle: Rectangle {

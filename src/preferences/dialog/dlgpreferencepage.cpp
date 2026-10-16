@@ -1,6 +1,7 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QGroupBox>
@@ -22,15 +23,20 @@ QUrl DlgPreferencePage::helpUrl() const {
 }
 
 void DlgPreferencePage::setScrollSafeGuardForAllInputWidgets(QObject* pObj) {
-    // Set the focus policy to for scrollable input widgets and connect them
-    // to the custom event filter.
-    // Note: finding all relevant widgets with pObj->findchildren<Type*>
-    // is much faster than with
-    // for (auto* ch : pObj->children()) { qobject_cast<Type*>(ch); }
+    // This ensures that scrollable input widgets react on wheel events only if
+    // they have focus. This avoid unintended value changes when scrolling the
+    // preferences pages.
+    // This works by setting the focus policy to Qt::StrongFocus and installing
+    // our custom event filter on them.
     setScrollSafeGuardForChildrenOfType<QComboBox>(pObj);
     setScrollSafeGuardForChildrenOfType<QSpinBox>(pObj);
     setScrollSafeGuardForChildrenOfType<QDoubleSpinBox>(pObj);
     setScrollSafeGuardForChildrenOfType<QSlider>(pObj);
+    // Note: there is a Qt quirk where scrolling stops if a disabled checkbox
+    // moves underneath the cursor. (seen with Qt 6.2.3 on Linux)
+    // We can avoid this by setting the same scrollguard on them, even though
+    // they don't act on wheel events like sliders etc. ¯\_(ツ)_/¯
+    setScrollSafeGuardForChildrenOfType<QCheckBox>(pObj);
 }
 
 void DlgPreferencePage::setScrollSafeGuard(QWidget* pWidget) {
@@ -40,6 +46,9 @@ void DlgPreferencePage::setScrollSafeGuard(QWidget* pWidget) {
 
 template<typename T>
 void DlgPreferencePage::setScrollSafeGuardForChildrenOfType(QObject* pObj) {
+    // Note: finding all relevant widgets with pObj->findchildren<Type*>
+    // is much faster than with
+    // for (auto* ch : pObj->children()) { qobject_cast<Type*>(ch); }
     QList<T*> children = pObj->findChildren<T*>();
     for (T* pChild : children) {
         setScrollSafeGuard(pChild);
@@ -54,10 +63,12 @@ bool DlgPreferencePage::eventFilter(QObject* pObj, QEvent* pEvent) {
         QSpinBox* spin = qobject_cast<QSpinBox*>(pObj);
         QDoubleSpinBox* spinDbl = qobject_cast<QDoubleSpinBox*>(pObj);
         QSlider* slider = qobject_cast<QSlider*>(pObj);
+        QCheckBox* widget = qobject_cast<QCheckBox*>(pObj);
         if ((combo && !combo->hasFocus()) ||
                 (spin && !spin->hasFocus()) ||
                 (spinDbl && !spinDbl->hasFocus()) ||
-                (slider && !slider->hasFocus())) {
+                (slider && !slider->hasFocus()) ||
+                (widget && !widget->isEnabled())) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             QApplication::sendEvent(layout()->parent(), pEvent);
 #else

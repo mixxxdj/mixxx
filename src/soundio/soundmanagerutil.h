@@ -206,6 +206,37 @@ class AudioInputBuffer : public AudioInput {
     CSAMPLE* m_pBuffer;
 };
 
+namespace std {
+
+template<>
+struct hash<AudioInput> {
+    size_t operator()(const AudioInput& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+template<>
+struct hash<AudioOutput> {
+    size_t operator()(const AudioOutput& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+template<>
+struct hash<AudioInputBuffer> {
+    size_t operator()(const AudioInputBuffer& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+template<>
+struct hash<AudioOutputBuffer> {
+    size_t operator()(const AudioOutputBuffer& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+} // namespace std
 
 class AudioSource {
   public:
@@ -262,12 +293,13 @@ class SoundDeviceId final {
     /// The "hw:X,Y" device name. Remains an empty string if not using ALSA
     /// or using a non-hw ALSA device such as "default" or "pulse".
     QString alsaHwDevice;
-    int portAudioIndex;
+    int deviceIndex;
 
     QString debugName() const;
 
     SoundDeviceId()
-       : portAudioIndex(-1) {}
+            : deviceIndex(-1) {
+    }
 };
 
 /// This must be registered with QMetaType::registerComparators for
@@ -276,9 +308,8 @@ class SoundDeviceId final {
 inline bool operator==(
         const SoundDeviceId& lhs,
         const SoundDeviceId& rhs) {
-    return lhs.name == rhs.name
-            && lhs.alsaHwDevice == rhs.alsaHwDevice
-            && lhs.portAudioIndex == rhs.portAudioIndex;
+    return lhs.name == rhs.name && lhs.alsaHwDevice == rhs.alsaHwDevice &&
+            lhs.deviceIndex == rhs.deviceIndex;
 }
 
 inline bool operator!=(
@@ -290,7 +321,7 @@ inline bool operator!=(
 /// There is not really a use case for this, but it is required for QMetaType::registerComparators.
 inline bool operator<(const SoundDeviceId& lhs, const SoundDeviceId& rhs) {
     DEBUG_ASSERT(!"should never be invoked");
-    return lhs.portAudioIndex < rhs.portAudioIndex;
+    return lhs.deviceIndex < rhs.deviceIndex;
 }
 
 Q_DECLARE_METATYPE(SoundDeviceId);
@@ -300,7 +331,7 @@ inline qhash_seed_t qHash(
         qhash_seed_t seed = 0) {
     return qHash(id.name, seed) ^
             qHash(id.alsaHwDevice, seed) ^
-            qHash(id.portAudioIndex, seed);
+            qHash(id.deviceIndex, seed);
 }
 
 inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {

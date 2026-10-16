@@ -78,6 +78,7 @@ class WTrackTableViewHeader : public QHeaderView {
 
     // These two track the hovered section which is considered in paintSection().
     // This essentially restores the qss `hover` style.
+    void mousePressEvent(QMouseEvent* pEvent) override;
     void mouseMoveEvent(QMouseEvent* pEvent) override;
     void leaveEvent(QEvent* pEvent) override;
 

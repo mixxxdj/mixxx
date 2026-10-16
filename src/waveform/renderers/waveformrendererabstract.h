@@ -51,6 +51,7 @@ class WaveformRendererAbstract {
     }
 
     WaveformWidgetRenderer* m_waveformRenderer;
+    float m_lastPlayMarkerPos;
 
   private:
 

@@ -222,7 +222,10 @@ void DlgLibraryExport::browseExportDirectory() {
             m_pConfig->getValue(ConfigKey("[Library]", kLastDirConfigItemName),
                     QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
     const auto exportDirectory = QFileDialog::getExistingDirectory(
-            nullptr, tr("Export Library To"), lastExportDirectory);
+            nullptr,
+            tr("Export Library To"),
+            lastExportDirectory,
+            QFileDialog::ShowDirsOnly);
     if (exportDirectory.isEmpty()) {
         return;
     }

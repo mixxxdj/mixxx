@@ -1,6 +1,6 @@
 <!--
 Description:
-	Container for Microphone 1-4 and Auxiliary 1-4.
+  Container for Microphone 1-4 and Auxiliary 1-4.
 -->
 <Template>
   <WidgetGroup>

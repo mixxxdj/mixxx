@@ -450,7 +450,7 @@ void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint f
     double damp = exp(-M_PI * (.0005+.9995*dampingParam));
     tank.damping[0].set(damp);
     tank.damping[1].set(damp);
-    RampingValue<sample_t> send(pow(currentSend, 1.53), previousSend, frames);
+    RampingValue<sample_t> send(pow(previousSend, 1.53), pow(currentSend, 1.53), frames);
 
     // the modulated lattices interpolate, which needs truncated float
     DSP::FPTruncateMode _truncate;

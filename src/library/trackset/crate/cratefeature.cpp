@@ -678,8 +678,6 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
-    // TODO(XXX): Parsing a list of track locations from a playlist file
-    // is a general task and should be implemented separately.
     QList<QString> locations = Parser().parse(playlistFile);
     if (locations.empty()) {
         return;
@@ -949,6 +947,8 @@ void CrateFeature::slotTrackSelected(TrackId trackId) {
                         CrateId(pTreeItem->getData()));
         pTreeItem->setBold(crateContainsSelectedTrack);
     }
+
+    pRootItem->setBold(m_selectedTrackId.isValid() && sortedTrackCrates.size() > 0);
 
     m_pSidebarModel->triggerRepaint();
 }

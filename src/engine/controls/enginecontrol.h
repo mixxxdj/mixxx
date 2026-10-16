@@ -101,7 +101,6 @@ class EngineControl : public QObject {
     FrameInfo frameInfo() const {
         return m_frameInfo.getValue();
     }
-    void seek(double fractionalPosition);
     void seekAbs(mixxx::audio::FramePos position);
     /// Seek to an exact frame, no quantizing
     /// virtual only for tests!

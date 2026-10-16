@@ -53,10 +53,7 @@ void TableItemDelegate::paint(
     // Brush color for the star rating polygons:
     painter->setBrush(brush);
     // Pen for the 'location' text
-    // Note: seems not to be required anymore (Qt 6.2.3)
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     painter->setPen(brush.color());
-#endif
 
     QStyle* style = m_pTableView->style();
     if (style) {
@@ -74,25 +71,6 @@ void TableItemDelegate::paint(
 
 int TableItemDelegate::columnWidth(const QModelIndex &index) const {
     return m_pTableView->columnWidth(index.column());
-}
-
-void TableItemDelegate::paintItemBackground(
-        QPainter* painter,
-        const QStyleOptionViewItem& option,
-        const QModelIndex& index) {
-    // If the row is not selected, paint the desired background color before
-    // painting the delegate item
-    if (option.showDecorationSelected &&
-            (option.state & QStyle::State_Selected)) {
-        return;
-    }
-    QVariant bgValue = index.data(Qt::BackgroundRole);
-    if (!bgValue.isValid()) {
-        return;
-    }
-    DEBUG_ASSERT(bgValue.canConvert<QBrush>());
-    const auto bgBrush = qvariant_cast<QBrush>(bgValue);
-    painter->fillRect(option.rect, bgBrush);
 }
 
 // static

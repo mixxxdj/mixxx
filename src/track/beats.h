@@ -264,12 +264,14 @@ class Beats : private std::enable_shared_from_this<Beats> {
             const QString& subVersion = QString());
 
     enum class BpmScale {
-        Double,
         Halve,
         TwoThirds,
         ThreeFourths,
+        FourFifths,
+        FiveFourths,
         FourThirds,
         ThreeHalves,
+        Double,
     };
 
     /// Returns false if the beats implementation supports non-const beats.

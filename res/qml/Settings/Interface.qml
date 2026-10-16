@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import QtQuick.Dialogs
 import Qt5Compat.GraphicalEffects
 import Mixxx 1.0 as Mixxx
 import "." as Setting
@@ -15,7 +14,6 @@ Category {
 
     function load() {
         loadInterface();
-        loadWaveform();
         loadDeck();
         errorMessage.text = "";
     }
@@ -65,7 +63,6 @@ Category {
         keyPaletteInput.selected = Mixxx.Config.configKeyColorsEnabled ? "on" : "off";
         keyPaletteComboBox.currentIndex = keyPaletteComboBox.model.indexOf(Mixxx.Config.configKeyColorPalette);
         colorPane.hotcuePaletteColorIndex = Mixxx.Config.controlHotcueDefaultColorIndex;
-        console.log(colorPane.hotcuePaletteColorIndex, Mixxx.Config.controlHotcueDefaultColorIndex);
         if (colorPane.hotcuePaletteColorIndex < 0)
             colorPane.hotcuePaletteColorIndex = colorPane.defaultPalette.length - 1;
         hotcuePaletteInput.currentIndex = colorPane.hotcuePaletteColorIndex;
@@ -78,20 +75,16 @@ Category {
         jumpPaletteInput.currentIndex = colorPane.jumpPaletteColorIndex;
         themeColorTab.dirty = false;
     }
-    function loadWaveform() {
-    }
     function resetDeck() {
     }
     function resetInterface() {
     }
-    function resetWaveform() {
-    }
     function saveDeck() {
         Mixxx.Config.controlCueDefault = cueModeInput.currentIndex;
-        Mixxx.Config.controlSetIntroStartAtMainCue = setIntroStartToMainCueInput.enabled;
+        Mixxx.Config.controlSetIntroStartAtMainCue = setIntroStartToMainCueInput.selected === "on";
         Mixxx.Config.controlPositionDisplay = trackTimeDisplayInput.options.indexOf(trackTimeDisplayInput.selected);
         Mixxx.Config.controlTimeFormat = timeMode.currentIndex;
-        Mixxx.Config.controlCloneDeckOnLoadDoubleTap = doublePressLoadToCloneInput.enabled;
+        Mixxx.Config.controlCloneDeckOnLoadDoubleTap = doublePressLoadToCloneInput.selected === "on";
         Mixxx.Config.controlCueRecall = trackLoadPointInput.currentIndex;
         Mixxx.Config.controlLoadWhenDeckPlaying = loadingTrackWhenPlayingInput.options.indexOf(loadingTrackWhenPlayingInput.selected);
         Mixxx.Config.controlSpeedAutoReset = resetOnTrackLoadInput.options.indexOf(resetOnTrackLoadInput.selected);
@@ -121,15 +114,15 @@ Category {
         // layoutInput.value =
         Mixxx.Config.libraryTooltips = tooltipsInput.options.indexOf(tooltipsInput.selected);
         Mixxx.Config.libraryInhibitScreensaver = disableScreensaverInput.options.indexOf(disableScreensaverInput.selected);
-        Mixxx.Config.configStartInFullscreenKey = startFullscreenInput.enabled;
-        Mixxx.Config.libraryHideMenuBar = autoHideMenuBarInput.enabled;
-        Mixxx.Config.libraryEnableSearchCompletions = searchCompletionInput.enabled;
-        Mixxx.Config.libraryEnableSearchHistoryShortcuts = searchHistoryKeyboardInput.enabled;
+        Mixxx.Config.configStartInFullscreenKey = startFullscreenInput.selected === "on";
+        Mixxx.Config.libraryHideMenuBar = autoHideMenuBarInput.selected === "on";
+        Mixxx.Config.libraryEnableSearchCompletions = searchCompletionInput.selected === "on";
+        Mixxx.Config.libraryEnableSearchHistoryShortcuts = searchHistoryKeyboardInput.selected === "on";
         Mixxx.Config.libraryBpmColumnPrecision = bpmPrecisionInput.value;
         Mixxx.Config.libraryRowHeight = libraryRowHeightInput.value;
         Mixxx.Config.configTrackColorPalette = trackPaletteComboBox.model[trackPaletteComboBox.currentIndex];
         Mixxx.Config.configHotcueColorPalette = hotcuePaletteComboBox.model[hotcuePaletteComboBox.currentIndex];
-        Mixxx.Config.configKeyColorsEnabled = keyPaletteInput.enabled;
+        Mixxx.Config.configKeyColorsEnabled = keyPaletteInput.selected === "on";
         Mixxx.Config.configKeyColorPalette = keyPaletteComboBox.model[keyPaletteComboBox.currentIndex];
         // keyPaletteInput.value
         Mixxx.Config.controlHotcueDefaultColorIndex = hotcuePaletteInput.currentIndex;
@@ -137,13 +130,10 @@ Category {
         // jumpPaletteInput.value =
         loadInterface();
     }
-    function saveWaveform() {
-        loadWaveform();
-    }
 
     label: "Interface"
     selectedIndex: 0
-    tabs: ["theme & color", "waveform", "decks"]
+    tabs: ["theme & color", "decks"]
 
     Component.onCompleted: {
         root.load();
@@ -880,29 +870,16 @@ Category {
             }
         }
         Mixxx.SettingGroup {
-            id: waveformTab
-
-            property bool dirty: false
-
-            anchors.fill: parent
-            label: "Waveform"
-            visible: root.selectedIndex == 1
-
-            onActivated: {
-                root.selectedIndex = 1;
-            }
-        }
-        Mixxx.SettingGroup {
             id: decksTab
 
             property bool dirty: false
 
             anchors.fill: parent
             label: "Decks"
-            visible: root.selectedIndex == 2
+            visible: root.selectedIndex == 1
 
             onActivated: {
-                root.selectedIndex = 2;
+                root.selectedIndex = 1;
             }
 
             ColumnLayout {
@@ -1565,9 +1542,6 @@ Category {
                     root.resetInterface();
                     break;
                 case 1:
-                    root.resetWaveform();
-                    break;
-                case 0:
                     root.resetDeck();
                     break;
                 }
@@ -1588,7 +1562,7 @@ Category {
             SettingComponents.FormButton {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && decksTab.dirty
                 opacity: enabled ? 1.0 : 0.5
                 text: "Cancel"
 
@@ -1598,9 +1572,6 @@ Category {
                         root.loadInterface();
                         break;
                     case 1:
-                        root.loadWaveform();
-                        break;
-                    case 2:
                         root.loadDeck();
                         break;
                     }
@@ -1608,8 +1579,8 @@ Category {
             }
             SettingComponents.FormButton {
                 activeColor: "#999999"
-                backgroundColor: root.hasChanges ? "#3a60be" : "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                backgroundColor: (root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && decksTab.dirty) ? "#3a60be" : "#3F3F3F"
+                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && decksTab.dirty
                 opacity: enabled ? 1.0 : 0.5
                 text: "Save"
 
@@ -1620,9 +1591,6 @@ Category {
                         root.saveInterface();
                         break;
                     case 1:
-                        root.saveWaveform();
-                        break;
-                    case 2:
                         root.saveDeck();
                         break;
                     }

@@ -15,7 +15,7 @@
 #include "waveform/waveform.h"
 
 namespace {
-const QString kPaththroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
+const QString kPassthroughShaderPath = QStringLiteral(":/shaders/passthrough.vert");
 } // namespace
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
@@ -58,10 +58,10 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 Shader::Vertex,
-                kPaththroughShaderPath)) {
+                kPassthroughShaderPath)) {
         qWarning()
                 << "GLSLWaveformRendererSignal::loadShaders - compilation failed:"
-                << kPaththroughShaderPath;
+                << kPassthroughShaderPath;
         qDebug() << m_frameShaderProgram->log();
         return false;
     }

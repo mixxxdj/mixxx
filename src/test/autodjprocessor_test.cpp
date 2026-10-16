@@ -25,7 +25,7 @@ using ::testing::Return;
 namespace {
 const int kDefaultTransitionTime = 10;
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelOutputCount;
-const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
+const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-øé~ł€˚-png.mp3");
 const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
@@ -142,20 +142,20 @@ class MockPlayerManager : public PlayerManagerInterface {
 
     MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const QString&));
     MOCK_CONST_METHOD1(getPlayer, BaseTrackPlayer*(const ChannelHandle&));
-    MOCK_CONST_METHOD1(getDeck, Deck*(unsigned int));
-    MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(unsigned int));
-    MOCK_CONST_METHOD1(getSampler, Sampler*(unsigned int));
+    MOCK_CONST_METHOD1(getDeckBase, BaseTrackPlayer*(int));
+    MOCK_CONST_METHOD1(getPreviewDeck, PreviewDeck*(int));
+    MOCK_CONST_METHOD1(getSampler, Sampler*(int));
 
-    unsigned int numberOfDecks() const {
-        return static_cast<unsigned int>(numDecks.get());
+    int numberOfDecks() const {
+        return static_cast<int>(numDecks.get());
     }
 
-    unsigned int numberOfSamplers() const {
-        return static_cast<unsigned int>(numSamplers.get());
+    int numberOfSamplers() const {
+        return static_cast<int>(numSamplers.get());
     }
 
-    unsigned int numberOfPreviewDecks() const {
-        return static_cast<unsigned int>(numPreviewDecks.get());
+    int numberOfPreviewDecks() const {
+        return static_cast<int>(numPreviewDecks.get());
     }
 
     ControlObject numDecks;
@@ -213,20 +213,20 @@ class AutoDJProcessorTest : public LibraryTest {
         PlayerInfo::create();
 
         // Setup 4 fake decks.
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel1]")))
+        ON_CALL(*pPlayerManager, getDeckBase(0))
                 .WillByDefault(Return(&deck1));
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel2]")))
+        ON_CALL(*pPlayerManager, getDeckBase(1))
                 .WillByDefault(Return(&deck2));
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel3]")))
+        ON_CALL(*pPlayerManager, getDeckBase(2))
                 .WillByDefault(Return(&deck3));
-        ON_CALL(*pPlayerManager, getPlayer(QString("[Channel4]")))
+        ON_CALL(*pPlayerManager, getDeckBase(3))
                 .WillByDefault(Return(&deck4));
         pPlayerManager->numDecks.set(4);
 
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
-        EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(0)).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(1)).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(2)).Times(1);
+        EXPECT_CALL(*pPlayerManager, getDeckBase(3)).Times(1);
 
         pProcessor.reset(new MockAutoDJProcessor(nullptr,
                 config(),
@@ -602,10 +602,10 @@ TEST_F(AutoDJProcessorTest, TransitionTimeLoadedFromConfig) {
     config()->set(ConfigKey("[Auto DJ]", "Transition"), QString("25"));
     // Creating a new MockAutoDJProcessor will get each player from player
     // manager.
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel1]"))).Times(1);
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel2]"))).Times(1);
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel3]"))).Times(1);
-    EXPECT_CALL(*pPlayerManager, getPlayer(QString("[Channel4]"))).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(0)).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(1)).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(2)).Times(1);
+    EXPECT_CALL(*pPlayerManager, getDeckBase(3)).Times(1);
 
     // We need to call reset *before* constructing a new MockAutoDJProcessor,
     // because otherwise the new object will try to create COs that already
@@ -1895,4 +1895,164 @@ TEST_F(AutoDJProcessorTest, TrackZeroLength) {
     // Expect that the track is rejected an a new one is loaded
     // Signal that the request to load pTrack succeeded.
     deck1.fakeTrackLoadedEvent(pTrack);
+}
+
+TEST_F(AutoDJProcessorTest, FadeToDeck2_ZeroTransition_PlayStopsBeforeEnd) {
+    // Reproduces the engine EOF race: play is cleared before playposition
+    // reaches fadeBeginPos (1.0 for Full Track / 0 s). Auto DJ must start the
+    // next deck instead of treating this as a cueing seek that swaps roles.
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedFullTrack);
+    pProcessor->setTransitionTime(0);
+
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    mixer.crossfader.set(-1.0);
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setDuration(120);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, mixer.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    // Last playposition tick before EOF, still playing. Fade begins at 1.0.
+    deck1.playposition.set(0.999);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
+
+    // Engine stops play at EOF before playposition reaches 1.0.
+    deck1.play.set(0.0);
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, mixer.crossfader.get());
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+
+    // A delayed playposition callback at 0.999 must not swap from/to roles.
+    deck1.playposition.set(0.999);
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+}
+
+TEST_F(AutoDJProcessorTest, FadeToDeck2_ZeroTransition_MidTrackPauseDoesNotFade) {
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedFullTrack);
+    pProcessor->setTransitionTime(0);
+
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    mixer.crossfader.set(-1.0);
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setDuration(120);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    deck1.playposition.set(0.5);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Pausing the from-deck in the middle of the track is not EOF.
+    deck1.play.set(0.0);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, mixer.crossfader.get());
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+}
+
+TEST_F(AutoDJProcessorTest, FadeToDeck2_ZeroTransition_DelayedPlaypositionAfterStop) {
+    // Engine may emit play=0 first, then a delayed playposition near EOF.
+    // That must start the transition, not a cueing-seek role swap.
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedFullTrack);
+    pProcessor->setTransitionTime(0);
+
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    mixer.crossfader.set(-1.0);
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setDuration(120);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    deck1.playposition.set(0.5);
+    deck1.play.set(0.0);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
+
+    deck1.playposition.set(0.999);
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, mixer.crossfader.get());
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 }

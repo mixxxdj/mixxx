@@ -167,14 +167,14 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             double bpmUpperBound = 0.0;
             std::tie(bpmLowerBound, bpmUpperBound) = pBpmNode->getBpmRange();
             const QString searchQuery =
-                    QStringLiteral("bpm:>=") +
+                    QStringLiteral("bpm:") +
                     QString::number(bpmLowerBound) +
-                    QStringLiteral(" bpm:<=") +
+                    QStringLiteral("-") +
                     QString::number(bpmUpperBound);
             addTriggerSearchAction(&addSeparatorBeforeNextAction,
                     searchQuery,
                     tr("BPM"),
-                    tr("between %1 and %2")
+                    tr("%1 - %2")
                             .arg(QString::number(bpmLowerBound),
                                     QString::number(bpmUpperBound)));
         }
@@ -205,7 +205,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             // Search tracks with similar artist(s)
             {
                 const auto actionTextPrefix = tr("Artist");
-                const auto searchQueryPrefix = QStringLiteral("artist:");
+                const auto searchQueryPrefix = QStringLiteral("a:");
                 {
                     const QString searchQuery =
                             searchQueryPrefix +
@@ -229,7 +229,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             }
             {
                 const auto actionTextPrefix = tr("Album Artist");
-                const auto searchQueryPrefix = QStringLiteral("album_artist:");
+                const auto searchQueryPrefix = QStringLiteral("aa:");
                 {
                     const QString searchQuery =
                             searchQueryPrefix +
@@ -257,7 +257,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto composer = track.getComposer();
         if (!composer.isEmpty()) {
             const QString searchQuery =
-                    QStringLiteral("composer:") +
+                    QStringLiteral("cp:") +
                     quoteSearchQueryText(composer);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
@@ -273,7 +273,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto title = track.getTitle();
         if (!title.isEmpty()) {
             const QString searchQuery =
-                    QStringLiteral("title:") +
+                    QStringLiteral("t:") +
                     quoteSearchQueryText(title);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
@@ -286,7 +286,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto album = track.getAlbum();
         if (!album.isEmpty()) {
             const QString searchQuery =
-                    QStringLiteral("album:") +
+                    QStringLiteral("al:") +
                     quoteSearchQueryText(album);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
@@ -299,7 +299,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto grouping = track.getGrouping();
         if (!grouping.isEmpty()) {
             const QString searchQuery =
-                    QStringLiteral("grouping:") +
+                    QStringLiteral("gr:") +
                     quoteSearchQueryText(grouping);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
@@ -316,7 +316,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                 extractCalendarYearNumberFromReleaseDate(track.getYear());
         if (!releaseYearNumber.isEmpty()) {
             const QString searchQuery =
-                    QStringLiteral("year:") +
+                    QStringLiteral("y:") +
                     releaseYearNumber;
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
@@ -329,7 +329,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
         const auto genre = track.getGenre();
         if (!genre.isEmpty()) {
             const QString searchQuery =
-                    QStringLiteral("genre:") +
+                    QStringLiteral("g:") +
                     quoteSearchQueryText(genre);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
@@ -347,7 +347,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             const QString locationPathWithTerminator =
                     locationPath + QChar('/');
             const QString searchQuery =
-                    QStringLiteral("location:") +
+                    QStringLiteral("lo:") +
                     quoteSearchQueryText(locationPathWithTerminator);
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
@@ -376,7 +376,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
     // This is for click and Space key
     connect(pCheckBox.get(),
-            &QCheckBox::clicked,
+            &QCheckBox::toggled,
             this,
             &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
 }
@@ -419,7 +419,7 @@ bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
 }
 
 void WSearchRelatedTracksMenu::updateSearchButton() {
-    // Enable the Search button if at least opChildbox is checked.
+    // Enable the Search button if at least one checkbox is ticked
     VERIFY_OR_DEBUG_ASSERT(m_pSearchAction) {
         return;
     }

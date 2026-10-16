@@ -7,6 +7,7 @@
 
 #include "control/controlvalue.h"
 #include "engine/slipmodestate.h"
+#include "util/delayring.h"
 #include "util/performancetimer.h"
 
 class ControlProxy;
@@ -68,8 +69,7 @@ class VisualPlayPosition : public QObject {
             double tempoTrackSeconds,
             double audioBufferMicroS);
 
-    double getAtNextVSync(VSyncTimeProvider* pSyncTimeProvider);
-    void getPlaySlipAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
+    bool getPlaySlipAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
             double* playPosition,
             double* slipPosition);
     double determinePlayPosInLoopBoundries(
@@ -85,17 +85,16 @@ class VisualPlayPosition : public QObject {
     static void setCallbackEntryToDacSecs(double secs, const PerformanceTimer& time);
 
     void setInvalid() {
-        m_valid.store(false);
+        m_data.reset();
     };
-    bool isValid() const {
-        return m_valid.load();
+    const QString& key() const {
+        return m_key;
     }
 
   private:
     double calcOffsetAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
             const VisualPlayPositionData& data);
-    ControlValueAtomic<VisualPlayPositionData> m_data;
-    std::atomic<bool> m_valid;
+    DelayRing<VisualPlayPositionData, 16> m_data;
     QString m_key;
     bool m_noTransport;
 

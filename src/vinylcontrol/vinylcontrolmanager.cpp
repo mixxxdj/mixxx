@@ -22,7 +22,6 @@ VinylControlManager::VinylControlManager(QObject* pParent,
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pProcessor(new VinylControlProcessor(this, pConfig)),
-          m_iTimerId(-1),
           m_pNumDecks(nullptr),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
@@ -35,6 +34,10 @@ VinylControlManager::VinylControlManager(QObject* pParent,
                         i),
                 m_pProcessor);
     }
+    connect(m_pProcessor,
+            &VinylControlProcessor::qualityReportWritten,
+            this,
+            &VinylControlManager::updateSignalQualityListeners);
 }
 
 VinylControlManager::~VinylControlManager() {
@@ -142,20 +145,12 @@ int VinylControlManager::vinylInputFromGroup(const QString& group) {
 void VinylControlManager::addSignalQualityListener(VinylSignalQualityListener* pListener) {
     m_listeners.insert(pListener);
     m_pProcessor->setSignalQualityReporting(true);
-
-    if (m_iTimerId == -1) {
-        m_iTimerId = startTimer(MIXXX_VINYL_SCOPE_UPDATE_LATENCY_MS);
-    }
 }
 
 void VinylControlManager::removeSignalQualityListener(VinylSignalQualityListener* pListener) {
     m_listeners.remove(pListener);
     if (m_listeners.empty()) {
         m_pProcessor->setSignalQualityReporting(false);
-        if (m_iTimerId != -1) {
-            killTimer(m_iTimerId);
-            m_iTimerId = -1;
-        }
     }
 }
 
@@ -171,8 +166,4 @@ void VinylControlManager::updateSignalQualityListeners() {
             pListener->onVinylSignalQualityUpdate(report);
         }
     }
-}
-
-void VinylControlManager::timerEvent(QTimerEvent*) {
-    updateSignalQualityListeners();
 }

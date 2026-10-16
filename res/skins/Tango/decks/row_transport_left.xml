@@ -202,7 +202,7 @@ Variables:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-          <!--	Cue button -->
+          <!-- Cue button -->
           <CueButton>
             <TooltipId>cue_default_cue_gotoandstop</TooltipId>
             <ObjectName>CueButton</ObjectName>

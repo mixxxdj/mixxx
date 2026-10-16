@@ -1,8 +1,10 @@
 #include "track/track.h"
 
 #include <QDebug>
+#include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <utility>
 
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
@@ -303,6 +305,7 @@ bool Track::replaceRecord(
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
     const auto newRating = newRecord.getRating();
+    const bool newBpmLocked = newRecord.getBpmLocked();
 
     auto locked = lockMutex(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
@@ -313,6 +316,7 @@ bool Track::replaceRecord(
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
     const auto oldRating = m_record.getRating();
+    const bool oldBpmLocked = m_record.getBpmLocked();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
@@ -338,6 +342,9 @@ bool Track::replaceRecord(
 
     if (bpmUpdatedFlag) {
         emit beatsUpdated();
+    }
+    if (oldBpmLocked != newBpmLocked) {
+        emit bpmLockChanged(newBpmLocked);
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
@@ -389,6 +396,20 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         // they want to clear the beatgrid.
         return trySetBeatsWhileLocked(nullptr);
     } else if (!m_pBeats) {
+        if (!getSampleRate().isValid()) {
+            // The sample rate might still be unknown here, e.g. when
+            // importing a BPM from file tags while the audio properties
+            // could not be determined (seen with STEM files, #16846).
+            // A beat grid cannot be created without a valid sample rate,
+            // so keep the beat grid empty. The BPM will be set once the
+            // track has been analyzed or the stream info becomes known.
+            kLogger.warning()
+                    << "Cannot create beat grid for imported BPM"
+                    << bpm
+                    << "without a valid sample rate:"
+                    << getLocation();
+            return false;
+        }
         // No beat grid available -> create and initialize
         mixxx::audio::FramePos cuePosition = m_record.getMainCuePosition();
         if (!cuePosition.isValid()) {
@@ -432,11 +453,6 @@ bool Track::trySetBeats(mixxx::BeatsPointer pBeats) {
     return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, false);
 }
 
-bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
-    auto locked = lockMutex(&m_qMutex);
-    return trySetBeatsMarkDirtyAndUnlock(&locked, pBeats, true);
-}
-
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     if (m_pBeats == pBeats) {
         return false;
@@ -465,9 +481,10 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
 bool Track::trySetBeatsWhileLocked(
         mixxx::BeatsPointer pBeats,
         bool lockBpmAfterSet) {
-    if (m_pBeats && m_record.getBpmLocked()) {
-        // Track has already a valid and locked beats object, abort.
-        qDebug() << "Track beats is already set and BPM-locked. Discard the new beats";
+    if (m_record.getBpmLocked()) {
+        // The BPM is locked, so the beatgrid must not be changed - regardless
+        // of whether one currently exists.
+        qDebug() << "Track is BPM-locked. Discarding new beats";
         return false;
     }
 
@@ -927,7 +944,7 @@ const ConstWaveformPointer& Track::getWaveform() const {
 }
 
 void Track::setWaveform(ConstWaveformPointer pWaveform) {
-    m_waveform = pWaveform;
+    m_waveform = std::move(pWaveform);
     emit waveformUpdated();
 }
 
@@ -949,12 +966,12 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
     }
 
     // Store the cue point as main cue
-    CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
+    CuePointer pMainCue = findCueByType(mixxx::CueType::MainCue);
     if (position.isValid()) {
-        if (pLoadCue) {
-            pLoadCue->setStartPosition(position);
+        if (pMainCue) {
+            pMainCue->setStartPosition(position);
         } else {
-            pLoadCue = CuePointer(new Cue(
+            pMainCue = CuePointer(new Cue(
                     mixxx::CueType::MainCue,
                     Cue::kNoHotCue,
                     position,
@@ -963,16 +980,16 @@ void Track::setMainCuePosition(mixxx::audio::FramePos position) {
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
-            pLoadCue->moveToThread(thread());
-            connect(pLoadCue.get(),
+            pMainCue->moveToThread(thread());
+            connect(pMainCue.get(),
                     &Cue::updated,
                     this,
                     &Track::slotCueUpdated);
-            m_cuePoints.push_back(pLoadCue);
+            m_cuePoints.push_back(pMainCue);
         }
-    } else if (pLoadCue) {
-        disconnect(pLoadCue.get(), nullptr, this, nullptr);
-        m_cuePoints.removeOne(pLoadCue);
+    } else if (pMainCue) {
+        disconnect(pMainCue.get(), nullptr, this, nullptr);
+        m_cuePoints.removeOne(pMainCue);
     }
 
     markDirtyAndUnlock(&locked);
@@ -996,64 +1013,68 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
 void Track::setHotcueIndicesSortedByPosition(HotcueSortMode sortMode) {
     auto locked = lockMutex(&m_qMutex);
 
-    // Populate lists of positions and indices
-    QList<int> indices;
-    QList<mixxx::audio::FramePos> positions;
-    indices.reserve(m_cuePoints.size());
-    positions.reserve(m_cuePoints.size());
+    // Collect the hotcues to sort together with their positions.
+    // We only want hotcues (regular, loop, jump) with a valid index.
+    // Note: Cue::kNoHotCue (-1) is the temporary, unsaved loop, or some
+    // orphaned hotcue.
+    //
+    // Two hotcues may share the same position, e.g. if they have been
+    // duplicated accidentally.
+    // Sorting must not swallow any of them, hence we must not use a
+    // position -> index hash map like QHash<FramePos, int>
+    struct HotcueAndPosition {
+        mixxx::audio::FramePos position;
+        CuePointer pCue;
+    };
+    QList<HotcueAndPosition> hotcues;
+    hotcues.reserve(m_cuePoints.size());
     for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
-        // We only want hotcues (regular, loop, jump) with a valid index.
-        // Note: Loop with index -1 is the temporary, unsaved loop.
-        // Also note that there may be orphaned hotcues with index -1.
-        // Remember to also run this check when setting the new indices.
         if (pCue->getHotCue() == Cue::kNoHotCue ||
                 (pCue->getType() != mixxx::CueType::HotCue &&
                         pCue->getType() != mixxx::CueType::Loop &&
                         pCue->getType() != mixxx::CueType::Jump)) {
             continue;
         }
-        const auto pos = pCue->getPosition();
-        positions.append(pos);
-        if (sortMode == HotcueSortMode::KeepOffsets) {
-            // We shall keep empty hotcues (start offset, gaps), so we need
-            // to store the indices
-            indices.append(pCue->getHotCue());
-        }
+        hotcues.append(HotcueAndPosition{pCue->getPosition(), pCue});
     }
 
-    std::sort(positions.begin(), positions.end());
-    if (sortMode == HotcueSortMode::KeepOffsets) {
-        DEBUG_ASSERT(positions.size() == indices.size());
-        std::sort(indices.begin(), indices.end());
-    }
+    // Sort the hotcues by position.
+    // Hotcues sharing the same position retain their existing order,
+    // i.e. the order of their current hotcue indices. This is relevant if
+    // users have cues of different types at the same position, eg. first
+    // the hotcue, then a loopcue, which we don't want to shuffle.
+    std::stable_sort(
+            hotcues.begin(),
+            hotcues.end(),
+            [](const HotcueAndPosition& a, const HotcueAndPosition& b) {
+                if (a.position != b.position) {
+                    return a.position < b.position;
+                }
+                return a.pCue->getHotCue() < b.pCue->getHotCue();
+            });
 
     // The actual sorting:
-    // re-map hotcue positions to indices in ascending order
-    QHash<mixxx::audio::FramePos, int> posIndexHash;
+    // assign new indices to the hotcues in ascending order of their positions
     if (sortMode == HotcueSortMode::RemoveOffsets) {
         // Assign new indices, start with 0
         int index = mixxx::kFirstHotCueIndex;
-        for (int i = 0; i < positions.size(); i++) {
-            posIndexHash.insert(positions[i], index);
+        for (const HotcueAndPosition& hotcue : std::as_const(hotcues)) {
+            hotcue.pCue->setHotCue(index);
             index++;
         }
     } else { // HotcueSortMode::KeepOffsets
-        // Assign sorted indices
-        for (int i = 0; i < positions.size(); i++) {
-            posIndexHash.insert(positions[i], indices[i]);
+        // Assign sorted indices, keeping empty hotcues (start offset, gaps)
+        // before and in between.
+        QList<int> indices;
+        indices.reserve(hotcues.size());
+        for (const HotcueAndPosition& hotcue : std::as_const(hotcues)) {
+            indices.append(hotcue.pCue->getHotCue());
         }
-    }
-
-    // Finally set new indices on hotcues
-    for (CuePointer& pCue : m_cuePoints) {
-        if (pCue->getHotCue() == Cue::kNoHotCue ||
-                (pCue->getType() != mixxx::CueType::HotCue &&
-                        pCue->getType() != mixxx::CueType::Loop &&
-                        pCue->getType() != mixxx::CueType::Jump)) {
-            continue;
+        DEBUG_ASSERT(indices.size() == hotcues.size());
+        std::sort(indices.begin(), indices.end());
+        for (int i = 0; i < hotcues.size(); i++) {
+            hotcues[i].pCue->setHotCue(indices[i]);
         }
-        int newIndex = posIndexHash.take(pCue->getPosition());
-        pCue->setHotCue(newIndex);
     }
 
     markDirtyAndUnlock(&locked);
@@ -1169,7 +1190,6 @@ void Track::removeCuesOfType(mixxx::CueType type) {
     QMutableListIterator<CuePointer> it(m_cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
             disconnect(pCue.get(), nullptr, this, nullptr);
             it.remove();
@@ -1179,9 +1199,28 @@ void Track::removeCuesOfType(mixxx::CueType type) {
             dirty = true;
         }
     }
-    // If loop cues are removed, also clear the last active loop
-    if (type == mixxx::CueType::Loop) {
-        emit loopRemove();
+    if (dirty) {
+        // If loop cues have been removed, also clear the last active loop
+        if (type == mixxx::CueType::Loop) {
+            emit loopRemove();
+        }
+        markDirtyAndUnlock(&locked);
+        emit cuesUpdated();
+    }
+}
+
+void Track::removeTempLoopCue() {
+    auto locked = lockMutex(&m_qMutex);
+    bool dirty = false;
+    QMutableListIterator<CuePointer> it(m_cuePoints);
+    while (it.hasNext()) {
+        CuePointer pCue = it.next();
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            disconnect(pCue.get(), nullptr, this, nullptr);
+            it.remove();
+            dirty = true;
+            break;
+        }
     }
     if (dirty) {
         markDirtyAndUnlock(&locked);

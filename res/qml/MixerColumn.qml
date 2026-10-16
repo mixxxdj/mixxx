@@ -56,7 +56,7 @@ Item {
             id: volumeSlider
 
             anchors.fill: parent
-            barColor: Theme.volumeSliderBarColor
+            bar.color: Theme.volumeSliderBarColor
             bg: Theme.imgVolumeSliderBackground
             group: root.group
             key: "volume"

@@ -161,6 +161,7 @@ Rectangle {
         // case "PulseAudio":
         // case "sndio":
 
+        case "Android Oboe":
         case "ALSA":
             {
                 const hwAlsa = / (\(hw:\d+,\d+\))/;
@@ -477,7 +478,7 @@ Rectangle {
                     tooltips: !root.hiddenConnections ? [] : [null, `${root.hiddenConnections} connection${root.hiddenConnections > 1 ? 's' : ''} hidden\nUse the advanced mode to view them`, null]
 
                     onOptionsChanged: {
-                        if (modeChoice.selected.startsWith("advanced")) {
+                        if (modeChoice.selected?.startsWith("advanced")) {
                             modeChoice.selected = options[1];
                         }
                     }

@@ -7,6 +7,11 @@
 #include "moc_colordelegate.cpp"
 #include "util/color/rgbcolor.h"
 
+namespace {
+constexpr const char* kUseRowBackgroundForColorCellProperty =
+        "mixxxColorDelegateUseRowBackgroundForColorCell";
+} // namespace
+
 ColorDelegate::ColorDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView) {
 }
@@ -16,13 +21,17 @@ void ColorDelegate::paintItem(
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
     const auto color = mixxx::RgbColor::fromQVariant(index.data());
+    const bool useRowBackgroundForColorCell =
+            m_pTableView->property(kUseRowBackgroundForColorCellProperty).toBool();
 
-    if (color) {
+    if (color && !useRowBackgroundForColorCell) {
         painter->fillRect(option.rect, mixxx::RgbColor::toQColor(color));
     } else {
         // Filter out track color that is hidden
         if (option.state & QStyle::State_Selected) {
             painter->fillRect(option.rect, option.palette.highlight());
+        } else if (useRowBackgroundForColorCell) {
+            paintItemBackground(painter, option, index);
         }
     }
 

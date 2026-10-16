@@ -93,3 +93,7 @@ void EncoderSndfileFlac::initStream() {
         sf_command(m_pSndfile, SFC_SET_CLIPPING, nullptr, SF_FALSE);
     }
 }
+
+void EncoderSndfileFlac::flush() {
+    sf_write_sync(m_pSndfile);
+}

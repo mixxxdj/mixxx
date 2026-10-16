@@ -4,12 +4,15 @@ name: Changelog
 
 on:
   workflow_call:
+    secrets:
+      MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT:
+        required: false
 
 permissions: {}
 jobs:
   trigger-changelog-update:
     name: Trigger Changelog update on manual repository
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - name: Get current branch name
         uses: nelonoel/branch-name@v1.0.1

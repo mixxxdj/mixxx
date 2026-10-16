@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QString>
+#include <QStringList>
 
 #include "mixer/playermanager.h"
 #include "qml/qmlplayerproxy.h"
@@ -11,6 +12,9 @@ namespace qml {
 
 class QmlPlayerManagerProxy : public QObject {
     Q_OBJECT
+    Q_PROPERTY(QStringList supportedAudioFileNameFilters READ
+                    supportedAudioFileNameFilters CONSTANT)
+    Q_PROPERTY(QUrl initialTrackDirectoryUrl READ initialTrackDirectoryUrl CONSTANT)
     QML_NAMED_ELEMENT(PlayerManager)
     QML_SINGLETON
   public:
@@ -22,6 +26,7 @@ class QmlPlayerManagerProxy : public QObject {
     Q_INVOKABLE void loadLocationIntoNextAvailableDeck(const QString& location, bool play = false);
     Q_INVOKABLE void loadLocationUrlIntoNextAvailableDeck(
             const QUrl& locationUrl, bool play = false);
+    Q_INVOKABLE void loadLocationUrlToDeck(const QUrl& locationUrl, int deck);
     Q_INVOKABLE void loadLocationToPlayer(
             const QString& location, const QString& group, bool play = false);
     Q_INVOKABLE void loadTrackToPlayer(TrackPointer track,
@@ -30,6 +35,11 @@ class QmlPlayerManagerProxy : public QObject {
             mixxx::StemChannelSelection stemSelection,
 #endif
             bool play);
+    Q_INVOKABLE void showNoDeckPassthroughInputConfiguredWarning();
+    Q_INVOKABLE void showNoVinylControlInputConfiguredWarning();
+
+    QStringList supportedAudioFileNameFilters() const;
+    QUrl initialTrackDirectoryUrl() const;
 
     static QmlPlayerManagerProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager) {

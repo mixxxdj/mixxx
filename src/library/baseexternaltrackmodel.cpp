@@ -6,6 +6,7 @@
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_baseexternaltrackmodel.cpp"
 #include "track/track.h"
@@ -119,7 +120,7 @@ TrackId BaseExternalTrackModel::doGetTrackId(const TrackPointer& pTrack) const {
 
 bool BaseExternalTrackModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
-            (PlayerManager::numPreviewDecks() == 0 &&
+            (PlayerInfo::instance().numPreviewDecks() == 0 &&
                     column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW));
 }
 

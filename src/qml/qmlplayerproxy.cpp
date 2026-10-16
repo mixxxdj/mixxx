@@ -35,6 +35,9 @@ void QmlPlayerProxy::loadTrack(QmlTrackProxy* track, bool play) {
     if (track == nullptr || track->internal() == nullptr) {
         return;
     }
+    if (m_pCurrentTrack == track->internal()) {
+        return;
+    }
     emit loadTrackRequested(track->internal(),
 #ifdef __STEM__
             mixxx::StemChannel::All,
@@ -43,6 +46,9 @@ void QmlPlayerProxy::loadTrack(QmlTrackProxy* track, bool play) {
 }
 
 void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation, bool play) {
+    if (m_pCurrentTrack && m_pCurrentTrack->getLocation() == trackLocation) {
+        return;
+    }
     emit loadTrackFromLocationRequested(trackLocation, play);
 }
 
@@ -56,6 +62,10 @@ void QmlPlayerProxy::loadTrackFromLocationUrl(const QUrl& trackLocationUrl, bool
 
 void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
     m_pCurrentTrack = pTrack;
+    if (!m_trackLoaded) {
+        m_trackLoaded = true;
+        emit trackLoadedChanged();
+    }
     emit trackChanged();
     emit trackLoaded();
 }
@@ -70,6 +80,11 @@ void QmlPlayerProxy::slotTrackUnloaded(TrackPointer pOldTrack) {
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.reset();
+    if (m_trackLoaded) {
+        m_trackLoaded = false;
+        emit trackLoadedChanged();
+    }
+    setAnalyzerProgress(kAnalyzerProgressUnknown);
     emit trackChanged();
     emit trackUnloaded();
 }
@@ -81,6 +96,11 @@ QmlTrackProxy* QmlPlayerProxy::currentTrack() {
 }
 
 void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    if (m_trackLoaded) {
+        m_trackLoaded = false;
+        emit trackLoadedChanged();
+    }
+    setAnalyzerProgress(kAnalyzerProgressUnknown);
     if (pNewTrack.get() == m_pCurrentTrack.get()) {
         emit trackLoading();
         return;
@@ -96,6 +116,29 @@ void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
 
 bool QmlPlayerProxy::isLoaded() const {
     return m_pCurrentTrack != nullptr;
+}
+
+bool QmlPlayerProxy::isTrackLoaded() const {
+    return m_trackLoaded;
+}
+
+double QmlPlayerProxy::analyzerProgress() const {
+    return m_analyzerProgress;
+}
+
+void QmlPlayerProxy::slotTrackAnalyzerProgress(
+        TrackId trackId, AnalyzerProgress analyzerProgress) {
+    if (m_pCurrentTrack && m_pCurrentTrack->getId() == trackId) {
+        setAnalyzerProgress(analyzerProgress);
+    }
+}
+
+void QmlPlayerProxy::setAnalyzerProgress(AnalyzerProgress analyzerProgress) {
+    if (m_analyzerProgress == analyzerProgress) {
+        return;
+    }
+    m_analyzerProgress = analyzerProgress;
+    emit analyzerProgressChanged();
 }
 
 } // namespace qml

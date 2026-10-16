@@ -146,3 +146,5 @@ class QmlTrackProxy : public QObject {
 
 } // namespace qml
 } // namespace mixxx
+
+Q_DECLARE_METATYPE(mixxx::qml::QmlTrackProxy*)

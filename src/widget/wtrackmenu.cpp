@@ -115,6 +115,8 @@ WTrackMenu::WTrackMenu(
           m_pNumSamplers(kAppGroup, QStringLiteral("num_samplers")),
           m_pNumDecks(kAppGroup, QStringLiteral("num_decks")),
           m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
+          m_bSearchRelatedMenuLoaded(false),
+          m_bFindOnWebMenuLoaded(false),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
@@ -242,10 +244,9 @@ void WTrackMenu::createMenus() {
                 &QMenu::aboutToShow,
                 this,
                 [this] {
-                    // TODO When accidentally leaving the menu and reopening it,
-                    // the previous check states are cleared.
-                    // Clear in closeEvent() only? And create actions on aboutToShow
-                    // only if it's empty?
+                    if (m_bSearchRelatedMenuLoaded) {
+                        return;
+                    }
                     m_pSearchRelatedMenu->clear();
                     const auto pTrack = getFirstTrackPointer();
                     if (pTrack) {
@@ -257,6 +258,7 @@ void WTrackMenu::createMenus() {
                     }
                     m_pSearchRelatedMenu->setEnabled(
                             !m_pSearchRelatedMenu->isEmpty());
+                    m_bSearchRelatedMenuLoaded = true;
                 });
         connect(m_pSearchRelatedMenu,
                 &WSearchRelatedTracksMenu::triggerSearch,
@@ -271,6 +273,25 @@ void WTrackMenu::createMenus() {
         DEBUG_ASSERT(!m_pFindOnWebMenu);
         m_pFindOnWebMenu = make_parented<QMenu>(tr("Find on Web"), this);
         m_pFindOnWebLastAct = make_parented<FindOnWebLast>(this, m_pConfig);
+        connect(m_pFindOnWebMenu,
+                &QMenu::aboutToShow,
+                this,
+                [this] {
+                    if (m_bFindOnWebMenuLoaded) {
+                        return;
+                    }
+                    m_pFindOnWebMenu->clear();
+                    const auto pTrack = getFirstTrackPointer();
+                    if (pTrack) {
+                        mixxx::library::createFindOnWebSubmenus(
+                                m_pFindOnWebMenu.toWeakRef(),
+                                m_pFindOnWebLastAct.toWeakRef(),
+                                *pTrack);
+                    }
+                    m_pFindOnWebMenu->setEnabled(
+                            !m_pFindOnWebMenu->isEmpty());
+                    m_bFindOnWebMenuLoaded = true;
+                });
     }
 
     if (featureIsEnabled(Feature::RemoveFromDisk)) {
@@ -489,22 +510,23 @@ void WTrackMenu::createActions() {
         connect(m_pBpmUnlockAction, &QAction::triggered, this, &WTrackMenu::slotUnlockBpm);
 
         //BPM edit actions
-        m_pBpmDoubleAction = make_parented<QAction>(tr("Double BPM"), m_pBPMMenu);
-        storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
         m_pBpmHalveAction = make_parented<QAction>(tr("Halve BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmHalveAction, 0.5);
         m_pBpmTwoThirdsAction = make_parented<QAction>(tr("2/3 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmTwoThirdsAction, 2.0 / 3.0);
         m_pBpmThreeFourthsAction = make_parented<QAction>(tr("3/4 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmThreeFourthsAction, 3.0 / 4.0);
+        m_pBpmFourFifthsAction = make_parented<QAction>(tr("4/5 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmFourFifthsAction, 4.0 / 5.0);
+        m_pBpmFiveFourthsAction = make_parented<QAction>(tr("5/4 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmFiveFourthsAction, 5.0 / 4.0);
         m_pBpmFourThirdsAction = make_parented<QAction>(tr("4/3 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmFourThirdsAction, 4.0 / 3.0);
         m_pBpmThreeHalvesAction = make_parented<QAction>(tr("3/2 BPM"), m_pBPMMenu);
         storeActionTextAndScaleInProperties(m_pBpmThreeHalvesAction, 3.0 / 2.0);
+        m_pBpmDoubleAction = make_parented<QAction>(tr("Double BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
 
-        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
-            slotScaleBpm(mixxx::Beats::BpmScale::Double);
-        });
         connect(m_pBpmHalveAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::Halve);
         });
@@ -514,11 +536,20 @@ void WTrackMenu::createActions() {
         connect(m_pBpmThreeFourthsAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
         });
+        connect(m_pBpmFourFifthsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::BpmScale::FourFifths);
+        });
+        connect(m_pBpmFiveFourthsAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::BpmScale::FiveFourths);
+        });
         connect(m_pBpmFourThirdsAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::FourThirds);
         });
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
+        });
+        connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
+            slotScaleBpm(mixxx::Beats::BpmScale::Double);
         });
 
         m_pBpmResetAction = make_parented<QAction>(tr("Clear BPM and Beatgrid"), m_pBPMMenu);
@@ -641,6 +672,8 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addAction(m_pBpmFourFifthsAction);
+        m_pBPMMenu->addAction(m_pBpmFiveFourthsAction);
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
@@ -976,17 +1009,17 @@ void WTrackMenu::updateMenus() {
     // Gray out some stuff if multiple songs were selected.
     const bool singleTrackSelected = getTrackCount() == 1;
 
+    auto pTrack = getFirstTrackPointer();
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+
     if (featureIsEnabled(Feature::SearchRelated)) {
-        // Enable only if we have one valid track pointer.
-        // this prevents the cursor getting stuck on this menu in case it gets
-        // disabled when encountering a track nullptr in lambda function
-        // connected to aboutToShow() signal (see createMenus()).
-        // Note: track nullptr can happen when TrackDAO returns nullptr because
-        // the selected track references a file referenced by another cached track.
-        DEBUG_ASSERT(m_pSearchRelatedMenu);
-        const auto pTrack = getFirstTrackPointer();
-        m_pSearchRelatedMenu->setEnabled(pTrack != nullptr);
-        // TODO Only enable for single track?
+        m_bSearchRelatedMenuLoaded = false;
+    }
+
+    if (featureIsEnabled(Feature::FindOnWeb)) {
+        m_bFindOnWebMenuLoaded = false;
     }
 
     if (featureIsEnabled(Feature::LoadTo)) {
@@ -1020,10 +1053,9 @@ void WTrackMenu::updateMenus() {
                 bool deckEnabled =
                         (!deckPlaying || allowLoadTrackIntoPlayingDeck) &&
                         singleTrackSelected;
-                auto pTrack = getFirstTrackPointer();
                 generateTrackLoadMenu(deckGroup,
                         tr("Deck %1").arg(i),
-                        getFirstTrackPointer(),
+                        pTrack,
                         m_pDeckMenu,
                         true,
                         deckEnabled);
@@ -1038,7 +1070,6 @@ void WTrackMenu::updateMenus() {
         if (singleTrackSelected && iNumSamplers > 0) {
             QMenu* pMenu = m_pSamplerMenu;
             int samplersInMenu = 0;
-            TrackPointer pTrack = getFirstTrackPointer();
             for (int i = 1; i <= iNumSamplers; ++i) {
                 if (samplersInMenu == maxSamplersPerMenu) {
                     samplersInMenu = 0;
@@ -1068,7 +1099,7 @@ void WTrackMenu::updateMenus() {
             // currently there is only one preview deck so just map it here.
             generateTrackLoadMenu(PlayerManager::groupForPreviewDeck(0),
                     tr("Preview Deck"),
-                    getFirstTrackPointer(),
+                    pTrack,
                     m_pLoadToMenu,
                     false);
         }
@@ -1128,32 +1159,30 @@ void WTrackMenu::updateMenus() {
         if (featureIsEnabled(Feature::BPM)) {
             m_pBpmUnlockAction->setEnabled(anyBpmLocked);
             m_pBpmLockAction->setEnabled(anyBpmNotLocked);
-            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
             m_pBpmHalveAction->setEnabled(!anyBpmLocked);
             m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeFourthsAction->setEnabled(!anyBpmLocked);
+            m_pBpmFourFifthsAction->setEnabled(!anyBpmLocked);
+            m_pBpmFiveFourthsAction->setEnabled(!anyBpmLocked);
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
+            m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
             m_pBpmUndoAction->setEnabled(!anyBpmLocked && canUndoBeatsChange());
 
             // Append scaled BPM preview for single selection
+            // TODO ... and multiple tracks with same BPM.
+            // See DlgTrackInfoMulti
             if (singleTrackSelected) {
-                TrackPointer pTrack;
-                if (m_pTrackModel) {
-                    pTrack = getFirstTrackPointer();
-                } else if (m_pTrack) {
-                    pTrack = m_pTrack;
-                }
-                if (pTrack) {
-                    const double bpm = pTrack->getBpm();
-                    appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
-                    appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
-                }
+                const double bpm = pTrack->getBpm();
+                appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmFourFifthsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmFiveFourthsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
             }
         }
     }
@@ -1227,11 +1256,9 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::FindOnWeb)) {
-        // We have a new Track
         m_pFindOnWebMenu->clear();
         m_pFindOnWebLastAct->setVisible(false);
-        const auto pTrack = getFirstTrackPointer();
-        const bool enableMenu = pTrack ? WFindOnWebMenu::hasEntriesForTrack(*pTrack) : false;
+        const bool enableMenu = WFindOnWebMenu::hasEntriesForTrack(*pTrack);
         if (enableMenu) {
             mixxx::library::createFindOnWebSubmenus(
                     m_pFindOnWebMenu.toWeakRef(),
@@ -1259,7 +1286,6 @@ void WTrackMenu::loadTrack(
     }
     m_pTrack = pTrack;
     m_deckGroup = deckGroup;
-    updateMenus();
 }
 
 void WTrackMenu::loadTrackModelIndices(
@@ -1275,7 +1301,6 @@ void WTrackMenu::loadTrackModelIndices(
     clearTrackSelection();
 
     m_trackIndexList = trackIndexList;
-    updateMenus();
 }
 
 TrackIdList WTrackMenu::getTrackIds() const {

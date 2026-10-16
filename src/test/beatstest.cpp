@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <QtDebug>
+#include <cmath>
+#include <limits>
 #include <memory>
 
 #include "audio/types.h"
@@ -567,6 +569,70 @@ TEST(BeatsTest, roundBpm) {
     roundBpm = BeatUtils::roundBpmWithinRange(
             mixxx::Bpm(186.01), mixxx::Bpm(186.1), mixxx::Bpm(186.18));
     EXPECT_NEAR(roundBpm.value(), 186.0833333333333, kMaxBeatError);
+}
+
+TEST(BeatsTest, IteratorFromCeilOvershoot) {
+    const auto sampleRate = audio::SampleRate(44100);
+    const auto markerPos = audio::FramePos(0);
+    const auto bpm = Bpm(60.1);
+    constexpr int kBeatOffset = 49;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = beatPos;
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
+}
+
+TEST(BeatsTest, IteratorFromCeilUndershoot) {
+    const auto sampleRate = audio::SampleRate(48000);
+    const auto markerPos = audio::FramePos(1000);
+    const auto bpm = Bpm(127.0);
+    constexpr int kBeatOffset = 11;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = audio::FramePos(
+            std::nextafter(beatPos.value(),
+                    std::numeric_limits<double>::max()));
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
+}
+
+TEST(BeatsTest, IteratorFromFloorOvershoot) {
+    const auto sampleRate = audio::SampleRate(44100);
+    const auto markerPos = audio::FramePos(0);
+    const auto bpm = Bpm(60.1);
+    constexpr int kBeatOffset = -7;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = beatPos;
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
+}
+
+TEST(BeatsTest, IteratorFromFloorUndershoot) {
+    const auto sampleRate = audio::SampleRate(44100);
+    const auto markerPos = audio::FramePos(18107);
+    const auto bpm = Bpm(60.0);
+    constexpr int kBeatOffset = -1;
+
+    const auto beats = Beats(markerPos, bpm, sampleRate, QString());
+    const auto beatPos = *(beats.cfirstmarker() + kBeatOffset);
+    const auto position = audio::FramePos(
+            std::nextafter(beatPos.value(),
+                    std::numeric_limits<double>::max()));
+
+    const auto it = beats.iteratorFrom(position);
+    EXPECT_GE(it->value(), position.value());
+    EXPECT_LT(std::prev(it)->value(), position.value());
 }
 
 } // namespace

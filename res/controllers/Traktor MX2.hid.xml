@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset mixxxVersion="2.2.0" schemaVersion="1">
+  <info>
+    <name>Traktor MX2</name>
+    <author>K7</author>
+    <description>HID Mapping for Traktor MX2</description>
+    <manual>native_instruments_traktor_mx2</manual>
+    <devices>
+      <product protocol="hid" vendor_id="0x17cc" product_id="0x2420" usage_page="0xff01" usage="0x1" interface_number="0x3" />
+    </devices>
+  </info>
+  <controller id="Traktor">
+    <scriptfiles>
+      <file filename="common-hid-packet-parser.js" functionprefix="" />
+      <file filename="Traktor-MX2-hid-scripts.js" functionprefix="TraktorMX2" />
+    </scriptfiles>
+  </controller>
+  <settings>
+    <group label="Controller modes">
+      <option
+              variable="enableMasterGain"
+              label="Enable Master gain"
+              type="boolean"
+              description="Use Master gain knob, or send output directly to soundcard"
+              default="false"
+      />
+    </group>
+  </settings>
+</MixxxControllerPreset>

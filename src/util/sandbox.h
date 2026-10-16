@@ -38,6 +38,13 @@ class Sandbox {
     static QString migrateOldSettings();
 #endif
 
+    // Checks if the given settings path is accessible. If the path does not
+    // exist, attempts to create it. If it is unwritable, prompts the user to
+    // select a new location via a file dialog.
+    // If a new location is selected, pSettingsPath is updated.
+    // Returns true if an accessible path was secured, false otherwise.
+    static bool ensureSettingsPathAccessible(QString* pSettingsPath);
+
     // Returns true if we are in a sandbox.
     static bool enabled() {
         return s_bInSandbox;
@@ -74,7 +81,8 @@ class Sandbox {
             const QString& canonicalPath, const QString& bookmarkBase64);
 
     // Creates a security token. s_mutex is not needed for this method.
-    static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
+    static bool createSecurityToken(
+            const QString& canonicalPath, bool isDirectory);
 
     static QT_RECURSIVE_MUTEX s_mutex;
     static bool s_bInSandbox;

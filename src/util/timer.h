@@ -55,7 +55,7 @@ class ScopedTimer {
                 "_s or QStringLiteral() "
                 "to avoid runtime UTF-16 conversion.");
         // we can now assume that T is a QString.
-        if (!CmdlineArgs::Instance().getDeveloper()) {
+        if (!CmdlineArgs::Instance().getStats()) {
             return; // leave timer in cancelled state
         }
         DEBUG_ASSERT(key.capacity() == 0);

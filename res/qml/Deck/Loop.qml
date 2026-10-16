@@ -1,6 +1,6 @@
 import ".." as Skin
 import Mixxx 1.0 as Mixxx
-import QtQuick 2.12
+import QtQuick 2
 import QtQuick.Layouts
 import QtQuick.Shapes
 import QtQuick.Controls 2.12
@@ -32,11 +32,28 @@ Rectangle {
         group: root.group
         key: "loop_enabled"
     }
-    Mixxx.ControlProxy {
+    BeatSizeSpinBoxBehavior {
         id: beatloopSize
 
         group: root.group
         key: "beatloop_size"
+        beatSizes: [
+            1 / 32,
+            1 / 16,
+            1 / 8,
+            1 / 4,
+            1 / 2,
+            1,
+            2,
+            4,
+            8,
+            16,
+            32,
+            64,
+            128,
+            256,
+            512
+        ]
     }
     Mixxx.ControlProxy {
         id: beatloopActivate
@@ -104,6 +121,16 @@ Rectangle {
         }
     }
     RowLayout {
+        WheelHandler {
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: event => {
+                if (event.angleDelta.y < 0) {
+                    loopSizeRepeater.adjustSelectedIndex(-1)
+                } else if (event.angleDelta.y > 0) {
+                    loopSizeRepeater.adjustSelectedIndex(1)
+                }
+            }
+        }
         anchors {
             bottom: parent.bottom
             bottomMargin: 6
@@ -160,7 +187,7 @@ Rectangle {
                     if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
                         loopHalve.trigger();
                     }
-                    loopSizeRepeater.selectedIndex = Math.max(0, loopSizeRepeater.selectedIndex - 1);
+                    loopSizeRepeater.adjustSelectedIndex(-1);
                 }
             }
         }
@@ -169,12 +196,11 @@ Rectangle {
 
             property int selectedIndex: 0
             property int valueCount: Math.min(Math.max(1, parseInt((root.width - 56) / 40)), 4)
-            property list<double> values: {
-                let values = [1 / 32];
-                while (values[values.length - 1] < 512) {
-                    values.push(values[values.length - 1] * 2);
-                }
-                return values;
+            property list<double> values: beatloopSize.beatSizes
+
+
+            function adjustSelectedIndex(delta){
+                loopSizeRepeater.selectedIndex = Math.min(Math.max(0, loopSizeRepeater.selectedIndex + delta), loopSizeRepeater.values.length - 1)
             }
 
             function update() {
@@ -228,11 +254,11 @@ Rectangle {
                 highlight: currentSize == beatloopSize.value && trackLoadedControl.value > 0
                 implicitHeight: 28
                 implicitWidth: 33
-                text: currentSize < 1 ? `1/${1 / currentSize}` : currentSize
+                text: beatloopSize.formatBeatSize(currentSize)
 
                 onPressed: {
                     if (loopEnabled.value) {
-                        beatloopSize.value = currentSize;
+                        beatloopSize.commitText(currentSize.toString());
                     } else {
                         sizedBeatloopActivate.trigger();
                     }
@@ -296,7 +322,7 @@ Rectangle {
                     if (loopEnabled.value ^ mouse.button == Qt.RightButton) {
                         loopDouble.trigger();
                     }
-                    loopSizeRepeater.selectedIndex = Math.min(loopSizeRepeater.values.length - 1, loopSizeRepeater.selectedIndex + 1);
+                    loopSizeRepeater.adjustSelectedIndex(1);
                 }
             }
         }

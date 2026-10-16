@@ -265,7 +265,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
         return true;
     }
 
-    // 2.) If non non-skipping reports were in the FIFO, send the skipable reports
+    // 2.) If non non-skipping reports were in the FIFO, send the skippable reports
     // from the m_outputReports cache
 
     // m_outputReports.size() doesn't need mutex protection, because the value of i is not used.

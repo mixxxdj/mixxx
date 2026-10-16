@@ -74,17 +74,19 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
         }
     }
 
-    // This call here assumes that the caching reader will read the first sound cue at
-    // one of the first chunks. The check serves as a sanity check to ensure that the
-    // sample data has not changed since it has ben analyzed. This could happen because
-    // of a change in actual audio data or because the file was decoded using a different
-    // decoder
-    // This is part of a first prove of concept and needs to be replaces with a different
-    // solution which is still under discussion. This might be also extended
-    // to further checks whether a automatic offset adjustment is possible or a the
-    // sample position metadata shall be treated as outdated.
-    // Failures of the sanity check only result in an entry into the log at the moment.
-    verifyFirstSound(pChunk, m_pAudioSource->getSignalInfo().getChannelCount());
+    if (status == CHUNK_READ_SUCCESS) {
+        // This call here assumes that the caching reader will read the first sound cue at
+        // one of the first chunks. The check serves as a sanity check to ensure that the
+        // sample data has not changed since it has ben analyzed. This could happen because
+        // of a change in actual audio data or because the file was decoded using a different
+        // decoder
+        // This is part of a first prove of concept and needs to be replaces with a different
+        // solution which is still under discussion. This might be also extended
+        // to further checks whether a automatic offset adjustment is possible or a the
+        // sample position metadata shall be treated as outdated.
+        // Failures of the sanity check only result in an entry into the log at the moment.
+        verifyFirstSound(pChunk, m_pAudioSource->getSignalInfo().getChannelCount());
+    }
 
     ReaderStatusUpdate result;
     result.init(status, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
@@ -237,6 +239,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                     mixxx::audio::ChannelCount::mono() &&
             m_pAudioSource->getSignalInfo().getChannelCount() <=
                     m_maxSupportedChannel) {
+        // Cache the channel count before we reset the AudioSourcePointer
+        const int chCount = static_cast<int>(m_pAudioSource->getSignalInfo().getChannelCount());
         m_pAudioSource.reset(); // Close open file handles
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
@@ -244,8 +248,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                 tr("The file '%1' could not be loaded because it contains %2 "
                    "channels, and only 1 to %3 are supported.")
                         .arg(QDir::toNativeSeparators(pTrack->getLocation()),
-                                QString::number(m_pAudioSource->getSignalInfo()
-                                                        .getChannelCount()),
+                                QString::number(chCount),
                                 QString::number(m_maxSupportedChannel)));
         return;
     }
@@ -318,11 +321,22 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk,
                     m_firstSoundFrameToVerify.toLowerFrameBoundary()
                             .value()));
     if (pChunk->getIndex() == firstSoundIndex) {
-        mixxx::SampleBuffer sampleBuffer(kNumSoundFrameToVerify * channelCount);
-        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
-        pChunk->readBufferedSampleFrames(sampleBuffer.data(),
-                channelCount,
-                mixxx::IndexRange::forward(end - 1, kNumSoundFrameToVerify));
+        auto sampleBuffer = mixxx::SampleBuffer(
+                kNumSoundFrameToVerify * channelCount);
+        // We read two frames, the last silence frame and the first non-silence frame from
+        // m_firstSoundFrameToVerify. end points to one position after them.
+        sampleBuffer.clear(); // we need to clear the buffer, for the case the
+                              // very first sample is the first sound.
+        SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value()) + 1;
+        mixxx::IndexRange probeFrameIndexRange =
+                mixxx::IndexRange::between(end - kNumSoundFrameToVerify, end);
+        mixxx::IndexRange bufferedFrameIndexRange =
+                pChunk->readBufferedSampleFrames(
+                        sampleBuffer.data(), channelCount, probeFrameIndexRange);
+        VERIFY_OR_DEBUG_ASSERT(bufferedFrameIndexRange.end() == probeFrameIndexRange.end()) {
+            qWarning() << "skipping verifyFirstSound()";
+            return;
+        }
         if (AnalyzerSilence::verifyFirstSound(sampleBuffer.span(),
                     mixxx::audio::FramePos(1),
                     channelCount)) {

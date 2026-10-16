@@ -1,8 +1,10 @@
 #include "library/dlgtrackinfo.h"
 
+#include <QScrollArea>
 #include <QSignalBlocker>
 #include <QStyleFactory>
 #include <QtDebug>
+#include <cmath>
 
 #include "defs_urls.h"
 #include "library/coverartcache.h"
@@ -20,6 +22,8 @@
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
+#include "util/parented_ptr.h"
+#include "util/widgethelper.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
@@ -33,6 +37,9 @@ constexpr int kMinBpm = 30;
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 const QString kBpmPropertyName = QStringLiteral("bpm");
+
+constexpr double kStandardTuningHz = 440.0;
+constexpr double kCentsPerOctave = 1200.0;
 
 } // namespace
 
@@ -53,7 +60,8 @@ DlgTrackInfo::DlgTrackInfo(
                           // TODO(xxx) remove this once the preferences are themed via QSS
                           WColorPicker::Option::NoExtStyleSheet,
                   ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
-                  this)) {
+                  this)),
+          m_widgetSizesFixed(false) {
     init();
 }
 
@@ -77,10 +85,8 @@ void DlgTrackInfo::init() {
     m_propertyWidgets.insert("key", txtKey);
     m_propertyWidgets.insert("grouping", txtGrouping);
     m_propertyWidgets.insert("comment", txtComment);
+    m_propertyWidgets.insert("color", btnColorPicker);
 
-    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
-    coverLayout->setSpacing(0);
-    coverLayout->setContentsMargins(0, 0, 0, 0);
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
 
     starsLayout->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -121,17 +127,20 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotCancel);
 
     // BPM edit buttons
-    connect(bpmDouble, &QPushButton::clicked, this, [this] {
-        slotBpmScale(mixxx::Beats::BpmScale::Double);
-    });
     connect(bpmHalve, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::Halve);
     });
     connect(bpmTwoThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::TwoThirds);
     });
-    connect(bpmThreeFourth, &QPushButton::clicked, this, [this] {
+    connect(bpmThreeFourths, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeFourths);
+    });
+    connect(bpmFourFifths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FourFifths);
+    });
+    connect(bpmFiveFourths, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::FiveFourths);
     });
     connect(bpmFourThirds, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::FourThirds);
@@ -139,10 +148,18 @@ void DlgTrackInfo::init() {
     connect(bpmThreeHalves, &QPushButton::clicked, this, [this] {
         slotBpmScale(mixxx::Beats::BpmScale::ThreeHalves);
     });
+    connect(bpmDouble, &QPushButton::clicked, this, [this] {
+        slotBpmScale(mixxx::Beats::BpmScale::Double);
+    });
     connect(bpmClear,
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotBpmClear);
+
+    connect(bpmLock,
+            &QPushButton::clicked,
+            this,
+            &DlgTrackInfo::slotBpmLockClicked);
 
     connect(bpmConst,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -162,6 +179,11 @@ void DlgTrackInfo::init() {
             &QLineEdit::editingFinished,
             this,
             &DlgTrackInfo::slotKeyTextChanged);
+
+    connect(spinTuning,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgTrackInfo::slotTuningValueChanged);
 
     connect(bpmTap,
             &QPushButton::pressed,
@@ -397,7 +419,7 @@ void DlgTrackInfo::replaceTrackRecord(
     QFileInfo info(trackLocation);
     if (info.exists() && info.isFile()) {
         int size = info.size();
-        QString sizeStr = QLocale().formattedDataSize(size);
+        QString sizeStr = QLocale().formattedDataSize(size, 1, QLocale::DataSizeSIFormat);
         txtFileSize->setText(sizeStr);
     }
 
@@ -405,35 +427,30 @@ void DlgTrackInfo::replaceTrackRecord(
 }
 
 void DlgTrackInfo::updateTrackMetadataFields() {
+    const auto metadata = m_trackRecord.getMetadata();
+    const auto trackInfo = metadata.getTrackInfo();
+    const auto albumInfo = metadata.getAlbumInfo();
+    const auto signalInfo = metadata.getStreamInfo().getSignalInfo();
+
     // Editable fields
-    txtTitle->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTitle());
-    txtArtist->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getArtist());
-    txtAlbum->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getTitle());
-    txtAlbumArtist->setText(
-            m_trackRecord.getMetadata().getAlbumInfo().getArtist());
-    txtGenre->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGenre());
-    txtComposer->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getComposer());
-    txtGrouping->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getGrouping());
-    txtYear->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getYear());
-    txtTrackNumber->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
-    txtComment->setPlainText(
-            m_trackRecord.getMetadata().getTrackInfo().getComment());
-    txtBpm->setText(
-            m_trackRecord.getMetadata().getTrackInfo().getBpmText());
+    txtTitle->setText(trackInfo.getTitle());
+    txtArtist->setText(trackInfo.getArtist());
+    txtAlbum->setText(albumInfo.getTitle());
+    txtAlbumArtist->setText(albumInfo.getArtist());
+    txtGenre->setText(trackInfo.getGenre());
+    txtComposer->setText(trackInfo.getComposer());
+    txtGrouping->setText(trackInfo.getGrouping());
+    txtYear->setText(trackInfo.getYear());
+    txtTrackNumber->setText(trackInfo.getTrackNumber());
+    txtComment->setPlainText(trackInfo.getComment());
+    txtBpm->setText(trackInfo.getBpmText());
     displayKeyText();
+    displayTuningFields();
 
     // Non-editable fields
     txtDuration->setText(
-            m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
-    QString bitrate = m_trackRecord.getMetadata().getBitrateText();
+            metadata.getDurationText(mixxx::Duration::Precision::SECONDS));
+    QString bitrate = metadata.getBitrateText();
     if (bitrate.isEmpty()) {
         txtBitrate->clear();
     } else {
@@ -441,9 +458,9 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     }
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
-                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+                    trackInfo.getReplayGain().getRatio()));
 
-    auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
+    auto samplerate = signalInfo.getSampleRate();
     if (samplerate.isValid()) {
         txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
     } else {
@@ -464,20 +481,36 @@ void DlgTrackInfo::updateSpinBpmFromBeats() {
     spinBpm->setValue(bpmValue);
 }
 
+/// Updates Lock button text and enables/disables all BPM editing controls based on m_bpmLocked.
+void DlgTrackInfo::updateBpmEditControls() {
+    bpmLock->setText(m_bpmLocked ? tr("Unlock BPM") : tr("Lock BPM"));
+
+    bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
+    spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+    bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+    bpmHalve->setEnabled(!m_bpmLocked);
+    bpmTwoThirds->setEnabled(!m_bpmLocked);
+    bpmThreeFourths->setEnabled(!m_bpmLocked);
+    bpmFourFifths->setEnabled(!m_bpmLocked);
+    bpmFiveFourths->setEnabled(!m_bpmLocked);
+    bpmFourThirds->setEnabled(!m_bpmLocked);
+    bpmThreeHalves->setEnabled(!m_bpmLocked);
+    bpmDouble->setEnabled(!m_bpmLocked);
+    bpmClear->setEnabled(!m_bpmLocked);
+}
+
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     m_pBeatsClone = track.getBeats();
     updateSpinBpmFromBeats();
+    updateBpmScaleButtonLabels();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tap them
-    bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
-    if (track.isBpmLocked()) {
-        tabBPM->setEnabled(false);
-    } else {
-        tabBPM->setEnabled(true);
-    }
+    // Store the lock state from the track into the local staging variable.
+    // This will only be written back to the track on Apply/OK.
+    m_bpmLocked = track.isBpmLocked();
+
+    updateBpmEditControls();
 }
 
 void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
@@ -637,6 +670,9 @@ void DlgTrackInfo::saveTrack() {
     slotSpinBpmValueChanged(spinBpm->value());
     updateKeyText();
 
+    slotTuningValueChanged(spinTuning->value());
+    m_trackRecord.setBpmLocked(m_bpmLocked);
+
     // Update the cached track
     //
     // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
@@ -663,6 +699,7 @@ void DlgTrackInfo::clear() {
     resetTrackRecord();
 
     m_pBeatsClone.reset();
+    m_bpmLocked = false;
     updateSpinBpmFromBeats();
 
     txtLocation->setText("");
@@ -678,17 +715,57 @@ void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
     if (scaledBeats) {
         m_pBeatsClone = *scaledBeats;
         updateSpinBpmFromBeats();
+        updateBpmScaleButtonLabels();
     }
+}
+
+void DlgTrackInfo::updateBpmScaleButtonLabels() {
+    // Get current BPM from the spinbox
+    const double bpm = spinBpm->value();
+
+    auto formatLabel = [bpm](const QString& baseLabel, double scale) -> QString {
+        if (bpm <= 0) {
+            return baseLabel;
+        }
+        const double scaledBpm = bpm * scale;
+        QLocale loc;
+        QString scaledBpmStr = loc.toString(scaledBpm, 'f', 2);
+        while (scaledBpmStr.endsWith('0')) {
+            scaledBpmStr.chop(1);
+        }
+        if (scaledBpmStr.endsWith(loc.decimalPoint())) {
+            scaledBpmStr.chop(1);
+        }
+        return QStringLiteral("%1 | %2 BPM").arg(baseLabel, scaledBpmStr);
+    };
+
+    bpmHalve->setText(formatLabel(tr("1/2 BPM"), 0.5));
+    bpmTwoThirds->setText(formatLabel(tr("2/3 BPM"), 2.0 / 3.0));
+    bpmThreeFourths->setText(formatLabel(tr("3/4 BPM"), 3.0 / 4.0));
+    bpmFourFifths->setText(formatLabel(tr("4/5 BPM"), 4.0 / 5.0));
+    bpmFiveFourths->setText(formatLabel(tr("5/4 BPM"), 5.0 / 4.0));
+    bpmFourThirds->setText(formatLabel(tr("4/3 BPM"), 4.0 / 3.0));
+    bpmThreeHalves->setText(formatLabel(tr("3/2 BPM"), 3.0 / 2.0));
+    bpmDouble->setText(formatLabel(tr("2x BPM"), 2.0));
 }
 
 void DlgTrackInfo::slotBpmClear() {
     m_pBeatsClone.reset();
     updateSpinBpmFromBeats();
+    updateBpmScaleButtonLabels();
 
     bpmConst->setChecked(true);
     bpmConst->setEnabled(m_trackHasBeatMap);
     spinBpm->setEnabled(true);
     bpmTap->setEnabled(true);
+}
+
+void DlgTrackInfo::slotBpmLockClicked() {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    m_bpmLocked = !m_bpmLocked;
+    updateBpmEditControls();
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -753,6 +830,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     updateSpinBpmFromBeats();
+    updateBpmScaleButtonLabels();
 }
 
 void DlgTrackInfo::updateKeyText() {
@@ -766,6 +844,53 @@ void DlgTrackInfo::updateKeyText() {
 void DlgTrackInfo::displayKeyText() {
     const QString keyText = KeyUtils::keyToString(m_trackRecord.getKeys().getGlobalKey());
     txtKey->setText(keyText);
+}
+
+void DlgTrackInfo::displayTuningFields() {
+    const double tuningHz =
+            m_trackRecord.getKeys().getGlobalTuningFrequencyHz();
+    const QSignalBlocker blocker(spinTuning);
+    if (tuningHz > 0.0) {
+        // Block signals to avoid triggering slotTuningValueChanged
+        // while we are just loading data into the widget.
+        spinTuning->setValue(tuningHz);
+
+        const double cents = kCentsPerOctave *
+                std::log2(tuningHz / kStandardTuningHz);
+        const int centsRounded = static_cast<int>(std::lround(cents));
+        const QString offsetText = centsRounded >= 0
+                ? QStringLiteral("+%1 ct").arg(centsRounded)
+                : QStringLiteral("%1 ct").arg(centsRounded);
+        txtTuningCents->setText(offsetText);
+    } else {
+        // No tuning data: set to minimum (triggers specialValueText = blank)
+        spinTuning->setValue(spinTuning->minimum());
+        txtTuningCents->clear();
+    }
+}
+
+void DlgTrackInfo::slotTuningValueChanged(double value) {
+    // Store the user-entered Hz value in the Keys protobuf
+    Keys keys = m_trackRecord.getKeys();
+    if (value <= spinTuning->minimum()) {
+        // Special value (minimum) means "no tuning set" — store 0 Hz
+        keys.setGlobalTuningFrequencyHz(0.0);
+        m_trackRecord.setKeys(std::move(keys));
+        txtTuningCents->clear();
+        return;
+    }
+
+    keys.setGlobalTuningFrequencyHz(value);
+    m_trackRecord.setKeys(std::move(keys));
+
+    // Update the cents offset label so the user gets immediate feedback
+    const double cents = kCentsPerOctave *
+            std::log2(value / kStandardTuningHz);
+    const int centsRounded = static_cast<int>(std::lround(cents));
+    const QString offsetText = centsRounded >= 0
+            ? QStringLiteral("+%1 ct").arg(centsRounded)
+            : QStringLiteral("%1 ct").arg(centsRounded);
+    txtTuningCents->setText(offsetText);
 }
 
 void DlgTrackInfo::slotKeyTextChanged() {
@@ -886,16 +1011,30 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     }
     m_pDlgTagFetcher->show();
 }
+void DlgTrackInfo::showEvent(QShowEvent* pEvent) {
+    QDialog::showEvent(pEvent);
+    adjustWidgetSizes();
+    maybeMakeDialogScrollable();
+}
 
 void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     QDialog::resizeEvent(pEvent);
+    adjustWidgetSizes();
+}
 
+void DlgTrackInfo::adjustWidgetSizes() {
     if (!isVisible()) {
         // Likely one of the resize events before show().
         // Widgets don't have their final size, yet, so it
         // makes no sense to resize the cover label.
         return;
     }
+
+    if (m_widgetSizesFixed) {
+        return;
+    }
+    // Set this now to avoid re-entrance on multiple resize events in quick succession
+    m_widgetSizesFixed = true;
 
     // Set a maximum size on the cover label so it can use the available space
     // but doesn't force-expand the dialog.
@@ -914,4 +1053,129 @@ void DlgTrackInfo::resizeEvent(QResizeEvent* pEvent) {
     // Also clamp height of the cover's parent widget. Keeping its height minimal
     // can't be accomplished with QSizePolicies alone unfortunately.
     coverWidget->setFixedHeight(totalHeight);
+
+    // Set fixed height on stars widget so it doesn't make the adjacent
+    // txtAlbumArtist expand vertically
+    m_pWStarRating->setFixedHeight(txtAlbumArtist->height());
+
+    // Set the minimum height for the Comment editor to at least 3 line. Let's
+    // use the triple the height of a QLineEdit because they are sized correctly.
+    // The editor can expand vertically when the dialog is resized.
+    txtComment->setMinimumHeight(txtTrackNumber->geometry().height() * 3);
+}
+
+void DlgTrackInfo::maybeMakeDialogScrollable() {
+    // If the dialog doesn't fit the screen (with some margin), make it scrollable
+    // by putting the Summary tab inside a QScrollArea (plus some magic);
+    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    QRect screenAvailableGeometry;
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        qWarning() << "Assuming screen size of 800x600px.";
+        screenAvailableGeometry = QRect(0, 0, 800, 600);
+    }
+    else {
+        screenAvailableGeometry = pScreen->availableGeometry();
+    }
+
+    const QRect geometry = frameGeometry();
+    int currHeight = geometry.height();
+    int top = geometry.top();
+#ifndef __WINDOWS__
+    // On Linux, when the window is shown for the first time by the window manager,
+    // Qt doesn't have information about the frame size, so the offset is zero.
+    // As such, the first time it opens the window does not include the offset.
+    // Assume window decoration is 30 px tall, the frame is 2 px wide and some margin.
+    // Even for taller decoration, this kind of works since the Cancel|Reset|Okay buttons
+    // would still be partly visible.
+    // FIXME: we could also assume the window decoration is about as tall as
+    // those button and simply subtract btnCancel->height().
+    constexpr int kDecorationHeight = 50;
+    currHeight += kDecorationHeight;
+    top -= kDecorationHeight;
+#endif
+
+    if (currHeight > screenAvailableGeometry.height()) {
+        int origWidth = frameGeometry().width();
+        parented_ptr<QScrollArea> pScrollArea = make_parented<QScrollArea>(tabWidget);
+        pScrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContentsOnFirstShow);
+
+        // Store the Summary tab's title before we (implicitly) remove its tab via
+        // QScrollArea::setWidget().
+        const QString summaryTitle = tabWidget->tabText(tabWidget->indexOf(tabSummary));
+        pScrollArea->setWidget(tabSummary);
+
+        // With true, adjustSize() avoids the horizontal scrollbar, but the comment
+        // editor will grow taller than necessary (~5 lines).
+        // With false, the comment editor will be small (~2 lines), but adjustSize()
+        // won't avoid the horizontal scrollbar, even when we use the Summary tab's
+        // width for the QScrollArea's minimum width.
+        pScrollArea->setWidgetResizable(true);
+
+        // Some settings to get the same look as the regular layout/view:
+        // By default, the QScrollArea would use another palette. Disable that.
+        pScrollArea->viewport()->setAutoFillBackground(false);
+        pScrollArea->widget()->setAutoFillBackground(false);
+        // Also don't draw an extra border
+        pScrollArea->setFrameStyle(QFrame::NoFrame);
+        // Now the scrollbar doesn't have borders anymore (it relied on those of
+        // the QScrollArea it seems), but the borders of tabSummary do the trick.
+
+        // This doesn't hurt either, though the scrollbar still stands out
+        // a tiny bit at the top:
+        // set margins to 0 before computing the size hint so the minimum
+        // width below is based on the content's preferred size, not default
+        // margins.
+        pScrollArea->setContentsMargins(0, 0, 0, 0);
+        tabSummary->setContentsMargins(0, 0, 0, 0);
+
+        // Expand the QScrollArea so that we don't need the horizontal scrollbar.
+        // Use the size hint (preferred width) instead of the current width,
+        // because with long translations (e.g. French) the current width may
+        // be too narrow for the content to fit without a horizontal scrollbar.
+        pScrollArea->setMinimumWidth(tabSummary->sizeHint().width());
+
+        // Move the Summary tab into the QScrollArea
+        tabWidget->removeTab(tabWidget->indexOf(tabSummary));
+        tabWidget->insertTab(0, pScrollArea.get(), summaryTitle);
+        tabWidget->setCurrentIndex(0);
+
+        // For some reason the reparenting removes the size adjustment we applied
+        // to txtComment in adjustWidgetSizes(). Let's set a fixed...
+        txtComment->setFixedHeight(txtTrackNumber->geometry().height() * 3);
+
+        // Note: with this alone the dialog would be much smaller than necessary.
+        // Without this the dialog would fit the screen exactly, but some parts
+        // may still be occluded by taskbar or other (system) toolbars.
+        // Also, for some setGeometry() would not trigger a resize event, even
+        // though the dialog is reported to be visible. (noticed on Linux)
+        adjustSize();
+
+        // Now expand vertically to available screen height.
+        // And show horizontally centered (Note: for some reason frameGeometry().left()
+        // would not work reliably after adjustSize(), dialog would be moved to left side.
+        // Use the dialog's width after adjustSize() which accounts for the scroll
+        // area's minimum width (incl. long translations), but don't make it smaller
+        // than the original width and cap it at the available screen width.
+        int newWidth = math_min(
+                math_max(origWidth, frameGeometry().width()),
+                screenAvailableGeometry.width());
+        int newX = screenAvailableGeometry.left() +
+                screenAvailableGeometry.width() / 2 -
+                newWidth / 2;
+        int optHeight = screenAvailableGeometry.height();
+#ifndef __WINDOWS__
+        optHeight -= kDecorationHeight;
+#endif
+        setGeometry(
+                newX,
+                screenAvailableGeometry.top(),
+                newWidth,
+                optHeight);
+    } else if (geometry.bottom() > screenAvailableGeometry.bottom()) {
+        // Dialog fits the available space but is positioned too low and buttons
+        // are (partially) occluded by the taskbar
+        // Move it up.
+        int overlap = geometry.bottom() - screenAvailableGeometry.bottom();
+        move(geometry.x(), top - overlap);
+    }
 }

@@ -2,6 +2,7 @@
 
 #include <QBrush>
 #include <QColor>
+#include <QGuiApplication>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
@@ -45,6 +46,7 @@ WOverview::WOverview(
           m_group(group),
           m_pConfig(pConfig),
           m_type(OverviewType::RGB),
+          m_stereo(true),
           m_actualCompletion(0),
           m_pixmapDone(false),
           m_waveformPeak(-1.0),
@@ -52,7 +54,7 @@ WOverview::WOverview(
           m_devicePixelRatio(1.0),
           m_endOfTrack(false),
           m_bPassthroughEnabled(false),
-          m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
+          m_pCueMenuPopup(nullptr),
           m_bShowCueTimes(true),
           m_iPosSeconds(0),
           m_bLeftClickDragging(false),
@@ -97,6 +99,13 @@ WOverview::WOverview(
     m_pTypeControl->connectValueChanged(this, &WOverview::slotTypeControlChanged);
     slotTypeControlChanged(m_pTypeControl->get());
 
+    m_pStereoControl = make_parented<ControlProxy>(
+            QStringLiteral("[Waveform]"),
+            QStringLiteral("overview_stereo_mode"),
+            this);
+    m_pStereoControl->connectValueChanged(this, &WOverview::slotStereoControlChanged);
+    slotStereoControlChanged(m_pStereoControl->get());
+
     m_pMinuteMarkersControl = make_parented<ControlProxy>(
             QStringLiteral("[Waveform]"),
             QStringLiteral("draw_overview_minute_markers"),
@@ -133,8 +142,6 @@ WOverview::WOverview(
 
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
             this, &WOverview::onTrackAnalyzerProgress);
-
-    connect(m_pCueMenuPopup.get(), &WCueMenuPopup::aboutToHide, this, &WOverview::slotCueMenuPopupAboutToHide);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {
@@ -188,15 +195,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
-    ColorPaletteSettings colorPaletteSettings(m_pConfig);
-    auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
-    m_pCueMenuPopup->setColorPalette(colorPalette);
-
-    m_marks.connectSamplePositionChanged(this, &WOverview::onMarkChanged);
-    m_marks.connectSampleEndPositionChanged(this, &WOverview::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WOverview::onMarkChanged);
-    m_marks.connectTypeChanged(this, &WOverview::onMarkChanged);
-    m_marks.connectStatusChanged(this, &WOverview::onMarkChanged);
 
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
@@ -269,6 +268,21 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     setFocusPolicy(Qt::NoFocus);
+}
+
+WCueMenuPopup* WOverview::getMenu() {
+    if (m_pCueMenuPopup.get() == nullptr) {
+        m_pCueMenuPopup = make_parented<WCueMenuPopup>(m_pConfig, this);
+        connect(m_pCueMenuPopup.get(),
+                &WCueMenuPopup::aboutToHide,
+                this,
+                &WOverview::slotCueMenuPopupAboutToHide);
+    }
+    return m_pCueMenuPopup.get();
+}
+
+bool WOverview::menuIsCreated() {
+    return m_pCueMenuPopup.get() != nullptr;
 }
 
 void WOverview::initWithTrack(TrackPointer pTrack) {
@@ -402,7 +416,14 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 this,
                 &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
-        connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
+        // IMPORTANT: make this a QueuedConnection so the slot is called AFTER
+        // objects with DirectConnection (eg. CueControl, which updates the
+        // position COs we need when we iterate over the cues and update marks)
+        connect(pNewTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WOverview::receiveCuesUpdated,
+                Qt::QueuedConnection);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -462,6 +483,18 @@ void WOverview::slotTypeControlChanged(double v) {
 
     m_type = type;
     m_pWaveform.clear();
+    m_waveformSourceImage = QImage();
+    slotWaveformSummaryUpdated();
+}
+
+void WOverview::slotStereoControlChanged(double v) {
+    bool stereo = v > 0;
+    if (stereo == m_stereo) {
+        return;
+    }
+
+    m_stereo = stereo;
+    // Enforce generation of the new stereo/mono source image
     m_waveformSourceImage = QImage();
     slotWaveformSummaryUpdated();
 }
@@ -653,11 +686,12 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                 } else {
                     // Clear the pickup position display, we have all cue info in the menu.
                     leaveEvent(nullptr);
-                    m_pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
+                    auto* pCueMenuPopup = getMenu();
+                    pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                    m_pCueMenuPopup->popup(e->globalPosition().toPoint());
+                    pCueMenuPopup->popup(e->globalPosition().toPoint());
 #else
-                    m_pCueMenuPopup->popup(e->globalPos());
+                    pCueMenuPopup->popup(e->globalPos());
 #endif
                 }
             }
@@ -672,7 +706,19 @@ void WOverview::slotCueMenuPopupAboutToHide() {
 
 void WOverview::leaveEvent(QEvent* pEvent) {
     Q_UNUSED(pEvent);
-    if (!m_pCueMenuPopup->isVisible()) {
+    // Reset our dragging only if the left button is not pressed.
+    // This works around a Qt mouse event change after Qt 6.5 which causes
+    // leaveEvents to be emitted when we hover another widget which has set the
+    // acceptDrops() property true (eg. WSpinnyBase) -- even if we explicitly
+    // setMouseTracking(true) and the left button is still pressed.
+    // See https://github.com/mixxxdj/mixxx/issues/16306
+    // We still get another leave event when we release outside WOverview.
+    // Note: casting to QMouseEvent works, but buttons are not reported correctly,
+    // QGuiApplication::mouseButtons() is the way to go here.
+    if (QGuiApplication::mouseButtons() & Qt::LeftButton) {
+        return;
+    }
+    if (!menuIsCreated() || !getMenu()->isVisible()) {
         m_pHoveredMark.clear();
     }
     m_bLeftClickDragging = false;
@@ -736,6 +782,10 @@ void WOverview::drawEndOfTrackBackground(QPainter* pPainter) {
 }
 
 void WOverview::drawAxis(QPainter* pPainter) {
+    if (!m_stereo) {
+        return;
+    }
+
     PainterScope painterScope(pPainter);
     pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
     if (m_orientation == Qt::Horizontal) {
@@ -780,7 +830,7 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
 
     if (m_diffGain != diffGain || m_waveformImageScaled.isNull()) {
         const QRect sourceRect(0,
-                static_cast<int>(diffGain),
+                (m_stereo ? 1 : 2) * static_cast<int>(diffGain),
                 m_waveformSourceImage.width(),
                 m_waveformSourceImage.height() -
                         2 * static_cast<int>(diffGain));
@@ -830,14 +880,20 @@ void WOverview::drawMinuteMarkers(QPainter* pPainter) {
         if (m_orientation == Qt::Horizontal) {
             line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
             pPainter->drawLine(line);
-            line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
-            pPainter->drawLine(line);
+            // Draw bottom markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
+                pPainter->drawLine(line);
+            }
         } else {
             // untested, best effort basis
             line.setLine(0.0, currentMarkerXPos, markerHeight, currentMarkerXPos);
             pPainter->drawLine(line);
-            line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
-            pPainter->drawLine(line);
+            // Draw right markers only in stereo mode
+            if (m_stereo) {
+                line.setLine(lowerMarkerYPos, currentMarkerXPos, overviewHeight, currentMarkerXPos);
+                pPainter->drawLine(line);
+            }
         }
     }
 }
@@ -893,18 +949,21 @@ void WOverview::drawAnalyzerProgress(QPainter* pPainter) {
     if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
             (m_analyzerProgress < kAnalyzerProgressDone)) {
         PainterScope painterScope(pPainter);
-        pPainter->setPen(QPen(m_playPosColor, 3 * m_scaleFactor));
+        double penWidth = 3 * m_scaleFactor;
+        pPainter->setPen(QPen(m_playPosColor, penWidth));
 
         if (m_analyzerProgress > kAnalyzerProgressNone) {
             if (m_orientation == Qt::Horizontal) {
+                double y = m_stereo ? height() / 2 : height() - penWidth / 2;
                 pPainter->drawLine(QLineF(width() * m_analyzerProgress,
-                        height() / 2,
+                        y,
                         width(),
-                        height() / 2));
+                        y));
             } else {
-                pPainter->drawLine(QLineF(width() / 2,
+                double x = m_stereo ? width() / 2 : width() - penWidth / 2;
+                pPainter->drawLine(QLineF(x,
                         height() * m_analyzerProgress,
-                        width() / 2,
+                        x,
                         height()));
             }
         }
@@ -1472,21 +1531,24 @@ bool WOverview::drawNextPixmapPart() {
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     } else if (m_type == OverviewType::HSV) {
         waveformOverviewRenderer::drawWaveformPartHSV(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     } else { // OverviewType::RGB:
         waveformOverviewRenderer::drawWaveformPartRGB(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,
                 nextCompletion,
-                m_signalColors);
+                m_signalColors,
+                !m_stereo);
     }
 
     m_waveformImageScaled = QImage();

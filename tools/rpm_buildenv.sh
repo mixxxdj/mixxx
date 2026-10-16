@@ -47,6 +47,7 @@ case "$1" in
             libmad-devel \
             libmodplug-devel \
             libmp4v2-devel \
+            pipewire0.2-devel \
             libsndfile-devel \
             libusb1-devel \
             libvorbis-devel \
