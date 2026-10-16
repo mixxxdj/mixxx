@@ -142,6 +142,7 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_seekedSinceLastBuffer(false),
           m_prevPaused(true),
           m_latchedPlay(false),
+          m_resetRampRequested(false),
           m_rampAllowed(PlayerManager::isDeckGroup(group)) {
     // Vinyl control COs are only created for main decks
     if (PlayerManager::isDeckGroup(getGroup())) {
@@ -573,7 +574,18 @@ double RateControl::calculateSpeed(double baserate,
     if (!m_rampAllowed) {
         return rate;
     }
+
+    if (m_resetRampRequested.exchange(false)) {
+        m_platterSpeed = 1.0;
+        m_spinningDown = false;
+        m_latchedPlay = false;
+        m_prevPaused = true;
+    }
+
     // Physical SL1200 spin-up / spin-down ramp
+    // EngineBuffer passes paused = !play, and play is also 1 during cue
+    // preview, so play can't tell a Play press from a cue preview.
+    // play_latched (owned by CueControl) is 1 only for a latched play.
     const bool playLatched = m_pPlayLatched && m_pPlayLatched->toBool();
     const bool seeked = m_seekedSinceLastBuffer;
     m_seekedSinceLastBuffer = false;
@@ -608,6 +620,10 @@ double RateControl::calculateSpeed(double baserate,
                 m_platterSpeed = 1.0;
             }
             m_spinningDown = false;
+        } else if (seeked) {
+            // Jump while playing (hotcue, cue preview, beatjump, ...):
+            // a running spin-up is cut, playback continues at full speed
+            m_platterSpeed = 1.0;
         }
     } else {
         if (m_rampDownEnabled && !m_prevPaused && m_latchedPlay && !seeked) {
@@ -803,6 +819,9 @@ void RateControl::resetPositionScratchController() {
     // reported on track load while scratching.
     // https://github.com/mixxxdj/mixxx/issues/15082
     m_pScratchController->reset();
+    // Track changed: start the next track with a fresh motor state.
+    // This runs in a worker thread, so calculateSpeed() applies it.
+    m_resetRampRequested = true;
 }
 
 void RateControl::setEngineMixer(EngineMixer* pEngineMixer) {

@@ -196,5 +196,7 @@ private:
   static std::atomic<int> m_rampMode; // 0 = 33 RPM, 1 = 45 RPM
   static std::atomic<bool> m_rampIncludePitch;
   static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
-  bool m_rampAllowed;                     // only main decks, not samplers / preview deck
+  // Set on track change (worker thread), applied in calculateSpeed()
+  std::atomic<bool> m_resetRampRequested;
+  bool m_rampAllowed; // only main decks, not samplers / preview deck
 };
