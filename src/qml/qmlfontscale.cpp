@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QEvent>
 #include <QtMath>
 
 #include "moc_qmlfontscale.cpp"
@@ -26,12 +27,15 @@ QmlFontScale::QmlFontScale(QObject* parent)
     s_pInstance = this;
     qDebug() << "QmlFontScale: initialized with basePointSize =" << m_basePointSize << "pt";
 
-    if (auto* app = qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
-        connect(app, &QGuiApplication::fontChanged, this, &QmlFontScale::onFontChanged);
+    if (auto* app = QCoreApplication::instance()) {
+        app->installEventFilter(this);
     }
 }
 
 QmlFontScale::~QmlFontScale() {
+    if (auto* app = QCoreApplication::instance()) {
+        app->removeEventFilter(this);
+    }
     if (s_pInstance == this) {
         s_pInstance = nullptr;
     }
@@ -52,8 +56,11 @@ QmlFontScale* QmlFontScale::create(
     return s_pInstance;
 }
 
-void QmlFontScale::onFontChanged(const QFont& font) {
-    updateFont(font);
+bool QmlFontScale::eventFilter(QObject* watched, QEvent* event) {
+    if (event->type() == QEvent::ApplicationFontChange) {
+        updateFont(QGuiApplication::font());
+    }
+    return QObject::eventFilter(watched, event);
 }
 
 void QmlFontScale::updateFont(const QFont& font) {

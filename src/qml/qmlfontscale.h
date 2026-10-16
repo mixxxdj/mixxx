@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QEvent>
 #include <QFont>
 #include <QGuiApplication>
 #include <QJSEngine>
@@ -31,8 +32,8 @@ class QmlFontScale : public QObject {
   signals:
     void basePointSizeChanged();
 
-  private slots:
-    void onFontChanged(const QFont& font);
+  protected:
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
   private:
     void updateFont(const QFont& font);
