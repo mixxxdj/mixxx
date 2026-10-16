@@ -8,14 +8,17 @@
 #include "util/sample.h"
 #include "util/timer.h"
 
-EngineBufferScaleSignalSmith::EngineBufferScaleSignalSmith(ReadAheadManager* pReadAheadManager)
+EngineBufferScaleSignalSmith::EngineBufferScaleSignalSmith(
+        ReadAheadManager* pReadAheadManager)
         : m_pReadAheadManager(pReadAheadManager),
           m_buffers(),
           m_bufferPtrs(),
-          m_interleavedBuffer(mixxx::kMaxSupportedStems * MAX_BUFFER_LEN),
+          m_interleavedBuffer(mixxx::kMaxSupportedStems * MAX_BUFFER_LEN *
+                  mixxx::audio::ChannelCount::stereo()),
           m_frameFractionalLeftover(0),
           m_expectedFrameLatency(0),
           m_currentFrameOffset(0),
+          m_bBackwards(false),
           m_currentPreset(Preset::Default) {
     onSignalChanged();
 }
@@ -217,15 +220,15 @@ double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iO
 
     {
         ScopedTimer t(QStringLiteral("Signalsmith::process"));
-        float* outputBufferPtr[8] = {
+        static float* outputBufferPtr[8] = {
                 m_interleavedBuffer.data(),
-                m_interleavedBuffer.data(iOutputBufferSize),
-                m_interleavedBuffer.data(2 * iOutputBufferSize),
-                m_interleavedBuffer.data(3 * iOutputBufferSize),
-                m_interleavedBuffer.data(4 * iOutputBufferSize),
-                m_interleavedBuffer.data(5 * iOutputBufferSize),
-                m_interleavedBuffer.data(6 * iOutputBufferSize),
-                m_interleavedBuffer.data(7 * iOutputBufferSize),
+                m_interleavedBuffer.data(MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(2 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(3 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(4 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(5 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(6 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(7 * MAX_BUFFER_LEN),
         };
         m_stretch.process(m_bufferPtrs.data(), frameRead, outputBufferPtr, outputFrames);
     }
@@ -235,19 +238,19 @@ double EngineBufferScaleSignalSmith::scaleBuffer(CSAMPLE* pOutputBuffer, SINT iO
     case mixxx::audio::ChannelCount::stereo():
         SampleUtil::interleaveBuffer(pOutputBuffer,
                 m_interleavedBuffer.data(),
-                m_interleavedBuffer.data(iOutputBufferSize),
+                m_interleavedBuffer.data(MAX_BUFFER_LEN),
                 outputFrameSize);
         break;
     case mixxx::audio::ChannelCount::stem():
         SampleUtil::interleaveBuffer(pOutputBuffer,
                 m_interleavedBuffer.data(),
-                m_interleavedBuffer.data(iOutputBufferSize),
-                m_interleavedBuffer.data(2 * iOutputBufferSize),
-                m_interleavedBuffer.data(3 * iOutputBufferSize),
-                m_interleavedBuffer.data(4 * iOutputBufferSize),
-                m_interleavedBuffer.data(5 * iOutputBufferSize),
-                m_interleavedBuffer.data(6 * iOutputBufferSize),
-                m_interleavedBuffer.data(7 * iOutputBufferSize),
+                m_interleavedBuffer.data(MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(2 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(3 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(4 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(5 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(6 * MAX_BUFFER_LEN),
+                m_interleavedBuffer.data(7 * MAX_BUFFER_LEN),
                 outputFrameSize);
         break;
     default: {
