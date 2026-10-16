@@ -621,6 +621,8 @@ class RateControlRampTest : public MockedEngineBackendTest {
         RateControl::setRampIncludePitch(true);
         RateControl::setRampDownMode(0);
         RateControl::setRateRampMode(RateControl::RampMode::Stepping);
+        RateControl::setRampUpTimeFactor(1.0);
+        RateControl::setRampDownTimeFactor(1.0);
     }
 
     double speed(const QString& group) const {
@@ -836,4 +838,48 @@ TEST_F(RateControlRampTest, HotcueCutsSpinUp) {
     ProcessBuffer();
     EXPECT_EQ(1.0, speed());
     ControlObject::set(ConfigKey(m_sGroup1, "hotcue_1_activate"), 0.0);
+}
+
+TEST_F(RateControlRampTest, SpinUpTimeFollowsPreference) {
+    RateControl::setRampUpEnabled(true);
+    RateControl::setRampUpTimeFactor(0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    int buffers = 0;
+    do {
+        ProcessBuffer();
+        ++buffers;
+    } while (speed() < 1.0 && buffers < 100000);
+    EXPECT_NEAR(RateControl::spinUpTime(0, 0.5),
+            buffers * bufferSeconds(),
+            2 * bufferSeconds());
+}
+
+TEST_F(RateControlRampTest, BrakeTimeFollowsPreference) {
+    playAtFullSpeed();
+    RateControl::setRampDownEnabled(true);
+    RateControl::setRampDownTimeFactor(2.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    int buffers = 0;
+    do {
+        ProcessBuffer();
+        ++buffers;
+    } while (speed() > 0.0 && buffers < 100000);
+    EXPECT_NEAR(2.0 * kBrakeTime33, buffers * bufferSeconds(), 2 * bufferSeconds());
+    EXPECT_NEAR(RateControl::spinDownTime(0, 0, 2.0), 2.0 * kBrakeTime33, 1e-9);
+}
+
+TEST_F(RateControlRampTest, PowerCutTimeFollowsPreference) {
+    playAtFullSpeed();
+    RateControl::setRampDownEnabled(true);
+    RateControl::setRampDownMode(1);
+    RateControl::setRampDownTimeFactor(0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    int buffers = 0;
+    do {
+        ProcessBuffer();
+        ++buffers;
+    } while (speed() > 0.0 && buffers < 100000);
+    EXPECT_NEAR(RateControl::spinDownTime(0, 1, 0.5),
+            buffers * bufferSeconds(),
+            2 * bufferSeconds());
 }

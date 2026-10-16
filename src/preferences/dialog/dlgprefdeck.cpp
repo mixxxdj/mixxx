@@ -25,6 +25,7 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 constexpr double kDefaultPositionDisplayType =
         static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING);
+constexpr int kDefaultRampTimePercent = 100; // Technics SL-1210
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
 const QString kAppGroup = QStringLiteral("[App]");
@@ -454,17 +455,52 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         labelRampDownMode->setEnabled(enabled);
         radioButtonRampDownBrake->setEnabled(enabled);
         radioButtonRampDownPowerCut->setEnabled(enabled);
+        labelRampDownTime->setEnabled(enabled);
+        sliderRampDownTime->setEnabled(enabled);
+        labelRampDownTimeValue->setEnabled(enabled);
     };
     connect(checkBoxRampDownEnabled, &QCheckBox::toggled, this, updateRampDownModeEnabled);
     updateRampDownModeEnabled(checkBoxRampDownEnabled->isChecked());
     comboBoxRampUpMode->setCurrentIndex(rampMode);
     checkBoxRampUpIncludePitch->setChecked(rampIncludePitch);
 
+    sliderRampUpTime->setValue(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpTime")),
+            kDefaultRampTimePercent));
+    sliderRampDownTime->setValue(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampDownTime")),
+            kDefaultRampTimePercent));
+
+    // The time labels depend on the sliders, the platter type and the
+    // spin-down type
+    connect(sliderRampUpTime, &QSlider::valueChanged, this, &DlgPrefDeck::updateRampTimeLabels);
+    connect(sliderRampDownTime, &QSlider::valueChanged, this, &DlgPrefDeck::updateRampTimeLabels);
+    connect(comboBoxRampUpMode,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefDeck::updateRampTimeLabels);
+    connect(radioButtonRampDownPowerCut,
+            &QRadioButton::toggled,
+            this,
+            &DlgPrefDeck::updateRampTimeLabels);
+
+    // Spin-up time is only relevant if spin-up is enabled
+    const auto updateRampUpTimeEnabled = [this](bool enabled) {
+        labelRampUpTime->setEnabled(enabled);
+        sliderRampUpTime->setEnabled(enabled);
+        labelRampUpTimeValue->setEnabled(enabled);
+    };
+    connect(checkBoxRampUpEnabled, &QCheckBox::toggled, this, updateRampUpTimeEnabled);
+    updateRampUpTimeEnabled(checkBoxRampUpEnabled->isChecked());
+    updateRampTimeLabels();
+
     RateControl::setRampUpEnabled(checkBoxRampUpEnabled->isChecked());
     RateControl::setRampDownEnabled(checkBoxRampDownEnabled->isChecked());
     RateControl::setRampDownMode(radioButtonRampDownPowerCut->isChecked() ? 1 : 0);
     RateControl::setRampRpmMode(comboBoxRampUpMode->currentIndex());
     RateControl::setRampIncludePitch(checkBoxRampUpIncludePitch->isChecked());
+    RateControl::setRampUpTimeFactor(sliderRampUpTime->value() / 100.0);
+    RateControl::setRampDownTimeFactor(sliderRampDownTime->value() / 100.0);
 
     slotUpdate();
 }
@@ -573,6 +609,13 @@ void DlgPrefDeck::slotUpdate() {
     } else {
         radioButtonRampDownBrake->setChecked(true);
     }
+
+    sliderRampUpTime->setValue(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpTime")),
+            kDefaultRampTimePercent));
+    sliderRampDownTime->setValue(m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampDownTime")),
+            kDefaultRampTimePercent));
 }
 
 void DlgPrefDeck::slotResetToDefaults() {
@@ -622,6 +665,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     radioButtonRampDownBrake->setChecked(true);
     comboBoxRampUpMode->setCurrentIndex(0); // 33 RPM
     checkBoxRampUpIncludePitch->setChecked(true);
+    sliderRampUpTime->setValue(kDefaultRampTimePercent);
+    sliderRampDownTime->setValue(kDefaultRampTimePercent);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -868,11 +913,17 @@ void DlgPrefDeck::slotApply() {
 
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")),
             checkBoxRampUpIncludePitch->isChecked());
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpTime")),
+            sliderRampUpTime->value());
+    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampDownTime")),
+            sliderRampDownTime->value());
 
     RateControl::setRampUpEnabled(checkBoxRampUpEnabled->isChecked());
     RateControl::setRampDownEnabled(checkBoxRampDownEnabled->isChecked());
     RateControl::setRampRpmMode(comboBoxRampUpMode->currentIndex());
     RateControl::setRampIncludePitch(checkBoxRampUpIncludePitch->isChecked());
+    RateControl::setRampUpTimeFactor(sliderRampUpTime->value() / 100.0);
+    RateControl::setRampDownTimeFactor(sliderRampDownTime->value() / 100.0);
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
@@ -959,4 +1010,22 @@ int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
     qWarning() << "No default cue behavior found for value" << userData
                << "returning default";
     return 0;
+}
+
+void DlgPrefDeck::updateRampTimeLabels() {
+    const int rpmMode = comboBoxRampUpMode->currentIndex();
+    const int rampDownMode = radioButtonRampDownPowerCut->isChecked() ? 1 : 0;
+    const auto timeText = [](int percent, double seconds) {
+        QString text = tr("%1 % (%2 s)").arg(percent).arg(seconds, 0, 'f', 1);
+        if (percent == kDefaultRampTimePercent) {
+            text += QChar(' ') + tr("Technics SL-1210");
+        }
+        return text;
+    };
+    const int upPercent = sliderRampUpTime->value();
+    labelRampUpTimeValue->setText(timeText(upPercent,
+            RateControl::spinUpTime(rpmMode, upPercent / 100.0)));
+    const int downPercent = sliderRampDownTime->value();
+    labelRampDownTimeValue->setText(timeText(downPercent,
+            RateControl::spinDownTime(rpmMode, rampDownMode, downPercent / 100.0)));
 }

@@ -88,6 +88,12 @@ public:
   static void setRampRpmMode(int mode); // 0 = 33 RPM, 1 = 45 RPM
   static void setRampIncludePitch(bool includePitch);
   static void setRampDownMode(int mode); // 0 = brake, 1 = power cut
+  // 1.0 = Technics SL-1210, clamped to 0.25 .. 4.0
+  static void setRampUpTimeFactor(double factor);
+  static void setRampDownTimeFactor(double factor);
+  // Resulting ramp times in seconds, for the preferences
+  static double spinUpTime(int rpmMode, double factor);
+  static double spinDownTime(int rpmMode, int rampDownMode, double factor);
 
 public slots:
   void slotRateRangeChanged(double);
@@ -200,5 +206,7 @@ private:
   static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
   // Set on track change (worker thread), applied in calculateSpeed()
   std::atomic<bool> m_resetRampRequested;
+  static std::atomic<double> m_rampUpTimeFactor;
+  static std::atomic<double> m_rampDownTimeFactor;
   bool m_rampAllowed; // only main decks, not samplers / preview deck
 };

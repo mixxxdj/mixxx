@@ -1,6 +1,7 @@
 #include "engine/controls/ratecontrol.h"
 
 #include <QtDebug>
+#include <algorithm>
 #include <cmath>
 
 #include "control/controlobject.h"
@@ -20,7 +21,7 @@ namespace {
 constexpr int kRateSensitivityMin = 100;
 constexpr int kRateSensitivityMax = 2500;
 const QString kControlsGroup = QStringLiteral("[Controls]");
-// Approximate Technics SL-1200 brake time from 33 RPM to standstill.
+// Approximate Technics SL-1210 brake time from 33 RPM to standstill.
 // At 45 RPM the platter spins 1.35x faster with the same brake torque,
 // so it takes 1.35x longer to stop.
 constexpr double kSpindownTime33 = 0.8; // seconds
@@ -37,6 +38,15 @@ constexpr double kCoastDragRatio = 2.0;
 const double kCoastDrag = std::log(1.0 + kCoastDragRatio) / kCoastTime33;
 const double kCoastFriction33 = kCoastDrag / kCoastDragRatio;
 const double kCoastFriction45 = kCoastFriction33 * (100.0 / 3.0) / 45.0;
+// Spin-up: motor torque (speed units per second), then soft saturation
+// when the platter settles into quartz lock
+constexpr double kSpinupTorque33 = 0.45;
+constexpr double kSpinupTorque45 = 0.75;
+constexpr double kQuartzLockStart = 0.9;
+constexpr double kQuartzLockGain = 2.0;
+// Range of the spin-up / spin-down time preferences, 1.0 = Technics SL-1210
+constexpr double kMinRampTimeFactor = 0.25;
+constexpr double kMaxRampTimeFactor = 4.0;
 } // namespace
 
 // Static default values for rate buttons (percents)
@@ -52,6 +62,8 @@ std::atomic<bool> RateControl::m_rampDownEnabled{false};
 std::atomic<int> RateControl::m_rampMode{0};
 std::atomic<bool> RateControl::m_rampIncludePitch{true};
 std::atomic<int> RateControl::m_rampDownMode{0};
+std::atomic<double> RateControl::m_rampUpTimeFactor{1.0};
+std::atomic<double> RateControl::m_rampDownTimeFactor{1.0};
 
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
@@ -301,6 +313,43 @@ void RateControl::setRampRpmMode(int mode) {
 // static
 void RateControl::setRampIncludePitch(bool includePitch) {
     m_rampIncludePitch = includePitch;
+}
+
+// static
+void RateControl::setRampUpTimeFactor(double factor) {
+    m_rampUpTimeFactor = std::clamp(factor, kMinRampTimeFactor, kMaxRampTimeFactor);
+}
+
+// static
+void RateControl::setRampDownTimeFactor(double factor) {
+    m_rampDownTimeFactor = std::clamp(factor, kMinRampTimeFactor, kMaxRampTimeFactor);
+}
+
+// static
+double RateControl::spinUpTime(int rpmMode, double factor) {
+    // Integrate the spin-up model of calculateSpeed() with a fine time step
+    constexpr double kStep = 0.0005; // seconds
+    const double torque = (rpmMode == 0) ? kSpinupTorque33 : kSpinupTorque45;
+    double platterSpeed = 0.0;
+    double time = 0.0;
+    while (platterSpeed < 1.0 && time < 60.0) {
+        platterSpeed += torque * kStep;
+        if (platterSpeed > kQuartzLockStart) {
+            platterSpeed += (1.0 - platterSpeed) * kQuartzLockGain * kStep;
+        }
+        time += kStep;
+    }
+    return time * factor;
+}
+
+// static
+double RateControl::spinDownTime(int rpmMode, int rampDownMode, double factor) {
+    if (rampDownMode == 1) {
+        // Power cut: solution of dv/dt = -(friction + drag * v) from 1 to 0
+        const double friction = (rpmMode == 0) ? kCoastFriction33 : kCoastFriction45;
+        return std::log(1.0 + kCoastDrag / friction) / kCoastDrag * factor;
+    }
+    return ((rpmMode == 0) ? kSpindownTime33 : kSpindownTime45) * factor;
 }
 
 //static
@@ -588,7 +637,7 @@ double RateControl::calculateSpeed(double baserate,
         m_prevPaused = true;
     }
 
-    // Physical SL1200 spin-up / spin-down ramp
+    // Physical SL-1210 spin-up / spin-down ramp
     // EngineBuffer passes paused = !play, and play is also 1 during cue
     // preview, so play can't tell a Play press from a cue preview.
     // play_latched (owned by CueControl) is 1 only for a latched play.
@@ -651,15 +700,56 @@ double RateControl::calculateSpeed(double baserate,
 
     const double dt = static_cast<double>(samplesPerBuffer) / m_pSampleRate.get() / 2;
 
+    // if (m_spinningDown) {
+    //     if (m_rampDownMode == 1) {
+    //         // Power cut: the platter coasts without brake
+    //         const double friction = (m_rampMode == 0) ? kCoastFriction33 : kCoastFriction45;
+    //         m_platterSpeed -= (friction + kCoastDrag * m_platterSpeed) * dt;
+    //     } else {
+    //         // Electronic brake: constant deceleration until standstill
+    //         const double spindownTime = (m_rampMode == 0) ? kSpindownTime33 : kSpindownTime45;
+    //         m_platterSpeed -= dt / spindownTime;
+    //     }
+    //     if (m_platterSpeed <= 0.0) {
+    //         m_platterSpeed = 1.0;
+    //         m_spinningDown = false;
+    //         return rate; // paused rate (0 unless jog scrubbing)
+    //     }
+    //     return m_lastTargetRate * m_platterSpeed;
+    // }
+
+    // if (m_platterSpeed < 1.0) {
+    //     // 33 RPM = heavier platter feel, 45 RPM = lighter
+    //     const double torque = (m_rampMode == 0) ? 0.45 : 0.75;
+    //     m_platterSpeed += torque * dt;
+
+    //    // Soft saturation: motor settling into quartz lock
+    //    if (m_platterSpeed > 0.9) {
+    //        m_platterSpeed += (1.0 - m_platterSpeed) * 2.0 * dt;
+    //    }
+    //    if (m_platterSpeed < 1.0) {
+    //        // Ramp to the pitched speed, or to the nominal 33/45 RPM speed
+    //        // without the rate slider. Nudges and pitch bend are kept.
+    //        // rate is already negated for reverse.
+    //        m_lastTargetRate = m_rampIncludePitch
+    //                ? rate
+    //                : rate - (*pReportReverse ? -sliderOffset : sliderOffset);
+    //        return m_lastTargetRate * m_platterSpeed;
+    //    }
+    //    m_platterSpeed = 1.0;
+    //}
+
     if (m_spinningDown) {
+        // Spin-down time preference stretches the curve, 1.0 = SL-1210
+        const double downDt = dt / m_rampDownTimeFactor;
         if (m_rampDownMode == 1) {
             // Power cut: the platter coasts without brake
             const double friction = (m_rampMode == 0) ? kCoastFriction33 : kCoastFriction45;
-            m_platterSpeed -= (friction + kCoastDrag * m_platterSpeed) * dt;
+            m_platterSpeed -= (friction + kCoastDrag * m_platterSpeed) * downDt;
         } else {
             // Electronic brake: constant deceleration until standstill
             const double spindownTime = (m_rampMode == 0) ? kSpindownTime33 : kSpindownTime45;
-            m_platterSpeed -= dt / spindownTime;
+            m_platterSpeed -= downDt / spindownTime;
         }
         if (m_platterSpeed <= 0.0) {
             m_platterSpeed = 1.0;
@@ -670,13 +760,15 @@ double RateControl::calculateSpeed(double baserate,
     }
 
     if (m_platterSpeed < 1.0) {
+        // Spin-up time preference stretches the curve, 1.0 = SL-1210
+        const double upDt = dt / m_rampUpTimeFactor;
         // 33 RPM = heavier platter feel, 45 RPM = lighter
-        const double torque = (m_rampMode == 0) ? 0.45 : 0.75;
-        m_platterSpeed += torque * dt;
+        const double torque = (m_rampMode == 0) ? kSpinupTorque33 : kSpinupTorque45;
+        m_platterSpeed += torque * upDt;
 
         // Soft saturation: motor settling into quartz lock
-        if (m_platterSpeed > 0.9) {
-            m_platterSpeed += (1.0 - m_platterSpeed) * 2.0 * dt;
+        if (m_platterSpeed > kQuartzLockStart) {
+            m_platterSpeed += (1.0 - m_platterSpeed) * kQuartzLockGain * upDt;
         }
         if (m_platterSpeed < 1.0) {
             // Ramp to the pitched speed, or to the nominal 33/45 RPM speed

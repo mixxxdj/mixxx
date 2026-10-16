@@ -740,6 +740,104 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
              </property>
            </widget>
          </item>
+         <item row="17" column="0">
+           <widget class="QLabel" name="labelRampUpTime">
+             <property name="text">
+               <string>Spin-up time</string>
+             </property>
+             <property name="buddy">
+               <cstring>sliderRampUpTime</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="17" column="1">
+           <widget class="QSlider" name="sliderRampUpTime">
+             <property name="toolTip">
+               <string>Time the platter needs to reach its speed after pressing Play.
+100 % is a Technics SL-1210. 25 % starts 4x faster, 400 % 4x slower.</string>
+             </property>
+             <property name="minimum">
+               <number>25</number>
+             </property>
+             <property name="maximum">
+               <number>400</number>
+             </property>
+             <property name="singleStep">
+               <number>5</number>
+             </property>
+             <property name="pageStep">
+               <number>25</number>
+             </property>
+             <property name="value">
+               <number>100</number>
+             </property>
+             <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+             </property>
+             <property name="tickInterval">
+               <number>25</number>
+             </property>
+           </widget>
+         </item>
+         <item row="17" column="2">
+           <widget class="QLabel" name="labelRampUpTimeValue">
+             <property name="text">
+               <string notr="true">100 %</string>
+             </property>
+           </widget>
+         </item>
+         <item row="18" column="0">
+           <widget class="QLabel" name="labelRampDownTime">
+             <property name="text">
+               <string>Spin-down time</string>
+             </property>
+             <property name="buddy">
+               <cstring>sliderRampDownTime</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="18" column="1">
+           <widget class="QSlider" name="sliderRampDownTime">
+             <property name="toolTip">
+               <string>Time the platter needs to stop after pressing Pause, for both brake and power cut.
+100 % is a Technics SL-1210. 25 % stops 4x faster, 400 % 4x slower.</string>
+             </property>
+             <property name="minimum">
+               <number>25</number>
+             </property>
+             <property name="maximum">
+               <number>400</number>
+             </property>
+             <property name="singleStep">
+               <number>5</number>
+             </property>
+             <property name="pageStep">
+               <number>25</number>
+             </property>
+             <property name="value">
+               <number>100</number>
+             </property>
+             <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+             </property>
+             <property name="tickInterval">
+               <number>25</number>
+             </property>
+           </widget>
+         </item>
+         <item row="18" column="2">
+           <widget class="QLabel" name="labelRampDownTimeValue">
+             <property name="text">
+               <string notr="true">100 %</string>
+             </property>
+           </widget>
+         </item>
        </layout>
       </item>
      </layout>
