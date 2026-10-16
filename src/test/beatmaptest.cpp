@@ -106,6 +106,99 @@ TEST_F(BeatMapTest, Scale) {
                     .value());
 }
 
+TEST_F(BeatMapTest, ScaleVariableTempo) {
+    // Build a beat map with two tempo sections of 3 and 5 beats each. The
+    // odd beat counts cannot be scaled to an integer number of beats, so
+    // the beats have to be resampled by beat index.
+    const auto anchor = mixxx::audio::FramePos(7);
+    const mixxx::audio::FrameDiff_t beatLengthA = 5000;
+    const mixxx::audio::FrameDiff_t beatLengthB = 3000;
+    QVector<mixxx::audio::FramePos> beats;
+    for (int i = 0; i <= 3; ++i) {
+        beats.append(anchor + i * beatLengthA);
+    }
+    for (int i = 1; i <= 5; ++i) {
+        beats.append(anchor + 3 * beatLengthA + i * beatLengthB);
+    }
+    const auto pMap = Beats::fromBeatPositions(m_pTrack->getSampleRate(), beats);
+    ASSERT_TRUE(pMap);
+    ASSERT_FALSE(pMap->hasConstantTempo());
+    ASSERT_EQ(2u, pMap->getMarkers().size());
+    ASSERT_EQ(3, pMap->getMarkers()[0].beatsTillNextMarker());
+    ASSERT_EQ(5, pMap->getMarkers()[1].beatsTillNextMarker());
+
+    int totalBeats = 0;
+    for (const auto& marker : pMap->getMarkers()) {
+        totalBeats += marker.beatsTillNextMarker();
+    }
+    ASSERT_EQ(8, totalBeats);
+
+    const struct {
+        Beats::BpmScale bpmScale;
+        double factor;
+    } scales[] = {
+            {Beats::BpmScale::Halve, 0.5},
+            {Beats::BpmScale::TwoThirds, 2.0 / 3.0},
+            {Beats::BpmScale::ThreeHalves, 3.0 / 2.0},
+            {Beats::BpmScale::Double, 2.0},
+    };
+
+    for (const auto& scale : scales) {
+        const auto scaled = pMap->tryScale(scale.bpmScale);
+        ASSERT_TRUE(scaled.has_value());
+        const auto pScaledMap = scaled.value();
+
+        // The first beat keeps its position.
+        EXPECT_EQ(anchor, pScaledMap->firstBeat());
+
+        // Beat m of the scaled beats is placed at the position of the
+        // original beat with the index m / factor (interpolated between two
+        // original beats and rounded to the frame boundary). In particular,
+        // the beats still span the whole track instead of being squeezed
+        // into a part of it.
+        const int lastBeatIndex =
+                static_cast<int>(scale.factor * totalBeats + 1e-9);
+        for (int m = 0; m <= lastBeatIndex; ++m) {
+            const auto expectedPosition =
+                    pMap->findNBeatsFromPosition(anchor, m / scale.factor);
+            const auto actualPosition = pScaledMap->findNBeatsFromPosition(anchor, m);
+            ASSERT_TRUE(actualPosition.isValid());
+            EXPECT_NEAR(actualPosition.value(), expectedPosition.value(), 0.5);
+        }
+
+        // The BPM of the last marker is scaled as well.
+        EXPECT_DOUBLE_EQ(pMap->getLastMarkerBpm().value() * scale.factor,
+                pScaledMap->getLastMarkerBpm().value());
+    }
+
+    // Roundtrip: doubling the halved beats restores every beat that halving
+    // has kept bit-exactly (the beats dropped by halving can only be
+    // recreated by interpolation).
+    const auto halved = pMap->tryScale(Beats::BpmScale::Halve);
+    ASSERT_TRUE(halved.has_value());
+    const auto restored = halved.value()->tryScale(Beats::BpmScale::Double);
+    ASSERT_TRUE(restored.has_value());
+    for (int m = 0; m <= totalBeats; m += 2) {
+        EXPECT_EQ(beats[m], restored.value()->findNBeatsFromPosition(anchor, m));
+    }
+    EXPECT_DOUBLE_EQ(pMap->getLastMarkerBpm().value(),
+            restored.value()->getLastMarkerBpm().value());
+}
+
+TEST_F(BeatMapTest, ScaleMarkerCollision) {
+    // Two markers that are only one frame apart would collapse onto the
+    // same frame position when scaled by 2. This cannot be represented, so
+    // the scale process must fail gracefully.
+    const auto pBeats = Beats::fromBeatMarkers(m_sampleRate,
+            {BeatMarker(mixxx::audio::FramePos(7), 1),
+                    BeatMarker(mixxx::audio::FramePos(8), 1)},
+            mixxx::audio::FramePos(9),
+            mixxx::Bpm(200));
+    ASSERT_TRUE(pBeats);
+    EXPECT_TRUE(pBeats->tryScale(Beats::BpmScale::Halve).has_value());
+    EXPECT_FALSE(pBeats->tryScale(Beats::BpmScale::Double).has_value());
+}
+
 TEST_F(BeatMapTest, TestNthBeat) {
     constexpr mixxx::Bpm bpm(60.0);
     m_pTrack->trySetBpm(bpm.value());
