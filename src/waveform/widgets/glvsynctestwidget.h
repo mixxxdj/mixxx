@@ -5,7 +5,7 @@
 class GLVSyncTestWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLVSyncTestWidget(const QString& group, QWidget* parent);
+    GLVSyncTestWidget(const QString& group, QWidget* pParent);
     virtual ~GLVSyncTestWidget();
 
     virtual WaveformWidgetType::Type getType() const {

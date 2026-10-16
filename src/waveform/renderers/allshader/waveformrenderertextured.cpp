@@ -103,7 +103,7 @@ bool WaveformRendererTextured::loadTexture() {
     int dataSize = 0;
     const WaveformData* data = nullptr;
 
-    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    ConstWaveformPointer pWaveform = m_pWaveformRenderer->getWaveform();
     if (pWaveform) {
         dataSize = pWaveform->getDataSize();
         if (dataSize > 1) {
@@ -205,15 +205,15 @@ void WaveformRendererTextured::createGeometry() {
 }
 
 void WaveformRendererTextured::createFrameBuffers() {
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     // We create a frame buffer that is 4x the size of the renderer itself to
     // "oversample" the texture relative to the surface we're drawing on.
     constexpr int oversamplingFactor = 4;
     const auto bufferWidth = oversamplingFactor *
-            static_cast<int>(m_waveformRenderer->getWidth() * devicePixelRatio);
+            static_cast<int>(m_pWaveformRenderer->getWidth() * devicePixelRatio);
     const auto bufferHeight = oversamplingFactor *
             static_cast<int>(
-                    m_waveformRenderer->getHeight() * devicePixelRatio);
+                    m_pWaveformRenderer->getHeight() * devicePixelRatio);
 
     m_framebuffer = std::make_unique<QOpenGLFramebufferObject>(bufferWidth,
             bufferHeight);
@@ -253,7 +253,7 @@ void WaveformRendererTextured::onSetTrack() {
 
     slotWaveformUpdated();
 
-    const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    const TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
     }
@@ -284,15 +284,15 @@ void WaveformRendererTextured::slotWaveformUpdated() {
 }
 
 void WaveformRendererTextured::paintGL() {
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
+    if (!pTrack || (m_isSlipRenderer && !m_pWaveformRenderer->isSlipActive())) {
         return;
     }
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
                                          : ::WaveformRendererAbstract::Play;
 
-    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    ConstWaveformPointer pWaveform = m_pWaveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }
@@ -318,7 +318,7 @@ void WaveformRendererTextured::paintGL() {
     }
 #endif
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_pWaveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -336,10 +336,10 @@ void WaveformRendererTextured::paintGL() {
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition(positionType) * trackSamples /
+            m_pWaveformRenderer->getFirstDisplayedPosition(positionType) * trackSamples /
             audioVisualRatio / 2.0);
     const auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition(positionType) *
+            m_pWaveformRenderer->getLastDisplayedPosition(positionType) *
             trackSamples / audioVisualRatio / 2.0);
 
     // const int firstIndex = int(firstVisualIndex+0.5);
@@ -458,7 +458,7 @@ void WaveformRendererTextured::paintGL() {
 
         glBegin(GL_QUADS);
         {
-            if (m_isSlipRenderer && m_waveformRenderer->isSlipActive()) {
+            if (m_isSlipRenderer && m_pWaveformRenderer->isSlipActive()) {
                 glTexCoord2f(0.0, 0.5);
                 glVertex3f(firstVisualIndex, 0.0f, 0.0f);
 
@@ -509,13 +509,13 @@ void WaveformRendererTextured::paintGL() {
         // OpenGL pixels are real screen pixels, not device independent
         // pixels like QPainter provides. We scale the viewport by the
         // devicePixelRatio to render the texture to the surface.
-        const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+        const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
         glViewport(0,
                 0,
                 static_cast<GLsizei>(
-                        devicePixelRatio * m_waveformRenderer->getWidth()),
+                        devicePixelRatio * m_pWaveformRenderer->getWidth()),
                 static_cast<GLsizei>(
-                        devicePixelRatio * m_waveformRenderer->getHeight()));
+                        devicePixelRatio * m_pWaveformRenderer->getHeight()));
         glBindTexture(GL_TEXTURE_2D, m_framebuffer->texture());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

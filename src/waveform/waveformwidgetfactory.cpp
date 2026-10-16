@@ -102,17 +102,17 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 ///////////////////////////////////////////
 
 WaveformWidgetHolder::WaveformWidgetHolder()
-        : m_waveformWidget(nullptr),
-          m_waveformViewer(nullptr),
+        : m_pWaveformWidget(nullptr),
+          m_pWaveformViewer(nullptr),
           m_skinContextCache(UserSettingsPointer(), QString()) {
 }
 
-WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
-        WWaveformViewer* waveformViewer,
+WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* pWaveformWidget,
+        WWaveformViewer* pWaveformViewer,
         const QDomNode& node,
         const SkinContext& parentContext)
-        : m_waveformWidget(waveformWidget),
-          m_waveformViewer(waveformViewer),
+        : m_pWaveformWidget(pWaveformWidget),
+          m_pWaveformViewer(pWaveformViewer),
           m_skinNodeCache(node.cloneNode()),
           m_skinContextCache(&parentContext) {
 }
@@ -142,7 +142,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
           m_beatGridAlpha(90),
-          m_vsyncThread(nullptr),
+          m_pVsyncThread(nullptr),
           m_pGuiTick(nullptr),
           m_pVisualsManager(nullptr),
           m_frameCnt(0),
@@ -374,8 +374,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
 }
 
 WaveformWidgetFactory::~WaveformWidgetFactory() {
-    if (m_vsyncThread) {
-        delete m_vsyncThread;
+    if (m_pVsyncThread) {
+        delete m_pVsyncThread;
     }
 }
 
@@ -485,8 +485,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
 void WaveformWidgetFactory::destroyWidgets() {
     for (auto& holder : m_waveformWidgetHolders) {
-        WaveformWidgetAbstract* pWidget = holder.m_waveformWidget;
-        holder.m_waveformWidget = nullptr;
+        WaveformWidgetAbstract* pWidget = holder.m_pWaveformWidget;
+        holder.m_pWaveformWidget = nullptr;
         delete pWidget;
     }
     m_waveformWidgetHolders.clear();
@@ -526,24 +526,24 @@ void WaveformWidgetFactory::slotSkinLoaded() {
 #endif
 }
 
-bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
+bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* pViewer,
         const QDomElement& node,
         const SkinContext& parentContext) {
-    int index = findIndexOf(viewer);
+    int index = findIndexOf(pViewer);
     if (index != -1) {
         qDebug() << "WaveformWidgetFactory::setWaveformWidget - "
                     "viewer already have a waveform widget but it's not found by the factory !";
-        delete viewer->getWaveformWidget();
+        delete pViewer->getWaveformWidget();
     }
 
     // Cast to widget done just after creation because it can't be perform in
     // constructor (pure virtual)
-    WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, viewer);
-    viewer->setWaveformWidget(waveformWidget);
-    viewer->setup(node, parentContext);
+    WaveformWidgetAbstract* waveformWidget = createWaveformWidget(m_type, pViewer);
+    pViewer->setWaveformWidget(waveformWidget);
+    pViewer->setup(node, parentContext);
 
     // create new holder
-    WaveformWidgetHolder holder(waveformWidget, viewer, node, &parentContext);
+    WaveformWidgetHolder holder(waveformWidget, pViewer, node, &parentContext);
     if (index == -1) {
         // add holder
         m_waveformWidgetHolders.push_back(std::move(holder));
@@ -554,12 +554,12 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
         m_waveformWidgetHolders[index] = std::move(holder);
     }
 
-    viewer->setZoom(m_defaultZoom);
-    viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
-    viewer->setPlayMarkerPosition(m_playMarkerPosition);
-    waveformWidget->resize(viewer->width(), viewer->height());
+    pViewer->setZoom(m_defaultZoom);
+    pViewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    pViewer->setPlayMarkerPosition(m_playMarkerPosition);
+    waveformWidget->resize(pViewer->width(), pViewer->height());
     waveformWidget->getWidget()->show();
-    viewer->update();
+    pViewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
 
@@ -571,8 +571,8 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     if (m_config) {
         m_config->setValue(kFrameRateKey, m_frameRate);
     }
-    if (m_vsyncThread) {
-        m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
+    if (m_pVsyncThread) {
+        m_pVsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
     }
 }
 
@@ -687,28 +687,28 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
 
     // re-create/setup all waveform widgets
     for (auto& holder : m_waveformWidgetHolders) {
-        WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
-        TrackPointer pTrack = previousWidget->getTrackInfo();
+        WaveformWidgetAbstract* pPreviousWidget = holder.m_pWaveformWidget;
+        TrackPointer pTrack = pPreviousWidget->getTrackInfo();
         // previousWidget->hold();
-        double previousZoom = previousWidget->getZoom();
-        double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
-        int previousbeatgridAlpha = previousWidget->getBeatGridAlpha();
-        delete previousWidget;
-        WWaveformViewer* viewer = holder.m_waveformViewer;
-        WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
-        holder.m_waveformWidget = widget;
-        viewer->setWaveformWidget(widget);
-        viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
-        viewer->setZoom(previousZoom);
-        viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
-        viewer->setDisplayBeatGridAlpha(previousbeatgridAlpha);
+        double previousZoom = pPreviousWidget->getZoom();
+        double previousPlayMarkerPosition = pPreviousWidget->getPlayMarkerPosition();
+        int previousbeatgridAlpha = pPreviousWidget->getBeatGridAlpha();
+        delete pPreviousWidget;
+        WWaveformViewer* pViewer = holder.m_pWaveformViewer;
+        WaveformWidgetAbstract* pWidget = createWaveformWidget(m_type, holder.m_pWaveformViewer);
+        holder.m_pWaveformWidget = pWidget;
+        pViewer->setWaveformWidget(pWidget);
+        pViewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
+        pViewer->setZoom(previousZoom);
+        pViewer->setPlayMarkerPosition(previousPlayMarkerPosition);
+        pViewer->setDisplayBeatGridAlpha(previousbeatgridAlpha);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         // viewer->resize(viewer->size());
-        widget->resize(viewer->width(), viewer->height());
-        widget->setTrack(pTrack);
-        widget->getWidget()->show();
-        viewer->update();
+        pWidget->resize(pViewer->width(), pViewer->height());
+        pWidget->setTrack(pTrack);
+        pWidget->getWidget()->show();
+        pViewer->update();
     }
 
     m_skipRender = false;
@@ -737,7 +737,7 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
     }
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
-        holder.m_waveformViewer->setZoom(m_defaultZoom);
+        holder.m_pWaveformViewer->setZoom(m_defaultZoom);
     }
 }
 
@@ -751,9 +751,9 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
         return;
     }
 
-    double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoom();
+    double refZoom = m_waveformWidgetHolders[0].m_pWaveformWidget->getZoom();
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
-        holder.m_waveformViewer->setZoom(refZoom);
+        holder.m_pWaveformViewer->setZoom(refZoom);
     }
 }
 
@@ -764,7 +764,7 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
     }
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
-        holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
+        holder.m_pWaveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
 }
 
@@ -814,20 +814,20 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
     }
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
-        holder.m_waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
+        holder.m_pWaveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
     }
 }
 
-void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
-    WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
+void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* pViewer) {
+    WaveformWidgetAbstract* pWaveformWidget = pViewer->getWaveformWidget();
     if (pWaveformWidget == nullptr || !isZoomSync()) {
         return;
     }
     double refZoom = pWaveformWidget->getZoom();
 
     for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
-        if (holder.m_waveformViewer != viewer) {
-            holder.m_waveformViewer->setZoom(refZoom);
+        if (holder.m_pWaveformViewer != pViewer) {
+            holder.m_pWaveformViewer->setZoom(refZoom);
         }
     }
 }
@@ -844,7 +844,8 @@ void WaveformWidgetFactory::renderSelf() {
             for (decltype(m_waveformWidgetHolders)::size_type i = 0;
                     i < m_waveformWidgetHolders.size();
                     i++) {
-                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+                WaveformWidgetAbstract* pWaveformWidget =
+                        m_waveformWidgetHolders[i].m_pWaveformWidget;
                 // Don't bother doing the pre-render work if we aren't going to
                 // render this widget.
                 bool shouldRender = shouldRenderWaveform(pWaveformWidget);
@@ -853,7 +854,7 @@ void WaveformWidgetFactory::renderSelf() {
                     continue;
                 }
                 // Calculate play position for the new Frame in following run
-                pWaveformWidget->preRender(m_vsyncThread);
+                pWaveformWidget->preRender(m_pVsyncThread);
             }
             // qDebug() << "prerender" << m_vsyncThread->elapsed();
 
@@ -863,7 +864,8 @@ void WaveformWidgetFactory::renderSelf() {
             for (decltype(m_waveformWidgetHolders)::size_type i = 0;
                     i < m_waveformWidgetHolders.size();
                     i++) {
-                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+                WaveformWidgetAbstract* pWaveformWidget =
+                        m_waveformWidgetHolders[i].m_pWaveformWidget;
                 if (!shouldRenderWaveforms[static_cast<int>(i)]) {
                     continue;
                 }
@@ -874,10 +876,10 @@ void WaveformWidgetFactory::renderSelf() {
 
         // WSpinnys are also double-buffered WGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
-        emit renderSpinnies(m_vsyncThread);
+        emit renderSpinnies(m_pVsyncThread);
         // Same for WVuMeterGL. Note that we are either using WVuMeter or WVuMeterGL.
         // If we are using WVuMeter, this does nothing
-        emit renderVuMeters(m_vsyncThread);
+        emit renderVuMeters(m_pVsyncThread);
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
@@ -890,7 +892,7 @@ void WaveformWidgetFactory::renderSelf() {
         if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
             m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
-            emit waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames());
+            emit waveformMeasured(m_frameCnt, m_pVsyncThread->droppedFrames());
             m_frameCnt = 0.0;
         }
     }
@@ -903,7 +905,7 @@ void WaveformWidgetFactory::renderSelf() {
 
 void WaveformWidgetFactory::render() {
     renderSelf();
-    m_vsyncThread->vsyncSlotFinished();
+    m_pVsyncThread->vsyncSlotFinished();
 }
 
 void WaveformWidgetFactory::swapSelf() {
@@ -916,7 +918,7 @@ void WaveformWidgetFactory::swapSelf() {
             // Show rendered buffer from last render() run
             // qDebug() << "swap() start" << m_vsyncThread->elapsed();
             for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
-                WaveformWidgetAbstract* pWaveformWidget = holder.m_waveformWidget;
+                WaveformWidgetAbstract* pWaveformWidget = holder.m_pWaveformWidget;
 
                 // Don't swap invalid / invisible widgets or widgets with an
                 // unexposed window. Prevents continuous log spew of
@@ -945,7 +947,7 @@ void WaveformWidgetFactory::swapSelf() {
 
 void WaveformWidgetFactory::swap() {
     swapSelf();
-    m_vsyncThread->vsyncSlotFinished();
+    m_pVsyncThread->vsyncSlotFinished();
 }
 
 void WaveformWidgetFactory::swapAndRender() {
@@ -956,18 +958,18 @@ void WaveformWidgetFactory::swapAndRender() {
     swapSelf();
     renderSelf();
 
-    m_vsyncThread->vsyncSlotFinished();
+    m_pVsyncThread->vsyncSlotFinished();
 }
 
 void WaveformWidgetFactory::slotFrameSwapped() {
 #ifdef MIXXX_USE_QOPENGL
-    if (m_vsyncThread->pllInitializing()) {
+    if (m_pVsyncThread->pllInitializing()) {
         // continuously trigger redraws during PLL init
         WGLWidget* widget = SharedGLContext::getWidget();
         widget->getOpenGLWindow()->update();
     }
     // update the phase-locked-loop
-    m_vsyncThread->updatePLL();
+    m_pVsyncThread->updatePLL();
 #endif
 }
 
@@ -1122,102 +1124,103 @@ void WaveformWidgetFactory::evaluateWidgets() {
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
-        WaveformWidgetType::Type type, WWaveformViewer* viewer) {
+        WaveformWidgetType::Type type, WWaveformViewer* pViewer) {
     // The stored options may contain flags that are not supported by the
     // current GL context, e.g. HighDetail from a previous desktop OpenGL
     // session when running on OpenGL ES. Mask them out here, so an
     // unsupported renderer like WaveformRendererTextured is never created.
     allshader::WaveformRendererSignalBase::Options options = getWaveformOptions() &
             getWaveformOptionsSupportedByType(type, WaveformWidgetBackend::AllShader);
-    return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
+    return new allshader::WaveformWidget(pViewer, type, pViewer->getGroup(), options);
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
-        WWaveformViewer* viewer) {
+        WWaveformViewer* pViewer) {
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Filtered, pViewer);
 #endif
     case WaveformWidgetBackend::None:
     case WaveformWidgetBackend::GL:
     case WaveformWidgetBackend::GLSL:
     default:
-        return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+        return new SoftwareWaveformWidget(pViewer->getGroup(), pViewer);
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveformViewer* viewer) {
+WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveformViewer* pViewer) {
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-        return createAllshaderWaveformWidget(WaveformWidgetType::HSV, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::HSV, pViewer);
 #endif
     case WaveformWidgetBackend::None:
     case WaveformWidgetBackend::GL:
     case WaveformWidgetBackend::GLSL:
     default:
-        return new HSVWaveformWidget(viewer->getGroup(), viewer);
+        return new HSVWaveformWidget(pViewer->getGroup(), pViewer);
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveformViewer* viewer) {
+WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveformViewer* pViewer) {
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::RGB, pViewer);
 #endif
     case WaveformWidgetBackend::None:
     case WaveformWidgetBackend::GL:
     case WaveformWidgetBackend::GLSL:
     default:
-        return new RGBWaveformWidget(viewer->getGroup(), viewer);
+        return new RGBWaveformWidget(pViewer->getGroup(), pViewer);
     }
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
-        WWaveformViewer* viewer) {
+        WWaveformViewer* pViewer) {
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, pViewer);
 #endif
     case WaveformWidgetBackend::None:
     case WaveformWidgetBackend::GL:
     case WaveformWidgetBackend::GLSL:
     default:
-        return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+        return new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
     }
 }
 
-WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWaveformViewer* viewer) {
+WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
+        WWaveformViewer* pViewer) {
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, pViewer);
 #endif
     case WaveformWidgetBackend::None:
     case WaveformWidgetBackend::GL:
     case WaveformWidgetBackend::GLSL:
     default:
-        return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
+        return new SimpleSignalWaveformWidget(pViewer->getGroup(), pViewer);
     }
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createVSyncTestWaveformWidget(
-        WWaveformViewer* viewer) {
+        WWaveformViewer* pViewer) {
 #ifdef MIXXX_USE_QOPENGL
-    return new GLVSyncTestWidget(viewer->getGroup(), viewer);
+    return new GLVSyncTestWidget(pViewer->getGroup(), pViewer);
 #else
     return new EmptyWaveformWidget(viewer->getGroup(), viewer);
 #endif
@@ -1270,9 +1273,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
     return pWidget;
 }
 
-int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
+int WaveformWidgetFactory::findIndexOf(WWaveformViewer* pViewer) const {
     for (int i = 0; i < (int)m_waveformWidgetHolders.size(); i++) {
-        if (m_waveformWidgetHolders[i].m_waveformViewer == viewer) {
+        if (m_waveformWidgetHolders[i].m_pWaveformViewer == pViewer) {
             return i;
         }
     }
@@ -1287,12 +1290,12 @@ void WaveformWidgetFactory::startVSync(
 
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
-    m_vsyncThread = new VSyncThread(this, vSyncMode);
-    m_vsyncThread->setObjectName(QStringLiteral("VSync"));
-    m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
+    m_pVsyncThread = new VSyncThread(this, vSyncMode);
+    m_pVsyncThread->setObjectName(QStringLiteral("VSync"));
+    m_pVsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
 
 #ifdef MIXXX_USE_QOPENGL
-    if (m_vsyncThread->vsyncMode() == VSyncThread::ST_PLL) {
+    if (m_pVsyncThread->vsyncMode() == VSyncThread::ST_PLL) {
         WGLWidget* widget = SharedGLContext::getWidget();
         if (widget) {
             connect(widget->getOpenGLWindow(),
@@ -1305,24 +1308,24 @@ void WaveformWidgetFactory::startVSync(
     }
 #endif
 
-    connect(m_vsyncThread,
+    connect(m_pVsyncThread,
             &VSyncThread::vsyncRender,
             this,
             &WaveformWidgetFactory::render);
-    connect(m_vsyncThread,
+    connect(m_pVsyncThread,
             &VSyncThread::vsyncSwap,
             this,
             &WaveformWidgetFactory::swap);
-    connect(m_vsyncThread,
+    connect(m_pVsyncThread,
             &VSyncThread::vsyncSwapAndRender,
             this,
             &WaveformWidgetFactory::swapAndRender);
 
-    m_vsyncThread->start(QThread::NormalPriority);
+    m_pVsyncThread->start(QThread::NormalPriority);
 }
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
-    m_vsyncThread->getAvailableVSyncTypes(pList);
+    m_pVsyncThread->getAvailableVSyncTypes(pList);
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int index) {

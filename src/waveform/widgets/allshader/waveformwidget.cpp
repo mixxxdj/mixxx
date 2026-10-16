@@ -163,7 +163,7 @@ void WaveformWidget::paintGL() {
 }
 
 void WaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void WaveformWidget::initializeGL() {

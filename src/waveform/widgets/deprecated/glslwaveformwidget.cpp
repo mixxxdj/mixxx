@@ -62,7 +62,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(
 }
 
 void GLSLWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {

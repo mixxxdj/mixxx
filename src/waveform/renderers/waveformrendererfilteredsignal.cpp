@@ -16,8 +16,8 @@ WaveformRendererFilteredSignal::~WaveformRendererFilteredSignal() {
 
 void WaveformRendererFilteredSignal::onResize() {
     const int devicePixelLength =
-            static_cast<int>(m_waveformRenderer->getLength() *
-                    m_waveformRenderer->getDevicePixelRatio());
+            static_cast<int>(m_pWaveformRenderer->getLength() *
+                    m_pWaveformRenderer->getDevicePixelRatio());
     m_lowLines.resize(devicePixelLength);
     m_midLines.resize(devicePixelLength);
     m_highLines.resize(devicePixelLength);
@@ -29,7 +29,7 @@ void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,
                                           QPaintEvent* /*event*/) {
-    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    ConstWaveformPointer pWaveform = m_pWaveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }
@@ -39,7 +39,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         return;
     }
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
 
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
@@ -51,7 +51,7 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         return;
     }
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_pWaveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -65,20 +65,20 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     // Rotate if drawing vertical waveforms
     // and revert devicePixelRatio scaling in x direction.
-    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+    if (m_pWaveformRenderer->getOrientation() == Qt::Vertical) {
         painter->setTransform(QTransform(0, 1 / devicePixelRatio, 1, 0, 0, 0));
     } else {
         painter->setTransform(QTransform(1 / devicePixelRatio, 0, 0, 1, 0, 0));
     }
 
     const double firstVisualIndex =
-            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            m_pWaveformRenderer->getFirstDisplayedPosition() * trackSamples /
             audioVisualRatio;
     const double lastVisualIndex =
-            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            m_pWaveformRenderer->getLastDisplayedPosition() * trackSamples /
             audioVisualRatio;
 
-    const float length = m_waveformRenderer->getLength() * devicePixelRatio;
+    const float length = m_pWaveformRenderer->getLength() * devicePixelRatio;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) / length;
@@ -87,16 +87,16 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    const float breadth = m_waveformRenderer->getBreadth();
+    const float breadth = m_pWaveformRenderer->getBreadth();
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = m_alignment == Qt::AlignCenter
             ? allGain * halfBreadth / 255.0f
-            : allGain * m_waveformRenderer->getBreadth() / 255.0f;
+            : allGain * m_pWaveformRenderer->getBreadth() / 255.0f;
 
     //draw reference line
     if (m_alignment == Qt::AlignCenter) {
-        painter->setPen(m_waveformRenderer->getWaveformSignalColors()->getAxesColor());
+        painter->setPen(m_pWaveformRenderer->getWaveformSignalColors()->getAxesColor());
         painter->drawLine(QLineF(0, halfBreadth, length, halfBreadth));
     }
 
@@ -265,8 +265,8 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         }
     }
 
-    double lineThickness = math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel());
-    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
+    double lineThickness = math_max(1.0, 1.0 / m_pWaveformRenderer->getVisualSamplePerPixel());
+    const auto* pColors = m_pWaveformRenderer->getWaveformSignalColors();
 
     painter->setPen(QPen(QBrush(pColors->getLowColor()),
             lineThickness,

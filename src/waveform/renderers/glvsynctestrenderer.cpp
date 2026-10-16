@@ -29,7 +29,7 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     timer.start();
 
-    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    ConstWaveformPointer pWaveform = m_pWaveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }
@@ -49,14 +49,14 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_pWaveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() *
+    double firstVisualIndex = m_pWaveformRenderer->getFirstDisplayedPosition() *
             trackSamples / audioVisualRatio;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+    double lastVisualIndex = m_pWaveformRenderer->getLastDisplayedPosition() *
             trackSamples / audioVisualRatio;
 
     const int firstIndex = int(firstVisualIndex + 0.5);

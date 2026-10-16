@@ -31,7 +31,7 @@ void WaveformRendererHSV::preprocess() {
 }
 
 bool WaveformRendererHSV::preprocessInner() {
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
 
     if (!pTrack) {
         return false;
@@ -59,18 +59,18 @@ bool WaveformRendererHSV::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength());
-    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const int length = static_cast<int>(m_pWaveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
     const float invDevicePixelRatio = 1.f / devicePixelRatio;
     const float halfPixelSize = 0.5f / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
     const double firstVisualFrame =
-            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+            m_pWaveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
     const double lastVisualFrame =
-            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
+            m_pWaveformRenderer->getLastDisplayedPosition() * visualFramesSize;
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
@@ -87,9 +87,9 @@ bool WaveformRendererHSV::preprocessInner() {
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
-    getHsvF(m_waveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
+    getHsvF(m_pWaveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float breadth = static_cast<float>(m_pWaveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;

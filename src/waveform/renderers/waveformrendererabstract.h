@@ -23,7 +23,7 @@ class WaveformRendererAbstract {
         Slip
     };
     explicit WaveformRendererAbstract(
-            WaveformWidgetRenderer* waveformWidgetRenderer);
+            WaveformWidgetRenderer* pWaveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
 
     virtual bool init() {return true; }
@@ -50,7 +50,7 @@ class WaveformRendererAbstract {
         m_scaleFactor = scaleFactor;
     }
 
-    WaveformWidgetRenderer* m_waveformRenderer;
+    WaveformWidgetRenderer* m_pWaveformRenderer;
 
   private:
 

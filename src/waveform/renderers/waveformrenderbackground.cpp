@@ -14,7 +14,7 @@ WaveformRenderBackground::~WaveformRenderBackground() {
 
 void WaveformRenderBackground::setup(const QDomNode& node,
                                      const SkinContext& context) {
-    m_backgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
+    m_backgroundColor = m_pWaveformRenderer->getWaveformSignalColors()->getBgColor();
     QString backgroundPixmapPath = context.selectString(node, "BgPixmap");
     if (!backgroundPixmapPath.isEmpty()) {
         m_backgroundPixmapPath = context.makeSkinPath(backgroundPixmapPath);
@@ -49,8 +49,8 @@ void WaveformRenderBackground::draw(QPainter* painter,
     // background color.
     painter->fillRect(0,
             0,
-            m_waveformRenderer->getWidth(),
-            m_waveformRenderer->getHeight(),
+            m_pWaveformRenderer->getWidth(),
+            m_pWaveformRenderer->getHeight(),
             m_backgroundColor);
 }
 
@@ -62,13 +62,13 @@ void WaveformRenderBackground::generateImage() {
                 scaleFactor());
 
         if (!backgroundImage.isNull()) {
-            if (backgroundImage.width() == m_waveformRenderer->getWidth() &&
-                    backgroundImage.height() == m_waveformRenderer->getHeight()) {
+            if (backgroundImage.width() == m_pWaveformRenderer->getWidth() &&
+                    backgroundImage.height() == m_pWaveformRenderer->getHeight()) {
                 m_backgroundImage = backgroundImage.convertToFormat(QImage::Format_RGB32);
             } else {
-                m_backgroundImage = QImage(m_waveformRenderer->getWidth(),
-                                           m_waveformRenderer->getHeight(),
-                                           QImage::Format_RGB32);
+                m_backgroundImage = QImage(m_pWaveformRenderer->getWidth(),
+                        m_pWaveformRenderer->getHeight(),
+                        QImage::Format_RGB32);
                 QPainter painter(&m_backgroundImage);
                 painter.setRenderHint(QPainter::SmoothPixmapTransform);
                 painter.drawImage(m_backgroundImage.rect(),

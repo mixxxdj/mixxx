@@ -7,8 +7,8 @@
 #include "waveform/renderers/glvsynctestrenderer.h"
 #include "waveform/renderers/glwaveformrenderbackground.h"
 
-GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
-        : GLWaveformWidgetAbstract(group, parent) {
+GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* pParent)
+        : GLWaveformWidgetAbstract(group, pParent) {
     addRenderer<GLWaveformRenderBackground>(); // 172 µs
     //  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
     //  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
@@ -28,7 +28,7 @@ GLVSyncTestWidget::~GLVSyncTestWidget() {
 }
 
 void GLVSyncTestWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {
