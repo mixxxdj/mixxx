@@ -715,6 +715,9 @@ void EngineBuffer::notifyTrackLoaded(
 }
 
 void EngineBuffer::slotPassthroughChanged(double enabled) {
+    // calculateSpeed() is not called while passthrough is active, so the
+    // ramp state would be stale when track playback resumes
+    m_pRateControl->requestRampReset();
     if (enabled != 0) {
         // If passthrough was enabled, stop playing the current track.
         slotControlStop(1.0);
