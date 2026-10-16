@@ -1,8 +1,7 @@
 import Mixxx 1.0 as Mixxx
-import QtQml 2.12
-import QtQuick 2.12
-import QtQuick.Window 2.12
-import QtQuick.Shapes 1.12
+import QtQml
+import QtQuick
+import QtQuick.Shapes
 
 Item {
     id: root
@@ -14,7 +13,6 @@ Item {
     }
 
     property real angle: 130
-    property bool hideCursorWhileDragging: false
     property bool arc: false
     property alias arcColor: arcPath.strokeColor
     property real arcOffsetX: 0
@@ -36,6 +34,7 @@ Item {
     property alias arcWidth: arcPath.strokeWidth
     property alias background: background.data
     property alias foreground: foreground.data
+    property bool hideCursorWhileDragging: true
     property real knobCenterOffsetX: 0
     property real knobCenterOffsetY: 0
     property real max: 1
@@ -105,7 +104,7 @@ Item {
         property vector2d lastTranslation: Qt.vector2d(0, 0)
         property real value
 
-        acceptedButtons: root.hideCursorWhileDragging ? Qt.LeftButton | Qt.MiddleButton : Qt.LeftButton
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         target: null
 
         onActiveChanged: {
@@ -137,39 +136,33 @@ Item {
         value: dragHandler.value
         when: dragHandler.active
     }
+    PointHandler {
+        id: pointerHandler
 
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        enabled: root.hideCursorWhileDragging && root.Window.active
+    }
     MouseArea {
-        parent: root.Window.window ? root.Window.window.contentItem : null
         acceptedButtons: Qt.NoButton
         anchors.fill: parent
+        anchors.margins: -Math.max(Screen.desktopAvailableWidth, Screen.desktopAvailableHeight)
         cursorShape: Qt.BlankCursor
-        enabled: root.hideCursorWhileDragging && dragHandler.active
+        enabled: root.enabled && root.visible && pointerHandler.enabled && pointerHandler.active
         hoverEnabled: true
+        parent: root.Window.window ? root.Window.window.contentItem : null
         visible: enabled
         z: 2147483647
     }
-
-    // TODO: Replace this with a WheelHandler once we switch to Qt >= 5.14.
-    MouseArea {
-        id: wheelHandler
-
-        property real value
-
-        acceptedButtons: Qt.NoButton
-        anchors.fill: parent
+    WheelHandler {
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        target: null
 
         onWheel: event => {
             const wheelAdjustment = event.angleDelta.y / root.wheelDeltaStep * root.wheelStepSize;
             const value = Mixxx.MathUtils.clamp(root.value + wheelAdjustment, root.min, root.max);
             root.turned(value);
             event.accepted = true;
-            wheelHandler.value = value;
         }
-    }
-    Binding {
-        property: "value"
-        target: root
-        value: wheelHandler.value
-        when: wheelHandler.drag.active
     }
 }

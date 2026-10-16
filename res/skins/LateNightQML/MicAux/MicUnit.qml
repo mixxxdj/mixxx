@@ -126,7 +126,6 @@ Item {
                             indicatorColor: "orange"
                             indicatorKind: "small"
                             key: "pregain"
-                            hideCursorWhileDragging: true
                             width: 35
                             y: Math.floor((parent.height - height) / 2)
                         }

@@ -71,7 +71,6 @@ Controls.Panel {
         indicatorColor: "red"
         indicatorKind: "small"
         key: "duckStrength"
-        hideCursorWhileDragging: true
         width: 35
         y: LateNightTheme.isClassic ? 29 : 28
     }
