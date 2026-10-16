@@ -195,6 +195,7 @@ class SoundManager : public QObject {
     QHash<AudioInput, CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
+    bool m_prevAPIWasPulse;
     SoundDevicePointer m_pErrorDevice;
     QHash<AudioOutput, AudioSource*> m_registeredSources;
     QMultiHash<AudioInput, AudioDestination*> m_registeredDestinations;
