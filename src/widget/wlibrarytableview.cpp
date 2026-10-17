@@ -295,92 +295,112 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
 QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
         Qt::KeyboardModifiers modifiers) {
     QAbstractItemModel* pModel = model();
-    if (pModel) {
-        switch (cursorAction) {
-        // The up and down cursor keys should wrap the list around. This
-        // behavior also applies to the `[Library],MoveVertical` action that is
-        // usually bound to the library browse encoder on controllers. Otherwise
-        // browsing a key-sorted library list requires either a serious workout
-        // or the user needs to reach for the mouse or keyboard when moving
-        // between 12/C#m/E and 1/G#m/B. This is very similar to
-        // WTrackTableView::moveSelection(), except that it doesn't actually
-        // modify the selection. It simply returns a new cursor that the
-        // keyboard event handler in `QAbstractItemView` uses to either move the
-        // cursor, move the selection, or extend the selection depending on
-        // which modifier keys are held down.
-        // Note: Shift modifier prevents wrap-around.
-        case QAbstractItemView::MoveUp:
-        case QAbstractItemView::MoveDown: {
-            const QModelIndex current = currentIndex();
-            if (current.isValid()) {
-                const int row = currentIndex().row();
-                const int column = currentIndex().column();
-                if (cursorAction == QAbstractItemView::MoveDown) {
-                    if (row + 1 < pModel->rowCount()) {
-                        return pModel->index(row + 1, column);
-                    } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
-                        return pModel->index(0, column);
-                    }
-                } else {
-                    if (row - 1 >= 0) {
-                        return pModel->index(row - 1, column);
-                    } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
-                        return pModel->index(pModel->rowCount() - 1, column);
-                    }
-                }
-            } else {
-                // If the cursor does not yet exist (because the view has not
-                // yet been interacted with) then this selects the first or last
-                // row
-                const int row = cursorAction == QAbstractItemView::MoveUp
-                        ? pModel->rowCount() - 1
-                        : 0;
+    if (!pModel || pModel->rowCount() == 0) {
+        return QTableView::moveCursor(cursorAction, modifiers);
+    }
 
-                // Selecting a hidden column doesn't work, so we'll need to find
-                // the first non-hidden column here
-                int column = 0;
-                while (isColumnHidden(column) && column < pModel->columnCount()) {
-                    column++;
-                }
+    const QModelIndex current = currentIndex();
+    // Enforce selection if we have only one row and a vertical cursor move.
+    // Works around a QTableView limitation: it skips selection when
+    // newIndex == currentIndex(), which would leave us with no selected row
+    // and thereby prevent us calling track actions, eg. load to deck,
+    // open track menu etc.
+    if (current.isValid() &&
+            pModel->rowCount() == 1 &&
+            selectionModel() &&
+            !selectionModel()->isSelected(current) &&
+            (cursorAction == QAbstractItemView::MoveUp ||
+                    cursorAction == QAbstractItemView::MoveDown ||
+                    cursorAction == QAbstractItemView::MovePageUp ||
+                    cursorAction == QAbstractItemView::MovePageDown ||
+                    cursorAction == QAbstractItemView::MoveHome ||
+                    cursorAction == QAbstractItemView::MoveEnd)) {
+        selectionModel()->select(
+                current,
+                QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        return current;
+    }
 
-                return pModel->index(row, column);
-            }
-        } break;
-        // Make the home and end keys move to the first and last row rather than
-        // the first and last column (QAbstractItemView default)
-        case QAbstractItemView::MoveHome:
-        case QAbstractItemView::MoveEnd: {
-            const QModelIndex current = currentIndex();
-
-            // We don't want to change the selected column if a column has
-            // already been selected
-            int column = current.column();
-            if (!current.isValid()) {
-                // Selecting a hidden column doesn't work, so we'll need to find
-                // the first non-hidden column here
-                int column = 0;
-                while (isColumnHidden(column) && column < pModel->columnCount()) {
-                    column++;
-                }
-            }
-
-            if (cursorAction == QAbstractItemView::MoveHome) {
-                return pModel->index(0, column);
-            } else {
-                return pModel->index(pModel->rowCount() - 1, column);
-            }
-        } break;
-        case QAbstractItemView::MoveLeft:
-        case QAbstractItemView::MoveRight:
-            if (modifiers & Qt::ControlModifier) {
-                // Ignore, so it can be handled by WLibrary::keyEvent
-                // to navigate to the sidebar
-                return currentIndex();
-            }
-            break;
-        default:
-            break;
+    switch (cursorAction) {
+    case QAbstractItemView::MoveLeft:
+    case QAbstractItemView::MoveRight:
+        if (modifiers & Qt::ControlModifier) {
+            // Ignore, so it can be handled by WLibrary::keyEvent
+            // to navigate to the sidebar
+            return current;
         }
+        break;
+    // The up and down cursor keys should wrap the list around.
+    // This behavior also applies to the `[Library],MoveVertical` action that is
+    // usually bound to the library browse encoder on controllers. Otherwise
+    // browsing a key-sorted library list requires either a serious workout
+    // or the user needs to reach for the mouse or keyboard when moving
+    // between 12/C#m/E and 1/G#m/B. This is very similar to
+    // WTrackTableView::moveSelection(), except that it doesn't actually
+    // modify the selection. It simply returns a new cursor that the
+    // keyboard event handler in `QAbstractItemView` uses to either move the
+    // cursor, move the selection, or extend the selection depending on
+    // which modifier keys are held down.
+    // Note: Shift modifier prevents wrap-around.
+    case QAbstractItemView::MoveUp:
+    case QAbstractItemView::MoveDown: {
+        if (current.isValid()) {
+            const int row = current.row();
+            const int column = current.column();
+            if (cursorAction == QAbstractItemView::MoveDown) {
+                if (row + 1 < pModel->rowCount()) {
+                    return pModel->index(row + 1, column);
+                } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
+                    return pModel->index(0, column);
+                }
+            } else {
+                if (row - 1 >= 0) {
+                    return pModel->index(row - 1, column);
+                } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
+                    return pModel->index(pModel->rowCount() - 1, column);
+                }
+            }
+        } else {
+            // If the cursor does not yet exist (because the view has not yet
+            // been interacted with) then this selects the first or last row
+            const int row = cursorAction == QAbstractItemView::MoveUp
+                    ? pModel->rowCount() - 1
+                    : 0;
+
+            // Selecting a hidden column doesn't work, so we'll need to find
+            // the first non-hidden column here
+            int column = 0;
+            while (isColumnHidden(column) && column < pModel->columnCount()) {
+                column++;
+            }
+
+            return pModel->index(row, column);
+        }
+    } break;
+    // Make the home and end keys move to the first and last row rather than
+    // the first and last column (QAbstractItemView default)
+    case QAbstractItemView::MoveHome:
+    case QAbstractItemView::MoveEnd: {
+        // We don't want to change the selected column if a column has
+        // already been selected
+        int column = current.column();
+        if (!current.isValid()) {
+            // Selecting a hidden column doesn't work, so we'll need to find
+            // the first non-hidden column here
+            column = 0;
+            while (isColumnHidden(column) && column < pModel->columnCount()) {
+                column++;
+            }
+        }
+
+        if (cursorAction == QAbstractItemView::MoveHome) {
+            return pModel->index(0, column);
+        } else {
+            return pModel->index(pModel->rowCount() - 1, column);
+        }
+    } break;
+    default:
+        break;
     }
 
     return QTableView::moveCursor(cursorAction, modifiers);
