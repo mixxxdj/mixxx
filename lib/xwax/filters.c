@@ -260,6 +260,62 @@ out:
 }
 
 /*
+ * Computes the magnitude of the frequency response of a Savitzky-Golay
+ * filter at the normalised frequency f (in cycles per sample).
+ */
+
+static double savgol_gain(const double *coeff, size_t window_size, double f)
+{
+    long M = (long)(window_size - 1) / 2; /* Middle of the window */
+    double re = 0.0; /* Real part */
+    double im = 0.0; /* Imaginary part */
+
+    for (size_t i = 0; i < window_size; i++) {
+        long k = (long)i - M;
+
+        re += coeff[i] * cos(2.0 * M_PI * f * k);
+        im -= coeff[i] * sin(2.0 * M_PI * f * k);
+    }
+
+    return sqrt(re * re + im * im);
+}
+
+/*
+ * Finds the largest window size of a Savitzky-Golay filter of the given
+ * order that still passes the normalised frequency cutoff (in cycles per
+ * sample).
+ *
+ * A larger window smoothes more, but lowers the cutoff frequency of the filter.
+ * If even the smallest window attenuates the cutoff frequency, the smallest
+ * window is returned.
+ */
+
+size_t savgol_window_size(size_t polyorder, double cutoff)
+{
+    size_t min = polyorder + 1; /* Minimum window size so the filter works */
+    if (min % 2 == 0)
+        min++;
+
+    size_t best = min;
+
+    for (size_t n = min; n <= SAVGOL_MAX_WINDOW_SIZE; n += 2) {
+        double *coeff = savgol_gen_coeffs(n, polyorder);
+        if (!coeff)
+            break;
+
+        double gain = savgol_gain(coeff, n, cutoff);
+        free(coeff);
+
+        if (gain < M_SQRT1_2)
+            break;
+
+        best = n;
+    }
+
+    return best;
+}
+
+/*
  * Creates a Savitzky-Golay filter at runtime given a windows size N
  * and filter order. The sample window size determines the delay of the filter.
  * The delay of the filter equals the half width M of the sample window.
