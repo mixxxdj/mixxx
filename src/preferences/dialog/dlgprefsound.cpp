@@ -303,7 +303,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 audioBufferComboBox->setEnabled(checked);
 
                 if (checked) {
-                    updateAudioBufferSizes(0);
+                    if (audioBufferComboBox->isEnabled()) {
+                        audioBufferComboBox->clear();
+                        for (int i = 1; i < 8; i++) {
+                            audioBufferComboBox->addItem(tr("%1 frames/period").arg(2 << (i + 4)),
+                                    QVariant::fromValue(i));
+                        }
+                    }
                 } else {
                     audioBufferComboBox->clear();
                     unsigned int bufferSize = static_cast<unsigned int>(m_cpBufferSize->get());
@@ -364,11 +370,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                     kAppGroup, QStringLiteral("latency_params_mismatch"), this);
             m_latencyParamsMismatchText->setVisible(
                     static_cast<bool>(m_cpLatencyParamsMismatch->get()));
-            m_latencyParamsMismatchText->setText(
-                    tr("Server is providing different buffer size "
-                       "(%1) or samplerate (%2) than forced.")
-                            .arg(QString::number(m_cpBufferSize->get()),
-                                    QString::number(m_cpSamplerate->get())));
+
+            if (m_latencyParamsMismatchText->isVisible()) {
+                m_latencyParamsMismatchText->setText(
+                        tr("Server is providing different buffer size "
+                           "(%1) or samplerate (%2) than forced.")
+                                .arg(QString::number(m_cpBufferSize->get()),
+                                        QString::number(m_cpSamplerate->get())));
+            }
 
             m_cpLatencyParamsMismatch->connectValueChanged(
                     this, [this](double mismatch) {
@@ -969,7 +978,12 @@ void DlgPrefSound::engineClockChanged(int index) {
 // but they'll be close).
 void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     QVariant oldSizeIndex = audioBufferComboBox->currentData();
-    if (m_config.getAPI() == SoundManagerConfig::kAPIPipewire) {
+
+    if (!m_pSoundManager->isPipewireSelected()) {
+        audioBufferComboBox->clear();
+    }
+
+    if (m_pSoundManager->isPipewireSelected()) {
         if (audioBufferComboBox->isEnabled()) {
             audioBufferComboBox->clear();
             for (int i = 1; i < 8; i++) {
@@ -977,11 +991,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
                         QVariant::fromValue(i));
             }
         }
-        return;
-    }
-
-    audioBufferComboBox->clear();
-    if (m_config.getAPI() == SoundManagerConfig::kAPIJack) {
+    } else if (m_config.getAPI() == SoundManagerConfig::kAPIJack) {
         // in case of jack we configure the frames/period
         // we cannot calc the resulting buffer size in ms because the
         // Sample rate is not known yet. We assume 48000 KHz here
