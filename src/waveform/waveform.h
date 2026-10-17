@@ -97,6 +97,12 @@ class Waveform {
         return m_audioVisualRatio;
     }
 
+    // We do not lock the mutex since m_visualSampleRate is not changed after
+    // the constructor runs.
+    double getVisualSampleRate() const {
+        return m_visualSampleRate;
+    }
+
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
     int getCompletion() const {
@@ -149,7 +155,6 @@ class Waveform {
     inline unsigned char& mid(int i) { return m_data[i].filtered.mid;}
     inline unsigned char& high(int i) { return m_data[i].filtered.high;}
     inline unsigned char& all(int i) { return m_data[i].filtered.all;}
-    double getVisualSampleRate() const { return m_visualSampleRate; }
 
     // If stored in the database, the ID of the waveform.
     int m_id;

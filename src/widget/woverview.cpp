@@ -484,6 +484,7 @@ void WOverview::slotTypeControlChanged(double v) {
     m_type = type;
     m_pWaveform.clear();
     m_waveformSourceImage = QImage();
+    m_actualCompletion = 0;
     slotWaveformSummaryUpdated();
 }
 
@@ -496,6 +497,7 @@ void WOverview::slotStereoControlChanged(double v) {
     m_stereo = stereo;
     // Enforce generation of the new stereo/mono source image
     m_waveformSourceImage = QImage();
+    m_actualCompletion = 0;
     slotWaveformSummaryUpdated();
 }
 
@@ -1506,6 +1508,14 @@ bool WOverview::drawNextPixmapPart() {
 
     const int nextCompletion = m_actualCompletion + completionIncrement;
 
+    // The RGB 3-band overview is scaled by the levels of the whole track, so
+    // the parts drawn during the analysis are redrawn when it is complete.
+    if (m_type == OverviewType::RGB3Band && nextCompletion >= dataSize - 2 &&
+            (m_actualCompletion == 0 || !m_pixmapDone)) {
+        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
+        m_actualCompletion = 0;
+    }
+
     // qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
     //  << nextCompletion
     //  << "m_actualCompletion:" << m_actualCompletion
@@ -1527,6 +1537,14 @@ bool WOverview::drawNextPixmapPart() {
 
     if (m_type == OverviewType::Filtered) {
         waveformOverviewRenderer::drawWaveformPartLMH(
+                &painter,
+                pWaveform,
+                &m_actualCompletion,
+                nextCompletion,
+                m_signalColors,
+                !m_stereo);
+    } else if (m_type == OverviewType::RGB3Band) {
+        waveformOverviewRenderer::drawWaveformPartRGB3Band(
                 &painter,
                 pWaveform,
                 &m_actualCompletion,

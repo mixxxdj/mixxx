@@ -13,6 +13,7 @@
 #include "waveform/renderers/allshader/waveformrendererhsv.h"
 #include "waveform/renderers/allshader/waveformrendererpreroll.h"
 #include "waveform/renderers/allshader/waveformrendererrgb.h"
+#include "waveform/renderers/allshader/waveformrendererrgb3band.h"
 #include "waveform/renderers/allshader/waveformrenderersimple.h"
 #include "waveform/renderers/allshader/waveformrendererslipmode.h"
 #include "waveform/renderers/allshader/waveformrendererstem.h"
@@ -133,6 +134,8 @@ WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
     case ::WaveformWidgetType::Stacked:
         return addWaveformSignalRenderer<WaveformRendererFiltered>(
                 true, options); // true for RGB Stacked
+    case ::WaveformWidgetType::RGB3Band:
+        return addWaveformSignalRenderer<WaveformRendererRGB3Band>(options);
     default:
         break;
     }
