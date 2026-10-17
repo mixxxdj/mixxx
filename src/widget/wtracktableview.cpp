@@ -524,13 +524,14 @@ void WTrackTableView::trackRatingChangeRequestRelative(int change) {
         return;
     }
 
-    const QModelIndex index = indices.at(0);
-    TrackPointer pTrack = pTrackModel->getTrack(index);
-    if (pTrack) {
-        int newRating = pTrack->getRating() + change;
-        if (mixxx::TrackRecord::isValidRating(newRating) &&
-                newRating != pTrack->getRating()) {
-            pTrack->setRating(newRating);
+    for (const auto& idx : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(idx);
+        if (pTrack) {
+            int newRating = pTrack->getRating() + change;
+            if (mixxx::TrackRecord::isValidRating(newRating) &&
+                    newRating != pTrack->getRating()) {
+                pTrack->setRating(newRating);
+            }
         }
     }
 }
