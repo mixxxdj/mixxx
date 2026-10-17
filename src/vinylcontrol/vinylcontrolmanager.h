@@ -28,6 +28,7 @@ class VinylControlManager : public QObject {
 
     bool vinylInputConnected(int deck);
     int vinylInputFromGroup(const QString& group);
+    void saveEnabledStates();
 
     void addSignalQualityListener(VinylSignalQualityListener* pListener);
     void removeSignalQualityListener(VinylSignalQualityListener* pListener);
