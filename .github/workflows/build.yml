@@ -173,6 +173,69 @@ jobs:
             artifacts_path: build/*.msi
             artifacts_slug: windows-winarm
             arch: arm64
+          - name: AppImage Linux aarch64
+            # Build the 2.6 AppImage in a glibc-2.28 Rocky 8 container against
+            # the Rocky-8-built buildenv, so the resulting binaries stay at
+            # glibc 2.28.
+            # The gcc-toolset-12 compiler is pinned explicitly because CMake's
+            # automatic detection of it fails inside the rockylinux:8
+            # container ("compiler identification is unknown"), while the
+            # compiler itself compiles, links and runs fine.
+            # GCC 12 emits false-positive -Warray-bounds in Qt QVariant code;
+            # suppress it while keeping -Werror for everything else.
+            os: ubuntu-24.04-arm
+            container: rockylinux:8
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_C_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/cc
+              -DCMAKE_CXX_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/c++
+              -DCMAKE_CXX_FLAGS=-Wno-error=array-bounds
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/usr
+              -DCMAKE_INSTALL_LIBDIR=lib
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            cpack_generator: AppImage
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/appimage_release_buildenv.sh
+            artifacts_name: AppImage Linux aarch64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage-arm64
+            arch: aarch64
+          - name: AppImage Linux x86_64
+            # x86_64 counterpart of the aarch64 entry above; same Rocky 8
+            # (glibc 2.28) container and buildenv approach.
+            os: ubuntu-24.04
+            container: rockylinux:8
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_C_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/cc
+              -DCMAKE_CXX_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/c++
+              -DCMAKE_CXX_FLAGS=-Wno-error=array-bounds
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/usr
+              -DCMAKE_INSTALL_LIBDIR=lib
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            cpack_generator: AppImage
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/appimage_release_buildenv.sh
+            artifacts_name: AppImage Linux x86_64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage-x86_64
+            arch: x86_64
 
     env:
       # macOS codesigning
@@ -188,6 +251,17 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
       artifact-windows-winarm: ${{ steps.prepare_deploy.outputs.artifact-windows-winarm }}
     steps:
+      - name: "[Rocky8] Install base tools"
+        # The rockylinux:8 container has no git, so install it before the
+        # checkout step to avoid the git-archive tarball fallback (which
+        # omits .git).  python39 runs the AppImage floor-deps check (Rocky
+        # 8's default python3 is 3.6, too old for
+        # subprocess.run(capture_output=...)).
+        if: matrix.container == 'rockylinux:8'
+        run: |
+          dnf install -y git python39
+          alternatives --set python3 /usr/bin/python3.9
+
       - name: "Check out repository"
         uses: actions/checkout@v7
         with:
@@ -270,12 +344,28 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
+      - name: "[AppImage] Set up cmake"
+        # The CPack AppImage generator requires CMake >= 4.2, which is not
+        # available from dnf on the rockylinux:8 container.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        uses: jwlawson/actions-setup-cmake@v2.2
+        with:
+          cmake-version: "4.2.x"
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
+      - name: "[Rocky8] Config ALSA null device"
+        # The container has no sound card; point ALSA at a null device so the
+        # test suite can initialize the audio engine.  The alsa-lib package
+        # installs its own /etc/asound.conf during the setup step above, so
+        # this must run after it.  Both the default and the sysdefault PCM
+        # (which PortAudio requests) map to the null type.
+        if: matrix.container == 'rockylinux:8'
+        run: printf 'pcm.!default {\n  type null\n}\npcm.sysdefault null\n' > /etc/asound.conf
       - name: "[Windows] Set up build environment"
         if: matrix.buildenv_script != null && runner.os == 'Windows'
         # With the cmd shell the ERRORLEVEL is checked
@@ -365,8 +455,10 @@ jobs:
       - name: "[Ubuntu/macOS] Drop ccache entries not used by this build"
         # The saved cache would otherwise keep every object it ever held and
         # grow to --max-size on each branch. Entries this build used have a
-        # fresh timestamp; everything else is stale.
-        if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
+        # fresh timestamp; everything else is stale.  The AppImage jobs are
+        # excluded: they run in the Rocky 8 container, whose ccache
+        # predates --evict-older-than.
+        if: runner.os != 'windows' && matrix.cpack_generator != 'AppImage' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
         run: |
           ${{ matrix.compiler_cache }} --evict-older-than "$(( $(date +%s) - CCACHE_BUILD_START ))s"
           ${{ matrix.compiler_cache }} --show-stats
@@ -382,7 +474,9 @@ jobs:
       - name: "[Ubuntu/macOS] Delete outdated ccache caches"
         # Every source change creates a new cache entry for this branch. Drop
         # the older ones so they don't evict the caches of other branches.
-        if: steps.ccache_save.outcome == 'success'
+        # The AppImage jobs are excluded for the same ccache-version reason
+        # as the drop step above.
+        if: matrix.cpack_generator != 'AppImage' && steps.ccache_save.outcome == 'success'
         run: |
           # A build of a newer commit may have saved its cache already
           if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
@@ -477,6 +571,46 @@ jobs:
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
 
+      - name: "[AppImage] Check floor dependencies"
+        # The AppImage delegates fontconfig, alsa and the base system stack to
+        # the host (freetype and harfbuzz are bundled), so the shipped binary
+        # must not reference symbols or symbol versions the floor (the Rocky 8
+        # build host, glibc 2.28) cannot provide.  Headers from newer vcpkg
+        # ports can introduce them; walk the packaged AppImage's
+        # dynamic-linking closure against its bundled libraries and the build
+        # host's own libraries and fail on anything unsatisfiable.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Checking ${APPIMAGE}"
+          python3 tools/check_appimage_floor_deps.py "${APPIMAGE}"
+
+      - name: "[AppImage] Smoke test"
+        # Run the packaged AppImage once.  This catches loader-level failures
+        # (e.g. the ld.so assertion a broken linker produces, or missing
+        # bundled libraries) that a build-only pipeline cannot see.  The
+        # container has no display, so --version may exit non-zero after
+        # initializing Qt — reaching Mixxx startup is what matters.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Smoke-testing ${APPIMAGE}"
+          set +e
+          APPIMAGE_EXTRACT_AND_RUN=1 timeout 60 "${APPIMAGE}" --version >/tmp/smoke.log 2>&1
+          rc=$?
+          set -e
+          if grep -qE "Inconsistency detected by ld.so|error while loading shared libraries|cannot open shared object file" /tmp/smoke.log; then
+            echo "FAIL: AppImage failed at loader level (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          if ! grep -qE "Mixxx [0-9]|Using preferences|Selected Qt style|ConfigObject:" /tmp/smoke.log; then
+            echo "FAIL: AppImage did not reach Mixxx startup (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          echo "SMOKE OK"
+
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
         uses: actions/upload-artifact@v7
@@ -564,7 +698,8 @@ jobs:
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
         id: prepare_deploy
-        if: inputs.publish && matrix.artifacts_path != null
+        # The AppImage is published via the appimage.yml reusable workflow.
+        if: inputs.publish && matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         shell: bash
         run: >
           if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
@@ -650,8 +785,17 @@ jobs:
         run: |
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
+      - name: "[AppImage] Upload AppImage"
+        # The AppImage is uploaded uncompressed (archive: false), so the
+        # artifact name equals the file name.
+        if: matrix.cpack_generator == 'AppImage'
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          archive: "false"
+          path: ${{ matrix.artifacts_path }}
+
       - name: "Upload GitHub Actions artifacts"
-        if: matrix.artifacts_path != null
+        if: matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         uses: actions/upload-artifact@v7.0.1
         with:
           archive: "false"
