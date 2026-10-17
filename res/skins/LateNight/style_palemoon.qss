@@ -420,6 +420,10 @@ WTrackProperty[selected="true"],
   max-width: 0px;
 }
 
+/*#RateRangeDisplayCompactSync {
+  margin-right: 16px;
+}*/
+
 #ToolBar {
   padding: 0px 2px 0px 2px;
   }
