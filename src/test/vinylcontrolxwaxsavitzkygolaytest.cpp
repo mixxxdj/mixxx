@@ -30,7 +30,7 @@ class SavitzkyGolayTest : public ::testing::Test {
     }
 };
 
-TEST(SavitzkyGolayTest, LowFrequencySignal) {
+TEST(VinylControlXwaxSavitzkyGolayTest, LowFrequencySignal) {
     const double f = 100.0;
     const double w = 2 * M_PI * f;
     const double fs = 44100;
@@ -58,7 +58,7 @@ TEST(SavitzkyGolayTest, LowFrequencySignal) {
     savgol_destroy(sg);
 }
 
-TEST(SavitzkyGolayTest, PlainSequence) {
+TEST(VinylControlXwaxSavitzkyGolayTest, PlainSequence) {
     const int N = 21;
     const double atol = 1e-6;
 
@@ -82,7 +82,7 @@ TEST(SavitzkyGolayTest, PlainSequence) {
     savgol_destroy(sg);
 }
 
-TEST(SavitzkyGolayTest, NoiseFiltering) {
+TEST(VinylControlXwaxSavitzkyGolayTest, NoiseFiltering) {
     const double f = 100.0;
     const double w = 2 * M_PI * f;
     const double fs = 44100;
