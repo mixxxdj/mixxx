@@ -1,0 +1,90 @@
+<!--
+  deck-channel.html — Mixer channel card: transport buttons + knob controls.
+  Used inside the Mixer channels section.
+
+  Expected context (Alpine scope):
+    deck: { id, visible }
+    Decks: object of Deck models
+    Mixer: { Channels: { [id]: Channel } }
+    knob({name, value, size}): Alpine component data
+    knobChange(knobName, deckId, value): function
+    deckCue(deckId): function
+    toggleDeckPlay(deckId): function
+-->
+<template id="deck-channel">
+  <div
+    class="flex-1 items-center card card-border border-primary/30 bg-base-300"
+    x-show="deck.visible"
+    x-data=""
+    :id="'Mixer_CH_' + deck.id"
+  >
+    <div class="items-center px-0 py-2 w-full card-body">
+      <h3
+        class="font-mono text-sm tracking-wider card-title"
+        x-text="'CH ' + deck.id"
+      ></h3>
+
+      <div class="pt-2 space-y-2 w-full bg-base-200">
+        <div class="flex flex-wrap gap-1 justify-center items-center">
+          <!-- CUE -->
+          <button
+            class="text-white bg-orange-700 btn btn-sm btn-square"
+            @click="deckCue(deck.id)"
+          >
+            <span class="text-xs">CUE</span>
+          </button>
+          <!-- PLAY / PAUSE toggle -->
+          <button
+            class="btn btn-sm btn-square"
+            :class="Decks[deck.id]?.play ? 'btn-warning' : 'btn-success'"
+            @click="toggleDeckPlay(deck.id)"
+          >
+            <span
+              class="text-base"
+              :class="Decks[deck.id]?.play ? 'iconify mdi--pause' : 'iconify mdi--play'"
+            ></span>
+          </button>
+          <!-- SYNC -->
+          <button class="btn btn-sm btn-square btn-neutral">
+            <span class="text-xs">SYNC</span>
+          </button>
+        </div>
+        <div class="flex justify-center">
+          <div
+            :id="'ch' + deck.id + '_gain'"
+            x-data="knob({name: 'GAIN', value: Mixer.Channels[deck.id].gain, size: 48})"
+            x-init="$watch('value', newVal => knobChange('gain', deck.id, newVal))"
+          ></div>
+        </div>
+      </div>
+
+      <div
+        :id="'ch' + deck.id + '_high'"
+        x-data="knob({name: 'HI', value: Mixer.Channels[deck.id].high, size: 48})"
+        x-init="$watch('value', newVal => knobChange('high', deck.id, newVal))"
+      ></div>
+      <div
+        :id="'ch' + deck.id + '_mid'"
+        x-data="knob({name: 'MI', value: Mixer.Channels[deck.id].mid, size: 48})"
+        x-init="$watch('value', newVal => knobChange('mid', deck.id, newVal))"
+      ></div>
+      <div
+        :id="'ch' + deck.id + '_bass'"
+        x-data="knob({name: 'BA', value: Mixer.Channels[deck.id].bass, size: 48})"
+        x-init="$watch('value', newVal => knobChange('bass', deck.id, newVal))"
+      ></div>
+      <div class="flex flex-col justify-center items-center pt-2 w-full bg-base-200">
+        <div
+          :id="'ch' + deck.id + '_super_fx'"
+          x-data="knob({name: 'FX', value: Mixer.Channels[deck.id].super_fx, size: 48})"
+          x-init="$watch('value', newVal => knobChange('super_fx', deck.id, newVal))"
+        ></div>
+        <div
+          :id="'ch' + deck.id + '_volume'"
+          x-data="knob({name: 'VOL', value: Mixer.Channels[deck.id].volume, size: 48, default: 100})"
+          x-init="$watch('value', newVal => knobChange('volume', deck.id, newVal))"
+        ></div>
+      </div>
+    </div>
+  </div>
+</template>

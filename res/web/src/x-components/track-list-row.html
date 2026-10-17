@@ -1,0 +1,42 @@
+<!--
+  track-list-row.html — Reusable track list row template.
+  Used by: AutoDJ queue, Library search results.
+
+  Expected context (Alpine scope):
+    track: { id, key, bpm, title, artist, duration, timesplayed, position? }
+    selectedTrackId: number|null
+    settings.selectedColor: string
+    formatTime: function
+    selectTrack(trackId): function
+-->
+<template id="track-list-row">
+  <li
+    class="rounded-none cursor-pointer list-row"
+    :class="selectedTrackId === track.id ? 'bg-' + settings.selectedColor + '/75 text-' + settings.selectedColor + '-content' : 'bg-base-100/75'"
+    @click="selectTrack(track.id)"
+  >
+    <!-- Generate Colors on npx vite build -->
+    <div class="hidden">
+      <div class="bg-primary/75"></div>
+      <div class="bg-secondary/75"></div>
+      <div class="bg-neutral/75"></div>
+      <div class="bg-accent/75"></div>
+      <div class="bg-info/75"></div>
+      <div class="bg-success/75"></div>
+      <div class="bg-error/75"></div>
+      <div class="bg-warning/75"></div>
+    </div>
+    <div class="w-8">
+      <div class="text-xs font-semibold text-center uppercase opacity-75" x-text="track.key || '–'"></div>
+      <div class="text-xs opacity-75" title="BPM" x-text="track.bpm ? track.bpm.toFixed(1) : '–'"></div>
+    </div>
+    <div class="flex-1 min-w-0 list-col-grow">
+      <div class="font-semibold truncate" x-text="track.title || '–'"></div>
+      <div class="text-xs truncate opacity-75" x-text="track.artist || 'Unknown Artist'"></div>
+    </div>
+    <div class="text-right">
+      <div class="text-xs" x-text="formatTime(track.duration)"></div>
+      <div class="text-xs whitespace-nowrap opacity-60" x-text="'&#9654; ' + (track.timesplayed || 0)"></div>
+    </div>
+  </li>
+</template>
