@@ -23,6 +23,7 @@ class ControlObject;
 #define MIXXX_PORTAUDIO_OSS_STRING "OSS"
 #define MIXXX_PORTAUDIO_ASIO_STRING "ASIO"
 #define MIXXX_PORTAUDIO_DIRECTSOUND_STRING "Windows DirectSound"
+#define MIXXX_PORTAUDIO_WASAPI_STRING "Windows WASAPI"
 // NOTE: This is what our patched version of PortAudio uses for the Core Audio
 // backend on iOS. If/when upstream supports iOS officially
 // (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
@@ -72,6 +73,11 @@ class SoundManager : public QObject {
 
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
+
+    /// The PortAudio index of the host API's default output device, or -1
+    /// if the API is unknown or has none.
+    int getDefaultOutputDeviceIndex(const QString& api) const;
+
     SoundManagerConfig getConfig() const;
     SoundDeviceStatus setConfig(const SoundManagerConfig& config);
     void closeActiveConfig();
