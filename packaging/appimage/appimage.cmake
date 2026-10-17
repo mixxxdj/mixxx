@@ -3,7 +3,9 @@
 
 # AppImage desktop file (simplified Exec=mixxx).
 # The Exec= key must refer to the binary by basename only, as CPack matches it
-# against an installed file.
+# against an installed file.  The Icon= key references the uniquely named
+# high-resolution icon installed below, which is also what appimagetool looks
+# up at the AppDir root (it uses the desktop file's Icon= name).
 set(
   MIXXX_APPIMAGE_DESKTOP_FILE
   "${CMAKE_CURRENT_BINARY_DIR}/mixxx-appimage.desktop"
@@ -20,7 +22,24 @@ string(
   MIXXX_APPIMAGE_DESKTOP_CONTENT
   "${MIXXX_APPIMAGE_DESKTOP_CONTENT}"
 )
+string(
+  REGEX REPLACE
+  "\nIcon=[^\n]*"
+  "\nIcon=mixxx-512"
+  MIXXX_APPIMAGE_DESKTOP_CONTENT
+  "${MIXXX_APPIMAGE_DESKTOP_CONTENT}"
+)
 file(WRITE "${MIXXX_APPIMAGE_DESKTOP_FILE}" "${MIXXX_APPIMAGE_DESKTOP_CONTENT}")
+
+# The 512x512 icon under a unique name, referenced by the AppImage desktop
+# file above and by CPACK_PACKAGE_ICON.  The hicolor install provides all
+# sizes as mixxx.png for the desktop environments, but a distinct name makes
+# the AppImage's top-level icon deterministically the high-resolution one.
+install(
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/512x512/apps/mixxx.png"
+  DESTINATION "${CMAKE_INSTALL_DATADIR}/pixmaps"
+  RENAME "mixxx-512.png"
+)
 install(
   FILES "${MIXXX_APPIMAGE_DESKTOP_FILE}"
   DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
