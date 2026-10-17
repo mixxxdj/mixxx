@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QPointer>
+
 #include "rendergraph/engine.h"
 #include "rendergraph/opacitynode.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
@@ -30,6 +32,7 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     void resizeRenderer(int width, int height, float devicePixelRatio) override;
 
     // override for WaveformWidgetAbstract
+    void preRender(VSyncThread* vsyncThread) override;
     mixxx::Duration render() override;
 
     // overrides for WGLWidget
@@ -73,6 +76,9 @@ class allshader::WaveformWidget final : public ::WGLWidget,
     WaveformRenderMark* m_pWaveformRenderMarkSlip;
 
     WaveformRendererSignalBase* m_pWaveformRendererSignal;
+    QPointer<VSyncThread> m_pVSyncThread;
+    bool m_rendergraphResizePending = true;
+    bool m_preRenderPending = false;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformWidget);
 };

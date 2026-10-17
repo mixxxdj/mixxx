@@ -17,6 +17,7 @@
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
+#include "waveform/vsyncthread.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveform/widgets/allshader/moc_waveformwidget.cpp"
 
@@ -148,7 +149,28 @@ mixxx::Duration WaveformWidget::render() {
     return mixxx::Duration();
 }
 
+void WaveformWidget::preRender(VSyncThread* vsyncThread) {
+    m_pVSyncThread = vsyncThread;
+    resizeRenderer(width(), height(), static_cast<float>(devicePixelRatioF()));
+    WaveformWidgetAbstract::preRender(vsyncThread);
+    m_preRenderPending = false;
+}
+
 void WaveformWidget::paintGL() {
+    resizeRenderer(width(), height(), static_cast<float>(devicePixelRatioF()));
+    if (m_preRenderPending && m_pVSyncThread) {
+        WaveformWidgetAbstract::preRender(m_pVSyncThread);
+        m_preRenderPending = false;
+    }
+    if (m_rendergraphResizePending) {
+        m_pEngine->resize(getWidth(), getHeight());
+        m_rendergraphResizePending = false;
+    }
+    glViewport(0,
+            0,
+            static_cast<GLsizei>(std::lround(getWidth() * getDevicePixelRatio())),
+            static_cast<GLsizei>(std::lround(getHeight() * getDevicePixelRatio())));
+
     // opacity of 0.f effectively skips the subtree rendering
     m_pOpacityNode->setOpacity(shouldOnlyDrawBackground() ? 0.f : 1.f);
 
@@ -169,21 +191,18 @@ void WaveformWidget::castToQWidget() {
 void WaveformWidget::initializeGL() {
 }
 
-void WaveformWidget::resizeRenderer(int, int, float) {
-    // This is called when the widget is resized, but as this is a WGLWidget, we
-    // also get the resizeGL call and use that instead, as it has the opengl
-    // context set.
+void WaveformWidget::resizeRenderer(int width, int height, float devicePixelRatio) {
+    if (getWidth() == width && getHeight() == height &&
+            getDevicePixelRatio() == devicePixelRatio) {
+        return;
+    }
+    WaveformWidgetRenderer::resizeRenderer(width, height, devicePixelRatio);
+    m_rendergraphResizePending = true;
+    m_preRenderPending = true;
 }
 
-void WaveformWidget::resizeGL(int w, int h) {
-    w = static_cast<int>(std::lround(static_cast<qreal>(w) / devicePixelRatioF()));
-    h = static_cast<int>(std::lround(static_cast<qreal>(h) / devicePixelRatioF()));
-
-    // Many allshader components relies on WaveformWidgetRenderer::getWidth and
-    // WaveformWidgetRenderer::getHeight to update their rendering stack, so we
-    // must resize the renderer first, before updating the rendergraph
-    WaveformWidgetRenderer::resizeRenderer(w, h, static_cast<float>(devicePixelRatio()));
-    m_pEngine->resize(w, h);
+void WaveformWidget::resizeGL(int, int) {
+    resizeRenderer(width(), height(), static_cast<float>(devicePixelRatioF()));
 }
 
 void WaveformWidget::paintEvent(QPaintEvent* event) {
