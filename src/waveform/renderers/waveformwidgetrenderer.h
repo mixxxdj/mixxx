@@ -47,7 +47,7 @@ class WaveformWidgetRenderer {
     }
 
     bool isSlipActive() const {
-        return m_pos[::WaveformRendererAbstract::Play] != m_pos[::WaveformRendererAbstract::Slip];
+        return m_slipActive;
     }
 
     ConstWaveformPointer getWaveform() const;
@@ -252,4 +252,5 @@ private:
     bool m_passthroughEnabled;
     double m_pos[2];
     double m_truePosSample[2];
+    bool m_slipActive;
 };
