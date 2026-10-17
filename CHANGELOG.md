@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.5.7 (unreleased)
+## [2.5.7](https://github.com/mixxxdj/mixxx/milestone/56) (unreleased)
 
 ### Controller Mappings
 
@@ -64,7 +64,7 @@
 * EngineBuffer: Reset sample counter after indicator update [#16245](https://github.com/mixxxdj/mixxx/pull/16245)
 * libfdk_aac: SoundSourceProxyTest.seekBoundaries fix
   [#16440](https://github.com/mixxxdj/mixxx/pull/16440)
-  [#16440](https://github.com/mixxxdj/mixxx/issues/14624)
+  [#14624](https://github.com/mixxxdj/mixxx/issues/14624)
 * FFmpeg: fix of gap bug fix
   [#16439](https://github.com/mixxxdj/mixxx/pull/16439)
   [#10464](https://github.com/mixxxdj/mixxx/issues/10464)
@@ -2115,7 +2115,7 @@ Note: Version 2.5.5 has been skipped following an issue in the release workflow.
 * macOS: Library entries are now sorted using the language depending Unicode Collation Algorithm (UCA).
   [#12517](https://github.com/mixxxdj/mixxx/issues/12517)
 * macOS: Visual glitches with the main EQ sliders
-  [#12517](https://github.com/mixxxdj/mixxx/issues/12630)
+  [#12630](https://github.com/mixxxdj/mixxx/issues/12630)
 * Linux: possible crash when enabling a MIDI controller [#12001](https://github.com/mixxxdj/mixxx/issues/12001)
   Introduce with Qt 5.15.5, fixed in Qt 5.15.17 and Qt 6.6.3
 * Extra Samplers are created during startup, when found in a saved Sampler Bank [#12657](https://github.com/mixxxdj/mixxx/pull/12657) [#12809](https://github.com/mixxxdj/mixxx/pull/12809)
