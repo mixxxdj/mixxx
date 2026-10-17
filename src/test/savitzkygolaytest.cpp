@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 
@@ -111,6 +112,72 @@ TEST(SavitzkyGolayTest, NoiseFiltering) {
     }
 
     savgol_destroy(sg);
+}
+
+// The window size is chosen so the carrier passes the filter within -3 dB at
+// up to 4 times the reference speed (SAVGOL_PASSBAND_PITCH in timecoder.c).
+size_t windowSize(double carrierHz, double sampleRate) {
+    return savgol_window_size(3, 4.0 * carrierHz / sampleRate);
+}
+
+TEST(VinylControlXwaxLibSavitzkyGolayTest, WindowSizeOfEmpiricallyTunedTimecodes) {
+    // Verify the empirically tuned windows for Traktor MK2 and Serato stay untouched
+    // for different sampling rates
+    EXPECT_EQ(5, windowSize(2500, 44100));
+    EXPECT_EQ(5, windowSize(2500, 48000));
+    EXPECT_EQ(9, windowSize(2500, 96000));
+    EXPECT_EQ(11, windowSize(1000, 44100));
+}
+
+TEST(VinylControlXwaxLibSavitzkyGolayTest, WindowSizeIsAtLeastTheSmallestValidWindow) {
+    // Traktor MK2 CD (3000 Hz) at 44.1 kHz: no window passes 12 kHz, so the smallest window
+    // for a 3rd order polynomial is used instead of an invalid one.
+    EXPECT_EQ(5, windowSize(3000, 44100));
+    EXPECT_EQ(5, savgol_window_size(3, 0.5));
+    EXPECT_EQ(5, savgol_window_size(4, 0.5));
+    EXPECT_EQ(3, savgol_window_size(1, 0.5));
+}
+
+TEST(VinylControlXwaxLibSavitzkyGolayTest, WindowSizeGrowsWithSampleRate) {
+    size_t previous = 0;
+
+    for (double sampleRate : {44100.0, 48000.0, 88200.0, 96000.0}) {
+        const size_t window = windowSize(1000, sampleRate);
+        EXPECT_EQ(1u, window % 2) << sampleRate;
+        EXPECT_GE(window, previous) << sampleRate;
+        previous = window;
+    }
+
+    EXPECT_GT(previous, 11u);
+}
+
+TEST(VinylControlXwaxLibSavitzkyGolayTest, WindowSizeIsLargestWindowPassingCutoff) {
+    // The timecode signal should survive the filter at a pitch of 4.0, so attenuate less than -3dB
+    const double cutoff = 4.0 * 1000 / 96000;
+    const size_t window = savgol_window_size(3, cutoff);
+    const size_t N = 2000; // Number of samples
+
+    auto amplitude = [cutoff](size_t windowSize) {
+        struct savitzky_golay* sg = savgol_create(windowSize, 3);
+        int peak = 0;
+
+        // Feed a sinusoid with the cutoff frequency into the filter y(n) = A * sin(2π*f*n)
+
+        for (size_t n = 0; n < N; n++) {
+            int y = savgol(sg, to_q1_31(0.5 * sin(2 * M_PI * cutoff * n)));
+
+            if (n > N / 2) {
+                peak = std::max(peak, std::abs(y));
+            }
+        }
+
+        savgol_destroy(sg);
+
+        return static_cast<double>(peak) / to_q1_31(0.5);
+    };
+
+    EXPECT_GE(amplitude(window), M_SQRT1_2 - 0.01);
+    EXPECT_LT(amplitude(window + 2), M_SQRT1_2);
 }
 
 } // namespace
