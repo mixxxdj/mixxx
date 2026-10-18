@@ -1615,10 +1615,16 @@ void WTrackMenu::slotPopulateCrateMenu() {
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
-        qWarning() << "crateId is not of CrateId type";
+        qWarning() << "WTrackMenu::updateSelectionCrates:"
+                   << "widget is not a QCheckbox";
         return;
     }
     CrateId crateId = pCheckBox->property(kCrateIdProp).value<CrateId>();
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
+        qWarning() << "WTrackMenu::updateSelectionCrates:"
+                   << "checkbox property is not of CrateId type";
+        return;
+    }
 
     const TrackIdList trackIds = getTrackIds();
 
@@ -1630,23 +1636,14 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     // we need to disable tristate again as the mixed state will now be gone and can't be brought back
     pCheckBox->setTristate(false);
     if (!pCheckBox->isChecked()) {
-        if (crateId.isValid()) {
-            m_pLibrary->trackCollectionManager()
-                    ->internalCollection()
-                    ->removeCrateTracks(crateId, trackIds);
-        }
+        m_pLibrary->trackCollectionManager()
+                ->internalCollection()
+                ->removeCrateTracks(crateId, trackIds);
     } else {
-        if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
-            crateId = CrateFeatureHelper(
-                    m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
-                              .createEmptyCrate();
-        }
-        if (crateId.isValid()) {
-            m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
-            m_pLibrary->trackCollectionManager()
-                    ->internalCollection()
-                    ->addCrateTracks(crateId, trackIds);
-        }
+        m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
+        m_pLibrary->trackCollectionManager()
+                ->internalCollection()
+                ->addCrateTracks(crateId, trackIds);
     }
 }
 
