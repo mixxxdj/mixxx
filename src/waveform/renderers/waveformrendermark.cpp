@@ -80,7 +80,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                                     pMark, drawOffset});
                 }
             } else {
-                const int markHeight = std::lroundf(image.height() /
+                const int markHeight = std::lround(image.height() /
                         m_pWaveformRenderer->getDevicePixelRatio());
                 const int drawOffset =
                         std::lround(static_cast<float>(currentMarkPoint) +

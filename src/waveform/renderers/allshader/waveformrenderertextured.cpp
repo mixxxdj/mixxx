@@ -205,7 +205,7 @@ void WaveformRendererTextured::createGeometry() {
 }
 
 void WaveformRendererTextured::createFrameBuffers() {
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     // We create a frame buffer that is 4x the size of the renderer itself to
     // "oversample" the texture relative to the surface we're drawing on.
     constexpr int oversamplingFactor = 4;
@@ -509,7 +509,7 @@ void WaveformRendererTextured::paintGL() {
         // OpenGL pixels are real screen pixels, not device independent
         // pixels like QPainter provides. We scale the viewport by the
         // devicePixelRatio to render the texture to the surface.
-        const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+        const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
         glViewport(0,
                 0,
                 static_cast<GLsizei>(

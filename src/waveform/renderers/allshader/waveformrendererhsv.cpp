@@ -59,11 +59,11 @@ bool WaveformRendererHSV::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_pWaveformRenderer->getLength());
     const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
-    const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5f / devicePixelRatio;
+    const qreal invDevicePixelRatio = 1.0 / devicePixelRatio;
+    const qreal halfPixelSize = 0.5 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -125,7 +125,7 @@ bool WaveformRendererHSV::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
+        const qreal rPos = pos * invDevicePixelRatio;
 
         // per channel
         float maxLow[2]{};
@@ -192,9 +192,10 @@ bool WaveformRendererHSV::preprocessInner() {
 
         // Lines are thin rectangles
         // maxAll[0] is for left channel, maxAll[1] is for right channel
-        vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                           halfBreadth - heightFactor * eqGain[0] * maxAll[0]},
-                {fpos + halfPixelSize,
+        vertexUpdater.addRectangle(
+                {static_cast<float>(rPos - halfPixelSize),
+                        halfBreadth - heightFactor * eqGain[0] * maxAll[0]},
+                {static_cast<float>(rPos + halfPixelSize),
                         halfBreadth + heightFactor * eqGain[1] * maxAll[1]},
                 {static_cast<float>(color.redF()),
                         static_cast<float>(color.greenF()),

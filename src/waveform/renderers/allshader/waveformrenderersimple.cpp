@@ -59,11 +59,11 @@ bool WaveformRendererSimple::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_pWaveformRenderer->getLength());
     const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
-    const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5f / devicePixelRatio;
+    const qreal invDevicePixelRatio = 1.0 / devicePixelRatio;
+    const qreal halfPixelSize = 0.5 / devicePixelRatio;
 
     // Note that waveform refers to the visual waveform, not to audio samples.
     //
@@ -128,7 +128,7 @@ bool WaveformRendererSimple::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
+        const qreal rPos = pos * invDevicePixelRatio;
 
         // - Per channel
         uchar u8maxAllChn[2]{};
@@ -147,9 +147,10 @@ bool WaveformRendererSimple::preprocessInner() {
 
         // note: heightFactor is the same for left and right,
         // but negative for left (chn 0) and positive for right (chn 1)
-        vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                           halfBreadth - heightFactor * maxAllChn[0]},
-                {fpos + halfPixelSize,
+        vertexUpdater.addRectangle(
+                {static_cast<float>(rPos - halfPixelSize),
+                        halfBreadth - heightFactor * maxAllChn[0]},
+                {static_cast<float>(rPos + halfPixelSize),
                         halfBreadth + heightFactor * maxAllChn[0]},
                 signalColor);
 

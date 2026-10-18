@@ -138,7 +138,7 @@ class WaveformWidgetRenderer {
         return m_alphaBeatGrid;
     }
 
-    virtual void resizeRenderer(int width, int height, float devicePixelRatio);
+    virtual void resizeRenderer(int width, int height, qreal devicePixelRatio);
 
     int getHeight() const {
         return m_height;
@@ -146,7 +146,7 @@ class WaveformWidgetRenderer {
     int getWidth() const {
         return m_width;
     }
-    float getDevicePixelRatio() const {
+    qreal getDevicePixelRatio() const {
         return m_devicePixelRatio;
     }
     int getLength() const {
@@ -221,7 +221,7 @@ class WaveformWidgetRenderer {
     int m_dimBrightThreshold;
     int m_height;
     int m_width;
-    float m_devicePixelRatio;
+    qreal m_devicePixelRatio;
     WaveformSignalColors m_colors;
     QColor m_passthroughLabelColor;
 

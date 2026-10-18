@@ -18,18 +18,18 @@
 namespace {
 QImage drawPrerollImage(float markerLength,
         float markerBreadth,
-        float devicePixelRatio,
+        qreal devicePixelRatio,
         QColor color) {
-    const int imagePixelW = static_cast<int>(markerLength * devicePixelRatio + 0.5f);
-    const int imagePixelH = static_cast<int>(markerBreadth * devicePixelRatio + 0.5f);
-    const float imageW = static_cast<float>(imagePixelW) / devicePixelRatio;
-    const float imageH = static_cast<float>(imagePixelH) / devicePixelRatio;
+    const int imagePixelW = static_cast<int>(markerLength * devicePixelRatio + 0.5);
+    const int imagePixelH = static_cast<int>(markerBreadth * devicePixelRatio + 0.5);
+    const qreal imageW = imagePixelW / devicePixelRatio;
+    const qreal imageH = imagePixelH / devicePixelRatio;
 
     QImage image(imagePixelW, imagePixelH, QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
 
-    const float penWidth = 1.5f;
-    const float offset = penWidth / 2.f;
+    const qreal penWidth = 1.5;
+    const qreal offset = penWidth / 2.0;
 
     image.fill(Qt::transparent);
     QPainter painter;
@@ -45,7 +45,7 @@ QImage drawPrerollImage(float markerLength,
     // Draw base the right, tip to the left
     QPointF p0{imageW - offset, offset};
     QPointF p1{imageW - offset, imageH - offset};
-    QPointF p2{offset, imageH / 2.f};
+    QPointF p2{offset, imageH / 2.0};
     QPainterPath path;
     path.moveTo(p2);
     path.lineTo(p1);

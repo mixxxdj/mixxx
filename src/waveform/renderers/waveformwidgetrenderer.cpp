@@ -31,7 +31,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_dimBrightThreshold(kDefaultDimBrightThreshold),
           m_height(-1),
           m_width(-1),
-          m_devicePixelRatio(1.0f),
+          m_devicePixelRatio(1.0),
 
           m_trackPixelCount(0.0),
 
@@ -392,7 +392,7 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     }
 }
 
-void WaveformWidgetRenderer::resizeRenderer(int width, int height, float devicePixelRatio) {
+void WaveformWidgetRenderer::resizeRenderer(int width, int height, qreal devicePixelRatio) {
     m_width = width;
     m_height = height;
     m_devicePixelRatio = devicePixelRatio;

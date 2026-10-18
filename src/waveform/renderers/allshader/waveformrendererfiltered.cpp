@@ -61,11 +61,11 @@ bool WaveformRendererFiltered::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_pWaveformRenderer->getLength());
     const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
-    const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5f / devicePixelRatio;
+    const qreal invDevicePixelRatio = 1.0 / devicePixelRatio;
+    const qreal halfPixelSize = 0.5 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -153,7 +153,7 @@ bool WaveformRendererFiltered::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
+        const qreal rPos = pos * invDevicePixelRatio;
 
         // 3 bands, 2 channels
         float max[3][2]{};
@@ -181,9 +181,9 @@ bool WaveformRendererFiltered::preprocessInner() {
             max[bandIndex][1] *= bandGain[bandIndex];
 
             vertexUpdater[bandIndex].addRectangle(
-                    {fpos - halfPixelSize,
+                    {static_cast<float>(rPos - halfPixelSize),
                             halfBreadth - heightFactor * max[bandIndex][0]},
-                    {fpos + halfPixelSize,
+                    {static_cast<float>(rPos + halfPixelSize),
                             halfBreadth + heightFactor * max[bandIndex][1]},
                     {rgb[bandIndex]});
         }

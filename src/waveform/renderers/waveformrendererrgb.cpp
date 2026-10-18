@@ -29,7 +29,7 @@ void WaveformRendererRGB::draw(
         return;
     }
 
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
 
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
@@ -70,7 +70,7 @@ void WaveformRendererRGB::draw(
 
     const double offset = firstVisualIndex;
 
-    const float length = m_pWaveformRenderer->getLength() * devicePixelRatio;
+    const qreal length = m_pWaveformRenderer->getLength() * devicePixelRatio;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) / length;

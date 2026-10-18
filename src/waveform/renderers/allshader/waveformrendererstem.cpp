@@ -141,12 +141,12 @@ bool WaveformRendererStem::preprocessInner() {
 
     uint selectedStems = m_pWaveformRenderer->getSelectedStems();
 
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_pWaveformRenderer->getLength());
     const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
     const int stripLength = static_cast<int>(std::ceil(pixelLength / kPixelPerStrip));
-    const float invDevicePixelRatio = kPixelPerStrip / devicePixelRatio;
-    const float halfStripSize = kPixelPerStrip / 2.0f / devicePixelRatio;
+    const qreal invDevicePixelRatio = kPixelPerStrip / devicePixelRatio;
+    const qreal halfStripSize = kPixelPerStrip / 2.0 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -213,7 +213,7 @@ bool WaveformRendererStem::preprocessInner() {
                 const int visualIndexStop =
                         std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-                const float fVisualIdx = static_cast<float>(visualIdx) * invDevicePixelRatio;
+                const qreal rVisualIdx = visualIdx * invDevicePixelRatio;
 
                 // Find the max values for current eq in the waveform data.
                 // - Max of left and right
@@ -254,9 +254,9 @@ bool WaveformRendererStem::preprocessInner() {
                 }
                 const int yIndex = m_splitStemTracks ? stemIdx : stemLayer;
                 vertexUpdater.addRectangle(
-                        {fVisualIdx - halfStripSize,
+                        {static_cast<float>(rVisualIdx - halfStripSize),
                                 yIndex * stemBreadth + halfBreadth - height},
-                        {fVisualIdx + halfStripSize,
+                        {static_cast<float>(rVisualIdx + halfStripSize),
                                 m_isSlipRenderer
                                         ? yIndex * stemBreadth + halfBreadth
                                         : yIndex * stemBreadth + halfBreadth + height},

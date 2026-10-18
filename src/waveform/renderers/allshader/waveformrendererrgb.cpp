@@ -82,11 +82,11 @@ bool WaveformRendererRGB::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_pWaveformRenderer->getLength());
     const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
-    const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5f / devicePixelRatio;
+    const qreal invDevicePixelRatio = 1.0 / devicePixelRatio;
+    const qreal halfPixelSize = 0.5 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
@@ -161,7 +161,7 @@ bool WaveformRendererRGB::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
+        const qreal rPos = pos * invDevicePixelRatio;
 
         // Find the max values for low, mid, high and all in the waveform data.
         // - Max of left and right
@@ -232,11 +232,11 @@ bool WaveformRendererRGB::preprocessInner() {
             // Lines are thin rectangles
             if (!splitLeftRight) {
                 vertexUpdater.addRectangle(
-                        {fpos - halfPixelSize,
+                        {static_cast<float>(rPos - halfPixelSize),
                                 halfBreadth -
                                         heightFactorAbs * eqGain *
                                                 maxAllChn[chn]},
-                        {fpos + halfPixelSize,
+                        {static_cast<float>(rPos + halfPixelSize),
                                 m_isSlipRenderer ? halfBreadth
                                                  : halfBreadth +
                                                 heightFactorAbs * eqGain *
@@ -245,9 +245,10 @@ bool WaveformRendererRGB::preprocessInner() {
             } else {
                 // note: heightFactor is the same for left and right,
                 // but negative for left (chn 0) and positive for right (chn 1)
-                vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                                   halfBreadth},
-                        {fpos + halfPixelSize,
+                vertexUpdater.addRectangle(
+                        {static_cast<float>(rPos - halfPixelSize),
+                                halfBreadth},
+                        {static_cast<float>(rPos + halfPixelSize),
                                 halfBreadth + heightFactor[chn] * eqGain * maxAllChn[chn]},
                         {red,
                                 green,

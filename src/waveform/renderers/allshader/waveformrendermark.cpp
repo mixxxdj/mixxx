@@ -4,6 +4,7 @@
 
 #include "engine/engine.h"
 #include "moc_waveformrendermark.cpp"
+#include "qglobal.h"
 #include "rendergraph/context.h"
 #include "rendergraph/geometry.h"
 #include "rendergraph/geometrynode.h"
@@ -53,7 +54,7 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
             float boxBreadth,
             float yOffset,
             int labelBoxIdx,
-            float devicePixelRatio) {
+            qreal devicePixelRatio) {
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
         const float epsilon = 1e-6f;
         auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
@@ -64,21 +65,29 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
         geometry().allocate(numVerticesPerRectangle * numBoxes);
         TexturedVertexUpdater vertexUpdater{
                 geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
-        const float u1 = (m_pOwner->m_linePosition - 1.5f) / (m_textureWidth / devicePixelRatio);
-        const float u2 = (m_pOwner->m_linePosition + 1.5f) / (m_textureWidth / devicePixelRatio);
+        const float u1 = (m_pOwner->m_linePosition - 1.5f) /
+                (m_textureWidth / static_cast<float>(devicePixelRatio));
+        const float u2 = (m_pOwner->m_linePosition + 1.5f) /
+                (m_textureWidth / static_cast<float>(devicePixelRatio));
         const float vLine = (labelBoxIdx == 0) ? 0.9f : 0.1f;
         for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
             const float y = boxIdx * boxBreadth + yOffset;
             if (boxIdx == labelBoxIdx) {
                 vertexUpdater.addRectangle({x, y},
-                        {x + m_textureWidth / devicePixelRatio,
-                                y + m_textureHeight / devicePixelRatio},
+                        {x +
+                                        static_cast<float>(m_textureWidth /
+                                                static_cast<float>(
+                                                        devicePixelRatio)),
+                                y +
+                                        static_cast<float>(m_textureHeight /
+                                                static_cast<float>(
+                                                        devicePixelRatio))},
                         {0.f, 0.f},
                         {1.f, 1.f});
             } else {
                 const float lineX = x + m_pOwner->m_linePosition;
                 vertexUpdater.addRectangle({lineX - 1.5f, y},
-                        {lineX + 1.5f, y + m_textureHeight / devicePixelRatio},
+                        {lineX + 1.5f, y + static_cast<float>(m_textureHeight / devicePixelRatio)},
                         {u1, vLine},
                         {u2, vLine});
             }
@@ -113,7 +122,7 @@ class WaveformMarkNodeGraphics : public WaveformMark::Graphics {
             float boxBreadth,
             float yOffset,
             int labelBoxIdx,
-            float devicePixelRatio) {
+            qreal devicePixelRatio) {
         waveformMarkNode()->update(x, numBoxes, boxBreadth, yOffset, labelBoxIdx, devicePixelRatio);
     }
     float textureWidth() const {
@@ -176,7 +185,7 @@ allshader::WaveformRenderMark::WaveformRenderMark(
           m_nextBeatPosition(0.0),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip),
           m_playPosHeight(0.f),
-          m_playPosDevicePixelRatio(0.f),
+          m_playPosDevicePixelRatio(0.0),
           m_untilMarkShowBeats{false},
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
@@ -341,7 +350,7 @@ void allshader::WaveformRenderMark::update() {
             : 0.f;
     const int labelBoxIdx = m_isSlipRenderer ? 0 : numBoxes - 1;
 
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
     QList<WaveformWidgetRenderer::WaveformMarkOnScreen> marksOnScreen;
 
     auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
@@ -389,7 +398,8 @@ void allshader::WaveformRenderMark::update() {
         }
         const double sampleEndPosition = pMark->getSampleEndPosition();
 
-        const float markWidth = pMarkNodeGraphics->textureWidth() / devicePixelRatio;
+        const float markWidth = pMarkNodeGraphics->textureWidth() /
+                static_cast<float>(devicePixelRatio);
         const float drawOffset = currentMarkPos + pMark->getOffset();
 
         bool visible = false;
@@ -397,10 +407,10 @@ void allshader::WaveformRenderMark::update() {
         if (drawOffset > -markWidth &&
                 drawOffset < m_pWaveformRenderer->getLength()) {
             pMarkNodeGraphics->update(
-                    roundToPixel(drawOffset),
+                    static_cast<float>(roundToPixel(drawOffset)),
                     numBoxes,
                     boxBreadth,
-                    roundToPixel(yOffset),
+                    static_cast<float>(roundToPixel(yOffset)),
                     labelBoxIdx,
                     devicePixelRatio);
 
@@ -434,7 +444,7 @@ void allshader::WaveformRenderMark::update() {
                                         roundToPixel(markBreadth))),
                         numBoxes,
                         boxBreadth,
-                        roundToPixel(yOffset),
+                        static_cast<float>(roundToPixel(yOffset)),
                         color);
 
                 visible = true;
@@ -458,10 +468,10 @@ void allshader::WaveformRenderMark::update() {
 
     m_pWaveformRenderer->setMarkPositions(marksOnScreen);
 
-    const float playMarkerPos = static_cast<float>(m_pWaveformRenderer->getPlayMarkerPosition() *
+    const qreal playMarkerPos = static_cast<float>(m_pWaveformRenderer->getPlayMarkerPosition() *
             m_pWaveformRenderer->getLength());
     {
-        const float drawOffset = roundToPixel(playMarkerPos + kPlayPosOffset);
+        const float drawOffset = static_cast<float>(roundToPixel(playMarkerPos + kPlayPosOffset));
         TexturedVertexUpdater vertexUpdater{
                 m_pPlayPosNode->geometry()
                         .vertexDataAs<Geometry::TexturedPoint2D>()};
@@ -473,7 +483,7 @@ void allshader::WaveformRenderMark::update() {
 
     if (m_untilMarkShowBeats || m_untilMarkShowTime) {
         updateUntilMark(playPosition, nextMarkPosition);
-        updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
+        updateDigitsNodeForUntilMark(static_cast<float>(roundToPixel(playMarkerPos + 20.0)));
     } else {
         m_pDigitsRenderNode->clear();
     }
@@ -528,7 +538,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture(rendergraph::Contex
     float imgHeight;
 
     const float height = m_pWaveformRenderer->getBreadth();
-    const float devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
 
     if (height == m_playPosHeight && devicePixelRatio == m_playPosDevicePixelRatio) {
         return;
