@@ -1586,7 +1586,13 @@ void WTrackMenu::slotPopulateCrateMenu() {
         }
 
         m_pCrateMenu->addAction(pAction.get());
-        connect(pAction.get(), &QAction::triggered, this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
+        connect(pAction.get(),
+                &QAction::triggered,
+                this,
+                [this, pCheckBox{pCheckBox.get()}] {
+                    pCheckBox->toggle();
+                    updateSelectionCrates(pCheckBox);
+                });
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
         connect(pCheckBox.get(),
