@@ -293,6 +293,8 @@ static double savgol_gain(const double *coeff, size_t window_size, double f)
 size_t savgol_window_size(size_t polyorder, double cutoff)
 {
     size_t min = polyorder + 1; /* Minimum window size so the filter works */
+    if (min < 3)
+        min = 3;
     if (min % 2 == 0)
         min++;
 
