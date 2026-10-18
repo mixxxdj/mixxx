@@ -24,6 +24,15 @@ class TableItemDelegate : public DefaultDelegate {
             const QRect& rect);
 
   protected:
+    /// Returns the harmonic highlighter's tint for this cell
+    /// (TrackModel::kHighlightBackgroundRole), or an invalid QColor if there
+    /// is none. On a selected row, where paintItemBackground() paints nothing,
+    /// it also paints the tint semi-transparently over the selection.
+    static QColor paintHighlightOverSelection(
+            QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index);
+
     // Only used by LocationDelegate's text elide.
     // Having this here avoids including QTableView there.
     int columnWidth(const QModelIndex &index) const;

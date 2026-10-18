@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "library/columncache.h"
+#include "library/keyhighlightmanager.h"
 #include "library/trackmodel.h"
 #include "track/track_decl.h"
 #include "util/color/colorpalette.h"
@@ -273,6 +274,18 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     void slotRefreshAllRows();
 
+    /// Repaints the Key column when the key highlighter's reference key
+    /// changes. Emits dataChanged() only for the roles the classification
+    /// affects; it does not re-query the database.
+    void slotKeyHighlightChanged();
+
+    /// Repaints the BPM column when the highlighter's reference BPM or
+    /// tolerance changes. Does not re-query the database.
+    void slotBpmHighlightChanged();
+
+    /// Finds the reference track's row and repaints the Key and BPM columns.
+    void slotKeyHighlightReferenceTrackChanged();
+
     void slotTracksRemoved(const QSet<TrackId>& trackIds);
 
     void slotCoverFound(
@@ -288,6 +301,37 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     QVariant rawSiblingValue(
             const QModelIndex& index,
             ColumnCache::Column siblingField) const;
+
+    // The track's stored key, decoded from the KEY_ID sibling column, or
+    // INVALID if absent/unparsable.
+    mixxx::track::io::key::ChromaticKey keyFromIndex(
+            const QModelIndex& index) const;
+
+    // Returns the key highlighter's match for the track at the given index, or
+    // None if the highlighter is inactive or the track has no key.
+    mixxx::KeyHighlightManager::KeyMatch keyMatchForIndex(
+            const QModelIndex& index) const;
+
+    // Whether the row holds the track loaded on the highlighter's reference
+    // deck.
+    bool isKeyHighlightReferenceRow(const QModelIndex& index) const;
+
+    void updateKeyHighlightTrackId();
+
+    // Whether the track's file is missing (fs_deleted).
+    bool isTrackMissing(const QModelIndex& index) const;
+
+    bool isTrackPlayed(const QModelIndex& index) const;
+
+    // The skin's background colour for a key or BPM match, or an invalid
+    // QColor for None.
+    QColor keyMatchBackground(mixxx::KeyHighlightManager::KeyMatch match) const;
+    QColor bpmMatchBackground(mixxx::KeyHighlightManager::BpmMatch match) const;
+
+    // The highlighter's background for a Key or BPM cell: the played or a
+    // match colour, an invalid QColor if the cell has no match and
+    // stays neutral, or std::nullopt if the highlighter leaves the cell alone.
+    std::optional<QColor> keyHighlightBackground(const QModelIndex& index) const;
 
     // Track models may reference tracks by an external id
     // TODO: TrackId should only be used for tracks from
@@ -309,6 +353,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     double m_backgroundColorOpacity;
     QColor m_trackPlayedColor;
     QColor m_trackMissingColor;
+    QColor m_keyHighlightMatchColor;
+    QColor m_keyHighlightNeighbourColor;
+    QColor m_keyHighlightShiftColor;
+    QColor m_keyHighlightPlayedColor;
 
     ColumnCache m_columnCache;
 
@@ -319,6 +367,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     QVector<ColumnHeader> m_columnHeaders;
 
     TrackId m_previewDeckTrackId;
+    // The key highlighter's reference track, in this model's id space.
+    TrackId m_keyHighlightTrackId;
 
     mutable QModelIndex m_toolTipIndex;
 

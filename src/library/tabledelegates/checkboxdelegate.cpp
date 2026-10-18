@@ -6,17 +6,39 @@
 
 #include "moc_checkboxdelegate.cpp"
 
-CheckboxDelegate::CheckboxDelegate(QTableView* pTableView, const QString& checkboxName)
-        : TableItemDelegate(pTableView),
-          m_pCheckBox(new QCheckBox(m_pTableView)),
-          m_checkboxName(checkboxName) {
+namespace {
+
+QCheckBox* newHiddenCheckBox(QTableView* pTableView,
+        const QString& checkboxName,
+        const QString& styleSheet) {
+    auto* pCheckBox = new QCheckBox(pTableView);
     // Note that object names set here are not picked up by /tools/qsscheck.py
     // and need to be added there manually
-    m_pCheckBox->setObjectName(checkboxName);
+    pCheckBox->setObjectName(checkboxName);
+    if (!styleSheet.isEmpty()) {
+        pCheckBox->setStyleSheet(styleSheet);
+    }
     // NOTE(rryan): Without ensurePolished the first render of the QTableView
     // shows the checkbox unstyled. Not sure why -- but this fixes it.
-    m_pCheckBox->ensurePolished();
-    m_pCheckBox->hide();
+    pCheckBox->ensurePolished();
+    pCheckBox->hide();
+    return pCheckBox;
+}
+
+} // namespace
+
+CheckboxDelegate::CheckboxDelegate(QTableView* pTableView, const QString& checkboxName)
+        : TableItemDelegate(pTableView),
+          m_pCheckBox(newHiddenCheckBox(m_pTableView, checkboxName, QString())),
+          m_checkboxName(checkboxName) {
+}
+
+CheckboxDelegate::~CheckboxDelegate() {
+    // The hidden checkboxes are children of the table view so they pick up its
+    // stylesheet, but the view outlives this delegate: it replaces its
+    // delegates whenever another model is loaded.
+    delete m_pCheckBox;
+    qDeleteAll(m_checkBoxByTextColor);
 }
 
 void CheckboxDelegate::paintItem(QPainter* painter,
@@ -54,12 +76,17 @@ void CheckboxDelegate::paintItem(QPainter* painter,
 
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
+    drawCheckboxItem(painter, opt);
+}
 
+void CheckboxDelegate::drawCheckboxItem(
+        QPainter* painter,
+        const QStyleOptionViewItem& option) const {
     // The checkbox uses the QTableView's qss style, therefore it's not picking
     // up the 'missing' or 'played' text color via ForegroundRole from
     // BaseTrackTableModel::data().
-    // Enforce it with an explicit stylesheet. Note: the stylesheet persists so
-    // we need to reset it to normal/highlighted.
+    // Enforce it with an explicit stylesheet on a hidden checkbox kept for
+    // that text colour, see checkBoxForTextColor().
     // By now, we have already changed the palette's highlight color in
     // TableItemDelegate::paint(), so we can pick that here.
     QColor textColor;
@@ -69,16 +96,27 @@ void CheckboxDelegate::paintItem(QPainter* painter,
         textColor = option.palette.text().color();
     }
 
-    if (textColor.isValid() && textColor != m_cachedTextColor) {
-        m_cachedTextColor = textColor;
-        m_pCheckBox->setStyleSheet(QStringLiteral(
-                "#%1::item { color: %2; }")
-                                           .arg(m_checkboxName,
-                                                   textColor.name(QColor::HexRgb)));
-    }
-
     QStyle* style = m_pTableView->style();
     if (style != nullptr) {
-        style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, m_pCheckBox);
+        style->drawControl(QStyle::CE_ItemViewItem,
+                &option,
+                painter,
+                checkBoxForTextColor(textColor));
     }
+}
+
+QCheckBox* CheckboxDelegate::checkBoxForTextColor(const QColor& textColor) const {
+    if (!textColor.isValid()) {
+        return m_pCheckBox;
+    }
+    const QRgb rgb = textColor.rgb();
+    QCheckBox* pCheckBox = m_checkBoxByTextColor.value(rgb, nullptr);
+    if (!pCheckBox) {
+        pCheckBox = newHiddenCheckBox(m_pTableView,
+                m_checkboxName,
+                QStringLiteral("#%1::item { color: %2; }")
+                        .arg(m_checkboxName, textColor.name(QColor::HexRgb)));
+        m_checkBoxByTextColor.insert(rgb, pCheckBox);
+    }
+    return pCheckBox;
 }
