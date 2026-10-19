@@ -1714,7 +1714,9 @@ void WaveformWidgetFactory::setUntilMarkShowBeats(bool value) {
 void WaveformWidgetFactory::setShowMemoryCueMarkers(bool value) {
     WaveformMark::setShowMemoryCueMarkers(value);
     if (m_config) {
-        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("ShowMemoryCueMarkers")), value);
+        m_config->setValue(ConfigKey(kWaveformGroup,
+                                   QStringLiteral("ShowMemoryCueMarkers")),
+                value);
     }
 }
 
