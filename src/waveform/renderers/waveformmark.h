@@ -2,6 +2,7 @@
 #include <QDomNode>
 #include <QHash>
 #include <QImage>
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <variant>
@@ -199,7 +200,8 @@ class WaveformMark {
     }
 
     bool needsImageUpdate() const {
-        return !m_pGraphics || m_pGraphics->m_obsolete;
+        return !m_pGraphics || m_pGraphics->m_obsolete ||
+                m_styleGeneration != s_styleGeneration.load();
     }
 
     bool needsEndImageUpdate() const {
@@ -227,6 +229,22 @@ class WaveformMark {
 
     QImage generateImage(float devicePixelRatio);
     QImage generateEndImage(float devicePixelRatio);
+
+    // Rekordbox-style memory cue markers. When enabled, hotcues from
+    // kFirstMemoryCueHotCue on (0-based, i.e. hotcue 9 and up) are drawn as
+    // a small triangle in the cue's color instead of a numbered label.
+    static constexpr int kFirstMemoryCueHotCue = 8;
+    static void setShowMemoryCueMarkers(bool show);
+    static bool showMemoryCueMarkers();
+    // Vertical placement of the memory cue triangle: Qt::AlignTop or Qt::AlignBottom.
+    static void setMemoryCueMarkerAlign(Qt::Alignment align);
+    static Qt::Alignment memoryCueMarkerAlign();
+    // Width of the memory cue marker line in logical pixels.
+    static constexpr int kMinMemoryCueLineWidth = 1;
+    static constexpr int kMaxMemoryCueLineWidth = 5;
+    static void setMemoryCueMarkerLineWidth(int width);
+    static int memoryCueMarkerLineWidth();
+    bool isMemoryCueMarker() const;
 
     QColor m_textColor;
     QString m_text;
@@ -297,6 +315,16 @@ class WaveformMark {
     QColor m_fillColor;
     QColor m_borderColor;
     QColor m_labelColor;
+
+    // Bumped whenever a global marker style setting changes, so every mark
+    // regenerates its image on the next paint.
+    static std::atomic<int> s_styleGeneration;
+    static std::atomic<bool> s_showMemoryCueMarkers;
+    static std::atomic<int> s_memoryCueMarkerAlign;
+    static std::atomic<int> s_memoryCueMarkerLineWidth;
+    int m_styleGeneration{-1};
+
+    QImage generateMemoryCueImage(float devicePixelRatio);
 
     friend class WaveformRenderMark;
     friend class WaveformRenderMarkBase;

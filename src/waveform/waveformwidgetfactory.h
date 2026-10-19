@@ -179,6 +179,12 @@ class WaveformWidgetFactory : public QObject,
     bool widgetTypeSupportsStems() const;
 
     void setUntilMarkShowBeats(bool value);
+    void setShowMemoryCueMarkers(bool value);
+    bool getShowMemoryCueMarkers() const;
+    void setMemoryCueMarkerAlign(Qt::Alignment align);
+    Qt::Alignment getMemoryCueMarkerAlign() const;
+    void setMemoryCueMarkerLineWidth(int width);
+    int getMemoryCueMarkerLineWidth() const;
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);

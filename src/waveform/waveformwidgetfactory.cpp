@@ -28,6 +28,7 @@
 #include "util/performancetimer.h"
 #include "util/timer.h"
 #include "waveform/guitick.h"
+#include "waveform/renderers/waveformmark.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"
@@ -470,6 +471,17 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowTime")),
                 m_untilMarkShowTime);
     }
+
+    setShowMemoryCueMarkers(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("ShowMemoryCueMarkers")), true));
+    // 0 = top, 1 = bottom
+    setMemoryCueMarkerAlign(
+            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")), 1) == 0
+                    ? Qt::AlignTop
+                    : Qt::AlignBottom);
+    setMemoryCueMarkerLineWidth(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerLineWidth")),
+            WaveformMark::kMinMemoryCueLineWidth));
 
     setUntilMarkAlign(toUntilMarkAlign(
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkAlign")),
@@ -1626,6 +1638,41 @@ void WaveformWidgetFactory::setUntilMarkShowBeats(bool value) {
                 m_untilMarkShowBeats);
     }
     emit untilMarkShowBeatsChanged(value);
+}
+
+void WaveformWidgetFactory::setShowMemoryCueMarkers(bool value) {
+    WaveformMark::setShowMemoryCueMarkers(value);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("ShowMemoryCueMarkers")), value);
+    }
+}
+
+bool WaveformWidgetFactory::getShowMemoryCueMarkers() const {
+    return WaveformMark::showMemoryCueMarkers();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerAlign(Qt::Alignment align) {
+    WaveformMark::setMemoryCueMarkerAlign(align);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")),
+                getMemoryCueMarkerAlign().testFlag(Qt::AlignTop) ? 0 : 1);
+    }
+}
+
+Qt::Alignment WaveformWidgetFactory::getMemoryCueMarkerAlign() const {
+    return WaveformMark::memoryCueMarkerAlign();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerLineWidth(int width) {
+    WaveformMark::setMemoryCueMarkerLineWidth(width);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerLineWidth")),
+                getMemoryCueMarkerLineWidth());
+    }
+}
+
+int WaveformWidgetFactory::getMemoryCueMarkerLineWidth() const {
+    return WaveformMark::memoryCueMarkerLineWidth();
 }
 
 void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {

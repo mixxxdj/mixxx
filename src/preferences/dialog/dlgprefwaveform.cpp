@@ -162,6 +162,10 @@ DlgPrefWaveform::DlgPrefWaveform(
     // Adopt tr string from first GLSL hint
     requiresGLSLLabel2->setText(requiresGLSLLabel->text());
 
+    // Index 0 = top, 1 = bottom (matches the "MemoryCueMarkerAlign" config value)
+    memoryCueMarkerAlignComboBox->addItem(tr("Top"));
+    memoryCueMarkerAlignComboBox->addItem(tr("Bottom"));
+
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
@@ -284,6 +288,18 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetUntilMarkShowBeats);
+    connect(showMemoryCueMarkersCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetShowMemoryCueMarkers);
+    connect(memoryCueMarkerAlignComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerAlign);
+    connect(memoryCueMarkerLineWidthSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth);
     connect(untilMarkShowTimeCheckBox,
             &QCheckBox::toggled,
             this,
@@ -404,6 +420,11 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSpinBox->setValue(pFactory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(pFactory->getBeatGridAlpha());
 
+    showMemoryCueMarkersCheckBox->setChecked(pFactory->getShowMemoryCueMarkers());
+    memoryCueMarkerAlignComboBox->setCurrentIndex(
+            pFactory->getMemoryCueMarkerAlign().testFlag(Qt::AlignTop) ? 0 : 1);
+    memoryCueMarkerLineWidthSpinBox->setValue(pFactory->getMemoryCueMarkerLineWidth());
+    updateEnableMemoryCueMarkers();
     untilMarkShowBeatsCheckBox->setChecked(pFactory->getUntilMarkShowBeats());
     untilMarkShowTimeCheckBox->setChecked(pFactory->getUntilMarkShowTime());
     untilMarkAlignComboBox->setCurrentIndex(
@@ -524,6 +545,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Beat grid alpha default is 90
     beatGridAlphaSlider->setValue(90);
+
+    showMemoryCueMarkersCheckBox->setChecked(true);
+    memoryCueMarkerAlignComboBox->setCurrentIndex(1); // Bottom
+    memoryCueMarkerLineWidthSpinBox->setValue(1);
     beatGridAlphaSpinBox->setValue(90);
 
     // 50 (center) is default
@@ -848,6 +873,28 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
     notifyQmlWaveformSettingsChanged();
+}
+
+void DlgPrefWaveform::slotSetShowMemoryCueMarkers(bool checked) {
+    WaveformWidgetFactory::instance()->setShowMemoryCueMarkers(checked);
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerAlign(int index) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(
+            index == 0 ? Qt::AlignTop : Qt::AlignBottom);
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth(int width) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerLineWidth(width);
+}
+
+void DlgPrefWaveform::updateEnableMemoryCueMarkers() {
+    const bool enabled = showMemoryCueMarkersCheckBox->isChecked();
+    memoryCueMarkerAlignLabel->setEnabled(enabled);
+    memoryCueMarkerAlignComboBox->setEnabled(enabled);
+    memoryCueMarkerLineWidthLabel->setEnabled(enabled);
+    memoryCueMarkerLineWidthSpinBox->setEnabled(enabled);
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {

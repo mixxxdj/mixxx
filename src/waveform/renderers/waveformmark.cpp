@@ -1,6 +1,7 @@
 #include "waveformmark.h"
 
 #include <QOpenGLTexture>
+#include <QPainter>
 #include <QPainterPath>
 #include <QRegularExpression>
 #include <QStringLiteral>
@@ -319,6 +320,113 @@ std::variant<WaveformMarkPointer, WaveformMark::WaveformMarkConstructionError> W
 }
 
 WaveformMark::~WaveformMark() = default;
+
+std::atomic<int> WaveformMark::s_styleGeneration{0};
+std::atomic<bool> WaveformMark::s_showMemoryCueMarkers{true};
+std::atomic<int> WaveformMark::s_memoryCueMarkerAlign{static_cast<int>(Qt::AlignBottom)};
+std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kMinMemoryCueLineWidth};
+
+// static
+void WaveformMark::setShowMemoryCueMarkers(bool show) {
+    if (s_showMemoryCueMarkers.exchange(show) != show) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::showMemoryCueMarkers() {
+    return s_showMemoryCueMarkers.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerAlign(Qt::Alignment align) {
+    const int value = static_cast<int>(
+            align.testFlag(Qt::AlignTop) ? Qt::AlignTop : Qt::AlignBottom);
+    if (s_memoryCueMarkerAlign.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+Qt::Alignment WaveformMark::memoryCueMarkerAlign() {
+    return s_memoryCueMarkerAlign.load() == static_cast<int>(Qt::AlignTop)
+            ? Qt::AlignTop
+            : Qt::AlignBottom;
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerLineWidth(int width) {
+    width = std::clamp(width, kMinMemoryCueLineWidth, kMaxMemoryCueLineWidth);
+    if (s_memoryCueMarkerLineWidth.exchange(width) != width) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+int WaveformMark::memoryCueMarkerLineWidth() {
+    return s_memoryCueMarkerLineWidth.load();
+}
+
+bool WaveformMark::isMemoryCueMarker() const {
+    if (!s_showMemoryCueMarkers.load() || m_iHotCue < kFirstMemoryCueHotCue) {
+        return false;
+    }
+    // Saved loops keep their normal label so they stay recognizable.
+    return !isLoop();
+}
+
+QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
+    // A thin line in the cue color with a triangle at the top (pointing
+    // down) or at the bottom (pointing up), like rekordbox memory cues.
+    constexpr float kTriangleSize = 11.f;
+    const float width = kTriangleSize + 2.f; // odd pixel width keeps the line centered
+    const float height = m_breadth;
+
+    QImage image{QSize{static_cast<int>(width * devicePixelRatio),
+                         static_cast<int>(height * devicePixelRatio)},
+            QImage::Format_ARGB32_Premultiplied};
+    VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
+        return image;
+    }
+    image.setDevicePixelRatio(devicePixelRatio);
+    image.fill(Qt::transparent);
+
+    QPainter painter;
+    painter.begin(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setWorldMatrixEnabled(false);
+
+    const float hcenter = width / 2.f;
+    m_linePosition = hcenter;
+    m_offset = -(width - 1.f) / 2.f;
+
+    // Line in the cue color, centered on the cue position
+    const float lineWidth = static_cast<float>(memoryCueMarkerLineWidth());
+    painter.fillRect(QRectF(hcenter - lineWidth / 2.f, 0.f, lineWidth, height),
+            fillColor());
+
+    const float half = kTriangleSize / 2.f;
+    const bool atBottom = memoryCueMarkerAlign().testFlag(Qt::AlignBottom);
+    QPainterPath triangle;
+    if (atBottom) {
+        triangle.moveTo(hcenter, height - kTriangleSize);
+        triangle.lineTo(hcenter + half, height - 0.5f);
+        triangle.lineTo(hcenter - half, height - 0.5f);
+    } else {
+        triangle.moveTo(hcenter - half, 0.5f);
+        triangle.lineTo(hcenter + half, 0.5f);
+        triangle.lineTo(hcenter, kTriangleSize);
+    }
+    triangle.closeSubpath();
+    painter.fillPath(triangle, fillColor());
+    painter.setPen(borderColor());
+    painter.drawPath(triangle);
+    painter.end();
+
+    // Hover / right-click area for the cue menu
+    m_label.setAreaRect(triangle.boundingRect());
+    return image;
+}
 
 void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
     if (m_fillColor == baseColor) {
@@ -683,6 +791,11 @@ std::optional<WaveformMark::WaveformMarkConstructionError> WaveformMark::validat
 
 QImage WaveformMark::generateImage(float devicePixelRatio) {
     DEBUG_ASSERT(needsImageUpdate());
+    m_styleGeneration = s_styleGeneration.load();
+
+    if (m_breadth != 0.0f && isMemoryCueMarker()) {
+        return generateMemoryCueImage(devicePixelRatio);
+    }
 
     QString label = m_text;
 
