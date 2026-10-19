@@ -854,7 +854,8 @@ void WaveformWidgetFactory::renderSelf() {
                     continue;
                 }
                 // Calculate play position for the new Frame in following run
-                pWaveformWidget->preRender(m_pVsyncThread);
+                // We do this first for all Waveforms, to render all Waveforms at the same position
+                pWaveformWidget->fetchVSyncPositions(m_pVsyncThread);
             }
             // qDebug() << "prerender" << m_vsyncThread->elapsed();
 
@@ -869,6 +870,7 @@ void WaveformWidgetFactory::renderSelf() {
                 if (!shouldRenderWaveforms[static_cast<int>(i)]) {
                     continue;
                 }
+                pWaveformWidget->onPreRender();
                 pWaveformWidget->render();
                 // qDebug() << "render" << i << m_vsyncThread->elapsed();
             }

@@ -26,11 +26,6 @@ void WaveformWidgetAbstract::release() {
     }
 }
 
-void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
-    WaveformWidgetRenderer::fetchVSyncPositions(vsyncThread);
-    WaveformWidgetRenderer::onPreRender();
-}
-
 mixxx::Duration WaveformWidgetAbstract::render() {
     if (m_pWidget) {
         m_pWidget->repaint(); // Repaints the widget directly by calling paintEvent()

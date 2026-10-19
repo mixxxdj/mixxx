@@ -38,7 +38,6 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     void hold();
     void release();
 
-    virtual void preRender(VSyncThread* vsyncThread);
     virtual mixxx::Duration render();
     virtual void resize(int width, int height);
 
