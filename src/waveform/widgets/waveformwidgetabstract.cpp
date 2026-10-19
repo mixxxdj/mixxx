@@ -35,10 +35,9 @@ mixxx::Duration WaveformWidgetAbstract::render() {
 }
 
 void WaveformWidgetAbstract::resize(int width, int height) {
-    qreal devicePixelRatio = 1.0;
     if (m_pWidget) {
+        qreal devicePixelRatio = m_pWidget->devicePixelRatioF();
+        resizeRenderer(width, height, devicePixelRatio);
         m_pWidget->resize(width, height);
-        devicePixelRatio = m_pWidget->devicePixelRatioF();
     }
-    resizeRenderer(width, height, devicePixelRatio);
 }
