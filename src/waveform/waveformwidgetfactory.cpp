@@ -1274,9 +1274,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
 }
 
 int WaveformWidgetFactory::findIndexOf(WWaveformViewer* pViewer) const {
-    for (int i = 0; i < (int)m_waveformWidgetHolders.size(); i++) {
+    for (size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
         if (m_waveformWidgetHolders[i].m_pWaveformViewer == pViewer) {
-            return i;
+            return static_cast<int>(i);
         }
     }
     return -1;
