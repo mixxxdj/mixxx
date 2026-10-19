@@ -55,6 +55,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         m_firstDisplayedPosition[type] = 0.0;
         m_lastDisplayedPosition[type] = 0.0;
         m_posVSample[type] = 0.0;
+        m_truePos[type] = 0.0;
         m_pos[type] = -1.0; // disable renderers
         m_truePosSample[type] = -1.0;
     }
@@ -124,9 +125,20 @@ bool WaveformWidgetRenderer::init() {
     return true;
 }
 
-void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
+void WaveformWidgetRenderer::fetchVSyncPositions(VSyncTimeProvider* pVsyncThread) {
     if (m_passthroughEnabled) {
-        // disables renderers in draw()
+        return;
+    }
+
+    m_visualPlayPosition->getPlaySlipAtNextVSync(
+            pVsyncThread,
+            m_truePos + ::WaveformRendererAbstract::Play,
+            m_truePos + ::WaveformRendererAbstract::Slip);
+}
+
+void WaveformWidgetRenderer::onPreRender() {
+    if (m_passthroughEnabled) {
+        // Disables renderers in draw()
         for (int type = ::WaveformRendererAbstract::Play;
                 type <= ::WaveformRendererAbstract::Slip;
                 type++) {
@@ -136,15 +148,14 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
         return;
     }
 
-    // For a valid track to render we need
+    // For a valid track to render we need valid samples
     m_trackSamples = m_pTrackSamplesControlObject->get();
     if (m_trackSamples <= 0) {
         return;
     }
 
-    //Fetch parameters before rendering in order the display all sub-renderers with the same values
+    // Fetch parameters before rendering in order to display all sub-renderers with the same values
     double rateRatio = m_pRateRatioCO->get();
-
     m_gain = m_pGainControlObject->get();
 
     // Compute visual sample to pixel ratio
@@ -162,14 +173,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
         }
     }
 
-    double truePos[2]{0};
-    m_visualPlayPosition->getPlaySlipAtNextVSync(vsyncThread,
-            truePos + ::WaveformRendererAbstract::Play,
-            truePos + ::WaveformRendererAbstract::Slip);
-    // truePlayPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
-
     if (m_audioSamplePerPixel > 0) {
-        // Track length in pixels.
+        // Track length in pixels
         m_trackPixelCount = m_trackSamples / 2.0 / m_audioSamplePerPixel;
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;
@@ -185,14 +190,14 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
         //        "displayedLengthRight=" << displayedLengthRight;
 
         m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
+
         for (int type = ::WaveformRendererAbstract::Play;
                 type <= ::WaveformRendererAbstract::Slip;
                 type++) {
-            // Avoid pixel jitter in play position by rounding to the nearest track
-            // pixel.
-            m_pos[type] = round(truePos[type] * m_trackPixelCount) / m_trackPixelCount;
+            // Avoid pixel jitter in play position by rounding to the nearest track pixel
+            m_pos[type] = round(m_truePos[type] * m_trackPixelCount) / m_trackPixelCount;
             m_posVSample[type] = static_cast<int>(m_pos[type] * m_totalVSamples);
-            m_truePosSample[type] = truePos[type] * static_cast<double>(m_trackSamples);
+            m_truePosSample[type] = m_truePos[type] * static_cast<double>(m_trackSamples);
             m_firstDisplayedPosition[type] = m_pos[type] - displayedLengthLeft;
             m_lastDisplayedPosition[type] = m_pos[type] + displayedLengthRight;
         }
@@ -201,7 +206,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
         for (int type = ::WaveformRendererAbstract::Play;
                 type <= ::WaveformRendererAbstract::Slip;
                 type++) {
-            m_pos[type] = -1.0; // disable renderers
+            m_pos[type] = -1.0; // Disable renderers
             m_truePosSample[type] = -1.0;
         }
     }

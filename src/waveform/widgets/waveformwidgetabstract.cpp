@@ -27,7 +27,8 @@ void WaveformWidgetAbstract::release() {
 }
 
 void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
-    WaveformWidgetRenderer::onPreRender(vsyncThread);
+    WaveformWidgetRenderer::fetchVSyncPositions(vsyncThread);
+    WaveformWidgetRenderer::onPreRender();
 }
 
 mixxx::Duration WaveformWidgetAbstract::render() {
