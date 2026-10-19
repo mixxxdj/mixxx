@@ -578,7 +578,61 @@ Select from different types of displays for the waveform, which differ primarily
       </layout><!-- marker_option_layout -->
      </item>
 
+     <item row="13" column="0">
+      <widget class="QLabel" name="hotCueLabelsLabel">
+       <property name="text">
+        <string>Hotcue labels</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
      <item row="13" column="1" colspan="4">
+      <layout class="QHBoxLayout" name="hotCueLabelsLayout">
+       <item>
+        <widget class="QCheckBox" name="hotCueLettersCheckBox">
+         <property name="toolTip">
+          <string>Name hotcues A, B, C... instead of 1, 2, 3, like rekordbox hot cues. Hotcues after Z keep their number. A main cue labeled with a single letter (e.g. "C") is shown as "CUE" then.</string>
+         </property>
+         <property name="text">
+          <string>Show hotcues as letters</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="hotCueLabelPlacementLabel">
+         <property name="text">
+          <string>Placement</string>
+         </property>
+         <property name="buddy">
+          <cstring>hotCueLabelPlacementComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="hotCueLabelPlacementComboBox">
+         <property name="toolTip">
+          <string>Where hotcue labels are drawn: as defined by the skin, or at the top or bottom of the waveforms.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="hotCueLabelsSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="14" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
         <string>This functionality requires waveform acceleration.</string>
@@ -589,7 +643,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="14" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="stemOpacityLabel">
        <property name="text">
         <string>Stem</string>
@@ -602,7 +656,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="14" column="1" colspan="4">
+     <item row="15" column="1" colspan="4">
       <layout class="QGridLayout" name="stemOpacityGridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="stemOpacityMainLabel">
@@ -699,7 +753,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
-     <item row="15" column="1" colspan="4">
+     <item row="16" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel2">
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -926,6 +980,8 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>untilMarkAlignComboBox</tabstop>
   <tabstop>untilMarkTextPointSizeSpinBox</tabstop>
   <tabstop>untilMarkTextHeightLimitComboBox</tabstop>
+ <tabstop>hotCueLettersCheckBox</tabstop>
+ <tabstop>hotCueLabelPlacementComboBox</tabstop>
   <tabstop>waveformOverviewComboBox</tabstop>
   <tabstop>overviewStereoCheckBox</tabstop>
   <tabstop>overviewMinuteMarkersCheckBox</tabstop>
