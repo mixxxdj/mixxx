@@ -169,20 +169,26 @@ void WaveformWidget::castToQWidget() {
 void WaveformWidget::initializeGL() {
 }
 
-void WaveformWidget::resizeRenderer(int, int, qreal) {
-    // This is called when the widget is resized, but as this is a WGLWidget, we
-    // also get the resizeGL call and use that instead, as it has the opengl
-    // context set.
+void WaveformWidget::resizeRenderer(int width, int height, qreal devicePixelRatio) {
+    // This is called before the widget is resized.
+    // We need to make sure that the texture fits to the resized image to not see a
+    // visual glitch of the old no longer fitting image
+
+    // NOTE: this is needed since we allocation buffer on resize
+    // and the Gl Context should be properly set
+    makeCurrentIfNeeded();
+    WaveformWidgetRenderer::resizeRenderer(width, height, devicePixelRatio);
+    onPreRender();
+    doneCurrent();
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
+    // This virtual function is called via signal whenever the widget has been resized
+    // The widget has already the new size but maybe a sqized version of the texture
+
+    // We have already a valid current context here
     w = static_cast<int>(std::lround(w / devicePixelRatioF()));
     h = static_cast<int>(std::lround(h / devicePixelRatioF()));
-
-    // Many allshader components relies on WaveformWidgetRenderer::getWidth and
-    // WaveformWidgetRenderer::getHeight to update their rendering stack, so we
-    // must resize the renderer first, before updating the rendergraph
-    WaveformWidgetRenderer::resizeRenderer(w, h, devicePixelRatio());
     m_pEngine->resize(w, h);
 }
 
