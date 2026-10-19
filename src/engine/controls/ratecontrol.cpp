@@ -40,8 +40,8 @@ const double kCoastFriction33 = kCoastDrag / kCoastDragRatio;
 const double kCoastFriction45 = kCoastFriction33 * (100.0 / 3.0) / 45.0;
 // Spin-up: motor torque (speed units per second), then soft saturation
 // when the platter settles into quartz lock
-constexpr double kSpinupTorque33 = 0.45;
-constexpr double kSpinupTorque45 = 0.75;
+constexpr double kSpinupTorque33 = 1.42;
+constexpr double kSpinupTorque45 = kSpinupTorque33 * (100.0 / 3.0) / 45.0;
 constexpr double kQuartzLockStart = 0.9;
 constexpr double kQuartzLockGain = 2.0;
 // Range of the spin-up / spin-down time preferences, 1.0 = Technics SL-1210

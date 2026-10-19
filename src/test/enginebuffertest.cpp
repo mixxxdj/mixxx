@@ -676,7 +676,7 @@ TEST_F(RateControlRampTest, SpinUpReachesFullSpeed) {
     const double first = speed();
     EXPECT_GT(first, 0.0);
     EXPECT_LT(first, 0.1);
-    processSeconds(1.0);
+    processSeconds(0.3);
     EXPECT_GT(speed(), first);
     EXPECT_LT(speed(), 1.0);
     processSeconds(3.0);
