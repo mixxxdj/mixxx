@@ -58,6 +58,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetMemoryCueMarkerAlign(int index);
     void slotSetMemoryCueMarkerLineWidth(int width);
     void slotSetMemoryCueMarkerSize(int size);
+    void slotSetMemoryCueMarkerOpacity(int percent);
     void slotSetMemoryCueMarkerCustomOutline(bool checked);
     void slotChooseMemoryCueMarkerOutlineColor();
     void slotSetMemoryCueMarkerSingleColor(bool checked);

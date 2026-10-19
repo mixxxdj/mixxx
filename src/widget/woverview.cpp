@@ -1124,9 +1124,13 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
         }
 
-        // Memory cue markers may have their line switched off (width 0)
-        // and may all use one color.
+        // Memory cue markers may have their line switched off (width 0),
+        // may all use one color and may be drawn semi-transparent.
+        const qreal memoryCueOpacity = isMemoryCue
+                ? WaveformMark::memoryCueMarkerOpacity() / 100.0
+                : 1.0;
         if (lineWidth > 0.0) {
+            pPainter->setOpacity(memoryCueOpacity);
             const QColor lineColor = isMemoryCue ? pMark->memoryCueColor() : pMark->fillColor();
             pPainter->setPen(isMemoryCue ? pMark->memoryCueBorderColor() : pMark->borderColor());
             pPainter->drawLine(bgLine);
@@ -1139,6 +1143,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 pPainter->setPen(lineColor);
             }
             pPainter->drawLine(line);
+            pPainter->setOpacity(1.0);
         }
 
         if (rect.isValid()) {
@@ -1197,9 +1202,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 triangles.addPath(top);
             }
             pPainter->setRenderHint(QPainter::Antialiasing);
+            pPainter->setOpacity(memoryCueOpacity);
             pPainter->fillPath(triangles, pMark->memoryCueColor());
             pPainter->setPen(pMark->memoryCueOutlineColor());
             pPainter->drawPath(triangles);
+            pPainter->setOpacity(1.0);
             pMark->m_label.clear();
             QRectF hoverArea = triangles.boundingRect();
 

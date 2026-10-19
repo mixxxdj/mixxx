@@ -326,6 +326,7 @@ std::atomic<bool> WaveformMark::s_showMemoryCueMarkers{true};
 std::atomic<int> WaveformMark::s_memoryCueMarkerAlign{static_cast<int>(Qt::AlignBottom)};
 std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kDefaultMemoryCueLineWidth};
 std::atomic<int> WaveformMark::s_memoryCueMarkerSize{kDefaultMemoryCueMarkerSize};
+std::atomic<int> WaveformMark::s_memoryCueMarkerOpacity{kMaxMemoryCueMarkerOpacity};
 std::atomic<bool> WaveformMark::s_memoryCueMarkerCustomOutline{false};
 std::atomic<QRgb> WaveformMark::s_memoryCueMarkerOutlineColor{qRgb(255, 255, 255)};
 std::atomic<bool> WaveformMark::s_memoryCueMarkerSingleColor{false};
@@ -388,6 +389,19 @@ void WaveformMark::setMemoryCueMarkerLineWidth(int width) {
 // static
 int WaveformMark::memoryCueMarkerLineWidth() {
     return s_memoryCueMarkerLineWidth.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerOpacity(int percent) {
+    percent = std::clamp(percent, kMinMemoryCueMarkerOpacity, kMaxMemoryCueMarkerOpacity);
+    if (s_memoryCueMarkerOpacity.exchange(percent) != percent) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+int WaveformMark::memoryCueMarkerOpacity() {
+    return s_memoryCueMarkerOpacity.load();
 }
 
 // static
@@ -669,6 +683,9 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     m_linePosition = hcenter;
     m_offset = -(width - 1.f) / 2.f;
 
+    // Line and triangles use the configured opacity, the name stays opaque.
+    painter.setOpacity(memoryCueMarkerOpacity() / 100.0);
+
     // Line in the cue color, centered on the cue position (width 0 = no line)
     const float lineWidth = static_cast<float>(memoryCueMarkerLineWidth());
     if (lineWidth > 0.f) {
@@ -696,6 +713,7 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     painter.fillPath(triangles, memoryCueColor());
     painter.setPen(memoryCueOutlineColor());
     painter.drawPath(triangles);
+    painter.setOpacity(1.0);
 
     QRectF hoverArea = triangles.boundingRect();
     if (nameRect.isValid()) {

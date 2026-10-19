@@ -309,6 +309,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth);
+    connect(memoryCueMarkerOpacitySpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerOpacity);
     connect(memoryCueMarkerSizeSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
@@ -482,6 +486,7 @@ void DlgPrefWaveform::slotUpdate() {
     }
     memoryCueMarkerLineWidthSpinBox->setValue(pFactory->getMemoryCueMarkerLineWidth());
     memoryCueMarkerSizeSpinBox->setValue(pFactory->getMemoryCueMarkerSize());
+    memoryCueMarkerOpacitySpinBox->setValue(pFactory->getMemoryCueMarkerOpacity());
     memoryCueMarkerCustomOutlineCheckBox->setChecked(
             pFactory->getMemoryCueMarkerCustomOutline());
     updateMemoryCueMarkerOutlineColorButton();
@@ -622,6 +627,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     memoryCueMarkerAlignComboBox->setCurrentIndex(1); // Bottom
     memoryCueMarkerLineWidthSpinBox->setValue(1);
     memoryCueMarkerSizeSpinBox->setValue(11);
+    memoryCueMarkerOpacitySpinBox->setValue(100);
     memoryCueMarkerCustomOutlineCheckBox->setChecked(false);
     WaveformWidgetFactory::instance()->setMemoryCueMarkerOutlineColor(Qt::white);
     updateMemoryCueMarkerOutlineColorButton();
@@ -995,6 +1001,8 @@ void DlgPrefWaveform::updateEnableMemoryCueMarkers() {
     memoryCueMarkerLineWidthLabel->setEnabled(enabled);
     memoryCueMarkerLineWidthSpinBox->setEnabled(enabled);
     memoryCueMarkerSizeLabel->setEnabled(enabled);
+    memoryCueMarkerOpacityLabel->setEnabled(enabled);
+    memoryCueMarkerOpacitySpinBox->setEnabled(enabled);
     memoryCueMarkerSizeSpinBox->setEnabled(enabled);
     memoryCueMarkerCustomOutlineCheckBox->setEnabled(enabled);
     memoryCueMarkerOutlineColorButton->setEnabled(
@@ -1101,6 +1109,10 @@ void DlgPrefWaveform::updateMemoryCueNameTextColorButton() {
 
 void DlgPrefWaveform::slotSetMemoryCueMarkerSize(int size) {
     WaveformWidgetFactory::instance()->setMemoryCueMarkerSize(size);
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerOpacity(int percent) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerOpacity(percent);
 }
 
 void DlgPrefWaveform::slotSetMemoryCueMarkerCustomOutline(bool checked) {

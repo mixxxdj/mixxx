@@ -490,6 +490,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setMemoryCueMarkerLineWidth(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerLineWidth")),
             WaveformMark::kDefaultMemoryCueLineWidth));
+    setMemoryCueMarkerOpacity(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOpacity")),
+            WaveformMark::kMaxMemoryCueMarkerOpacity));
     setMemoryCueMarkerSize(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSize")),
             WaveformMark::kDefaultMemoryCueMarkerSize));
@@ -1732,6 +1735,18 @@ void WaveformWidgetFactory::setMemoryCueMarkerLineWidth(int width) {
 
 int WaveformWidgetFactory::getMemoryCueMarkerLineWidth() const {
     return WaveformMark::memoryCueMarkerLineWidth();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerOpacity(int percent) {
+    WaveformMark::setMemoryCueMarkerOpacity(percent);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOpacity")),
+                getMemoryCueMarkerOpacity());
+    }
+}
+
+int WaveformWidgetFactory::getMemoryCueMarkerOpacity() const {
+    return WaveformMark::memoryCueMarkerOpacity();
 }
 
 void WaveformWidgetFactory::setMemoryCueMarkerSize(int size) {

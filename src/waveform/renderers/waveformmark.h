@@ -246,6 +246,12 @@ class WaveformMark {
     static constexpr int kMaxMemoryCueLineWidth = 5;
     static void setMemoryCueMarkerLineWidth(int width);
     static int memoryCueMarkerLineWidth();
+    // Opacity of the memory cue line and triangles in percent (names keep
+    // full opacity, they have their own background options).
+    static constexpr int kMinMemoryCueMarkerOpacity = 10;
+    static constexpr int kMaxMemoryCueMarkerOpacity = 100;
+    static void setMemoryCueMarkerOpacity(int percent);
+    static int memoryCueMarkerOpacity();
     // Size (width and height) of the memory cue triangle in the scrolling
     // waveforms, in logical pixels. The overview scales it down.
     static constexpr int kMinMemoryCueMarkerSize = 5;
@@ -381,6 +387,7 @@ class WaveformMark {
     static std::atomic<int> s_memoryCueMarkerAlign;
     static std::atomic<int> s_memoryCueMarkerLineWidth;
     static std::atomic<int> s_memoryCueMarkerSize;
+    static std::atomic<int> s_memoryCueMarkerOpacity;
     static std::atomic<bool> s_memoryCueMarkerCustomOutline;
     static std::atomic<QRgb> s_memoryCueMarkerOutlineColor;
     static std::atomic<bool> s_memoryCueMarkerSingleColor;
