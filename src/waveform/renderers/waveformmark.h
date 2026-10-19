@@ -242,6 +242,17 @@ class WaveformMark {
     };
     static void setHotCueLabelPlacement(HotCueLabelPlacement placement);
     static HotCueLabelPlacement hotCueLabelPlacement();
+    // Look of hotcue labels. Rekordbox: centered on the cue line (at the top
+    // unless placed at the bottom), cue colored background, black text, no
+    // outline.
+    enum class HotCueLabelStyle {
+        Mixxx = 0,
+        Rekordbox = 1,
+    };
+    static void setHotCueLabelStyle(HotCueLabelStyle style);
+    static HotCueLabelStyle hotCueLabelStyle();
+    // Whether this mark is a hotcue drawn in the rekordbox label style.
+    bool isRekordboxStyleLabel() const;
     // Display name of a hotcue (0-based index): "1", "2", ... or "A", "B", ...
     // Hotcues beyond Z keep their number.
     static QString hotCueName(int hotCue);
@@ -333,6 +344,7 @@ class WaveformMark {
     static std::atomic<int> s_styleGeneration;
     static std::atomic<bool> s_hotCueLetters;
     static std::atomic<int> s_hotCueLabelPlacement;
+    static std::atomic<int> s_hotCueLabelStyle;
     int m_styleGeneration{-1};
 
     friend class WaveformRenderMark;

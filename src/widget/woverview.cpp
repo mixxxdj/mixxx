@@ -1199,12 +1199,14 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 }
             }
 
+            // Rekordbox style: cue colored background, black text.
+            const bool rekordboxStyle = pMark->isRekordboxStyleLabel();
             pMark->m_label.prerender(textPoint,
                     QPixmap(),
                     text,
                     markerFont,
-                    m_labelTextColor,
-                    m_labelBackgroundColor,
+                    rekordboxStyle ? QColor(Qt::black) : m_labelTextColor,
+                    rekordboxStyle ? pMark->fillColor() : m_labelBackgroundColor,
                     width(),
                     devicePixelRatioF());
         }

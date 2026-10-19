@@ -184,6 +184,8 @@ class WaveformWidgetFactory : public QObject,
     bool getHotCueLetters() const;
     void setHotCueLabelPlacement(WaveformMark::HotCueLabelPlacement placement);
     WaveformMark::HotCueLabelPlacement getHotCueLabelPlacement() const;
+    void setHotCueLabelStyle(WaveformMark::HotCueLabelStyle style);
+    WaveformMark::HotCueLabelStyle getHotCueLabelStyle() const;
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);

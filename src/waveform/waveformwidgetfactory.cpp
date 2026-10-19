@@ -474,6 +474,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     setHotCueLetters(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("HotCueLetters")), false));
+    // 0 = Mixxx, 1 = rekordbox
+    setHotCueLabelStyle(
+            m_config->getValue(
+                    ConfigKey(kWaveformGroup, QStringLiteral("HotCueLabelStyle")), 0) == 1
+                    ? WaveformMark::HotCueLabelStyle::Rekordbox
+                    : WaveformMark::HotCueLabelStyle::Mixxx);
     // 0 = skin default, 1 = top, 2 = bottom
     switch (m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("HotCueLabelPlacement")), 0)) {
@@ -1667,6 +1673,18 @@ void WaveformWidgetFactory::setHotCueLabelPlacement(
 
 WaveformMark::HotCueLabelPlacement WaveformWidgetFactory::getHotCueLabelPlacement() const {
     return WaveformMark::hotCueLabelPlacement();
+}
+
+void WaveformWidgetFactory::setHotCueLabelStyle(WaveformMark::HotCueLabelStyle style) {
+    WaveformMark::setHotCueLabelStyle(style);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("HotCueLabelStyle")),
+                static_cast<int>(getHotCueLabelStyle()));
+    }
+}
+
+WaveformMark::HotCueLabelStyle WaveformWidgetFactory::getHotCueLabelStyle() const {
+    return WaveformMark::hotCueLabelStyle();
 }
 
 void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {

@@ -288,6 +288,13 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetHotCueLetters);
+    // Index matches WaveformMark::HotCueLabelStyle ("HotCueLabelStyle")
+    hotCueLabelStyleComboBox->addItem(tr("Mixxx"));
+    hotCueLabelStyleComboBox->addItem(tr("rekordbox"));
+    connect(hotCueLabelStyleComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetHotCueLabelStyle);
     // Index matches WaveformMark::HotCueLabelPlacement ("HotCueLabelPlacement")
     hotCueLabelPlacementComboBox->addItem(tr("Skin default"));
     hotCueLabelPlacementComboBox->addItem(tr("Top"));
@@ -420,6 +427,8 @@ void DlgPrefWaveform::slotUpdate() {
     hotCueLettersCheckBox->setChecked(pFactory->getHotCueLetters());
     hotCueLabelPlacementComboBox->setCurrentIndex(
             static_cast<int>(pFactory->getHotCueLabelPlacement()));
+    hotCueLabelStyleComboBox->setCurrentIndex(
+            static_cast<int>(pFactory->getHotCueLabelStyle()));
     untilMarkShowTimeCheckBox->setChecked(pFactory->getUntilMarkShowTime());
     untilMarkAlignComboBox->setCurrentIndex(
             WaveformWidgetFactory::toUntilMarkAlignIndex(
@@ -544,6 +553,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     hotCueLettersCheckBox->setChecked(false);
     hotCueLabelPlacementComboBox->setCurrentIndex(
             static_cast<int>(WaveformMark::HotCueLabelPlacement::SkinDefault));
+    hotCueLabelStyleComboBox->setCurrentIndex(
+            static_cast<int>(WaveformMark::HotCueLabelStyle::Mixxx));
 
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
@@ -871,6 +882,13 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
 
 void DlgPrefWaveform::slotSetHotCueLetters(bool checked) {
     WaveformWidgetFactory::instance()->setHotCueLetters(checked);
+}
+
+void DlgPrefWaveform::slotSetHotCueLabelStyle(int index) {
+    WaveformWidgetFactory::instance()->setHotCueLabelStyle(
+            index == static_cast<int>(WaveformMark::HotCueLabelStyle::Rekordbox)
+                    ? WaveformMark::HotCueLabelStyle::Rekordbox
+                    : WaveformMark::HotCueLabelStyle::Mixxx);
 }
 
 void DlgPrefWaveform::slotSetHotCueLabelPlacement(int index) {

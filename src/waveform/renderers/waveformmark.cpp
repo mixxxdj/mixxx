@@ -281,6 +281,7 @@ std::atomic<int> WaveformMark::s_styleGeneration{0};
 std::atomic<bool> WaveformMark::s_hotCueLetters{false};
 std::atomic<int> WaveformMark::s_hotCueLabelPlacement{
         static_cast<int>(HotCueLabelPlacement::SkinDefault)};
+std::atomic<int> WaveformMark::s_hotCueLabelStyle{static_cast<int>(HotCueLabelStyle::Mixxx)};
 
 // static
 void WaveformMark::setHotCueLetters(bool letters) {
@@ -315,6 +316,25 @@ WaveformMark::HotCueLabelPlacement WaveformMark::hotCueLabelPlacement() {
 }
 
 // static
+void WaveformMark::setHotCueLabelStyle(HotCueLabelStyle style) {
+    const int value = static_cast<int>(style);
+    if (s_hotCueLabelStyle.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+WaveformMark::HotCueLabelStyle WaveformMark::hotCueLabelStyle() {
+    return s_hotCueLabelStyle.load() == static_cast<int>(HotCueLabelStyle::Rekordbox)
+            ? HotCueLabelStyle::Rekordbox
+            : HotCueLabelStyle::Mixxx;
+}
+
+bool WaveformMark::isRekordboxStyleLabel() const {
+    return m_iHotCue != Cue::kNoHotCue && hotCueLabelStyle() == HotCueLabelStyle::Rekordbox;
+}
+
+// static
 QString WaveformMark::hotCueName(int hotCue) {
     constexpr int kNumLetters = 26;
     if (s_hotCueLetters.load() && hotCue >= 0 && hotCue < kNumLetters) {
@@ -338,6 +358,13 @@ QString WaveformMark::displayText() const {
 Qt::Alignment WaveformMark::labelAlign() const {
     if (m_iHotCue == Cue::kNoHotCue) {
         return m_align;
+    }
+    if (isRekordboxStyleLabel()) {
+        // Centered on the cue line, at the top unless placed at the bottom.
+        return Qt::AlignHCenter |
+                (hotCueLabelPlacement() == HotCueLabelPlacement::Bottom
+                                ? Qt::AlignBottom
+                                : Qt::AlignTop);
     }
     switch (hotCueLabelPlacement()) {
     case HotCueLabelPlacement::Top:
@@ -677,13 +704,17 @@ QImage WaveformMark::performImageGeneration(float devicePixelRatio,
             markerGeometry.imageSize().height()));
 
     if (useIcon || text.length() != 0) {
+        // Rekordbox style: cue colored badge without outline, black text.
+        const bool rekordboxStyle = labelMark && isRekordboxStyleLabel();
         painter.setPen(borderColor());
 
         // Draw the label rounded rect with border
         QPainterPath path;
         path.addRoundedRect(markerGeometry.labelRect(), 2.f, 2.f);
         painter.fillPath(path, fillColor());
-        painter.drawPath(path);
+        if (!rekordboxStyle) {
+            painter.drawPath(path);
+        }
 
         // Center m_contentRect.width() and m_contentRect.height() inside labelRectMarl
         // and apply the offset x,y so the text ends up in the centered width,height.
@@ -704,7 +735,7 @@ QImage WaveformMark::performImageGeneration(float devicePixelRatio,
         } else {
             // Draw the text
             painter.setBrush(Qt::transparent);
-            painter.setPen(labelColor());
+            painter.setPen(rekordboxStyle ? QColor(Qt::black) : labelColor());
             painter.setFont(markerGeometry.font());
 
             painter.drawText(pos, text);

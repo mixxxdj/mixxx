@@ -601,6 +601,23 @@ Select from different types of displays for the waveform, which differ primarily
         </widget>
        </item>
        <item>
+        <widget class="QLabel" name="hotCueLabelStyleLabel">
+         <property name="text">
+          <string>Style</string>
+         </property>
+         <property name="buddy">
+          <cstring>hotCueLabelStyleComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="hotCueLabelStyleComboBox">
+         <property name="toolTip">
+          <string>Look of the hotcue labels. rekordbox: centered on the cue line at the top (or bottom, see Placement), cue colored background and black text.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="hotCueLabelPlacementLabel">
          <property name="text">
           <string>Placement</string>
@@ -981,6 +998,7 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>untilMarkTextPointSizeSpinBox</tabstop>
   <tabstop>untilMarkTextHeightLimitComboBox</tabstop>
  <tabstop>hotCueLettersCheckBox</tabstop>
+ <tabstop>hotCueLabelStyleComboBox</tabstop>
  <tabstop>hotCueLabelPlacementComboBox</tabstop>
   <tabstop>waveformOverviewComboBox</tabstop>
   <tabstop>overviewStereoCheckBox</tabstop>
