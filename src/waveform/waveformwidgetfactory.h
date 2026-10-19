@@ -192,6 +192,10 @@ class WaveformWidgetFactory : public QObject,
     bool getMemoryCueMarkerCustomOutline() const;
     void setMemoryCueMarkerOutlineColor(const QColor& color);
     QColor getMemoryCueMarkerOutlineColor() const;
+    void setMemoryCueMarkerSingleColor(bool enabled);
+    bool getMemoryCueMarkerSingleColor() const;
+    void setMemoryCueMarkerColor(const QColor& color);
+    QColor getMemoryCueMarkerColor() const;
     void setMemoryCueMarkerShowNames(bool show);
     bool getMemoryCueMarkerShowNames() const;
     void setMemoryCueNameAlign(Qt::Alignment align);

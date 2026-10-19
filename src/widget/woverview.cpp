@@ -1124,17 +1124,19 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
         }
 
-        // Memory cue markers may have their line switched off (width 0).
+        // Memory cue markers may have their line switched off (width 0)
+        // and may all use one color.
         if (lineWidth > 0.0) {
-            pPainter->setPen(pMark->borderColor());
+            const QColor lineColor = isMemoryCue ? pMark->memoryCueColor() : pMark->fillColor();
+            pPainter->setPen(isMemoryCue ? pMark->memoryCueBorderColor() : pMark->borderColor());
             pPainter->drawLine(bgLine);
 
             if (lineWidth > 1.0) {
-                QPen linePen(pMark->fillColor());
+                QPen linePen(lineColor);
                 linePen.setWidthF(lineWidth);
                 pPainter->setPen(linePen);
             } else {
-                pPainter->setPen(pMark->fillColor());
+                pPainter->setPen(lineColor);
             }
             pPainter->drawLine(line);
         }
@@ -1195,7 +1197,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 triangles.addPath(top);
             }
             pPainter->setRenderHint(QPainter::Antialiasing);
-            pPainter->fillPath(triangles, pMark->fillColor());
+            pPainter->fillPath(triangles, pMark->memoryCueColor());
             pPainter->setPen(pMark->memoryCueOutlineColor());
             pPainter->drawPath(triangles);
             pMark->m_label.clear();

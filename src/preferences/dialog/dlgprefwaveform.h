@@ -60,6 +60,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetMemoryCueMarkerSize(int size);
     void slotSetMemoryCueMarkerCustomOutline(bool checked);
     void slotChooseMemoryCueMarkerOutlineColor();
+    void slotSetMemoryCueMarkerSingleColor(bool checked);
+    void slotChooseMemoryCueMarkerColor();
     void slotSetMemoryCueMarkerShowNames(bool checked);
     void slotSetMemoryCueNameAlign(int index);
     void slotSetMemoryCueNameBackground(int index);
@@ -94,6 +96,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void notifyQmlWaveformSettingsChanged();
     void updateEnableMemoryCueMarkers();
     void updateMemoryCueMarkerOutlineColorButton();
+    void updateMemoryCueMarkerColorButton();
     void updateMemoryCueNameTextColorButton();
     void updateMemoryCueNameBackgroundColorButton();
 

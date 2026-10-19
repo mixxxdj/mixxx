@@ -328,6 +328,8 @@ std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kDefaultMemoryCueLineW
 std::atomic<int> WaveformMark::s_memoryCueMarkerSize{kDefaultMemoryCueMarkerSize};
 std::atomic<bool> WaveformMark::s_memoryCueMarkerCustomOutline{false};
 std::atomic<QRgb> WaveformMark::s_memoryCueMarkerOutlineColor{qRgb(255, 255, 255)};
+std::atomic<bool> WaveformMark::s_memoryCueMarkerSingleColor{false};
+std::atomic<QRgb> WaveformMark::s_memoryCueMarkerColor{qRgb(230, 40, 40)};
 std::atomic<bool> WaveformMark::s_memoryCueMarkerShowNames{false};
 std::atomic<bool> WaveformMark::s_memoryCueNameAlignTop{true};
 std::atomic<int> WaveformMark::s_memoryCueNameBackground{
@@ -426,9 +428,56 @@ QColor WaveformMark::memoryCueMarkerOutlineColor() {
     return QColor::fromRgb(s_memoryCueMarkerOutlineColor.load());
 }
 
+// static
+void WaveformMark::setMemoryCueMarkerSingleColor(bool enabled) {
+    if (s_memoryCueMarkerSingleColor.exchange(enabled) != enabled) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueMarkerSingleColor() {
+    return s_memoryCueMarkerSingleColor.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerColor(const QColor& color) {
+    const QRgb rgb = color.isValid() ? color.rgb() : qRgb(230, 40, 40);
+    if (s_memoryCueMarkerColor.exchange(rgb) != rgb) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueMarkerColor() {
+    return QColor::fromRgb(s_memoryCueMarkerColor.load());
+}
+
+QColor WaveformMark::memoryCueColor() const {
+    return s_memoryCueMarkerSingleColor.load() ? memoryCueMarkerColor() : fillColor();
+}
+
+QColor WaveformMark::memoryCueBorderColor() const {
+    if (!s_memoryCueMarkerSingleColor.load()) {
+        return borderColor();
+    }
+    // Same rule as setBaseColor() uses for the cue's own color
+    return Color::chooseContrastColor(memoryCueMarkerColor(), m_dimBrightThreshold);
+}
+
+QColor WaveformMark::memoryCueLabelColor() const {
+    if (!s_memoryCueMarkerSingleColor.load()) {
+        return labelColor();
+    }
+    return Color::chooseColorByBrightness(memoryCueMarkerColor(),
+            QColor(255, 255, 255, 255),
+            QColor(0, 0, 0, 255),
+            m_dimBrightThreshold);
+}
+
 QColor WaveformMark::memoryCueOutlineColor() const {
     return s_memoryCueMarkerCustomOutline.load() ? memoryCueMarkerOutlineColor()
-                                                 : borderColor();
+                                                 : memoryCueBorderColor();
 }
 
 // static
@@ -521,12 +570,12 @@ QColor WaveformMark::memoryCueNameEffectiveTextColor() const {
     switch (memoryCueNameBackground()) {
     case MemoryCueNameBackground::CueColor:
         // Readable on the cue colored box
-        return labelColor();
+        return memoryCueLabelColor();
     case MemoryCueNameBackground::CustomColor: {
         const QColor background = memoryCueNameBackgroundCustomColor();
         if (background.alphaF() < 0.3f) {
             // Mostly transparent: the waveform is the real background
-            return fillColor();
+            return memoryCueColor();
         }
         const float luminance = 0.299f * background.redF() +
                 0.587f * background.greenF() + 0.114f * background.blueF();
@@ -534,14 +583,14 @@ QColor WaveformMark::memoryCueNameEffectiveTextColor() const {
     }
     case MemoryCueNameBackground::Off:
     default:
-        return fillColor();
+        return memoryCueColor();
     }
 }
 
 QColor WaveformMark::memoryCueNameBackgroundColor() const {
     switch (memoryCueNameBackground()) {
     case MemoryCueNameBackground::CueColor: {
-        QColor color = fillColor();
+        QColor color = memoryCueColor();
         color.setAlphaF(0.6f); // subtle, the waveform stays visible underneath
         return color;
     }
@@ -624,7 +673,7 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     const float lineWidth = static_cast<float>(memoryCueMarkerLineWidth());
     if (lineWidth > 0.f) {
         painter.fillRect(QRectF(hcenter - lineWidth / 2.f, 0.f, lineWidth, height),
-                fillColor());
+                memoryCueColor());
     }
 
     QPainterPath triangles;
@@ -644,7 +693,7 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
         bottom.closeSubpath();
         triangles.addPath(bottom);
     }
-    painter.fillPath(triangles, fillColor());
+    painter.fillPath(triangles, memoryCueColor());
     painter.setPen(memoryCueOutlineColor());
     painter.drawPath(triangles);
 
@@ -674,6 +723,7 @@ void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
     }
 
     m_fillColor = baseColor;
+    m_dimBrightThreshold = dimBrightThreshold;
     m_borderColor = Color::chooseContrastColor(baseColor, dimBrightThreshold);
     m_labelColor = Color::chooseColorByBrightness(baseColor,
             QColor(255, 255, 255, 255),

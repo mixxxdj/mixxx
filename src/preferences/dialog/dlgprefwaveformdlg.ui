@@ -912,6 +912,35 @@ Select from different types of displays for the waveform overview, which differ 
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="memoryCueMarkerSingleColorCheckBox">
+         <property name="toolTip">
+          <string>Draw all memory cues in one color (e.g. rekordbox red) instead of each cue's own color.</string>
+         </property>
+         <property name="text">
+          <string>Single color</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="memoryCueMarkerColorButton">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="memoryCueMarkerCustomOutlineCheckBox">
          <property name="toolTip">
           <string>Draw the outline of the memory cue triangles in a custom color instead of the automatic one.</string>
@@ -1220,6 +1249,8 @@ Select from different types of displays for the waveform overview, which differ 
  <tabstop>memoryCueMarkerAlignComboBox</tabstop>
  <tabstop>memoryCueMarkerLineWidthSpinBox</tabstop>
  <tabstop>memoryCueMarkerSizeSpinBox</tabstop>
+ <tabstop>memoryCueMarkerSingleColorCheckBox</tabstop>
+ <tabstop>memoryCueMarkerColorButton</tabstop>
  <tabstop>memoryCueMarkerCustomOutlineCheckBox</tabstop>
  <tabstop>memoryCueMarkerOutlineColorButton</tabstop>
  <tabstop>memoryCueMarkerShowNamesCheckBox</tabstop>

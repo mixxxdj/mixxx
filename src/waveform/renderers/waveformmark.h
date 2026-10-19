@@ -259,6 +259,17 @@ class WaveformMark {
     static bool memoryCueMarkerCustomOutline();
     static void setMemoryCueMarkerOutlineColor(const QColor& color);
     static QColor memoryCueMarkerOutlineColor();
+    // Optionally draw all memory cues in one color (e.g. rekordbox red)
+    // instead of each cue's own color.
+    static void setMemoryCueMarkerSingleColor(bool enabled);
+    static bool memoryCueMarkerSingleColor();
+    static void setMemoryCueMarkerColor(const QColor& color);
+    static QColor memoryCueMarkerColor();
+    // Colors to draw this mark as a memory cue with: the single color (and
+    // matching contrast colors) when enabled, otherwise the cue's own colors.
+    QColor memoryCueColor() const;
+    QColor memoryCueBorderColor() const;
+    QColor memoryCueLabelColor() const;
     // Outline color to draw this mark's memory cue triangle with.
     QColor memoryCueOutlineColor() const;
     // Show the cue's name (e.g. the rekordbox comment) next to the triangle.
@@ -360,6 +371,8 @@ class WaveformMark {
     QColor m_fillColor;
     QColor m_borderColor;
     QColor m_labelColor;
+    // Last threshold passed to setBaseColor(), reused for the single memory cue color.
+    int m_dimBrightThreshold{127};
 
     // Bumped whenever a global marker style setting changes, so every mark
     // regenerates its image on the next paint.
@@ -370,6 +383,8 @@ class WaveformMark {
     static std::atomic<int> s_memoryCueMarkerSize;
     static std::atomic<bool> s_memoryCueMarkerCustomOutline;
     static std::atomic<QRgb> s_memoryCueMarkerOutlineColor;
+    static std::atomic<bool> s_memoryCueMarkerSingleColor;
+    static std::atomic<QRgb> s_memoryCueMarkerColor;
     static std::atomic<bool> s_memoryCueMarkerShowNames;
     static std::atomic<bool> s_memoryCueNameAlignTop;
     static std::atomic<int> s_memoryCueNameBackground;

@@ -499,6 +499,12 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setMemoryCueMarkerOutlineColor(QColor(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOutlineColor")),
             QStringLiteral("#ffffff"))));
+    setMemoryCueMarkerSingleColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSingleColor")),
+            false));
+    setMemoryCueMarkerColor(QColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerColor")),
+            QStringLiteral("#e62828"))));
     setMemoryCueMarkerShowNames(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerShowNames")),
             false));
@@ -1764,6 +1770,31 @@ void WaveformWidgetFactory::setMemoryCueMarkerOutlineColor(const QColor& color) 
 
 QColor WaveformWidgetFactory::getMemoryCueMarkerOutlineColor() const {
     return WaveformMark::memoryCueMarkerOutlineColor();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerSingleColor(bool enabled) {
+    WaveformMark::setMemoryCueMarkerSingleColor(enabled);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSingleColor")),
+                enabled);
+    }
+}
+
+bool WaveformWidgetFactory::getMemoryCueMarkerSingleColor() const {
+    return WaveformMark::memoryCueMarkerSingleColor();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerColor(const QColor& color) {
+    WaveformMark::setMemoryCueMarkerColor(color);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerColor")),
+                getMemoryCueMarkerColor().name());
+    }
+}
+
+QColor WaveformWidgetFactory::getMemoryCueMarkerColor() const {
+    return WaveformMark::memoryCueMarkerColor();
 }
 
 void WaveformWidgetFactory::setMemoryCueMarkerShowNames(bool show) {
