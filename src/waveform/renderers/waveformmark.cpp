@@ -323,6 +323,7 @@ WaveformMark::~WaveformMark() = default;
 
 std::atomic<int> WaveformMark::s_styleGeneration{0};
 std::atomic<bool> WaveformMark::s_showMemoryCueMarkers{true};
+std::atomic<int> WaveformMark::s_memoryCueMarkerView{static_cast<int>(MemoryCueMarkerView::Both)};
 std::atomic<int> WaveformMark::s_memoryCueMarkerAlign{static_cast<int>(Qt::AlignBottom)};
 std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kDefaultMemoryCueLineWidth};
 std::atomic<int> WaveformMark::s_memoryCueMarkerSize{kDefaultMemoryCueMarkerSize};
@@ -614,6 +615,36 @@ QColor WaveformMark::memoryCueNameBackgroundColor() const {
     default:
         return QColor(Qt::transparent);
     }
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerView(MemoryCueMarkerView view) {
+    const int value = static_cast<int>(view);
+    if (s_memoryCueMarkerView.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+WaveformMark::MemoryCueMarkerView WaveformMark::memoryCueMarkerView() {
+    switch (s_memoryCueMarkerView.load()) {
+    case static_cast<int>(MemoryCueMarkerView::ScrollingWaveformsOnly):
+        return MemoryCueMarkerView::ScrollingWaveformsOnly;
+    case static_cast<int>(MemoryCueMarkerView::OverviewOnly):
+        return MemoryCueMarkerView::OverviewOnly;
+    default:
+        return MemoryCueMarkerView::Both;
+    }
+}
+
+bool WaveformMark::isMemoryCueMarkerInScrollingWaveforms() const {
+    return isMemoryCueMarker() &&
+            memoryCueMarkerView() != MemoryCueMarkerView::OverviewOnly;
+}
+
+bool WaveformMark::isMemoryCueMarkerInOverview() const {
+    return isMemoryCueMarker() &&
+            memoryCueMarkerView() != MemoryCueMarkerView::ScrollingWaveformsOnly;
 }
 
 bool WaveformMark::isMemoryCueMarker() const {
@@ -1101,7 +1132,7 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     DEBUG_ASSERT(needsImageUpdate());
     m_styleGeneration = s_styleGeneration.load();
 
-    if (m_breadth != 0.0f && isMemoryCueMarker()) {
+    if (m_breadth != 0.0f && isMemoryCueMarkerInScrollingWaveforms()) {
         return generateMemoryCueImage(devicePixelRatio);
     }
 

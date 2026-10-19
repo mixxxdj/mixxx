@@ -163,6 +163,10 @@ DlgPrefWaveform::DlgPrefWaveform(
     // Adopt tr string from first GLSL hint
     requiresGLSLLabel2->setText(requiresGLSLLabel->text());
 
+    // Index matches WaveformMark::MemoryCueMarkerView ("MemoryCueMarkerShowIn")
+    memoryCueMarkerViewComboBox->addItem(tr("Scrolling waveforms and overview"));
+    memoryCueMarkerViewComboBox->addItem(tr("Scrolling waveforms only"));
+    memoryCueMarkerViewComboBox->addItem(tr("Overview only"));
     // Index 0 = top, 1 = bottom, 2 = both (matches the "MemoryCueMarkerAlign" config value)
     memoryCueMarkerAlignComboBox->addItem(tr("Top"));
     memoryCueMarkerAlignComboBox->addItem(tr("Bottom"));
@@ -301,6 +305,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetShowMemoryCueMarkers);
+    connect(memoryCueMarkerViewComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerView);
     connect(memoryCueMarkerAlignComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -478,6 +486,8 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSlider->setValue(pFactory->getBeatGridAlpha());
 
     showMemoryCueMarkersCheckBox->setChecked(pFactory->getShowMemoryCueMarkers());
+    memoryCueMarkerViewComboBox->setCurrentIndex(
+            static_cast<int>(pFactory->getMemoryCueMarkerView()));
     {
         const Qt::Alignment memoryCueAlign = pFactory->getMemoryCueMarkerAlign();
         const bool top = memoryCueAlign.testFlag(Qt::AlignTop);
@@ -624,6 +634,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     beatGridAlphaSlider->setValue(90);
 
     showMemoryCueMarkersCheckBox->setChecked(true);
+    memoryCueMarkerViewComboBox->setCurrentIndex(
+            static_cast<int>(WaveformMark::MemoryCueMarkerView::Both));
     memoryCueMarkerAlignComboBox->setCurrentIndex(1); // Bottom
     memoryCueMarkerLineWidthSpinBox->setValue(1);
     memoryCueMarkerSizeSpinBox->setValue(11);
@@ -975,6 +987,23 @@ void DlgPrefWaveform::slotSetShowMemoryCueMarkers(bool checked) {
     updateEnableMemoryCueMarkers();
 }
 
+void DlgPrefWaveform::slotSetMemoryCueMarkerView(int index) {
+    switch (index) {
+    case static_cast<int>(WaveformMark::MemoryCueMarkerView::ScrollingWaveformsOnly):
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerView(
+                WaveformMark::MemoryCueMarkerView::ScrollingWaveformsOnly);
+        break;
+    case static_cast<int>(WaveformMark::MemoryCueMarkerView::OverviewOnly):
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerView(
+                WaveformMark::MemoryCueMarkerView::OverviewOnly);
+        break;
+    default:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerView(
+                WaveformMark::MemoryCueMarkerView::Both);
+        break;
+    }
+}
+
 void DlgPrefWaveform::slotSetMemoryCueMarkerAlign(int index) {
     switch (index) {
     case 0:
@@ -996,6 +1025,7 @@ void DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth(int width) {
 
 void DlgPrefWaveform::updateEnableMemoryCueMarkers() {
     const bool enabled = showMemoryCueMarkersCheckBox->isChecked();
+    memoryCueMarkerViewComboBox->setEnabled(enabled);
     memoryCueMarkerAlignLabel->setEnabled(enabled);
     memoryCueMarkerAlignComboBox->setEnabled(enabled);
     memoryCueMarkerLineWidthLabel->setEnabled(enabled);

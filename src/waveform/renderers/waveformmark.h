@@ -307,6 +307,18 @@ class WaveformMark {
     // Background color of this mark's name box (transparent when off).
     QColor memoryCueNameBackgroundColor() const;
     bool isMemoryCueMarker() const;
+    // Where memory cue markers are drawn. In the other view the cues are
+    // shown as normal numbered hotcues.
+    enum class MemoryCueMarkerView {
+        Both = 0,
+        ScrollingWaveformsOnly = 1,
+        OverviewOnly = 2,
+    };
+    static void setMemoryCueMarkerView(MemoryCueMarkerView view);
+    static MemoryCueMarkerView memoryCueMarkerView();
+    // isMemoryCueMarker() and enabled for that view.
+    bool isMemoryCueMarkerInScrollingWaveforms() const;
+    bool isMemoryCueMarkerInOverview() const;
 
     QColor m_textColor;
     QString m_text;
@@ -384,6 +396,7 @@ class WaveformMark {
     // regenerates its image on the next paint.
     static std::atomic<int> s_styleGeneration;
     static std::atomic<bool> s_showMemoryCueMarkers;
+    static std::atomic<int> s_memoryCueMarkerView;
     static std::atomic<int> s_memoryCueMarkerAlign;
     static std::atomic<int> s_memoryCueMarkerLineWidth;
     static std::atomic<int> s_memoryCueMarkerSize;

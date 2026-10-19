@@ -182,6 +182,8 @@ class WaveformWidgetFactory : public QObject,
     void setUntilMarkShowBeats(bool value);
     void setShowMemoryCueMarkers(bool value);
     bool getShowMemoryCueMarkers() const;
+    void setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView view);
+    WaveformMark::MemoryCueMarkerView getMemoryCueMarkerView() const;
     void setMemoryCueMarkerAlign(Qt::Alignment align);
     Qt::Alignment getMemoryCueMarkerAlign() const;
     void setMemoryCueMarkerLineWidth(int width);

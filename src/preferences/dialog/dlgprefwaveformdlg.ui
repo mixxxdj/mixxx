@@ -817,6 +817,13 @@ Select from different types of displays for the waveform overview, which differ 
         </widget>
        </item>
        <item>
+        <widget class="QComboBox" name="memoryCueMarkerViewComboBox">
+         <property name="toolTip">
+          <string>Where to draw the memory cue markers. In the other view, memory cues are shown as normal numbered hotcues.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="memoryCueMarkerAlignLabel">
          <property name="text">
           <string>Placement</string>
@@ -1278,6 +1285,7 @@ Select from different types of displays for the waveform overview, which differ 
   <tabstop>untilMarkTextPointSizeSpinBox</tabstop>
   <tabstop>untilMarkTextHeightLimitComboBox</tabstop>
  <tabstop>showMemoryCueMarkersCheckBox</tabstop>
+ <tabstop>memoryCueMarkerViewComboBox</tabstop>
  <tabstop>memoryCueMarkerAlignComboBox</tabstop>
  <tabstop>memoryCueMarkerLineWidthSpinBox</tabstop>
  <tabstop>memoryCueMarkerOpacitySpinBox</tabstop>

@@ -474,6 +474,19 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     setShowMemoryCueMarkers(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("ShowMemoryCueMarkers")), true));
+    // 0 = both, 1 = scrolling waveforms only, 2 = overview only
+    switch (m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerShowIn")), 0)) {
+    case 1:
+        setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView::ScrollingWaveformsOnly);
+        break;
+    case 2:
+        setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView::OverviewOnly);
+        break;
+    default:
+        setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView::Both);
+        break;
+    }
     // 0 = top, 1 = bottom, 2 = top and bottom
     switch (m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")), 1)) {
@@ -1707,6 +1720,18 @@ void WaveformWidgetFactory::setShowMemoryCueMarkers(bool value) {
 
 bool WaveformWidgetFactory::getShowMemoryCueMarkers() const {
     return WaveformMark::showMemoryCueMarkers();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView view) {
+    WaveformMark::setMemoryCueMarkerView(view);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerShowIn")),
+                static_cast<int>(getMemoryCueMarkerView()));
+    }
+}
+
+WaveformMark::MemoryCueMarkerView WaveformWidgetFactory::getMemoryCueMarkerView() const {
+    return WaveformMark::memoryCueMarkerView();
 }
 
 void WaveformWidgetFactory::setMemoryCueMarkerAlign(Qt::Alignment align) {

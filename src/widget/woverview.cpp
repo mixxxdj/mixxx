@@ -48,7 +48,7 @@ QString cueNameFromOverviewLabel(const QString& text, int hotCue) {
 // Whether a mark draws a text label in the overview at the given vertical
 // alignment. Used to elide labels so they don't run into the next one.
 bool hasOverviewLabelAt(const WaveformMarkPointer& pMark, Qt::Alignment valign) {
-    if (pMark->isMemoryCueMarker()) {
+    if (pMark->isMemoryCueMarkerInOverview()) {
         return WaveformMark::memoryCueMarkerShowNames() &&
                 valign == (WaveformMark::memoryCueNameAlign() & Qt::AlignVertical_Mask) &&
                 !cueNameFromOverviewLabel(pMark->m_text, pMark->getHotCue()).isEmpty();
@@ -1085,7 +1085,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         float markStartPosition = markPosition;
         pMark->m_linePosition = markPosition;
 
-        const bool isMemoryCue = pMark->isMemoryCueMarker();
+        const bool isMemoryCue = pMark->isMemoryCueMarkerInOverview();
         const qreal lineWidth = isMemoryCue
                 ? static_cast<qreal>(WaveformMark::memoryCueMarkerLineWidth())
                 : 1.0;

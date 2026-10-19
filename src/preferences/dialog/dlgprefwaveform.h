@@ -55,6 +55,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
     void slotSetShowMemoryCueMarkers(bool checked);
+    void slotSetMemoryCueMarkerView(int index);
     void slotSetMemoryCueMarkerAlign(int index);
     void slotSetMemoryCueMarkerLineWidth(int width);
     void slotSetMemoryCueMarkerSize(int size);
