@@ -662,6 +662,84 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
      <item row="14" column="1" colspan="4">
+      <layout class="QHBoxLayout" name="memoryCueMarkersStyleLayout">
+       <item>
+        <widget class="QLabel" name="memoryCueMarkerSizeLabel">
+         <property name="text">
+          <string>Size</string>
+         </property>
+         <property name="buddy">
+          <cstring>memoryCueMarkerSizeSpinBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="memoryCueMarkerSizeSpinBox">
+         <property name="toolTip">
+          <string>Size of the memory cue triangles in the scrolling waveforms. The overview uses a slightly smaller size.</string>
+         </property>
+         <property name="suffix">
+          <string> px</string>
+         </property>
+         <property name="minimum">
+          <number>5</number>
+         </property>
+         <property name="maximum">
+          <number>31</number>
+         </property>
+         <property name="singleStep">
+          <number>2</number>
+         </property>
+         <property name="value">
+          <number>11</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="memoryCueMarkerCustomOutlineCheckBox">
+         <property name="toolTip">
+          <string>Draw the outline of the memory cue triangles in a custom color instead of the automatic one.</string>
+         </property>
+         <property name="text">
+          <string>Custom outline color</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="memoryCueMarkerOutlineColorButton">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="memoryCueMarkersStyleSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="15" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
         <string>This functionality requires waveform acceleration.</string>
@@ -672,7 +750,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="15" column="0">
+     <item row="16" column="0">
       <widget class="QLabel" name="stemOpacityLabel">
        <property name="text">
         <string>Stem</string>
@@ -685,7 +763,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="15" column="1" colspan="4">
+     <item row="16" column="1" colspan="4">
       <layout class="QGridLayout" name="stemOpacityGridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="stemOpacityMainLabel">
@@ -782,7 +860,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
-     <item row="16" column="1" colspan="4">
+     <item row="17" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel2">
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -1012,6 +1090,9 @@ Select from different types of displays for the waveform overview, which differ 
  <tabstop>showMemoryCueMarkersCheckBox</tabstop>
  <tabstop>memoryCueMarkerAlignComboBox</tabstop>
  <tabstop>memoryCueMarkerLineWidthSpinBox</tabstop>
+ <tabstop>memoryCueMarkerSizeSpinBox</tabstop>
+ <tabstop>memoryCueMarkerCustomOutlineCheckBox</tabstop>
+ <tabstop>memoryCueMarkerOutlineColorButton</tabstop>
   <tabstop>waveformOverviewComboBox</tabstop>
   <tabstop>overviewStereoCheckBox</tabstop>
   <tabstop>overviewMinuteMarkersCheckBox</tabstop>

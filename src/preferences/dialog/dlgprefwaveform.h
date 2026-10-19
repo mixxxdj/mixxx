@@ -57,6 +57,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetShowMemoryCueMarkers(bool checked);
     void slotSetMemoryCueMarkerAlign(int index);
     void slotSetMemoryCueMarkerLineWidth(int width);
+    void slotSetMemoryCueMarkerSize(int size);
+    void slotSetMemoryCueMarkerCustomOutline(bool checked);
+    void slotChooseMemoryCueMarkerOutlineColor();
     void slotSetUntilMarkShowBeats(bool checked);
     void slotSetUntilMarkShowTime(bool checked);
     void slotSetUntilMarkAlign(int index);
@@ -84,6 +87,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void updateStemOptionsEnabled();
     void notifyQmlWaveformSettingsChanged();
     void updateEnableMemoryCueMarkers();
+    void updateMemoryCueMarkerOutlineColorButton();
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;

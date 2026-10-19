@@ -246,6 +246,21 @@ class WaveformMark {
     static constexpr int kMaxMemoryCueLineWidth = 5;
     static void setMemoryCueMarkerLineWidth(int width);
     static int memoryCueMarkerLineWidth();
+    // Size (width and height) of the memory cue triangle in the scrolling
+    // waveforms, in logical pixels. The overview scales it down.
+    static constexpr int kMinMemoryCueMarkerSize = 5;
+    static constexpr int kDefaultMemoryCueMarkerSize = 11;
+    static constexpr int kMaxMemoryCueMarkerSize = 31;
+    static void setMemoryCueMarkerSize(int size);
+    static int memoryCueMarkerSize();
+    // Optional custom outline color of the memory cue triangle. When off,
+    // the outline uses the mark's automatic border color.
+    static void setMemoryCueMarkerCustomOutline(bool enabled);
+    static bool memoryCueMarkerCustomOutline();
+    static void setMemoryCueMarkerOutlineColor(const QColor& color);
+    static QColor memoryCueMarkerOutlineColor();
+    // Outline color to draw this mark's memory cue triangle with.
+    QColor memoryCueOutlineColor() const;
     bool isMemoryCueMarker() const;
 
     QColor m_textColor;
@@ -324,6 +339,9 @@ class WaveformMark {
     static std::atomic<bool> s_showMemoryCueMarkers;
     static std::atomic<int> s_memoryCueMarkerAlign;
     static std::atomic<int> s_memoryCueMarkerLineWidth;
+    static std::atomic<int> s_memoryCueMarkerSize;
+    static std::atomic<bool> s_memoryCueMarkerCustomOutline;
+    static std::atomic<QRgb> s_memoryCueMarkerOutlineColor;
     int m_styleGeneration{-1};
 
     QImage generateMemoryCueImage(float devicePixelRatio);

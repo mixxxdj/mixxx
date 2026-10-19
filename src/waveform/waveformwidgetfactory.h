@@ -185,6 +185,12 @@ class WaveformWidgetFactory : public QObject,
     Qt::Alignment getMemoryCueMarkerAlign() const;
     void setMemoryCueMarkerLineWidth(int width);
     int getMemoryCueMarkerLineWidth() const;
+    void setMemoryCueMarkerSize(int size);
+    int getMemoryCueMarkerSize() const;
+    void setMemoryCueMarkerCustomOutline(bool enabled);
+    bool getMemoryCueMarkerCustomOutline() const;
+    void setMemoryCueMarkerOutlineColor(const QColor& color);
+    QColor getMemoryCueMarkerOutlineColor() const;
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);

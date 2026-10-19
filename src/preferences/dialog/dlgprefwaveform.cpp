@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
+#include <QColorDialog>
 #include <QLocale>
 #include <QMetaEnum>
 #include <QtGlobal>
@@ -301,6 +302,18 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
             &DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth);
+    connect(memoryCueMarkerSizeSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerSize);
+    connect(memoryCueMarkerCustomOutlineCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerCustomOutline);
+    connect(memoryCueMarkerOutlineColorButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefWaveform::slotChooseMemoryCueMarkerOutlineColor);
     connect(untilMarkShowTimeCheckBox,
             &QCheckBox::toggled,
             this,
@@ -429,6 +442,10 @@ void DlgPrefWaveform::slotUpdate() {
         memoryCueMarkerAlignComboBox->setCurrentIndex(top && bottom ? 2 : (top ? 0 : 1));
     }
     memoryCueMarkerLineWidthSpinBox->setValue(pFactory->getMemoryCueMarkerLineWidth());
+    memoryCueMarkerSizeSpinBox->setValue(pFactory->getMemoryCueMarkerSize());
+    memoryCueMarkerCustomOutlineCheckBox->setChecked(
+            pFactory->getMemoryCueMarkerCustomOutline());
+    updateMemoryCueMarkerOutlineColorButton();
     updateEnableMemoryCueMarkers();
     untilMarkShowBeatsCheckBox->setChecked(pFactory->getUntilMarkShowBeats());
     untilMarkShowTimeCheckBox->setChecked(pFactory->getUntilMarkShowTime());
@@ -554,6 +571,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
     showMemoryCueMarkersCheckBox->setChecked(true);
     memoryCueMarkerAlignComboBox->setCurrentIndex(1); // Bottom
     memoryCueMarkerLineWidthSpinBox->setValue(1);
+    memoryCueMarkerSizeSpinBox->setValue(11);
+    memoryCueMarkerCustomOutlineCheckBox->setChecked(false);
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerOutlineColor(Qt::white);
+    updateMemoryCueMarkerOutlineColorButton();
     beatGridAlphaSpinBox->setValue(90);
 
     // 50 (center) is default
@@ -910,6 +931,40 @@ void DlgPrefWaveform::updateEnableMemoryCueMarkers() {
     memoryCueMarkerAlignComboBox->setEnabled(enabled);
     memoryCueMarkerLineWidthLabel->setEnabled(enabled);
     memoryCueMarkerLineWidthSpinBox->setEnabled(enabled);
+    memoryCueMarkerSizeLabel->setEnabled(enabled);
+    memoryCueMarkerSizeSpinBox->setEnabled(enabled);
+    memoryCueMarkerCustomOutlineCheckBox->setEnabled(enabled);
+    memoryCueMarkerOutlineColorButton->setEnabled(
+            enabled && memoryCueMarkerCustomOutlineCheckBox->isChecked());
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerSize(int size) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerSize(size);
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerCustomOutline(bool checked) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerCustomOutline(checked);
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotChooseMemoryCueMarkerOutlineColor() {
+    const QColor oldColor = WaveformWidgetFactory::instance()->getMemoryCueMarkerOutlineColor();
+    const QColor newColor = QColorDialog::getColor(
+            oldColor, this, tr("Memory cue marker outline color"));
+    if (!newColor.isValid()) {
+        return; // dialog canceled
+    }
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerOutlineColor(newColor);
+    updateMemoryCueMarkerOutlineColorButton();
+}
+
+void DlgPrefWaveform::updateMemoryCueMarkerOutlineColorButton() {
+    const QColor color = WaveformWidgetFactory::instance()->getMemoryCueMarkerOutlineColor();
+    memoryCueMarkerOutlineColorButton->setStyleSheet(
+            QStringLiteral("QPushButton { background-color: %1; }").arg(color.name()));
+    memoryCueMarkerOutlineColorButton->setToolTip(
+            tr("Outline color of the memory cue triangles (%1). Click to change.")
+                    .arg(color.name()));
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {

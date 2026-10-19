@@ -1134,7 +1134,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // Rekordbox-style memory cue: small triangle in the cue color,
             // no number or label text. Placement comes from the preferences
             // (top/bottom; left/right on vertical overviews).
-            constexpr qreal kSize = 9.0;
+            // The overview is smaller than the scrolling waveforms, so the
+            // triangle is drawn at 9/11 of the configured size (9 px by default).
+            const qreal kSize = std::max(3.0,
+                    WaveformMark::memoryCueMarkerSize() * 9.0 /
+                            WaveformMark::kDefaultMemoryCueMarkerSize);
             const qreal half = kSize / 2.0;
             const Qt::Alignment align = WaveformMark::memoryCueMarkerAlign();
             QPainterPath triangles;
@@ -1168,7 +1172,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
             pPainter->setRenderHint(QPainter::Antialiasing);
             pPainter->fillPath(triangles, pMark->fillColor());
-            pPainter->setPen(pMark->borderColor());
+            pPainter->setPen(pMark->memoryCueOutlineColor());
             pPainter->drawPath(triangles);
             pMark->m_label.clear();
             pMark->m_label.setAreaRect(triangles.boundingRect());

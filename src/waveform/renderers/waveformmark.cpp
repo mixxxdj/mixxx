@@ -325,6 +325,9 @@ std::atomic<int> WaveformMark::s_styleGeneration{0};
 std::atomic<bool> WaveformMark::s_showMemoryCueMarkers{true};
 std::atomic<int> WaveformMark::s_memoryCueMarkerAlign{static_cast<int>(Qt::AlignBottom)};
 std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kDefaultMemoryCueLineWidth};
+std::atomic<int> WaveformMark::s_memoryCueMarkerSize{kDefaultMemoryCueMarkerSize};
+std::atomic<bool> WaveformMark::s_memoryCueMarkerCustomOutline{false};
+std::atomic<QRgb> WaveformMark::s_memoryCueMarkerOutlineColor{qRgb(255, 255, 255)};
 
 // static
 void WaveformMark::setShowMemoryCueMarkers(bool show) {
@@ -378,6 +381,49 @@ int WaveformMark::memoryCueMarkerLineWidth() {
     return s_memoryCueMarkerLineWidth.load();
 }
 
+// static
+void WaveformMark::setMemoryCueMarkerSize(int size) {
+    size = std::clamp(size, kMinMemoryCueMarkerSize, kMaxMemoryCueMarkerSize);
+    if (s_memoryCueMarkerSize.exchange(size) != size) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+int WaveformMark::memoryCueMarkerSize() {
+    return s_memoryCueMarkerSize.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerCustomOutline(bool enabled) {
+    if (s_memoryCueMarkerCustomOutline.exchange(enabled) != enabled) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueMarkerCustomOutline() {
+    return s_memoryCueMarkerCustomOutline.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerOutlineColor(const QColor& color) {
+    const QRgb rgb = color.isValid() ? color.rgb() : qRgb(255, 255, 255);
+    if (s_memoryCueMarkerOutlineColor.exchange(rgb) != rgb) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueMarkerOutlineColor() {
+    return QColor::fromRgb(s_memoryCueMarkerOutlineColor.load());
+}
+
+QColor WaveformMark::memoryCueOutlineColor() const {
+    return s_memoryCueMarkerCustomOutline.load() ? memoryCueMarkerOutlineColor()
+                                                 : borderColor();
+}
+
 bool WaveformMark::isMemoryCueMarker() const {
     if (!s_showMemoryCueMarkers.load() || m_iHotCue < kFirstMemoryCueHotCue) {
         return false;
@@ -389,8 +435,10 @@ bool WaveformMark::isMemoryCueMarker() const {
 QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     // A thin line in the cue color with a triangle at the top (pointing
     // down), at the bottom (pointing up) or both, like rekordbox memory cues.
-    constexpr float kTriangleSize = 11.f;
-    const float width = kTriangleSize + 2.f; // odd pixel width keeps the line centered
+    const int triangleSize = memoryCueMarkerSize();
+    const float triangleSizeF = static_cast<float>(triangleSize);
+    // An odd pixel width keeps the line centered on the cue position.
+    const float width = static_cast<float>(triangleSize + (triangleSize % 2 == 0 ? 3 : 2));
     const float height = m_breadth;
 
     QImage image{QSize{static_cast<int>(width * devicePixelRatio),
@@ -418,27 +466,27 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
                 fillColor());
     }
 
-    const float half = kTriangleSize / 2.f;
+    const float half = triangleSizeF / 2.f;
     const Qt::Alignment align = memoryCueMarkerAlign();
     QPainterPath triangles;
     if (align.testFlag(Qt::AlignTop)) {
         QPainterPath top;
         top.moveTo(hcenter - half, 0.5f);
         top.lineTo(hcenter + half, 0.5f);
-        top.lineTo(hcenter, kTriangleSize);
+        top.lineTo(hcenter, triangleSizeF);
         top.closeSubpath();
         triangles.addPath(top);
     }
     if (align.testFlag(Qt::AlignBottom)) {
         QPainterPath bottom;
-        bottom.moveTo(hcenter, height - kTriangleSize);
+        bottom.moveTo(hcenter, height - triangleSizeF);
         bottom.lineTo(hcenter + half, height - 0.5f);
         bottom.lineTo(hcenter - half, height - 0.5f);
         bottom.closeSubpath();
         triangles.addPath(bottom);
     }
     painter.fillPath(triangles, fillColor());
-    painter.setPen(borderColor());
+    painter.setPen(memoryCueOutlineColor());
     painter.drawPath(triangles);
     painter.end();
 

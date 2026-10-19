@@ -490,6 +490,15 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setMemoryCueMarkerLineWidth(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerLineWidth")),
             WaveformMark::kDefaultMemoryCueLineWidth));
+    setMemoryCueMarkerSize(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSize")),
+            WaveformMark::kDefaultMemoryCueMarkerSize));
+    setMemoryCueMarkerCustomOutline(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerCustomOutline")),
+            false));
+    setMemoryCueMarkerOutlineColor(QColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOutlineColor")),
+            QStringLiteral("#ffffff"))));
 
     setUntilMarkAlign(toUntilMarkAlign(
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkAlign")),
@@ -1685,6 +1694,44 @@ void WaveformWidgetFactory::setMemoryCueMarkerLineWidth(int width) {
 
 int WaveformWidgetFactory::getMemoryCueMarkerLineWidth() const {
     return WaveformMark::memoryCueMarkerLineWidth();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerSize(int size) {
+    WaveformMark::setMemoryCueMarkerSize(size);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSize")),
+                getMemoryCueMarkerSize());
+    }
+}
+
+int WaveformWidgetFactory::getMemoryCueMarkerSize() const {
+    return WaveformMark::memoryCueMarkerSize();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerCustomOutline(bool enabled) {
+    WaveformMark::setMemoryCueMarkerCustomOutline(enabled);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerCustomOutline")),
+                enabled);
+    }
+}
+
+bool WaveformWidgetFactory::getMemoryCueMarkerCustomOutline() const {
+    return WaveformMark::memoryCueMarkerCustomOutline();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerOutlineColor(const QColor& color) {
+    WaveformMark::setMemoryCueMarkerOutlineColor(color);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOutlineColor")),
+                getMemoryCueMarkerOutlineColor().name());
+    }
+}
+
+QColor WaveformWidgetFactory::getMemoryCueMarkerOutlineColor() const {
+    return WaveformMark::memoryCueMarkerOutlineColor();
 }
 
 void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {
