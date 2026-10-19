@@ -1100,17 +1100,20 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
         }
 
-        pPainter->setPen(pMark->borderColor());
-        pPainter->drawLine(bgLine);
+        // Memory cue markers may have their line switched off (width 0).
+        if (lineWidth > 0.0) {
+            pPainter->setPen(pMark->borderColor());
+            pPainter->drawLine(bgLine);
 
-        if (lineWidth > 1.0) {
-            QPen linePen(pMark->fillColor());
-            linePen.setWidthF(lineWidth);
-            pPainter->setPen(linePen);
-        } else {
-            pPainter->setPen(pMark->fillColor());
+            if (lineWidth > 1.0) {
+                QPen linePen(pMark->fillColor());
+                linePen.setWidthF(lineWidth);
+                pPainter->setPen(linePen);
+            } else {
+                pPainter->setPen(pMark->fillColor());
+            }
+            pPainter->drawLine(line);
         }
-        pPainter->drawLine(line);
 
         if (rect.isValid()) {
             QColor rangeColor = pMark->fillColor();
@@ -1133,37 +1136,42 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // (top/bottom; left/right on vertical overviews).
             constexpr qreal kSize = 9.0;
             const qreal half = kSize / 2.0;
-            const bool atBottom =
-                    WaveformMark::memoryCueMarkerAlign().testFlag(Qt::AlignBottom);
-            QPainterPath triangle;
-            if (m_orientation == Qt::Horizontal) {
-                if (atBottom) {
-                    triangle.moveTo(markPosition, height() - kSize);
-                    triangle.lineTo(markPosition + half, height());
-                    triangle.lineTo(markPosition - half, height());
+            const Qt::Alignment align = WaveformMark::memoryCueMarkerAlign();
+            QPainterPath triangles;
+            if (align.testFlag(Qt::AlignBottom)) {
+                QPainterPath bottom;
+                if (m_orientation == Qt::Horizontal) {
+                    bottom.moveTo(markPosition, height() - kSize);
+                    bottom.lineTo(markPosition + half, height());
+                    bottom.lineTo(markPosition - half, height());
                 } else {
-                    triangle.moveTo(markPosition - half, 0.0);
-                    triangle.lineTo(markPosition + half, 0.0);
-                    triangle.lineTo(markPosition, kSize);
+                    bottom.moveTo(width() - kSize, markPosition);
+                    bottom.lineTo(width(), markPosition - half);
+                    bottom.lineTo(width(), markPosition + half);
                 }
-            } else {
-                if (atBottom) {
-                    triangle.moveTo(width() - kSize, markPosition);
-                    triangle.lineTo(width(), markPosition - half);
-                    triangle.lineTo(width(), markPosition + half);
-                } else {
-                    triangle.moveTo(0.0, markPosition - half);
-                    triangle.lineTo(0.0, markPosition + half);
-                    triangle.lineTo(kSize, markPosition);
-                }
+                bottom.closeSubpath();
+                triangles.addPath(bottom);
             }
-            triangle.closeSubpath();
+            if (align.testFlag(Qt::AlignTop)) {
+                QPainterPath top;
+                if (m_orientation == Qt::Horizontal) {
+                    top.moveTo(markPosition - half, 0.0);
+                    top.lineTo(markPosition + half, 0.0);
+                    top.lineTo(markPosition, kSize);
+                } else {
+                    top.moveTo(0.0, markPosition - half);
+                    top.lineTo(0.0, markPosition + half);
+                    top.lineTo(kSize, markPosition);
+                }
+                top.closeSubpath();
+                triangles.addPath(top);
+            }
             pPainter->setRenderHint(QPainter::Antialiasing);
-            pPainter->fillPath(triangle, pMark->fillColor());
+            pPainter->fillPath(triangles, pMark->fillColor());
             pPainter->setPen(pMark->borderColor());
-            pPainter->drawPath(triangle);
+            pPainter->drawPath(triangles);
             pMark->m_label.clear();
-            pMark->m_label.setAreaRect(triangle.boundingRect());
+            pMark->m_label.setAreaRect(triangles.boundingRect());
         } else if (!pMark->m_text.isEmpty()) {
             Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
             Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;

@@ -324,7 +324,7 @@ WaveformMark::~WaveformMark() = default;
 std::atomic<int> WaveformMark::s_styleGeneration{0};
 std::atomic<bool> WaveformMark::s_showMemoryCueMarkers{true};
 std::atomic<int> WaveformMark::s_memoryCueMarkerAlign{static_cast<int>(Qt::AlignBottom)};
-std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kMinMemoryCueLineWidth};
+std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kDefaultMemoryCueLineWidth};
 
 // static
 void WaveformMark::setShowMemoryCueMarkers(bool show) {
@@ -340,8 +340,13 @@ bool WaveformMark::showMemoryCueMarkers() {
 
 // static
 void WaveformMark::setMemoryCueMarkerAlign(Qt::Alignment align) {
-    const int value = static_cast<int>(
-            align.testFlag(Qt::AlignTop) ? Qt::AlignTop : Qt::AlignBottom);
+    int value = 0;
+    if (align.testFlag(Qt::AlignTop)) {
+        value |= static_cast<int>(Qt::AlignTop);
+    }
+    if (align.testFlag(Qt::AlignBottom) || value == 0) {
+        value |= static_cast<int>(Qt::AlignBottom);
+    }
     if (s_memoryCueMarkerAlign.exchange(value) != value) {
         s_styleGeneration.fetch_add(1);
     }
@@ -349,9 +354,15 @@ void WaveformMark::setMemoryCueMarkerAlign(Qt::Alignment align) {
 
 // static
 Qt::Alignment WaveformMark::memoryCueMarkerAlign() {
-    return s_memoryCueMarkerAlign.load() == static_cast<int>(Qt::AlignTop)
-            ? Qt::AlignTop
-            : Qt::AlignBottom;
+    const int value = s_memoryCueMarkerAlign.load();
+    Qt::Alignment align;
+    if (value & static_cast<int>(Qt::AlignTop)) {
+        align |= Qt::AlignTop;
+    }
+    if (value & static_cast<int>(Qt::AlignBottom)) {
+        align |= Qt::AlignBottom;
+    }
+    return align;
 }
 
 // static
@@ -377,7 +388,7 @@ bool WaveformMark::isMemoryCueMarker() const {
 
 QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     // A thin line in the cue color with a triangle at the top (pointing
-    // down) or at the bottom (pointing up), like rekordbox memory cues.
+    // down), at the bottom (pointing up) or both, like rekordbox memory cues.
     constexpr float kTriangleSize = 11.f;
     const float width = kTriangleSize + 2.f; // odd pixel width keeps the line centered
     const float height = m_breadth;
@@ -400,31 +411,40 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     m_linePosition = hcenter;
     m_offset = -(width - 1.f) / 2.f;
 
-    // Line in the cue color, centered on the cue position
+    // Line in the cue color, centered on the cue position (width 0 = no line)
     const float lineWidth = static_cast<float>(memoryCueMarkerLineWidth());
-    painter.fillRect(QRectF(hcenter - lineWidth / 2.f, 0.f, lineWidth, height),
-            fillColor());
+    if (lineWidth > 0.f) {
+        painter.fillRect(QRectF(hcenter - lineWidth / 2.f, 0.f, lineWidth, height),
+                fillColor());
+    }
 
     const float half = kTriangleSize / 2.f;
-    const bool atBottom = memoryCueMarkerAlign().testFlag(Qt::AlignBottom);
-    QPainterPath triangle;
-    if (atBottom) {
-        triangle.moveTo(hcenter, height - kTriangleSize);
-        triangle.lineTo(hcenter + half, height - 0.5f);
-        triangle.lineTo(hcenter - half, height - 0.5f);
-    } else {
-        triangle.moveTo(hcenter - half, 0.5f);
-        triangle.lineTo(hcenter + half, 0.5f);
-        triangle.lineTo(hcenter, kTriangleSize);
+    const Qt::Alignment align = memoryCueMarkerAlign();
+    QPainterPath triangles;
+    if (align.testFlag(Qt::AlignTop)) {
+        QPainterPath top;
+        top.moveTo(hcenter - half, 0.5f);
+        top.lineTo(hcenter + half, 0.5f);
+        top.lineTo(hcenter, kTriangleSize);
+        top.closeSubpath();
+        triangles.addPath(top);
     }
-    triangle.closeSubpath();
-    painter.fillPath(triangle, fillColor());
+    if (align.testFlag(Qt::AlignBottom)) {
+        QPainterPath bottom;
+        bottom.moveTo(hcenter, height - kTriangleSize);
+        bottom.lineTo(hcenter + half, height - 0.5f);
+        bottom.lineTo(hcenter - half, height - 0.5f);
+        bottom.closeSubpath();
+        triangles.addPath(bottom);
+    }
+    painter.fillPath(triangles, fillColor());
     painter.setPen(borderColor());
-    painter.drawPath(triangle);
+    painter.drawPath(triangles);
     painter.end();
 
-    // Hover / right-click area for the cue menu
-    m_label.setAreaRect(triangle.boundingRect());
+    // Hover / right-click area for the cue menu. With triangles at the top
+    // and bottom this spans the whole marker height.
+    m_label.setAreaRect(triangles.boundingRect());
     return image;
 }
 

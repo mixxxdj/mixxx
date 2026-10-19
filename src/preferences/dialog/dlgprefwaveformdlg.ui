@@ -613,7 +613,7 @@ Select from different types of displays for the waveform, which differ primarily
        <item>
         <widget class="QComboBox" name="memoryCueMarkerAlignComboBox">
          <property name="toolTip">
-          <string>Show the memory cue triangle at the top or at the bottom of the waveforms.</string>
+          <string>Show the memory cue triangle at the top, at the bottom or at both edges of the waveforms.</string>
          </property>
         </widget>
        </item>
@@ -630,13 +630,13 @@ Select from different types of displays for the waveform, which differ primarily
        <item>
         <widget class="QSpinBox" name="memoryCueMarkerLineWidthSpinBox">
          <property name="toolTip">
-          <string>Thickness of the memory cue marker line.</string>
+          <string>Thickness of the memory cue marker line. 0 px shows only the triangles.</string>
          </property>
          <property name="suffix">
           <string> px</string>
          </property>
          <property name="minimum">
-          <number>1</number>
+          <number>0</number>
          </property>
          <property name="maximum">
           <number>5</number>

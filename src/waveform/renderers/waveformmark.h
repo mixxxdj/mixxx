@@ -236,11 +236,13 @@ class WaveformMark {
     static constexpr int kFirstMemoryCueHotCue = 8;
     static void setShowMemoryCueMarkers(bool show);
     static bool showMemoryCueMarkers();
-    // Vertical placement of the memory cue triangle: Qt::AlignTop or Qt::AlignBottom.
+    // Vertical placement of the memory cue triangle: Qt::AlignTop,
+    // Qt::AlignBottom or both (Qt::AlignTop | Qt::AlignBottom).
     static void setMemoryCueMarkerAlign(Qt::Alignment align);
     static Qt::Alignment memoryCueMarkerAlign();
-    // Width of the memory cue marker line in logical pixels.
-    static constexpr int kMinMemoryCueLineWidth = 1;
+    // Width of the memory cue marker line in logical pixels; 0 hides the line.
+    static constexpr int kMinMemoryCueLineWidth = 0;
+    static constexpr int kDefaultMemoryCueLineWidth = 1;
     static constexpr int kMaxMemoryCueLineWidth = 5;
     static void setMemoryCueMarkerLineWidth(int width);
     static int memoryCueMarkerLineWidth();

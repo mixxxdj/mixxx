@@ -474,14 +474,22 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     setShowMemoryCueMarkers(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("ShowMemoryCueMarkers")), true));
-    // 0 = top, 1 = bottom
-    setMemoryCueMarkerAlign(
-            m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")), 1) == 0
-                    ? Qt::AlignTop
-                    : Qt::AlignBottom);
+    // 0 = top, 1 = bottom, 2 = top and bottom
+    switch (m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")), 1)) {
+    case 0:
+        setMemoryCueMarkerAlign(Qt::AlignTop);
+        break;
+    case 2:
+        setMemoryCueMarkerAlign(Qt::AlignTop | Qt::AlignBottom);
+        break;
+    default:
+        setMemoryCueMarkerAlign(Qt::AlignBottom);
+        break;
+    }
     setMemoryCueMarkerLineWidth(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerLineWidth")),
-            WaveformMark::kMinMemoryCueLineWidth));
+            WaveformMark::kDefaultMemoryCueLineWidth));
 
     setUntilMarkAlign(toUntilMarkAlign(
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkAlign")),
@@ -1654,8 +1662,12 @@ bool WaveformWidgetFactory::getShowMemoryCueMarkers() const {
 void WaveformWidgetFactory::setMemoryCueMarkerAlign(Qt::Alignment align) {
     WaveformMark::setMemoryCueMarkerAlign(align);
     if (m_config) {
+        const Qt::Alignment storedAlign = getMemoryCueMarkerAlign();
+        const bool top = storedAlign.testFlag(Qt::AlignTop);
+        const bool bottom = storedAlign.testFlag(Qt::AlignBottom);
+        // 0 = top, 1 = bottom, 2 = top and bottom
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")),
-                getMemoryCueMarkerAlign().testFlag(Qt::AlignTop) ? 0 : 1);
+                top && bottom ? 2 : (top ? 0 : 1));
     }
 }
 

@@ -162,9 +162,10 @@ DlgPrefWaveform::DlgPrefWaveform(
     // Adopt tr string from first GLSL hint
     requiresGLSLLabel2->setText(requiresGLSLLabel->text());
 
-    // Index 0 = top, 1 = bottom (matches the "MemoryCueMarkerAlign" config value)
+    // Index 0 = top, 1 = bottom, 2 = both (matches the "MemoryCueMarkerAlign" config value)
     memoryCueMarkerAlignComboBox->addItem(tr("Top"));
     memoryCueMarkerAlignComboBox->addItem(tr("Bottom"));
+    memoryCueMarkerAlignComboBox->addItem(tr("Top and bottom"));
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
@@ -421,8 +422,12 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSlider->setValue(pFactory->getBeatGridAlpha());
 
     showMemoryCueMarkersCheckBox->setChecked(pFactory->getShowMemoryCueMarkers());
-    memoryCueMarkerAlignComboBox->setCurrentIndex(
-            pFactory->getMemoryCueMarkerAlign().testFlag(Qt::AlignTop) ? 0 : 1);
+    {
+        const Qt::Alignment memoryCueAlign = pFactory->getMemoryCueMarkerAlign();
+        const bool top = memoryCueAlign.testFlag(Qt::AlignTop);
+        const bool bottom = memoryCueAlign.testFlag(Qt::AlignBottom);
+        memoryCueMarkerAlignComboBox->setCurrentIndex(top && bottom ? 2 : (top ? 0 : 1));
+    }
     memoryCueMarkerLineWidthSpinBox->setValue(pFactory->getMemoryCueMarkerLineWidth());
     updateEnableMemoryCueMarkers();
     untilMarkShowBeatsCheckBox->setChecked(pFactory->getUntilMarkShowBeats());
@@ -881,8 +886,18 @@ void DlgPrefWaveform::slotSetShowMemoryCueMarkers(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetMemoryCueMarkerAlign(int index) {
-    WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(
-            index == 0 ? Qt::AlignTop : Qt::AlignBottom);
+    switch (index) {
+    case 0:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(Qt::AlignTop);
+        break;
+    case 2:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(
+                Qt::AlignTop | Qt::AlignBottom);
+        break;
+    default:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(Qt::AlignBottom);
+        break;
+    }
 }
 
 void DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth(int width) {
