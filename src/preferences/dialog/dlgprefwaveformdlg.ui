@@ -578,168 +578,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout><!-- marker_option_layout -->
      </item>
 
-     <item row="13" column="0">
-      <widget class="QLabel" name="memoryCueMarkersLabel">
-       <property name="text">
-        <string>Memory cues</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="13" column="1" colspan="4">
-      <layout class="QHBoxLayout" name="memoryCueMarkersLayout">
-       <item>
-        <widget class="QCheckBox" name="showMemoryCueMarkersCheckBox">
-         <property name="toolTip">
-          <string>Draw hotcues 9 and up as small triangles in the cue color, without number, like rekordbox memory cues. Memory cues imported from rekordbox USB drives are placed on these hotcues.</string>
-         </property>
-         <property name="text">
-          <string>Show rekordbox memory cues markers</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="memoryCueMarkerAlignLabel">
-         <property name="text">
-          <string>Placement</string>
-         </property>
-         <property name="buddy">
-          <cstring>memoryCueMarkerAlignComboBox</cstring>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="memoryCueMarkerAlignComboBox">
-         <property name="toolTip">
-          <string>Show the memory cue triangle at the top, at the bottom or at both edges of the waveforms.</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="memoryCueMarkerLineWidthLabel">
-         <property name="text">
-          <string>Line width</string>
-         </property>
-         <property name="buddy">
-          <cstring>memoryCueMarkerLineWidthSpinBox</cstring>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="memoryCueMarkerLineWidthSpinBox">
-         <property name="toolTip">
-          <string>Thickness of the memory cue marker line. 0 px shows only the triangles.</string>
-         </property>
-         <property name="suffix">
-          <string> px</string>
-         </property>
-         <property name="minimum">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <number>5</number>
-         </property>
-         <property name="value">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="memoryCueMarkersSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item row="14" column="1" colspan="4">
-      <layout class="QHBoxLayout" name="memoryCueMarkersStyleLayout">
-       <item>
-        <widget class="QLabel" name="memoryCueMarkerSizeLabel">
-         <property name="text">
-          <string>Size</string>
-         </property>
-         <property name="buddy">
-          <cstring>memoryCueMarkerSizeSpinBox</cstring>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="memoryCueMarkerSizeSpinBox">
-         <property name="toolTip">
-          <string>Size of the memory cue triangles in the scrolling waveforms. The overview uses a slightly smaller size.</string>
-         </property>
-         <property name="suffix">
-          <string> px</string>
-         </property>
-         <property name="minimum">
-          <number>5</number>
-         </property>
-         <property name="maximum">
-          <number>31</number>
-         </property>
-         <property name="singleStep">
-          <number>2</number>
-         </property>
-         <property name="value">
-          <number>11</number>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="memoryCueMarkerCustomOutlineCheckBox">
-         <property name="toolTip">
-          <string>Draw the outline of the memory cue triangles in a custom color instead of the automatic one.</string>
-         </property>
-         <property name="text">
-          <string>Custom outline color</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="memoryCueMarkerOutlineColorButton">
-         <property name="minimumSize">
-          <size>
-           <width>40</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>40</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="memoryCueMarkersStyleSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item row="15" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel">
        <property name="text">
         <string>This functionality requires waveform acceleration.</string>
@@ -750,7 +589,7 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
 
-     <item row="16" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="stemOpacityLabel">
        <property name="text">
         <string>Stem</string>
@@ -763,7 +602,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="16" column="1" colspan="4">
+     <item row="14" column="1" colspan="4">
       <layout class="QGridLayout" name="stemOpacityGridLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="stemOpacityMainLabel">
@@ -860,7 +699,7 @@ Select from different types of displays for the waveform, which differ primarily
       </layout>
      </item>
 
-     <item row="17" column="1" colspan="4">
+     <item row="15" column="1" colspan="4">
       <widget class="QLabel" name="requiresGLSLLabel2">
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -948,6 +787,296 @@ Select from different types of displays for the waveform overview, which differ 
     </layout>
    </widget>
   </item><!-- overview_groupbox -->
+
+  <item>
+   <widget class="QGroupBox" name="memory_cues_groupbox">
+    <property name="title">
+     <string>Memory Cues</string>
+    </property>
+    <layout class="QGridLayout" name="memory_cues_layout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="memoryCueMarkersLabel">
+       <property name="text">
+        <string>Markers</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" colspan="4">
+      <layout class="QHBoxLayout" name="memoryCueMarkersLayout">
+       <item>
+        <widget class="QCheckBox" name="showMemoryCueMarkersCheckBox">
+         <property name="toolTip">
+          <string>Draw hotcues 9 and up as small triangles in the cue color, without number, like rekordbox memory cues. Memory cues imported from rekordbox USB drives are placed on these hotcues.</string>
+         </property>
+         <property name="text">
+          <string>Show rekordbox memory cues markers</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="memoryCueMarkerAlignLabel">
+         <property name="text">
+          <string>Placement</string>
+         </property>
+         <property name="buddy">
+          <cstring>memoryCueMarkerAlignComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="memoryCueMarkerAlignComboBox">
+         <property name="toolTip">
+          <string>Show the memory cue triangle at the top, at the bottom or at both edges of the waveforms.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="memoryCueMarkerLineWidthLabel">
+         <property name="text">
+          <string>Line width</string>
+         </property>
+         <property name="buddy">
+          <cstring>memoryCueMarkerLineWidthSpinBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="memoryCueMarkerLineWidthSpinBox">
+         <property name="toolTip">
+          <string>Thickness of the memory cue marker line. 0 px shows only the triangles.</string>
+         </property>
+         <property name="suffix">
+          <string> px</string>
+         </property>
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="memoryCueMarkersSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="1" colspan="4">
+      <layout class="QHBoxLayout" name="memoryCueMarkersStyleLayout">
+       <item>
+        <widget class="QLabel" name="memoryCueMarkerSizeLabel">
+         <property name="text">
+          <string>Size</string>
+         </property>
+         <property name="buddy">
+          <cstring>memoryCueMarkerSizeSpinBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="memoryCueMarkerSizeSpinBox">
+         <property name="toolTip">
+          <string>Size of the memory cue triangles in the scrolling waveforms. The overview uses a slightly smaller size.</string>
+         </property>
+         <property name="suffix">
+          <string> px</string>
+         </property>
+         <property name="minimum">
+          <number>5</number>
+         </property>
+         <property name="maximum">
+          <number>31</number>
+         </property>
+         <property name="singleStep">
+          <number>2</number>
+         </property>
+         <property name="value">
+          <number>11</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="memoryCueMarkerCustomOutlineCheckBox">
+         <property name="toolTip">
+          <string>Draw the outline of the memory cue triangles in a custom color instead of the automatic one.</string>
+         </property>
+         <property name="text">
+          <string>Custom outline color</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="memoryCueMarkerOutlineColorButton">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="memoryCueMarkersStyleSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="2" column="1" colspan="4">
+      <layout class="QHBoxLayout" name="memoryCueNamesLayout">
+       <item>
+        <widget class="QCheckBox" name="memoryCueMarkerShowNamesCheckBox">
+         <property name="toolTip">
+          <string>Show the name of each memory cue (e.g. the rekordbox comment) next to its marker. Long names are shortened so they don't run into the next label.</string>
+         </property>
+         <property name="text">
+          <string>Show names</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="memoryCueNameAlignLabel">
+         <property name="text">
+          <string>Placement</string>
+         </property>
+         <property name="buddy">
+          <cstring>memoryCueNameAlignComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="memoryCueNameAlignComboBox">
+         <property name="toolTip">
+          <string>Show the memory cue names at the top or at the bottom of the waveforms.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="memoryCueNameBackgroundLabel">
+         <property name="text">
+          <string>Background</string>
+         </property>
+         <property name="buddy">
+          <cstring>memoryCueNameBackgroundComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="memoryCueNameBackgroundComboBox">
+         <property name="toolTip">
+          <string>Background behind the names: none, a subtle box in the cue color like hotcue labels, or a custom color (transparency supported).</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="memoryCueNameBackgroundColorButton">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="memoryCueNameCustomTextColorCheckBox">
+         <property name="toolTip">
+          <string>Draw the names in a custom text color instead of the automatic one.</string>
+         </property>
+         <property name="text">
+          <string>Custom text color</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="memoryCueNameTextColorButton">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="memoryCueNamesSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="memoryCueNamesLabel">
+       <property name="text">
+        <string>Names</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </item><!-- memory_cues_groupbox -->
 
   <item>
    <widget class="QGroupBox" name="caching_groupbox">
@@ -1093,6 +1222,12 @@ Select from different types of displays for the waveform overview, which differ 
  <tabstop>memoryCueMarkerSizeSpinBox</tabstop>
  <tabstop>memoryCueMarkerCustomOutlineCheckBox</tabstop>
  <tabstop>memoryCueMarkerOutlineColorButton</tabstop>
+ <tabstop>memoryCueMarkerShowNamesCheckBox</tabstop>
+ <tabstop>memoryCueNameAlignComboBox</tabstop>
+ <tabstop>memoryCueNameBackgroundComboBox</tabstop>
+ <tabstop>memoryCueNameBackgroundColorButton</tabstop>
+ <tabstop>memoryCueNameCustomTextColorCheckBox</tabstop>
+ <tabstop>memoryCueNameTextColorButton</tabstop>
   <tabstop>waveformOverviewComboBox</tabstop>
   <tabstop>overviewStereoCheckBox</tabstop>
   <tabstop>overviewMinuteMarkersCheckBox</tabstop>

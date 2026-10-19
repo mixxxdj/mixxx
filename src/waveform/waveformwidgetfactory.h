@@ -11,6 +11,7 @@
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
@@ -191,6 +192,18 @@ class WaveformWidgetFactory : public QObject,
     bool getMemoryCueMarkerCustomOutline() const;
     void setMemoryCueMarkerOutlineColor(const QColor& color);
     QColor getMemoryCueMarkerOutlineColor() const;
+    void setMemoryCueMarkerShowNames(bool show);
+    bool getMemoryCueMarkerShowNames() const;
+    void setMemoryCueNameAlign(Qt::Alignment align);
+    Qt::Alignment getMemoryCueNameAlign() const;
+    void setMemoryCueNameBackground(WaveformMark::MemoryCueNameBackground background);
+    WaveformMark::MemoryCueNameBackground getMemoryCueNameBackground() const;
+    void setMemoryCueNameBackgroundCustomColor(const QColor& color);
+    QColor getMemoryCueNameBackgroundCustomColor() const;
+    void setMemoryCueNameCustomTextColor(bool enabled);
+    bool getMemoryCueNameCustomTextColor() const;
+    void setMemoryCueNameTextColor(const QColor& color);
+    QColor getMemoryCueNameTextColor() const;
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);

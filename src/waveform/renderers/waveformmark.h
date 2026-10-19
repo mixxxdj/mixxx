@@ -261,6 +261,34 @@ class WaveformMark {
     static QColor memoryCueMarkerOutlineColor();
     // Outline color to draw this mark's memory cue triangle with.
     QColor memoryCueOutlineColor() const;
+    // Show the cue's name (e.g. the rekordbox comment) next to the triangle.
+    static void setMemoryCueMarkerShowNames(bool show);
+    static bool memoryCueMarkerShowNames();
+    // Longest memory cue name drawn, in logical pixels; longer names are elided.
+    static constexpr float kMaxMemoryCueNameWidth = 150.f;
+    // Vertical placement of the name: Qt::AlignTop or Qt::AlignBottom.
+    static void setMemoryCueNameAlign(Qt::Alignment align);
+    static Qt::Alignment memoryCueNameAlign();
+    // Background box of the name: none, the cue color (semi-transparent) or
+    // a custom color (which may include transparency).
+    enum class MemoryCueNameBackground {
+        Off = 0,
+        CueColor = 1,
+        CustomColor = 2,
+    };
+    static void setMemoryCueNameBackground(MemoryCueNameBackground background);
+    static MemoryCueNameBackground memoryCueNameBackground();
+    static void setMemoryCueNameBackgroundCustomColor(const QColor& color);
+    static QColor memoryCueNameBackgroundCustomColor();
+    // Optional custom text color of the name.
+    static void setMemoryCueNameCustomTextColor(bool enabled);
+    static bool memoryCueNameCustomTextColor();
+    static void setMemoryCueNameTextColor(const QColor& color);
+    static QColor memoryCueNameTextColor();
+    // Text color to draw this mark's memory cue name with.
+    QColor memoryCueNameEffectiveTextColor() const;
+    // Background color of this mark's name box (transparent when off).
+    QColor memoryCueNameBackgroundColor() const;
     bool isMemoryCueMarker() const;
 
     QColor m_textColor;
@@ -342,6 +370,12 @@ class WaveformMark {
     static std::atomic<int> s_memoryCueMarkerSize;
     static std::atomic<bool> s_memoryCueMarkerCustomOutline;
     static std::atomic<QRgb> s_memoryCueMarkerOutlineColor;
+    static std::atomic<bool> s_memoryCueMarkerShowNames;
+    static std::atomic<bool> s_memoryCueNameAlignTop;
+    static std::atomic<int> s_memoryCueNameBackground;
+    static std::atomic<QRgb> s_memoryCueNameBackgroundColor;
+    static std::atomic<bool> s_memoryCueNameCustomTextColor;
+    static std::atomic<QRgb> s_memoryCueNameTextColor;
     int m_styleGeneration{-1};
 
     QImage generateMemoryCueImage(float devicePixelRatio);

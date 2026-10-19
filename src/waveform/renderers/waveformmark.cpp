@@ -328,6 +328,13 @@ std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kDefaultMemoryCueLineW
 std::atomic<int> WaveformMark::s_memoryCueMarkerSize{kDefaultMemoryCueMarkerSize};
 std::atomic<bool> WaveformMark::s_memoryCueMarkerCustomOutline{false};
 std::atomic<QRgb> WaveformMark::s_memoryCueMarkerOutlineColor{qRgb(255, 255, 255)};
+std::atomic<bool> WaveformMark::s_memoryCueMarkerShowNames{false};
+std::atomic<bool> WaveformMark::s_memoryCueNameAlignTop{true};
+std::atomic<int> WaveformMark::s_memoryCueNameBackground{
+        static_cast<int>(MemoryCueNameBackground::CueColor)};
+std::atomic<QRgb> WaveformMark::s_memoryCueNameBackgroundColor{qRgba(0, 0, 0, 153)};
+std::atomic<bool> WaveformMark::s_memoryCueNameCustomTextColor{false};
+std::atomic<QRgb> WaveformMark::s_memoryCueNameTextColor{qRgb(255, 255, 255)};
 
 // static
 void WaveformMark::setShowMemoryCueMarkers(bool show) {
@@ -424,6 +431,128 @@ QColor WaveformMark::memoryCueOutlineColor() const {
                                                  : borderColor();
 }
 
+// static
+void WaveformMark::setMemoryCueMarkerShowNames(bool show) {
+    if (s_memoryCueMarkerShowNames.exchange(show) != show) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueMarkerShowNames() {
+    return s_memoryCueMarkerShowNames.load();
+}
+
+// static
+void WaveformMark::setMemoryCueNameAlign(Qt::Alignment align) {
+    const bool top = !align.testFlag(Qt::AlignBottom);
+    if (s_memoryCueNameAlignTop.exchange(top) != top) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+Qt::Alignment WaveformMark::memoryCueNameAlign() {
+    return s_memoryCueNameAlignTop.load() ? Qt::AlignTop : Qt::AlignBottom;
+}
+
+// static
+void WaveformMark::setMemoryCueNameBackground(MemoryCueNameBackground background) {
+    const int value = static_cast<int>(background);
+    if (s_memoryCueNameBackground.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+WaveformMark::MemoryCueNameBackground WaveformMark::memoryCueNameBackground() {
+    switch (s_memoryCueNameBackground.load()) {
+    case static_cast<int>(MemoryCueNameBackground::Off):
+        return MemoryCueNameBackground::Off;
+    case static_cast<int>(MemoryCueNameBackground::CustomColor):
+        return MemoryCueNameBackground::CustomColor;
+    default:
+        return MemoryCueNameBackground::CueColor;
+    }
+}
+
+// static
+void WaveformMark::setMemoryCueNameBackgroundCustomColor(const QColor& color) {
+    const QRgb rgba = color.isValid() ? color.rgba() : qRgba(0, 0, 0, 153);
+    if (s_memoryCueNameBackgroundColor.exchange(rgba) != rgba) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueNameBackgroundCustomColor() {
+    return QColor::fromRgba(s_memoryCueNameBackgroundColor.load());
+}
+
+// static
+void WaveformMark::setMemoryCueNameCustomTextColor(bool enabled) {
+    if (s_memoryCueNameCustomTextColor.exchange(enabled) != enabled) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueNameCustomTextColor() {
+    return s_memoryCueNameCustomTextColor.load();
+}
+
+// static
+void WaveformMark::setMemoryCueNameTextColor(const QColor& color) {
+    const QRgb rgb = color.isValid() ? color.rgb() : qRgb(255, 255, 255);
+    if (s_memoryCueNameTextColor.exchange(rgb) != rgb) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueNameTextColor() {
+    return QColor::fromRgb(s_memoryCueNameTextColor.load());
+}
+
+QColor WaveformMark::memoryCueNameEffectiveTextColor() const {
+    if (s_memoryCueNameCustomTextColor.load()) {
+        return memoryCueNameTextColor();
+    }
+    switch (memoryCueNameBackground()) {
+    case MemoryCueNameBackground::CueColor:
+        // Readable on the cue colored box
+        return labelColor();
+    case MemoryCueNameBackground::CustomColor: {
+        const QColor background = memoryCueNameBackgroundCustomColor();
+        if (background.alphaF() < 0.3f) {
+            // Mostly transparent: the waveform is the real background
+            return fillColor();
+        }
+        const float luminance = 0.299f * background.redF() +
+                0.587f * background.greenF() + 0.114f * background.blueF();
+        return luminance < 0.5f ? QColor(Qt::white) : QColor(Qt::black);
+    }
+    case MemoryCueNameBackground::Off:
+    default:
+        return fillColor();
+    }
+}
+
+QColor WaveformMark::memoryCueNameBackgroundColor() const {
+    switch (memoryCueNameBackground()) {
+    case MemoryCueNameBackground::CueColor: {
+        QColor color = fillColor();
+        color.setAlphaF(0.6f); // subtle, the waveform stays visible underneath
+        return color;
+    }
+    case MemoryCueNameBackground::CustomColor:
+        return memoryCueNameBackgroundCustomColor();
+    case MemoryCueNameBackground::Off:
+    default:
+        return QColor(Qt::transparent);
+    }
+}
+
 bool WaveformMark::isMemoryCueMarker() const {
     if (!s_showMemoryCueMarkers.load() || m_iHotCue < kFirstMemoryCueHotCue) {
         return false;
@@ -440,8 +569,41 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     // An odd pixel width keeps the line centered on the cue position.
     const float width = static_cast<float>(triangleSize + (triangleSize % 2 == 0 ? 3 : 2));
     const float height = m_breadth;
+    const float hcenter = width / 2.f;
+    const float half = triangleSizeF / 2.f;
+    const Qt::Alignment align = memoryCueMarkerAlign();
 
-    QImage image{QSize{static_cast<int>(width * devicePixelRatio),
+    // Optional name label to the right of the marker, at the top or bottom
+    // (see memoryCueNameAlign()). Next to a triangle at the same edge it
+    // starts right of the triangle, otherwise right of the line.
+    QFont nameFont;
+    nameFont.setPixelSize(std::clamp(triangleSize, 9, 16));
+    QString name;
+    QRectF nameRect;
+    if (memoryCueMarkerShowNames() && !m_text.isEmpty()) {
+        const QFontMetricsF metrics(nameFont);
+        name = metrics.elidedText(m_text, Qt::ElideRight, kMaxMemoryCueNameWidth);
+        constexpr float kPadding = 2.f;
+        const float boxWidth = static_cast<float>(metrics.horizontalAdvance(name)) +
+                2.f * kPadding;
+        const float boxHeight = static_cast<float>(metrics.height());
+        if (!name.isEmpty() && boxHeight < height) {
+            const bool nameAtTop = memoryCueNameAlign().testFlag(Qt::AlignTop);
+            const bool triangleAtSameEdge =
+                    align.testFlag(nameAtTop ? Qt::AlignTop : Qt::AlignBottom);
+            const float lineHalfWidth =
+                    static_cast<float>(memoryCueMarkerLineWidth()) / 2.f;
+            const float boxX = hcenter + (triangleAtSameEdge ? half : lineHalfWidth) + 2.f;
+            const float boxY = nameAtTop ? 0.5f : height - boxHeight - 0.5f;
+            nameRect = QRectF(boxX, boxY, boxWidth, boxHeight);
+        }
+    }
+    // The image grows to the right for the name; the line stays at hcenter.
+    const float imageWidth = nameRect.isValid()
+            ? static_cast<float>(std::ceil(nameRect.right() + 1.f))
+            : width;
+
+    QImage image{QSize{static_cast<int>(imageWidth * devicePixelRatio),
                          static_cast<int>(height * devicePixelRatio)},
             QImage::Format_ARGB32_Premultiplied};
     VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
@@ -455,7 +617,6 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setWorldMatrixEnabled(false);
 
-    const float hcenter = width / 2.f;
     m_linePosition = hcenter;
     m_offset = -(width - 1.f) / 2.f;
 
@@ -466,8 +627,6 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
                 fillColor());
     }
 
-    const float half = triangleSizeF / 2.f;
-    const Qt::Alignment align = memoryCueMarkerAlign();
     QPainterPath triangles;
     if (align.testFlag(Qt::AlignTop)) {
         QPainterPath top;
@@ -488,11 +647,24 @@ QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
     painter.fillPath(triangles, fillColor());
     painter.setPen(memoryCueOutlineColor());
     painter.drawPath(triangles);
+
+    QRectF hoverArea = triangles.boundingRect();
+    if (nameRect.isValid()) {
+        if (memoryCueNameBackground() != MemoryCueNameBackground::Off) {
+            QPainterPath box;
+            box.addRoundedRect(nameRect, 2.f, 2.f);
+            painter.fillPath(box, memoryCueNameBackgroundColor());
+        }
+        painter.setFont(nameFont);
+        painter.setPen(memoryCueNameEffectiveTextColor());
+        painter.drawText(nameRect, Qt::AlignCenter, name);
+        hoverArea = hoverArea.united(nameRect);
+    }
     painter.end();
 
     // Hover / right-click area for the cue menu. With triangles at the top
     // and bottom this spans the whole marker height.
-    m_label.setAreaRect(triangles.boundingRect());
+    m_label.setAreaRect(hoverArea);
     return image;
 }
 
