@@ -736,7 +736,6 @@ void SoundManager::invalidateConfig() {
     qDebug() << "SoundManager::invalidateConfig";
     emit configInvalidated();
 }
-#endif
 
 void SoundManager::queryDevicesPortaudio() {
     m_pEnumerator->initialize();

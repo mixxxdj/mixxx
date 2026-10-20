@@ -163,6 +163,12 @@ class SoundManager : public QObject {
         return m_calibFrameCache;
     }
 
+    void configureInput(const AudioInput& input);
+    void unconfigureInput(const AudioInput& input);
+    void configureOutput(const AudioOutput& output);
+    void unconfigureOutput(const AudioOutput& output);
+
+    void invalidateConfig();
   signals:
     void deviceAdded(SoundDevicePointer pDevice);
     void deviceRemoved(SoundDevicePointer pDevice);
