@@ -248,62 +248,62 @@
       <!-- jog wheel -->
       <control>
         <group>[Channel1]</group>
-        <key>NumarkMixtrackGo.leftDeck.jogTouch</key>
+        <key>NumarkMixtrackGo.leftDeck.jogWheel.inputWheel</key>
+        <description>left_jog_wheel</description>
+        <status>0xB0</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkMixtrackGo.rightDeck.jogWheel.inputWheel</key>
+        <description>right_jog-wheel</description>
+        <status>0xB1</status>
+        <midino>0x06</midino>
+        <options>
+            <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkMixtrackGo.leftDeck.jogWheel.inputTouch</key>
         <description>jog_touch_press</description>
         <status>0x90</status>
         <midino>0x50</midino>
         <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>NumarkMixtrackGo.rightDeck.jogTouch</key>
-        <description>jog_touch_press</description>
-        <status>0x91</status>
-        <midino>0x50</midino>
-        <options>
-          <script-binding/>
+            <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NumarkMixtrackGo.leftDeck.jogTouch</key>
+        <key>NumarkMixtrackGo.leftDeck.jogWheel.inputTouch</key>
         <description>jog_touch_release</description>
         <status>0x80</status>
         <midino>0x50</midino>
         <options>
-          <script-binding/>
+            <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NumarkMixtrackGo.rightDeck.jogTouch</key>
+        <key>NumarkMixtrackGo.rightDeck.jogWheel.inputTouch</key>
+        <description>jog_touch_press</description>
+        <status>0x91</status>
+        <midino>0x50</midino>
+        <options>
+            <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkMixtrackGo.rightDeck.jogWheel.inputTouch</key>
         <description>jog_touch_release</description>
         <status>0x81</status>
         <midino>0x50</midino>
         <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel1]</group>
-        <key>NumarkMixtrackGo.leftDeck.jogTurn</key>
-        <description>jog_turn</description>
-        <status>0xB0</status>
-        <midino>0x06</midino>
-        <options>
-          <script-binding/>
-        </options>
-      </control>
-      <control>
-        <group>[Channel2]</group>
-        <key>NumarkMixtrackGo.rightDeck.jogTurn</key>
-        <description>jog_turn</description>
-        <status>0xB1</status>
-        <midino>0x06</midino>
-        <options>
-          <script-binding/>
+            <script-binding/>
         </options>
       </control>
       <control>

@@ -824,14 +824,9 @@ NumarkMixtrackGo.filterLowSwitcher = new components.Button({
 
 // toggles the availability of the scratch function on the jog-wheels
 NumarkMixtrackGo.vinylModeSwitcher = new components.Button({
-    input: function(_channel, _control, value) {
-        if (value === 127) {
-            if (vinylModeEnabled) {
-                vinylModeEnabled = false; ;
-            } else {
-                vinylModeEnabled = true;
-            }
-        }
+    input: function(_channel, _control, _value) {
+        NumarkMixtrackGo.leftDeck.jogWheel.vinylMode = !NumarkMixtrackGo.leftDeck.jogWheel.vinylMode;
+        NumarkMixtrackGo.rightDeck.jogWheel.vinylMode = !NumarkMixtrackGo.rightDeck.jogWheel.vinylMode;
     },
 });
 
@@ -1249,31 +1244,13 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     });//mode end
 
-    this.jogTouch = function(_channel, _control, value) {
-        if (vinylModeEnabled) {
-            if (value === 127) {
-                const alpha = 1.0/8;
-                engine.scratchEnable(deckNumber, 128, 33+1/3, alpha, alpha/32);
-            } else {
-                engine.scratchDisable(deckNumber);
-            }
-        }
-    };
-
-    this.jogTurn = function(_channel, _control, value) {
-        let newValue;
-        if (value < 64) {
-            newValue = value;
-        } else {
-            newValue = value - 128;
-        }
-
-        if (engine.isScratching(deckNumber)) {
-            engine.scratchTick(deckNumber, newValue); // Scratch!
-        } else {
-            engine.setValue(group, "jog", newValue); // Pitch bend
-        }
-    };
+    this.jogWheel = new components.JogWheelBasic({
+        wheelResolution: 242, // ticks per full revolution (Mixtrack Go has 242 approximately)
+        alpha: 1/8, // default
+        beta: this.alpha/32, // optional, default as is, here for further tuning if necessary
+        rpm: 33 + 1/3, //optional, default as is, here for further tuning if necessary
+        group: group,
+    });
 
     this.filterLowPot = new components.Pot({
         input: function(_channel, _control, value) {
