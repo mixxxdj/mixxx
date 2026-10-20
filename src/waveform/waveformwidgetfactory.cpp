@@ -1262,13 +1262,13 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
 #endif
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
-        WWaveformViewer* viewer) {
+        WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer, options);
 #endif
     case WaveformWidgetBackend::None:
     case WaveformWidgetBackend::GL:
