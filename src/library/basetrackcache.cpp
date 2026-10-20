@@ -1,5 +1,7 @@
 #include "library/basetrackcache.h"
 
+#include <algorithm>
+
 #include "library/queryutil.h"
 #include "library/searchquery.h"
 #include "library/searchqueryparser.h"
@@ -440,6 +442,74 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
                 fields.value(columnForKeyId, QVariant{}));
     }
     return fields.value(column, QVariant{});
+}
+
+void BaseTrackCache::sort(const QString& orderByClause,
+        const QList<SortColumn>& sortColumns,
+        const int columnOffset,
+        QHash<TrackId, int>* trackToIndex) {
+    // Only re-order the tracks of the current result set, whose members
+    // are the keys of *trackToIndex, without re-evaluating the search
+    // query. Tracks that have been edited to no longer match the search
+    // query stay in the table, and tracks that have been edited to match
+    // it are not added, i.e. the result set remains unchanged. This is
+    // used when only the sort column or order has changed, to prevent
+    // tracks from (dis-)appearing while the table is being re-sorted.
+    if (orderByClause.isEmpty() || sortColumns.isEmpty()) {
+        // If the order of the result set is defined by the ORDER BY clause
+        // of the table's own query (m_tableOrderBy, e.g. the playlist
+        // position or the random shuffle of the preview column) then the
+        // rows are already in the correct order and only the membership
+        // of the result set, which remains unchanged, has to be passed through.
+        return;
+    }
+
+    // The order of the result set is defined by the track source,
+    // re-sort it in memory with the same comparator that is used
+    // below for insertion-sorting dirty tracks. data() takes the
+    // values of cached tracks from the in-memory track objects,
+    // i.e. pending edits are taken into account.
+    m_trackOrder.resize(0); // keeps allocated memory
+    m_trackOrder.reserve(trackToIndex->size());
+    for (auto it = trackToIndex->constBegin();
+            it != trackToIndex->constEnd();
+            ++it) {
+        m_trackOrder.append(it.key());
+    }
+    // The keys of the hash are in an arbitrary order, restore the
+    // previous order of the result set first. Otherwise tracks with
+    // equal values in all sort columns would be shuffled around on
+    // every re-sorting.
+    std::sort(m_trackOrder.begin(),
+            m_trackOrder.end(),
+            [trackToIndex](const TrackId& trackId1, const TrackId& trackId2) {
+                return trackToIndex->value(trackId1) <
+                        trackToIndex->value(trackId2);
+            });
+    // Note: std::stable_sort() preserves the previous order of
+    // tracks with equal values in all sort columns.
+    std::stable_sort(m_trackOrder.begin(),
+            m_trackOrder.end(),
+            [this, &sortColumns, columnOffset](const TrackId& trackId1,
+                    const TrackId& trackId2) {
+                for (const auto& sortColumn : sortColumns) {
+                    const int column = sortColumn.m_column - columnOffset;
+                    const int result = compareColumnValues(column,
+                            sortColumn.m_order,
+                            data(trackId1, column),
+                            data(trackId2, column));
+                    if (result != 0) {
+                        return result < 0;
+                    }
+                }
+                // All sort columns are equal
+                return false;
+            });
+    trackToIndex->clear();
+    trackToIndex->reserve(m_trackOrder.size());
+    for (int i = 0; i < m_trackOrder.size(); ++i) {
+        (*trackToIndex)[m_trackOrder[i]] = i;
+    }
 }
 
 void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
