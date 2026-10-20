@@ -5,12 +5,6 @@ import QtQuick.Shapes 1.12
 Slider {
     id: root
 
-    property bool bar: false
-    property alias barColor: barPath.strokeColor
-    property real barMargin: 0
-    property real barStart: 0
-    property alias barWidth: barPath.strokeWidth
-
     orientation: Qt.Vertical
     wheelEnabled: true
 
@@ -18,16 +12,16 @@ Slider {
         id: barShape
 
         anchors.fill: parent
-        anchors.margins: root.barMargin
+        anchors.margins: root.bar.margin
         antialiasing: true
-        visible: root.bar
+        visible: root.bar.enabled
 
         ShapePath {
             id: barPath
 
             fillColor: "transparent"
-            startX: barShape.width * (root.horizontal ? (1 - root.barStart) : 0.5)
-            startY: barShape.height * (root.vertical ? (1 - root.barStart) : 0.5)
+            startX: barShape.width * (root.horizontal ? (1 - root.bar.start) : 0.5)
+            startY: barShape.height * (root.vertical ? (1 - root.bar.start) : 0.5)
             strokeColor: "transparent"
             strokeWidth: 2
 
@@ -36,5 +30,14 @@ Slider {
                 y: root.vertical ? (barShape.height * (1 - root.value)) : barPath.startY
             }
         }
+    }
+
+    component BarSettings: QtObject {
+        property real axis: -1
+        property color color: "transparent"
+        property bool enabled: false
+        property real margin: 0
+        property real start: 0
+        property real width: 2
     }
 }
