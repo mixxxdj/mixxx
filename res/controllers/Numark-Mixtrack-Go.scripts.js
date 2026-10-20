@@ -624,6 +624,12 @@ const IdentityRequestSysex = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
 // https://github.com/mixxxdj/mixxx/wiki/Serato%20sysex
 const ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
 
+//settings
+const initialLEDSettingDelay = engine.getSetting("initialLEDSettingDelay");
+
+// Fade fx blinking
+const fadeFxIndicatorControl = "indicator_500ms";
+
 /**
  * Required function.
  * Sets the leds, instantiates the 2 deck objects and sets Mixxx with the controls values of the controller.
@@ -640,32 +646,33 @@ NumarkMixtrackGo.init = function() {
     // https://github.com/mixxxdj/mixxx/wiki/Serato%20sysex
     midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
-    // Led setting needs to be done after we receive a sysex response from
-    // midi.sendSysexMsg(IdentityRequestSysex, IdentityRequestSysex.length);
-    // Since we can't catch sysex messages and the controller sends it well under 10ms
-    // after we send the Identity request message 50ms is more than enough.
-    engine.beginTimer(50, () => {
+    // The initial LED setting needs to be started after the end of the lights demo
+    // stopping event in the controller or that event will turn off LEDs that were already set.
+    // I very rarely see this and i can't currently find a way to consistently
+    // reproduce it.
+    // As far as i know, there is no way to listen for the end of that event so
+    // we go for a lazy start of the led setting routine  with a generous 2000ms delay.
+    // A user setting is added for further tuning in the odd chance this
+    // is happening with device unit specific variation or an unforeseen use case.
+    engine.beginTimer(initialLEDSettingDelay * 1000, () => {
         NumarkMixtrackGo.leftDeck.setDeckStartLeds();
         NumarkMixtrackGo.rightDeck.setDeckStartLeds();
-    }, true);
-
-    // Fade fx blinking
-    const fadeFxIndicatorControl = "indicator_500ms";
-
-    engine.makeConnection("[App]", fadeFxIndicatorControl, function() {
-        if (isFadeFxOn) {
-            if (engine.getValue("[App]", fadeFxIndicatorControl) === 0) {
+        // The FadeFX LED is a special case as it is the only LED that isn't deck specific.
+        engine.makeConnection("[App]", fadeFxIndicatorControl, function() {
+            if (isFadeFxOn) {
+                if (engine.getValue("[App]", fadeFxIndicatorControl) === 0) {
+                    NumarkMixtrackGo.led.setFadefxDim();
+                    NumarkMixtrackGo.led.setFadefxShiftDim();
+                } else {
+                    NumarkMixtrackGo.led.setFadefxBright();
+                    NumarkMixtrackGo.led.setFadefxShiftBright();
+                }
+            } else {
                 NumarkMixtrackGo.led.setFadefxDim();
                 NumarkMixtrackGo.led.setFadefxShiftDim();
-            } else {
-                NumarkMixtrackGo.led.setFadefxBright();
-                NumarkMixtrackGo.led.setFadefxShiftBright();
             }
-        } else {
-            NumarkMixtrackGo.led.setFadefxDim();
-            NumarkMixtrackGo.led.setFadefxShiftDim();
-        }
-    });
+        });
+    }, true);
 
     // softTakeovers for the Filter/Low knob switching
     engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);

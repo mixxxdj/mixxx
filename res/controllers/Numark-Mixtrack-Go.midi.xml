@@ -5,6 +5,15 @@
     <author>mixo101</author>
     <description>Midi mapping for the Numark Mixtrack Go controller</description>
   </info>
+  <settings>
+    <group label="Initial LEDs state">
+      <option variable="initialLEDSettingDelay" label="Initial LEDs Setting Delay" type="integer" min="1" max="10" step="1" default="2">
+        <description>
+          Select the delay of the initial setting of LEDs. It should happen after the lightshow is finished.
+        </description>
+      </option>
+    </group>
+  </settings>
   <controller id="Numark">
     <scriptfiles>
       <file filename="lodash.mixxx.js" functionprefix=""/>
