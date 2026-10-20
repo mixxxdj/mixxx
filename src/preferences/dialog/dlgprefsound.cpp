@@ -1450,6 +1450,10 @@ void DlgPrefSound::calibrateOutputItem(DlgPrefSoundItem* pItem) {
     showLatencyCalibrationDialog(this, pItem, framesPerBuffer, sampleRate, outputLatencyMs);
 }
 
+void DlgPrefSound::invalidateConfig() {
+    m_settingsModified = true;
+}
+
 void DlgPrefSound::autoCalibrateAllOutputs() {
     // Collect all Main output items
     QList<DlgPrefSoundItem*> mainOutputs;

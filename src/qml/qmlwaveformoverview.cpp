@@ -112,7 +112,54 @@ void QmlWaveformOverview::setChannels(QmlWaveformOverview::Channels channels) {
     }
 
     m_channels = channels;
-    Q_EMIT channelsChanged(channels);
+    emit channelsChanged(channels);
+    update();
+}
+
+void QmlWaveformOverview::setRenderer(Renderer renderer) {
+    if (m_renderer == renderer) {
+        return;
+    }
+    m_renderer = renderer;
+    emit rendererChanged(renderer);
+    update();
+}
+
+void QmlWaveformOverview::setStereo(bool stereo) {
+    if (m_stereo == stereo) {
+        return;
+    }
+    m_stereo = stereo;
+    emit stereoChanged();
+    update();
+}
+
+void QmlWaveformOverview::setNormalized(bool normalized) {
+    if (m_normalized == normalized) {
+        return;
+    }
+    m_normalized = normalized;
+    emit normalizedChanged();
+    update();
+}
+
+void QmlWaveformOverview::setMinuteMarkers(bool minuteMarkers) {
+    if (m_minuteMarkers == minuteMarkers) {
+        return;
+    }
+    m_minuteMarkers = minuteMarkers;
+    emit minuteMarkersChanged();
+    update();
+}
+
+void QmlWaveformOverview::setAnalyzerProgress(double analyzerProgress) {
+    if (m_analyzerProgress == analyzerProgress) {
+        return;
+    }
+
+    m_analyzerProgress = analyzerProgress;
+    emit analyzerProgressChanged();
+    update();
 }
 
 void QmlWaveformOverview::slotWaveformUpdated() {
