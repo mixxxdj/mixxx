@@ -1302,7 +1302,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
 
         switch (type) {
         case WaveformWidgetType::Simple:
-            pWidget = createSimpleWaveformWidget(pViewer);
+            pWidget = createSimpleWaveformWidget(pViewer, options);
             break;
         case WaveformWidgetType::Filtered:
             pWidget = createFilteredWaveformWidget(pViewer, options);
@@ -1317,7 +1317,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             pWidget = createRGBWaveformWidget(pViewer, options);
             break;
         case WaveformWidgetType::Stacked:
-            pWidget = createStackedWaveformWidget(pViewer);
+            pWidget = createStackedWaveformWidget(pViewer, options);
             break;
         default:
             pWidget = new EmptyWaveformWidget(pViewer->getGroup(), pViewer);

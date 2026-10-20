@@ -92,7 +92,7 @@ CmdlineArgs::CmdlineArgs()
           // potentially diagnose issues by accessing logs etc. via the native iOS files app.
           m_settingsPath(
                   QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
-                          .append("/Library/Application Support/Mixxx")),
+                          .append("/Library/Application Support/Mixxx"))
 #elif defined(Q_OS_ANDROID)
           // DJ Sugar: on Android place settings (including logs) under the
           // app's user-visible "documents" folder:
@@ -103,7 +103,7 @@ CmdlineArgs::CmdlineArgs()
           // manager, without needing adb or a logcat viewer.
           m_settingsPath(
                   QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
-                          .append("/Mixxx/")),
+                          .append("/Mixxx/"))
 #else
 
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append

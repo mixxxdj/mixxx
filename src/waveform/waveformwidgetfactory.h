@@ -339,7 +339,8 @@ class WaveformWidgetFactory : public QObject,
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
             WaveformWidgetType::Type type,
-            WWaveformViewer* pViewer);
+            WWaveformViewer* pViewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createWaveformWidget(
             WaveformWidgetType::Type type, WWaveformViewer* pViewer);
     int findIndexOf(WWaveformViewer* viewer) const;
@@ -402,8 +403,10 @@ class WaveformWidgetFactory : public QObject,
             WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer,
             WaveformRendererSignalBase::Options option);
-    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);
 
     //Debug
