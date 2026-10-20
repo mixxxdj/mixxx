@@ -615,8 +615,6 @@ const padModes = ["hotcue", "loops", "fx", "sampler", "stems"];
 // 0 for filter, 1 for low
 let filterLowSwitch = 1;
 
-let vinylModeEnabled = true;
-
 // to disable the lights demo, from npredella@mixxxforums
 const IdentityRequestSysex = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
 
