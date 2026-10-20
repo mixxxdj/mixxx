@@ -314,7 +314,7 @@ jobs:
               -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
             # Same slow-runner exclusions as the Ubuntu build: controller
             # mapping/HID suites and stem tests time out on CI runners.
-            ctest_args: --exclude-regex '(ControllerScriptEngineLegacy|PlayerManagerTest\\.Un|MappingTestFixture|HidMappings|StemTest|StemControlTest)'
+            ctest_args: --exclude-regex '(ControllerScriptEngineLegacy|PlayerManagerTest\.Un|MappingTestFixture|HidMappings|StemTest|StemControlTest)'
             cpack_generator: AppImage
             # Not a cross-compile: this is a native x86_64 build, so the
             # shared Test step must run.  The PPA steps are excluded for the
