@@ -326,10 +326,11 @@ Rectangle {
         root.loadConnections();
     }
     function addOutput(device) {
-        if (!device)
+        if (!device) {
             return false;
+        }
         let api = Mixxx.SoundManager.getAPI();
-        let[cardName, deviceName] = root.friendlyName(api, device.displayName);
+        let [cardName, deviceName] = root.friendlyName(api, device.displayName);
         cardName = !cardName ? "Unnamed card" : cardName;
         deviceName = !deviceName ? "Default" : deviceName;
         if (root.outputs[cardName] && root.outputs[cardName].gateways[deviceName]) {
@@ -337,15 +338,15 @@ Rectangle {
         }
         if (!root.outputs[cardName]) {
             root.outputs[cardName] = {
-                gateways : {},
-                channelCount : 0
+                gateways: {},
+                channelCount: 0
             };
         }
         root.outputs[cardName].gateways[deviceName] = {
-            name : deviceName,
-            node : null,
-            device : device,
-            channels : device.channelCount
+            name: deviceName,
+            node: null,
+            device: device,
+            channels: device.channelCount
         };
         root.outputs[cardName].channelCount += device.channelCount;
         root.hasChanges = true;
@@ -353,8 +354,9 @@ Rectangle {
         return true;
     }
     function removeOutput(deviceName) {
-        if (!deviceName || !root.outputs[deviceName])
+        if (!deviceName || !root.outputs[deviceName]) {
             return;
+        }
         // Disconnect any active connections on this device's gateways
         let device = root.outputs[deviceName];
         for (let address of Object.keys(device.gateways)) {
@@ -576,27 +578,35 @@ Rectangle {
             visible: root.mode != AudioRouter.Mode.Legacy
         }
         ColumnLayout {
-            Layout.fillHeight : true Layout.maximumWidth : 220 Layout
-                                        .minimumWidth : 200 visible
-                    : root.mode !=
-                    AudioRouter.Mode.Legacy
+            Layout.fillHeight: true
+            Layout.maximumWidth: 220
+            Layout.minimumWidth: 200
+            visible: root.mode != AudioRouter.Mode.Legacy
 
-                            RowLayout {
-                Layout.alignment : Qt.AlignHCenter
-                                           Layout.margins : 15
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.margins: 15
+                color: '#626262'
+                font.pixelSize: 14
+                text: "Outputs"
+            }
+            RowLayout {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.margins: 15
 
-                                   Text{
-                                       Layout.fillWidth : true
-                                       color : '#626262' font.pixelSize : 14
-                                       text : "Outputs"
-                                   } Button {
-                id:
-                    addOutputButton
+                Text {
+                    Layout.fillWidth: true
+                    color: '#626262'
+                    font.pixelSize: 14
+                    text: "Outputs"
+                }
+                Button {
+                    id: addOutputButton
 
-                                    text : "+" visible : Object.keys(root.outputDevices)
-                                                                 .length > 0
+                    text: "+"
+                    visible: Object.keys(root.outputDevices).length > 0
 
-                            onClicked : {
+                    onClicked: {
                         // Add a new stereo output gateway on devices that have
                         // room. Skips devices already fully allocated.
                         // Each click adds the next available gateway (#2, #3...).
@@ -604,7 +614,7 @@ Rectangle {
                         let available = manager.availableOutputDevices(api);
                         let added = false;
                         for (let dev of available) {
-                            let[cardName, deviceName] = root.friendlyName(api, dev.displayName);
+                            let [cardName, deviceName] = root.friendlyName(api, dev.displayName);
                             cardName = !cardName ? "Unnamed card" : cardName;
                             deviceName = !deviceName ? "Default" : deviceName;
                             let existing = root.outputs[cardName];
@@ -615,10 +625,7 @@ Rectangle {
                             let newName = deviceName;
                             let suffix = 2;
                             while (existing.gateways[newName]) {
-                                newName = `${deviceName} #$ {
-                                    suffix
-                                }
-                                `;
+                                newName = `${deviceName} #${suffix}`;
                                 suffix++;
                             }
                             // Check if device has enough channels for another stereo pair
@@ -626,10 +633,10 @@ Rectangle {
                                 continue;
                             }
                             existing.gateways[newName] = {
-                                name : newName,
-                                node : null,
-                                device : dev,
-                                channels : dev.channelCount
+                                name: newName,
+                                node: null,
+                                device: dev,
+                                channels: dev.channelCount
                             };
                             existing.channelCount += 2;
                             added = true;
@@ -641,13 +648,12 @@ Rectangle {
                     }
                 }
                 RoundButton {
-                id:
-                    removeOutputButton
+                    id: removeOutputButton
 
-                                    text : "-" visible : Object.keys(root.outputs)
-                                                                 .length > 1
+                    text: "-"
+                    visible: Object.keys(root.outputs).length > 1
 
-                            onClicked : {
+                    onClicked: {
                         let keys = Object.keys(root.outputs);
                         if (keys.length > 1) {
                             root.removeOutput(keys[keys.length - 1]);
@@ -728,18 +734,18 @@ Rectangle {
                     }
 
                     RoundButton {
-                    id:
-                        removePerDeviceButton
+                        id: removePerDeviceButton
 
-                                        text
-                                : "-" width : 24 height : 24 anchors
-                                          .right
-                                : parent.right anchors.top : parent.top anchors
-                                          .margins : 4 z : 20 visible
-                                : Object.keys(root.outputs)
-                                          .length > 1
+                        text: "-"
+                        width: 24
+                        height: 24
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 4
+                        z: 20
+                        visible: Object.keys(root.outputs).length > 1
 
-                                onClicked : {
+                        onClicked: {
                             root.removeOutput(modelData);
                         }
                     }
