@@ -5,6 +5,9 @@ import QtQuick.Shapes 1.12
 Slider {
     id: root
 
+    // A typed property is required so inherited controls accept grouped bindings such as bar.margin.
+    property BarSettings bar: BarSettings {
+    }
     orientation: Qt.Vertical
     wheelEnabled: true
 
