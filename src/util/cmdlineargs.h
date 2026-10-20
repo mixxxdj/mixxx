@@ -7,14 +7,12 @@
 
 #include "util/logging.h"
 
-namespace mixxx {
-
 /// A structure to store the parsed command-line arguments
 class CmdlineArgs final {
   public:
     /// The constructor is only public to make this class reusable in tests.
     /// All operational code in Mixxx itself must access the global singleton
-    /// via `CmdlineArgs::Instance()`.
+    /// via `CmdlineArgs::instance()`.
     CmdlineArgs();
 
     static inline CmdlineArgs& Instance() {
@@ -30,12 +28,8 @@ class CmdlineArgs final {
     //! This requires an initialized QCoreApplication
     void parseForUserFeedback();
 
-    const QList<QString>& getMusicFiles() const {
-        return m_musicFiles;
-    }
-    bool getStartInFullscreen() const {
-        return m_startInFullscreen;
-    }
+    const QList<QString>& getMusicFiles() const { return m_musicFiles; }
+    bool getStartInFullscreen() const { return m_startInFullscreen; }
     bool getStartAutoDJ() const {
         return m_startAutoDJ;
     }
@@ -51,20 +45,19 @@ class CmdlineArgs final {
     bool getControllerAbortOnWarning() const {
         return m_controllerAbortOnWarning;
     }
-    bool getDeveloper() const {
-        return m_developer;
+    bool getDeveloper() const { return m_developer; }
+    bool getStats() const {
+        return m_developer || m_stats;
     }
-
+#ifdef MIXXX_USE_QML
     bool isQml() const {
         return m_qml;
     }
     bool isAwareOfRisk() const {
         return m_awareOfRisk;
     }
-
-    bool getSafeMode() const {
-        return m_safeMode;
-    }
+#endif
+    bool getSafeMode() const { return m_safeMode; }
     bool useColors() const {
         return m_useColors;
     }
@@ -74,30 +67,16 @@ class CmdlineArgs final {
     bool getUseLegacySpinny() const {
         return m_useLegacySpinny;
     }
-    bool getDebugAssertBreak() const {
-        return m_debugAssertBreak;
-    }
-    bool getSettingsPathSet() const {
-        return m_settingsPathSet;
-    }
-    mixxx::LogLevel getLogLevel() const {
-        return m_logLevel;
-    }
-    mixxx::LogLevel getLogFlushLevel() const {
-        return m_logFlushLevel;
-    }
+    bool getDebugAssertBreak() const { return m_debugAssertBreak; }
+    bool getSettingsPathSet() const { return m_settingsPathSet; }
+    mixxx::LogLevel getLogLevel() const { return m_logLevel; }
+    mixxx::LogLevel getLogFlushLevel() const { return m_logFlushLevel; }
     qint64 getLogMaxFileSize() const {
         return m_logMaxFileSize;
     }
-    bool getTimelineEnabled() const {
-        return !m_timelinePath.isEmpty();
-    }
-    const QString& getLocale() const {
-        return m_locale;
-    }
-    const QString& getSettingsPath() const {
-        return m_settingsPath;
-    }
+    bool getTimelineEnabled() const { return !m_timelinePath.isEmpty(); }
+    const QString& getLocale() const { return m_locale; }
+    const QString& getSettingsPath() const { return m_settingsPath; }
     void setSettingsPath(const QString& newSettingsPath) {
         m_settingsPath = QDir::toNativeSeparators(newSettingsPath);
         m_settingsPathSet = true;
@@ -108,12 +87,8 @@ class CmdlineArgs final {
             m_settingsPath.append(QDir::separator());
         }
     }
-    const QString& getResourcePath() const {
-        return m_resourcePath;
-    }
-    const QString& getTimelinePath() const {
-        return m_timelinePath;
-    }
+    const QString& getResourcePath() const { return m_resourcePath; }
+    const QString& getTimelinePath() const { return m_timelinePath; }
 
     const QString& getStyle() const {
         return m_styleName;
@@ -126,7 +101,7 @@ class CmdlineArgs final {
         return m_scaleFactor;
     }
 
-  public:
+  private:
     enum class ParseMode {
         Initial,
         ForUserFeedback
@@ -134,26 +109,28 @@ class CmdlineArgs final {
 
     bool parse(const QStringList& arguments, ParseMode mode);
 
-  private:
-    QList<QString> m_musicFiles; // List of files to load into players at startup
-    bool m_startInFullscreen;    // Start in fullscreen mode
+    QList<QString> m_musicFiles;    // List of files to load into players at startup
+    bool m_startInFullscreen;       // Start in fullscreen mode
     bool m_startAutoDJ;
     bool m_rescanLibrary;
     bool m_controllerDebug;
     bool m_controllerPreviewScreens;
     bool m_controllerAbortOnWarning; // Controller Engine will be stricter
-    bool m_developer;                // Developer Mode
+    bool m_developer; // Developer Mode
+    bool m_stats;     // Enable stats collection
+#ifdef MIXXX_USE_QML
     bool m_qml;
     bool m_awareOfRisk;
+#endif
     bool m_safeMode;
     bool m_useLegacyVuMeter;
     bool m_useLegacySpinny;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
     double m_scaleFactor;
-    bool m_useColors; // should colors be used
+    bool m_useColors;       // should colors be used
     bool m_parseForUserFeedbackRequired;
-    mixxx::LogLevel m_logLevel;      // Level of stderr logging message verbosity
+    mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing
     qint64 m_logMaxFileSize;
     QString m_locale;
@@ -162,7 +139,3 @@ class CmdlineArgs final {
     QString m_timelinePath;
     QString m_styleName;
 };
-
-} // namespace mixxx
-
-using CmdlineArgs = mixxx::CmdlineArgs;

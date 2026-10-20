@@ -214,6 +214,7 @@ class SoundManager : public QObject {
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;
     NetworkEnumerator m_networkEnumerator;
+    bool m_pipewireEnabled;
 
     AudioLatencyCalibrator* m_pCalibrator = nullptr;
     /// Cache for one buffer's worth of calibration chirp samples.

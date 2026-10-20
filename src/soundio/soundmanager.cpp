@@ -64,7 +64,9 @@ SoundManager::SoundManager(
           m_pNetworkStream(QSharedPointer<EngineNetworkStream>::create(2, 0)),
           m_pNetworkDevice(QSharedPointer<SoundDeviceNetwork>::create(
                   pConfig, this, m_pNetworkStream)),
-          m_networkEnumerator(pConfig, this) {
+          m_networkEnumerator(pConfig, this),
+          m_pipewireEnabled(m_pConfig->getValue(
+                  ConfigKey(kAppGroup, QStringLiteral("pipewire")), false)) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -585,7 +587,7 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                 ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
         }
-   }
+    }
 }
 
 void SoundManager::writeProcess(SINT framesPerBuffer) const {
