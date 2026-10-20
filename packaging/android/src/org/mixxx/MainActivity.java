@@ -61,6 +61,12 @@ public class MainActivity extends QtActivityBase {
         });
 
         requestMusicLibraryPermissions();
+
+        // ─── Background audio survival (AI-agent change, needs human review)
+        // Start the foreground playback service so the mix survives screen-off
+        // and backgrounding. See PlaybackService.java. The service is stopped
+        // only on explicit quit in onDestroy() — never here, never on pause.
+        PlaybackService.start(this);
     }
 
     private void requestBluetoothPermissions() {
@@ -154,6 +160,34 @@ public class MainActivity extends QtActivityBase {
     protected void onResume() {
         super.onResume();
         requestAllFilesAccessIfNeeded();
+    }
+
+    // ─── Background audio survival (AI-agent change, needs human review) ──
+    // The mix engine must NOT pause here: backgrounding the app is exactly
+    // the case PlaybackService protects. Re-assert the service so a system
+    // restart of our process re-establishes foreground priority.
+    @Override
+    protected void onPause() {
+        super.onPause();
+        PlaybackService.start(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        PlaybackService.start(this);
+    }
+
+    // Stop the service only on explicit user quit. The Qt activity teardown
+    // calls onDestroy when the user actually exits (not on rotate/background).
+    // Guarded by isFinishing() so destruction from an unhandled configuration
+    // change never kills background playback.
+    @Override
+    protected void onDestroy() {
+        if (isFinishing()) {
+            PlaybackService.stop(this);
+        }
+        super.onDestroy();
     }
 
     private void requestAllFilesAccessIfNeeded() {
