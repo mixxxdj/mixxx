@@ -131,6 +131,21 @@ class SoundManager : public QObject {
                         false);
     }
 
+    CSAMPLE* getInputBuffer(const AudioInput& input) {
+        if (!m_inputBuffers.contains(input)) {
+            qWarning() << "getInputBuffer does not have" << input.getString();
+        }
+        return m_inputBuffers.value(input);
+    }
+
+    const CSAMPLE* getOutputBuffer(const AudioOutput& output) {
+        const float* buffer = m_registeredSources.value(output)->buffer(output).data();
+        if (!buffer) {
+            qWarning() << "getOutputBuffer does not have" << output.getString();
+        }
+        return buffer;
+    }
+
     // Our fork's extended device query (Android Oboe + PortAudio)
     void queryDevicesPortaudio();
     void queryDevicesMixxx();

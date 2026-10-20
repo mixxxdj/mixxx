@@ -857,7 +857,9 @@ void PipewireEnumerator::updateAudioLatencyUsage(SINT samplerate, SINT framesPer
 
 void PipewireEnumerator::destroyLink(uint32_t id) {
     pw_thread_loop_lock(m_pPwThreadLoop);
-    pw_registry_destroy(m_pPwRegistry, id);
+    // Cast: the pw_registry_destroy macro compares against int 0, which
+    // trips -Wsign-compare on newer compilers.
+    pw_registry_destroy(m_pPwRegistry, static_cast<int>(id));
     pw_thread_loop_unlock(m_pPwThreadLoop);
 }
 
