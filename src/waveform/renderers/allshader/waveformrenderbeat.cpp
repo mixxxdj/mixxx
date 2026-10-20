@@ -51,8 +51,13 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
 
-    const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
+    const bool isStemTrack =
+#ifdef __STEM__
+            trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
+#else
+            false;
+#endif
     const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
