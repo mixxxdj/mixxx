@@ -390,6 +390,15 @@ jobs:
           # see: https://cmake.org/cmake/help/latest/cpack_gen/wix.html#variable:CPACK_WIX_VERSION
           cmake-version: "3.30.x"
 
+      - name: "[AppImage] Set up cmake"
+        # The CPack AppImage generator requires CMake >= 4.2, which is not
+        # available from apt on the ubuntu-22.04 runner (kept for the glibc
+        # baseline).  Use the same action as the macOS/Windows builds.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        uses: jwlawson/actions-setup-cmake@v2.2
+        with:
+          cmake-version: "4.2.x"
+
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1.13.0
