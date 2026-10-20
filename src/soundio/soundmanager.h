@@ -123,6 +123,13 @@ class SoundManager : public QObject {
         return false;
 #endif
     }
+    bool pipewireSkipConfig() {
+        return isPipewireSelected() &&
+                m_pConfig->getValue(
+                        ConfigKey("[App]",
+                                QStringLiteral("pipewire_patchbay_sync")),
+                        false);
+    }
 
     // Our fork's extended device query (Android Oboe + PortAudio)
     void queryDevicesPortaudio();
