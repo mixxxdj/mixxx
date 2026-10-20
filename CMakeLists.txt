@@ -4267,6 +4267,8 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
   if(NOT ANDROID)
     list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+    # LateNightQML's ApplicationMenuCommands needs QtQuick.Dialogs
+    list(APPEND QT_EXTRA_COMPONENTS "QuickDialogs2")
     list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
   endif()
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
@@ -4710,6 +4712,33 @@ else()
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QuickControls2Impl
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2QuickImpl
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickDialogs2Utils
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
