@@ -1244,6 +1244,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(
 #ifdef MIXXX_USE_QOPENGL
 WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
+    Q_UNUSED(options);
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
@@ -1263,6 +1264,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
         WWaveformViewer* viewer, WaveformRendererSignalBase::Options options) {
+    Q_UNUSED(options);
     WaveformWidgetBackend backend = getBackendFromConfig();
 
     switch (backend) {
@@ -1274,7 +1276,6 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
     case WaveformWidgetBackend::GL:
     case WaveformWidgetBackend::GLSL:
     default:
-        Q_UNUSED(options);
         return new SimpleSignalWaveformWidget(viewer->getGroup(), viewer);
     }
 }

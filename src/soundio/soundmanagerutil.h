@@ -320,3 +320,20 @@ inline qhash_seed_t qHash(
 inline QDebug operator<<(QDebug dbg, const SoundDeviceId& soundDeviceId) {
     return dbg << QString("SoundDeviceId(" + soundDeviceId.debugName() + ")");
 }
+
+// std::hash specializations so AudioInput/AudioOutput can be used as keys in
+// std::unordered_map (e.g. PipewireEnumerator). Only qHash existed before,
+// which newer libstdc++ versions reject for unordered_map's default hasher.
+template<>
+struct std::hash<AudioInput> {
+    std::size_t operator()(const AudioInput& input) const noexcept {
+        return static_cast<std::size_t>(input.hashValue());
+    }
+};
+
+template<>
+struct std::hash<AudioOutput> {
+    std::size_t operator()(const AudioOutput& output) const noexcept {
+        return static_cast<std::size_t>(output.hashValue());
+    }
+};

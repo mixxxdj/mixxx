@@ -230,8 +230,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     PerformanceTimer m_clkRefTimer;
     mixxx::audio::SampleRate m_defaultSampleRate;
 
-    QHash<AudioInput, PortPair> m_inputs;
-    QHash<AudioOutput, PortPair> m_outputs;
+    std::unordered_map<AudioInput, PortPair> m_inputs;
+    std::unordered_map<AudioOutput, PortPair> m_outputs;
 
     PollingControlProxy m_audioLatencyUsage;
     ControlObject m_coPipewirePatchbaySync;

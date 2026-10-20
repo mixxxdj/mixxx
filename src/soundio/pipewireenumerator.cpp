@@ -375,9 +375,9 @@ void PipewireEnumerator::registryEventGlobal(uint32_t id,
                 }
 
                 if (list.at(1) == "FL") {
-                    m_outputs[*it].left.id = id;
+                    m_outputs.at(*it).left.id = id;
                 } else {
-                    m_outputs[*it].right.id = id;
+                    m_outputs.at(*it).right.id = id;
                 }
             }
         }
@@ -580,7 +580,7 @@ std::string PipewireEnumerator::openDeviceInput(uint32_t deviceId,
         return {};
     }
 
-    PortPair& ports = m_inputs[input];
+    PortPair& ports = m_inputs.at(input);
     ports.activeDevice = deviceId;
 
     if (ports.active.load()) {
@@ -621,7 +621,7 @@ std::string PipewireEnumerator::openDeviceOutput(uint32_t deviceId, const AudioO
         return {};
     }
 
-    PortPair& ports = m_outputs[output];
+    PortPair& ports = m_outputs.at(output);
     ports.activeDevice = deviceId;
 
     if (ports.active.load()) {
@@ -904,14 +904,12 @@ void PipewireEnumerator::registerInput(const AudioInput& input, AudioDestination
         return;
     }
 
-    auto it = m_inputs.find(input);
-    if (it == m_inputs.end()) {
-        it = m_inputs.insert(input, PortPair{});
-        if (m_initialized) {
-            pw_thread_loop_lock(m_pPwThreadLoop);
-            createInputPorts(input, it.value());
-            pw_thread_loop_unlock(m_pPwThreadLoop);
-        }
+    auto [it, isInserted] = m_inputs.try_emplace(input);
+
+    if (m_initialized and isInserted) {
+        pw_thread_loop_lock(m_pPwThreadLoop);
+        createInputPorts(input, it->second);
+        pw_thread_loop_unlock(m_pPwThreadLoop);
     }
 }
 
@@ -920,14 +918,11 @@ void PipewireEnumerator::registerOutput(const AudioOutput& output, AudioSource*)
         return;
     }
 
-    auto it = m_outputs.find(output);
-    if (it == m_outputs.end()) {
-        it = m_outputs.insert(output, PortPair{});
-        if (m_initialized) {
-            pw_thread_loop_lock(m_pPwThreadLoop);
-            createOutputPorts(output, it.value());
-            pw_thread_loop_unlock(m_pPwThreadLoop);
-        }
+    auto [it, isInserted] = m_outputs.try_emplace(output);
+    if (m_initialized and isInserted) {
+        pw_thread_loop_lock(m_pPwThreadLoop);
+        createOutputPorts(output, it->second);
+        pw_thread_loop_unlock(m_pPwThreadLoop);
     }
 }
 
