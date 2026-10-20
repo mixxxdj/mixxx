@@ -1248,7 +1248,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
 
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer, options);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Stacked, viewer);
     default:
         return new EmptyWaveformWidget(viewer->getGroup(), viewer);
     }
@@ -1268,7 +1268,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(
     switch (backend) {
     case WaveformWidgetBackend::AllShader:
 #ifdef MIXXX_USE_QOPENGL
-        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer, options);
+        return createAllshaderWaveformWidget(WaveformWidgetType::Type::Simple, viewer);
 #endif
     case WaveformWidgetBackend::None:
     case WaveformWidgetBackend::GL:
