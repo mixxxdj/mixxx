@@ -5,7 +5,6 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
-#include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #ifdef MIXXX_USE_QOPENGL
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
@@ -75,13 +74,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
-#ifdef MIXXX_USE_QOPENGL
-    void updateWaveformTypeOptions(bool useWaveform,
-            WaveformWidgetBackend backend,
-            WaveformRendererSignalBase::Options currentOption);
-#endif
-    void updateWaveformAcceleration(
-            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void updateWaveformTypeOptions(bool useWaveform);
+    void updateWaveformAcceleration(WaveformWidgetType::Type type);
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
     void updateStemOptionsEnabled();

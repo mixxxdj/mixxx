@@ -92,8 +92,13 @@ bool WaveformRendererSlipMode::preprocessInner() {
     }
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    const bool isStemTrack = pTrack && pTrack->hasStem() &&
+    const bool isStemTrack =
+#ifdef __STEM__
+            pTrack && pTrack->hasStem() &&
             pTrack->getWaveform() && pTrack->getWaveform()->hasStem();
+#else
+            false;
+#endif
     const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 

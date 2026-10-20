@@ -356,8 +356,13 @@ void allshader::WaveformRenderMark::update() {
     bool slipActive = m_waveformRenderer->isSlipActive();
 
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
+    const bool isStemTrack =
+#ifdef __STEM__
+            trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
+#else
+            false;
+#endif
     const bool splitStemTracks = isStemTrack &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
