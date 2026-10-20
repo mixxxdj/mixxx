@@ -36,8 +36,9 @@ import android.util.Log;
  *
  * Follow-up (requires C++ change, intentionally out of scope here): route
  * focus events into the engine via JNI (e.g. nativeAudioFocusChanged) so
- * LOSS pauses the mix and LOSS_TRANSIENT_CAN_DUCK ducks volume instead of
- * the coarse relinquish/re-acquire behavior below.
+ * LOSS pauses the mix and LOSS_TRANSIENT_CAN_DUCK ducks volume. The
+ * pauseEnginePlayback()/resumeEnginePlayback() hooks are the landing zone;
+ * until the JNI side exists they only manage protection state.
  */
 public class PlaybackService extends Service {
     private static final String TAG = "DJSugarPlayback";
@@ -58,18 +59,21 @@ public class PlaybackService extends Service {
             public void onAudioFocusChange(int focusChange) {
                 switch (focusChange) {
                     case AudioManager.AUDIOFOCUS_LOSS:
-                        // Permanent loss (call, alarm): give everything up so
-                        // the system reclaims audio instead of mixing over it.
-                        Log.i(TAG, "Audio focus lost permanently, relinquishing");
-                        abandonAudioFocus();
-                        releaseWakeLock();
-                        stopForeground(true);
+                        // Permanent loss (call, alarm): ask the mix engine to
+                        // pause BEFORE touching protection. Keep the focus
+                        // request held (no abandonAudioFocus) so a later
+                        // focus-gain callback can restore protection, and keep
+                        // foreground + wake lock until the engine confirms the
+                        // pause — playback may otherwise continue unprotected.
+                        Log.i(TAG, "Audio focus lost permanently, pausing mix");
+                        pauseEnginePlayback();
                         break;
                     case AudioManager.AUDIOFOCUS_GAIN:
                         Log.i(TAG, "Audio focus gained, re-acquiring");
                         acquireWakeLock();
                         requestAudioFocus();
                         startInForeground();
+                        resumeEnginePlayback();
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
@@ -179,19 +183,23 @@ public class PlaybackService extends Service {
     }
 
     private void acquireWakeLock() {
-        if (mWakeLock != null && mWakeLock.isHeld()) {
-            return;
-        }
         PowerManager powerManager =
             (PowerManager) getSystemService(Context.POWER_SERVICE);
         if (powerManager == null) {
             return;
         }
-        mWakeLock = powerManager.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK, TAG + ":lock");
-        // 10-minute timeout as a safety net against battery drain if the
-        // service is ever orphaned; normal path releases explicitly.
-        mWakeLock.acquire(10 * 60 * 1000L);
+        if (mWakeLock == null) {
+            mWakeLock = powerManager.newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK, TAG + ":lock");
+            mWakeLock.setReferenceCounted(false);
+        }
+        // No timeout: the lock lifetime is tied to playback and every stop
+        // path (ACTION_STOP, onDestroy) releases it explicitly. Re-acquiring
+        // an already-held non-reference-counted lock is a no-op, so this
+        // also renews protection on repeat start / focus-gain events.
+        if (!mWakeLock.isHeld()) {
+            mWakeLock.acquire();
+        }
     }
 
     private void releaseWakeLock() {
@@ -207,15 +215,17 @@ public class PlaybackService extends Service {
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (mFocusRequest == null) {
-                AudioAttributes attributes = new AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build();
-                mFocusRequest = new AudioFocusRequest.Builder(
-                        AudioManager.AUDIOFOCUS_GAIN)
-                    .setAudioAttributes(attributes)
-                    .setOnAudioFocusChangeListener(mFocusListener)
-                    .build();
+                AudioAttributes attributes =
+                    new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .build();
+                mFocusRequest =
+                    new AudioFocusRequest.Builder(
+                                             AudioManager.AUDIOFOCUS_GAIN)
+                        .setAudioAttributes(attributes)
+                        .setOnAudioFocusChangeListener(mFocusListener)
+                        .build();
             }
             mAudioManager.requestAudioFocus(mFocusRequest);
         } else {
@@ -234,6 +244,21 @@ public class PlaybackService extends Service {
         } else {
             mAudioManager.abandonAudioFocus(mFocusListener);
         }
+    }
+
+    // Engine hooks (TODO: wire via JNI to nativeAudioFocusChanged once the
+    // C++ side lands). Until then these only manage our own protection state:
+    // pause drops foreground priority but keeps the service alive so a later
+    // AUDIOFOCUS_GAIN can resume. LOSS teeth (actually stopping audio) arrive
+    // with the JNI hookup.
+    private void pauseEnginePlayback() {
+        releaseWakeLock();
+        stopForeground(true);
+    }
+
+    private void resumeEnginePlayback() {
+        // Protection already re-acquired by the GAIN handler above; engine
+        // resume (un-pause) lands here with the JNI hookup.
     }
 }
 

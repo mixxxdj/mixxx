@@ -180,9 +180,13 @@ public class MainActivity extends QtActivityBase {
 
     // Stop the service only on explicit user quit. The Qt activity teardown
     // calls onDestroy when the user actually exits (not on rotate/background).
+    // Guarded by isFinishing() so destruction from an unhandled configuration
+    // change never kills background playback.
     @Override
     protected void onDestroy() {
-        PlaybackService.stop(this);
+        if (isFinishing()) {
+            PlaybackService.stop(this);
+        }
         super.onDestroy();
     }
 
