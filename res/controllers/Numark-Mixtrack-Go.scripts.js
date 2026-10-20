@@ -625,6 +625,8 @@ const IdentityRequestSysex = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
 const ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
 
 //settings
+const pitchBendSharpnessSetting = engine.getSetting("pitchBendSharpness");
+const isVinylModeInitiallyActivated = engine.getSetting("vinylModeDefaultState");
 const initialLEDSettingDelay = engine.getSetting("initialLEDSettingDelay");
 
 // Fade fx blinking
@@ -1250,6 +1252,27 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         beta: this.alpha/32, // optional, default as is, here for further tuning if necessary
         rpm: 33 + 1/3, //optional, default as is, here for further tuning if necessary
         group: group,
+        vinylMode: isVinylModeInitiallyActivated,
+        //overridden to set pitch bend sharpness
+        inputWheel: function(_channel, _control, value, _status, _group) {
+            if (!this.deck) {
+                return;
+            }
+
+            let pitchBendValue;
+            if (value === 127) {
+                pitchBendValue = -1 * pitchBendSharpnessSetting;
+            } else { //0x01
+                pitchBendValue = pitchBendSharpnessSetting;
+            }
+
+            value = this.inValueScale(value);
+            if (engine.isScratching(this.deck)) {
+                engine.scratchTick(this.deck, value);
+            } else {
+                this.inSetValue(pitchBendValue);
+            }
+        },
     });
 
     this.filterLowPot = new components.Pot({

@@ -6,6 +6,23 @@
     <description>Midi mapping for the Numark Mixtrack Go controller</description>
   </info>
   <settings>
+    <group label="Jog Wheel">
+      <option variable="pitchBendSharpness" label="Pitch Bend Sharpness" type="enum">
+        <value label="Very Fine" default="true">0.1</value>
+        <value label="Fine (good with aligned beatgrips and sync enabled)">0.2</value>
+        <value label="Normal" default="true">0.6</value>
+        <value label="Coarse (better for manual beatmatching)">0.8</value>
+        <value label="Very Coarse">1</value>
+        <description>
+          Select the sharpness of the pitch bend.
+        </description>
+      </option>
+      <option variable="vinylModeDefaultStateOn" label="Vinyl Mode Default State On" type="boolean" default="true">
+        <description>
+          Check this box for the Vinyl Mode to be activated from the start.
+        </description>
+      </option>
+    </group>
     <group label="Initial LEDs state">
       <option variable="initialLEDSettingDelay" label="Initial LEDs Setting Delay" type="integer" min="1" max="10" step="1" default="2">
         <description>
