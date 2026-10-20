@@ -980,7 +980,9 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        if: matrix.artifacts_path != null
+        # The AppImage is uploaded by the dedicated "[AppImage] Upload AppImage"
+        # step with a stable name used by the publish workflow.
+        if: matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           archive: "false"
