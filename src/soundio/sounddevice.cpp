@@ -225,7 +225,7 @@ void SoundDevice::clearInputBuffer(const SINT framesToPush,
     }
 }
 
-QString SoundDevice::getChannelString(ChannelGroup channelGroup, bool) {
+QString SoundDevice::getChannelString(ChannelGroup channelGroup, bool) const {
     mixxx::audio::ChannelCount count = channelGroup.getChannelCount();
     unsigned char channelBase = channelGroup.getChannelBase();
     if (count == 1) {

@@ -22,7 +22,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
             QWidget* pParent,
             UserSettingsPointer pConfig,
             std::shared_ptr<Library> pLibrary);
-    virtual ~DlgPrefWaveform();
 
   public slots:
     void slotUpdate() override;
@@ -61,9 +60,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
     void slotSetUntilMarkTextHeightLimit(int index);
-    void slotStemOpacity(float value);
+    void slotStemOpacity(double value);
     void slotStemReorderOnChange(bool value);
-    void slotStemOutlineOpacity(float value);
+    void slotStemOutlineOpacity(double value);
     void slotStemDisplayMode(int index);
     // overview options
     void slotSetWaveformOverviewType();
@@ -86,6 +85,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
     void updateStemOptionsEnabled();
+    void notifyQmlWaveformSettingsChanged();
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;

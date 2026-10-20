@@ -186,14 +186,18 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
-      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
+      - name: "[Ubuntu/macOS] Restore ccache cache"
+        # Reuse the ccache saved by build.yml, which compiles the same sources
+        # with the same flags. Never save: the benchmark would only store a
+        # duplicate of the build cache.
         if: runner.os != 'windows'
         uses: actions/cache@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.base_ref }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"

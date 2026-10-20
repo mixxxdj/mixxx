@@ -40,7 +40,7 @@ Rectangle {
         height: 1
         color: root.bottomBorderColor
         visible: root.borderVisible
-        z: 1000
+        z: 1001
     }
 
     Rectangle {

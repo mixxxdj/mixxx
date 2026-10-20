@@ -630,6 +630,7 @@
 
 * Allen & Heath Xone K3: Update midi mappings (backport [#16453](https://github.com/mixxxdj/mixxx/pull/16453)) [#16496](https://github.com/mixxxdj/mixxx/pull/16496)
 * Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
+* Vestax VCI-400: fix VU meters, midi.sendShortMsg() [#16180](https://github.com/mixxxdj/mixxx/pull/16180)
 
 ### Library
 
@@ -644,9 +645,13 @@
 * Fixing last played time being wiped on history deletion
   [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
   [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+  [#16911](https://github.com/mixxxdj/mixxx/pull/16911)
 * Fix false-positive missing tracks
   [#16685](https://github.com/mixxxdj/mixxx/pull/16685)
   [#13533](https://github.com/mixxxdj/mixxx/issues/13533)
+* Rekordbox: detect databases in hidden .PIONEER directory
+  [#16895](https://github.com/mixxxdj/mixxx/pull/16895)
+  [#16894](https://github.com/mixxxdj/mixxx/issues/16894)
 
 ### Target support
 
@@ -654,6 +659,7 @@
   [#16507](https://github.com/mixxxdj/mixxx/pull/16507)
   [#16619](https://github.com/mixxxdj/mixxx/pull/16619)
   [#16614](https://github.com/mixxxdj/mixxx/issues/16614)
+* Retire Ubuntu Questing 25.10 [#16780](https://github.com/mixxxdj/mixxx/pull/16780)
 * Support Windows 11 25H2
   [#16401](https://github.com/mixxxdj/mixxx/pull/16401)
 * Add Arch Linux build environment script [#16594](https://github.com/mixxxdj/mixxx/pull/16594)
@@ -665,6 +671,9 @@
   [#16368](https://github.com/mixxxdj/mixxx/pull/16368)
 * Flatpak: fix building with Soundtouch, update to 2.4.1
   [#16720](https://github.com/mixxxdj/mixxx/pull/16720)
+* Flatpack: prevent branches to delete each other
+  [#16779](https://github.com/mixxxdj/mixxx/pull/16779)
+  [#16810](https://github.com/mixxxdj/mixxx/pull/16810)
 
 ### Miscellaneous
 
@@ -683,14 +692,36 @@
 * FFmpeg: fix of gap bug fix
   [#16439](https://github.com/mixxxdj/mixxx/pull/16439)
   [#10464](https://github.com/mixxxdj/mixxx/issues/10464)
-* Fix flaky test, due to not waiting for a fully loaded EngineBufferE2ETest
+* Fix flaky unittests test
   [#16275](https://github.com/mixxxdj/mixxx/pull/16275)
   [#12554](https://github.com/mixxxdj/mixxx/issues/12554)
-* Fix flaky test ControllerScriptEngineLegacyTimerTest.beginTimer_repeatedTimer [#16332](https://github.com/mixxxdj/mixxx/pull/16332)
-* Fix flaky test for org.mixxx.Mixxx.metainfo.xml
+  [#16332](https://github.com/mixxxdj/mixxx/pull/16332)
   [#16290](https://github.com/mixxxdj/mixxx/pull/16290)
   [#16162](https://github.com/mixxxdj/mixxx/issues/16162)
+  [#16693](https://github.com/mixxxdj/mixxx/pull/16693)
 * Fix warning/violated debug assertion when opening Preferences (backport [#16257](https://github.com/mixxxdj/mixxx/pull/16257)) [#16274](https://github.com/mixxxdj/mixxx/pull/16274)
+* Don't reset `beatloop_size` to 1/32 when loop doesn't match any of the pre-defined sizes
+  [#16881](https://github.com/mixxxdj/mixxx/pull/16881)
+  [#16880](https://github.com/mixxxdj/mixxx/issues/16880)
+* Fix last played time being wiped on history deletion
+  [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
+  [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+* Fix Hotcue 350 hours before song start, caused by a race condition with quantize control
+  [#16743](https://github.com/mixxxdj/mixxx/pull/16743)
+  [#16320](https://github.com/mixxxdj/mixxx/issues/16320)
+* Skins: Fix tiny battery icons [#16801](https://github.com/mixxxdj/mixxx/pull/16801)
+* Fix broadcasting using libshout-idjc >= 2.4.6, by using the correct usage flag
+  [#16816](https://github.com/mixxxdj/mixxx/pull/16816)
+  [#16783](https://github.com/mixxxdj/mixxx/issues/16783)
+  [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
+* Avoid spurious play control update
+  [#16912](https://github.com/mixxxdj/mixxx/pull/16912)
+  [#16910](https://github.com/mixxxdj/mixxx/issues/16910)
+* Respect `repeat` in slip mode when enabled before slip, like looping
+  [#16982](https://github.com/mixxxdj/mixxx/pull/16982)
+* Mixdown headphone and booth outputs in mono mode
+  [#17013](https://github.com/mixxxdj/mixxx/pull/17013)
+  [#16942](https://github.com/mixxxdj/mixxx/issues/16942)
 
 ## [2.5.6](https://github.com/mixxxdj/mixxx/milestone/53) (2026-03-25)
 

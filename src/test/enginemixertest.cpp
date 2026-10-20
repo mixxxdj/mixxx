@@ -68,7 +68,7 @@ class EngineMixerTest
     std::pair<EngineChannelMock*, std::span<const CSAMPLE>> makeChannel(
             const QString& group, float bufferInitValue) {
         auto pChannelOwner = std::make_unique<EngineChannelMock>(
-                group, EngineChannel::CENTER, m_pEngineMixer);
+                group, EngineChannel::CENTER, m_pEngineMixer.get());
         auto* pChannel = pChannelOwner.get();
         m_pEngineMixer->addChannel(std::move(pChannelOwner));
 

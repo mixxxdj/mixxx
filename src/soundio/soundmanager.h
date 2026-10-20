@@ -80,6 +80,7 @@ class SoundManager : public QObject {
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
+    void pushInputBuffer(const AudioInput& input, const SINT iFramesPerBuffer);
     void pushInputBuffers(const QList<AudioInputBuffer>& inputs,
             const SINT iFramesPerBuffer);
 
@@ -114,11 +115,14 @@ class SoundManager : public QObject {
         m_audioLatencyOverloadCount.set(0);
     }
 
-    // currently only used by pipewire
     void updateDeviceChannels(SoundDevicePointer pDevice);
+    bool isPipewireSelected() {
 #ifdef __PIPEWIRE__
-    bool isPipewireSelected();
+        return CmdlineArgs::Instance().getDeveloper() && m_pipewireEnabled;
+#else
+        return false;
 #endif
+    }
 
     // Our fork's extended device query (Android Oboe + PortAudio)
     void queryDevicesPortaudio();
@@ -164,6 +168,7 @@ class SoundManager : public QObject {
     void devicesClosed();  // emitted when the sound devices have been closed and resources freed
     void outputRegistered(const AudioOutput& output, AudioSource* src);
     void inputRegistered(const AudioInput& input, AudioDestination* dest);
+    void configInvalidated();
 
   private slots:
     void completeDevicesClosing();
@@ -171,6 +176,7 @@ class SoundManager : public QObject {
   public slots:
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
+    void devicesEnumerated();
 
   private:
     // Closes all the devices and empties the list of devices we have.
@@ -189,7 +195,7 @@ class SoundManager : public QObject {
     EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     QList<SoundDevicePointer> m_devices;
-    QList<CSAMPLE*> m_inputBuffers;
+    QHash<AudioInput, CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
     SoundDevicePointer m_pErrorDevice;

@@ -422,17 +422,9 @@ bool CmdlineArgs::parse(const QStringList& arguments, ParseMode mode) {
     }
 
     if (parser.isSet(settingsPath)) {
-        m_settingsPath = parser.value(settingsPath);
-        if (!m_settingsPath.endsWith("/")) {
-            m_settingsPath.append("/");
-        }
-        m_settingsPathSet = true;
+        setSettingsPath(parser.value(settingsPath));
     } else if (parser.isSet(settingsPathDeprecated)) {
-        m_settingsPath = parser.value(settingsPathDeprecated);
-        if (!m_settingsPath.endsWith("/")) {
-            m_settingsPath.append("/");
-        }
-        m_settingsPathSet = true;
+        setSettingsPath(parser.value(settingsPathDeprecated));
     }
 
     if (parser.isSet(resourcePath)) {

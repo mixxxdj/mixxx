@@ -21,9 +21,7 @@ const QString SoundManagerConfig::kAPIDirectSound = QStringLiteral("Windows Dire
 // (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
 const QString SoundManagerConfig::kAPIIosAudio = QStringLiteral("iOS Audio");
 const QString SoundManagerConfig::kAPICoreAudio = QStringLiteral("Core Audio");
-#ifdef __PIPEWIRE__
 const QString SoundManagerConfig::kAPIPipewire = QStringLiteral("PipeWire");
-#endif
 
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
@@ -70,26 +68,24 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
  */
 bool SoundManagerConfig::readFromDisk() {
     QFile file(m_configFile.absoluteFilePath());
-    QDomDocument doc;
     QDomElement rootElement;
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
-    if (!doc.setContent(&file)) {
+    if (!m_doc.setContent(&file)) {
         file.close();
         return false;
     }
     file.close();
-    rootElement = doc.documentElement();
+    rootElement = m_doc.documentElement();
 
     setAPI(rootElement.attribute(xmlAttributeApi));
 
-#ifdef __PIPEWIRE__
     if (m_pSoundManager->isPipewireSelected() and m_api != SoundManagerConfig::kAPIPipewire) {
         // PipeWire check box just changed, current config is useless
+        m_doc.clear();
         return false;
     }
-#endif
 
     setSampleRate(mixxx::audio::SampleRate(
             rootElement.attribute(xmlAttributeSampleRate, "0").toUInt()));
@@ -101,13 +97,25 @@ bool SoundManagerConfig::readFromDisk() {
     setDeckCount(rootElement.attribute(xmlAttributeDeckCount,
                                     QString::number(kDefaultDeckCount))
                          .toUInt());
+
+    return true;
+}
+
+bool SoundManagerConfig::validateDevices() {
     clearOutputs();
     clearInputs();
-    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
+    if (m_doc.isNull()) {
+        return false;
+    }
 
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
+
+    QDomElement rootElement = m_doc.documentElement();
+    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
     const QList<SoundDevicePointer> soundDevices =
             m_pSoundManager->getDeviceList(m_api, true, true);
 
@@ -408,7 +416,16 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 // This reflects the configured value only. In case of JACK the
 // setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
-    if (m_api == SoundManagerConfig::kAPIJack) {
+    if (m_api == SoundManagerConfig::kAPIPipewire) {
+        unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
+        VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
+            const int index1024frames = 5;
+            audioBufferSizeIndex = index1024frames;
+        }
+
+        // audioBufferSize combobox contains from 64 to 4096 frames
+        return 1 << (audioBufferSizeIndex + 5);
+    } else if (m_api == SoundManagerConfig::kAPIJack) {
         // in case of jack we configure the frames/period
         if (m_audioBufferSizeIndex ==
                 static_cast<unsigned int>(
@@ -470,6 +487,14 @@ QMultiHash<SoundDeviceId, AudioInput> SoundManagerConfig::getInputs() const {
     return m_inputs;
 }
 
+QMultiHash<SoundDeviceId, AudioOutput>& SoundManagerConfig::getOutputsRef() {
+    return m_outputs;
+}
+
+QMultiHash<SoundDeviceId, AudioInput>& SoundManagerConfig::getInputsRef() {
+    return m_inputs;
+}
+
 void SoundManagerConfig::clearOutputs() {
     m_outputs.clear();
 }
@@ -501,17 +526,14 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         if (!apiList.isEmpty()) {
 #ifdef __LINUX__
             // Check if PipeWire checkbox selected
-#ifdef __PIPEWIRE__
             if (m_pSoundManager->isPipewireSelected()) {
                 m_api = SoundManagerConfig::kAPIPipewire;
-            } else
-#endif
                 // Check for JACK and use that if it's available, otherwise use ALSA
-                if (apiList.contains(SoundManagerConfig::kAPIJack)) {
-                    m_api = SoundManagerConfig::kAPIJack;
-                } else {
-                    m_api = SoundManagerConfig::kAPIAlsa;
-                }
+            } else if (apiList.contains(SoundManagerConfig::kAPIJack)) {
+                m_api = SoundManagerConfig::kAPIJack;
+            } else {
+                m_api = SoundManagerConfig::kAPIAlsa;
+            }
 #endif
 #ifdef __WINDOWS__
             //Existence of ASIO doesn't necessarily mean you've got ASIO devices

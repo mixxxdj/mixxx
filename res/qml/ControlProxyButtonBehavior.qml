@@ -12,6 +12,7 @@ Item {
     property bool toggleable: false
     property bool activateOnClick: false
     property bool ignoreActivePresses: false
+    property bool powerWindow: false
     property bool releaseToZero: true
     property bool longPressLatching: false
     property bool handlePointerInput: true
@@ -22,6 +23,7 @@ Item {
     property bool pressAndHoldTriggered: false
     property bool longPressAnimationRunning: false
     property real longPressProgress: 0
+    property bool powerWindowLatched: false
     property real pressStartValue: 0
     property real pressTargetValue: 0
     readonly property real displayValue: displayControl.value
@@ -67,7 +69,14 @@ Item {
     function pressPrimary() {
         root.pressAndHoldTriggered = false;
         root.primaryPressed(displayControl.value);
-        if (root.longPressLatching) {
+        if (root.powerWindow) {
+            root.powerWindowLatched = false;
+            root.pressStartValue = displayControl.value;
+            root.pressTargetValue = root.nextState(root.pressStartValue);
+            powerWindowTimer.stop();
+            control.value = root.pressTargetValue;
+            powerWindowTimer.start();
+        } else if (root.longPressLatching) {
             root.pressStartValue = displayControl.value;
             root.pressTargetValue = root.nextState(root.pressStartValue);
             longPressTimer.stop();
@@ -90,7 +99,13 @@ Item {
     }
 
     function releasePrimary() {
-        if (root.longPressLatching) {
+        if (root.powerWindow) {
+            if (!powerWindowTimer.running && !root.powerWindowLatched &&
+                    !(interactionArea.pressedButtons & Qt.RightButton)) {
+                control.value = root.pressStartValue;
+            }
+            powerWindowTimer.stop();
+        } else if (root.longPressLatching) {
             if (longPressTimer.running &&
                     root.pressTargetValue > root.activeDisplayThreshold) {
                 control.value = root.pressStartValue;
@@ -112,6 +127,9 @@ Item {
     }
 
     function releaseSecondary() {
+        if (root.powerWindow && (interactionArea.pressedButtons & Qt.LeftButton)) {
+            root.powerWindowLatched = true;
+        }
         if (root.rightClickKey.length > 0) {
             rightControl.value = 0;
         }
@@ -190,6 +208,13 @@ Item {
         onTriggered: {
             root.longPressAnimationRunning = false;
         }
+    }
+
+    Timer {
+        id: powerWindowTimer
+
+        interval: root.longPressDuration
+        repeat: false
     }
 
     NumberAnimation {

@@ -239,6 +239,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                     mixxx::audio::ChannelCount::mono() &&
             m_pAudioSource->getSignalInfo().getChannelCount() <=
                     m_maxSupportedChannel) {
+        // Cache the channel count before we reset the AudioSourcePointer
+        const int chCount = static_cast<int>(m_pAudioSource->getSignalInfo().getChannelCount());
         m_pAudioSource.reset(); // Close open file handles
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
@@ -246,8 +248,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                 tr("The file '%1' could not be loaded because it contains %2 "
                    "channels, and only 1 to %3 are supported.")
                         .arg(QDir::toNativeSeparators(pTrack->getLocation()),
-                                QString::number(m_pAudioSource->getSignalInfo()
-                                                        .getChannelCount()),
+                                QString::number(chCount),
                                 QString::number(m_maxSupportedChannel)));
         return;
     }

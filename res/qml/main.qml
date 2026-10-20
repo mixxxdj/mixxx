@@ -28,39 +28,20 @@ import "." as Skin import Mixxx 1.0 as Mixxx import QtQuick 2.12 import QtQuick.
                                   onInitializedChanged: {value = root.numDecks;
         }
     }
-    Mixxx.ControlProxy {
-        group: "[App]"
-        key: "num_samplers"
 
-        onInitializedChanged: {
-            value = root.numSamplers;
-        }
-    }
-    Mixxx.ControlProxy {
-        group: "[App]"
-        key: "num_preview_decks"
+    Component.onCompleted: root.updateVisibility()
 
-        onInitializedChanged: {
-            value = root.numPreviewDecks;
-        }
-    }
-    Mixxx.ControlProxy {
-        group: "[Waveform]"
-        key: "WaveformOverviewType"
-
-        onInitializedChanged: {
-            value = root.waveformOverviewTypeRgb;
-        }
-    }
-    Column {
+    Loader {
         id: content
 
         anchors.fill: parent
 
-        move: Transition {
-            NumberAnimation {
-                duration: 150
-                properties: "x,y"
+        active: Mixxx.Core.ready
+        asynchronous: true
+        onStatusChanged: {
+            if (status === Loader.Error) {
+                console.error("Failed to load the Mixxx main window")
+                Qt.quit()
             }
         }
 
@@ -650,14 +631,13 @@ import "." as Skin import Mixxx 1.0 as Mixxx import QtQuick 2.12 import QtQuick.
                 }
         }
     }
-    Skin.Settings {
-        id: settingsPopup
+    Rectangle {
+        id: splash
+        visible: opacity > 0
+        color: Theme.backgroundColor
+        anchors.fill: parent
 
-        height: Math.min(840, parent.height)
-        modal: true
-        width: Math.min(1400, parent.width)
-        x: Math.round((parent.width - width) / 2)
-        y: Math.round((parent.height - height) / 2)
+        property bool ready: false
 
         Overlay.modal: Rectangle {
             id:
@@ -672,6 +652,42 @@ import "." as Skin import Mixxx 1.0 as Mixxx import QtQuick 2.12 import QtQuick.
                                   hasHardwareAcceleration ? 1.0 : 0.6)
                 }
             }
+        ]
+        Image {
+            id: logo
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "qrc:/images/mixxx-icon-logo-symbolic.svg"
+            // height: 64
+            opacity: 0
+            y: root.height / 2
+
+            Behavior on opacity {
+                NumberAnimation { duration: 1500; easing.type: Easing.InOutQuad }
+            }
+
+            Behavior on y {
+                NumberAnimation { duration: 1500; easing.type: Easing.InOutQuad }
+            }
+        }
+        Text {
+            id: text
+            opacity: 0
+            y: logo.y + logo.height*2
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 20
+            font.pixelSize: 12
+            color: Theme.lightGray3
+            text: "DJ your way"
+            Behavior on opacity {
+                SequentialAnimation {
+                    PauseAnimation { duration: 1000 }
+                    NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
+                }
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
         }
     }
 

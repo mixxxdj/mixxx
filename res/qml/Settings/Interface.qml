@@ -14,7 +14,6 @@ Category {
 
     function load() {
         loadInterface();
-        loadWaveform();
         loadDeck();
         errorMessage.text = "";
     }
@@ -76,13 +75,9 @@ Category {
         jumpPaletteInput.currentIndex = colorPane.jumpPaletteColorIndex;
         themeColorTab.dirty = false;
     }
-    function loadWaveform() {
-    }
     function resetDeck() {
     }
     function resetInterface() {
-    }
-    function resetWaveform() {
     }
     function saveDeck() {
         Mixxx.Config.controlCueDefault = cueModeInput.currentIndex;
@@ -135,13 +130,10 @@ Category {
         // jumpPaletteInput.value =
         loadInterface();
     }
-    function saveWaveform() {
-        loadWaveform();
-    }
 
     label: "Interface"
     selectedIndex: 0
-    tabs: ["theme & color", "waveform", "decks"]
+    tabs: ["theme & color", "decks"]
 
     Component.onCompleted: {
         root.load();
@@ -878,29 +870,16 @@ Category {
             }
         }
         Mixxx.SettingGroup {
-            id: waveformTab
-
-            property bool dirty: false
-
-            anchors.fill: parent
-            label: "Waveform"
-            visible: root.selectedIndex == 1
-
-            onActivated: {
-                root.selectedIndex = 1;
-            }
-        }
-        Mixxx.SettingGroup {
             id: decksTab
 
             property bool dirty: false
 
             anchors.fill: parent
             label: "Decks"
-            visible: root.selectedIndex == 2
+            visible: root.selectedIndex == 1
 
             onActivated: {
-                root.selectedIndex = 2;
+                root.selectedIndex = 1;
             }
 
             ColumnLayout {
@@ -1563,9 +1542,6 @@ Category {
                     root.resetInterface();
                     break;
                 case 1:
-                    root.resetWaveform();
-                    break;
-                case 0:
                     root.resetDeck();
                     break;
                 }
@@ -1586,7 +1562,7 @@ Category {
             SettingComponents.FormButton {
                 activeColor: "#999999"
                 backgroundColor: "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && decksTab.dirty
                 opacity: enabled ? 1.0 : 0.5
                 text: "Cancel"
 
@@ -1596,9 +1572,6 @@ Category {
                         root.loadInterface();
                         break;
                     case 1:
-                        root.loadWaveform();
-                        break;
-                    case 2:
                         root.loadDeck();
                         break;
                     }
@@ -1606,8 +1579,8 @@ Category {
             }
             SettingComponents.FormButton {
                 activeColor: "#999999"
-                backgroundColor: root.hasChanges ? "#3a60be" : "#3F3F3F"
-                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && waveformTab.dirty || root.selectedIndex == 2 && decksTab.dirty
+                backgroundColor: (root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && decksTab.dirty) ? "#3a60be" : "#3F3F3F"
+                enabled: root.selectedIndex == 0 && themeColorTab.dirty || root.selectedIndex == 1 && decksTab.dirty
                 opacity: enabled ? 1.0 : 0.5
                 text: "Save"
 
@@ -1618,9 +1591,6 @@ Category {
                         root.saveInterface();
                         break;
                     case 1:
-                        root.saveWaveform();
-                        break;
-                    case 2:
                         root.saveDeck();
                         break;
                     }
