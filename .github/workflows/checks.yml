@@ -20,7 +20,9 @@ jobs:
           - name: clazy
           - name: clang-tidy
           - name: coverage
-    runs-on: ubuntu-24.04
+    # clazy 1.11 bundles Clang 15, which cannot parse GCC 14 libstdc++ headers
+    # on ubuntu-24.04 runners; pin it to 22.04 until the PPA ships noble builds.
+    runs-on: ${{ matrix.name == 'clazy' && 'ubuntu-22.04' || 'ubuntu-24.04' }}
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
