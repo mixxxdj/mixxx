@@ -100,7 +100,7 @@ def main() -> int:
     parser.add_argument("--aapt", required=True)
     parser.add_argument("--readelf", required=True)
     parser.add_argument("--sysroot", required=True)
-    parser.add_argument("--api", type=int, default=34)
+    parser.add_argument("--api", type=int, default=35)
     parser.add_argument("--report")
     args = parser.parse_args()
 
