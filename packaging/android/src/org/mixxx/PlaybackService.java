@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
@@ -91,11 +90,7 @@ public class PlaybackService extends Service {
     public static void start(Context context) {
         Intent intent = new Intent(context, PlaybackService.class);
         intent.setAction(ACTION_START);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
+        context.startForegroundService(intent);
     }
 
     public static void stop(Context context) {
@@ -116,7 +111,7 @@ public class PlaybackService extends Service {
         if (intent != null && ACTION_STOP.equals(intent.getAction())) {
             abandonAudioFocus();
             releaseWakeLock();
-            stopForeground(true);
+            stopForeground(STOP_FOREGROUND_REMOVE);
             stopSelf();
             return START_NOT_STICKY;
         }
@@ -142,19 +137,12 @@ public class PlaybackService extends Service {
 
     private void startInForeground() {
         Notification notification = buildNotification();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(NOTIFICATION_ID, notification,
-                android.content.pm.ServiceInfo
-                    .FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-        } else {
-            startForeground(NOTIFICATION_ID, notification);
-        }
+        startForeground(NOTIFICATION_ID, notification,
+            android.content.pm.ServiceInfo
+                .FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
     }
 
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            return;
-        }
         NotificationChannel channel = new NotificationChannel(
             CHANNEL_ID,
             "Playback",
@@ -168,12 +156,8 @@ public class PlaybackService extends Service {
     }
 
     private Notification buildNotification() {
-        Notification.Builder builder;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            builder = new Notification.Builder(this, CHANNEL_ID);
-        } else {
-            builder = new Notification.Builder(this);
-        }
+        Notification.Builder builder =
+            new Notification.Builder(this, CHANNEL_ID);
         return builder
             .setContentTitle("DJ Sugar")
             .setContentText("Mixing — playback protected in background")
@@ -213,7 +197,7 @@ public class PlaybackService extends Service {
         if (mAudioManager == null) {
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        {
             if (mFocusRequest == null) {
                 AudioAttributes attributes =
                     new AudioAttributes.Builder()
@@ -228,9 +212,6 @@ public class PlaybackService extends Service {
                         .build();
             }
             mAudioManager.requestAudioFocus(mFocusRequest);
-        } else {
-            mAudioManager.requestAudioFocus(mFocusListener,
-                AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         }
     }
 
@@ -238,11 +219,8 @@ public class PlaybackService extends Service {
         if (mAudioManager == null) {
             return;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            && mFocusRequest != null) {
+        if (mFocusRequest != null) {
             mAudioManager.abandonAudioFocusRequest(mFocusRequest);
-        } else {
-            mAudioManager.abandonAudioFocus(mFocusListener);
         }
     }
 
@@ -253,7 +231,7 @@ public class PlaybackService extends Service {
     // with the JNI hookup.
     private void pauseEnginePlayback() {
         releaseWakeLock();
-        stopForeground(true);
+        stopForeground(STOP_FOREGROUND_DETACH);
     }
 
     private void resumeEnginePlayback() {

@@ -15,7 +15,7 @@ permissions:
 jobs:
   pre-commit:
     name: Detecting code style issues
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v7

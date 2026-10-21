@@ -1074,7 +1074,7 @@ jobs:
 
   update_manifest:
     name: "Update manifest file on download server"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: build
     # Always run this job, even if one or more jobs from the `build` jobs
     # fail to allow partial updates of the manifest.
