@@ -60,10 +60,7 @@ VestaxVCI380.init = function(_id, _debugging) {
         }
     }
 
-    // soft takeover
-    engine.softTakeover("[Master]", "crossfader", true);
-    engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
-    engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
+    // no soft takeover: Mixxx gets the position of every fader and knob at startup (see syncWithController)
 
     // events connection
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "playposition", VestaxVCI380.updatePlayposition));
@@ -94,6 +91,45 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.setPadColorSplash(1);
     VestaxVCI380.setPadColorSplash(2);
 
+    // align Mixxx with the current position of the faders, knobs and switches
+    VestaxVCI380.syncWithController();
+};
+
+////
+// Initial state
+// The VCI-380 answers the MIDI Universal Identity Request by sending the current
+// state of all its controls (faders, knobs, pitch, crossfader, pad mode, headphone
+// cue and FX ON switches), through the usual MIDI messages and so the usual handlers.
+//
+// Identity reply: F0 7E 00 06 02  00 40 02 (maker)  40 02 (family = USB product
+// ID 0x0240)  00 00 (model)  02 01 01 00 (version)  F7
+//
+// Hardware facts found by testing the controller, not used here:
+// - note 0x0B on 0x97 / 0x98: MIXER / PC switch of the channel, which mutes its
+//   external input (7F = MIXER, input heard; 00 = PC, input muted). The sound
+//   card audio goes through in both positions, so the mapping doesn't need to
+//   change anything.
+// - CC 0x56, 0x57, 0x58 on 0xB7: knobs of the centre section.
+//   0x56 CF CURVE (crossfader curve) and 0x57 IF CURVE (input fader = channel
+//   fader curve): they don't change the MIDI values sent by the crossfader and
+//   the faders; they act on the external inputs mixed by the hardware (channel
+//   switch on MIXER). 0x56 drives the Mixxx crossfader curve (onCrossfaderCurve).
+//   0x58 headphone CUE / MASTER mix: the hardware itself mixes the main output
+//   and the headphone (PFL / preview) output.
+// - CC 0x5B on 0xB7 / 0xB8: pad pressure (one value per deck); the pad notes
+//   also carry the velocity.
+// - MODE buttons are radio buttons handled by the hardware: changing mode sends
+//   the old mode with 00, then the new one with 7F.
+// - DEPTH (CC 0x0A) and FX ON (note 0x1C) also drive a hardware high-pass filter
+//   on the external input of the channel, besides the MIDI used by this mapping.
+// - LOAD (headphone cue) and FX ON are toggled by the hardware: their LEDs can't
+//   be driven by MIDI, but their state is sent (0x99 / 0x9A 0x0A, 0x97 / 0x98 0x1C).
+////
+
+VestaxVCI380.IDENTITY_REQUEST = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
+
+VestaxVCI380.syncWithController = function() {
+    midi.sendSysexMsg(VestaxVCI380.IDENTITY_REQUEST, VestaxVCI380.IDENTITY_REQUEST.length);
 };
 
 
@@ -266,6 +302,17 @@ VestaxVCI380.onEQ = function(channel, control, value, _status) {
 ////
 // SLIDERS
 ////
+// CF CURVE knob: crossfader curve of Mixxx, from smooth (left) to sharp cut (right).
+// The knob only acts on the external inputs in the hardware; Mixxx does the mixing
+// of its own decks, so the knob drives the curve set in Preferences > Mixer.
+// Same formula as the preferences slider (dlgprefmixer: linearToOneByX).
+VestaxVCI380.onCrossfaderCurve = function(channel, control, value, _status) {
+    const maxCurve = 999.6;
+    const curve = maxCurve / ((127 - value) / 127 * (maxCurve - 1) + 1);
+    engine.setValue("[Mixer Profile]", "xFaderCurve", curve);
+    engine.setValue("[Mixer Profile]", "xFaderCalibration", Math.pow(0.5, 1 / curve));
+};
+
 VestaxVCI380.onCrossfader = function(channel, control, value, _status) {
     if (VestaxVCI380.shiftStatus) { // SHIFT + crossfader sets Balance
         engine.setValue("[Master]", "balance", script.absoluteLin(value, -1, 1, 0, 127));
@@ -636,7 +683,9 @@ VestaxVCI380.onSelectPadMode = function(channel, control, value, _status) {
         } else {
             newMode=control-0x37;
         }
-        VestaxVCI380.setMode(deck, newMode);
+        if (newMode !== VestaxVCI380.padMode[deck-1]) { // the initial state may repeat the current mode
+            VestaxVCI380.setMode(deck, newMode);
+        }
     }
 };
 
@@ -646,6 +695,10 @@ VestaxVCI380.setMode = function(deck, newMode) {
     VestaxVCI380.clearConnectionsForMode(deck, previousMode);
     VestaxVCI380.setPadMode(deck, newMode);
     VestaxVCI380.makeConnectionsForMode(deck, newMode);
+    // no track loaded: keep the splash screen, except in sampler mode, which doesn't depend on the deck
+    if (newMode !== 5 && engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
+        VestaxVCI380.setPadColorSplash(deck);
+    }
 };
 
 VestaxVCI380.setPadMode = function(deck, mode) {

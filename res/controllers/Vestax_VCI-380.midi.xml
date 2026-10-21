@@ -35,6 +35,16 @@
         </options>
       </control>
       <control>
+        <group>[Mixer Profile]</group>
+        <key>VestaxVCI380.onCrossfaderCurve</key>
+        <description>CF CURVE knob: crossfader curve</description>
+        <status>0xB7</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.wheelTouch</key>
         <status>0x97</status>
@@ -76,7 +86,7 @@
         <status>0xB7</status>
         <midino>0x07</midino>
         <options>
-          <soft-takeover/>
+          <normal/>
         </options>
       </control>
       <control>
@@ -94,7 +104,7 @@
         <status>0xB8</status>
         <midino>0x07</midino>
         <options>
-          <soft-takeover/>
+          <normal/>
         </options>
       </control>
       <control>
