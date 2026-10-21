@@ -25,6 +25,10 @@ class WSliderComposed : public WWidget  {
             const PixmapSource& sourceHandle,
             Paintable::DrawMode mode,
             double scaleFactor);
+    void setHandleNeutralPixmap(
+            const PixmapSource& sourceHandle,
+            Paintable::DrawMode mode,
+            double scaleFactor);
     // This is called by LegacySkinParser::setupConnections() before setup()
     // because it needs 'horizontal' for picking the correct keyboard shortcut
     // command (left/right or up/down.
@@ -73,6 +77,7 @@ class WSliderComposed : public WWidget  {
     PaintablePointer m_pSlider;
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
+    PaintablePointer m_pHandleNeutral;
     SliderEventHandler<WSliderComposed> m_handler;
 
     friend class SliderEventHandler<WSliderComposed>;
