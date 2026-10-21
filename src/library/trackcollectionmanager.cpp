@@ -72,6 +72,28 @@ TrackCollectionManager::TrackCollectionManager(
     } else {
         m_pScanner = std::make_unique<LibraryScanner>(pDbConnectionPool, pConfig);
 
+        connect(
+                m_pScanner.get(),
+                &LibraryScanner::scanStarted,
+                this,
+                [this]() { m_libraryScanActive.store(true); },
+                Qt::DirectConnection);
+        connect(
+                m_pScanner.get(),
+                &LibraryScanner::scanFinished,
+                this,
+                [this]() { m_libraryScanActive.store(false); },
+                Qt::DirectConnection);
+        connect(
+                m_pScanner.get(),
+                &LibraryScanner::scanSummary,
+                this,
+                [this](const LibraryScanResultSummary& result) {
+                    const std::lock_guard lock(m_libraryScanSummaryMutex);
+                    m_pendingLibraryScanSummary = result;
+                },
+                Qt::DirectConnection);
+
         // Forward signals
         connect(m_pScanner.get(),
                 &LibraryScanner::scanStarted,
@@ -168,6 +190,14 @@ TrackCollectionManager::~TrackCollectionManager() {
     m_pInternalCollection->disconnectDatabase();
 
     GlobalTrackCache::destroyInstance();
+}
+
+std::optional<LibraryScanResultSummary>
+TrackCollectionManager::takePendingLibraryScanSummary() {
+    const std::lock_guard lock(m_libraryScanSummaryMutex);
+    auto result = std::move(m_pendingLibraryScanSummary);
+    m_pendingLibraryScanSummary.reset();
+    return result;
 }
 
 void TrackCollectionManager::startLibraryAutoScan() {

@@ -63,7 +63,6 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void addDevice(SoundDevicePointer pDevice);
     void removeDevice(SoundDevicePointer pDevice);
     void updateDeviceChannels(SoundDevicePointer pDevice);
-    void updateDeviceRoute(const SoundDeviceId& pDevice, const AudioPath* pPath);
 
   private slots:
     void latencyOffsetChanged(double value);

@@ -67,6 +67,7 @@ class SoundDeviceNetwork : public SoundDevice {
     bool m_denormals;
     /// The deadline for the next buffer, in microseconds since the Unix epoch.
     qint64 m_targetTime;
+    std::atomic_int m_extraFramesWritten;
     PerformanceTimer m_clkRefTimer;
 };
 

@@ -398,53 +398,12 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         return;
     }
 
-    // Clear loop
-    // It seems that the trick is to first clear the loop out point, and then
-    // the loop in point. If we first clear the loop in point, the loop out point
-    // does not get cleared.
-    m_pLoopOutPoint->set(kNoTrigger);
-    m_pLoopInPoint->set(kNoTrigger);
+    // Note: the track's saved loop is restored by
+    // LoopingControl::trackLoaded() only after the track has been handed
+    // over to the engine, so it can never be applied to the loop cue of the
+    // previously loaded track.
 
-    // The loop in and out points must be set here and not in slotTrackLoaded
-    // so LoopingControl::trackLoaded can access them.
-    if (!m_pChannelToCloneFrom) {
-        // Restore loop from the first loop cue with minimum hotcue number.
-        // For the volatile "most recent loop" the hotcue number will be -1.
-        // If no such loop exists, restore a saved loop cue.
-        CuePointer pLoopCue;
-        const QList<CuePointer> trackCues = m_pLoadedTrack->getCuePoints();
-        for (const auto& pCue : trackCues) {
-            if (pCue->getType() != mixxx::CueType::Loop) {
-                continue;
-            }
-            if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
-                continue;
-            }
-            pLoopCue = pCue;
-        }
-
-        if (pLoopCue) {
-            const auto loop = pLoopCue->getStartAndEndPosition();
-            if (loop.startPosition.isValid() && loop.endPosition.isValid() &&
-                    loop.startPosition <= loop.endPosition) {
-                // TODO: For all loop cues, both end and start positions should
-                // be valid and the end position should be greater than the
-                // start position. We should use a VERIFY_OR_DEBUG_ASSERT to
-                // check this. To make this possible, we need to ensure that
-                // all invalid cues are discarded when saving cues to the
-                // database first.
-                m_pLoopInPoint->set(loop.startPosition.toEngineSamplePos());
-                m_pLoopOutPoint->set(loop.endPosition.toEngineSamplePos());
-            }
-        }
-    } else {
-        // copy loop in and out points from other deck because any new loops
-        // won't be saved yet
-        m_pLoopInPoint->set(ControlObject::get(
-                ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_start_position")));
-        m_pLoopOutPoint->set(ControlObject::get(
-                ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_end_position")));
-
+    if (m_pChannelToCloneFrom) {
 #ifdef __STEM__
         auto* pDeckToClone = qobject_cast<EngineDeck*>(m_pChannelToCloneFrom);
         if (pDeckToClone && m_pLoadedTrack && m_pLoadedTrack->hasStem() && m_pChannel) {
@@ -467,33 +426,35 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         return;
     }
 
-    mixxx::Duration elapsed = m_ejectTimer.restart();
+    if (m_pPlayerManager) {
+        mixxx::Duration elapsed = m_ejectTimer.restart();
 
-    // Double-click always restores the last replaced track, i.e. un-eject the second
-    // last track: the first click ejects or unejects, and the second click reloads.
-    if (elapsed < mixxx::Duration::fromMillis(kUnreplaceDelay)) {
-        TrackPointer lastEjected = m_pPlayerManager->getSecondLastEjectedTrack();
-        if (lastEjected) {
-            slotLoadTrack(lastEjected,
+        // Double-click always restores the last replaced track, i.e. un-eject the second
+        // last track: the first click ejects or unejects, and the second click reloads.
+        if (elapsed < mixxx::Duration::fromMillis(kUnreplaceDelay)) {
+            TrackPointer lastEjected = m_pPlayerManager->getSecondLastEjectedTrack();
+            if (lastEjected) {
+                slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::StemChannelSelection(),
+                        mixxx::StemChannelSelection(),
 #endif
-                    false);
+                        false);
+            }
+            return;
         }
-        return;
-    }
 
-    // With no loaded track a single click reloads the last ejected track.
-    if (!m_pLoadedTrack) {
-        TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
-        if (lastEjected) {
-            slotLoadTrack(lastEjected,
+        // With no loaded track a single click reloads the last ejected track.
+        if (!m_pLoadedTrack) {
+            TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
+            if (lastEjected) {
+                slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::StemChannelSelection(),
+                        mixxx::StemChannelSelection(),
 #endif
-                    false);
+                        false);
+            }
+            return;
         }
-        return;
     }
 
     m_pChannel->getEngineBuffer()->ejectTrack();
@@ -506,43 +467,14 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
     }
     PlayerInfo::instance().setTrackInfo(getGroup(), TrackPointer());
 
-    // Save the loop that is currently to the loop cue. If no loop cue is
-    // currently on the track, create a new one.
-    // If the loop is invalid and a loop cue exists, remove it.
-    const auto loopStart =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopInPoint->get());
-    const auto loopEnd =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pLoopOutPoint->get());
-    CuePointer pLoopCue;
-    const QList<CuePointer> cuePoints = m_pLoadedTrack->getCuePoints();
-    for (const auto& pCue : cuePoints) {
-        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
-            pLoopCue = pCue;
-            break;
-        }
-    }
-    if (loopStart.isValid() && loopEnd.isValid() && loopStart <= loopEnd) {
-        if (pLoopCue) {
-            pLoopCue->setStartAndEndPosition(loopStart, loopEnd);
-        } else {
-            pLoopCue = m_pLoadedTrack->createAndAddCue(
-                    mixxx::CueType::Loop,
-                    Cue::kNoHotCue,
-                    loopStart,
-                    loopEnd);
-        }
-    } else if (pLoopCue) {
-        m_pLoadedTrack->removeCue(pLoopCue);
-    }
-
     disconnectLoadedTrack();
 
     // Do not reset m_pReplayGain here, because the track might be still
     // playing and the last buffer will be processed.
 
-    m_pPlay->set(0.0);
+    if (m_pPlay->toBool()) {
+        m_pPlay->set(0.0);
+    }
 
 #ifdef __STEM__
     if (m_pStemColors.size()) {

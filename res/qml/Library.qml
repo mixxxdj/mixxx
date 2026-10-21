@@ -15,9 +15,29 @@ Item {
 
     property var sidebar: librarySources.sidebar()
 
+    function applySearch() {
+        if (root.sidebar && root.sidebar.tracklist) {
+            root.sidebar.tracklist.search(searchField.text);
+        }
+    }
+    function focusSearch() {
+        root.applySearch();
+        searchField.forceActiveFocus(Qt.ShortcutFocusReason);
+        searchField.selectAll();
+    }
+
     LibraryComponent.SourceTree {
         id: librarySources
+    }
+    TextField {
+        id: searchField
 
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        placeholderText: qsTranslate("WSearchLineEdit", "Search...")
+
+        onTextChanged: root.applySearch()
     }
 
     // "Up Next" suggestions strip pinned to the top of the library area.

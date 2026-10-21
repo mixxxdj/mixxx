@@ -82,6 +82,25 @@ TEST_F(QmlSkinControlCreatorTest, AppliesDefaultBeforeComponentCompleteInAnyOrde
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(key));
 }
 
+TEST_F(QmlSkinControlCreatorTest, AppliesZeroDefaultBeforeComponentComplete) {
+    const ConfigKey key(QStringLiteral("[Skin]"),
+            QStringLiteral("qml_skin_control_creator_precomplete_zero_default_test"));
+
+    auto creator = std::make_unique<QmlSkinControlCreator>();
+    creator->setGroup(key.group);
+    creator->setKey(key.item);
+    creator->setPersist(true);
+    creator->setDefaultValue(0.0);
+
+    EXPECT_TRUE(ControlObject::exists(key));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(key));
+
+    creator->componentComplete();
+
+    EXPECT_TRUE(ControlObject::exists(key));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(key));
+}
+
 TEST_F(QmlSkinControlCreatorTest, RejectsExistingSkinControl) {
     const ConfigKey key(QStringLiteral("[Skin]"),
             QStringLiteral("qml_skin_control_creator_duplicate_test"));

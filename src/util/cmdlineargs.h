@@ -7,14 +7,12 @@
 
 #include "util/logging.h"
 
-namespace mixxx {
-
 /// A structure to store the parsed command-line arguments
 class CmdlineArgs final {
   public:
     /// The constructor is only public to make this class reusable in tests.
     /// All operational code in Mixxx itself must access the global singleton
-    /// via `CmdlineArgs::Instance()`.
+    /// via `CmdlineArgs::instance()`.
     CmdlineArgs();
 
     static inline CmdlineArgs& Instance() {
@@ -54,14 +52,17 @@ class CmdlineArgs final {
     bool getDeveloper() const {
         return m_developer;
     }
-
+    bool getStats() const {
+        return m_developer || m_stats;
+    }
+#ifdef MIXXX_USE_QML
     bool isQml() const {
         return m_qml;
     }
     bool isAwareOfRisk() const {
         return m_awareOfRisk;
     }
-
+#endif
     bool getSafeMode() const {
         return m_safeMode;
     }
@@ -99,7 +100,14 @@ class CmdlineArgs final {
         return m_settingsPath;
     }
     void setSettingsPath(const QString& newSettingsPath) {
-        m_settingsPath = newSettingsPath;
+        m_settingsPath = QDir::toNativeSeparators(newSettingsPath);
+        m_settingsPathSet = true;
+        if (m_settingsPath.isEmpty()) {
+            return;
+        }
+        if (!m_settingsPath.endsWith(QDir::separator())) {
+            m_settingsPath.append(QDir::separator());
+        }
     }
     const QString& getResourcePath() const {
         return m_resourcePath;
@@ -119,7 +127,7 @@ class CmdlineArgs final {
         return m_scaleFactor;
     }
 
-  public:
+  private:
     enum class ParseMode {
         Initial,
         ForUserFeedback
@@ -127,7 +135,6 @@ class CmdlineArgs final {
 
     bool parse(const QStringList& arguments, ParseMode mode);
 
-  private:
     QList<QString> m_musicFiles; // List of files to load into players at startup
     bool m_startInFullscreen;    // Start in fullscreen mode
     bool m_startAutoDJ;
@@ -136,8 +143,11 @@ class CmdlineArgs final {
     bool m_controllerPreviewScreens;
     bool m_controllerAbortOnWarning; // Controller Engine will be stricter
     bool m_developer;                // Developer Mode
+    bool m_stats;                    // Enable stats collection
+#ifdef MIXXX_USE_QML
     bool m_qml;
     bool m_awareOfRisk;
+#endif
     bool m_safeMode;
     bool m_useLegacyVuMeter;
     bool m_useLegacySpinny;
@@ -155,7 +165,3 @@ class CmdlineArgs final {
     QString m_timelinePath;
     QString m_styleName;
 };
-
-} // namespace mixxx
-
-using CmdlineArgs = mixxx::CmdlineArgs;

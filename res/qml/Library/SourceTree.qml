@@ -95,29 +95,9 @@ Mixxx.LibrarySourceTree {
         }
     ]
 
-    Mixxx.LibraryTracksSource {
+    Mixxx.LibraryAllTrackSource {
         columns: root.defaultColumns
-        label: qsTr("Tracks")
-    }
-
-    Mixxx.LibraryPlaylistsSource {
-        columns: root.defaultColumns
-        label: qsTr("Playlists")
-    }
-
-    Mixxx.LibraryCratesSource {
-        columns: root.defaultColumns
-        label: qsTr("Crates")
-    }
-
-    Mixxx.LibraryBrowseSource {
-        columns: root.defaultColumns
-        label: qsTr("Browse")
-    }
-
-    Mixxx.LibraryYouTubeSource {
-        columns: root.defaultColumns
-        label: qsTr("YouTube")
+        label: qsTr("All...")
     }
 
     component DefaultDelegate: LibraryComponent.Cell {

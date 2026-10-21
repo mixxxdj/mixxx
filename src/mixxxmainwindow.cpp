@@ -57,6 +57,7 @@
 #include "track/track.h"
 #include "util/debug.h"
 #include "util/desktophelper.h"
+#include "util/menubarhelper.h"
 #include "util/sandbox.h"
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
@@ -396,7 +397,11 @@ void MixxxMainWindow::initialize() {
     // that says "mixxx will barely work with no outs".
     // In case of persisting errors, the user has already received a message
     // above. So we can just check the output count here.
-    while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().isEmpty()) {
+    while (m_pCoreServices->getSoundManager()
+                    ->getConfig()
+                    .getOutputs()
+                    .isEmpty() &&
+            !m_pCoreServices->getSoundManager()->pipewireSkipConfig()) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
         bool continueClicked = false;
