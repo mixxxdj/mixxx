@@ -787,7 +787,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VestaxVCI380.onStripMode3</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB7</status>
         <midino>0x3B</midino>
         <options>
@@ -805,7 +805,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VestaxVCI380.onStripMode3</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB8</status>
         <midino>0x3B</midino>
         <options>
@@ -841,7 +841,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VestaxVCI380.onStripMode2</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB7</status>
         <midino>0x3A</midino>
         <options>
@@ -850,7 +850,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VestaxVCI380.onStripMode2</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB8</status>
         <midino>0x3A</midino>
         <options>
@@ -898,7 +898,7 @@
 
       <control>
         <group>[Channel1]</group>
-        <key>VestaxVCI380.onStripMode4</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB7</status>
         <midino>0x39</midino>
         <options>
@@ -907,7 +907,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VestaxVCI380.onStripMode4</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB8</status>
         <midino>0x39</midino>
         <options>
@@ -943,7 +943,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VestaxVCI380.onStripMode1</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB7</status>
         <midino>0x38</midino>
         <options>
@@ -961,7 +961,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>VestaxVCI380.onStripMode1</key>
+        <key>VestaxVCI380.onStrip</key>
         <status>0xB8</status>
         <midino>0x38</midino>
         <options>

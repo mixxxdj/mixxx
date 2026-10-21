@@ -397,37 +397,19 @@ VestaxVCI380.onHeadCue = function(channel, control, value, _status) {
 
 ////
 // STRIPS
-// They automatically send a different code according to the current Mode
-// so each mode has its own mapping and function
+// In mode 4 (Stems), if a stem is selected, the strip will control its volume
+// In other modes, both strips control the needle drop on the preview deck.
+//                 or with SHIFT, they do needle drop on the corresponding deck
 ////
 
-VestaxVCI380.onStripMode1 = function(channel, control, value, _status) {
-    const deck=VestaxVCI380.getDeck(channel);
-    if (VestaxVCI380.shiftStatus) { // SHIFT + strip = needle drop on main decks
-        engine.setValue(`[Channel${deck}]`, "playposition", script.absoluteLin(value, 0, 0.99)); // 0.99 instead of 1, to avoid unintentional stop while stripping to the end
-    } else { // without shift : needle drop in the preview deck
-        engine.setValue("[PreviewDeck1]", "playposition", script.absoluteLin(value, 0, 0.99));
-    }
-};
-
-// In modes 2,3 and 5, the strips keep the same functionality as in mode 1
-VestaxVCI380.onStripMode2 = function(channel, control, value, status) {
-    VestaxVCI380.onStripMode1(channel, control, value, status);
-};
-VestaxVCI380.onStripMode3 = function(channel, control, value, status) {
-    VestaxVCI380.onStripMode1(channel, control, value, status);
-};
-VestaxVCI380.onStripMode5 = function(channel, control, value, status) {
-    VestaxVCI380.onStripMode1(channel, control, value, status);
-};
-
-// In mode 4 (Stems), if a stem is selected, the strip will control its volume
-VestaxVCI380.onStripMode4 = function(channel, control, value, status) {
+VestaxVCI380.onStrip = function(channel, control, value, _status) {
     const deck=VestaxVCI380.getDeck(channel);
     if (VestaxVCI380.padMode[deck-1]===4 && VestaxVCI380.pushedButton[deck-1]>=1 && VestaxVCI380.pushedButton[deck-1]<=4) {
         engine.setValue(`[Channel${VestaxVCI380.getDeck(channel)}_Stem${VestaxVCI380.pushedButton[deck-1]}]`, "volume", script.absoluteLin(value, 0, 1));
-    } else {
-        VestaxVCI380.onStripMode1(channel, control, value, status);
+    } else if (VestaxVCI380.shiftStatus) { // SHIFT + strip = needle drop on main decks
+        engine.setValue(`[Channel${deck}]`, "playposition", script.absoluteLin(value, 0, 0.99)); // 0.99 instead of 1, to avoid unintentional stop while stripping to the end
+    } else { // without shift : needle drop in the preview deck
+        engine.setValue("[PreviewDeck1]", "playposition", script.absoluteLin(value, 0, 0.99));
     }
 };
 
@@ -612,7 +594,7 @@ VestaxVCI380.trackEndAlert=[false, false];
 VestaxVCI380.trackEndAlertTimer=[0, 0];
 VestaxVCI380.trackEndAlertLEDStatus=[false, false];
 
-VestaxVCI380.updatePlayStatus = function(value, group, _control) {
+VestaxVCI380.updatePlayStatus = function(_value, group, _control) {
     const deck=VestaxVCI380.getDeckFromGroup(group);
     VestaxVCI380.enableTrackEndAlert(deck, engine.getValue(group, "end_of_track") === 1 && engine.getValue(group, "play") === 1);
 };
@@ -656,7 +638,6 @@ VestaxVCI380.trackEndAlertNoFlash = function(deck) {
         VestaxVCI380.setLED(1, VestaxVCI380.LED.FWD, true);
     }
 };
-
 
 // Managing the 5 different modes for the colorpads
 // Modes are :
