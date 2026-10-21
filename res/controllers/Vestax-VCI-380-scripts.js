@@ -85,12 +85,14 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.setMode(1, 1);
     VestaxVCI380.setMode(2, 1);
 
-    // displaying splash screen
-    VestaxVCI380.setPadColorSplash(1);
-    VestaxVCI380.setPadColorSplash(2);
-
     // align Mixxx with the current position of the faders, knobs and switches
     VestaxVCI380.syncWithController();
+
+    // splash screen, once the controller has sent its state (pad mode included)
+    engine.beginTimer(500, function() {
+        VestaxVCI380.setPadColorSplash(1);
+        VestaxVCI380.setPadColorSplash(2);
+    }, true);
 };
 
 ////
@@ -673,10 +675,6 @@ VestaxVCI380.setMode = function(deck, newMode) {
     VestaxVCI380.clearConnectionsForMode(deck, previousMode);
     VestaxVCI380.setPadMode(deck, newMode);
     VestaxVCI380.makeConnectionsForMode(deck, newMode);
-    // no track loaded: keep the splash screen, except in sampler mode, which doesn't depend on the deck
-    if (newMode !== 5 && engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
-        VestaxVCI380.setPadColorSplash(deck);
-    }
 };
 
 VestaxVCI380.setPadMode = function(deck, mode) {
@@ -840,7 +838,6 @@ VestaxVCI380.onRateChange = function(value, group, _control) {
 VestaxVCI380.onTrackLoaded = function(value, group, _control) {
     const deck=VestaxVCI380.getDeckFromGroup(group);
     if (engine.getValue(group, "track_loaded")===0) { // track ejected -> reset display
-        VestaxVCI380.setPadColorSplash(deck);
         VestaxVCI380.setWheelLED(deck, 0);
     } else {
 
