@@ -74,10 +74,8 @@ void main(void) {
         new_currentData.y *= midGain;
         new_currentData.z *= highGain;
 
-        highp vec4 new_currentDataTop = vec4(0.0, 0.0, 0.0, 0.0);
-        new_currentDataTop.x = max(new_currentData.x, new_currentDataUnscaled.x);
-        new_currentDataTop.y = max(new_currentData.y, new_currentDataUnscaled.y);
-        new_currentDataTop.z = max(new_currentData.z, new_currentDataUnscaled.z);
+        highp float midBandStart = new_currentDataUnscaled.x;
+        highp float highBandStart = midBandStart + new_currentDataUnscaled.y;
 
         // Represents the [-1, 1] distance of this pixel. Subtracting this from
         // the signal data in new_currentData, we can tell if a signal band should
@@ -108,24 +106,21 @@ void main(void) {
             showingColor = midColor;
             mixin = false;
             alpha = 0.90;
-        } else if (ourDistance <= new_currentDataTop.x + new_currentData.y) {
+        } else if (ourDistance <= midBandStart + new_currentData.y) {
             showingColor = midColor;
-        } else if (ourDistance <= new_currentDataTop.x + new_currentDataTop.y) {
+        } else if (ourDistance <= midBandStart + new_currentDataUnscaled.y) {
             showingColor = midFilteredColor;
             alpha = 0.6;
         } else if (drawBorder &&
-                nearBorder(new_currentDataTop.x + new_currentDataTop.y +
-                                new_currentDataUnscaled.z,
+                nearBorder(highBandStart + new_currentDataUnscaled.z,
                         ourDistance,
                         0.04)) {
             showingColor = highColor;
             mixin = false;
             alpha = 0.90;
-        } else if (ourDistance <= new_currentDataTop.x + new_currentDataTop.y +
-                        new_currentData.z) {
+        } else if (ourDistance <= highBandStart + new_currentData.z) {
             showingColor = highColor;
-        } else if (ourDistance <= new_currentDataTop.x + new_currentDataTop.y +
-                        new_currentDataUnscaled.z) {
+        } else if (ourDistance <= highBandStart + new_currentDataUnscaled.z) {
             showingColor = highFilteredColor;
             alpha = 0.6;
         } else {
