@@ -93,6 +93,50 @@ class RgbColor {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////
+    // Sorting
+    ///////////////////////////////////////////////////////////////////
+
+    // Number of distinct values a 24-bit color code can take. Used as the
+    // multiplier that packs a hue into the high bits of a sort key.
+    static constexpr qint64 kColorCodeRange = 1LL << 24;
+
+    // Sort keys for colors that do not have a meaningful hue. They are
+    // deliberately greater than any real hue (0..359) so that achromatic
+    // colors are grouped after all chromatic ones, and unset colors are
+    // grouped after all colored ones.
+    static constexpr int kSortKeyAchromatic = 360;
+    static constexpr int kSortKeyUnset = 361;
+
+    // Returns a sort key that orders colors by hue, i.e. colors of a similar
+    // hue end up next to each other, instead of by their internal color code.
+    //
+    // The key is monotonically increasing with the hue and additionally
+    // incorporates the color code, which yields a total order. That matters
+    // because the library sorts incrementally by binary search, which requires
+    // a strict weak ordering to be consistent with the initial SQL query.
+    //
+    // NOTE: This must stay in sync with the `mixxx_hue()` SQL function
+    // registered in mixxx::DbConnection, which is used to build the
+    // "ORDER BY" clause for the color column (see ColumnCache). Both sides
+    // have to agree, otherwise incrementally re-sorted rows would jump around.
+    static qint64 sortKey(RgbColor color) {
+        const QColor qColor = toQColor(color);
+        // QColor::hue() returns an undefined value (-1) for achromatic
+        // colors, i.e. when saturation is 0 (grey, black, white).
+        const int hue = qColor.saturation() == 0
+                ? kSortKeyAchromatic
+                : qColor.hue();
+        return static_cast<qint64>(hue) * kColorCodeRange +
+                static_cast<qint64>(color.m_code);
+    }
+
+    static qint64 sortKey(optional_t color) {
+        return color
+                ? sortKey(*color)
+                : static_cast<qint64>(kSortKeyUnset) * kColorCodeRange;
+    }
+
     // Explicit conversion of both non-optional and optional
     // RgbColor values to/from QString in the format #RRGGBB,
     // e.g. for tool tips or settings.
