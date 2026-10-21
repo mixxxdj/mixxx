@@ -161,7 +161,15 @@ def main() -> int:
             undefined_counts = {}
             audit_errors = []
             for member, path in extracted.items():
-                soname, needed = dynamic_info(path, args.readelf)
+                try:
+                    soname, needed = dynamic_info(path, args.readelf)
+                except subprocess.CalledProcessError as error:
+                    detail = str(error)
+                    output = getattr(error, "output", None)
+                    if output:
+                        detail += f": {str(output)[:2000]}"
+                    audit_errors.append({"library": member, "error": detail})
+                    soname, needed = None, []
                 try:
                     defs, undefs = symbols(path, args.readelf)
                 except (
@@ -202,7 +210,16 @@ def main() -> int:
 
             stub_symbols: dict[tuple[int, str], set[str]] = {}
             for key, path in stub_paths.items():
-                defs, _ = symbols(path, args.readelf)
+                try:
+                    defs, _ = symbols(path, args.readelf)
+                except (
+                    SymbolTableError,
+                    subprocess.CalledProcessError,
+                ) as error:
+                    audit_errors.append(
+                        {"library": str(path), "error": str(error)}
+                    )
+                    defs = set()
                 stub_symbols[key] = defs
 
             newer_api_imports = []
