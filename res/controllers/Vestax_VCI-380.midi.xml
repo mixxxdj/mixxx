@@ -525,21 +525,21 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VestaxVCI380.onRate</key>
-        <status>0xB7</status>
-        <midino>0x2D</midino>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xB8</status>
+        <midino>0x0D</midino>
         <options>
-          <script-binding/>
+          <fourteen-bit-msb/>
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>VestaxVCI380.onRate</key>
+        <group>[Channel2]</group>
+        <key>rate</key>
         <status>0xB8</status>
         <midino>0x2D</midino>
         <options>
-          <script-binding/>
+          <fourteen-bit-lsb/>
         </options>
       </control>
       <control>
@@ -936,20 +936,20 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VestaxVCI380.onRate</key>
+        <key>rate</key>
         <status>0xB7</status>
         <midino>0x0D</midino>
         <options>
-          <script-binding/>
+          <fourteen-bit-msb/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>VestaxVCI380.onRate</key>
-        <status>0xB8</status>
-        <midino>0x0D</midino>
+        <key>rate</key>
+        <status>0xB7</status>
+        <midino>0x2D</midino>
         <options>
-          <script-binding/>
+          <fourteen-bit-lsb/>
         </options>
       </control>
       <control>

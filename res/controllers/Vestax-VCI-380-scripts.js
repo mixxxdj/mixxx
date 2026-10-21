@@ -326,18 +326,6 @@ VestaxVCI380.onCrossfader = function(channel, control, value, _status) {
     }
 };
 
-// Pitch : The VCI 380 has high resolution (14 bit) pitch controls
-// It sends this value in 2 sequential MIDI messages : MSB then LSB. So we need to implement a memory.
-VestaxVCI380.rateMSB=[0x00, 0x00]; // MSB memory
-VestaxVCI380.onRate = function(channel, control, value, _status) {
-    if (control===0x0D) { // we're receiving the MSB
-        VestaxVCI380.rateMSB[VestaxVCI380.getDeck(channel)-1]=value; // remember the MSB
-    } else if (control===0x2D) { // we're receiving the LSB
-        // calculate the rate value by combining together the received LSB and the memorized MSB
-        engine.setValue(`[Channel${VestaxVCI380.getDeck(channel)}]`, "rate", script.absoluteLin(VestaxVCI380.rateMSB[VestaxVCI380.getDeck(channel)-1]*128+value, -1, 1, 0, 16384));
-    }
-};
-
 ////
 // BUTTONS
 ////
