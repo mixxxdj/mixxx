@@ -37,6 +37,16 @@ jobs:
         run: tools/debian_buildenv.sh setup
       - name: Create build directory
         run: mkdir build
+      - name: Install GCC 13 toolchain for clazy
+        if: matrix.name == 'clazy'
+        # clazy 1.11 bundles Clang 15, which cannot parse the default GCC 14
+        # libstdc++ headers on ubuntu-24.04 runners. Install GCC 13 and point
+        # clazy at its headers instead.
+        run: |
+          sudo apt update
+          sudo apt install -y g++-13
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
       - name: Configure (clazy)
         if: matrix.name == 'clazy'
         # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
