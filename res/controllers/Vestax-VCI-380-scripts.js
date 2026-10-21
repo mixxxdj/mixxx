@@ -1043,7 +1043,7 @@ VestaxVCI380.setPadColorBeatGridMode = function(deck) {
 
 // Light up the pads of a deck for Sampler mode
 VestaxVCI380.setPadColorSamplerMode = function(deck) {
-    VestaxVCI380.setPadColor(deck, 1, VestaxVCI380.padColor.MAGENTA);
+    VestaxVCI380.setPadColorDeck(deck, VestaxVCI380.padColor.OFF);
 };
 
 VestaxVCI380.setPadColorSplash = function(deck) {
