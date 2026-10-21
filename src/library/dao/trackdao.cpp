@@ -1373,7 +1373,9 @@ struct ColumnPopulator {
 
 }  // namespace
 
-TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
+TrackPointer TrackDAO::getTrackById(
+        TrackId trackId,
+        bool updateTrackFromSource) const {
     if (!trackId.isValid()) {
         return nullptr;
     }
@@ -1576,43 +1578,47 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // Synchronize the track's metadata with the corresponding source
     // file. This import might have never been completed successfully
     // before, so just check and try for every track that has been
-    // freshly loaded from the database.
-    auto updateTrackFromSourceMode =
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once;
-    if (m_pConfig &&
-            m_pConfig->getValue(
-                    mixxx::library::prefs::kSyncTrackMetadataConfigKey,
-                    false)) {
-        // An implicit re-import and update is performed if the
-        // user has enabled export of file tags in the preferences.
-        // Either they want to keep their file tags synchronized or
-        // not, no exceptions!
-        updateTrackFromSourceMode =
-                SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
-    }
-    DEBUG_ASSERT(!pTrack->isDirty());
-    const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
-    const auto result =
-            SoundSourceProxy(pTrack).updateTrackFromSource(
-                    updateTrackFromSourceMode,
-                    SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
-    if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
-        // At least the source synchronization time stamp must have changed
-        DEBUG_ASSERT(pTrack->isDirty());
-        const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
-        DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
-        if (sourceSynchronizedAtBefore.isValid()) {
-            // Only log subsequent re-imports but not the initial import of metadata
-            DEBUG_ASSERT(updateTrackFromSourceMode ==
-                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
-            DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
-            kLogger.info()
-                    << "Re-imported and updated outdated track metadata in library ("
-                    << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
-                    << ") with tags from modified file ("
-                    << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
-                    << "):"
-                    << pTrack->getMetadata();
+    // freshly loaded from the database. Accessing the source file is
+    // skipped upon request, e.g. for tracks that will be analyzed on
+    // a worker thread where the deferred import is then performed.
+    if (updateTrackFromSource) {
+        auto updateTrackFromSourceMode =
+                SoundSourceProxy::UpdateTrackFromSourceMode::Once;
+        if (m_pConfig &&
+                m_pConfig->getValue(
+                        mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+                        false)) {
+            // An implicit re-import and update is performed if the
+            // user has enabled export of file tags in the preferences.
+            // Either they want to keep their file tags synchronized or
+            // not, no exceptions!
+            updateTrackFromSourceMode =
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
+        }
+        DEBUG_ASSERT(!pTrack->isDirty());
+        const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
+        const auto result =
+                SoundSourceProxy(pTrack).updateTrackFromSource(
+                        updateTrackFromSourceMode,
+                        SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
+        if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
+            // At least the source synchronization time stamp must have changed
+            DEBUG_ASSERT(pTrack->isDirty());
+            const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
+            DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
+            if (sourceSynchronizedAtBefore.isValid()) {
+                // Only log subsequent re-imports but not the initial import of metadata
+                DEBUG_ASSERT(updateTrackFromSourceMode ==
+                        SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
+                DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
+                kLogger.info()
+                        << "Re-imported and updated outdated track metadata in library ("
+                        << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
+                        << ") with tags from modified file ("
+                        << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
+                        << "):"
+                        << pTrack->getMetadata();
+            }
         }
     }
 

@@ -10,6 +10,7 @@
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
 #include "library/dao/analysisdao.h"
+#include "library/library_prefs.h"
 #include "moc_analyzerthread.cpp"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
@@ -123,9 +124,30 @@ void AnalyzerThread::doRun() {
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(mixxx::kAnalysisMaxChannels);
 
+    // Tracks are loaded without accessing their source files. The
+    // implicit metadata import that is otherwise performed by
+    // TrackDAO::getTrackById() on the GUI thread happens here on the
+    // worker thread before decoding.
+    const auto updateTrackFromSourceMode =
+            (m_pConfig &&
+                    m_pConfig->getValue(
+                            mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+                            false))
+                    ? SoundSourceProxy::UpdateTrackFromSourceMode::Newer
+                    : SoundSourceProxy::UpdateTrackFromSourceMode::Once;
+    const auto syncTrackMetadataParams =
+            m_pConfig
+                    ? SyncTrackMetadataParams::readFromUserSettings(*m_pConfig)
+                    : SyncTrackMetadataParams{};
+
     while (awaitWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack.has_value());
         kLogger.debug() << "Analyzing" << m_currentTrack->getTrack()->getLocation();
+
+        SoundSourceProxy(m_currentTrack->getTrack())
+                .updateTrackFromSource(
+                        updateTrackFromSourceMode,
+                        syncTrackMetadataParams);
 
         // Get the audio
         mixxx::AudioSourcePointer audioSource =

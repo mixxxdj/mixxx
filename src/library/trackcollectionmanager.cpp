@@ -610,9 +610,11 @@ void TrackCollectionManager::afterTracksRelocated(
 }
 
 TrackPointer TrackCollectionManager::getTrackById(
-        TrackId trackId) const {
+        TrackId trackId,
+        bool updateTrackFromSource) const {
     return internalCollection()->getTrackById(
-            trackId);
+            trackId,
+            updateTrackFromSource);
 }
 
 TrackPointer TrackCollectionManager::getTrackByRef(
