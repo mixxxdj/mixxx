@@ -259,7 +259,8 @@ if(ANDROID)
     # so retry up to 3 times per mirror before giving up. repo1 and
     # repo.maven.apache.org serve the same content from different frontends,
     # so alternate between them on each attempt.
-    set(_ytdlp_aar_mirrors
+    set(
+      _ytdlp_aar_mirrors
       "https://repo1.maven.org/maven2/io/github/junkfood02.youtubedl-android/library/0.18.1/library-0.18.1.aar"
       "https://repo.maven.apache.org/maven2/io/github/junkfood02/youtubedl-android/library/0.18.1/library-0.18.1.aar"
     )
