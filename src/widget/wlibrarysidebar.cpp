@@ -1,6 +1,9 @@
 #include "widget/wlibrarysidebar.h"
 
 #include <QHeaderView>
+#ifdef Q_OS_ANDROID
+#include <QScroller>
+#endif
 #include <QUrl>
 #include <QtDebug>
 
@@ -26,6 +29,10 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setAcceptDrops(true);
     setAutoScroll(true);
     setAttribute(Qt::WA_MacShowFocusRect, false);
+#ifdef Q_OS_ANDROID
+    setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    QScroller::grabGesture(viewport(), QScroller::TouchGesture);
+#endif
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
