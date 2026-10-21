@@ -6,6 +6,7 @@ Android NDK sysroot stubs. It is a screening tool, not a runtime compatibility
 proof. Unknown providers are reported as uncertain instead of being treated as
 compatible.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -24,12 +25,16 @@ def readelf(readelf_path: str, *args: str) -> str:
     )
 
 
-def dynamic_info(path: Path, readelf_path: str) -> tuple[str | None, list[str]]:
+def dynamic_info(
+    path: Path, readelf_path: str
+) -> tuple[str | None, list[str]]:
     text = readelf(readelf_path, "--dynamic", "--wide", str(path))
     soname = None
     needed = []
     for line in text.splitlines():
-        match = re.search(r"\(SONAME\).*soname: \[([^\]]+)\]", line, re.IGNORECASE)
+        match = re.search(
+            r"\(SONAME\).*soname: \[([^\]]+)\]", line, re.IGNORECASE
+        )
         if match:
             soname = match.group(1)
         match = re.search(r"\(NEEDED\).*Shared library: \[([^\]]+)\]", line)
@@ -42,7 +47,9 @@ class SymbolTableError(ValueError):
     """The dynamic symbol table could not be parsed completely."""
 
 
-def symbols(path: Path, readelf_path: str) -> tuple[set[str], list[tuple[str, str]]]:
+def symbols(
+    path: Path, readelf_path: str
+) -> tuple[set[str], list[tuple[str, str]]]:
     defined: set[str] = set()
     undefined: list[tuple[str, str]] = []
     text = readelf(readelf_path, "--dyn-syms", "--wide", str(path))
@@ -52,15 +59,14 @@ def symbols(path: Path, readelf_path: str) -> tuple[set[str], list[tuple[str, st
         re.MULTILINE,
     )
     if not header:
-        raise SymbolTableError("readelf output has no dynamic symbol table header")
-    rows = [
-        line for line in text.splitlines()
-        if re.match(r"^\s*\d+:", line)
-    ]
+        raise SymbolTableError(
+            "readelf output has no dynamic symbol table header"
+        )
+    rows = [line for line in text.splitlines() if re.match(r"^\s*\d+:", line)]
     expected_rows = int(header.group(1))
     if len(rows) != expected_rows:
         raise SymbolTableError(
-            f"readelf reported {expected_rows} dynamic symbols but returned {len(rows)} rows"
+            f"readelf reported {expected_rows} dynamic symbols but returned {len(rows)} rows"  # noqa: E501
         )
     for line in rows:
         fields = line.split()
@@ -69,7 +75,9 @@ def symbols(path: Path, readelf_path: str) -> tuple[set[str], list[tuple[str, st
         bind, visibility, section = fields[4], fields[5], fields[6]
         if len(fields) < 8:
             if bind in {"GLOBAL", "WEAK"}:
-                raise SymbolTableError(f"named dynamic symbol has no name field: {line}")
+                raise SymbolTableError(
+                    f"named dynamic symbol has no name field: {line}"
+                )
             continue
         name = fields[7]
         symbol = name.split("@", 1)[0]
@@ -77,7 +85,11 @@ def symbols(path: Path, readelf_path: str) -> tuple[set[str], list[tuple[str, st
             raise SymbolTableError(f"dynamic symbol has an empty name: {line}")
         if section == "UND" and bind in {"GLOBAL", "WEAK"}:
             undefined.append((symbol, bind))
-        elif section != "UND" and bind in {"GLOBAL", "WEAK"} and visibility in {"DEFAULT", "PROTECTED"}:
+        elif (
+            section != "UND"
+            and bind in {"GLOBAL", "WEAK"}
+            and visibility in {"DEFAULT", "PROTECTED"}
+        ):
             defined.add(symbol)
     return defined, undefined
 
@@ -99,18 +111,30 @@ def main() -> int:
     if not root.is_dir():
         raise SystemExit(f"NDK Android system-library stubs not found: {root}")
 
-    badging = subprocess.check_output([args.aapt, "dump", "badging", str(apk)], text=True)
+    badging = subprocess.check_output(
+        [args.aapt, "dump", "badging", str(apk)], text=True
+    )
     minimum = re.search(r"^sdkVersion:'(\d+)'", badging, re.MULTILINE)
     target = re.search(r"^targetSdkVersion:'(\d+)'", badging, re.MULTILINE)
     if not minimum or not target:
-        raise SystemExit("APK manifest is missing a numeric minSdkVersion or targetSdkVersion")
+        raise SystemExit(
+            "APK manifest is missing a numeric minSdkVersion or targetSdkVersion"  # noqa: E501
+        )
     min_sdk, target_sdk = int(minimum.group(1)), int(target.group(1))
     if min_sdk != args.api:
-        raise SystemExit(f"Expected APK minSdkVersion {args.api}, found {min_sdk}")
+        raise SystemExit(
+            f"Expected APK minSdkVersion {args.api}, found {min_sdk}"
+        )
     if target_sdk < min_sdk:
-        raise SystemExit(f"APK targetSdkVersion {target_sdk} is below minSdkVersion {min_sdk}")
+        raise SystemExit(
+            f"APK targetSdkVersion {target_sdk} is below minSdkVersion {min_sdk}"  # noqa: E501
+        )
 
-    api_dirs = sorted((int(p.name), p) for p in root.iterdir() if p.is_dir() and p.name.isdigit())
+    api_dirs = sorted(
+        (int(p.name), p)
+        for p in root.iterdir()
+        if p.is_dir() and p.name.isdigit()
+    )
     api_dir = next((p for n, p in api_dirs if n == args.api), None)
     if api_dir is None:
         raise SystemExit(f"NDK API {args.api} stubs not found under {root}")
@@ -118,7 +142,8 @@ def main() -> int:
 
     with zipfile.ZipFile(apk) as archive:
         members = sorted(
-            n for n in archive.namelist()
+            n
+            for n in archive.namelist()
             if n.startswith("lib/arm64-v8a/") and n.endswith(".so")
         )
         if not members:
@@ -139,7 +164,10 @@ def main() -> int:
                 soname, needed = dynamic_info(path, args.readelf)
                 try:
                     defs, undefs = symbols(path, args.readelf)
-                except (SymbolTableError, subprocess.CalledProcessError) as error:
+                except (
+                    SymbolTableError,
+                    subprocess.CalledProcessError,
+                ) as error:
                     detail = str(error)
                     output = getattr(error, "output", None)
                     if output:
@@ -149,16 +177,22 @@ def main() -> int:
                 key = soname or Path(member).name
                 packaged_sonames[key] = member
                 exported[member] = defs
-                info[member] = {"soname": key, "needed": needed, "undefined": undefs}
+                info[member] = {
+                    "soname": key,
+                    "needed": needed,
+                    "undefined": undefs,
+                }
                 undefined_counts[member] = len(undefs)
 
             packaged_names = set(packaged_sonames)
-            system_needed = sorted({
-                dep
-                for item in info.values()
-                for dep in item["needed"]
-                if dep not in packaged_names
-            })
+            system_needed = sorted(
+                {
+                    dep
+                    for item in info.values()
+                    for dep in item["needed"]
+                    if dep not in packaged_names
+                }
+            )
             stub_paths: dict[tuple[int, str], Path] = {}
             for api, directory in [(args.api, api_dir), *later_dirs]:
                 for dep in system_needed:
@@ -186,45 +220,66 @@ def main() -> int:
                 needed = item["needed"]
                 for dep in needed:
                     if dep in packaged_names:
-                        checked_edges.append({
-                            "library": member, "dependency": dep,
-                            "provider": "packaged shared library",
-                        })
+                        checked_edges.append(
+                            {
+                                "library": member,
+                                "dependency": dep,
+                                "provider": "packaged shared library",
+                            }
+                        )
                     elif (args.api, dep) in stub_paths:
-                        checked_edges.append({
-                            "library": member, "dependency": dep,
-                            "provider": f"Android system API {args.api} stub",
-                        })
+                        checked_edges.append(
+                            {
+                                "library": member,
+                                "dependency": dep,
+                                "provider": f"Android system API {args.api} stub",  # noqa: E501
+                            }
+                        )
                     else:
                         later_apis = [
-                            api for api, _ in later_dirs if (api, dep) in stub_paths
+                            api
+                            for api, _ in later_dirs
+                            if (api, dep) in stub_paths
                         ]
                         if later_apis:
                             available_from = min(later_apis)
-                            later_api_dependencies.append({
-                                "library": member,
-                                "dependency": dep,
-                                "available_from_api": available_from,
-                            })
-                            checked_edges.append({
-                                "library": member, "dependency": dep,
-                                "provider": f"Android system library available only from API {available_from}",
-                            })
+                            later_api_dependencies.append(
+                                {
+                                    "library": member,
+                                    "dependency": dep,
+                                    "available_from_api": available_from,
+                                }
+                            )
+                            checked_edges.append(
+                                {
+                                    "library": member,
+                                    "dependency": dep,
+                                    "provider": f"Android system library available only from API {available_from}",  # noqa: E501
+                                }
+                            )
                         else:
-                            missing_dependencies.append({"library": member, "dependency": dep})
-                            checked_edges.append({
-                                "library": member, "dependency": dep,
-                                "provider": "unknown",
-                            })
+                            missing_dependencies.append(
+                                {"library": member, "dependency": dep}
+                            )
+                            checked_edges.append(
+                                {
+                                    "library": member,
+                                    "dependency": dep,
+                                    "provider": "unknown",
+                                }
+                            )
 
                 system_candidates = [
-                    dep for dep in needed
-                    if dep not in packaged_names and (args.api, dep) in stub_paths
+                    dep
+                    for dep in needed
+                    if dep not in packaged_names
+                    and (args.api, dep) in stub_paths
                 ]
                 for symbol, binding in item["undefined"]:
                     bundled_provider = any(
                         symbol in exported[packaged_sonames[dep]]
-                        for dep in needed if dep in packaged_names
+                        for dep in needed
+                        if dep in packaged_names
                     )
                     if bundled_provider:
                         import_counts["provided_by_bundled_library"] += 1
@@ -237,24 +292,31 @@ def main() -> int:
                         import_counts["provided_by_api34_system_stub"] += 1
                         continue
                     later_provider = [
-                        api for api, _ in later_dirs
+                        api
+                        for api, _ in later_dirs
                         if any(
                             symbol in stub_symbols.get((api, dep), set())
                             for dep in system_candidates
                         )
                     ]
                     if later_provider and binding == "GLOBAL":
-                        newer_api_imports.append({
-                            "library": member,
-                            "symbol": symbol,
-                            "binding": binding,
-                            "available_from_api": min(later_provider),
-                        })
+                        newer_api_imports.append(
+                            {
+                                "library": member,
+                                "symbol": symbol,
+                                "binding": binding,
+                                "available_from_api": min(later_provider),
+                            }
+                        )
                         import_counts["found_only_in_later_system_stub"] += 1
                     else:
-                        uncertain.append({
-                            "library": member, "symbol": symbol, "binding": binding
-                        })
+                        uncertain.append(
+                            {
+                                "library": member,
+                                "symbol": symbol,
+                                "binding": binding,
+                            }
+                        )
                         import_counts["uncertain_or_unresolved"] += 1
 
     report_data = {
@@ -268,38 +330,50 @@ def main() -> int:
         "undefined_import_classification_counts": import_counts,
         "dependencies": checked_edges,
         "missing_or_unknown_dependencies": missing_dependencies,
-        "system_dependencies_found_only_in_later_api_stubs": later_api_dependencies,
+        "system_dependencies_found_only_in_later_api_stubs": later_api_dependencies,  # noqa: E501
         "strong_imports_found_only_in_later_api_stubs": newer_api_imports,
         "symbol_audit_errors": audit_errors,
         "uncertain_or_unresolved_imports": uncertain,
-        "status": "fail" if newer_api_imports or later_api_dependencies else (
-            "incomplete" if audit_errors else (
-                "review_required" if uncertain or missing_dependencies else "screened"
+        "status": (
+            "fail"
+            if newer_api_imports or later_api_dependencies
+            else (
+                "incomplete"
+                if audit_errors
+                else (
+                    "review_required"
+                    if uncertain or missing_dependencies
+                    else "screened"
+                )
             )
         ),
-        "limitations": "NDK stub comparison is a static screen, not runtime compatibility proof."
+        "limitations": "NDK stub comparison is a static screen, not runtime compatibility proof.",  # noqa: E501
     }
     print(json.dumps(report_data, indent=2))
     if args.report:
-        Path(args.report).write_text(json.dumps(report_data, indent=2) + "\n", encoding="utf-8")
+        Path(args.report).write_text(
+            json.dumps(report_data, indent=2) + "\n", encoding="utf-8"
+        )
     if newer_api_imports or later_api_dependencies:
         print(
-            "FAIL: strong imports or system dependencies require Android API newer than the configured floor.",
+            "FAIL: strong imports or system dependencies require Android API newer than the configured floor.",  # noqa: E501
             file=sys.stderr,
         )
         return 1
     if audit_errors:
         print(
-            "ERROR: dynamic symbol information was missing or malformed; compatibility could not be screened.",
+            "ERROR: dynamic symbol information was missing or malformed; compatibility could not be screened.",  # noqa: E501
             file=sys.stderr,
         )
         return 2
     if uncertain or missing_dependencies:
         print(
-            "::warning::REVIEW REQUIRED: unresolved imports or dependencies need human review."
+            "::warning::REVIEW REQUIRED: unresolved imports or dependencies need human review."  # noqa: E501
         )
     else:
-        print(f"PASS: screened {len(members)} ARM64 libraries against API {args.api} NDK stubs.")
+        print(
+            f"PASS: screened {len(members)} ARM64 libraries against API {args.api} NDK stubs."  # noqa: E501
+        )
     return 0
 
 

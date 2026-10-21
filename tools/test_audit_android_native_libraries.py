@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Focused mocked tests for the Android native-library API-floor audit."""
+
 from __future__ import annotations
 
 import contextlib
@@ -11,21 +12,20 @@ from pathlib import Path
 from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-import audit_android_native_libraries as audit
+import audit_android_native_libraries as audit  # noqa: E402
 
-
-BADGING = "package: name='example' versionCode='1'\nsdkVersion:'34'\ntargetSdkVersion:'34'\n"
+BADGING = "package: name='example' versionCode='1'\nsdkVersion:'34'\ntargetSdkVersion:'34'\n"  # noqa: E501
 
 
 def dynsym_output(definitions=(), imports=(), malformed=None):
     entries = ["   0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND"]
     for name in definitions:
         entries.append(
-            f"   {len(entries)}: 0000000000000000     0 FUNC    GLOBAL DEFAULT  1 {name}"
+            f"   {len(entries)}: 0000000000000000     0 FUNC    GLOBAL DEFAULT  1 {name}"  # noqa: E501
         )
     for name, binding in imports:
         entries.append(
-            f"   {len(entries)}: 0000000000000000     0 FUNC    {binding:<6} DEFAULT  UND {name}"
+            f"   {len(entries)}: 0000000000000000     0 FUNC    {binding:<6} DEFAULT  UND {name}"  # noqa: E501
         )
     if malformed == "no-table":
         return "readelf: no dynamic symbol information"
@@ -87,7 +87,10 @@ class AuditFixture(unittest.TestCase):
         api_dirs = {34: root / "34", 35: root / "35"}
         stub_paths = {
             api_dirs[api] / library
-            for api, libraries in ((34, api34_libraries), (35, api35_libraries))
+            for api, libraries in (
+                (34, api34_libraries),
+                (35, api35_libraries),
+            )
             for library in libraries
         }
         members = ["lib/arm64-v8a/libconsumer.so"]
@@ -95,17 +98,25 @@ class AuditFixture(unittest.TestCase):
             "libconsumer.so": (["libconsumer.so"], list(needed)),
         }
         symbol_tables = {
-            "libconsumer.so": dynsym_output(imports=imports, malformed=malformed),
+            "libconsumer.so": dynsym_output(
+                imports=imports, malformed=malformed
+            ),
         }
         if packaged_provider:
             members.append("lib/arm64-v8a/libprovider.so")
             dynamic["libprovider.so"] = (["libprovider.so"], [])
-            symbol_tables["libprovider.so"] = dynsym_output(definitions=("target",))
+            symbol_tables["libprovider.so"] = dynsym_output(
+                definitions=("target",)
+            )
         for library in set(api34_libraries) | set(api35_libraries):
             api34_defs = api34_symbols if library == "libandroid.so" else ()
             later_defs = later_symbols if library == "libandroid.so" else ()
-            symbol_tables[f"34/{library}"] = dynsym_output(definitions=api34_defs)
-            symbol_tables[f"35/{library}"] = dynsym_output(definitions=later_defs)
+            symbol_tables[f"34/{library}"] = dynsym_output(
+                definitions=api34_defs
+            )
+            symbol_tables[f"35/{library}"] = dynsym_output(
+                definitions=later_defs
+            )
         archive = FakeArchive()
         archive.members = members
         report_files = {}
@@ -130,11 +141,19 @@ class AuditFixture(unittest.TestCase):
             if operation == "--dynamic":
                 sonames, dependencies = dynamic[filename]
                 lines = ["Dynamic section at offset 0x0 contains entries:"]
-                lines.extend(f"  (SONAME) Library soname: [{name}]" for name in sonames)
-                lines.extend(f"  (NEEDED) Shared library: [{name}]" for name in dependencies)
+                lines.extend(
+                    f"  (SONAME) Library soname: [{name}]" for name in sonames
+                )
+                lines.extend(
+                    f"  (NEEDED) Shared library: [{name}]"
+                    for name in dependencies
+                )
                 return "\n".join(lines)
             if operation == "--dyn-syms":
-                if filename.startswith("lib") and filename not in symbol_tables:
+                if (
+                    filename.startswith("lib")
+                    and filename not in symbol_tables
+                ):
                     api = path.parent.name
                     filename = f"{api}/{filename}"
                 return symbol_tables[filename]
@@ -142,28 +161,42 @@ class AuditFixture(unittest.TestCase):
 
         argv = [
             "audit_android_native_libraries.py",
-            "--apk", str(apk),
-            "--aapt", "fake-aapt",
-            "--readelf", "fake-readelf",
-            "--sysroot", str(sysroot),
-            "--api", "34",
-            "--report", str(Path("C:/virtual/report.json")),
+            "--apk",
+            str(apk),
+            "--aapt",
+            "fake-aapt",
+            "--readelf",
+            "fake-readelf",
+            "--sysroot",
+            str(sysroot),
+            "--api",
+            "34",
+            "--report",
+            str(Path("C:/virtual/report.json")),
         ]
         stdout, stderr = io.StringIO(), io.StringIO()
         with (
             mock.patch.object(audit.sys, "argv", argv),
-            mock.patch.object(audit.subprocess, "check_output", return_value=BADGING),
+            mock.patch.object(
+                audit.subprocess, "check_output", return_value=BADGING
+            ),
             mock.patch.object(audit, "readelf", side_effect=mock_readelf),
             mock.patch.object(audit.zipfile, "ZipFile", return_value=archive),
-            mock.patch.object(audit.tempfile, "TemporaryDirectory", FakeTemporaryDirectory),
+            mock.patch.object(
+                audit.tempfile, "TemporaryDirectory", FakeTemporaryDirectory
+            ),
             mock.patch.object(audit.Path, "is_file", new=path_is_file),
             mock.patch.object(audit.Path, "is_dir", new=path_is_dir),
             mock.patch.object(audit.Path, "iterdir", new=path_iterdir),
-            mock.patch.object(audit.Path, "write_bytes", new=lambda _path, data: len(data)),
+            mock.patch.object(
+                audit.Path, "write_bytes", new=lambda _path, data: len(data)
+            ),
             mock.patch.object(
                 audit.Path,
                 "write_text",
-                new=lambda path, data, encoding=None: report_files.__setitem__(path, data),
+                new=lambda path, data, encoding=None: report_files.__setitem__(
+                    path, data
+                ),
             ),
             contextlib.redirect_stdout(stdout),
             contextlib.redirect_stderr(stderr),
@@ -178,16 +211,30 @@ class AuditFixture(unittest.TestCase):
         )
 
     def test_strong_import_present_in_api34_stub_is_screened(self):
-        code, report, _stdout, _stderr = self.run_fixture(api34_symbols=("target",))
+        code, report, _stdout, _stderr = self.run_fixture(
+            api34_symbols=("target",)
+        )
         self.assertEqual(code, 0)
         self.assertEqual(report["status"], "screened")
-        self.assertEqual(report["undefined_import_classification_counts"]["provided_by_api34_system_stub"], 1)
+        self.assertEqual(
+            report["undefined_import_classification_counts"][
+                "provided_by_api34_system_stub"
+            ],
+            1,
+        )
 
     def test_strong_import_first_present_in_api35_stub_fails(self):
-        code, report, _stdout, stderr = self.run_fixture(later_symbols=("target",))
+        code, report, _stdout, stderr = self.run_fixture(
+            later_symbols=("target",)
+        )
         self.assertEqual(code, 1)
         self.assertEqual(report["status"], "fail")
-        self.assertEqual(report["strong_imports_found_only_in_later_api_stubs"][0]["available_from_api"], 35)
+        self.assertEqual(
+            report["strong_imports_found_only_in_later_api_stubs"][0][
+                "available_from_api"
+            ],
+            35,
+        )
         self.assertIn("FAIL:", stderr)
 
     def test_symbol_exported_by_packaged_dependency_is_resolved(self):
@@ -196,7 +243,12 @@ class AuditFixture(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertEqual(report["status"], "screened")
-        self.assertEqual(report["undefined_import_classification_counts"]["provided_by_bundled_library"], 1)
+        self.assertEqual(
+            report["undefined_import_classification_counts"][
+                "provided_by_bundled_library"
+            ],
+            1,
+        )
 
     def test_unresolved_external_dependency_is_review_required_not_pass(self):
         code, report, stdout, _stderr = self.run_fixture(
@@ -204,8 +256,16 @@ class AuditFixture(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertEqual(report["status"], "review_required")
-        self.assertEqual(report["missing_or_unknown_dependencies"][0]["dependency"], "libprivate.so")
-        self.assertEqual(report["undefined_import_classification_counts"]["uncertain_or_unresolved"], 1)
+        self.assertEqual(
+            report["missing_or_unknown_dependencies"][0]["dependency"],
+            "libprivate.so",
+        )
+        self.assertEqual(
+            report["undefined_import_classification_counts"][
+                "uncertain_or_unresolved"
+            ],
+            1,
+        )
         self.assertIn("::warning::REVIEW REQUIRED", stdout)
 
     def test_weak_import_is_uncertain_and_does_not_fail_as_strong(self):
@@ -214,8 +274,12 @@ class AuditFixture(unittest.TestCase):
         )
         self.assertEqual(code, 0)
         self.assertEqual(report["status"], "review_required")
-        self.assertEqual(report["strong_imports_found_only_in_later_api_stubs"], [])
-        self.assertEqual(report["uncertain_or_unresolved_imports"][0]["binding"], "WEAK")
+        self.assertEqual(
+            report["strong_imports_found_only_in_later_api_stubs"], []
+        )
+        self.assertEqual(
+            report["uncertain_or_unresolved_imports"][0]["binding"], "WEAK"
+        )
 
     def test_malformed_or_missing_symbol_table_fails_closed_with_report(self):
         for malformed in ("no-table", "truncated"):
@@ -225,7 +289,10 @@ class AuditFixture(unittest.TestCase):
                 )
                 self.assertEqual(code, 2)
                 self.assertEqual(report["status"], "incomplete")
-                self.assertEqual(report["symbol_audit_errors"][0]["library"], "lib/arm64-v8a/libconsumer.so")
+                self.assertEqual(
+                    report["symbol_audit_errors"][0]["library"],
+                    "lib/arm64-v8a/libconsumer.so",
+                )
                 self.assertIn("ERROR:", stderr)
 
     def test_system_library_available_only_from_api35_fails(self):
@@ -237,7 +304,9 @@ class AuditFixture(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertEqual(report["status"], "fail")
         self.assertEqual(
-            report["system_dependencies_found_only_in_later_api_stubs"][0]["available_from_api"],
+            report["system_dependencies_found_only_in_later_api_stubs"][0][
+                "available_from_api"
+            ],
             35,
         )
         self.assertIn("FAIL:", stderr)
