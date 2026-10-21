@@ -19,11 +19,13 @@ QString rewriteFilename(const mixxx::FileInfo& fileinfo, int index) {
 }
 
 // Iterate over a list of tracks and generate a minimal set of files to copy.
-// Finds duplicate filenames.  Munges filenames if they refer to different files,
-// and skips if they refer to the same disk location.  Returns a map from
+// Finds duplicate filenames. Munges filenames if they refer to different files,
+// and skips if they refer to the same disk location. Returns a map from
 // QString (the destination possibly-munged filenames) to QFileInfo (the source
-// file information).
-QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
+// file information). Missing files are recorded in failedTracks.
+QMap<QString, mixxx::FileInfo> createCopylist(
+        const TrackPointerList& tracks,
+        QStringList& failedTracks) {
     // QMap is a non-obvious return value, but it's easy for callers to use
     // in practice and is the best object for producing the final list
     // efficiently.
@@ -37,7 +39,9 @@ QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
             kLogger.warning()
                     << "File not found or inaccessible while exporting"
                     << fileInfo;
-            // Skip file
+            // Track missing file and skip
+            const QString location = fileInfo.location();
+            failedTracks.append(location.isEmpty() ? pTrack->getTitle() : location);
             continue;
         }
 
@@ -62,6 +66,7 @@ QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
                         << fileName
                         << "while exporting"
                         << fileInfo.location();
+                failedTracks.append(fileInfo.location());
                 break;
             }
             // Next round
@@ -74,12 +79,20 @@ QMap<QString, mixxx::FileInfo> createCopylist(const TrackPointerList& tracks) {
 }  // namespace
 
 void TrackExportWorker::run() {
+    QMap<QString, mixxx::FileInfo> copy_list = createCopylist(m_tracks, m_failedTracks);
+    
+    // If all tracks were missing or skipped, the copy list is empty.
+    // Emit progress to trigger finish() on the dialog so it shows the summary box.
+    if (copy_list.isEmpty()) {
+        emit progress(QString(), 0, 0);
+        return;
+    }
+
     int i = 0;
-    QMap<QString, mixxx::FileInfo> copy_list = createCopylist(m_tracks);
     for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
         // We emit progress twice per loop, which may seem excessive, but it
         // guarantees that we emit a sane progress before we start and after
-        // we end.  In between, each filename will get its own visible tick
+        // we end. In between, each filename will get its own visible tick
         // on the bar, which looks really nice.
         emit progress(it->fileName(), i, copy_list.size());
         copyFile(*it, it.key());
@@ -131,6 +144,7 @@ void TrackExportWorker::copyFile(
                     "Error removing file %1: %2. Stopping.").arg(
                     dest_path, dest_file.errorString());
             kLogger.warning() << error_message;
+            m_failedTracks.append(sourceFilename);
             m_errorMessage = error_message;
             stop();
             return;
@@ -144,6 +158,7 @@ void TrackExportWorker::copyFile(
                 "Error exporting track %1 to %2: %3. Stopping.").arg(
                 sourceFilename, dest_path, source_file.errorString());
         kLogger.warning() << error_message;
+        m_failedTracks.append(sourceFilename);
         m_errorMessage = error_message;
         stop();
         return;
@@ -164,7 +179,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
     mode_future.wait();
 
     // We can be either canceled from the other thread, or as a return value
-    // from this call.  First check for a call from the other thread.
+    // from this call. First check for a call from the other thread.
     if (m_bStop.loadAcquire()) {
         return OverwriteAnswer::CANCEL;
     }
@@ -186,7 +201,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
         break;
     case OverwriteAnswer::CANCEL:
         // Handle cancellation as a result of the question.
-        m_errorMessage = tr("Export process was canceled");
+        m_errorMessage = tr("Error exporting tracks");
         stop();
         break;
     default:;

@@ -105,14 +105,30 @@ void TrackExportDlg::cancelButtonClicked() {
 void TrackExportDlg::finish() {
     m_worker->stop();
     m_worker->wait();
+
     if (!m_worker->errorMessage().isEmpty()) {
         QMessageBox::warning(
-                nullptr,
+                this,
                 tr("Export Error"),
                 m_worker->errorMessage(),
                 QMessageBox::Ok,
                 QMessageBox::Ok);
+    } else if (m_worker->failedCount() > 0) {
+        const QString summaryText = tr(
+                "Export completed, but %1 file(s) could not be exported "
+                "because they were missing or inaccessible.")
+                .arg(m_worker->failedCount());
+
+        QMessageBox warningBox(
+                QMessageBox::Warning,
+                tr("Export Summary"),
+                summaryText,
+                QMessageBox::Ok,
+                this);
+        warningBox.setDetailedText(m_worker->failedTracks().join("\n"));
+        warningBox.exec();
     }
+
     hide();
     accept();
 }
