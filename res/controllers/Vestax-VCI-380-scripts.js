@@ -60,6 +60,8 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "playposition", VestaxVCI380.updatePlayposition));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "play", VestaxVCI380.updatePlayStatus));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "play", VestaxVCI380.updatePlayStatus));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "end_of_track", VestaxVCI380.updatePlayStatus));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "end_of_track", VestaxVCI380.updatePlayStatus));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "track_loaded", VestaxVCI380.onTrackLoaded));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "track_loaded", VestaxVCI380.onTrackLoaded));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "quantize", VestaxVCI380.initLEDs));
@@ -610,6 +612,11 @@ VestaxVCI380.trackEndAlert=[false, false];
 VestaxVCI380.trackEndAlertTimer=[0, 0];
 VestaxVCI380.trackEndAlertLEDStatus=[false, false];
 
+VestaxVCI380.updatePlayStatus = function(value, group, _control) {
+    const deck=VestaxVCI380.getDeckFromGroup(group);
+    VestaxVCI380.enableTrackEndAlert(deck, engine.getValue(group, "end_of_track") === 1 && engine.getValue(group, "play") === 1);
+};
+
 VestaxVCI380.enableTrackEndAlert = function(deck, status) {
     if (status) { // enabling
         if (!VestaxVCI380.trackEndAlert[deck-1]) { // dont enable if already enabled
@@ -650,12 +657,6 @@ VestaxVCI380.trackEndAlertNoFlash = function(deck) {
     }
 };
 
-VestaxVCI380.updatePlayStatus = function(value, group, _control) {
-    const deck=VestaxVCI380.getDeckFromGroup(group);
-    if (value===0) {
-        VestaxVCI380.enableTrackEndAlert(deck, false);
-    }
-};
 
 // Managing the 5 different modes for the colorpads
 // Modes are :
@@ -1094,13 +1095,6 @@ VestaxVCI380.updatePlayposition = function(value, group, _control) {
     const tickPerSecond=71.11111;
     const elapsedticks=duration*value*tickPerSecond;
     VestaxVCI380.setWheelLED(deck, Math.floor(elapsedticks%128));
-
-    // update track end alert indicator
-    if (value*duration>(duration-30)) { // less than 30 seconds remaining
-        VestaxVCI380.enableTrackEndAlert(deck, true);
-    } else {
-        VestaxVCI380.enableTrackEndAlert(deck, false);
-    }
 };
 
 
