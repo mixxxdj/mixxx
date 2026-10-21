@@ -997,7 +997,7 @@ VestaxVCI380.setPadColor = function(deck, pad, color) {
 // Sets the color of all pads of a deck (1-2)
 // color from padCOLOR table
 VestaxVCI380.setPadColorDeck = function(deck, color) {
-    for (let padID=0x3B; padID<=0x43; padID++) {
+    for (let padID=0x3C; padID<=0x43; padID++) {
         midi.sendShortMsg(0x96+deck, padID, color);
     }
 };
@@ -1005,7 +1005,7 @@ VestaxVCI380.setPadColorDeck = function(deck, color) {
 // Sets the color of all pads of the device
 // color from padCOLOR table
 VestaxVCI380.setPadColorAll = function(color) {
-    for (let padID=0x3B; padID<=0x43; padID++) {
+    for (let padID=0x3C; padID<=0x43; padID++) {
         midi.sendShortMsg(0x97, padID, color);
         midi.sendShortMsg(0x98, padID, color);
     }
