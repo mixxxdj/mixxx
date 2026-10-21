@@ -660,11 +660,11 @@ void CrateFeature::slotImportPlaylist() {
         return;
     }
 
-    slotImportPlaylistFile(playlistFile, crateId);
+    importPlaylistFile(playlistFile, crateId);
     activateChild(m_lastRightClickedIndex);
 }
 
-void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId crateId) {
+void CrateFeature::importPlaylistFile(const QString& playlistFile, CrateId crateId) {
     Crate crate;
     if (!m_pTrackCollection->crates().readCrateById(crateId, &crate)) {
         return;
@@ -743,7 +743,7 @@ void CrateFeature::slotCreateImportCrate() {
             return;
         }
 
-        slotImportPlaylistFile(playlistFile, lastCrateId);
+        importPlaylistFile(playlistFile, lastCrateId);
     }
     activateCrate(lastCrateId);
 }

@@ -63,12 +63,11 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
-
     TreeItemModel* sidebarModel() const override;
-
-  public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+
+  public slots:
     void refreshLibraryModels();
     void onRekordboxDevicesFound();
     void onTracksFound();
