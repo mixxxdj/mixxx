@@ -53,13 +53,6 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.setPadColorAll(VestaxVCI380.padColor.WHITE);
     VestaxVCI380.setAllLEDs(true);
 
-    // Optional: Set the samplerate to 48KHz, the only rate accepted by the VCI380 integrated soundcard
-    if ("getSetting" in engine) {
-        if (engine.getSetting("autoSampleRate")) {
-            engine.setValue("[App]", "samplerate", 48000);
-        }
-    }
-
     // no soft takeover: Mixxx gets the position of every fader and knob at startup (see syncWithController)
 
     // events connection

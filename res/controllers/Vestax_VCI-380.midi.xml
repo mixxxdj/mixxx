@@ -5,21 +5,6 @@
     <author>JM Jacinto</author>
     <description>See details on github https://github.com/jaymanu79/Vestax_VCI-380_Mixxx_Mapping</description>
   </info>
-  <settings>
-    <group label="Sample rate">
-        <option
-            variable="autoSampleRate"
-            type="boolean"
-            default="false"
-            label="Automatically set sample rate to 48000 Hz">
-            <description>
-                If using the VCI-380 integrated soundcard, it will refuse to work
-                with sample rates other than 48000.
-                Enabling this setting will set the sample rate to 48000 when the mapping is started.
-            </description>
-        </option>
-    </group>
-  </settings>
   <controller id="VestaxVCI380">
     <scriptfiles>
       <file functionprefix="VestaxVCI380" filename="Vestax-VCI-380-scripts.js"/>
