@@ -170,22 +170,16 @@ VestaxVCI380.getDeckFromGroup = function(group) {
 // with soft start and brake
 ////
 VestaxVCI380.onPlay = function(channel, control, value, status, group) {
+    if (value === 0x7F) {
     const deck=VestaxVCI380.getDeck(channel);
-    if (value === 0x00) {
-        const playStatus = engine.getValue(group, "play");
-
         if (VestaxVCI380.shiftStatus) {
-            if (playStatus === 1) {
+            if (engine.getValue(group, "play")) {
                 engine.brake(deck, true, 10);
             } else {
                 engine.softStart(deck, true, 10);
             }
         } else {
-            if (playStatus === 1) {
-                engine.setValue(group, "play", 0);
-            } else {
-                engine.setValue(group, "play", 1);
-            }
+            script.toggleControl(group, "play");
         }
     }
 };
