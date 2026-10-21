@@ -1,0 +1,2090 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AI-generated: this file was generated with an AI agent (Claude) from a MIDI map verified on hardware. -->
+<MixxxControllerPreset mixxxVersion="2.5.0+" schemaVersion="1">
+    <info>
+        <name>Pioneer DDJ-WeGO</name>
+        <author>Samuel Nicholas, Dmytro Hakman</author>
+        <description>4-deck mapping for the Pioneer DDJ-WeGO with Jog FX and jog lighting.</description>
+    </info>
+    <settings>
+        <option variable="blinkingSync" type="boolean" default="false" label="Blink SYNC on beat">
+            <description>SYNC LED blinks on every beat instead of showing sync state.</description>
+        </option>
+        <option variable="autoLoopSize" type="integer" min="1" max="64" default="4" label="Auto loop size (beats)">
+            <description>Loop length set by the AUTO LOOP button when no loop is active.</description>
+        </option>
+    </settings>
+    <controller id="DDJ-WeGO">
+        <scriptfiles>
+            <file functionprefix="PioneerDDJWeGO" filename="Pioneer-DDJ-WeGO-scripts.js"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <description>PLAY (A)</description>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+PLAY (A): censor</description>
+                <group>[Channel1]</group>
+                <key>reverseroll</key>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CUE (A)</description>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+CUE (A): back to start</description>
+                <group>[Channel1]</group>
+                <key>start_stop</key>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SYNC (A)</description>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <status>0x90</status>
+                <midino>0x58</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+SYNC (A): sync leader</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.syncLeader</key>
+                <status>0x90</status>
+                <midino>0x5C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 1 (A)</description>
+                <group>[Channel1]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x90</status>
+                <midino>0x2E</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 1 (A): clear</description>
+                <group>[Channel1]</group>
+                <key>hotcue_1_clear</key>
+                <status>0x90</status>
+                <midino>0x5F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 1 (A)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 1 (A)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x90</status>
+                <midino>0x3D</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 2 (A)</description>
+                <group>[Channel1]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x90</status>
+                <midino>0x2F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 2 (A): clear</description>
+                <group>[Channel1]</group>
+                <key>hotcue_2_clear</key>
+                <status>0x90</status>
+                <midino>0x60</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 2 (A)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 2 (A)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 3 (A)</description>
+                <group>[Channel1]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 3 (A): clear</description>
+                <group>[Channel1]</group>
+                <key>hotcue_3_clear</key>
+                <status>0x90</status>
+                <midino>0x61</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 3 (A)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 3 (A)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 4 (A)</description>
+                <group>[Channel1]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x90</status>
+                <midino>0x31</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 4 (A): clear</description>
+                <group>[Channel1]</group>
+                <key>hotcue_4_clear</key>
+                <status>0x90</status>
+                <midino>0x62</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 4 (A)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x90</status>
+                <midino>0x42</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 4 (A)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP push (A)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.loopButton</key>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP push (A): reloop</description>
+                <group>[Channel1]</group>
+                <key>reloop_toggle</key>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP turn (A): loop size</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.loopEncoder</key>
+                <status>0xB0</status>
+                <midino>0x13</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP turn (A): beatjump</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.beatjumpEncoder</key>
+                <status>0xB0</status>
+                <midino>0x4F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog touch (A)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x90</status>
+                <midino>0x36</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog touch (A)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x90</status>
+                <midino>0x67</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog top turn (A)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.jogTurn</key>
+                <status>0xB0</status>
+                <midino>0x22</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog edge turn (A): pitch bend</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.jogEdge</key>
+                <status>0xB0</status>
+                <midino>0x21</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog turn (A): search</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.jogSearch</key>
+                <status>0xB0</status>
+                <midino>0x27</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (A) MSB</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.tempoMSB</key>
+                <status>0xB0</status>
+                <midino>0x00</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (A) LSB</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.tempoLSB</key>
+                <status>0xB0</status>
+                <midino>0x20</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Volume (A) MSB</description>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x13</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>Volume (A) LSB</description>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x33</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (A) MSB</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x07</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (A) LSB</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x27</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (A) MSB</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x0B</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (A) LSB</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x2B</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (A) MSB</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x0F</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (A) LSB</description>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x2F</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>LOAD (A)</description>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x46</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+LOAD (A): eject</description>
+                <group>[Channel1]</group>
+                <key>eject</key>
+                <status>0x96</status>
+                <midino>0x58</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Headphone CUE (A)</description>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x96</status>
+                <midino>0x54</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CTRL A (A): effect unit on/off</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x42</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (A): dry/wet MSB</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>mix</key>
+                <status>0xB4</status>
+                <midino>0x00</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (A): dry/wet LSB</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>mix</key>
+                <status>0xB4</status>
+                <midino>0x20</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX1 (A): effect on/off</description>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x43</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX1 (A): next effect</description>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>next_effect</key>
+                <status>0x94</status>
+                <midino>0x4D</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (A): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x02</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (A): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x22</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX2 (A): effect on/off</description>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x44</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX2 (A): next effect</description>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>next_effect</key>
+                <status>0x94</status>
+                <midino>0x4E</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (A): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x04</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (A): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x24</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX3 (A): effect on/off</description>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x45</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX3 (A): next effect</description>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>next_effect</key>
+                <status>0x94</status>
+                <midino>0x4F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (A): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x06</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (A): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x26</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>CTRL B (A): filter on/off</description>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x46</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (A): filter MSB</description>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <status>0xB4</status>
+                <midino>0x07</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (A): filter LSB</description>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <status>0xB4</status>
+                <midino>0x27</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>PLAY (B)</description>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+PLAY (B): censor</description>
+                <group>[Channel2]</group>
+                <key>reverseroll</key>
+                <status>0x91</status>
+                <midino>0x47</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CUE (B)</description>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+CUE (B): back to start</description>
+                <group>[Channel2]</group>
+                <key>start_stop</key>
+                <status>0x91</status>
+                <midino>0x48</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SYNC (B)</description>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <status>0x91</status>
+                <midino>0x58</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+SYNC (B): sync leader</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.syncLeader</key>
+                <status>0x91</status>
+                <midino>0x5C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 1 (B)</description>
+                <group>[Channel2]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x91</status>
+                <midino>0x2E</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 1 (B): clear</description>
+                <group>[Channel2]</group>
+                <key>hotcue_1_clear</key>
+                <status>0x91</status>
+                <midino>0x5F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 1 (B)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x91</status>
+                <midino>0x3C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 1 (B)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x91</status>
+                <midino>0x3D</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 2 (B)</description>
+                <group>[Channel2]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x91</status>
+                <midino>0x2F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 2 (B): clear</description>
+                <group>[Channel2]</group>
+                <key>hotcue_2_clear</key>
+                <status>0x91</status>
+                <midino>0x60</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 2 (B)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x91</status>
+                <midino>0x3E</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 2 (B)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x91</status>
+                <midino>0x3F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 3 (B)</description>
+                <group>[Channel2]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x91</status>
+                <midino>0x30</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 3 (B): clear</description>
+                <group>[Channel2]</group>
+                <key>hotcue_3_clear</key>
+                <status>0x91</status>
+                <midino>0x61</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 3 (B)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x91</status>
+                <midino>0x40</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 3 (B)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x91</status>
+                <midino>0x41</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 4 (B)</description>
+                <group>[Channel2]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x91</status>
+                <midino>0x31</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 4 (B): clear</description>
+                <group>[Channel2]</group>
+                <key>hotcue_4_clear</key>
+                <status>0x91</status>
+                <midino>0x62</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 4 (B)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x91</status>
+                <midino>0x42</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 4 (B)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x91</status>
+                <midino>0x43</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP push (B)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.loopButton</key>
+                <status>0x91</status>
+                <midino>0x14</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP push (B): reloop</description>
+                <group>[Channel2]</group>
+                <key>reloop_toggle</key>
+                <status>0x91</status>
+                <midino>0x50</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP turn (B): loop size</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.loopEncoder</key>
+                <status>0xB1</status>
+                <midino>0x13</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP turn (B): beatjump</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.beatjumpEncoder</key>
+                <status>0xB1</status>
+                <midino>0x4F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog touch (B)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x91</status>
+                <midino>0x36</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog touch (B)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x91</status>
+                <midino>0x67</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog top turn (B)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.jogTurn</key>
+                <status>0xB1</status>
+                <midino>0x22</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog edge turn (B): pitch bend</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.jogEdge</key>
+                <status>0xB1</status>
+                <midino>0x21</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog turn (B): search</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.jogSearch</key>
+                <status>0xB1</status>
+                <midino>0x27</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (B) MSB</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.tempoMSB</key>
+                <status>0xB1</status>
+                <midino>0x00</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (B) LSB</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.tempoLSB</key>
+                <status>0xB1</status>
+                <midino>0x20</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Volume (B) MSB</description>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x15</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>Volume (B) LSB</description>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x35</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (B) MSB</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x08</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (B) LSB</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x28</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (B) MSB</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x0C</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (B) LSB</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x2C</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (B) MSB</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x10</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (B) LSB</description>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x30</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>LOAD (B)</description>
+                <group>[Channel2]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x47</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+LOAD (B): eject</description>
+                <group>[Channel2]</group>
+                <key>eject</key>
+                <status>0x96</status>
+                <midino>0x59</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Headphone CUE (B)</description>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x96</status>
+                <midino>0x55</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CTRL A (B): effect unit on/off</description>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x42</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (B): dry/wet MSB</description>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>mix</key>
+                <status>0xB5</status>
+                <midino>0x00</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (B): dry/wet LSB</description>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>mix</key>
+                <status>0xB5</status>
+                <midino>0x20</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX1 (B): effect on/off</description>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x43</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX1 (B): next effect</description>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>next_effect</key>
+                <status>0x95</status>
+                <midino>0x4D</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (B): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x02</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (B): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x22</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX2 (B): effect on/off</description>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x44</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX2 (B): next effect</description>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>next_effect</key>
+                <status>0x95</status>
+                <midino>0x4E</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (B): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x04</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (B): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x24</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX3 (B): effect on/off</description>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x45</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX3 (B): next effect</description>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>next_effect</key>
+                <status>0x95</status>
+                <midino>0x4F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (B): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x06</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (B): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x26</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>CTRL B (B): filter on/off</description>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x46</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (B): filter MSB</description>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <status>0xB5</status>
+                <midino>0x07</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (B): filter LSB</description>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <status>0xB5</status>
+                <midino>0x27</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>PLAY (C)</description>
+                <group>[Channel3]</group>
+                <key>play</key>
+                <status>0x92</status>
+                <midino>0x0B</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+PLAY (C): censor</description>
+                <group>[Channel3]</group>
+                <key>reverseroll</key>
+                <status>0x92</status>
+                <midino>0x47</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CUE (C)</description>
+                <group>[Channel3]</group>
+                <key>cue_default</key>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+CUE (C): back to start</description>
+                <group>[Channel3]</group>
+                <key>start_stop</key>
+                <status>0x92</status>
+                <midino>0x48</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SYNC (C)</description>
+                <group>[Channel3]</group>
+                <key>sync_enabled</key>
+                <status>0x92</status>
+                <midino>0x58</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+SYNC (C): sync leader</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.syncLeader</key>
+                <status>0x92</status>
+                <midino>0x5C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 1 (C)</description>
+                <group>[Channel3]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x92</status>
+                <midino>0x2E</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 1 (C): clear</description>
+                <group>[Channel3]</group>
+                <key>hotcue_1_clear</key>
+                <status>0x92</status>
+                <midino>0x5F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 1 (C)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x92</status>
+                <midino>0x3C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 1 (C)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x92</status>
+                <midino>0x3D</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 2 (C)</description>
+                <group>[Channel3]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x92</status>
+                <midino>0x2F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 2 (C): clear</description>
+                <group>[Channel3]</group>
+                <key>hotcue_2_clear</key>
+                <status>0x92</status>
+                <midino>0x60</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 2 (C)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x92</status>
+                <midino>0x3E</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 2 (C)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x92</status>
+                <midino>0x3F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 3 (C)</description>
+                <group>[Channel3]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x92</status>
+                <midino>0x30</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 3 (C): clear</description>
+                <group>[Channel3]</group>
+                <key>hotcue_3_clear</key>
+                <status>0x92</status>
+                <midino>0x61</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 3 (C)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x92</status>
+                <midino>0x40</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 3 (C)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x92</status>
+                <midino>0x41</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 4 (C)</description>
+                <group>[Channel3]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x92</status>
+                <midino>0x31</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 4 (C): clear</description>
+                <group>[Channel3]</group>
+                <key>hotcue_4_clear</key>
+                <status>0x92</status>
+                <midino>0x62</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 4 (C)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x92</status>
+                <midino>0x42</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 4 (C)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x92</status>
+                <midino>0x43</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP push (C)</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.loopButton</key>
+                <status>0x92</status>
+                <midino>0x14</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP push (C): reloop</description>
+                <group>[Channel3]</group>
+                <key>reloop_toggle</key>
+                <status>0x92</status>
+                <midino>0x50</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP turn (C): loop size</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.loopEncoder</key>
+                <status>0xB2</status>
+                <midino>0x13</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP turn (C): beatjump</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.beatjumpEncoder</key>
+                <status>0xB2</status>
+                <midino>0x4F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog touch (C)</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x92</status>
+                <midino>0x36</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog touch (C)</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x92</status>
+                <midino>0x67</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog top turn (C)</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.jogTurn</key>
+                <status>0xB2</status>
+                <midino>0x22</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog edge turn (C): pitch bend</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.jogEdge</key>
+                <status>0xB2</status>
+                <midino>0x21</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog turn (C): search</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.jogSearch</key>
+                <status>0xB2</status>
+                <midino>0x27</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (C) MSB</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.tempoMSB</key>
+                <status>0xB2</status>
+                <midino>0x00</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (C) LSB</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.tempoLSB</key>
+                <status>0xB2</status>
+                <midino>0x20</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Volume (C) MSB</description>
+                <group>[Channel3]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x17</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>Volume (C) LSB</description>
+                <group>[Channel3]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x37</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (C) MSB</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x09</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (C) LSB</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x29</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (C) MSB</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x0D</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (C) LSB</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x2D</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (C) MSB</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x11</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (C) LSB</description>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x31</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>LOAD (C)</description>
+                <group>[Channel3]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x48</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+LOAD (C): eject</description>
+                <group>[Channel3]</group>
+                <key>eject</key>
+                <status>0x96</status>
+                <midino>0x5A</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Headphone CUE (C)</description>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <status>0x96</status>
+                <midino>0x56</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CTRL A (C): effect unit on/off</description>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x47</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (C): dry/wet MSB</description>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>mix</key>
+                <status>0xB4</status>
+                <midino>0x08</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (C): dry/wet LSB</description>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>mix</key>
+                <status>0xB4</status>
+                <midino>0x28</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX1 (C): effect on/off</description>
+                <group>[EffectRack1_EffectUnit3_Effect1]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x48</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX1 (C): next effect</description>
+                <group>[EffectRack1_EffectUnit3_Effect1]</group>
+                <key>next_effect</key>
+                <status>0x94</status>
+                <midino>0x52</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (C): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit3_Effect1]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x0A</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (C): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit3_Effect1]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x2A</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX2 (C): effect on/off</description>
+                <group>[EffectRack1_EffectUnit3_Effect2]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x49</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX2 (C): next effect</description>
+                <group>[EffectRack1_EffectUnit3_Effect2]</group>
+                <key>next_effect</key>
+                <status>0x94</status>
+                <midino>0x53</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (C): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit3_Effect2]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x0C</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (C): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit3_Effect2]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x2C</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX3 (C): effect on/off</description>
+                <group>[EffectRack1_EffectUnit3_Effect3]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x4A</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX3 (C): next effect</description>
+                <group>[EffectRack1_EffectUnit3_Effect3]</group>
+                <key>next_effect</key>
+                <status>0x94</status>
+                <midino>0x54</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (C): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit3_Effect3]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x0E</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (C): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit3_Effect3]</group>
+                <key>meta</key>
+                <status>0xB4</status>
+                <midino>0x2E</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>CTRL B (C): filter on/off</description>
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>enabled</key>
+                <status>0x94</status>
+                <midino>0x4B</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (C): filter MSB</description>
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>super1</key>
+                <status>0xB4</status>
+                <midino>0x0F</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (C): filter LSB</description>
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>super1</key>
+                <status>0xB4</status>
+                <midino>0x2F</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>PLAY (D)</description>
+                <group>[Channel4]</group>
+                <key>play</key>
+                <status>0x93</status>
+                <midino>0x0B</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+PLAY (D): censor</description>
+                <group>[Channel4]</group>
+                <key>reverseroll</key>
+                <status>0x93</status>
+                <midino>0x47</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CUE (D)</description>
+                <group>[Channel4]</group>
+                <key>cue_default</key>
+                <status>0x93</status>
+                <midino>0x0C</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+CUE (D): back to start</description>
+                <group>[Channel4]</group>
+                <key>start_stop</key>
+                <status>0x93</status>
+                <midino>0x48</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SYNC (D)</description>
+                <group>[Channel4]</group>
+                <key>sync_enabled</key>
+                <status>0x93</status>
+                <midino>0x58</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+SYNC (D): sync leader</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.syncLeader</key>
+                <status>0x93</status>
+                <midino>0x5C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 1 (D)</description>
+                <group>[Channel4]</group>
+                <key>hotcue_1_activate</key>
+                <status>0x93</status>
+                <midino>0x2E</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 1 (D): clear</description>
+                <group>[Channel4]</group>
+                <key>hotcue_1_clear</key>
+                <status>0x93</status>
+                <midino>0x5F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 1 (D)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x93</status>
+                <midino>0x3C</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 1 (D)</description>
+                <group>[Sampler1]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x93</status>
+                <midino>0x3D</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 2 (D)</description>
+                <group>[Channel4]</group>
+                <key>hotcue_2_activate</key>
+                <status>0x93</status>
+                <midino>0x2F</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 2 (D): clear</description>
+                <group>[Channel4]</group>
+                <key>hotcue_2_clear</key>
+                <status>0x93</status>
+                <midino>0x60</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 2 (D)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x93</status>
+                <midino>0x3E</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 2 (D)</description>
+                <group>[Sampler2]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x93</status>
+                <midino>0x3F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 3 (D)</description>
+                <group>[Channel4]</group>
+                <key>hotcue_3_activate</key>
+                <status>0x93</status>
+                <midino>0x30</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 3 (D): clear</description>
+                <group>[Channel4]</group>
+                <key>hotcue_3_clear</key>
+                <status>0x93</status>
+                <midino>0x61</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 3 (D)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x93</status>
+                <midino>0x40</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 3 (D)</description>
+                <group>[Sampler3]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x93</status>
+                <midino>0x41</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>HOT CUE 4 (D)</description>
+                <group>[Channel4]</group>
+                <key>hotcue_4_activate</key>
+                <status>0x93</status>
+                <midino>0x31</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+HOT CUE 4 (D): clear</description>
+                <group>[Channel4]</group>
+                <key>hotcue_4_clear</key>
+                <status>0x93</status>
+                <midino>0x62</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SAMPLER pad 4 (D)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPad</key>
+                <status>0x93</status>
+                <midino>0x42</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+SAMPLER pad 4 (D)</description>
+                <group>[Sampler4]</group>
+                <key>PioneerDDJWeGO.samplerPadShift</key>
+                <status>0x93</status>
+                <midino>0x43</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP push (D)</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.loopButton</key>
+                <status>0x93</status>
+                <midino>0x14</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP push (D): reloop</description>
+                <group>[Channel4]</group>
+                <key>reloop_toggle</key>
+                <status>0x93</status>
+                <midino>0x50</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>AUTO LOOP turn (D): loop size</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.loopEncoder</key>
+                <status>0xB3</status>
+                <midino>0x13</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+AUTO LOOP turn (D): beatjump</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.beatjumpEncoder</key>
+                <status>0xB3</status>
+                <midino>0x4F</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog touch (D)</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x93</status>
+                <midino>0x36</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog touch (D)</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.jogTouch</key>
+                <status>0x93</status>
+                <midino>0x67</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog top turn (D)</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.jogTurn</key>
+                <status>0xB3</status>
+                <midino>0x22</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Jog edge turn (D): pitch bend</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.jogEdge</key>
+                <status>0xB3</status>
+                <midino>0x21</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+Jog turn (D): search</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.jogSearch</key>
+                <status>0xB3</status>
+                <midino>0x27</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (D) MSB</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.tempoMSB</key>
+                <status>0xB3</status>
+                <midino>0x00</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>TEMPO (D) LSB</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.tempoLSB</key>
+                <status>0xB3</status>
+                <midino>0x20</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Volume (D) MSB</description>
+                <group>[Channel4]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x19</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>Volume (D) LSB</description>
+                <group>[Channel4]</group>
+                <key>volume</key>
+                <status>0xB6</status>
+                <midino>0x39</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (D) MSB</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x0A</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ HI (D) LSB</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter3</key>
+                <status>0xB6</status>
+                <midino>0x2A</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (D) MSB</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x0E</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ MID (D) LSB</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter2</key>
+                <status>0xB6</status>
+                <midino>0x2E</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (D) MSB</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x12</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>EQ LOW (D) LSB</description>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>parameter1</key>
+                <status>0xB6</status>
+                <midino>0x32</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>LOAD (D)</description>
+                <group>[Channel4]</group>
+                <key>LoadSelectedTrack</key>
+                <status>0x96</status>
+                <midino>0x49</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+LOAD (D): eject</description>
+                <group>[Channel4]</group>
+                <key>eject</key>
+                <status>0x96</status>
+                <midino>0x5B</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Headphone CUE (D)</description>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x96</status>
+                <midino>0x57</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>CTRL A (D): effect unit on/off</description>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x47</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (D): dry/wet MSB</description>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>mix</key>
+                <status>0xB5</status>
+                <midino>0x08</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL A (D): dry/wet LSB</description>
+                <group>[EffectRack1_EffectUnit4]</group>
+                <key>mix</key>
+                <status>0xB5</status>
+                <midino>0x28</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX1 (D): effect on/off</description>
+                <group>[EffectRack1_EffectUnit4_Effect1]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x48</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX1 (D): next effect</description>
+                <group>[EffectRack1_EffectUnit4_Effect1]</group>
+                <key>next_effect</key>
+                <status>0x95</status>
+                <midino>0x52</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (D): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit4_Effect1]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x0A</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX1 (D): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit4_Effect1]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x2A</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX2 (D): effect on/off</description>
+                <group>[EffectRack1_EffectUnit4_Effect2]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x49</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX2 (D): next effect</description>
+                <group>[EffectRack1_EffectUnit4_Effect2]</group>
+                <key>next_effect</key>
+                <status>0x95</status>
+                <midino>0x53</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (D): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit4_Effect2]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x0C</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX2 (D): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit4_Effect2]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x2C</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>FX3 (D): effect on/off</description>
+                <group>[EffectRack1_EffectUnit4_Effect3]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x4A</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+FX3 (D): next effect</description>
+                <group>[EffectRack1_EffectUnit4_Effect3]</group>
+                <key>next_effect</key>
+                <status>0x95</status>
+                <midino>0x54</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (D): parameter MSB</description>
+                <group>[EffectRack1_EffectUnit4_Effect3]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x0E</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX FX3 (D): parameter LSB</description>
+                <group>[EffectRack1_EffectUnit4_Effect3]</group>
+                <key>meta</key>
+                <status>0xB5</status>
+                <midino>0x2E</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>CTRL B (D): filter on/off</description>
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>enabled</key>
+                <status>0x95</status>
+                <midino>0x4B</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (D): filter MSB</description>
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>super1</key>
+                <status>0xB5</status>
+                <midino>0x0F</midino>
+                <options><fourteen-bit-msb/></options>
+            </control>
+            <control>
+                <description>Jog FX CTRL B (D): filter LSB</description>
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>super1</key>
+                <status>0xB5</status>
+                <midino>0x2F</midino>
+                <options><fourteen-bit-lsb/></options>
+            </control>
+            <control>
+                <description>DECK button (left): toggle A/C</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.deckToggle</key>
+                <status>0x92</status>
+                <midino>0x72</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>DECK button (right): toggle B/D</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.deckToggle</key>
+                <status>0x93</status>
+                <midino>0x72</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>Crossfader MSB</description>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB6</status>
+                <midino>0x1F</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>Crossfader LSB</description>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <status>0xB6</status>
+                <midino>0x3F</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>Headphone MIX MSB</description>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB6</status>
+                <midino>0x01</midino>
+                <options><fourteen-bit-msb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>Headphone MIX LSB</description>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <status>0xB6</status>
+                <midino>0x21</midino>
+                <options><fourteen-bit-lsb/><soft-takeover/></options>
+            </control>
+            <control>
+                <description>BROWSE turn</description>
+                <group>[Library]</group>
+                <key>PioneerDDJWeGO.browse</key>
+                <status>0xB6</status>
+                <midino>0x40</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT+BROWSE turn: scroll fast</description>
+                <group>[Library]</group>
+                <key>PioneerDDJWeGO.browseShift</key>
+                <status>0xB6</status>
+                <midino>0x64</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>BROWSE push: open/load item</description>
+                <group>[Library]</group>
+                <key>GoToItem</key>
+                <status>0x96</status>
+                <midino>0x41</midino>
+                <options><normal/></options>
+            </control>
+            <control>
+                <description>SHIFT+BROWSE push: switch library pane</description>
+                <group>[Library]</group>
+                <key>MoveFocusForward</key>
+                <status>0x96</status>
+                <midino>0x42</midino>
+                <options><normal/></options>
+            </control>
+        </controls>
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
+<!-- End of AI-generated file. -->
