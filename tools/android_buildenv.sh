@@ -50,7 +50,7 @@ fi
 
 BUILDENV_URL="https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/Linux/${BUILDENV_NAME}.zip"
 MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
-ANDROID_API=35
+ANDROID_API=34
 ANDROID_VERSION=35.0.0
 # NDK r28 (stable) — ships Clang 19, defaults to 16 KB page sizes (required
 # by Pixel 8a+ and any device declaring `ro.build.16k_page=true`), and is
