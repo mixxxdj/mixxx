@@ -3,7 +3,7 @@
   <info>
     <name>Vestax VCI-380</name>
     <author>JM Jacinto</author>
-    <description>Mapping for the Vestax VCI-380: 2 decks, hot cues, beat grid, loops, stems, sampler, quick effects, touch strip. Hardware test mapping and Linux audio notes on https://github.com/jaymanu79/Vestax_VCI-380_Mixxx_Mapping</description>
+    <description>Mapping for the Vestax VCI-380: 2 decks, hot cues, beat grid, loops, stems, sampler, quick effects, touch strip.</description>
     <forums>https://mixxx.discourse.group/t/vestax-vci-380-mapping/14713</forums>
     <manual>vestax_vci_380</manual>
   </info>
