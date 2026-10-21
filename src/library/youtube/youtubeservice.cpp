@@ -150,16 +150,14 @@ void applyYouTubeRequestAttributes(QNetworkRequest* req) {
 
 // Hardcoded list of Piped API instances tried in order on per-request
 // failure. Instances verified as working (both /search and /streams return
-// 200) as of 2026-05-29. Piped community instances are ephemeral — the
+// 200) as of 2026-10-21. Piped community instances are ephemeral — the
 // official registry at https://piped-instances.kavin.rocks/ currently lists
 // only private.coffee as active. Periodically re-verify and update this list.
 // When all Piped instances fail, the youtubedl-android bundled runtime
 // (JNI-based, no external Python needed) serves as the Android fallback.
 const QStringList kPipedInstances = {
         QStringLiteral("https://api.piped.private.coffee"),
-        QStringLiteral("https://api.piped.projectsegfau.lt"),
-        QStringLiteral("https://pipedapi.orangenet.cc"),
-        QStringLiteral("https://pi.ggtyler.dev"),
+        QStringLiteral("https://pipedapi.ducks.party"),
 };
 
 // InnerTube client contexts tried in order by downloadViaInnerTubeClient().
@@ -215,10 +213,10 @@ QVector<InnerTubeClient> innerTubeClients() {
             // serve. May require a poToken (and then fail over), but still
             // succeeds for many videos.
             {"IOS",
-                    "21.02.3",
+                    "21.26.4",
                     "5",
                     "",
-                    "com.google.ios.youtube/21.02.3 (iPhone16,2; U; CPU iOS "
+                    "com.google.ios.youtube/21.26.4 (iPhone16,2; U; CPU iOS "
                     "18_3_2 like Mac OS X;)",
                     "Apple",
                     "iPhone16,2",
@@ -229,10 +227,10 @@ QVector<InnerTubeClient> innerTubeClients() {
             // Requires a poToken for most videos, but still works for many.
             // Added as a fallback before the TVHTML5 client.
             {"ANDROID",
-                    "21.02.35",
+                    "21.26.364",
                     "3",
                     "",
-                    "com.google.android.youtube/21.02.35 (Linux; U; Android 11) gzip",
+                    "com.google.android.youtube/21.26.364 (Linux; U; Android 11) gzip",
                     "",
                     "",
                     30,
@@ -297,7 +295,7 @@ const QVector<InnerTubeClient>& innerTubeSearchClients() {
                     "",
                     ""},
             {"WEB",
-                    "2.20260114.08.00",
+                    "2.20260708.00.00",
                     "1",
                     "",
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/"
