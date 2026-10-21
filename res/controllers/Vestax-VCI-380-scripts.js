@@ -171,7 +171,7 @@ VestaxVCI380.getDeckFromGroup = function(group) {
 ////
 VestaxVCI380.onPlay = function(channel, control, value, status, group) {
     if (value === 0x7F) {
-    const deck=VestaxVCI380.getDeck(channel);
+        const deck = VestaxVCI380.getDeck(channel);
         if (VestaxVCI380.shiftStatus) {
             if (engine.getValue(group, "play")) {
                 engine.brake(deck, true, 10);
