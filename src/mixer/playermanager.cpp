@@ -1,6 +1,7 @@
 #include "mixer/playermanager.h"
 
 #include <QRegularExpression>
+#include <QSet>
 
 #include "audio/types.h"
 #include "control/controlobject.h"
@@ -797,6 +798,33 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         // until all loaded tracks have been analyzed. Emit it once just now
         // before any signals from the analyzer queue arrive.
         emit trackAnalyzerProgress(track->getId(), kAnalyzerProgressUnknown);
+    }
+}
+
+void PlayerManager::reanalyzeLoadedWaveforms() {
+    QSet<TrackId> scheduledTrackIds;
+    QList<TrackPointer> loadedTracks;
+    const auto collectPlayerTrack = [&scheduledTrackIds, &loadedTracks](BaseTrackPlayer* pPlayer) {
+        const TrackPointer pTrack = pPlayer->getLoadedTrack();
+        if (pTrack && !scheduledTrackIds.contains(pTrack->getId())) {
+            scheduledTrackIds.insert(pTrack->getId());
+            loadedTracks.append(pTrack);
+        }
+    };
+    {
+        const auto locker = lockMutex(&m_mutex);
+        for (Deck* pDeck : std::as_const(m_decks)) {
+            collectPlayerTrack(pDeck);
+        }
+        for (PreviewDeck* pPreviewDeck : std::as_const(m_previewDecks)) {
+            collectPlayerTrack(pPreviewDeck);
+        }
+        for (Sampler* pSampler : std::as_const(m_samplers)) {
+            collectPlayerTrack(pSampler);
+        }
+    }
+    for (const TrackPointer& pTrack : std::as_const(loadedTracks)) {
+        slotAnalyzeTrack(pTrack);
     }
 }
 

@@ -1,6 +1,13 @@
 #include "waveform/waveformfactory.h"
 #include "waveform/waveform.h"
 
+namespace {
+QString versionWithFrequencies(const QString& base, double lowMid, double midHigh) {
+    return base + QStringLiteral(":") + QString::number(lowMid, 'g', 17) +
+            QStringLiteral(":") + QString::number(midHigh, 'g', 17);
+}
+} // namespace
+
 // static
 Waveform* WaveformFactory::loadWaveformFromAnalysis(
         const AnalysisDao::AnalysisInfo& analysis) {
@@ -12,14 +19,20 @@ Waveform* WaveformFactory::loadWaveformFromAnalysis(
 }
 
 // static
-WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(const QString& version) {
-    if (version == WAVEFORM_CURRENT_VERSION) {
+WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(
+        const QString& version, double lowMidFrequency, double midHighFrequency) {
+    if (version == currentWaveformVersion(lowMidFrequency, midHighFrequency)) {
         // use, since is our version
         return VC_USE;
     }
 
-    if (version == WAVEFORM_4_VERSION) {
-        // Used in Mixxx 1.12 beta, suffers Bug #7776
+    if (version == WAVEFORM_4_VERSION || version == WAVEFORM_5_VERSION ||
+            version == WAVEFORM_CURRENT_VERSION ||
+            version.startsWith(QStringLiteral(WAVEFORM_CURRENT_VERSION ":"))
+#ifdef __STEM__
+            || version == WAVEFORM_6_VERSION
+#endif
+    ) {
         return VC_REMOVE;
     }
 
@@ -46,14 +59,16 @@ WaveformFactory::VersionClass WaveformFactory::waveformVersionToVersionClass(con
 }
 
 // static
-WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionClass(const QString& version) {
-    if (version == WAVEFORMSUMMARY_CURRENT_VERSION) {
+WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionClass(
+        const QString& version, double lowMidFrequency, double midHighFrequency) {
+    if (version == currentWaveformSummaryVersion(lowMidFrequency, midHighFrequency)) {
         // use, since is our version
         return VC_USE;
     }
 
-    if (version == WAVEFORMSUMMARY_4_VERSION) {
-        // Used in Mixxx 1.12 beta, suffers Bug #7776
+    if (version == WAVEFORMSUMMARY_4_VERSION || version == WAVEFORMSUMMARY_5_VERSION ||
+            version == WAVEFORMSUMMARY_CURRENT_VERSION ||
+            version.startsWith(QStringLiteral(WAVEFORMSUMMARY_CURRENT_VERSION ":"))) {
         return VC_REMOVE;
     }
 
@@ -72,13 +87,18 @@ WaveformFactory::VersionClass WaveformFactory::waveformSummaryVersionToVersionCl
 }
 
 // static
-QString WaveformFactory::currentWaveformVersion() {
-    return WAVEFORM_CURRENT_VERSION;
+QString WaveformFactory::currentWaveformVersion(double lowMidFrequency, double midHighFrequency) {
+    return versionWithFrequencies(QStringLiteral(WAVEFORM_CURRENT_VERSION),
+            lowMidFrequency,
+            midHighFrequency);
 }
 
 // static
-QString WaveformFactory::currentWaveformSummaryVersion() {
-    return WAVEFORMSUMMARY_CURRENT_VERSION;
+QString WaveformFactory::currentWaveformSummaryVersion(
+        double lowMidFrequency, double midHighFrequency) {
+    return versionWithFrequencies(QStringLiteral(WAVEFORMSUMMARY_CURRENT_VERSION),
+            lowMidFrequency,
+            midHighFrequency);
 }
 
 // static
