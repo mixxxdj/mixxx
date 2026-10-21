@@ -175,7 +175,8 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
     // Here we can override values to prevent restoring corrupt values from database
     setSectionsMovable(true);
 
-    // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
+    // Setting true in the next line causes Bug https://github.com/mixxxdj/mixxx/issues/6265
+    // at least with Qt 4.6.1
     setCascadingSectionResizes(false);
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
@@ -220,7 +221,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         pAction->setDefaultWidget(pCheckBox.get());
         // Pressing Return triggers the action but that would not toggle the
         // checkbox, we need to do this ourselves while the menu is being closed.
-        connect(pAction,
+        connect(pAction.get(),
                 &QAction::triggered,
                 this,
                 [pCheckBox{pCheckBox.get()}] {
@@ -296,8 +297,8 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
 }
 
 void WTrackTableViewHeader::clearActions() {
-    // The QActions are parented to the menu, so clearing deletes them. Since
-    // they are deleted we don't have to disconnect their signals from the
+    // The Q[Widget]Actions are parented to the menu, QMenu::clear() deletes them.
+    // Since they are deleted we don't have to disconnect their signals from the
     // mapper.
     m_columnCheckBoxes.clear();
     m_menu.clear();
