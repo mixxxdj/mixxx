@@ -3,6 +3,7 @@
 #include <QTemporaryFile>
 
 #include "control/control.h"
+#include "effects/backends/effectsbackendmanager.h"
 #include "library/coverartutils.h"
 #include "util/cmdlineargs.h"
 #include "util/logging.h"
@@ -42,6 +43,9 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // in the same thread during tests to prevent test failures
     // due to timing issues.
     disableConcurrentGuessingOfTrackCoverInfoDuringTests();
+
+    // Don't instantiate the system's Audio Units (macOS) in tests.
+    EffectsBackendManager::disableAudioUnitsDuringTests();
 
     DEBUG_ASSERT(s_pApplication.isNull());
     s_pApplication.reset(new MixxxApplication(argc, argv));
