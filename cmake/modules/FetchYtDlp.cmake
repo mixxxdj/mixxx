@@ -27,7 +27,7 @@
 
 set(
   YTDLP_VERSION
-  "2026.07.04"
+  "2026.08.19"
   CACHE STRING
   "Pinned yt-dlp release tag to bundle inside Mixxx"
 )
@@ -39,14 +39,14 @@ if(WIN32)
   set(_ytdlp_asset "yt-dlp.exe")
   set(
     _ytdlp_sha256
-    "52fe3c26dcf71fbdc85b528589020bb0b8e383155cfa81b64dd447bbe35e24b8"
+    "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a"
   )
   set(_ytdlp_install_name "yt-dlp.exe")
 elseif(APPLE)
   set(_ytdlp_asset "yt-dlp_macos")
   set(
     _ytdlp_sha256
-    "498bd0dae17855c599d371d68ec5bafc439a9d8640e838be25c765a9792f261b"
+    "0f192b7ec147ab6288885d6351d9ab67367640029b4377576ef46dd79cf7b202"
   )
   set(_ytdlp_install_name "yt-dlp")
 elseif(UNIX)
@@ -57,7 +57,7 @@ elseif(UNIX)
     set(_ytdlp_asset "yt-dlp_linux")
     set(
       _ytdlp_sha256
-      "6bbb3d314cde4febe36e5fa1d55462e29c974f63444e707871834f6d8cc210ae"
+      "58162f9bfdc27458ea47bfcb311cf47028f17d8154a8bf7d689861d46399230a"
     )
     set(_ytdlp_install_name "yt-dlp")
   endif()
@@ -256,14 +256,23 @@ if(ANDROID)
 
   if(_need_aar_download)
     # AAR is ~57 MB. Maven Central CDN or GitHub Actions runners can be flaky,
-    # so retry up to 3 times before giving up.
-    set(_max_attempts 3)
+    # so retry up to 3 times per mirror before giving up. repo1 and
+    # repo.maven.apache.org serve the same content from different frontends,
+    # so alternate between them on each attempt.
+    set(
+      _ytdlp_aar_mirrors
+      "https://repo1.maven.org/maven2/io/github/junkfood02.youtubedl-android/library/0.18.1/library-0.18.1.aar"
+      "https://repo.maven.apache.org/maven2/io/github/junkfood02/youtubedl-android/library/0.18.1/library-0.18.1.aar"
+    )
+    set(_max_attempts 6)
     set(_attempt 1)
     set(_aar_ok FALSE)
     while(_attempt LESS_EQUAL _max_attempts AND NOT _aar_ok)
+      math(EXPR _mirror_idx "(${_attempt} - 1) % 2")
+      list(GET _ytdlp_aar_mirrors ${_mirror_idx} _ytdlp_aar_url)
       message(
         STATUS
-        "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts})..."
+        "Downloading youtubedl-android AAR (${_attempt}/${_max_attempts}) from ${_ytdlp_aar_url}..."
       )
       file(
         DOWNLOAD "${_ytdlp_aar_url}" "${_ytdlp_aar_path}"
