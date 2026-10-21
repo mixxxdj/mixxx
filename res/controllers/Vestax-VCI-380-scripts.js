@@ -342,7 +342,7 @@ VestaxVCI380.onLoad = function(channel, control, value, _status) {
 // Headphone cue buttons
 // NOTE: the headphone cue function is handled by the controller in hardware
 VestaxVCI380.onHeadCue = function(channel, control, value, _status) {
-    engine.setValue(`[Channel${VestaxVCI380.getDeck(channel)}]`, "pfl", value===0x7F);
+    engine.setValue(`[Channel${VestaxVCI380.getDeck(channel)}]`, "pfl", value === 0x7F ? 1 : 0);
 };
 
 ////
