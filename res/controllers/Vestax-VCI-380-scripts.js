@@ -330,48 +330,10 @@ VestaxVCI380.onCrossfader = function(channel, control, value, _status) {
 // BUTTONS
 ////
 
-// RANGE button used as key lock
-VestaxVCI380.onRange = function(channel, control, value, _status) {
-    if (value===0x7F) {
-        const deck=VestaxVCI380.getDeck(channel);
-        if (VestaxVCI380.shiftStatus) {
-            const keyLockStatus=engine.getValue(`[Channel${deck}]`, "keylock")===1;
-            VestaxVCI380.setLED(deck+2, VestaxVCI380.LED.RANGE, !keyLockStatus); // LEDs possess a distinct status with shift. settable by adding 2 to midi channel #
-            engine.setValue(`[Channel${deck}]`, "keylock", !keyLockStatus);
-        } else {
-            const quantizeStatus=engine.getValue(`[Channel${deck}]`, "quantize")===1;
-            VestaxVCI380.setLED(deck, VestaxVCI380.LED.RANGE, !quantizeStatus);
-            engine.setValue(`[Channel${deck}]`, "quantize", !quantizeStatus);
-        }
-    }
-};
-
-
-
 // VINYL button used as slip mode
 VestaxVCI380.onVinyl = function(channel, control, value, _status) {
     if  (value===0x7F) {
         script.toggleControl(`[Channel${VestaxVCI380.getDeck(channel)}]`, "slip_enabled");
-    }
-};
-
-// BACK and FWD buttons
-VestaxVCI380.onBack = function(channel, control, value, _status) {
-    if (value===0x7F) {
-        engine.setValue("[Library]", "MoveHorizontal", -1);
-    }
-};
-VestaxVCI380.onFwd = function(channel, control, value, _status) {
-    if (value===0x7F) {
-        engine.setValue("[Library]", "MoveHorizontal", 1);
-    }
-};
-
-
-// SORT button
-VestaxVCI380.onSort = function(channel, control, value, _status) {
-    if  (value===0x7F) {
-        engine.setValue("[Library]", "sort_focused_column", 1);
     }
 };
 
