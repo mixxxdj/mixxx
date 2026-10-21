@@ -90,8 +90,11 @@ VestaxVCI380.init = function(_id, _debugging) {
 
     // splash screen, once the controller has sent its state (pad mode included)
     engine.beginTimer(500, function() {
-        VestaxVCI380.setPadColorSplash(1);
-        VestaxVCI380.setPadColorSplash(2);
+        for (let deck = 1; deck <= 2; deck++) {
+            if (engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
+                VestaxVCI380.setPadColorSplash(deck);
+            }
+        }
     }, true);
 };
 
