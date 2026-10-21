@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QDir>
+#include <QIcon>
 #include <QPixmapCache>
 #include <QString>
 #include <QStringList>
@@ -15,6 +16,7 @@
 #include "config.h"
 #include "controllers/controllermanager.h"
 #include "coreservices.h"
+#include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
 #ifdef MIXXX_USE_QML
@@ -273,6 +275,10 @@ int main(int argc, char * argv[]) {
     adjustScaleFactor(&args);
 
     MixxxApplication app(argc, argv);
+
+    // Default icon for all windows, also used for the Dock icon on macOS
+    // when not running from an .app bundle, and for the QML UI.
+    QApplication::setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
 #if defined(Q_OS_WIN)
     // The Mixxx style is based on Qt's WindowsVista style
