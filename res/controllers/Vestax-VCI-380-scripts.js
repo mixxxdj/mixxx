@@ -73,6 +73,8 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "keylock", VestaxVCI380.initLEDs));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "rate", VestaxVCI380.onRateChange));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "rate", VestaxVCI380.onRateChange));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "slip_enabled", VestaxVCI380.initLEDs));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "slip_enabled", VestaxVCI380.initLEDs));
 
     // turning off all LEDs
     VestaxVCI380.setPadColorAll(VestaxVCI380.padColor.OFF);
@@ -361,11 +363,7 @@ VestaxVCI380.onRange = function(channel, control, value, _status) {
 // VINYL button used as slip mode
 VestaxVCI380.onVinyl = function(channel, control, value, _status) {
     if  (value===0x7F) {
-        const deck=VestaxVCI380.getDeck(channel);
-        const group = `[Channel${deck}]`;
-        const newState = !engine.getValue(group, "slip_enabled");
-        VestaxVCI380.setLED(deck, VestaxVCI380.LED.VINYL, newState);
-        engine.setValue(group, "slip_enabled", newState);
+        script.toggleControl(`[Channel${VestaxVCI380.getDeck(channel)}]`, "slip_enabled");
     }
 };
 
