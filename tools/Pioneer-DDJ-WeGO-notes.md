@@ -116,9 +116,12 @@ SHIFT in FX mode sends `B4 12/32`, `14/34`, `16/36` (not mapped).
 ## Mapping choices
 
 - **Jog FX:** deck N drives `[EffectRack1_EffectUnitN]`; init routes deck N
-  into it. CTRL A = unit on/off, its jog = dry/wet (`mix`). FX1-3 = effect
-  on/off, jog = `meta`, SHIFT = `next_effect`. CTRL B =
-  `[QuickEffectRack1_[ChannelN]]` on/off, jog = `super1` (filter).
+  into it. CTRL A = jog controls dry/wet (`mix`). FX1-3 = effect on/off,
+  jog = `meta`, SHIFT = `next_effect`. CTRL B = jog controls
+  `[QuickEffectRack1_[ChannelN]] super1` (filter); turning it off re-centres
+  the filter. CTRL A/B keep their own state in the script and start unlit:
+  Mixxx effect units and quick effects are enabled by default, and a lit
+  CTRL LED puts the jog into Jog FX mode, which blocks scratching.
 - **SHIFT layer:** PLAY = censor (`reverseroll`), CUE = `start_stop`,
   SYNC = sync leader, HOT CUE = clear, LOAD = eject, AUTO LOOP push = reloop,
   AUTO LOOP turn = beatjump, jog = fast search, BROWSE turn = scroll x10,
@@ -126,6 +129,25 @@ SHIFT in FX mode sends `B4 12/32`, `14/34`, `16/36` (not mapped).
 - **Sampler pads:** `[Sampler1-4]` on every deck. Press: load if empty,
   else play/stop. SHIFT: stop if playing, else eject.
 - **Settings:** auto loop size (default 4 beats), SYNC LED blinks on beat.
+
+## Pitfalls found while testing
+
+- **The mapping object must be `var`.** Mixxx calls `PioneerDDJWeGO.init`
+  and every script binding from separately evaluated code. A top-level
+  `const` is not visible there (`ReferenceError: PioneerDDJWeGO is not
+  defined`). ESLint `--fix` turns `var` into `const`, hence the
+  `eslint-disable-next-line no-var`, as in other mappings. Node does not
+  reproduce this, only Mixxx does.
+- **Debug logs on macOS:** the App Store build is sandboxed, so its folder
+  under `~/Library/Containers` is not readable from Terminal. Start it as
+  `/Applications/Mixxx.app/Contents/MacOS/Mixxx --controller-debug
+  --log-level debug > mixxx.log 2>&1` instead. `--settings-path` outside
+  the container fails (database cannot be opened).
+
+## Tested in Mixxx 2.5.6
+
+Works, no script errors: script loads and `init` runs, PLAY, jog scratch
+(decks A and B), jog edge bend, FX1, BROWSE, LOAD.
 
 ## Still to test in Mixxx
 

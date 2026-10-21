@@ -7,7 +7,9 @@
 // after the CTRL/FX button LED is lit, so those LEDs double as mode switches.
 // SHIFT is handled by the hardware, which sends different notes while held.
 
-const PioneerDDJWeGO = {};
+// Must be var: Mixxx calls PioneerDDJWeGO.* from separately evaluated code.
+// eslint-disable-next-line no-var
+var PioneerDDJWeGO = {};
 
 PioneerDDJWeGO.jogResolution = 480;
 PioneerDDJWeGO.bendScale = 0.8;
@@ -35,18 +37,18 @@ PioneerDDJWeGO.init = function() {
     };
 
     for (let n = 0; n < 4; n++) {
-        const group = `[Channel${  n + 1  }]`;
+        const group = `[Channel${n + 1}]`;
         const note = 0x90 + n;
         const side = n % 2;
         const buttonOffset = n < 2 ? 0 : 5;
         const ringOffset = n < 2 ? 0 : 8;
-        const unit = `[EffectRack1_EffectUnit${  n + 1  }]`;
-        const quickEffect = `[QuickEffectRack1_${  group  }]`;
+        const unit = `[EffectRack1_EffectUnit${n + 1}]`;
+        const quickEffect = `[QuickEffectRack1_${group}]`;
 
         engine.setValue(group, "beatloop_size", engine.getSetting("autoLoopSize"));
         engine.softTakeover(group, "rate", true);
         // Jog FX of deck N drives effect unit N, so route that deck into it.
-        engine.setValue(unit, `group_${  group  }_enable`, 1);
+        engine.setValue(unit, `group_${group}_enable`, 1);
 
         connect(group, "play_indicator", function(value) {
             PioneerDDJWeGO.led(note, 0x0B, value);
@@ -64,7 +66,7 @@ PioneerDDJWeGO.init = function() {
             PioneerDDJWeGO.led(note, 0x5C, value);
         });
         for (let k = 0; k < 4; k++) {
-            connect(group, `hotcue_${  k + 1  }_status`, function(value) {
+            connect(group, `hotcue_${k + 1}_status`, function(value) {
                 PioneerDDJWeGO.led(note, 0x2E + k, value);
                 PioneerDDJWeGO.led(note, 0x5F + k, value);
             });
@@ -95,25 +97,21 @@ PioneerDDJWeGO.init = function() {
                 midi.sendShortMsg(0xB4 + side, midino, Math.round(value * 0x7F));
             };
         };
-        connect(unit, "enabled", function(value) {
-            PioneerDDJWeGO.led(0x94 + side, 0x42 + buttonOffset, value);
-        });
+        PioneerDDJWeGO.led(0x94 + side, 0x42 + buttonOffset, false);
         connect(unit, "mix", ring(0x00 + ringOffset));
         for (let m = 0; m < 3; m++) {
-            const effect = `[EffectRack1_EffectUnit${  n + 1  }_Effect${  m + 1  }]`;
+            const effect = `[EffectRack1_EffectUnit${n + 1}_Effect${m + 1}]`;
             connect(effect, "enabled", function(value) {
                 PioneerDDJWeGO.led(0x94 + side, 0x43 + buttonOffset + m, value);
             });
             connect(effect, "meta", ring(0x02 + ringOffset + 2 * m));
         }
-        connect(quickEffect, "enabled", function(value) {
-            PioneerDDJWeGO.led(0x94 + side, 0x46 + buttonOffset, value);
-        });
+        PioneerDDJWeGO.led(0x94 + side, 0x46 + buttonOffset, false);
         connect(quickEffect, "super1", ring(0x07 + ringOffset));
     }
 
     for (let k = 0; k < 4; k++) {
-        connect(`[Sampler${  k + 1  }]`, "play_indicator", function(value) {
+        connect(`[Sampler${k + 1}]`, "play_indicator", function(value) {
             for (let n = 0; n < 4; n++) {
                 PioneerDDJWeGO.led(0x90 + n, 0x3C + 2 * k, value);
                 PioneerDDJWeGO.led(0x90 + n, 0x3D + 2 * k, value);
@@ -129,6 +127,31 @@ PioneerDDJWeGO.init = function() {
 PioneerDDJWeGO.shutdown = function() {
     for (const key in PioneerDDJWeGO.litLeds) {
         midi.sendShortMsg(key >> 8, key & 0xFF, 0x00);
+    }
+};
+
+// CTRL A/B only switch the jog into Jog FX mode (lit LED = jog sends FX values),
+// so they keep their own state instead of following Mixxx effect "enabled",
+// which is on by default and would block scratching.
+PioneerDDJWeGO.jogFxMode = {};
+
+PioneerDDJWeGO.toggleJogFxMode = function(status, control) {
+    const key = (status << 8) | control;
+    PioneerDDJWeGO.jogFxMode[key] = !PioneerDDJWeGO.jogFxMode[key];
+    PioneerDDJWeGO.led(status, control, PioneerDDJWeGO.jogFxMode[key]);
+    return PioneerDDJWeGO.jogFxMode[key];
+};
+
+PioneerDDJWeGO.ctrlA = function(channel, control, value, status) {
+    if (value) {
+        PioneerDDJWeGO.toggleJogFxMode(status, control);
+    }
+};
+
+PioneerDDJWeGO.ctrlB = function(channel, control, value, status, group) {
+    // Turning CTRL B off re-centres the filter, so nothing stays filtered unlit.
+    if (value && !PioneerDDJWeGO.toggleJogFxMode(status, control)) {
+        engine.setValue(`[QuickEffectRack1_${group}]`, "super1", 0.5);
     }
 };
 

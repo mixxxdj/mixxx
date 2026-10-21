@@ -372,12 +372,12 @@
                 <options><normal/></options>
             </control>
             <control>
-                <description>CTRL A (A): effect unit on/off</description>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>enabled</key>
+                <description>CTRL A (A): jog controls dry/wet</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.ctrlA</key>
                 <status>0x94</status>
                 <midino>0x42</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL A (A): dry/wet MSB</description>
@@ -492,12 +492,12 @@
                 <options><fourteen-bit-lsb/></options>
             </control>
             <control>
-                <description>CTRL B (A): filter on/off</description>
-                <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>enabled</key>
+                <description>CTRL B (A): jog controls filter</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJWeGO.ctrlB</key>
                 <status>0x94</status>
                 <midino>0x46</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL B (A): filter MSB</description>
@@ -868,12 +868,12 @@
                 <options><normal/></options>
             </control>
             <control>
-                <description>CTRL A (B): effect unit on/off</description>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>enabled</key>
+                <description>CTRL A (B): jog controls dry/wet</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.ctrlA</key>
                 <status>0x95</status>
                 <midino>0x42</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL A (B): dry/wet MSB</description>
@@ -988,12 +988,12 @@
                 <options><fourteen-bit-lsb/></options>
             </control>
             <control>
-                <description>CTRL B (B): filter on/off</description>
-                <group>[QuickEffectRack1_[Channel2]]</group>
-                <key>enabled</key>
+                <description>CTRL B (B): jog controls filter</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJWeGO.ctrlB</key>
                 <status>0x95</status>
                 <midino>0x46</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL B (B): filter MSB</description>
@@ -1364,12 +1364,12 @@
                 <options><normal/></options>
             </control>
             <control>
-                <description>CTRL A (C): effect unit on/off</description>
-                <group>[EffectRack1_EffectUnit3]</group>
-                <key>enabled</key>
+                <description>CTRL A (C): jog controls dry/wet</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.ctrlA</key>
                 <status>0x94</status>
                 <midino>0x47</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL A (C): dry/wet MSB</description>
@@ -1484,12 +1484,12 @@
                 <options><fourteen-bit-lsb/></options>
             </control>
             <control>
-                <description>CTRL B (C): filter on/off</description>
-                <group>[QuickEffectRack1_[Channel3]]</group>
-                <key>enabled</key>
+                <description>CTRL B (C): jog controls filter</description>
+                <group>[Channel3]</group>
+                <key>PioneerDDJWeGO.ctrlB</key>
                 <status>0x94</status>
                 <midino>0x4B</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL B (C): filter MSB</description>
@@ -1860,12 +1860,12 @@
                 <options><normal/></options>
             </control>
             <control>
-                <description>CTRL A (D): effect unit on/off</description>
-                <group>[EffectRack1_EffectUnit4]</group>
-                <key>enabled</key>
+                <description>CTRL A (D): jog controls dry/wet</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.ctrlA</key>
                 <status>0x95</status>
                 <midino>0x47</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL A (D): dry/wet MSB</description>
@@ -1980,12 +1980,12 @@
                 <options><fourteen-bit-lsb/></options>
             </control>
             <control>
-                <description>CTRL B (D): filter on/off</description>
-                <group>[QuickEffectRack1_[Channel4]]</group>
-                <key>enabled</key>
+                <description>CTRL B (D): jog controls filter</description>
+                <group>[Channel4]</group>
+                <key>PioneerDDJWeGO.ctrlB</key>
                 <status>0x95</status>
                 <midino>0x4B</midino>
-                <options><normal/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Jog FX CTRL B (D): filter MSB</description>
