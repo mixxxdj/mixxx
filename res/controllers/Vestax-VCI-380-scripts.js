@@ -768,7 +768,7 @@ VestaxVCI380.refreshPadsStem = function(deck) {
         midi.sendShortMsg(0x96+deck, 0x3B+stem, stemColor);
         midi.sendShortMsg(0x96+deck, 0x3B+stem+4, engine.getValue(`[Channel${deck}_Stem${stem}]`, "mute")===0 ? stemColor : stemColorDim);
     }
-    for (let emptyStem=numStems+1; emptyStem <= 4; emptyStem++) {
+    for (let emptyStem=numStems+1; emptyStem <= VestaxVCI380.MAX_STEMS; emptyStem++) {
         midi.sendShortMsg(0x96+deck, 0x3B+emptyStem, VestaxVCI380.padColor.dimWHITE);
         midi.sendShortMsg(0x96+deck, 0x3B+emptyStem+4, VestaxVCI380.padColor.dimWHITE);
     }
