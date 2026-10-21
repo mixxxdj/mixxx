@@ -753,7 +753,7 @@ VestaxVCI380.makeConnectionsForMode = function(deck, mode) {
         break;
 
     case 5 : // samplers
-        numSamplers=engine.getValue("[App]", "num_samplers");
+        numSamplers=Math.min(engine.getValue("[App]", "num_samplers", 8));
         for (let sampler = 1; sampler <= numSamplers; sampler++) {
             connector=engine.makeConnection(`[Sampler${sampler}]`, "play", VestaxVCI380.onSampler);
             connector.trigger();
