@@ -920,7 +920,7 @@ VestaxVCI380.getDeck = function(channel) {
 // Most LEDs have 2 instances, one for left-deck and the other for the right. The MIDI channel selects the desired deck.
 // Though browse area leds (area, view, sort, back, fwd, jogscroll) are unique and assigned to deck 1 only
 // FX ON/OFF LED is not addressable, it maintains its own status
-VestaxVCI380.LED = {"SHIFT": 12, "SYNC": 19, "CUE": 22, "PLAY": 23, "VINYL": 26, "RANGE": 27, "AREA": 80, "VIEW": 81, "SORT": 82, "BACK": 83, "FWD": 79, "JOGSCROLL": "09", "PADFX": 29};
+VestaxVCI380.LED = {"SHIFT": 12, "SYNC": 19, "CUE": 22, "PLAY": 23, "VINYL": 26, "RANGE": 27, "AREA": 80, "VIEW": 81, "SORT": 82, "BACK": 83, "FWD": 79, "JOGSCROLL": 9, "PADFX": 29};
 
 // set a LED to ON or OFF, for given deck# (1 for left, 2 for right)
 // led IDs to be taken from LED table
