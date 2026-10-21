@@ -1093,7 +1093,7 @@ VestaxVCI380.updatePlayposition = function(value, group, _control) {
     const duration=engine.getValue(group, "duration");
     const tickPerSecond=71.11111;
     const elapsedticks=duration*value*tickPerSecond;
-    VestaxVCI380.setWheelLED(deck, elapsedticks%128);
+    VestaxVCI380.setWheelLED(deck, Math.floor(elapsedticks%128));
 
     // update track end alert indicator
     if (value*duration>(duration-30)) { // less than 30 seconds remaining
