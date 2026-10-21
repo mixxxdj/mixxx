@@ -525,7 +525,7 @@
       <control>
         <group>[Library]</group>
         <key>MoveFocusForward</key>
-        <description>BROWSE push: focus the next library pane</description>
+        <description>SCROLL push: focus the next library pane (TAB)</description>
         <status>0x97</status>
         <midino>0x54</midino>
         <options>
@@ -765,7 +765,7 @@
       <control>
         <group>[Library]</group>
         <key>VestaxVCI380.onSelectTrackKnob</key>
-        <description>BROWSE encoder: move in the library (fast: page scroll)</description>
+        <description>SCROLL encoder: library move up/down (fast: page up/down)</description>
         <status>0xB7</status>
         <midino>0x55</midino>
         <options>
@@ -865,7 +865,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onLoad</key>
-        <description>Left LOAD button: load the selected track (with JOG SCROLL held)</description>
+        <description>JOG SCROLL + CUE A: load the selected track into deck 1</description>
         <status>0x97</status>
         <midino>0x0A</midino>
         <options>
@@ -885,7 +885,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onLoad</key>
-        <description>Right LOAD button: load the selected track (with JOG SCROLL held)</description>
+        <description>JOG SCROLL + CUE B: load the selected track into deck 2</description>
         <status>0x98</status>
         <midino>0x0A</midino>
         <options>
@@ -925,7 +925,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onHeadCue</key>
-        <description>Left headphone CUE (SHIFT + LOAD, hardware toggle, state sent): PFL</description>
+        <description>CUE A: headphone cue (PFL) of deck 1, toggled by the controller, which sends its state</description>
         <status>0x99</status>
         <midino>0x0A</midino>
         <options>
@@ -935,7 +935,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onHeadCue</key>
-        <description>Right headphone CUE (SHIFT + LOAD, hardware toggle, state sent): PFL</description>
+        <description>CUE B: headphone cue (PFL) of deck 2, toggled by the controller, which sends its state</description>
         <status>0x9A</status>
         <midino>0x0A</midino>
         <options>
