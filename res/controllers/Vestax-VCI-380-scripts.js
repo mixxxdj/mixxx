@@ -7,6 +7,9 @@ VestaxVCI380.beatPos = [0, 0];
 // Color table. Colors are binary RGB, each in 2 variants : normal or dimmed
 VestaxVCI380.padColor = {"OFF": 0x00, "BLUE": 0x18, "GREEN": 0x28, "CYAN": 0x38, "RED": 0x48, "MAGENTA": 0x58, "YELLOW": 0x68, "WHITE": 0x78, "dimBLUE": 0x10, "dimGREEN": 0x20, "dimCYAN": 0x30, "dimRED": 0x40, "dimMAGENTA": 0x50, "dimYELLOW": 0x60, "dimWHITE": 0x70};
 
+// NI Stems format: up to 4 stems; one pad row per stem
+VestaxVCI380.MAX_STEMS = 4;
+
 // Color mapper
 VestaxVCI380.ColorMapper = new ColorMapper({
     0xFF0000: 0x48, // red
@@ -700,7 +703,6 @@ VestaxVCI380.setPadMode = function(deck, mode) {
 VestaxVCI380.makeConnectionsForMode = function(deck, mode) {
     let connector;
     let numSamplers;
-    let numStems;
     switch (mode) {
     case 1 : // hot cues
         for (let hotcue = 1; hotcue <= 8; hotcue++) {
@@ -724,8 +726,7 @@ VestaxVCI380.makeConnectionsForMode = function(deck, mode) {
         if (connector !== undefined) { // To keep compatibility with Mixxx versions without stem
             connector.trigger();
             VestaxVCI380.modeConnections[deck-1].push(connector);
-            numStems=engine.getValue(`[Channel${deck}]`, "stem_count");
-            for (let stem = 1; stem <= numStems; stem++) {
+            for (let stem = 1; stem <= VestaxVCI380.MAX_STEMS; stem++) {
                 VestaxVCI380.modeConnections[deck-1].push(engine.makeConnection(`[Channel${deck}_Stem${stem}]`, "color", VestaxVCI380.onStemChange));
                 VestaxVCI380.modeConnections[deck-1].push(engine.makeConnection(`[Channel${deck}_Stem${stem}]`, "mute", VestaxVCI380.onStemChange));
             }
