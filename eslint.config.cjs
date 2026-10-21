@@ -28,11 +28,6 @@ module.exports = tseslint.config(
             sourceType: "script",
         },
     },
-    {
-        plugins: {
-            jsdoc,
-        }
-    },
     eslint.configs.recommended,
     tseslint.configs.recommended,
     jsdoc.configs['flat/recommended'],
