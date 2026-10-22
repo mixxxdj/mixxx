@@ -94,8 +94,6 @@ VestaxVCI380.init = function(_id, _debugging) {
     engine.beginTimer(500, function() {
         for (let deck = 1; deck <= 2; deck++) {
             const pot = VestaxVCI380[`deck${deck}`].eq[0];
-            console.log(`EQ later: ${pot.group} ${pot.inKey} parameter=${engine.getParameter(pot.group, pot.inKey)}`);
-
             if (engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
                 VestaxVCI380.setPadColorSplash(deck);
             }
@@ -342,10 +340,10 @@ VestaxVCI380.onEQ = function(channel, control, value, _status) {
     if (!VestaxVCI380.shiftStatus) {
         // regular mode with Pot and soft takeover
         const pot = VestaxVCI380[`deck${deck}`].eq[control - 0x46];
-        console.log(`EQ in: ${pot.group} ${pot.inKey} midi=${value} -> parameter=${engine.getParameter(pot.group, pot.inKey)} value=${engine.getValue(pot.group, pot.inKey)}`);
         VestaxVCI380[`deck${deck}`].eq[control - 0x46].input(channel, control, value, _status);
     } else {
         // shift : KILL mode
+        engine.softTakeoverIgnoreNextValue(`[EqualizerRack1_[Channel${deck}]_Effect1]`, `parameter${control-0x45}`);
         engine.setValue(`[EqualizerRack1_[Channel${deck}]_Effect1]`, `button_parameter${control-0x45}`, (value<0x40 ? 1 : 0));
     }
 
@@ -367,8 +365,10 @@ VestaxVCI380.onCrossfaderCurve = function(channel, control, value, _status) {
 
 VestaxVCI380.onCrossfader = function(channel, control, value, _status) {
     if (VestaxVCI380.shiftStatus) { // SHIFT + crossfader sets Balance
+        engine.softTakeoverIgnoreNextValue("[Master]", "crossfader");
         VestaxVCI380.balance.input(channel, control, value, _status);
     } else { // crossfader
+        engine.softTakeoverIgnoreNextValue("[Master]", "balance");
         VestaxVCI380.crossfader.input(channel, control, value, _status);
     }
 };
