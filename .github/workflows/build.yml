@@ -372,13 +372,13 @@ jobs:
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: "[macOS] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v2.2
-        # Ubuntu 24.04 should use the CMake version from the repos.
+        # jwlawson/actions-setup-cmake is unmaintained and its version list
+        # is stale ("Unable to find version matching 3.22.x"). macos-15
+        # runner images ship cmake >= 3.30 via brew — use it directly.
         if: runner.os == 'macOS'
-        with:
-          # This should always match the minimum required version in
-          # our CMakeLists.txt
-          cmake-version: "3.22.x"
+        run: |
+          brew list cmake >/dev/null 2>&1 || brew install cmake
+          cmake --version
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.2
