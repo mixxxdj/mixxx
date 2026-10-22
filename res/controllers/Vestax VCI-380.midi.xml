@@ -9,6 +9,7 @@
   </info>
   <controller id="VestaxVCI380">
     <scriptfiles>
+      <file functionprefix="" filename="midi-components-0.0.js"/>
       <file functionprefix="VestaxVCI380" filename="Vestax-VCI-380-scripts.js"/>
     </scriptfiles>
     <controls>
@@ -74,12 +75,12 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>volume</key>
+        <key>VestaxVCI380.deck1.volume.input</key>
         <description>Left channel volume fader</description>
         <status>0xB7</status>
         <midino>0x07</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
@@ -94,12 +95,12 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>volume</key>
+        <key>VestaxVCI380.deck2.volume.input</key>
         <description>Right channel volume fader</description>
         <status>0xB8</status>
         <midino>0x07</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
@@ -584,22 +585,22 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
+        <key>VestaxVCI380.deck2.rate.inputMSB</key>
         <description>Right pitch fader, 14-bit MSB</description>
         <status>0xB8</status>
         <midino>0x0D</midino>
         <options>
-          <fourteen-bit-msb/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate</key>
+        <key>VestaxVCI380.deck2.rate.inputLSB</key>
         <description>Right pitch fader, 14-bit LSB</description>
         <status>0xB8</status>
         <midino>0x2D</midino>
         <options>
-          <fourteen-bit-lsb/>
+          <script-binding/>
         </options>
       </control>
       <control>
@@ -1034,22 +1035,22 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
+        <key>VestaxVCI380.deck1.rate.inputMSB</key>
         <description>Left pitch fader, 14-bit MSB</description>
         <status>0xB7</status>
         <midino>0x0D</midino>
         <options>
-          <fourteen-bit-msb/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate</key>
+        <key>VestaxVCI380.deck1.rate.inputLSB</key>
         <description>Left pitch fader, 14-bit LSB</description>
         <status>0xB7</status>
         <midino>0x2D</midino>
         <options>
-          <fourteen-bit-lsb/>
+          <script-binding/>
         </options>
       </control>
       <control>
@@ -1214,22 +1215,22 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>pregain</key>
+        <key>VestaxVCI380.deck1.pregain.input</key>
         <description>Left GAIN knob</description>
         <status>0xB7</status>
         <midino>0x09</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>pregain</key>
+        <key>VestaxVCI380.deck2.pregain.input</key>
         <description>Right GAIN knob</description>
         <status>0xB8</status>
         <midino>0x09</midino>
         <options>
-          <normal/>
+          <script-binding/>
         </options>
       </control>
     </controls>

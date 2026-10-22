@@ -56,7 +56,8 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.setPadColorAll(VestaxVCI380.padColor.WHITE);
     VestaxVCI380.setAllLEDs(true);
 
-    // no soft takeover: Mixxx gets the position of every fader and knob at startup (see syncWithController)
+    // faders and knobs: we get their position with identity reply, and only activate soft takeover after that
+    VestaxVCI380.createPots();
 
     // events connection
     VestaxVCI380.connections.push(engine.makeConnection("[App]", "indicator_250ms", VestaxVCI380.onIndicator250));
@@ -134,6 +135,27 @@ VestaxVCI380.IDENTITY_REQUEST = [0xF0, 0x7E, 0x7F, 0x06, 0x01, 0xF7];
 
 VestaxVCI380.syncWithController = function() {
     midi.sendSysexMsg(VestaxVCI380.IDENTITY_REQUEST, VestaxVCI380.IDENTITY_REQUEST.length);
+};
+
+VestaxVCI380.createPots = function() {
+    for (let deck = 1; deck <= 2; deck++) {
+        const group = `[Channel${deck}]`;
+        VestaxVCI380[`deck${deck}`] = {
+            volume: new components.Pot({group: group, inKey: "volume"}),
+            pregain: new components.Pot({group: group, inKey: "pregain"}),
+            rate: new components.Pot({group: group, inKey: "rate"}), // 14-bit: inputMSB / inputLSB
+            eq: [1, 2, 3].map(parameter => new components.Pot({
+                group: `[EqualizerRack1_${group}_Effect1]`, inKey: `parameter${parameter}`,
+            })),
+            depth: new components.Pot({group: `[QuickEffectRack1_${group}]`, inKey: "super1"}),
+        };
+    }
+    VestaxVCI380.crossfader = new components.Pot({group: "[Master]", inKey: "crossfader"});
+    VestaxVCI380.balance = new components.Pot({group: "[Master]", inKey: "balance"});
+    // we map balance to shift+CF which is not standard, so not received by the identity request
+    VestaxVCI380.balance.firstValueReceived = true;
+    VestaxVCI380.balance.connect();
+
 };
 
 
@@ -284,16 +306,12 @@ VestaxVCI380.onEQ = function(channel, control, value, _status) {
     const deck=VestaxVCI380.getDeck(channel);
 
     if (!VestaxVCI380.shiftStatus) {
-
-        // regular mode
-        engine.setValue(`[EqualizerRack1_[Channel${deck}]_Effect1]`, `parameter${control-0x45}`, script.absoluteNonLin(value, 0, 1, 4));
+        // regular mode with Pot and soft takeover
+        VestaxVCI380[`deck${deck}`].eq[control - 0x46].input(channel, control, value, _status);
     } else {
-
         // shift : KILL mode
         engine.setValue(`[EqualizerRack1_[Channel${deck}]_Effect1]`, `button_parameter${control-0x45}`, (value<0x40 ? 1 : 0));
     }
-
-
 
 };
 
@@ -313,9 +331,9 @@ VestaxVCI380.onCrossfaderCurve = function(channel, control, value, _status) {
 
 VestaxVCI380.onCrossfader = function(channel, control, value, _status) {
     if (VestaxVCI380.shiftStatus) { // SHIFT + crossfader sets Balance
-        engine.setValue("[Master]", "balance", script.absoluteLin(value, -1, 1, 0, 127));
+        VestaxVCI380.balance.input(channel, control, value, _status);
     } else { // crossfader
-        engine.setValue("[Master]", "crossfader", script.absoluteLin(value, -1, 1, 0, 127));
+        VestaxVCI380.crossfader.input(channel, control, value, _status);
     }
 };
 
@@ -803,7 +821,13 @@ VestaxVCI380.getFXGroup = function(channel) {
 
 VestaxVCI380.onFXDepth = function(channel, control, value, _status) {
     const group=VestaxVCI380.getFXGroup(channel);
-    engine.setValue(group, "super1", script.absoluteLin(value, 0, 1));
+    const depth=VestaxVCI380[`deck${VestaxVCI380.getDeck(channel)}`].depth;
+    if (depth.group !== group) {
+        depth.disconnect();
+        depth.group = group;
+        depth.connect();
+    }
+    depth.input(channel, control, value, _status);
 };
 
 VestaxVCI380.onFXSelect = function(channel, control, value, _status) {
