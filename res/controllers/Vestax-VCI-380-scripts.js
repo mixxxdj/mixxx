@@ -103,7 +103,6 @@ VestaxVCI380.init = function(_id, _debugging) {
     // splash screen, once the controller has sent its state (pad mode included)
     engine.beginTimer(500, function() {
         for (let deck = 1; deck <= 2; deck++) {
-            const pot = VestaxVCI380[`deck${deck}`].eq[0];
             if (VestaxVCI380.padMode[deck - 1] === 1 && engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
                 VestaxVCI380.setPadColorSplash(deck);
             }
@@ -129,7 +128,8 @@ VestaxVCI380.init = function(_id, _debugging) {
 //   0x56 CF CURVE (crossfader curve) and 0x57 IF CURVE (input fader = channel
 //   fader curve): they don't change the MIDI values sent by the crossfader and
 //   the faders; they act on the external inputs mixed by the hardware (channel
-//   switch on MIXER). 0x56 drives the Mixxx crossfader curve (onCrossfaderCurve).
+//   switch on MIXER). 0x56 drives the Mixxx crossfader curve (onCrossfaderCurve)
+//   if the option cfCurveKnob is enabled.
 //   0x58 headphone CUE / MASTER mix: the hardware itself mixes the main output
 //   and the headphone (PFL / preview) output.
 // - CC 0x5B on 0xB7 / 0xB8: pad pressure (one value per deck); the pad notes
@@ -138,7 +138,7 @@ VestaxVCI380.init = function(_id, _debugging) {
 //   the old mode with 00, then the new one with 7F.
 // - DEPTH (CC 0x0A) and FX ON (note 0x1C) also drive a hardware high-pass filter
 //   on the external input of the channel, besides the MIDI used by this mapping.
-// - LOAD (headphone cue) and FX ON are toggled by the hardware: their LEDs can't
+// - CUE A/B and FX ON are toggled by the hardware: their LEDs can't
 //   be driven by MIDI, but their state is sent (0x99 / 0x9A 0x0A, 0x97 / 0x98 0x1C).
 ////
 
@@ -206,13 +206,13 @@ VestaxVCI380.shutdown = function(_id) {
     // disconnect connections
     while (VestaxVCI380.connections.length > 0) {
         VestaxVCI380.connections.pop().disconnect();
-    };
+    }
     while (VestaxVCI380.modeConnections[0].length > 0) {
         VestaxVCI380.modeConnections[0].pop().disconnect();
-    };
+    }
     while (VestaxVCI380.modeConnections[1].length > 0) {
         VestaxVCI380.modeConnections[1].pop().disconnect();
-    };
+    }
 
 
     // turning off all LEDs
@@ -348,7 +348,7 @@ VestaxVCI380.onEQ = function(channel, control, value, _status) {
     if (!VestaxVCI380.shiftStatus) {
         // regular mode with Pot and soft takeover
         const pot = VestaxVCI380[`deck${deck}`].eq[control - 0x46];
-        VestaxVCI380[`deck${deck}`].eq[control - 0x46].input(channel, control, value, _status);
+        pot.input(channel, control, value, _status);
     } else {
         // shift : KILL mode
         engine.softTakeoverIgnoreNextValue(`[EqualizerRack1_[Channel${deck}]_Effect1]`, `parameter${control-0x45}`);
@@ -362,7 +362,8 @@ VestaxVCI380.onEQ = function(channel, control, value, _status) {
 ////
 // CF CURVE knob: crossfader curve of Mixxx, from smooth (left) to sharp cut (right).
 // The knob only acts on the external inputs in the hardware; Mixxx does the mixing
-// of its own decks, so the knob drives the curve set in Preferences > Mixer.
+// of its own decks, so when the cfCurveKnob option is enabled,
+// the knob drives the curve set in Preferences > Mixer.
 // Same formula as the preferences slider (dlgprefmixer: linearToOneByX).
 VestaxVCI380.onCrossfaderCurve = function(channel, control, value, _status) {
     if (!engine.getSetting("cfCurveKnob"))  {
@@ -396,7 +397,7 @@ VestaxVCI380.onVinyl = function(channel, control, value, _status) {
     }
 };
 
-// LOAD buttons. Must be used with jog scroll, otherwise they act as headphone cue toggle
+// CUE A/B buttons. Must be used with jog scroll, otherwise they act as headphone cue toggle
 // NOTE: the headphone cue function is handled by the controller in hardware
 VestaxVCI380.onLoad = function(channel, control, value, _status) {
     if (VestaxVCI380.jogScrollStatus && value===0x7F) { // value 00 when button released would trigger deck clone (double click)
@@ -503,7 +504,7 @@ VestaxVCI380.onPadTap = function(channel, control, value, _status) {
             break;
 
         case 4: // Stems mode
-            if (!VestaxVCI380.hasStems) { break; } ;
+            if (!VestaxVCI380.hasStems) { break; }
             switch (padNumber) {
             case 1:
             case 2:
@@ -740,7 +741,7 @@ VestaxVCI380.makeConnectionsForMode = function(deck, mode) {
 VestaxVCI380.clearConnectionsForMode = function(deck, _mode) {
     while (VestaxVCI380.modeConnections[deck-1].length > 0) {
         VestaxVCI380.modeConnections[deck-1].pop().disconnect();
-    };
+    }
 };
 
 VestaxVCI380.onStemChange = function(value, group, _control) {
