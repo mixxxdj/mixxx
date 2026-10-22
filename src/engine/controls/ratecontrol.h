@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <atomic>
 
 #include "control/pollingcontrolproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -77,7 +78,22 @@ public:
   void notifyWrapAround(mixxx::audio::FramePos triggerPos,
           mixxx::audio::FramePos targetPos);
   void notifySeek(mixxx::audio::FramePos position) override;
+  void setEngineMixer(EngineMixer* pEngineMixer) override;
   void resetPositionScratchController();
+  // Thread-safe: request a fresh motor state, applied in calculateSpeed()
+  void requestRampReset();
+
+  static void setRampUpEnabled(bool enabled);
+  static void setRampDownEnabled(bool enabled);
+  static void setRampRpmMode(int mode); // 0 = 33 RPM, 1 = 45 RPM
+  static void setRampIncludePitch(bool includePitch);
+  static void setRampDownMode(int mode); // 0 = brake, 1 = power cut
+  // 1.0 = Technics SL-1210, clamped to 0.25 .. 4.0
+  static void setRampUpTimeFactor(double factor);
+  static void setRampDownTimeFactor(double factor);
+  // Resulting ramp times in seconds, for the preferences
+  static double spinUpTime(int rpmMode, double factor);
+  static double spinDownTime(int rpmMode, int rampDownMode, double factor);
 
 public slots:
   void slotRateRangeChanged(double);
@@ -174,4 +190,23 @@ private:
   double m_tempRateRatio;
   // Speed for temporary rate change
   double m_dRateTempRampChange;
+
+  // Physical spin-up / spin-down
+  std::unique_ptr<PollingControlProxy> m_pPlayLatched;
+  double m_platterSpeed;   // 0.0 = standstill, 1.0 = target speed reached
+  double m_lastTargetRate; // speed the platter was ramping to / running at
+  bool m_spinningDown;
+  bool m_seekedSinceLastBuffer;
+  bool m_prevPaused;
+  bool m_latchedPlay;
+  static std::atomic<bool> m_rampUpEnabled;
+  static std::atomic<bool> m_rampDownEnabled;
+  static std::atomic<int> m_rampMode; // 0 = 33 RPM, 1 = 45 RPM
+  static std::atomic<bool> m_rampIncludePitch;
+  static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
+  // Set on track change (worker thread), applied in calculateSpeed()
+  std::atomic<bool> m_resetRampRequested;
+  static std::atomic<double> m_rampUpTimeFactor;
+  static std::atomic<double> m_rampDownTimeFactor;
+  bool m_rampAllowed; // only main decks, not samplers / preview deck
 };
