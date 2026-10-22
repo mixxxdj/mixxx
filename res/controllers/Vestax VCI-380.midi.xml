@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.5.0" schemaVersion="1">
   <info>
     <name>Vestax VCI-380</name>
     <author>JM Jacinto</author>
@@ -7,6 +7,18 @@
     <forums>https://mixxx.discourse.group/t/vestax-vci-380-mapping/14713</forums>
     <manual>vestax_vci_380</manual>
   </info>
+  <settings>
+    <option
+        variable="cfCurveKnob"
+        type="boolean"
+        default="false"
+        label="CF CURVE knob also sets the Mixxx crossfader curve">
+      <description>
+        If enabled, the CF CURVE knob also sets the crossfader curve of Mixxx, from smooth (left) to sharp cut (right),
+        in place of the crossfader curve slider of Preferences > Mixer. Without this option, the knob only acts on the external inputs, in the controller.
+      </description>
+    </option>
+  </settings>
   <controller id="VestaxVCI380">
     <scriptfiles>
       <file functionprefix="" filename="midi-components-0.0.js"/>
