@@ -15,6 +15,8 @@ Item {
     required property string key
     property color normalColor: LateNightTheme.effectsControlInactiveColor
     property url normalSource
+    property url pressedBackgroundSource: activeBackgroundSource
+    property url pressedSource: activeSource
     property bool toggleable: true
 
     Rectangle {
@@ -25,15 +27,20 @@ Item {
     Image {
         anchors.fill: parent
         fillMode: Image.Stretch
-        source: root.active ? root.activeBackgroundSource : root.backgroundSource
+        source: tapHandler.pressed ? root.pressedBackgroundSource : root.active ? root.activeBackgroundSource : root.backgroundSource
     }
     Image {
         anchors.fill: parent
         fillMode: Image.Stretch
-        source: root.active ? root.activeSource : root.normalSource
+        source: tapHandler.pressed ? root.pressedSource : root.active ? root.activeSource : root.normalSource
     }
     TapHandler {
-        onTapped: {
+        id: tapHandler
+
+        onPressedChanged: {
+            if (!pressed) {
+                return;
+            }
             if (root.toggleable) {
                 control.value = root.active ? 0 : 1;
             } else {

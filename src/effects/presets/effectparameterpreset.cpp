@@ -29,6 +29,13 @@ EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement
                 static_cast<int>(XmlParse::selectNodeDouble(parameterElement,
                         EffectXml::kParameterLinkInversion)));
 
+        bool validOrder = false;
+        const int order = XmlParse::selectNodeQString(parameterElement,
+                EffectXml::kParameterDisplayOrder)
+                                  .toInt(&validOrder);
+        if (validOrder && order >= 0) {
+            m_displayOrder = order;
+        }
         m_bHidden = XmlParse::selectNodeBool(parameterElement,
                 EffectXml::kParameterHidden);
     }
@@ -40,6 +47,7 @@ EffectParameterPreset::EffectParameterPreset(const EffectParameterPointer pParam
     m_linkType = pParameter->linkType();
     m_linkInversion = pParameter->linkInversion();
     m_bHidden = hidden;
+    m_displayOrder = pParameter->displayOrder();
 }
 
 EffectParameterPreset::EffectParameterPreset(
@@ -71,6 +79,12 @@ const QDomElement EffectParameterPreset::toXml(QDomDocument* doc) const {
                 parameterElement,
                 EffectXml::kParameterLinkInversion,
                 QString::number(static_cast<int>(m_linkInversion)));
+        if (m_displayOrder >= 0) {
+            XmlParse::addElement(*doc,
+                    parameterElement,
+                    EffectXml::kParameterDisplayOrder,
+                    QString::number(m_displayOrder));
+        }
         XmlParse::addElement(*doc,
                 parameterElement,
                 EffectXml::kParameterHidden,

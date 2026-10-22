@@ -1,6 +1,8 @@
 #include "effects/effectslot.h"
 
 #include <QDebug>
+#include <algorithm>
+#include <limits>
 
 #include "control/controlencoder.h"
 #include "control/controlpushbutton.h"
@@ -352,6 +354,21 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         }
     }
 
+    auto displayParameters = m_loadedParameters.value(EffectParameterType::Button);
+    displayParameters.append(m_loadedParameters.value(EffectParameterType::Knob));
+    std::stable_sort(displayParameters.begin(),
+            displayParameters.end(),
+            [](const auto& first, const auto& second) {
+                const auto order = [](const auto& parameter) {
+                    return parameter->displayOrder() < 0
+                            ? std::numeric_limits<int>::max()
+                            : parameter->displayOrder();
+                };
+                return order(first) < order(second);
+            });
+    for (int index = 0; index < displayParameters.size(); ++index) {
+        displayParameters.at(index)->setDisplayOrder(index);
+    }
     loadParameters();
 
     m_pControlMetaParameter->setDefaultValue(pManifest->metaknobDefault());
@@ -484,26 +501,78 @@ void EffectSlot::showParameter(EffectParameterPointer pParameter) {
             !m_loadedParameters.value(parameterType).contains(pParameter)) {
         return;
     }
+    int displayOrder = 0;
+    for (const auto& parameters : std::as_const(m_loadedParameters)) {
+        for (const auto& parameter : parameters) {
+            displayOrder = std::max(displayOrder, parameter->displayOrder() + 1);
+        }
+    }
+    pParameter->setDisplayOrder(displayOrder);
     m_loadedParameters[parameterType].append(pParameter);
     loadParameters();
     emit parametersChanged();
 }
 
 void EffectSlot::swapParameters(EffectParameterType type, int index1, int index2) {
-    if (index1 == index2) {
+    swapParameters(type, index1, type, index2);
+}
+
+void EffectSlot::swapParameters(EffectParameterType firstType,
+        int firstIndex,
+        EffectParameterType secondType,
+        int secondIndex) {
+    const auto firstParameters = m_loadedParameters.value(firstType);
+    const auto secondParameters = m_loadedParameters.value(secondType);
+    if (firstIndex < 0 || firstIndex >= firstParameters.size() ||
+            secondIndex < 0 || secondIndex >= secondParameters.size() ||
+            (firstType == secondType && firstIndex == secondIndex)) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index1) {
+    const auto& first = firstParameters.at(firstIndex);
+    const auto& second = secondParameters.at(secondIndex);
+    const int firstOrder = first->displayOrder();
+    first->setDisplayOrder(second->displayOrder());
+    second->setDisplayOrder(firstOrder);
+    if (firstType == secondType) {
+        m_loadedParameters[firstType].swapItemsAt(firstIndex, secondIndex);
+        loadParameters();
+    }
+    emit parametersChanged();
+}
+
+void EffectSlot::moveParameter(EffectParameterType type,
+        int index,
+        EffectParameterType targetType,
+        int targetIndex,
+        bool after) {
+    const auto sourceParameters = m_loadedParameters.value(type);
+    const auto targetParameters = m_loadedParameters.value(targetType);
+    if (index < 0 || index >= sourceParameters.size() ||
+            targetIndex < 0 || targetIndex >= targetParameters.size()) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index2) {
+    const auto source = sourceParameters.at(index);
+    const auto target = targetParameters.at(targetIndex);
+    if (source == target) {
         return;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
-    m_loadedParameters[type].swapItemsAt(index1, index2);
-#else
-    m_loadedParameters[type].swap(index1, index2);
-#endif
+    QList<EffectParameterPointer> parameters;
+    for (const auto& loaded : std::as_const(m_loadedParameters)) {
+        parameters.append(loaded);
+    }
+    std::stable_sort(parameters.begin(), parameters.end(), [](const auto& left, const auto& right) {
+        return left->displayOrder() < right->displayOrder();
+    });
+    parameters.removeAll(source);
+    parameters.insert(parameters.indexOf(target) + (after ? 1 : 0), source);
+    for (auto& loaded : m_loadedParameters) {
+        loaded.clear();
+    }
+    for (int order = 0; order < parameters.size(); ++order) {
+        const auto& parameter = parameters.at(order);
+        parameter->setDisplayOrder(order);
+        m_loadedParameters[parameter->manifest()->parameterType()].append(parameter);
+    }
     loadParameters();
     emit parametersChanged();
 }
