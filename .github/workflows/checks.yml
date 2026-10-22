@@ -48,11 +48,11 @@ jobs:
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 200
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 200
           gcc --version
-          ls /usr/include/c++/
-          ls /usr/lib/gcc/x86_64-linux-gnu/
       - name: Configure (clazy)
         if: matrix.name == 'clazy'
         # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
+        # Clang 15 (bundled with clazy 1.11) cannot parse GCC 14 libstdc++
+        # headers; force the GCC 13 install via CMAKE_CXX_FLAGS below.
         # QML/Qt Quick scenegraph is disabled here to avoid a clazy/libstdc++ 14
         # <format> false positive in Qt Quick headers on Ubuntu 24.04 runners.
         run: |
@@ -63,6 +63,7 @@ jobs:
             -DQT6=ON \
             -DQML=OFF \
             -DOPTIMIZE=off \
+            -DCMAKE_CXX_FLAGS="--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13" \
             -DBATTERY=ON \
             -DBROADCAST=ON \
             -DBULK=ON \
