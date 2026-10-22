@@ -94,7 +94,7 @@ VestaxVCI380.init = function(_id, _debugging) {
     engine.beginTimer(500, function() {
         for (let deck = 1; deck <= 2; deck++) {
             const pot = VestaxVCI380[`deck${deck}`].eq[0];
-            if (engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
+            if (VestaxVCI380.padMode[deck - 1] === 1 && engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
                 VestaxVCI380.setPadColorSplash(deck);
             }
         }
