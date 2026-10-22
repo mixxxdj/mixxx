@@ -2689,6 +2689,40 @@ if(UNIX AND NOT APPLE)
     PATTERN ic_mixxx.ico EXCLUDE
   )
 
+  # Desktop entry for running Mixxx from the build directory. Wayland
+  # compositors like GNOME's Mutter take the window icon only from the desktop
+  # entry matching the app_id (org.mixxx.Mixxx), so without it an uninstalled
+  # build shows a generic icon. Install it with
+  #   cmake --build build --target install-dev-desktop-entry
+  # and remove it again with
+  #   cmake --build build --target uninstall-dev-desktop-entry
+  # Note: This shadows a system-wide installed org.mixxx.Mixxx.desktop for the
+  # current user until it is uninstalled.
+  if(DEFINED ENV{XDG_DATA_HOME} AND NOT "$ENV{XDG_DATA_HOME}" STREQUAL "")
+    set(MIXXX_DEV_DATA_HOME "$ENV{XDG_DATA_HOME}")
+  else()
+    set(MIXXX_DEV_DATA_HOME "$ENV{HOME}/.local/share")
+  endif()
+  add_custom_target(
+    install-dev-desktop-entry
+    COMMAND
+      ${CMAKE_COMMAND} -DACTION=install -DMIXXX_BINARY=$<TARGET_FILE:mixxx>
+      -DDATA_HOME=${MIXXX_DEV_DATA_HOME}
+      -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -P
+      ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/devdesktopentry.cmake
+    COMMENT "Install desktop entry and icons for Mixxx in the build directory"
+    VERBATIM
+  )
+  add_custom_target(
+    uninstall-dev-desktop-entry
+    COMMAND
+      ${CMAKE_COMMAND} -DACTION=uninstall -DDATA_HOME=${MIXXX_DEV_DATA_HOME}
+      -DSOURCE_DIR=${CMAKE_CURRENT_SOURCE_DIR} -P
+      ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/devdesktopentry.cmake
+    COMMENT "Remove desktop entry and icons for Mixxx in the build directory"
+    VERBATIM
+  )
+
   # .metainfo.xml file for KDE/GNOME AppStream initiative
   install(
     FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
