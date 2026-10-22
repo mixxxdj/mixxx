@@ -386,9 +386,12 @@ if(ANDROID)
 
     # Runtime deps: fetch common-0.18.1.aar whole (Gradle merges it) plus the
     # plain jars from Maven Central (pinned versions matching the POMs).
+    # NOTE: kotlin-stdlib is deliberately NOT bundled — Qt's androiddeployqt
+    # Gradle template already pulls org.jetbrains.kotlin:kotlin-stdlib
+    # (1.8.22) for its own bindings, and shipping a second copy fails the
+    # build at :checkReleaseDuplicateClasses.
     set(_ytdlp_dep_files
       "io/github/junkfood02/youtubedl-android/common/0.18.1/common-0.18.1.aar"
-      "org/jetbrains/kotlin/kotlin-stdlib/1.7.22/kotlin-stdlib-1.7.22.jar"
       "com/fasterxml/jackson/core/jackson-databind/2.11.1/jackson-databind-2.11.1.jar"
       "com/fasterxml/jackson/core/jackson-core/2.11.1/jackson-core-2.11.1.jar"
       "com/fasterxml/jackson/core/jackson-annotations/2.11.1/jackson-annotations-2.11.1.jar"
