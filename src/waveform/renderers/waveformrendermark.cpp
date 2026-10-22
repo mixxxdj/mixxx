@@ -23,6 +23,8 @@ WaveformRenderMark::WaveformRenderMark(
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     PainterScope PainterScope(painter);
+    // Picks up global marker style changes (e.g. hotcue letters on/off).
+    updateMarkImages();
     // Associates mark objects with their positions in the widget.
     QList<WaveformWidgetRenderer::WaveformMarkOnScreen> marksOnScreen;
 
