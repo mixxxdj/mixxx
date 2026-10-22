@@ -220,12 +220,19 @@ class YouTubeService : public QObject {
     /// Pick the best audio stream from a Piped /streams response and start
     /// streaming it to `<cacheDir>/<videoId>.<ext>`. Emits downloadFinished
     /// (after the SponsorBlock chain) or invokes `onFailure` on error so
-    /// the caller can try the next Piped instance.
+    /// the caller can try the next Piped instance or InnerTube client.
+    /// Streams are tried in ranked order (M4A/AAC first, then bitrate) so a
+    /// per-stream CDN 403 falls through to the next stream before failing.
     void downloadAudioStream(const QString& videoId,
             const QString& cacheDir,
             const QJsonArray& audioStreams,
             const std::function<void(const QString&)>& onFailure,
             const QString& streamUserAgent = QString());
+    void downloadAudioStreamRanked(const QString& videoId,
+            const QString& cacheDir,
+            const QList<QJsonObject>& rankedStreams,
+            const std::function<void(const QString&)>& onFailure,
+            const QString& streamUserAgent);
 
     /// Parallel Range-request download: splits `contentLength` bytes into
     /// kParallelDownloadChunks concurrent HTTP GET requests with Range headers,

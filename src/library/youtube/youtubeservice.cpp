@@ -1978,32 +1978,49 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
                    << "streams=" << audioStreams.size()
                    << "cacheDir=" << cacheDir;
 #endif
-    // Pick the highest-bitrate M4A/AAC stream first because Mixxx already
-    // supports this container everywhere the YouTube feature is built. Fall
-    // back to WebM/Opus only if Piped does not expose an M4A stream.
-    QJsonObject best;
-    int bestBitrate = -1;
-    bool bestIsM4a = false;
+    // Rank all streams: M4A/AAC first (playback compatibility), then higher
+    // bitrate. A per-stream CDN 403 must NOT fail the whole client — fall
+    // through to the next stream before giving up (observed in the wild:
+    // ANDROID client returns several URLs where only some are 403).
+    QList<QJsonObject> ranked;
     for (const QJsonValue& v : audioStreams) {
-        const QJsonObject s = v.toObject();
-        const int br = s.value(QStringLiteral("bitrate")).toInt();
-        const QString codec =
-                s.value(QStringLiteral("codec")).toString().toLower();
-        const QString ext = extFromMime(
-                s.value(QStringLiteral("mimeType")).toString(), codec);
-        const bool isM4a = ext == QStringLiteral("m4a");
-        // Prefer M4A/AAC over WebM/Opus for playback compatibility; within
-        // the chosen family prefer higher bitrate.
-        if (best.isEmpty() || (isM4a && !bestIsM4a) ||
-                (isM4a == bestIsM4a && br > bestBitrate)) {
-            best = s;
-            bestBitrate = br;
-            bestIsM4a = isM4a;
-        }
+        ranked.append(v.toObject());
     }
+    std::sort(ranked.begin(), ranked.end(), [](const QJsonObject& a, const QJsonObject& b) {
+        const QString codecA = a.value(QStringLiteral("codec")).toString().toLower();
+        const QString codecB = b.value(QStringLiteral("codec")).toString().toLower();
+        const bool m4aA = extFromMime(a.value(QStringLiteral("mimeType")).toString(), codecA) ==
+                QStringLiteral("m4a");
+        const bool m4aB = extFromMime(b.value(QStringLiteral("mimeType")).toString(), codecB) ==
+                QStringLiteral("m4a");
+        if (m4aA != m4aB) {
+            return m4aA > m4aB;
+        }
+        return a.value(QStringLiteral("bitrate")).toInt() >
+                b.value(QStringLiteral("bitrate")).toInt();
+    });
+    if (ranked.isEmpty()) {
+        onFailure(tr("No usable audio stream URL"));
+        return;
+    }
+    downloadAudioStreamRanked(videoId, cacheDir, ranked, onFailure, streamUserAgent);
+}
+
+void YouTubeService::downloadAudioStreamRanked(const QString& videoId,
+        const QString& cacheDir,
+        const QList<QJsonObject>& rankedStreams,
+        const std::function<void(const QString&)>& onFailure,
+        const QString& streamUserAgent) {
+    if (rankedStreams.isEmpty()) {
+        onFailure(tr("No usable audio stream URL"));
+        return;
+    }
+    const QJsonObject best = rankedStreams.first();
+    const QList<QJsonObject> rest = rankedStreams.mid(1);
     const QString streamUrl = best.value(QStringLiteral("url")).toString();
     if (streamUrl.isEmpty()) {
-        onFailure(tr("No usable audio stream URL"));
+        // Skip URL-less entry, try the next stream.
+        downloadAudioStreamRanked(videoId, cacheDir, rest, onFailure, streamUserAgent);
         return;
     }
     const QString ext = extFromMime(
@@ -2017,9 +2034,20 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
     // slowly; 4 concurrent streams typically deliver 2-4x higher throughput.
     const qint64 contentLength =
             best.value(QStringLiteral("contentLength")).toVariant().toLongLong();
+    // On CDN failure try the next ranked stream before failing the client.
+    auto tryNextStream = [this, videoId, cacheDir, rest, onFailure, streamUserAgent](
+                                 const QString& err) {
+        if (rest.isEmpty()) {
+            onFailure(err);
+            return;
+        }
+        kLogger.info() << "Stream failed for" << videoId << ":" << err
+                       << "— trying next ranked stream (" << rest.size() << "left)";
+        downloadAudioStreamRanked(videoId, cacheDir, rest, onFailure, streamUserAgent);
+    };
     if (contentLength >= kChunkedDownloadThresholdBytes) {
         downloadAudioStreamChunked(
-                videoId, outPath, streamUrl, contentLength, streamUserAgent, onFailure);
+                videoId, outPath, streamUrl, contentLength, streamUserAgent, tryNextStream);
         return;
     }
 
@@ -2060,14 +2088,14 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
     connect(reply,
             &QNetworkReply::finished,
             this,
-            [this, reply, outFile, outPath, videoId, onFailure]() {
+            [this, reply, outFile, outPath, videoId, tryNextStream]() {
                 reply->deleteLater();
                 outFile->write(reply->readAll());
                 outFile->close();
                 if (reply->error() != QNetworkReply::NoError) {
                     QFile::remove(outFile->fileName());
                     delete outFile;
-                    onFailure(reply->errorString());
+                    tryNextStream(reply->errorString());
                     return;
                 }
                 // Atomic rename .part → final path. If a previous run left a
@@ -2079,7 +2107,7 @@ void YouTubeService::downloadAudioStream(const QString& videoId,
                     const QString err = outFile->errorString();
                     QFile::remove(outFile->fileName());
                     delete outFile;
-                    onFailure(tr("Cannot finalize %1: %2").arg(outPath, err));
+                    tryNextStream(tr("Cannot finalize %1: %2").arg(outPath, err));
                     return;
                 }
                 delete outFile;
