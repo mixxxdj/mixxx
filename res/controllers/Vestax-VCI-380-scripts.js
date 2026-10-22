@@ -67,21 +67,21 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "end_of_track", VestaxVCI380.onEndOfTrack));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "track_loaded", VestaxVCI380.onTrackLoaded));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "track_loaded", VestaxVCI380.onTrackLoaded));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "quantize", VestaxVCI380.initLEDs));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "quantize", VestaxVCI380.initLEDs));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "keylock", VestaxVCI380.initLEDs));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "keylock", VestaxVCI380.initLEDs));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "quantize", VestaxVCI380.refreshLEDs));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "quantize", VestaxVCI380.refreshLEDs));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "keylock", VestaxVCI380.refreshLEDs));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "keylock", VestaxVCI380.refreshLEDs));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "rate", VestaxVCI380.onRateChange));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "rate", VestaxVCI380.onRateChange));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "slip_enabled", VestaxVCI380.initLEDs));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "slip_enabled", VestaxVCI380.initLEDs));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "slip_enabled", VestaxVCI380.refreshLEDs));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "slip_enabled", VestaxVCI380.refreshLEDs));
 
     // turning off all LEDs
     VestaxVCI380.setPadColorAll(VestaxVCI380.padColor.OFF);
     VestaxVCI380.setAllLEDs(false);
 
     // init LEDs status according to settings
-    VestaxVCI380.initLEDs();
+    VestaxVCI380.refreshLEDs();
 
     // default pad mode
     VestaxVCI380.setMode(1, 1);
@@ -240,8 +240,6 @@ VestaxVCI380.onPlay = function(channel, control, value, status, group) {
 ////
 // WHEELS
 ////
-
-VestaxVCI380.beatskipTickCount=0;
 
 VestaxVCI380.isScratching=[false, false];
 // The button that enables/disables scratching
@@ -936,7 +934,7 @@ VestaxVCI380.setAllLEDs = function(state) {
     }
 };
 
-VestaxVCI380.initLEDs = function() {
+VestaxVCI380.refreshLEDs = function() {
     VestaxVCI380.setLED(1, VestaxVCI380.LED.RANGE, engine.getValue("[Channel1]", "quantize")===1);
     VestaxVCI380.setLED(2, VestaxVCI380.LED.RANGE, engine.getValue("[Channel2]", "quantize")===1);
     VestaxVCI380.setLED(3, VestaxVCI380.LED.RANGE, engine.getValue("[Channel1]", "keylock")===1);
@@ -945,11 +943,13 @@ VestaxVCI380.initLEDs = function() {
     VestaxVCI380.setLED(2, VestaxVCI380.LED.VINYL, engine.getValue("[Channel2]", "slip_enabled")===1);
     VestaxVCI380.setLED(1, VestaxVCI380.LED.PADFX, engine.getValue("[Channel1]", "rate")!==0);
     VestaxVCI380.setLED(2, VestaxVCI380.LED.PADFX, engine.getValue("[Channel2]", "rate")!==0);
-    // library control
-    VestaxVCI380.setLED(1, VestaxVCI380.LED.AREA, true);
-    VestaxVCI380.setLED(1, VestaxVCI380.LED.SORT, true);
-    VestaxVCI380.setLED(1, VestaxVCI380.LED.BACK, true);
-    VestaxVCI380.setLED(1, VestaxVCI380.LED.FWD, true);
+    // library LEDs: always on, they only blink for the track end alert
+    for (let deck = 1; deck <= 2; deck++) {
+        if (!VestaxVCI380.trackEndAlert[deck - 1]) {
+            VestaxVCI380.trackEndAlertSetLED(deck, true);
+        }
+    }
+
 };
 
 /////
