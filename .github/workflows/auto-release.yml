@@ -128,6 +128,9 @@ jobs:
   build:
     name: Build
     needs: version
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches
     uses: ./.github/workflows/build.yml
     with:
       publish: false
