@@ -4069,6 +4069,7 @@ if(QML)
       src/qml/qmleffectslotproxy.cpp
       src/qml/qmleffectunitproxy.cpp
       src/qml/qmleffectsmanagerproxy.cpp
+      src/qml/qmlfontscale.cpp
       src/qml/qmlkeyutils.cpp
       src/qml/qmllegacylibraryitem.cpp
       src/qml/qmllibraryproxy.cpp
