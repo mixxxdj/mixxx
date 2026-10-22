@@ -40,7 +40,10 @@ rewritten for Mixxx 2.5+ with 4-deck support.
 - **Jog ring** shows the value sent back on the same CC as the Jog FX input
   MSB, but only while the matching button is lit: `0x40` = red dot,
   `0x7F` = animation around the ring.
-- **Mixer controls are 14-bit** (MSB `0x00-0x1F`, LSB `+0x20`).
+- **Mixer controls are 14-bit** (MSB `0x00-0x1F`, LSB `+0x20`). Volume, EQ,
+  crossfader and headphone mix are routed through the script (`mixerInput`)
+  rather than mapped directly, so soft-takeover can be a runtime setting
+  (`engine.softTakeover` only affects values set from the script).
 - **Encoders** (AUTO LOOP, BROWSE) are relative: `01` = clockwise, `7F` =
   counter-clockwise. Jog is relative around `0x40` (`41` = +1).
 - **Tempo slider** sends MSB then LSB; top = `0`, so rate = `1 - value/0x2000`.
@@ -128,7 +131,9 @@ SHIFT in FX mode sends `B4 12/32`, `14/34`, `16/36` (not mapped).
   BROWSE push = `MoveFocusForward`.
 - **Sampler pads:** `[Sampler1-4]` on every deck. Press: load if empty,
   else play/stop. SHIFT: stop if playing, else eject.
-- **Settings:** auto loop size (default 4 beats), SYNC LED blinks on beat.
+- **Settings:** initial auto loop size (default 4 beats), SYNC LED blinks on
+  beat, route deck N to effect unit N (default on), soft-takeover for mixer
+  controls incl. tempo (default off, so knobs pick up immediately).
 
 ## Pitfalls found while testing
 

@@ -20,6 +20,11 @@ PioneerDDJWeGO.deckCD = [false, false];
 PioneerDDJWeGO.tempoMSBValue = {};
 PioneerDDJWeGO.vuLevel = [0, 0, 0, 0];
 PioneerDDJWeGO.litLeds = {};
+// Per-deck LED connections, re-triggered when a hidden deck becomes visible.
+PioneerDDJWeGO.connections = [[], [], [], []];
+// 14-bit mixer controls keyed by their MSB CC: {group, key, msb}. Populated
+// in init() so the script, not the XML, owns their (optional) soft-takeover.
+PioneerDDJWeGO.mixer14 = {};
 
 PioneerDDJWeGO.led = function(status, midino, on) {
     PioneerDDJWeGO.litLeds[(status << 8) | midino] = true;
@@ -36,6 +41,15 @@ PioneerDDJWeGO.init = function() {
         engine.makeConnection(group, key, callback).trigger();
     };
 
+    // Register the 14-bit mixer controls (volume, EQ, crossfader, headMix,
+    // tempo). Soft-takeover is a setting; engine.softTakeover only affects
+    // values set from the script, so these controls are script-routed.
+    const softTakeover = engine.getSetting("softTakeover");
+    const addMixer = function(midino, group, key) {
+        PioneerDDJWeGO.mixer14[midino] = {group: group, key: key, msb: 0};
+        engine.softTakeover(group, key, softTakeover);
+    };
+
     for (let n = 0; n < 4; n++) {
         const group = `[Channel${n + 1}]`;
         const note = 0x90 + n;
@@ -44,43 +58,58 @@ PioneerDDJWeGO.init = function() {
         const ringOffset = n < 2 ? 0 : 8;
         const unit = `[EffectRack1_EffectUnit${n + 1}]`;
         const quickEffect = `[QuickEffectRack1_${group}]`;
+        const eq = `[EqualizerRack1_${group}_Effect1]`;
+
+        // Deck-scoped connection: kept so deckToggle can re-send the LEDs for
+        // the deck that becomes visible (the controller forgets hidden state).
+        const connectDeck = function(group, key, callback) {
+            const conn = engine.makeConnection(group, key, callback);
+            conn.trigger();
+            PioneerDDJWeGO.connections[n].push(conn);
+        };
 
         engine.setValue(group, "beatloop_size", engine.getSetting("autoLoopSize"));
-        engine.softTakeover(group, "rate", true);
+        engine.softTakeover(group, "rate", softTakeover);
+        addMixer(0x13 + 2 * n, group, "volume");
+        addMixer(0x07 + n, eq, "parameter3"); // EQ HI
+        addMixer(0x0B + n, eq, "parameter2"); // EQ MID
+        addMixer(0x0F + n, eq, "parameter1"); // EQ LOW
         // Jog FX of deck N drives effect unit N, so route that deck into it.
-        engine.setValue(unit, `group_${group}_enable`, 1);
+        if (engine.getSetting("routeDecksToUnits")) {
+            engine.setValue(unit, `group_${group}_enable`, 1);
+        }
 
-        connect(group, "play_indicator", function(value) {
+        connectDeck(group, "play_indicator", function(value) {
             PioneerDDJWeGO.led(note, 0x0B, value);
             PioneerDDJWeGO.led(note, 0x47, value);
             PioneerDDJWeGO.led(note, 0x6E, value);
         });
-        connect(group, "cue_indicator", function(value) {
+        connectDeck(group, "cue_indicator", function(value) {
             PioneerDDJWeGO.led(note, 0x0C, value);
             PioneerDDJWeGO.led(note, 0x48, value);
         });
-        connect(group, engine.getSetting("blinkingSync") ? "beat_active" : "sync_enabled", function(value) {
+        connectDeck(group, engine.getSetting("blinkingSync") ? "beat_active" : "sync_enabled", function(value) {
             PioneerDDJWeGO.led(note, 0x58, value);
         });
-        connect(group, "sync_leader", function(value) {
+        connectDeck(group, "sync_leader", function(value) {
             PioneerDDJWeGO.led(note, 0x5C, value);
         });
         for (let k = 0; k < 4; k++) {
-            connect(group, `hotcue_${k + 1}_status`, function(value) {
+            connectDeck(group, `hotcue_${k + 1}_status`, function(value) {
                 PioneerDDJWeGO.led(note, 0x2E + k, value);
                 PioneerDDJWeGO.led(note, 0x5F + k, value);
             });
         }
-        connect(group, "track_loaded", function(value) {
+        connectDeck(group, "track_loaded", function(value) {
             PioneerDDJWeGO.led(0x9B, 0x0C + n, value);
         });
-        connect(group, "loop_enabled", function(value) {
+        connectDeck(group, "loop_enabled", function(value) {
             PioneerDDJWeGO.led(0x9B, 0x10 + n, value);
         });
-        connect(group, "pfl", function(value) {
+        connectDeck(group, "pfl", function(value) {
             PioneerDDJWeGO.led(0x96, 0x54 + n, value);
         });
-        connect(group, "vu_meter", function(value) {
+        connectDeck(group, "vu_meter", function(value) {
             const level = Math.round(value * 5);
             if (level === PioneerDDJWeGO.vuLevel[n]) {
                 return;
@@ -98,17 +127,20 @@ PioneerDDJWeGO.init = function() {
             };
         };
         PioneerDDJWeGO.led(0x94 + side, 0x42 + buttonOffset, false);
-        connect(unit, "mix", ring(0x00 + ringOffset));
+        connectDeck(unit, "mix", ring(0x00 + ringOffset));
         for (let m = 0; m < 3; m++) {
             const effect = `[EffectRack1_EffectUnit${n + 1}_Effect${m + 1}]`;
-            connect(effect, "enabled", function(value) {
+            connectDeck(effect, "enabled", function(value) {
                 PioneerDDJWeGO.led(0x94 + side, 0x43 + buttonOffset + m, value);
             });
-            connect(effect, "meta", ring(0x02 + ringOffset + 2 * m));
+            connectDeck(effect, "meta", ring(0x02 + ringOffset + 2 * m));
         }
         PioneerDDJWeGO.led(0x94 + side, 0x46 + buttonOffset, false);
-        connect(quickEffect, "super1", ring(0x07 + ringOffset));
+        connectDeck(quickEffect, "super1", ring(0x07 + ringOffset));
     }
+
+    addMixer(0x1F, "[Master]", "crossfader");
+    addMixer(0x01, "[Master]", "headMix");
 
     for (let k = 0; k < 4; k++) {
         connect(`[Sampler${k + 1}]`, "play_indicator", function(value) {
@@ -127,6 +159,14 @@ PioneerDDJWeGO.init = function() {
 PioneerDDJWeGO.shutdown = function() {
     for (const key in PioneerDDJWeGO.litLeds) {
         midi.sendShortMsg(key >> 8, key & 0xFF, 0x00);
+    }
+    // The jog ring values go out via raw messages, not led(), so clear them
+    // here too: CTRL A, FX1-3, CTRL B CCs on both sides (A/B 0xB4, C/D 0xB5).
+    const ringCCs = [0x00, 0x02, 0x04, 0x06, 0x07, 0x08, 0x0A, 0x0C, 0x0E, 0x0F];
+    for (const status of [0xB4, 0xB5]) {
+        for (const cc of ringCCs) {
+            midi.sendShortMsg(status, cc, 0x00);
+        }
     }
 };
 
@@ -162,6 +202,13 @@ PioneerDDJWeGO.deckToggle = function(channel, control, value, status) {
     const side = channel - 2;
     PioneerDDJWeGO.deckCD[side] = !PioneerDDJWeGO.deckCD[side];
     PioneerDDJWeGO.led(status, 0x72, PioneerDDJWeGO.deckCD[side]);
+    // The controller forgets LED state for the hidden deck, so re-send it for
+    // the one now shown. -1 forces the VU connection to resend its level.
+    const deck = side + (PioneerDDJWeGO.deckCD[side] ? 2 : 0);
+    PioneerDDJWeGO.vuLevel[deck] = -1;
+    PioneerDDJWeGO.connections[deck].forEach(function(conn) {
+        conn.trigger();
+    });
 };
 
 PioneerDDJWeGO.syncLeader = function(channel, control, value, status, group) {
@@ -238,6 +285,18 @@ PioneerDDJWeGO.tempoMSB = function(channel, control, value, status, group) {
 PioneerDDJWeGO.tempoLSB = function(channel, control, value, status, group) {
     const fullValue = ((PioneerDDJWeGO.tempoMSBValue[group] || 0) << 7) + value;
     engine.setValue(group, "rate", 1 - fullValue / 0x2000);
+};
+
+// 14-bit mixer inputs (volume, EQ, crossfader, headMix). The hardware sends
+// MSB (CC <= 0x1F) then LSB (MSB CC + 0x20). engine.setParameter applies the
+// softTakeover registered in init() when the setting is on.
+PioneerDDJWeGO.mixerInput = function(channel, control, value) {
+    if (control <= 0x1F) {
+        PioneerDDJWeGO.mixer14[control].msb = value;
+        return;
+    }
+    const entry = PioneerDDJWeGO.mixer14[control - 0x20];
+    engine.setParameter(entry.group, entry.key, ((entry.msb << 7) + value) / 0x3FFF);
 };
 
 PioneerDDJWeGO.browse = function(channel, control, value) {

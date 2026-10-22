@@ -10,8 +10,14 @@
         <option variable="blinkingSync" type="boolean" default="false" label="Blink SYNC on beat">
             <description>SYNC LED blinks on every beat instead of showing sync state.</description>
         </option>
-        <option variable="autoLoopSize" type="integer" min="1" max="64" default="4" label="Auto loop size (beats)">
-            <description>Loop length set by the AUTO LOOP button when no loop is active.</description>
+        <option variable="autoLoopSize" type="integer" min="1" max="64" default="4" label="Initial auto loop size (beats)">
+            <description>Beat length the AUTO LOOP button uses at startup. Turn the AUTO LOOP encoder to change it while running.</description>
+        </option>
+        <option variable="routeDecksToUnits" type="boolean" default="true" label="Route deck N to effect unit N">
+            <description>On startup, assign each deck to the effect unit its Jog FX buttons control. Turn off to keep your own effect routing.</description>
+        </option>
+        <option variable="softTakeover" type="boolean" default="false" label="Soft-takeover for mixer controls">
+            <description>Ignore volume, EQ, crossfader, headphone mix and tempo until the knob/fader passes the on-screen value, so switching decks does not jump them. Off = immediate pickup.</description>
         </option>
     </settings>
     <controller id="DDJ-WeGO">
@@ -286,66 +292,66 @@
             <control>
                 <description>Volume (A) MSB</description>
                 <group>[Channel1]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x13</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Volume (A) LSB</description>
                 <group>[Channel1]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x33</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (A) MSB</description>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x07</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (A) LSB</description>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x27</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (A) MSB</description>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x0B</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (A) LSB</description>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x2B</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (A) MSB</description>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x0F</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (A) LSB</description>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x2F</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>LOAD (A)</description>
@@ -782,66 +788,66 @@
             <control>
                 <description>Volume (B) MSB</description>
                 <group>[Channel2]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x15</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Volume (B) LSB</description>
                 <group>[Channel2]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x35</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (B) MSB</description>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x08</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (B) LSB</description>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x28</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (B) MSB</description>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x0C</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (B) LSB</description>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x2C</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (B) MSB</description>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x10</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (B) LSB</description>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x30</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>LOAD (B)</description>
@@ -1278,66 +1284,66 @@
             <control>
                 <description>Volume (C) MSB</description>
                 <group>[Channel3]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x17</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Volume (C) LSB</description>
                 <group>[Channel3]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x37</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (C) MSB</description>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x09</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (C) LSB</description>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x29</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (C) MSB</description>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x0D</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (C) LSB</description>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x2D</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (C) MSB</description>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x11</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (C) LSB</description>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x31</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>LOAD (C)</description>
@@ -1774,66 +1780,66 @@
             <control>
                 <description>Volume (D) MSB</description>
                 <group>[Channel4]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x19</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Volume (D) LSB</description>
                 <group>[Channel4]</group>
-                <key>volume</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x39</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (D) MSB</description>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x0A</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ HI (D) LSB</description>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter3</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x2A</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (D) MSB</description>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x0E</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ MID (D) LSB</description>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter2</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x2E</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (D) MSB</description>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x12</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>EQ LOW (D) LSB</description>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter1</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x32</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>LOAD (D)</description>
@@ -2022,34 +2028,34 @@
             <control>
                 <description>Crossfader MSB</description>
                 <group>[Master]</group>
-                <key>crossfader</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x1F</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Crossfader LSB</description>
                 <group>[Master]</group>
-                <key>crossfader</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x3F</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Headphone MIX MSB</description>
                 <group>[Master]</group>
-                <key>headMix</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x01</midino>
-                <options><fourteen-bit-msb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>Headphone MIX LSB</description>
                 <group>[Master]</group>
-                <key>headMix</key>
+                <key>PioneerDDJWeGO.mixerInput</key>
                 <status>0xB6</status>
                 <midino>0x21</midino>
-                <options><fourteen-bit-lsb/><soft-takeover/></options>
+                <options><script-binding/></options>
             </control>
             <control>
                 <description>BROWSE turn</description>
