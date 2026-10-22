@@ -1515,6 +1515,7 @@ add_library(
   src/library/trackcollectioniterator.cpp
   src/library/trackcollectionmanager.cpp
   src/library/trackloader.cpp
+  src/library/trackmetadataexportthread.cpp
   src/library/trackmodeliterator.cpp
   src/library/trackprocessing.cpp
   src/library/trackset/baseplaylistfeature.cpp
@@ -3032,6 +3033,7 @@ if(BUILD_TESTING)
     src/test/trackexport_test.cpp
     src/test/trackmetadata_test.cpp
     src/test/trackmetadataexport_test.cpp
+    src/test/trackmetadataexportthreadtest.cpp
     src/test/tracknumberstest.cpp
     src/test/trackreftest.cpp
     src/test/trackupdate_test.cpp
