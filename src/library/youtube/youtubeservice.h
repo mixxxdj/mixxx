@@ -400,6 +400,7 @@ class YouTubeService : public QObject {
     // NOTE: all accesses are on the main/UI thread so no mutex is needed.
     QList<qint64> m_requestTimestamps; // msecsSinceEpoch of recent requests
     QElapsedTimer m_rateLimitTimer;
+    qint64 m_rateLimitLogTs = -100000; // last burst-log time (elapsed ms)
 
     // Bot-flag state with exponential backoff cooldown.
     bool m_botFlagActive = false;

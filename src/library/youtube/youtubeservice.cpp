@@ -189,15 +189,40 @@ QVector<InnerTubeClient> innerTubeClients() {
     if (!s_downloadClients.isEmpty()) {
         return s_downloadClients;
     }
-    // Initialize from compiled-in defaults.
+    // Initialize from compiled-in defaults. Order matters: tried first to
+    // last. TVHTML5 (yt-dlp 'tv' client, no PO-token policy upstream) goes
+    // first — it still returns plain stream URLs without a poToken. Mobile
+    // clients (ANDROID_VR/IOS/ANDROID) now need a GVS poToken and 403.
     s_downloadClients = {
-            // ANDROID_VR (Oculus Quest) — as of 2026 this is the only widely
-            // reliable client that still returns plain, directly-downloadable
-            // adaptive audio URLs WITHOUT a poToken. It mirrors yt-dlp's
-            // current default `android_vr` client context exactly. The other
-            // mobile clients (IOS/ANDROID) now require a GVS poToken and reply
-            // with HTTP 400 / 403, so this MUST be tried first. Caveat: it
-            // cannot access "made for kids" videos, hence the fallbacks below.
+            // TVHTML5 — yt-dlp's current 'tv' client. No GVS PO-token
+            // policy in upstream yt-dlp, so this is the best bet for plain
+            // downloadable audio URLs. TV clients need no poToken.
+            {"TVHTML5",
+                    "7.20260707.07.00",
+                    "7",
+                    "",
+                    "Mozilla/5.0 (ChromiumStylePlatform) Cobalt/25.lts.30.1034943-gold "
+                    "(unlike Gecko), Unknown_TV_Unknown_0/Unknown (Unknown, Unknown)",
+                    "",
+                    "",
+                    0,
+                    "",
+                    ""},
+            // TVHTML5 downgraded — yt-dlp's 'tv_downgraded' fallback.
+            {"TVHTML5",
+                    "5.20260707",
+                    "7",
+                    "",
+                    "Mozilla/5.0 (ChromiumStylePlatform) Cobalt/Version",
+                    "",
+                    "",
+                    0,
+                    "",
+                    ""},
+            // ANDROID_VR (Oculus Quest) — since 2026.08.17 upstream yt-dlp
+            // reports ALL formats (incl. live HLS, itag 18) 403 with 1.65.10.
+            // Kept as a fallback: it still serves some videos, and covers
+            // "made for kids" videos the TV client can't.
             {"ANDROID_VR",
                     "1.65.10",
                     "28",
@@ -3074,11 +3099,15 @@ bool YouTubeService::shouldThrottleRequest() {
         m_requestTimestamps.removeFirst();
     }
 
-    // Check burst limit.
+    // Check burst limit. Log at most once per window — the retry path calls
+    // this on every attempt and spammed 100+ identical lines per download.
     if (m_requestTimestamps.size() >= kRateLimitBurst) {
-        kLogger.info() << "Rate limit: burst limit reached ("
-                       << m_requestTimestamps.size() << "/" << kRateLimitBurst
-                       << " in " << kRateLimitWindowMs << "ms window)";
+        if (now - m_rateLimitLogTs > kRateLimitWindowMs) {
+            kLogger.info() << "Rate limit: burst limit reached ("
+                           << m_requestTimestamps.size() << "/" << kRateLimitBurst
+                           << " in " << kRateLimitWindowMs << "ms window)";
+            m_rateLimitLogTs = now;
+        }
         return true;
     }
 
