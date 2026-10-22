@@ -48,6 +48,8 @@ jobs:
           sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 200
           sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 200
           gcc --version
+          ls /usr/include/c++/
+          ls /usr/lib/gcc/x86_64-linux-gnu/
       - name: Configure (clazy)
         if: matrix.name == 'clazy'
         # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
