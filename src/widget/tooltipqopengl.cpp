@@ -4,7 +4,7 @@
 #include <QToolTip>
 
 #include "moc_tooltipqopengl.cpp"
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 
 ToolTipQOpenGL::ToolTipQOpenGL()
         : m_active(true),
