@@ -15,6 +15,15 @@
     <controls>
       <control>
         <group>[Master]</group>
+        <key>VestaxVCI380.incomingData</key>
+        <description>SysEx from the controller: identity reply at startup, then soft takeover</description>
+        <status>0xF0</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
         <key>VestaxVCI380.onCrossfader</key>
         <description>Crossfader (SHIFT: main balance)</description>
         <status>0xB7</status>

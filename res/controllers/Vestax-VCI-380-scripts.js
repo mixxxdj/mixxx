@@ -93,6 +93,9 @@ VestaxVCI380.init = function(_id, _debugging) {
     // splash screen, once the controller has sent its state (pad mode included)
     engine.beginTimer(500, function() {
         for (let deck = 1; deck <= 2; deck++) {
+            const pot = VestaxVCI380[`deck${deck}`].eq[0];
+            console.log(`EQ later: ${pot.group} ${pot.inKey} parameter=${engine.getParameter(pot.group, pot.inKey)}`);
+
             if (engine.getValue(`[Channel${deck}]`, "track_loaded") === 0) {
                 VestaxVCI380.setPadColorSplash(deck);
             }
@@ -137,27 +140,58 @@ VestaxVCI380.syncWithController = function() {
     midi.sendSysexMsg(VestaxVCI380.IDENTITY_REQUEST, VestaxVCI380.IDENTITY_REQUEST.length);
 };
 
+// Detecting reception of the identity request reply
+// Which means the controller will send all control positions
+// After which we can activate the soft takeovers
+VestaxVCI380.incomingData = function(data, length) {
+    // identity reply: F0 7E <id> 06 02 ...
+    if (length > 4 && data[0] === 0xF0 && data[1] === 0x7E && data[3] === 0x06 && data[4] === 0x02) {
+        engine.beginTimer(200, VestaxVCI380.enableSoftTakeover, true);
+    }
+};
+
+// Create some pots to handle soft takeover
+// note: softTakeover is initially disabled because at startup
+//       - the controller can flush a queue of old control movements
+//       - we need to load the events triggered by identity request
+//       after this loading, we will enable soft takeover.
 VestaxVCI380.createPots = function() {
     for (let deck = 1; deck <= 2; deck++) {
         const group = `[Channel${deck}]`;
         VestaxVCI380[`deck${deck}`] = {
-            volume: new components.Pot({group: group, inKey: "volume"}),
-            pregain: new components.Pot({group: group, inKey: "pregain"}),
-            rate: new components.Pot({group: group, inKey: "rate"}), // 14-bit: inputMSB / inputLSB
+            volume: new components.Pot({group: group, inKey: "volume", softTakeover: false}),
+            pregain: new components.Pot({group: group, inKey: "pregain", softTakeover: false}),
+            rate: new components.Pot({group: group, inKey: "rate", softTakeover: false}), // 14-bit: inputMSB / inputLSB
             eq: [1, 2, 3].map(parameter => new components.Pot({
-                group: `[EqualizerRack1_${group}_Effect1]`, inKey: `parameter${parameter}`,
+                group: `[EqualizerRack1_${group}_Effect1]`, inKey: `parameter${parameter}`, softTakeover: false,
             })),
-            depth: new components.Pot({group: `[QuickEffectRack1_${group}]`, inKey: "super1"}),
+            depth: new components.Pot({group: `[QuickEffectRack1_${group}]`, inKey: "super1", softTakeover: false}),
         };
     }
-    VestaxVCI380.crossfader = new components.Pot({group: "[Master]", inKey: "crossfader"});
-    VestaxVCI380.balance = new components.Pot({group: "[Master]", inKey: "balance"});
+    VestaxVCI380.crossfader = new components.Pot({group: "[Master]", inKey: "crossfader", softTakeover: false});
+    VestaxVCI380.balance = new components.Pot({group: "[Master]", inKey: "balance", softTakeover: false});
     // we map balance to shift+CF which is not standard, so not received by the identity request
-    VestaxVCI380.balance.firstValueReceived = true;
-    VestaxVCI380.balance.connect();
-
 };
 
+// soft takeover on every fader and knob, once Mixxx has their real position
+VestaxVCI380.enableSoftTakeover = function() {
+    const pots = [VestaxVCI380.crossfader, VestaxVCI380.balance];
+    for (let deck = 1; deck <= 2; deck++) {
+        const d = VestaxVCI380[`deck${deck}`];
+        pots.push(d.volume, d.pregain, d.rate, d.depth, ...d.eq);
+    }
+    for (const pot of pots) {
+        pot.softTakeover = true;
+        pot.firstValueReceived = true; // also for the balance, which isn't in the controller state
+        pot.connect();                 // engine.softTakeover(group, inKey, true)
+        // the next value is ignored by soft takeover (it only records the position):
+        // send the current value ourselves, so that Mixxx records the knob as being
+        // exactly where Mixxx is, and the first real move is taken directly
+        if (pot !== VestaxVCI380.balance) {
+            engine.setParameter(pot.group, pot.inKey, engine.getParameter(pot.group, pot.inKey));
+        }
+    }
+};
 
 VestaxVCI380.shutdown = function(_id) {
 
@@ -307,6 +341,8 @@ VestaxVCI380.onEQ = function(channel, control, value, _status) {
 
     if (!VestaxVCI380.shiftStatus) {
         // regular mode with Pot and soft takeover
+        const pot = VestaxVCI380[`deck${deck}`].eq[control - 0x46];
+        console.log(`EQ in: ${pot.group} ${pot.inKey} midi=${value} -> parameter=${engine.getParameter(pot.group, pot.inKey)} value=${engine.getValue(pot.group, pot.inKey)}`);
         VestaxVCI380[`deck${deck}`].eq[control - 0x46].input(channel, control, value, _status);
     } else {
         // shift : KILL mode
