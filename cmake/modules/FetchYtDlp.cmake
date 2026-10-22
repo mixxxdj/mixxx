@@ -390,12 +390,17 @@ if(ANDROID)
     set(_ytdlp_stub_so "${_ytdlp_android_dir}/libandroid-support.so")
     if(NOT EXISTS "${_ytdlp_stub_so}")
       message(STATUS "Building libandroid-support.so stub for youtubedl-android...")
+      message(STATUS
+        "  NDK=${CMAKE_ANDROID_NDK} host=${ANDROID_NDK_HOST_SYSTEM_NAME} api=${CMAKE_SYSTEM_VERSION}")
       execute_process(
         COMMAND
-          "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/aarch64-linux-android${ANDROID_NATIVE_API_LEVEL}-clang"
+          "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/aarch64-linux-android${CMAKE_SYSTEM_VERSION}-clang"
           -shared -fPIC -O2 -o "${_ytdlp_stub_so}" "${_ytdlp_stub_c}"
         RESULT_VARIABLE _stub_result
+        OUTPUT_VARIABLE _stub_out
+        ERROR_VARIABLE _stub_err
       )
+      message(STATUS "  stub build rc=${_stub_result} out=[${_stub_out}] err=[${_stub_err}]")
       if(NOT _stub_result EQUAL 0)
         message(FATAL_ERROR "Failed to build libandroid-support.so stub")
       endif()
