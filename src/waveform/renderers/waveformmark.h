@@ -2,6 +2,7 @@
 #include <QDomNode>
 #include <QHash>
 #include <QImage>
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <variant>
@@ -199,7 +200,8 @@ class WaveformMark {
     }
 
     bool needsImageUpdate() const {
-        return !m_pGraphics || m_pGraphics->m_obsolete;
+        return !m_pGraphics || m_pGraphics->m_obsolete ||
+                m_styleGeneration != s_styleGeneration.load();
     }
 
     bool needsEndImageUpdate() const {
@@ -227,6 +229,96 @@ class WaveformMark {
 
     QImage generateImage(float devicePixelRatio);
     QImage generateEndImage(float devicePixelRatio);
+
+    // Rekordbox-style memory cue markers. When enabled, hotcues from
+    // kFirstMemoryCueHotCue on (0-based, i.e. hotcue 9 and up) are drawn as
+    // a small triangle in the cue's color instead of a numbered label.
+    static constexpr int kFirstMemoryCueHotCue = 8;
+    static void setShowMemoryCueMarkers(bool show);
+    static bool showMemoryCueMarkers();
+    // Vertical placement of the memory cue triangle: Qt::AlignTop,
+    // Qt::AlignBottom or both (Qt::AlignTop | Qt::AlignBottom).
+    static void setMemoryCueMarkerAlign(Qt::Alignment align);
+    static Qt::Alignment memoryCueMarkerAlign();
+    // Width of the memory cue marker line in logical pixels; 0 hides the line.
+    static constexpr int kMinMemoryCueLineWidth = 0;
+    static constexpr int kDefaultMemoryCueLineWidth = 1;
+    static constexpr int kMaxMemoryCueLineWidth = 5;
+    static void setMemoryCueMarkerLineWidth(int width);
+    static int memoryCueMarkerLineWidth();
+    // Opacity of the memory cue line and triangles in percent (names keep
+    // full opacity, they have their own background options).
+    static constexpr int kMinMemoryCueMarkerOpacity = 10;
+    static constexpr int kMaxMemoryCueMarkerOpacity = 100;
+    static void setMemoryCueMarkerOpacity(int percent);
+    static int memoryCueMarkerOpacity();
+    // Size (width and height) of the memory cue triangle in the scrolling
+    // waveforms, in logical pixels. The overview scales it down.
+    static constexpr int kMinMemoryCueMarkerSize = 5;
+    static constexpr int kDefaultMemoryCueMarkerSize = 11;
+    static constexpr int kMaxMemoryCueMarkerSize = 31;
+    static void setMemoryCueMarkerSize(int size);
+    static int memoryCueMarkerSize();
+    // Optional custom outline color of the memory cue triangle. When off,
+    // the outline uses the mark's automatic border color.
+    static void setMemoryCueMarkerCustomOutline(bool enabled);
+    static bool memoryCueMarkerCustomOutline();
+    static void setMemoryCueMarkerOutlineColor(const QColor& color);
+    static QColor memoryCueMarkerOutlineColor();
+    // Optionally draw all memory cues in one color (e.g. rekordbox red)
+    // instead of each cue's own color.
+    static void setMemoryCueMarkerSingleColor(bool enabled);
+    static bool memoryCueMarkerSingleColor();
+    static void setMemoryCueMarkerColor(const QColor& color);
+    static QColor memoryCueMarkerColor();
+    // Colors to draw this mark as a memory cue with: the single color (and
+    // matching contrast colors) when enabled, otherwise the cue's own colors.
+    QColor memoryCueColor() const;
+    QColor memoryCueBorderColor() const;
+    QColor memoryCueLabelColor() const;
+    // Outline color to draw this mark's memory cue triangle with.
+    QColor memoryCueOutlineColor() const;
+    // Show the cue's name (e.g. the rekordbox comment) next to the triangle.
+    static void setMemoryCueMarkerShowNames(bool show);
+    static bool memoryCueMarkerShowNames();
+    // Longest memory cue name drawn, in logical pixels; longer names are elided.
+    static constexpr float kMaxMemoryCueNameWidth = 150.f;
+    // Vertical placement of the name: Qt::AlignTop or Qt::AlignBottom.
+    static void setMemoryCueNameAlign(Qt::Alignment align);
+    static Qt::Alignment memoryCueNameAlign();
+    // Background box of the name: none, the cue color (semi-transparent) or
+    // a custom color (which may include transparency).
+    enum class MemoryCueNameBackground {
+        Off = 0,
+        CueColor = 1,
+        CustomColor = 2,
+    };
+    static void setMemoryCueNameBackground(MemoryCueNameBackground background);
+    static MemoryCueNameBackground memoryCueNameBackground();
+    static void setMemoryCueNameBackgroundCustomColor(const QColor& color);
+    static QColor memoryCueNameBackgroundCustomColor();
+    // Optional custom text color of the name.
+    static void setMemoryCueNameCustomTextColor(bool enabled);
+    static bool memoryCueNameCustomTextColor();
+    static void setMemoryCueNameTextColor(const QColor& color);
+    static QColor memoryCueNameTextColor();
+    // Text color to draw this mark's memory cue name with.
+    QColor memoryCueNameEffectiveTextColor() const;
+    // Background color of this mark's name box (transparent when off).
+    QColor memoryCueNameBackgroundColor() const;
+    bool isMemoryCueMarker() const;
+    // Where memory cue markers are drawn. In the other view the cues are
+    // shown as normal numbered hotcues.
+    enum class MemoryCueMarkerView {
+        Both = 0,
+        ScrollingWaveformsOnly = 1,
+        OverviewOnly = 2,
+    };
+    static void setMemoryCueMarkerView(MemoryCueMarkerView view);
+    static MemoryCueMarkerView memoryCueMarkerView();
+    // isMemoryCueMarker() and enabled for that view.
+    bool isMemoryCueMarkerInScrollingWaveforms() const;
+    bool isMemoryCueMarkerInOverview() const;
 
     QColor m_textColor;
     QString m_text;
@@ -297,6 +389,31 @@ class WaveformMark {
     QColor m_fillColor;
     QColor m_borderColor;
     QColor m_labelColor;
+    // Last threshold passed to setBaseColor(), reused for the single memory cue color.
+    int m_dimBrightThreshold{127};
+
+    // Bumped whenever a global marker style setting changes, so every mark
+    // regenerates its image on the next paint.
+    static std::atomic<int> s_styleGeneration;
+    static std::atomic<bool> s_showMemoryCueMarkers;
+    static std::atomic<int> s_memoryCueMarkerView;
+    static std::atomic<int> s_memoryCueMarkerAlign;
+    static std::atomic<int> s_memoryCueMarkerLineWidth;
+    static std::atomic<int> s_memoryCueMarkerSize;
+    static std::atomic<int> s_memoryCueMarkerOpacity;
+    static std::atomic<bool> s_memoryCueMarkerCustomOutline;
+    static std::atomic<QRgb> s_memoryCueMarkerOutlineColor;
+    static std::atomic<bool> s_memoryCueMarkerSingleColor;
+    static std::atomic<QRgb> s_memoryCueMarkerColor;
+    static std::atomic<bool> s_memoryCueMarkerShowNames;
+    static std::atomic<bool> s_memoryCueNameAlignTop;
+    static std::atomic<int> s_memoryCueNameBackground;
+    static std::atomic<QRgb> s_memoryCueNameBackgroundColor;
+    static std::atomic<bool> s_memoryCueNameCustomTextColor;
+    static std::atomic<QRgb> s_memoryCueNameTextColor;
+    int m_styleGeneration{-1};
+
+    QImage generateMemoryCueImage(float devicePixelRatio);
 
     friend class WaveformRenderMark;
     friend class WaveformRenderMarkBase;

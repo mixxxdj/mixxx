@@ -1,6 +1,7 @@
 #include "waveformmark.h"
 
 #include <QOpenGLTexture>
+#include <QPainter>
 #include <QPainterPath>
 #include <QRegularExpression>
 #include <QStringLiteral>
@@ -320,12 +321,458 @@ std::variant<WaveformMarkPointer, WaveformMark::WaveformMarkConstructionError> W
 
 WaveformMark::~WaveformMark() = default;
 
+std::atomic<int> WaveformMark::s_styleGeneration{0};
+std::atomic<bool> WaveformMark::s_showMemoryCueMarkers{true};
+std::atomic<int> WaveformMark::s_memoryCueMarkerView{static_cast<int>(MemoryCueMarkerView::Both)};
+std::atomic<int> WaveformMark::s_memoryCueMarkerAlign{static_cast<int>(Qt::AlignBottom)};
+std::atomic<int> WaveformMark::s_memoryCueMarkerLineWidth{kDefaultMemoryCueLineWidth};
+std::atomic<int> WaveformMark::s_memoryCueMarkerSize{kDefaultMemoryCueMarkerSize};
+std::atomic<int> WaveformMark::s_memoryCueMarkerOpacity{kMaxMemoryCueMarkerOpacity};
+std::atomic<bool> WaveformMark::s_memoryCueMarkerCustomOutline{false};
+std::atomic<QRgb> WaveformMark::s_memoryCueMarkerOutlineColor{qRgb(255, 255, 255)};
+std::atomic<bool> WaveformMark::s_memoryCueMarkerSingleColor{false};
+std::atomic<QRgb> WaveformMark::s_memoryCueMarkerColor{qRgb(230, 40, 40)};
+std::atomic<bool> WaveformMark::s_memoryCueMarkerShowNames{false};
+std::atomic<bool> WaveformMark::s_memoryCueNameAlignTop{true};
+std::atomic<int> WaveformMark::s_memoryCueNameBackground{
+        static_cast<int>(MemoryCueNameBackground::CueColor)};
+std::atomic<QRgb> WaveformMark::s_memoryCueNameBackgroundColor{qRgba(0, 0, 0, 153)};
+std::atomic<bool> WaveformMark::s_memoryCueNameCustomTextColor{false};
+std::atomic<QRgb> WaveformMark::s_memoryCueNameTextColor{qRgb(255, 255, 255)};
+
+// static
+void WaveformMark::setShowMemoryCueMarkers(bool show) {
+    if (s_showMemoryCueMarkers.exchange(show) != show) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::showMemoryCueMarkers() {
+    return s_showMemoryCueMarkers.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerAlign(Qt::Alignment align) {
+    int value = 0;
+    if (align.testFlag(Qt::AlignTop)) {
+        value |= static_cast<int>(Qt::AlignTop);
+    }
+    if (align.testFlag(Qt::AlignBottom) || value == 0) {
+        value |= static_cast<int>(Qt::AlignBottom);
+    }
+    if (s_memoryCueMarkerAlign.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+Qt::Alignment WaveformMark::memoryCueMarkerAlign() {
+    const int value = s_memoryCueMarkerAlign.load();
+    Qt::Alignment align;
+    if (value & static_cast<int>(Qt::AlignTop)) {
+        align |= Qt::AlignTop;
+    }
+    if (value & static_cast<int>(Qt::AlignBottom)) {
+        align |= Qt::AlignBottom;
+    }
+    return align;
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerLineWidth(int width) {
+    width = std::clamp(width, kMinMemoryCueLineWidth, kMaxMemoryCueLineWidth);
+    if (s_memoryCueMarkerLineWidth.exchange(width) != width) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+int WaveformMark::memoryCueMarkerLineWidth() {
+    return s_memoryCueMarkerLineWidth.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerOpacity(int percent) {
+    percent = std::clamp(percent, kMinMemoryCueMarkerOpacity, kMaxMemoryCueMarkerOpacity);
+    if (s_memoryCueMarkerOpacity.exchange(percent) != percent) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+int WaveformMark::memoryCueMarkerOpacity() {
+    return s_memoryCueMarkerOpacity.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerSize(int size) {
+    size = std::clamp(size, kMinMemoryCueMarkerSize, kMaxMemoryCueMarkerSize);
+    if (s_memoryCueMarkerSize.exchange(size) != size) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+int WaveformMark::memoryCueMarkerSize() {
+    return s_memoryCueMarkerSize.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerCustomOutline(bool enabled) {
+    if (s_memoryCueMarkerCustomOutline.exchange(enabled) != enabled) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueMarkerCustomOutline() {
+    return s_memoryCueMarkerCustomOutline.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerOutlineColor(const QColor& color) {
+    const QRgb rgb = color.isValid() ? color.rgb() : qRgb(255, 255, 255);
+    if (s_memoryCueMarkerOutlineColor.exchange(rgb) != rgb) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueMarkerOutlineColor() {
+    return QColor::fromRgb(s_memoryCueMarkerOutlineColor.load());
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerSingleColor(bool enabled) {
+    if (s_memoryCueMarkerSingleColor.exchange(enabled) != enabled) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueMarkerSingleColor() {
+    return s_memoryCueMarkerSingleColor.load();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerColor(const QColor& color) {
+    const QRgb rgb = color.isValid() ? color.rgb() : qRgb(230, 40, 40);
+    if (s_memoryCueMarkerColor.exchange(rgb) != rgb) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueMarkerColor() {
+    return QColor::fromRgb(s_memoryCueMarkerColor.load());
+}
+
+QColor WaveformMark::memoryCueColor() const {
+    return s_memoryCueMarkerSingleColor.load() ? memoryCueMarkerColor() : fillColor();
+}
+
+QColor WaveformMark::memoryCueBorderColor() const {
+    if (!s_memoryCueMarkerSingleColor.load()) {
+        return borderColor();
+    }
+    // Same rule as setBaseColor() uses for the cue's own color
+    return Color::chooseContrastColor(memoryCueMarkerColor(), m_dimBrightThreshold);
+}
+
+QColor WaveformMark::memoryCueLabelColor() const {
+    if (!s_memoryCueMarkerSingleColor.load()) {
+        return labelColor();
+    }
+    return Color::chooseColorByBrightness(memoryCueMarkerColor(),
+            QColor(255, 255, 255, 255),
+            QColor(0, 0, 0, 255),
+            m_dimBrightThreshold);
+}
+
+QColor WaveformMark::memoryCueOutlineColor() const {
+    return s_memoryCueMarkerCustomOutline.load() ? memoryCueMarkerOutlineColor()
+                                                 : memoryCueBorderColor();
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerShowNames(bool show) {
+    if (s_memoryCueMarkerShowNames.exchange(show) != show) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueMarkerShowNames() {
+    return s_memoryCueMarkerShowNames.load();
+}
+
+// static
+void WaveformMark::setMemoryCueNameAlign(Qt::Alignment align) {
+    const bool top = !align.testFlag(Qt::AlignBottom);
+    if (s_memoryCueNameAlignTop.exchange(top) != top) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+Qt::Alignment WaveformMark::memoryCueNameAlign() {
+    return s_memoryCueNameAlignTop.load() ? Qt::AlignTop : Qt::AlignBottom;
+}
+
+// static
+void WaveformMark::setMemoryCueNameBackground(MemoryCueNameBackground background) {
+    const int value = static_cast<int>(background);
+    if (s_memoryCueNameBackground.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+WaveformMark::MemoryCueNameBackground WaveformMark::memoryCueNameBackground() {
+    switch (s_memoryCueNameBackground.load()) {
+    case static_cast<int>(MemoryCueNameBackground::Off):
+        return MemoryCueNameBackground::Off;
+    case static_cast<int>(MemoryCueNameBackground::CustomColor):
+        return MemoryCueNameBackground::CustomColor;
+    default:
+        return MemoryCueNameBackground::CueColor;
+    }
+}
+
+// static
+void WaveformMark::setMemoryCueNameBackgroundCustomColor(const QColor& color) {
+    const QRgb rgba = color.isValid() ? color.rgba() : qRgba(0, 0, 0, 153);
+    if (s_memoryCueNameBackgroundColor.exchange(rgba) != rgba) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueNameBackgroundCustomColor() {
+    return QColor::fromRgba(s_memoryCueNameBackgroundColor.load());
+}
+
+// static
+void WaveformMark::setMemoryCueNameCustomTextColor(bool enabled) {
+    if (s_memoryCueNameCustomTextColor.exchange(enabled) != enabled) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::memoryCueNameCustomTextColor() {
+    return s_memoryCueNameCustomTextColor.load();
+}
+
+// static
+void WaveformMark::setMemoryCueNameTextColor(const QColor& color) {
+    const QRgb rgb = color.isValid() ? color.rgb() : qRgb(255, 255, 255);
+    if (s_memoryCueNameTextColor.exchange(rgb) != rgb) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+QColor WaveformMark::memoryCueNameTextColor() {
+    return QColor::fromRgb(s_memoryCueNameTextColor.load());
+}
+
+QColor WaveformMark::memoryCueNameEffectiveTextColor() const {
+    if (s_memoryCueNameCustomTextColor.load()) {
+        return memoryCueNameTextColor();
+    }
+    switch (memoryCueNameBackground()) {
+    case MemoryCueNameBackground::CueColor:
+        // Readable on the cue colored box
+        return memoryCueLabelColor();
+    case MemoryCueNameBackground::CustomColor: {
+        const QColor background = memoryCueNameBackgroundCustomColor();
+        if (background.alphaF() < 0.3f) {
+            // Mostly transparent: the waveform is the real background
+            return memoryCueColor();
+        }
+        const float luminance = 0.299f * background.redF() +
+                0.587f * background.greenF() + 0.114f * background.blueF();
+        return luminance < 0.5f ? QColor(Qt::white) : QColor(Qt::black);
+    }
+    case MemoryCueNameBackground::Off:
+    default:
+        return memoryCueColor();
+    }
+}
+
+QColor WaveformMark::memoryCueNameBackgroundColor() const {
+    switch (memoryCueNameBackground()) {
+    case MemoryCueNameBackground::CueColor: {
+        QColor color = memoryCueColor();
+        color.setAlphaF(0.6f); // subtle, the waveform stays visible underneath
+        return color;
+    }
+    case MemoryCueNameBackground::CustomColor:
+        return memoryCueNameBackgroundCustomColor();
+    case MemoryCueNameBackground::Off:
+    default:
+        return QColor(Qt::transparent);
+    }
+}
+
+// static
+void WaveformMark::setMemoryCueMarkerView(MemoryCueMarkerView view) {
+    const int value = static_cast<int>(view);
+    if (s_memoryCueMarkerView.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+WaveformMark::MemoryCueMarkerView WaveformMark::memoryCueMarkerView() {
+    switch (s_memoryCueMarkerView.load()) {
+    case static_cast<int>(MemoryCueMarkerView::ScrollingWaveformsOnly):
+        return MemoryCueMarkerView::ScrollingWaveformsOnly;
+    case static_cast<int>(MemoryCueMarkerView::OverviewOnly):
+        return MemoryCueMarkerView::OverviewOnly;
+    default:
+        return MemoryCueMarkerView::Both;
+    }
+}
+
+bool WaveformMark::isMemoryCueMarkerInScrollingWaveforms() const {
+    return isMemoryCueMarker() &&
+            memoryCueMarkerView() != MemoryCueMarkerView::OverviewOnly;
+}
+
+bool WaveformMark::isMemoryCueMarkerInOverview() const {
+    return isMemoryCueMarker() &&
+            memoryCueMarkerView() != MemoryCueMarkerView::ScrollingWaveformsOnly;
+}
+
+bool WaveformMark::isMemoryCueMarker() const {
+    if (!s_showMemoryCueMarkers.load() || m_iHotCue < kFirstMemoryCueHotCue) {
+        return false;
+    }
+    // Saved loops keep their normal label so they stay recognizable.
+    return !isLoop();
+}
+
+QImage WaveformMark::generateMemoryCueImage(float devicePixelRatio) {
+    // A thin line in the cue color with a triangle at the top (pointing
+    // down), at the bottom (pointing up) or both, like rekordbox memory cues.
+    const int triangleSize = memoryCueMarkerSize();
+    const float triangleSizeF = static_cast<float>(triangleSize);
+    // An odd pixel width keeps the line centered on the cue position.
+    const float width = static_cast<float>(triangleSize + (triangleSize % 2 == 0 ? 3 : 2));
+    const float height = m_breadth;
+    const float hcenter = width / 2.f;
+    const float half = triangleSizeF / 2.f;
+    const Qt::Alignment align = memoryCueMarkerAlign();
+
+    // Optional name label to the right of the marker, at the top or bottom
+    // (see memoryCueNameAlign()). Next to a triangle at the same edge it
+    // starts right of the triangle, otherwise right of the line.
+    QFont nameFont;
+    nameFont.setPixelSize(std::clamp(triangleSize, 9, 16));
+    QString name;
+    QRectF nameRect;
+    if (memoryCueMarkerShowNames() && !m_text.isEmpty()) {
+        const QFontMetricsF metrics(nameFont);
+        name = metrics.elidedText(m_text, Qt::ElideRight, kMaxMemoryCueNameWidth);
+        constexpr float kPadding = 2.f;
+        const float boxWidth = static_cast<float>(metrics.horizontalAdvance(name)) +
+                2.f * kPadding;
+        const float boxHeight = static_cast<float>(metrics.height());
+        if (!name.isEmpty() && boxHeight < height) {
+            const bool nameAtTop = memoryCueNameAlign().testFlag(Qt::AlignTop);
+            const bool triangleAtSameEdge =
+                    align.testFlag(nameAtTop ? Qt::AlignTop : Qt::AlignBottom);
+            const float lineHalfWidth =
+                    static_cast<float>(memoryCueMarkerLineWidth()) / 2.f;
+            const float boxX = hcenter + (triangleAtSameEdge ? half : lineHalfWidth) + 2.f;
+            const float boxY = nameAtTop ? 0.5f : height - boxHeight - 0.5f;
+            nameRect = QRectF(boxX, boxY, boxWidth, boxHeight);
+        }
+    }
+    // The image grows to the right for the name; the line stays at hcenter.
+    const float imageWidth = nameRect.isValid()
+            ? static_cast<float>(std::ceil(nameRect.right() + 1.f))
+            : width;
+
+    QImage image{QSize{static_cast<int>(imageWidth * devicePixelRatio),
+                         static_cast<int>(height * devicePixelRatio)},
+            QImage::Format_ARGB32_Premultiplied};
+    VERIFY_OR_DEBUG_ASSERT(!image.isNull()) {
+        return image;
+    }
+    image.setDevicePixelRatio(devicePixelRatio);
+    image.fill(Qt::transparent);
+
+    QPainter painter;
+    painter.begin(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.setWorldMatrixEnabled(false);
+
+    m_linePosition = hcenter;
+    m_offset = -(width - 1.f) / 2.f;
+
+    // Line and triangles use the configured opacity, the name stays opaque.
+    painter.setOpacity(memoryCueMarkerOpacity() / 100.0);
+
+    // Line in the cue color, centered on the cue position (width 0 = no line)
+    const float lineWidth = static_cast<float>(memoryCueMarkerLineWidth());
+    if (lineWidth > 0.f) {
+        painter.fillRect(QRectF(hcenter - lineWidth / 2.f, 0.f, lineWidth, height),
+                memoryCueColor());
+    }
+
+    QPainterPath triangles;
+    if (align.testFlag(Qt::AlignTop)) {
+        QPainterPath top;
+        top.moveTo(hcenter - half, 0.5f);
+        top.lineTo(hcenter + half, 0.5f);
+        top.lineTo(hcenter, triangleSizeF);
+        top.closeSubpath();
+        triangles.addPath(top);
+    }
+    if (align.testFlag(Qt::AlignBottom)) {
+        QPainterPath bottom;
+        bottom.moveTo(hcenter, height - triangleSizeF);
+        bottom.lineTo(hcenter + half, height - 0.5f);
+        bottom.lineTo(hcenter - half, height - 0.5f);
+        bottom.closeSubpath();
+        triangles.addPath(bottom);
+    }
+    painter.fillPath(triangles, memoryCueColor());
+    painter.setPen(memoryCueOutlineColor());
+    painter.drawPath(triangles);
+    painter.setOpacity(1.0);
+
+    QRectF hoverArea = triangles.boundingRect();
+    if (nameRect.isValid()) {
+        if (memoryCueNameBackground() != MemoryCueNameBackground::Off) {
+            QPainterPath box;
+            box.addRoundedRect(nameRect, 2.f, 2.f);
+            painter.fillPath(box, memoryCueNameBackgroundColor());
+        }
+        painter.setFont(nameFont);
+        painter.setPen(memoryCueNameEffectiveTextColor());
+        painter.drawText(nameRect, Qt::AlignCenter, name);
+        hoverArea = hoverArea.united(nameRect);
+    }
+    painter.end();
+
+    // Hover / right-click area for the cue menu. With triangles at the top
+    // and bottom this spans the whole marker height.
+    m_label.setAreaRect(hoverArea);
+    return image;
+}
+
 void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
     if (m_fillColor == baseColor) {
         return;
     }
 
     m_fillColor = baseColor;
+    m_dimBrightThreshold = dimBrightThreshold;
     m_borderColor = Color::chooseContrastColor(baseColor, dimBrightThreshold);
     m_labelColor = Color::chooseColorByBrightness(baseColor,
             QColor(255, 255, 255, 255),
@@ -683,6 +1130,11 @@ std::optional<WaveformMark::WaveformMarkConstructionError> WaveformMark::validat
 
 QImage WaveformMark::generateImage(float devicePixelRatio) {
     DEBUG_ASSERT(needsImageUpdate());
+    m_styleGeneration = s_styleGeneration.load();
+
+    if (m_breadth != 0.0f && isMemoryCueMarkerInScrollingWaveforms()) {
+        return generateMemoryCueImage(devicePixelRatio);
+    }
 
     QString label = m_text;
 

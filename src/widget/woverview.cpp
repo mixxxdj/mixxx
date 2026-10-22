@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPainterPath>
 #include <QPen>
 #include <QVBoxLayout>
 
@@ -32,6 +33,30 @@ namespace {
 // Horizontal and vertical margin around the widget where we accept play pos dragging.
 constexpr int kDragOutsideLimitX = 100;
 constexpr int kDragOutsideLimitY = 50;
+
+// Hotcue labels in the overview are "<number>: <label>" (see updateCues()).
+// Returns just the label part, or an empty string if the cue has no label.
+QString cueNameFromOverviewLabel(const QString& text, int hotCue) {
+    const QString number = QString::number(hotCue + 1);
+    if (text == number) {
+        return {};
+    }
+    const QString prefix = number + QStringLiteral(": ");
+    return text.startsWith(prefix) ? text.mid(prefix.size()) : text;
+}
+
+// Whether a mark draws a text label in the overview at the given vertical
+// alignment. Used to elide labels so they don't run into the next one.
+bool hasOverviewLabelAt(const WaveformMarkPointer& pMark, Qt::Alignment valign) {
+    if (pMark->isMemoryCueMarkerInOverview()) {
+        return WaveformMark::memoryCueMarkerShowNames() &&
+                valign == (WaveformMark::memoryCueNameAlign() & Qt::AlignVertical_Mask) &&
+                !cueNameFromOverviewLabel(pMark->m_text, pMark->getHotCue()).isEmpty();
+    }
+    // Hotcues always show at least their number.
+    return valign == (pMark->m_align & Qt::AlignVertical_Mask) &&
+            (!pMark->m_text.isEmpty() || pMark->getHotCue() != Cue::kNoHotCue);
+}
 } // anonymous namespace
 
 // for mixxx::OverviewType
@@ -1060,14 +1085,21 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         float markStartPosition = markPosition;
         pMark->m_linePosition = markPosition;
 
+        const bool isMemoryCue = pMark->isMemoryCueMarkerInOverview();
+        const qreal lineWidth = isMemoryCue
+                ? static_cast<qreal>(WaveformMark::memoryCueMarkerLineWidth())
+                : 1.0;
+        // The dark background line sits just left of (or above) the colored line.
+        const qreal bgOffset = (lineWidth + 1.0) / 2.0;
+
         QLineF line;
         QLineF bgLine;
         if (m_orientation == Qt::Horizontal) {
             line.setLine(markPosition, 0.0, markPosition, height());
-            bgLine.setLine(markPosition - 1.0, 0.0, markPosition - 1.0, height());
+            bgLine.setLine(markPosition - bgOffset, 0.0, markPosition - bgOffset, height());
         } else {
             line.setLine(0.0, markPosition, width(), markPosition);
-            bgLine.setLine(0.0, markPosition - 1.0, width(), markPosition - 1.0);
+            bgLine.setLine(0.0, markPosition - bgOffset, width(), markPosition - bgOffset);
         }
 
         QRectF rect;
@@ -1092,11 +1124,27 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
         }
 
-        pPainter->setPen(pMark->borderColor());
-        pPainter->drawLine(bgLine);
+        // Memory cue markers may have their line switched off (width 0),
+        // may all use one color and may be drawn semi-transparent.
+        const qreal memoryCueOpacity = isMemoryCue
+                ? WaveformMark::memoryCueMarkerOpacity() / 100.0
+                : 1.0;
+        if (lineWidth > 0.0) {
+            pPainter->setOpacity(memoryCueOpacity);
+            const QColor lineColor = isMemoryCue ? pMark->memoryCueColor() : pMark->fillColor();
+            pPainter->setPen(isMemoryCue ? pMark->memoryCueBorderColor() : pMark->borderColor());
+            pPainter->drawLine(bgLine);
 
-        pPainter->setPen(pMark->fillColor());
-        pPainter->drawLine(line);
+            if (lineWidth > 1.0) {
+                QPen linePen(lineColor);
+                linePen.setWidthF(lineWidth);
+                pPainter->setPen(linePen);
+            } else {
+                pPainter->setPen(lineColor);
+            }
+            pPainter->drawLine(line);
+            pPainter->setOpacity(1.0);
+        }
 
         if (rect.isValid()) {
             QColor rangeColor = pMark->fillColor();
@@ -1113,7 +1161,105 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             pPainter->fillRect(rect, rangeColor);
         }
 
-        if (!pMark->m_text.isEmpty()) {
+        if (isMemoryCue) {
+            // Rekordbox-style memory cue: small triangle in the cue color,
+            // no number or label text. Placement comes from the preferences
+            // (top/bottom; left/right on vertical overviews).
+            // The overview is smaller than the scrolling waveforms, so the
+            // triangle is drawn at 9/11 of the configured size (9 px by default).
+            const qreal kSize = std::max(3.0,
+                    WaveformMark::memoryCueMarkerSize() * 9.0 /
+                            WaveformMark::kDefaultMemoryCueMarkerSize);
+            const qreal half = kSize / 2.0;
+            const Qt::Alignment align = WaveformMark::memoryCueMarkerAlign();
+            QPainterPath triangles;
+            if (align.testFlag(Qt::AlignBottom)) {
+                QPainterPath bottom;
+                if (m_orientation == Qt::Horizontal) {
+                    bottom.moveTo(markPosition, height() - kSize);
+                    bottom.lineTo(markPosition + half, height());
+                    bottom.lineTo(markPosition - half, height());
+                } else {
+                    bottom.moveTo(width() - kSize, markPosition);
+                    bottom.lineTo(width(), markPosition - half);
+                    bottom.lineTo(width(), markPosition + half);
+                }
+                bottom.closeSubpath();
+                triangles.addPath(bottom);
+            }
+            if (align.testFlag(Qt::AlignTop)) {
+                QPainterPath top;
+                if (m_orientation == Qt::Horizontal) {
+                    top.moveTo(markPosition - half, 0.0);
+                    top.lineTo(markPosition + half, 0.0);
+                    top.lineTo(markPosition, kSize);
+                } else {
+                    top.moveTo(0.0, markPosition - half);
+                    top.lineTo(0.0, markPosition + half);
+                    top.lineTo(kSize, markPosition);
+                }
+                top.closeSubpath();
+                triangles.addPath(top);
+            }
+            pPainter->setRenderHint(QPainter::Antialiasing);
+            pPainter->setOpacity(memoryCueOpacity);
+            pPainter->fillPath(triangles, pMark->memoryCueColor());
+            pPainter->setPen(pMark->memoryCueOutlineColor());
+            pPainter->drawPath(triangles);
+            pPainter->setOpacity(1.0);
+            pMark->m_label.clear();
+            QRectF hoverArea = triangles.boundingRect();
+
+            // Optional name at the top or bottom, right of the triangle (or
+            // of the line, if there is no triangle at that edge).
+            const QString cueName =
+                    cueNameFromOverviewLabel(pMark->m_text, pMark->getHotCue());
+            if (WaveformMark::memoryCueMarkerShowNames() &&
+                    m_orientation == Qt::Horizontal && !cueName.isEmpty()) {
+                const Qt::Alignment nameAlign = WaveformMark::memoryCueNameAlign();
+                const bool nameAtTop = nameAlign.testFlag(Qt::AlignTop);
+                const bool triangleAtSameEdge =
+                        align.testFlag(nameAtTop ? Qt::AlignTop : Qt::AlignBottom);
+                const qreal textX = markPosition +
+                        (triangleAtSameEdge ? half : lineWidth / 2.0) + 2.0;
+                constexpr qreal kPadding = 2.0;
+
+                // Like hotcue labels: don't run into the next label at the
+                // same height, unless the mouse hovers over this mark.
+                qreal maxWidth = WaveformMark::kMaxMemoryCueNameWidth;
+                if (pMark != m_pHoveredMark) {
+                    for (auto m = std::next(it); m != m_marks.cend(); ++m) {
+                        if (hasOverviewLabelAt(*m, nameAlign & Qt::AlignVertical_Mask)) {
+                            const qreal nextMarkPosition = offset +
+                                    static_cast<float>((*m)->getSamplePosition()) * gain;
+                            maxWidth = std::min(maxWidth,
+                                    nextMarkPosition - textX - 2.0 * kPadding - 3.0);
+                            break;
+                        }
+                    }
+                }
+                const QString name = maxWidth > 0.0
+                        ? fontMetrics.elidedText(cueName, Qt::ElideRight, maxWidth)
+                        : QString();
+                if (!name.isEmpty() && name != QStringLiteral("…")) {
+                    const qreal textWidth = fontMetrics.horizontalAdvance(name);
+                    const qreal boxHeight = fontMetrics.height();
+                    const qreal boxY = nameAtTop ? 0.0 : height() - boxHeight;
+                    const QRectF nameRect(textX, boxY, textWidth + 2.0 * kPadding, boxHeight);
+                    if (WaveformMark::memoryCueNameBackground() !=
+                            WaveformMark::MemoryCueNameBackground::Off) {
+                        QPainterPath box;
+                        box.addRoundedRect(nameRect, 2.0, 2.0);
+                        pPainter->fillPath(box, pMark->memoryCueNameBackgroundColor());
+                    }
+                    pPainter->setFont(markerFont);
+                    pPainter->setPen(pMark->memoryCueNameEffectiveTextColor());
+                    pPainter->drawText(nameRect, Qt::AlignCenter, name);
+                    hoverArea = hoverArea.united(nameRect);
+                }
+            }
+            pMark->m_label.setAreaRect(hoverArea);
+        } else if (!pMark->m_text.isEmpty()) {
             Qt::Alignment halign = pMark->m_align & Qt::AlignHorizontal_Mask;
             Qt::Alignment valign = pMark->m_align & Qt::AlignVertical_Mask;
 
@@ -1128,12 +1274,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
                 float nextMarkPosition = -1.0f;
                 for (auto m = std::next(it); m != m_marks.cend(); ++m) {
                     const WaveformMarkPointer& otherMark = *m;
-                    bool otherAtSameHeight =
-                            valign == (otherMark->m_align & Qt::AlignVertical_Mask);
-                    // Hotcues always show at least their number.
-                    bool otherHasLabel = !otherMark->m_text.isEmpty() ||
-                            otherMark->getHotCue() != Cue::kNoHotCue;
-                    if (otherAtSameHeight && otherHasLabel) {
+                    if (hasOverviewLabelAt(otherMark, valign)) {
                         nextMarkPosition = offset +
                                 static_cast<float>(
                                         otherMark->getSamplePosition()) *
