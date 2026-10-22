@@ -706,6 +706,14 @@ QJsonObject innerTubeClientContext(const InnerTubeClient& c,
     client.insert(QStringLiteral("hl"), QStringLiteral("en"));
     client.insert(QStringLiteral("gl"),
             regionOverride.isEmpty() ? QStringLiteral("US") : regionOverride);
+    // Include the User-Agent inside the context body too (not just as the
+    // HTTP header): upstream yt-dlp always sends INNERTUBE_CONTEXT.client.
+    // userAgent, and the TV player endpoint rejects ("needs to be reloaded")
+    // requests whose context lacks it.
+    if (c.userAgent[0] != '\0') {
+        client.insert(QStringLiteral("userAgent"),
+                QString::fromLatin1(c.userAgent));
+    }
     if (c.androidSdkVersion > 0) {
         client.insert(QStringLiteral("androidSdkVersion"), c.androidSdkVersion);
     }
