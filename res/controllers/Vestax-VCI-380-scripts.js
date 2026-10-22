@@ -9,6 +9,8 @@ VestaxVCI380.padColor = {"OFF": 0x00, "BLUE": 0x18, "GREEN": 0x28, "CYAN": 0x38,
 
 // NI Stems format: up to 4 stems; one pad row per stem
 VestaxVCI380.MAX_STEMS = 4;
+// Whether our Mixxx version supports stems
+VestaxVCI380.hasStems = false;
 
 // Color mapper
 VestaxVCI380.ColorMapper = new ColorMapper({
@@ -58,6 +60,14 @@ VestaxVCI380.init = function(_id, _debugging) {
 
     // faders and knobs: we get their position with identity reply, and only activate soft takeover after that
     VestaxVCI380.createPots();
+
+    // check whether our Mixxx version supports stems
+    // warning once ("non-existent" stem_count) and makeConnection returns undefined
+    const stemConnection = engine.makeConnection("[Channel1]", "stem_count", function() {});
+    VestaxVCI380.hasStems = stemConnection !== undefined;
+    if (VestaxVCI380.hasStems) {
+        stemConnection.disconnect();
+    }
 
     // events connection
     VestaxVCI380.connections.push(engine.makeConnection("[App]", "indicator_250ms", VestaxVCI380.onIndicator250));
@@ -409,7 +419,7 @@ VestaxVCI380.onHeadCue = function(channel, control, value, _status) {
 
 VestaxVCI380.onStrip = function(channel, control, value, _status) {
     const deck=VestaxVCI380.getDeck(channel);
-    if (VestaxVCI380.padMode[deck-1]===4 && VestaxVCI380.pushedButton[deck-1]>=1 && VestaxVCI380.pushedButton[deck-1]<=4) {
+    if (VestaxVCI380.isStemSelected(deck)) {
         engine.setValue(`[Channel${VestaxVCI380.getDeck(channel)}_Stem${VestaxVCI380.pushedButton[deck-1]}]`, "volume", script.absoluteLin(value, 0, 1));
     } else if (VestaxVCI380.shiftStatus) { // SHIFT + strip = needle drop on main decks
         engine.setValue(`[Channel${deck}]`, "playposition", script.absoluteLin(value, 0, 0.99)); // 0.99 instead of 1, to avoid unintentional stop while stripping to the end
@@ -493,6 +503,7 @@ VestaxVCI380.onPadTap = function(channel, control, value, _status) {
             break;
 
         case 4: // Stems mode
+            if (!VestaxVCI380.hasStems) { break; } ;
             switch (padNumber) {
             case 1:
             case 2:
@@ -547,7 +558,7 @@ VestaxVCI380.onPadTap = function(channel, control, value, _status) {
             break;
 
         case 4:
-            VestaxVCI380.refreshPadsStem(deck);
+            if (VestaxVCI380.hasStems) { VestaxVCI380.refreshPadsStem(deck); }
             break;
         }
 
@@ -700,8 +711,8 @@ VestaxVCI380.makeConnectionsForMode = function(deck, mode) {
         break;
 
     case 4 : // stems
-        connector=engine.makeConnection(`[Channel${deck}]`, "stem_count", VestaxVCI380.onStemChange);
-        if (connector !== undefined) { // To keep compatibility with Mixxx versions without stem
+        if (VestaxVCI380.hasStems) { // To keep compatibility with Mixxx versions without stem
+            connector=engine.makeConnection(`[Channel${deck}]`, "stem_count", VestaxVCI380.onStemChange);
             connector.trigger();
             VestaxVCI380.modeConnections[deck-1].push(connector);
             for (let stem = 1; stem <= VestaxVCI380.MAX_STEMS; stem++) {
@@ -848,9 +859,15 @@ VestaxVCI380.onLoopEnabled = function(value, group, _control) {
 // Managing effects
 ////
 
+// true while a stem is selected (upper pad held in stems mode)
+VestaxVCI380.isStemSelected = function(deck) {
+    return VestaxVCI380.hasStems && VestaxVCI380.padMode[deck-1]===4 &&
+        VestaxVCI380.pushedButton[deck-1]>=1 && VestaxVCI380.pushedButton[deck-1]<=4;
+};
+
 VestaxVCI380.getFXGroup = function(channel) {
     const deck=VestaxVCI380.getDeck(channel);
-    if (VestaxVCI380.padMode[deck-1]===4 && VestaxVCI380.pushedButton[deck-1]>=1 && VestaxVCI380.pushedButton[deck-1]<=4) {
+    if (VestaxVCI380.isStemSelected(deck)) {
         return (`[QuickEffectRack1_[Channel${VestaxVCI380.getDeck(channel)}_Stem${VestaxVCI380.pushedButton[deck-1]}]]`);
     } else {
         return (`[QuickEffectRack1_[Channel${VestaxVCI380.getDeck(channel)}]]`);
@@ -949,7 +966,6 @@ VestaxVCI380.refreshLEDs = function() {
             VestaxVCI380.trackEndAlertSetLED(deck, true);
         }
     }
-
 };
 
 /////
