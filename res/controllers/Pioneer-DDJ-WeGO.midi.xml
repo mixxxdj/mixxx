@@ -16,7 +16,7 @@
         <option variable="routeDecksToUnits" type="boolean" default="true" label="Route deck N to effect unit N">
             <description>On startup, assign each deck to the effect unit its Jog FX buttons control. Turn off to keep your own effect routing.</description>
         </option>
-        <option variable="softTakeover" type="boolean" default="false" label="Soft-takeover for mixer controls">
+        <option variable="softTakeover" type="boolean" default="true" label="Soft-takeover for mixer controls">
             <description>Ignore volume, EQ, crossfader, headphone mix and tempo until the knob/fader passes the on-screen value, so switching decks does not jump them. Off = immediate pickup.</description>
         </option>
     </settings>
