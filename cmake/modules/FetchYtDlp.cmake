@@ -352,7 +352,9 @@ if(ANDROID)
 
     # ---------------------------------------------------------------------------
     # Install the classes.jar into the APK's classpath.
-    # We add it via QT_ANDROID_JAR_DEPENDENCIES so androiddeployqt includes it.
+    # androiddeployqt picks up *.jar files from <package-source-dir>/libs/,
+    # so copy it there at configure time. (There is no QT_ANDROID_* CMake
+    # property for jars — EXTRA_LIBS is for .so files only.)
     # ---------------------------------------------------------------------------
     set(_ytdlp_classes_jar "${_ytdlp_aar_extracted}/classes.jar")
     if(EXISTS "${_ytdlp_classes_jar}")
@@ -362,10 +364,10 @@ if(ANDROID)
       # available on modern Android NDKs (removed in NDK r23+). Bundling it
       # causes UnsatisfiedLinkError at APK startup. The classes.jar alone
       # enables graceful runtime fallback when the native libs are absent.
-      set_property(
-        TARGET mixxx
-        APPEND
-        PROPERTY QT_ANDROID_JAR_DEPENDENCIES "${_ytdlp_classes_jar}"
+      file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/packaging/android/libs")
+      file(
+        COPY "${_ytdlp_classes_jar}"
+        DESTINATION "${CMAKE_SOURCE_DIR}/packaging/android/libs"
       )
     else()
       message(FATAL_ERROR "classes.jar not found in youtubedl-android AAR")
@@ -389,16 +391,7 @@ if(ANDROID)
       message(FATAL_ERROR "res/raw/ytdlp not found in youtubedl-android AAR")
     endif()
 
-    # Add classes.jar to the target's dependencies.
-    # NOTE: target_link_libraries with a .jar file can cause linker errors
-    # on some NDK toolchains. Use QT_ANDROID_JAR_DEPENDENCIES instead, which
-    # tells androiddeployqt to include the jar in the APK's classpath without
-    # passing it to the native linker.
-    set_property(
-      TARGET mixxx
-      APPEND
-      PROPERTY QT_ANDROID_JAR_DEPENDENCIES "${_ytdlp_classes_jar}"
-    )
+    # classes.jar is deployed via packaging/android/libs/ (see above).
 
     # ---------------------------------------------------------------------------
     # Define a preprocessor macro so the C++ code knows the bundled runtime exists.
