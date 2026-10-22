@@ -357,8 +357,9 @@ VestaxVCI380.onEQ = function(channel, control, value, _status) {
 // of its own decks, so the knob drives the curve set in Preferences > Mixer.
 // Same formula as the preferences slider (dlgprefmixer: linearToOneByX).
 VestaxVCI380.onCrossfaderCurve = function(channel, control, value, _status) {
-    const maxCurve = 999.6;
-    const curve = maxCurve / ((127 - value) / 127 * (maxCurve - 1) + 1);
+    // same as the crossfader curve slider of the preferences (DlgPrefMixer, linearToOneByX):
+    // from 0.6 (smooth) to 999.6 (sharp cut)
+    const curve = 1000 / ((127 - value) / 127 * 999 + 1) - 0.4;
     engine.setValue("[Mixer Profile]", "xFaderCurve", curve);
     engine.setValue("[Mixer Profile]", "xFaderCalibration", Math.pow(0.5, 1 / curve));
 };
