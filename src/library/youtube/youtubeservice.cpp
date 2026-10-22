@@ -916,10 +916,10 @@ void YouTubeService::searchVideos(const QString& query, int cap, int minResults)
                 // dead, so cascading through all of them (5 instances × 3
                 // filters, ~10 s each) only adds ~100 s of stalling before
                 // search finally fails — the user-reported "clicking YouTube
-                // lags then shows nothing" symptom. InnerTube (ANDROID_VR →
-                // TVHTML5 → WEB) is the reliable search path on Android, so when
-                // it fails we go straight to the bundled/Termux yt-dlp if one is
-                // usable, otherwise surface the error immediately. The bundled
+                // lags then shows nothing" symptom. InnerTube (TVHTML5 first,
+                // then mobile clients) is the reliable search path on Android,
+                // so when it fails we go straight to the bundled/Termux yt-dlp
+                // if one is usable, otherwise surface the error immediately. The bundled
                 // ("android-bundled") runtime is download-only — it can't run a
                 // search — so it does not count here.
                 const bool canSearchViaYtDlp = hasYtDlpFallback &&
