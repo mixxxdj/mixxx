@@ -20,6 +20,7 @@ public class MainActivity extends QtActivityBase {
     private static final int BLUETOOTH_PERMISSION_REQUEST = 1002;
     private boolean mRequestedAllFilesAccess;
     private boolean mWaitingForMediaPermission;
+    private boolean mWaitingForBluetoothPermission;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,7 @@ public class MainActivity extends QtActivityBase {
                 needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
             }
             if (!needed.isEmpty()) {
+                mWaitingForBluetoothPermission = true;
                 requestPermissions(
                     needed.toArray(new String[0]),
                     BLUETOOTH_PERMISSION_REQUEST);
@@ -106,6 +108,7 @@ public class MainActivity extends QtActivityBase {
                 needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
             }
             if (!needed.isEmpty()) {
+                mWaitingForBluetoothPermission = true;
                 requestPermissions(
                     needed.toArray(new String[0]),
                     BLUETOOTH_PERMISSION_REQUEST);
@@ -114,6 +117,7 @@ public class MainActivity extends QtActivityBase {
             // Location required for Bluetooth scanning on Android 6-11
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+                mWaitingForBluetoothPermission = true;
                 requestPermissions(
                     new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
                     BLUETOOTH_PERMISSION_REQUEST);
@@ -152,6 +156,9 @@ public class MainActivity extends QtActivityBase {
         if (requestCode == MEDIA_PERMISSION_REQUEST) {
             mWaitingForMediaPermission = false;
             requestBluetoothPermissions();
+            requestAllFilesAccessIfNeeded();
+        } else if (requestCode == BLUETOOTH_PERMISSION_REQUEST) {
+            mWaitingForBluetoothPermission = false;
             requestAllFilesAccessIfNeeded();
         }
     }
@@ -192,6 +199,7 @@ public class MainActivity extends QtActivityBase {
 
     private void requestAllFilesAccessIfNeeded() {
         if (mWaitingForMediaPermission
+            || mWaitingForBluetoothPermission
             || mRequestedAllFilesAccess
             || Build.VERSION.SDK_INT < Build.VERSION_CODES.R
             || Environment.isExternalStorageManager()) {
