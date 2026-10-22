@@ -339,15 +339,40 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 
     PaStream *pStream;
+    const auto openStream = [&]() {
+        return Pa_OpenStream(&pStream,
+                pInputParams,
+                pOutputParams,
+                m_sampleRate.toDouble(),
+                framesPerBuffer,
+                paClipOff, // Stream flags
+                pCallback,
+                (void*)this); // pointer passed to the callback function
+    };
     // Try open device using iChannelMax
-    err = Pa_OpenStream(&pStream,
-            pInputParams,
-            pOutputParams,
-            m_sampleRate.toDouble(),
-            framesPerBuffer,
-            paClipOff, // Stream flags
-            pCallback,
-            (void*)this); // pointer passed to the callback function
+    err = openStream();
+
+#ifdef __WINDOWS__
+    if (m_deviceTypeId == paWASAPI &&
+            (err == paInvalidChannelCount || err == paInvalidSampleRate)) {
+        // In shared mode WASAPI only accepts the channel count and sample
+        // rate of the device's mix format, so opening just the Main pair of
+        // a 4-channel DJ controller fails with "Invalid number of channels".
+        // Retry and let Windows insert its channel mixer and sample rate
+        // converter. This is only done after a refusal, so a configuration
+        // that opens as it is keeps exactly the format it had.
+        qInfo() << "WASAPI refused the stream format:" << Pa_GetErrorText(err)
+                << "- retrying with Windows' format conversion";
+        m_wasapiStreamInfo = {};
+        m_wasapiStreamInfo.size = sizeof(m_wasapiStreamInfo);
+        m_wasapiStreamInfo.hostApiType = paWASAPI;
+        m_wasapiStreamInfo.version = 1;
+        m_wasapiStreamInfo.flags = paWinWasapiAutoConvert;
+        m_outputParams.hostApiSpecificStreamInfo = &m_wasapiStreamInfo;
+        m_inputParams.hostApiSpecificStreamInfo = &m_wasapiStreamInfo;
+        err = openStream();
+    }
+#endif
 
     if (err != paNoError) {
         qWarning() << "Error opening stream:" << Pa_GetErrorText(err);

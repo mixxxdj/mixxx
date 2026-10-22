@@ -145,6 +145,16 @@ QList<QString> SoundManager::getHostAPIList() const {
     return apiList;
 }
 
+int SoundManager::getDefaultOutputDeviceIndex(const QString& api) const {
+    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
+        const PaHostApiInfo* pApiInfo = Pa_GetHostApiInfo(i);
+        if (pApiInfo && api == pApiInfo->name) {
+            return pApiInfo->defaultOutputDevice;
+        }
+    }
+    return paNoDevice;
+}
+
 void SoundManager::closeDevices(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::closeDevices()";
 
