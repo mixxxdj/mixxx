@@ -14,10 +14,12 @@ class CrateStorageTest : public LibraryTest {
 
 TEST_F(CrateStorageTest, persistentLifecycle) {
     constexpr uint kNumCrates = 10;
+    const auto kCrateParent = CrateId();
 
     // Insert some crates
     for (auto i = kNumCrates; i > 0; --i) {
         Crate crate;
+        crate.setParentId(kCrateParent);
         crate.setName(QString("Crate %1").arg(i));
         ASSERT_TRUE(m_crateStorage.onInsertingCrate(crate));
     }
@@ -31,7 +33,7 @@ TEST_F(CrateStorageTest, persistentLifecycle) {
     // Find this crate by name
     {
         Crate crate;
-        ASSERT_TRUE(m_crateStorage.readCrateByName(kCrateName, &crate));
+        ASSERT_TRUE(m_crateStorage.readCrateByName(kCrateParent, kCrateName, &crate));
         EXPECT_EQ(kCrateName, crate.getName());
         crateId = crate.getId();
         ASSERT_TRUE(crateId.isValid());
@@ -50,7 +52,7 @@ TEST_F(CrateStorageTest, persistentLifecycle) {
     crate.setName(kNewCrateName);
     ASSERT_TRUE(m_crateStorage.onUpdatingCrate(crate));
     // Reading the crate by its old name should fail
-    EXPECT_FALSE(m_crateStorage.readCrateByName(kCrateName));
+    EXPECT_FALSE(m_crateStorage.readCrateByName(kCrateParent, kCrateName));
     // Reading by id should reflect the updated name
     {
         Crate updatedCrate;
@@ -61,7 +63,7 @@ TEST_F(CrateStorageTest, persistentLifecycle) {
     // Finally delete this crate
     ASSERT_TRUE(m_crateStorage.onDeletingCrate(crateId));
     EXPECT_FALSE(m_crateStorage.readCrateById(crateId));
-    EXPECT_FALSE(m_crateStorage.readCrateByName(kCrateName));
-    EXPECT_FALSE(m_crateStorage.readCrateByName(kNewCrateName));
+    EXPECT_FALSE(m_crateStorage.readCrateByName(kCrateParent, kCrateName));
+    EXPECT_FALSE(m_crateStorage.readCrateByName(kCrateParent, kNewCrateName));
     EXPECT_EQ(kNumCrates - 1, m_crateStorage.countCrates());
 }

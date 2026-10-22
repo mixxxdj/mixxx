@@ -25,6 +25,9 @@ class CrateQueryFields {
     QString getName(const FwdSqlQuery& query) const {
         return query.fieldValue(m_iName).toString();
     }
+    CrateId getParentId(const FwdSqlQuery& query) const {
+        return CrateId(query.fieldValue(m_iParentId));
+    }
     bool isLocked(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iLocked);
     }
@@ -39,6 +42,7 @@ class CrateQueryFields {
   private:
     DbFieldIndex m_iId;
     DbFieldIndex m_iName;
+    DbFieldIndex m_iParentId;
     DbFieldIndex m_iLocked;
     DbFieldIndex m_iAutoDjSource;
 };
@@ -93,6 +97,13 @@ class CrateSummaryQueryFields : public CrateQueryFields {
             return varTrackDuration.toDouble();
         }
     }
+    QString getFullPath(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iFullPath).toString();
+    }
+    QString getFolderPath(const FwdSqlQuery& query) const {
+        return query.fieldValue(m_iFolderPath).toString();
+    }
+    QList<CrateId> getAncestorIds(const FwdSqlQuery& query) const;
 
     void populateFromQuery(
             const FwdSqlQuery& query,
@@ -101,6 +112,9 @@ class CrateSummaryQueryFields : public CrateQueryFields {
   private:
     DbFieldIndex m_iTrackCount;
     DbFieldIndex m_iTrackDuration;
+    DbFieldIndex m_iFullPath;
+    DbFieldIndex m_iFolderPath;
+    DbFieldIndex m_iAncestorIds;
 };
 
 class CrateSummarySelectResult : public FwdSqlQuerySelectResult {
@@ -273,6 +287,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
             CrateId id,
             Crate* pCrate = nullptr) const;
     bool readCrateByName(
+            CrateId parent,
             const QString& name,
             Crate* pCrate = nullptr) const;
 
@@ -292,7 +307,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
     // redesign of the AutoDJ feature has been reached. The main
     // ideas of the new design should be documented for verification
     // before starting to code.
-    CrateSelectResult selectAutoDjCrates(bool autoDjSource = true) const;
+    CrateSummarySelectResult selectAutoDjCrates(bool autoDjSource = true) const;
 
     // Crate content, i.e. the crate's tracks referenced by id
     uint countCrateTracks(CrateId crateId) const;
@@ -326,6 +341,9 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
     /////////////////////////////////////////////////////////////////////////
     // CrateSummary view operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
+
+    // Returns whether crateA is an ancestor folder of crateB.
+    bool isAncestor(CrateId crateA, CrateId crateB) const;
 
     // Track summaries of all crates:
     //  - Hidden tracks are excluded from the crate summary statistics
