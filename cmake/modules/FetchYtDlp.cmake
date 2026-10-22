@@ -377,6 +377,34 @@ if(ANDROID)
     # files were also deliberately skipped, so even a verified class could
     # never init() (it reads libpython.so from nativeLibraryDir).
     # ---------------------------------------------------------------------------
+    # libandroid-support.so stub: libpython.so declares DT_NEEDED on this
+    # pre-NDK-r23 compat shim but references zero symbols from it (verified
+    # via nm -D: only Py_BytesMain + libc hooks are undefined). Without it,
+    # initPython() fails: dlopen ENOENT -> init() throws "failed to
+    # initialize". Build an empty stub with the NDK clang and ship it via
+    # QT_ANDROID_EXTRA_LIBS alongside the AAR's own jni libs (which Gradle
+    # merges from the .aar automatically).
+    # ---------------------------------------------------------------------------
+    set(_ytdlp_stub_c
+      "${CMAKE_SOURCE_DIR}/packaging/android/stub/android_support_stub.c")
+    set(_ytdlp_stub_so "${_ytdlp_android_dir}/libandroid-support.so")
+    if(NOT EXISTS "${_ytdlp_stub_so}")
+      message(STATUS "Building libandroid-support.so stub for youtubedl-android...")
+      execute_process(
+        COMMAND
+          "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/aarch64-linux-android${ANDROID_NATIVE_API_LEVEL}-clang"
+          -shared -fPIC -O2 -o "${_ytdlp_stub_so}" "${_ytdlp_stub_c}"
+        RESULT_VARIABLE _stub_result
+      )
+      if(NOT _stub_result EQUAL 0)
+        message(FATAL_ERROR "Failed to build libandroid-support.so stub")
+      endif()
+    endif()
+    set_property(
+      TARGET mixxx
+      APPEND PROPERTY QT_ANDROID_EXTRA_LIBS "${_ytdlp_stub_so}"
+    )
+    message(STATUS "  yt-dlp native stub: libandroid-support.so")
     file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/packaging/android/libs")
     file(
       COPY "${_ytdlp_aar_path}"

@@ -2397,6 +2397,16 @@ void YouTubeService::downloadViaInnerTubeClient(
     // Required for the embedded TV client to consider the video playable.
     body.insert(QStringLiteral("contentCheckOk"), true);
     body.insert(QStringLiteral("racyCheckOk"), true);
+    // playbackContext.contentPlaybackContext.html5Preference mirrors what
+    // upstream yt-dlp sends (_generate_player_context). Without it the TV
+    // client replies playabilityStatus "The page needs to be reloaded."
+    QJsonObject contentPlaybackContext;
+    contentPlaybackContext.insert(
+            QStringLiteral("html5Preference"), QStringLiteral("HTML5_PREF_WANTS"));
+    QJsonObject playbackContext;
+    playbackContext.insert(
+            QStringLiteral("contentPlaybackContext"), contentPlaybackContext);
+    body.insert(QStringLiteral("playbackContext"), playbackContext);
 
     QNetworkRequest req(reqUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,
