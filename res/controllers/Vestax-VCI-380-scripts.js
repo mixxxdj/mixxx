@@ -59,12 +59,11 @@ VestaxVCI380.init = function(_id, _debugging) {
     // no soft takeover: Mixxx gets the position of every fader and knob at startup (see syncWithController)
 
     // events connection
+    VestaxVCI380.connections.push(engine.makeConnection("[App]", "indicator_250ms", VestaxVCI380.onIndicator250));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "playposition", VestaxVCI380.updatePlayposition));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "playposition", VestaxVCI380.updatePlayposition));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "play", VestaxVCI380.updatePlayStatus));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "play", VestaxVCI380.updatePlayStatus));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "end_of_track", VestaxVCI380.updatePlayStatus));
-    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "end_of_track", VestaxVCI380.updatePlayStatus));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "end_of_track", VestaxVCI380.onEndOfTrack));
+    VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "end_of_track", VestaxVCI380.onEndOfTrack));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "track_loaded", VestaxVCI380.onTrackLoaded));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "track_loaded", VestaxVCI380.onTrackLoaded));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "quantize", VestaxVCI380.initLEDs));
@@ -538,54 +537,34 @@ VestaxVCI380.onPadFXPush = function(channel, _control, value, _status) {
 
 ////
 // Track end alert management
+// We make some library LEDs blinking as a warning
 //
 
 VestaxVCI380.trackEndAlert=[false, false];
-VestaxVCI380.trackEndAlertTimer=[0, 0];
-VestaxVCI380.trackEndAlertLEDStatus=[false, false];
 
-VestaxVCI380.updatePlayStatus = function(_value, group, _control) {
+VestaxVCI380.onEndOfTrack = function(value, group, _control) {
     const deck=VestaxVCI380.getDeckFromGroup(group);
-    VestaxVCI380.enableTrackEndAlert(deck, engine.getValue(group, "end_of_track") === 1 && engine.getValue(group, "play") === 1);
+    VestaxVCI380.trackEndAlert[deck-1] = (value === 1);
+    if (!VestaxVCI380.trackEndAlert[deck-1]) {
+        VestaxVCI380.trackEndAlertSetLED(deck, true); // restore LEDs ON while no alert
+    }
 };
 
-VestaxVCI380.enableTrackEndAlert = function(deck, status) {
-    if (status) { // enabling
-        if (!VestaxVCI380.trackEndAlert[deck-1]) { // dont enable if already enabled
-            VestaxVCI380.trackEndAlert[deck-1]=true;
-            VestaxVCI380.trackEndAlertTimer[deck-1]=engine.beginTimer(250, () => { VestaxVCI380.trackEndAlertFlash(deck); });
-        }
-    } else { // disabling
-        if (VestaxVCI380.trackEndAlert[deck-1]) { // dont disable if already disabled
-            VestaxVCI380.trackEndAlert[deck-1]=false;
-            VestaxVCI380.trackEndAlertLEDStatus[deck-1]=false;
-            if (VestaxVCI380.trackEndAlertTimer[deck-1]!==0) {
-                engine.stopTimer(VestaxVCI380.trackEndAlertTimer[deck-1]);
-                VestaxVCI380.trackEndAlertTimer[deck-1]=0;
-            }
-            VestaxVCI380.trackEndAlertNoFlash(deck);
+VestaxVCI380.onIndicator250 = function(value, _group, _control) {
+    for (let deck = 1; deck <= 2; deck++) {
+        if (VestaxVCI380.trackEndAlert[deck-1]) {
+            VestaxVCI380.trackEndAlertSetLED(deck, value === 1);
         }
     }
 };
 
-VestaxVCI380.trackEndAlertFlash = function(deck) {
-    VestaxVCI380.trackEndAlertLEDStatus[deck-1]=!VestaxVCI380.trackEndAlertLEDStatus[deck-1];
+VestaxVCI380.trackEndAlertSetLED = function(deck, state) {
     if (deck===1) {
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.AREA, VestaxVCI380.trackEndAlertLEDStatus[deck-1]);
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.BACK, VestaxVCI380.trackEndAlertLEDStatus[deck-1]);
+        VestaxVCI380.setLED(1, VestaxVCI380.LED.AREA, state);
+        VestaxVCI380.setLED(1, VestaxVCI380.LED.BACK, state);
     } else {
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.SORT, VestaxVCI380.trackEndAlertLEDStatus[deck-1]);
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.FWD, VestaxVCI380.trackEndAlertLEDStatus[deck-1]);
-    }
-};
-
-VestaxVCI380.trackEndAlertNoFlash = function(deck) {
-    if (deck===1) {
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.AREA, true);
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.BACK, true);
-    } else {
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.SORT, true);
-        VestaxVCI380.setLED(1, VestaxVCI380.LED.FWD, true);
+        VestaxVCI380.setLED(1, VestaxVCI380.LED.SORT, state);
+        VestaxVCI380.setLED(1, VestaxVCI380.LED.FWD, state);
     }
 };
 
