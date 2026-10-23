@@ -61,33 +61,27 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
         DEBUG_ASSERT(std::abs(x - roundToPixel(x)) < epsilon);
         DEBUG_ASSERT(std::abs(yOffset - roundToPixel(yOffset)) < epsilon);
 #endif
+        const float logicalTextureWidth = m_textureWidth / static_cast<float>(devicePixelRatio);
+        const float logicalTextureHeight = m_textureHeight / static_cast<float>(devicePixelRatio);
         const int numVerticesPerRectangle = 6;
         geometry().allocate(numVerticesPerRectangle * numBoxes);
         TexturedVertexUpdater vertexUpdater{
                 geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
-        const float u1 = (m_pOwner->m_linePosition - 1.5f) /
-                (m_textureWidth / static_cast<float>(devicePixelRatio));
-        const float u2 = (m_pOwner->m_linePosition + 1.5f) /
-                (m_textureWidth / static_cast<float>(devicePixelRatio));
+        const float u1 = (m_pOwner->m_linePosition - 1.5f) / logicalTextureWidth;
+        const float u2 = (m_pOwner->m_linePosition + 1.5f) / logicalTextureWidth;
         const float vLine = (labelBoxIdx == 0) ? 0.9f : 0.1f;
         for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
             const float y = boxIdx * boxBreadth + yOffset;
             if (boxIdx == labelBoxIdx) {
-                vertexUpdater.addRectangle({x, y},
-                        {x +
-                                        static_cast<float>(m_textureWidth /
-                                                static_cast<float>(
-                                                        devicePixelRatio)),
-                                y +
-                                        static_cast<float>(m_textureHeight /
-                                                static_cast<float>(
-                                                        devicePixelRatio))},
+                vertexUpdater.addRectangle(
+                        {x, y},
+                        {x + logicalTextureWidth, y + logicalTextureHeight},
                         {0.f, 0.f},
                         {1.f, 1.f});
             } else {
                 const float lineX = x + m_pOwner->m_linePosition;
                 vertexUpdater.addRectangle({lineX - 1.5f, y},
-                        {lineX + 1.5f, y + static_cast<float>(m_textureHeight / devicePixelRatio)},
+                        {lineX + 1.5f, y + logicalTextureHeight},
                         {u1, vLine},
                         {u2, vLine});
             }
