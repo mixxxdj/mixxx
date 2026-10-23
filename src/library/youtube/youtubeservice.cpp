@@ -2882,11 +2882,13 @@ void YouTubeService::downloadViaAndroidBundled(
                 "(Ljava/lang/String;)V",
                 QJniObject::fromString(videoUrl).object());
 
-        // Add download options. Prefer a muxed m4a (AAC in MP4) over raw
+        // Add download options. Prefer a native m4a (AAC in MP4) over raw
         // Opus-in-WebM: raw bestaudio Opus streams carry no seekable duration
         // header, so SoundSourceFFmpeg refuses them ("Unknown or unlimited
-        // stream duration"). MP4 muxing via --merge-output-format writes a
-        // proper moov box FFmpeg and TagLib both accept.
+        // stream duration"). The -f selector below already lands a muxed
+        // .m4a with a proper moov box (no --merge-output-format needed:
+        // that flag is only for combining separate audio+video streams and
+        // yt-dlp rejects m4a as a merge format).
         request.callMethod<QJniObject>("addOption",
                 "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
                 "YoutubeDLRequest;",
@@ -2914,11 +2916,6 @@ void YouTubeService::downloadViaAndroidBundled(
         request.callMethod<QJniObject>("addOption",
                 "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
                 QJniObject::fromString("--no-mtime").object());
-        request.callMethod<QJniObject>("addOption",
-                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
-                "YoutubeDLRequest;",
-                QJniObject::fromString("--merge-output-format").object(),
-                QJniObject::fromString("m4a").object());
         // Bound network stalls: without this, a hung connection blocks
         // execute() forever, and teardown joins this thread -> ANR.
         request.callMethod<QJniObject>("addOption",
