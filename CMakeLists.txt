@@ -1793,6 +1793,7 @@ add_library(
   src/widget/wcuemenupopup.cpp
   src/widget/wcuebutton.cpp
   src/widget/wdisplay.cpp
+  src/widget/wdlgimportplaylist.cpp
   src/widget/weffectbuttonparametername.cpp
   src/widget/weffectchain.cpp
   src/widget/weffectchainpresetbutton.cpp
