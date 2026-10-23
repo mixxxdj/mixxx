@@ -28,6 +28,8 @@ using BrowseTableItems = QList<QList<QStandardItem*>>;
 
 typedef QSharedPointer<BrowseThread> BrowseThreadPointer;
 
+using BrowseRows = QList<QList<QStandardItem*>>;
+
 class BrowseThread : public QThread {
     Q_OBJECT
   public:
