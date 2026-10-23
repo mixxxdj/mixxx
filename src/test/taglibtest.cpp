@@ -1,5 +1,8 @@
 #include <QDir>
 #include <QtDebug>
+#include <atomic>
+#include <thread>
+#include <vector>
 
 #include "sources/metadatasourcetaglib.h"
 #include "test/mixxxtest.h"
@@ -134,3 +137,50 @@ TEST_F(TagLibTest, WriteID3v2TagViaLink) {
     EXPECT_TRUE(linkFileInfoAfter.isSymLink());
 }
 #endif
+
+// On Windows TagLib only allows FILE_SHARE_READ when opening a file. Opening
+// it for read/write therefore fails if the file is currently open somewhere
+// else, even only for reading. Importing metadata must not need write access,
+// otherwise tests running in parallel randomly fail to read shared test files.
+// Windows applies the sharing rules per handle, so threads reproduce this.
+TEST_F(TagLibTest, ImportConcurrentlyFromSameFile) {
+    const QString fileName =
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/cover-test-øé~ł€˚-png.mp3"));
+    ASSERT_TRUE(QFileInfo::exists(fileName));
+
+    constexpr int kThreads = 8;
+    constexpr int kImportsPerThread = 100;
+
+    std::atomic<int> readyThreads = 0;
+    std::atomic<bool> start = false;
+    std::atomic<int> failedImports = 0;
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < kThreads; ++i) {
+        threads.emplace_back([&] {
+            ++readyThreads;
+            while (!start) {
+                std::this_thread::yield();
+            }
+            const mixxx::MetadataSourceTagLib source(fileName, QStringLiteral("mp3"));
+            for (int j = 0; j < kImportsPerThread; ++j) {
+                mixxx::TrackMetadata trackMetadata;
+                const auto imported = source.importTrackMetadataAndCoverImage(
+                        &trackMetadata, nullptr, false);
+                if (imported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+                    ++failedImports;
+                }
+            }
+        });
+    }
+    while (readyThreads < kThreads) {
+        std::this_thread::yield();
+    }
+    start = true;
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    EXPECT_EQ(0, failedImports);
+}
