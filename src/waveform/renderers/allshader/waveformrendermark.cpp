@@ -348,6 +348,7 @@ void allshader::WaveformRenderMark::update() {
     QList<WaveformWidgetRenderer::WaveformMarkOnScreen> marksOnScreen;
 
     auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
+    auto roundToFloatPixel = createFunctionRoundToFloatPixel(static_cast<float>(devicePixelRatio));
 
     for (const auto& pMark : std::as_const(m_marks)) {
         pMark->setBreadth(markBreadth);
@@ -401,10 +402,10 @@ void allshader::WaveformRenderMark::update() {
         if (drawOffset > -markWidth &&
                 drawOffset < m_pWaveformRenderer->getLength()) {
             pMarkNodeGraphics->update(
-                    static_cast<float>(roundToPixel(drawOffset)),
+                    roundToFloatPixel(drawOffset),
                     numBoxes,
                     boxBreadth,
-                    static_cast<float>(roundToPixel(yOffset)),
+                    roundToFloatPixel(yOffset),
                     labelBoxIdx,
                     devicePixelRatio);
 
@@ -462,10 +463,10 @@ void allshader::WaveformRenderMark::update() {
 
     m_pWaveformRenderer->setMarkPositions(marksOnScreen);
 
-    const qreal playMarkerPos = static_cast<float>(m_pWaveformRenderer->getPlayMarkerPosition() *
+    const float playMarkerPos = static_cast<float>(m_pWaveformRenderer->getPlayMarkerPosition() *
             m_pWaveformRenderer->getLength());
     {
-        const float drawOffset = static_cast<float>(roundToPixel(playMarkerPos + kPlayPosOffset));
+        const float drawOffset = roundToFloatPixel(playMarkerPos + kPlayPosOffset);
         TexturedVertexUpdater vertexUpdater{
                 m_pPlayPosNode->geometry()
                         .vertexDataAs<Geometry::TexturedPoint2D>()};
@@ -477,7 +478,7 @@ void allshader::WaveformRenderMark::update() {
 
     if (m_untilMarkShowBeats || m_untilMarkShowTime) {
         updateUntilMark(playPosition, nextMarkPosition);
-        updateDigitsNodeForUntilMark(static_cast<float>(roundToPixel(playMarkerPos + 20.0)));
+        updateDigitsNodeForUntilMark(roundToFloatPixel(playMarkerPos + 20.f));
     } else {
         m_pDigitsRenderNode->clear();
     }
