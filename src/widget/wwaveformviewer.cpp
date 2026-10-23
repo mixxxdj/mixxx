@@ -23,7 +23,7 @@ WWaveformViewer::WWaveformViewer(
           m_bScratching(false),
           m_bBending(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
-          m_waveformWidget(nullptr) {
+          m_pWaveformWidget(nullptr) {
     setMouseTracking(true);
     setAcceptDrops(true);
     m_pZoom = new ControlProxy(group, "waveform_zoom", this, ControlFlag::NoAssertIfMissing);
@@ -48,36 +48,36 @@ WWaveformViewer::~WWaveformViewer() {
 }
 
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
-    if (m_waveformWidget) {
-        m_waveformWidget->setup(node, context);
-        m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
+    if (m_pWaveformWidget) {
+        m_pWaveformWidget->setup(node, context);
+        m_dimBrightThreshold = m_pWaveformWidget->getDimBrightThreshold();
     }
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
     Q_UNUSED(event);
-    if (m_waveformWidget) {
+    if (m_pWaveformWidget) {
         // Note m_waveformWidget is a WaveformWidgetAbstract,
         // so this calls the method of WaveformWidgetAbstract,
         // note of the derived waveform widgets which are also
         // a QWidget, though that will be called directly.
-        m_waveformWidget->resize(width(), height());
+        m_pWaveformWidget->resize(width(), height());
     }
 }
 
 void WWaveformViewer::showEvent(QShowEvent* event) {
     Q_UNUSED(event);
-    if (m_waveformWidget) {
+    if (m_pWaveformWidget) {
         // We leave it up to Qt to set the size of the derived
         // waveform widget, but we still need to set the size
         // of the renderer.
-        m_waveformWidget->resizeRenderer(
-                width(), height(), static_cast<float>(devicePixelRatioF()));
+        m_pWaveformWidget->resizeRenderer(
+                width(), height(), devicePixelRatioF());
     }
 }
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
-    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::Empty) {
+    if (!m_pWaveformWidget || m_pWaveformWidget->getType() == WaveformWidgetType::Empty) {
         return;
     }
 
@@ -91,14 +91,16 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_bBending = false;
         }
         m_bScratching = true;
-        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    event->pos().x() : event->pos().y();
-        double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
+        int eventPosValue =
+                m_pWaveformWidget->getOrientation() == Qt::Horizontal
+                ? event->pos().x()
+                : event->pos().y();
+        double audioSamplePerPixel = m_pWaveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
         m_pScratchPosition->set(targetPosition);
         m_pScratchPositionEnable->set(1.0);
     } else if (event->button() == Qt::RightButton) {
-        const auto currentTrack = m_waveformWidget->getTrackInfo();
+        const auto currentTrack = m_pWaveformWidget->getTrackInfo();
         if (!isPlaying() && m_pHoveredMark) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
@@ -128,23 +130,24 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
-    if (!m_waveformWidget || m_waveformWidget->getType() == WaveformWidgetType::Empty) {
+    if (!m_pWaveformWidget || m_pWaveformWidget->getType() == WaveformWidgetType::Empty) {
         return;
     }
 
     // Only send signals for mouse moving if the left button is pressed
     if (m_bScratching) {
-        int eventPosValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    event->pos().x() : event->pos().y();
+        int eventPosValue =
+                m_pWaveformWidget->getOrientation() == Qt::Horizontal
+                ? event->pos().x()
+                : event->pos().y();
         // Adjusts for one-to-one movement.
-        double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
+        double audioSamplePerPixel = m_pWaveformWidget->getAudioSamplePerPixel();
         double targetPosition = -1.0 * eventPosValue * audioSamplePerPixel * 2;
         //qDebug() << "Target:" << targetPosition;
         m_pScratchPosition->set(targetPosition);
     } else if (m_bBending) {
         QPoint diff = event->pos() - m_mouseAnchor;
-        int diffValue = m_waveformWidget->getOrientation() == Qt::Horizontal ?
-                    diff.x() : diff.y();
+        int diffValue = m_pWaveformWidget->getOrientation() == Qt::Horizontal ? diff.x() : diff.y();
         // Start at the middle of [0.0, 1.0], and emit values based on how far
         // the mouse has traveled horizontally. Note, for legacy (MIDI) reasons,
         // this is tuned to 127.
@@ -158,7 +161,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         m_pWheel->setParameter(v);
     } else if (!isPlaying()) {
         WaveformMarkPointer pMark;
-        pMark = m_waveformWidget->getCueMarkAtPoint(event->pos());
+        pMark = m_pWaveformWidget->getCueMarkAtPoint(event->pos());
         if (pMark && getCuePointerFromCueMark(pMark)) {
             if (!m_pHoveredMark) {
                 m_pHoveredMark = pMark;
@@ -193,11 +196,11 @@ void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
 }
 
 void WWaveformViewer::wheelEvent(QWheelEvent* event) {
-    if (m_waveformWidget) {
+    if (m_pWaveformWidget) {
         if (event->angleDelta().y() > 0) {
-            onZoomChange(m_waveformWidget->getZoom() / 1.05);
+            onZoomChange(m_pWaveformWidget->getZoom() / 1.05);
         } else if (event->angleDelta().y() < 0) {
-            onZoomChange(m_waveformWidget->getZoom() * 1.05);
+            onZoomChange(m_pWaveformWidget->getZoom() * 1.05);
         }
     }
 }
@@ -222,15 +225,15 @@ void WWaveformViewer::leaveEvent(QEvent*) {
 }
 
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
-    if (m_waveformWidget) {
-        m_waveformWidget->setTrack(track);
+    if (m_pWaveformWidget) {
+        m_pWaveformWidget->setTrack(track);
     }
 }
 
 #ifdef __STEM__
 void WWaveformViewer::slotSelectStem(mixxx::StemChannelSelection stemMask) {
-    if (m_waveformWidget) {
-        m_waveformWidget->selectStem(stemMask);
+    if (m_pWaveformWidget) {
+        m_pWaveformWidget->selectStem(stemMask);
         update();
     }
 }
@@ -243,8 +246,8 @@ void WWaveformViewer::slotTrackUnloaded(TrackPointer pOldTrack) {
 void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pNewTrack);
     Q_UNUSED(pOldTrack);
-    if (m_waveformWidget) {
-        m_waveformWidget->setTrack(TrackPointer());
+    if (m_pWaveformWidget) {
+        m_pWaveformWidget->setTrack(TrackPointer());
     }
 }
 
@@ -257,8 +260,8 @@ void WWaveformViewer::onZoomChange(double zoom) {
 
 void WWaveformViewer::setZoom(double zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
-    if (m_waveformWidget) {
-        m_waveformWidget->setZoom(zoom);
+    if (m_pWaveformWidget) {
+        m_pWaveformWidget->setZoom(zoom);
     }
 
     // If multiple waveform widgets for the same group are created then it's
@@ -274,56 +277,56 @@ void WWaveformViewer::setZoom(double zoom) {
 }
 
 void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
-    if (m_waveformWidget) {
-        m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+    if (m_pWaveformWidget) {
+        m_pWaveformWidget->setDisplayBeatGridAlpha(alpha);
     }
 }
 
 void WWaveformViewer::setPlayMarkerPosition(double position) {
-    if (m_waveformWidget) {
-        m_waveformWidget->setPlayMarkerPosition(position);
+    if (m_pWaveformWidget) {
+        m_pWaveformWidget->setPlayMarkerPosition(position);
     }
 }
 
-void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
-    if (m_waveformWidget) {
-        QWidget* pWidget = m_waveformWidget->getWidget();
+void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* pWaveformWidget) {
+    if (m_pWaveformWidget) {
+        QWidget* pWidget = m_pWaveformWidget->getWidget();
         disconnect(pWidget);
     }
-    m_waveformWidget = waveformWidget;
-    if (m_waveformWidget) {
-        QWidget* pWidget = m_waveformWidget->getWidget();
+    m_pWaveformWidget = pWaveformWidget;
+    if (m_pWaveformWidget) {
+        QWidget* pWidget = m_pWaveformWidget->getWidget();
         DEBUG_ASSERT(pWidget);
         connect(pWidget,
                 &QWidget::destroyed,
                 this,
                 [this]() {
                     // The pointer must be considered as dangling!
-                    m_waveformWidget = nullptr;
+                    m_pWaveformWidget = nullptr;
                 });
-        m_waveformWidget->getWidget()->setMouseTracking(true);
+        m_pWaveformWidget->getWidget()->setMouseTracking(true);
 #ifdef MIXXX_USE_QOPENGL
-        if (m_waveformWidget->getGLWidget()) {
+        if (m_pWaveformWidget->getGLWidget()) {
             // The OpenGLWindow used to display the waveform widget interferes with the
             // normal Qt tooltip mechanism and uses it's own mechanism. We set the tooltip
             // of the waveform widget to the tooltip of its parent WWaveformViewer so the
             // OpenGLWindow will display it.
-            m_waveformWidget->getGLWidget()->setToolTip(toolTip());
+            m_pWaveformWidget->getGLWidget()->setToolTip(toolTip());
 
             // Tell the WGLWidget that this is its drag&drop target
-            m_waveformWidget->getGLWidget()->setTrackDropTarget(this);
+            m_pWaveformWidget->getGLWidget()->setTrackDropTarget(this);
         }
 #endif
         // Make connection to show "Passthrough" label on the waveform, except for
         // "Empty" waveform type
-        if (m_waveformWidget->getType() == WaveformWidgetType::Empty) {
+        if (m_pWaveformWidget->getType() == WaveformWidgetType::Empty) {
             return;
         }
         connect(this,
                 &WWaveformViewer::passthroughChanged,
                 this,
                 [this](double value) {
-                    m_waveformWidget->setPassThroughEnabled(value > 0);
+                    m_pWaveformWidget->setPassThroughEnabled(value > 0);
                 });
         // Make sure the label is shown after the waveform type was changed
         emit passthroughChanged(m_pPassthroughEnabled->toBool());
@@ -331,8 +334,8 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 }
 
 CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) const {
-    if (m_waveformWidget && pMark) {
-        return m_waveformWidget->getCuePointerFromIndex(pMark->getHotCue());
+    if (m_pWaveformWidget && pMark) {
+        return m_pWaveformWidget->getCuePointerFromIndex(pMark->getHotCue());
     }
     return {};
 }

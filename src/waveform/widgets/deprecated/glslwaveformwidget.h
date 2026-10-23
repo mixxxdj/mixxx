@@ -16,7 +16,7 @@ class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
             GlslType type);
     ~GLSLWaveformWidget() override = default;
 
-    void resizeRenderer(int width, int height, float devicePixelRatio) override;
+    void resizeRenderer(int width, int height, qreal devicePixelRatio) override;
 
   protected:
     void castToQWidget() override;

@@ -8,41 +8,36 @@
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
         : WaveformWidgetRenderer(group),
           m_initSuccess(false) {
-    m_widget = nullptr;
+    m_pWidget = nullptr;
 }
 
 WaveformWidgetAbstract::~WaveformWidgetAbstract() {
 }
 
 void WaveformWidgetAbstract::hold() {
-    if (m_widget) {
-        m_widget->hide();
+    if (m_pWidget) {
+        m_pWidget->hide();
     }
 }
 
 void WaveformWidgetAbstract::release() {
-    if (m_widget) {
-        m_widget->show();
+    if (m_pWidget) {
+        m_pWidget->show();
     }
 }
 
-void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
-    WaveformWidgetRenderer::onPreRender(vsyncThread);
-}
-
 mixxx::Duration WaveformWidgetAbstract::render() {
-    if (m_widget) {
-        m_widget->repaint(); // Repaints the widget directly by calling paintEvent()
+    if (m_pWidget) {
+        m_pWidget->repaint(); // Repaints the widget directly by calling paintEvent()
     }
     // Time for Painter setup, unknown in this case
     return mixxx::Duration();
 }
 
 void WaveformWidgetAbstract::resize(int width, int height) {
-    qreal devicePixelRatio = 1.0;
-    if (m_widget) {
-        m_widget->resize(width, height);
-        devicePixelRatio = m_widget->devicePixelRatioF();
+    if (m_pWidget) {
+        qreal devicePixelRatio = m_pWidget->devicePixelRatioF();
+        resizeRenderer(width, height, devicePixelRatio);
+        m_pWidget->resize(width, height);
     }
-    resizeRenderer(width, height, static_cast<float>(devicePixelRatio));
 }

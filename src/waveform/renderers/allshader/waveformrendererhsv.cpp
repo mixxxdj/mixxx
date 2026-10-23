@@ -31,7 +31,7 @@ void WaveformRendererHSV::preprocess() {
 }
 
 bool WaveformRendererHSV::preprocessInner() {
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
 
     if (!pTrack) {
         return false;
@@ -59,18 +59,18 @@ bool WaveformRendererHSV::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength());
-    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
-    const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5f / devicePixelRatio;
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const int length = static_cast<int>(m_pWaveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
+    const qreal invDevicePixelRatio = 1.0 / devicePixelRatio;
+    const qreal halfPixelSize = 0.5 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
     const double firstVisualFrame =
-            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+            m_pWaveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
     const double lastVisualFrame =
-            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
+            m_pWaveformRenderer->getLastDisplayedPosition() * visualFramesSize;
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
@@ -87,9 +87,9 @@ bool WaveformRendererHSV::preprocessInner() {
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
-    getHsvF(m_waveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
+    getHsvF(m_pWaveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float breadth = static_cast<float>(m_pWaveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;
@@ -125,7 +125,7 @@ bool WaveformRendererHSV::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
+        const qreal rPos = pos * invDevicePixelRatio;
 
         // per channel
         float maxLow[2]{};
@@ -192,9 +192,10 @@ bool WaveformRendererHSV::preprocessInner() {
 
         // Lines are thin rectangles
         // maxAll[0] is for left channel, maxAll[1] is for right channel
-        vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                           halfBreadth - heightFactor * eqGain[0] * maxAll[0]},
-                {fpos + halfPixelSize,
+        vertexUpdater.addRectangle(
+                {static_cast<float>(rPos - halfPixelSize),
+                        halfBreadth - heightFactor * eqGain[0] * maxAll[0]},
+                {static_cast<float>(rPos + halfPixelSize),
                         halfBreadth + heightFactor * eqGain[1] * maxAll[1]},
                 {static_cast<float>(color.redF()),
                         static_cast<float>(color.greenF()),

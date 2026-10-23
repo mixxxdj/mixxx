@@ -18,18 +18,18 @@
 namespace {
 QImage drawPrerollImage(float markerLength,
         float markerBreadth,
-        float devicePixelRatio,
+        qreal devicePixelRatio,
         QColor color) {
-    const int imagePixelW = static_cast<int>(markerLength * devicePixelRatio + 0.5f);
-    const int imagePixelH = static_cast<int>(markerBreadth * devicePixelRatio + 0.5f);
-    const float imageW = static_cast<float>(imagePixelW) / devicePixelRatio;
-    const float imageH = static_cast<float>(imagePixelH) / devicePixelRatio;
+    const int imagePixelW = static_cast<int>(markerLength * devicePixelRatio + 0.5);
+    const int imagePixelH = static_cast<int>(markerBreadth * devicePixelRatio + 0.5);
+    const qreal imageW = imagePixelW / devicePixelRatio;
+    const qreal imageH = imagePixelH / devicePixelRatio;
 
     QImage image(imagePixelW, imagePixelH, QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
 
-    const float penWidth = 1.5f;
-    const float offset = penWidth / 2.f;
+    const qreal penWidth = 1.5;
+    const qreal offset = penWidth / 2.0;
 
     image.fill(Qt::transparent);
     QPainter painter;
@@ -45,7 +45,7 @@ QImage drawPrerollImage(float markerLength,
     // Draw base the right, tip to the left
     QPointF p0{imageW - offset, offset};
     QPointF p1{imageW - offset, imageH - offset};
-    QPointF p2{offset, imageH / 2.f};
+    QPointF p2{offset, imageH / 2.0};
     QPainterPath path;
     path.moveTo(p2);
     path.lineTo(p1);
@@ -104,9 +104,9 @@ void WaveformRendererPreroll::preprocess() {
 }
 
 bool WaveformRendererPreroll::preprocessInner() {
-    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    const TrackPointer trackInfo = m_pWaveformRenderer->getTrackInfo();
 
-    if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+    if (!trackInfo || (m_isSlipRenderer && !m_pWaveformRenderer->isSlipActive())) {
         return false;
     }
 
@@ -114,8 +114,9 @@ bool WaveformRendererPreroll::preprocessInner() {
                                          : ::WaveformRendererAbstract::Play;
 
     const double firstDisplayedPosition =
-            m_waveformRenderer->getFirstDisplayedPosition(positionType);
-    const double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition(positionType);
+            m_pWaveformRenderer->getFirstDisplayedPosition(positionType);
+    const double lastDisplayedPosition =
+            m_pWaveformRenderer->getLastDisplayedPosition(positionType);
 
     // Check if the pre- or post-roll is on screen. If so, draw little triangles
     // to indicate the respective zones.
@@ -132,14 +133,14 @@ bool WaveformRendererPreroll::preprocessInner() {
     const bool splitStemTracks = isStemTrack &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
-    const double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
-    const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-    const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
+    const double playMarkerPosition = m_pWaveformRenderer->getPlayMarkerPosition();
+    const double vSamplesPerPixel = m_pWaveformRenderer->getVisualSamplePerPixel();
+    const double numberOfVSamples = m_pWaveformRenderer->getLength() * vSamplesPerPixel;
 
-    const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample(positionType);
-    const int totalVSamples = m_waveformRenderer->getTotalVSample();
+    const int currentVSamplePosition = m_pWaveformRenderer->getPlayPosVSample(positionType);
+    const int totalVSamples = m_pWaveformRenderer->getTotalVSample();
 
-    const float breadth = m_waveformRenderer->getBreadth();
+    const float breadth = m_pWaveformRenderer->getBreadth();
     const int numBoxes = splitStemTracks ? mixxx::kMaxSupportedStems : 1;
     const float boxBreadth = breadth / static_cast<float>(numBoxes);
     const float halfBoxBreadth = boxBreadth * 0.5f;
@@ -161,10 +162,10 @@ bool WaveformRendererPreroll::preprocessInner() {
         m_markerLength = markerLength;
         m_markerBreadth = markerBreadth;
         dynamic_cast<PatternMaterial&>(material())
-                .setTexture(std::make_unique<Texture>(m_waveformRenderer->getContext(),
+                .setTexture(std::make_unique<Texture>(m_pWaveformRenderer->getContext(),
                         drawPrerollImage(m_markerLength,
                                 m_markerBreadth,
-                                m_waveformRenderer->getDevicePixelRatio(),
+                                m_pWaveformRenderer->getDevicePixelRatio(),
                                 m_color)));
     }
 
@@ -174,7 +175,7 @@ bool WaveformRendererPreroll::preprocessInner() {
 
     geometry().allocate(reservedVertexCount);
 
-    const float end = m_waveformRenderer->getLength();
+    const float end = m_pWaveformRenderer->getLength();
 
     TexturedVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
 

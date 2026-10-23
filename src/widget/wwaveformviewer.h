@@ -58,9 +58,9 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void onZoomChange(double zoom);
 
   private:
-    void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
+    void setWaveformWidget(WaveformWidgetAbstract* pWaveformWidget);
     WaveformWidgetAbstract* getWaveformWidget() {
-        return m_waveformWidget;
+        return m_pWaveformWidget;
     }
     //direct access to let factory sync/set default zoom
     void setZoom(double zoom);
@@ -83,7 +83,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     WaveformMarkPointer m_pHoveredMark;
 
-    WaveformWidgetAbstract* m_waveformWidget;
+    WaveformWidgetAbstract* m_pWaveformWidget;
 
     int m_dimBrightThreshold;
 
