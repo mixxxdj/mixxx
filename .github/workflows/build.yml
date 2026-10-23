@@ -683,9 +683,10 @@ jobs:
         env:
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel — keep serial there.
-          # On Linux/macOS we let CTest fan out across the runner's cores; the
-          # default value (`0`) means "use all available CPUs".
-          CTEST_PARALLEL_LEVEL: ${{ runner.os == 'Windows' && '1' || '0' }}
+          # The macos-15-intel runner is slow and dies (lost communication,
+          # twice in a row) when the whole heavy suite fans out across all
+          # CPUs — cap it at 2. Linux keeps full parallelism.
+          CTEST_PARALLEL_LEVEL: ${{ runner.os == 'Windows' && '1' || (runner.os == 'macOS' && '2' || '0') }}
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: "[Windows] Sign executables"
