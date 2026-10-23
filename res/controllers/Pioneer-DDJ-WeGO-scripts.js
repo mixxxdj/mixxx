@@ -1,6 +1,6 @@
-// AI-generated: this file was written with an AI agent (Claude) from a MIDI map
-// verified on DDJ-WeGO hardware and Pioneer's Traktor mapping. Based on the
-// original mapping by Samuel Nicholas (https://github.com/mixxxdj/mixxx/pull/1346).
+// Pioneer DDJ-WeGO mapping, from a MIDI map verified on hardware and Pioneer's
+// Traktor mapping. Based on the original mapping by Samuel Nicholas
+// (https://github.com/mixxxdj/mixxx/pull/1346).
 //
 // Deck channels: 0x90-0x93 / 0xB0-0xB3 = decks A-D. The controller only sends
 // deck C/D messages after the DECK button LED is lit, and Jog FX values only
@@ -14,11 +14,15 @@ var PioneerDDJWeGO = {};
 PioneerDDJWeGO.jogResolution = 480;
 PioneerDDJWeGO.bendScale = 0.8;
 PioneerDDJWeGO.searchScale = 150;
+// Whether touching the jog in Jog FX mode still scratches; set from a setting
+// in init(). Default off so the track keeps playing while turning an effect.
+PioneerDDJWeGO.jogFxScratch = false;
 
 // [left, right] side shows deck C/D instead of A/B
 PioneerDDJWeGO.deckCD = [false, false];
 PioneerDDJWeGO.tempoMSBValue = {};
-PioneerDDJWeGO.vuLevel = [0, 0, 0, 0];
+// -1 so the first vu_meter trigger always resends, even on silence.
+PioneerDDJWeGO.vuLevel = [-1, -1, -1, -1];
 PioneerDDJWeGO.litLeds = {};
 // Per-deck LED connections, re-triggered when a hidden deck becomes visible.
 PioneerDDJWeGO.connections = [[], [], [], []];
@@ -41,10 +45,11 @@ PioneerDDJWeGO.init = function() {
         engine.makeConnection(group, key, callback).trigger();
     };
 
-    // Register the 14-bit mixer controls (volume, EQ, crossfader, headMix,
-    // tempo). Soft-takeover is a setting; engine.softTakeover only affects
-    // values set from the script, so these controls are script-routed.
+    // Register the 14-bit mixer controls (volume, EQ, crossfader, headMix).
+    // Soft-takeover is a setting; engine.softTakeover only affects values set
+    // from the script, so these controls are script-routed.
     const softTakeover = engine.getSetting("softTakeover");
+    PioneerDDJWeGO.jogFxScratch = engine.getSetting("jogFxScratch");
     const addMixer = function(midino, group, key) {
         PioneerDDJWeGO.mixer14[midino] = {group: group, key: key, msb: 0};
         engine.softTakeover(group, key, softTakeover);
@@ -62,14 +67,16 @@ PioneerDDJWeGO.init = function() {
 
         // Deck-scoped connection: kept so deckToggle can re-send the LEDs for
         // the deck that becomes visible (the controller forgets hidden state).
-        const connectDeck = function(group, key, callback) {
-            const conn = engine.makeConnection(group, key, callback);
+        const connectDeck = function(connGroup, key, callback) {
+            const conn = engine.makeConnection(connGroup, key, callback);
             conn.trigger();
             PioneerDDJWeGO.connections[n].push(conn);
         };
 
         engine.setValue(group, "beatloop_size", engine.getSetting("autoLoopSize"));
-        engine.softTakeover(group, "rate", softTakeover);
+        // The tempo slider is shared across A/C and B/D, so always soft-takeover
+        // it (a jump there is never wanted); the setting only covers the mixer.
+        engine.softTakeover(group, "rate", true);
         addMixer(0x13 + 2 * n, group, "volume");
         addMixer(0x07 + n, eq, "parameter3"); // EQ HI
         addMixer(0x0B + n, eq, "parameter2"); // EQ MID
@@ -175,24 +182,61 @@ PioneerDDJWeGO.shutdown = function() {
 // which is on by default and would block scratching.
 PioneerDDJWeGO.jogFxMode = {};
 
-PioneerDDJWeGO.toggleJogFxMode = function(status, control) {
-    const key = (status << 8) | control;
-    PioneerDDJWeGO.jogFxMode[key] = !PioneerDDJWeGO.jogFxMode[key];
-    PioneerDDJWeGO.led(status, control, PioneerDDJWeGO.jogFxMode[key]);
-    return PioneerDDJWeGO.jogFxMode[key];
+PioneerDDJWeGO.setJogFxMode = function(status, control, on) {
+    PioneerDDJWeGO.jogFxMode[(status << 8) | control] = on;
+    PioneerDDJWeGO.led(status, control, on);
 };
 
-PioneerDDJWeGO.ctrlA = function(channel, control, value, status) {
-    if (value) {
-        PioneerDDJWeGO.toggleJogFxMode(status, control);
+// Re-centre the filter using the quick effect's own default (not a hard-coded
+// 0.5), so it works for whatever quick effect the user picked.
+PioneerDDJWeGO.resetFilter = function(group) {
+    engine.setValue(`[QuickEffectRack1_${group}]`, "super1_set_default", 1);
+};
+
+// CTRL A (dry/wet) and CTRL B (filter) are exclusive per deck: the jog can only
+// send one FX value at a time, so turning one on turns the other off. CTRL B
+// is always CTRL A + 4 on the same status byte.
+PioneerDDJWeGO.ctrlA = function(channel, control, value, status, group) {
+    if (!value) {
+        return;
+    }
+    const on = !PioneerDDJWeGO.jogFxMode[(status << 8) | control];
+    PioneerDDJWeGO.setJogFxMode(status, control, on);
+    if (on && PioneerDDJWeGO.jogFxMode[(status << 8) | (control + 4)]) {
+        PioneerDDJWeGO.setJogFxMode(status, control + 4, false);
+        PioneerDDJWeGO.resetFilter(group);
     }
 };
 
 PioneerDDJWeGO.ctrlB = function(channel, control, value, status, group) {
-    // Turning CTRL B off re-centres the filter, so nothing stays filtered unlit.
-    if (value && !PioneerDDJWeGO.toggleJogFxMode(status, control)) {
-        engine.setValue(`[QuickEffectRack1_${group}]`, "super1", 0.5);
+    if (!value) {
+        return;
     }
+    const on = !PioneerDDJWeGO.jogFxMode[(status << 8) | control];
+    PioneerDDJWeGO.setJogFxMode(status, control, on);
+    if (!on) {
+        // Turning CTRL B off re-centres the filter, so nothing stays filtered unlit.
+        PioneerDDJWeGO.resetFilter(group);
+    } else if (PioneerDDJWeGO.jogFxMode[(status << 8) | (control - 4)]) {
+        PioneerDDJWeGO.setJogFxMode(status, control - 4, false);
+    }
+};
+
+// Jog FX mode is active when CTRL A/B or any FX1-3 LED is lit for this deck; in
+// that mode the jog sends FX values, so touch must not start scratching.
+PioneerDDJWeGO.isJogFx = function(deck) {
+    const status = 0x94 + deck % 2;
+    const base = deck < 2 ? 0x42 : 0x47;
+    if (PioneerDDJWeGO.jogFxMode[(status << 8) | base] ||
+            PioneerDDJWeGO.jogFxMode[(status << 8) | (base + 4)]) {
+        return true;
+    }
+    for (let m = 1; m <= 3; m++) {
+        if (engine.getValue(`[EffectRack1_EffectUnit${deck + 1}_Effect${m}]`, "enabled")) {
+            return true;
+        }
+    }
+    return false;
 };
 
 PioneerDDJWeGO.deckToggle = function(channel, control, value, status) {
@@ -209,6 +253,12 @@ PioneerDDJWeGO.deckToggle = function(channel, control, value, status) {
     PioneerDDJWeGO.connections[deck].forEach(function(conn) {
         conn.trigger();
     });
+    // CTRL A/B LEDs live in jogFxMode, not in a connection, so resend them too.
+    const fxStatus = 0x94 + side;
+    const ctrlBase = deck < 2 ? 0x42 : 0x47;
+    for (const ctrl of [ctrlBase, ctrlBase + 4]) {
+        PioneerDDJWeGO.led(fxStatus, ctrl, !!PioneerDDJWeGO.jogFxMode[(fxStatus << 8) | ctrl]);
+    }
 };
 
 PioneerDDJWeGO.syncLeader = function(channel, control, value, status, group) {
@@ -253,8 +303,10 @@ PioneerDDJWeGO.beatjumpEncoder = function(channel, control, value, status, group
 };
 
 PioneerDDJWeGO.jogTouch = function(channel, control, value) {
-    // SHIFT+touch (0x67) only searches, so it never starts scratching.
-    if (control === 0x36 && value) {
+    // SHIFT+touch (0x67) only searches, and in Jog FX mode the jog turns the
+    // effect, so neither should start scratching (which would brake the track),
+    // unless the jogFxScratch setting opts back into scratching in FX mode.
+    if (control === 0x36 && value && (PioneerDDJWeGO.jogFxScratch || !PioneerDDJWeGO.isJogFx(channel))) {
         engine.scratchEnable(channel + 1, PioneerDDJWeGO.jogResolution, 33 + 1 / 3, 1 / 8, 1 / 8 / 32);
     } else {
         engine.scratchDisable(channel + 1);
@@ -306,5 +358,3 @@ PioneerDDJWeGO.browse = function(channel, control, value) {
 PioneerDDJWeGO.browseShift = function(channel, control, value) {
     engine.setValue("[Library]", "MoveVertical", PioneerDDJWeGO.encoderDelta(value) * 10);
 };
-
-// End of AI-generated file.

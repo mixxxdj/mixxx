@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- AI-generated: this file was generated with an AI agent (Claude) from a MIDI map verified on hardware. -->
 <MixxxControllerPreset mixxxVersion="2.5.0+" schemaVersion="1">
     <info>
         <name>Pioneer DDJ-WeGO</name>
@@ -17,7 +16,10 @@
             <description>On startup, assign each deck to the effect unit its Jog FX buttons control. Turn off to keep your own effect routing.</description>
         </option>
         <option variable="softTakeover" type="boolean" default="true" label="Soft-takeover for mixer controls">
-            <description>Ignore volume, EQ, crossfader, headphone mix and tempo until the knob/fader passes the on-screen value, so switching decks does not jump them. Off = immediate pickup.</description>
+            <description>Ignore volume, EQ, crossfader and headphone mix until the knob/fader passes the on-screen value, so switching decks does not jump them. Off = immediate pickup. (The shared tempo slider always uses soft-takeover.)</description>
+        </option>
+        <option variable="jogFxScratch" type="boolean" default="false" label="Scratch while in Jog FX mode">
+            <description>When a CTRL or FX button is lit the jog turns the effect. Off (default): touching the jog then does nothing, so the track keeps playing. On: touching the jog still scratches, which stops playback while held.</description>
         </option>
     </settings>
     <controller id="DDJ-WeGO">
@@ -2093,4 +2095,3 @@
         <outputs/>
     </controller>
 </MixxxControllerPreset>
-<!-- End of AI-generated file. -->
