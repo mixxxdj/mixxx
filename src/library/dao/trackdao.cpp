@@ -16,6 +16,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/segmentsdao.h"
 #include "library/dao/trackschema.h"
 #include "library/library_prefs.h"
 #include "library/queryutil.h"
@@ -89,13 +90,15 @@ QSet<QString> collectTrackLocations(FwdSqlQuery& query) {
 } // anonymous namespace
 
 TrackDAO::TrackDAO(CueDAO& cueDao,
-                   PlaylistDAO& playlistDao,
-                   AnalysisDao& analysisDao,
-                   LibraryHashDAO& libraryHashDao,
-                   UserSettingsPointer pConfig)
+        PlaylistDAO& playlistDao,
+        AnalysisDao& analysisDao,
+        SegmentsDAO& segmentsDao,
+        LibraryHashDAO& libraryHashDao,
+        UserSettingsPointer pConfig)
         : m_cueDao(cueDao),
           m_playlistDao(playlistDao),
           m_analysisDao(analysisDao),
+          m_segmentsDao(segmentsDao),
           m_libraryHashDao(libraryHashDao),
           m_pConfig(pConfig),
           m_trackLocationIdColumn(UndefinedRecordIndex),
@@ -367,6 +370,10 @@ bool TrackDAO::saveTrack(Track* pTrack) const {
     if (!updateTrack(*pTrack)) {
         return false;
     }
+
+    // Save BPM & Kesegments
+    saveTrackBpmSegments(pTrack);
+    saveTrackKeySegments(pTrack);
 
     // BaseTrackCache must be informed separately, because the
     // track has already been disconnected and TrackDAO does
@@ -1654,6 +1661,10 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         emit mixxx::thisAsNonConst(this)->trackClean(trackId);
     }
 
+    // Load BPM & KEY segments
+    loadTrackBpmSegments(pTrack.get());
+    loadTrackKeySegments(pTrack.get());
+
     return pTrack;
 }
 
@@ -2560,4 +2571,62 @@ QString TrackDAO::findLastTimeAddedToHistory(TrackId trackId) const {
     }
 
     return QString();
+}
+
+void TrackDAO::loadTrackBpmSegments(Track* pTrack) const {
+    TrackId trackId = pTrack->getId();
+    if (!trackId.isValid()) {
+        return;
+    }
+
+    QList<BpmSegmentsPointer> segments = m_segmentsDao.getBpmSegmentsForTrack(trackId);
+    if (!segments.isEmpty()) {
+        pTrack->setBpmSegments(segments);
+        pTrack->m_bpmSegmentsDirty = false;
+    }
+}
+
+void TrackDAO::loadTrackKeySegments(Track* pTrack) const {
+    TrackId trackId = pTrack->getId();
+    if (!trackId.isValid()) {
+        return;
+    }
+
+    QList<KeySegmentsPointer> segments = m_segmentsDao.getKeySegmentsForTrack(trackId);
+    if (!segments.isEmpty()) {
+        pTrack->setKeySegments(segments);
+        pTrack->m_keySegmentsDirty = false;
+    }
+}
+
+bool TrackDAO::deleteBpmSegmentsForTrack(TrackId trackId) const {
+    return m_segmentsDao.deleteBpmSegmentsForTrack(trackId);
+}
+
+bool TrackDAO::deleteKeySegmentsForTrack(TrackId trackId) const {
+    return m_segmentsDao.deleteKeySegmentsForTrack(trackId);
+}
+
+void TrackDAO::saveTrackBpmSegments(Track* pTrack) const {
+    TrackId trackId = pTrack->getId();
+    if (!trackId.isValid()) {
+        return;
+    }
+
+    if (pTrack->m_bpmSegmentsDirty) { // Need friend access
+        m_segmentsDao.saveTrackBpmSegments(trackId, pTrack->getBpmSegments());
+        pTrack->m_bpmSegmentsDirty = false;
+    }
+}
+
+void TrackDAO::saveTrackKeySegments(Track* pTrack) const {
+    TrackId trackId = pTrack->getId();
+    if (!trackId.isValid()) {
+        return;
+    }
+
+    if (pTrack->m_keySegmentsDirty) { // Need friend access
+        m_segmentsDao.saveTrackKeySegments(trackId, pTrack->getKeySegments());
+        pTrack->m_keySegmentsDirty = false;
+    }
 }
