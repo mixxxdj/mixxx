@@ -140,7 +140,7 @@ lang	source
 *	Mix
 *	Autopan
 *	Bessel4 ISO
-ca,de,el,en_CA,en_GB,es*,fr_CA,fr_CI,hu,it,nl,pt*,sl,sv	Res
+*	Res
 *	%1:%2
 *	Bessel8 ISO
 *	LR8 ISO
@@ -192,18 +192,18 @@ hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	F
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	F#
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	G
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Ab
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	Am
-hu,et,fi,nl,pl,pt_BR,ro,zh*,pt	Bbm
-hu,et,fi,nl,pl,pt_BR,ro,zh*,pt	Bm
-hu,et,fi,nl,pl,pt_BR,ro,sl,vi,zh,zh_CN,zh_HK	Cm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt	C#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Dm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt	Ebm
-hu,de,et,fi,nl,pl,pt_BR,ro,sl,vi,zh*,pt	Em
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	Fm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt	F#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt	Gm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	G#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,ja	Am
+hu,et,fi,nl,pl,pt_BR,ro,zh*,pt,ja	Bbm
+hu,et,fi,nl,pl,pt_BR,ro,zh*,pt,ja	Bm
+hu,et,fi,nl,pl,pt_BR,ro,sl,vi,zh,zh_CN,zh_HK,ja	Cm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt,ja	C#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ja	Dm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja	Ebm
+hu,de,et,fi,nl,pl,pt_BR,ro,sl,vi,zh*,pt,ja	Em
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ja	Fm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja	F#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja	Gm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,ja	G#m
 *	10Hz
 *	10ms
 *	5ms
@@ -298,7 +298,7 @@ ca,de,es*,it,pl,pt*,sv	Pitch Bend
 ca,de,es*,fr,pl,pt*,ro,sv,tr	Normal
 ca,de,es*,fr,it,nl,pl,pt*,ro,sv	Script
 ca,nl	Moog Ladder 4 Filter
-ca,es*	Mid/Side
+ca,es*,ja	Mid/Side
 ca,es*,fr,sl	Triplet
 ca,cs,de,es*,et,fi,fr,gl,it,nl,pt*,sl,sv,tr	Tempo
 *	MESA vblank_mode = 1
@@ -363,7 +363,7 @@ es*,fr,it,nl,pt*,sq_AL,sv	&Ok
 es*,pt_BR	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
-fr,it,nl,zh*,ko	 pt
+fr,it,nl,zh*,ko,ja	 pt
 it	Password
 nl,sv,vi	Equalizers
 nl,it	Controllers
