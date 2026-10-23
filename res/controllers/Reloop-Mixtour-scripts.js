@@ -316,7 +316,7 @@ ReloopMixtour.Mixer = class extends components.Deck {
 
         this.masterMeter = new components.Component({
             midi: [0x90 + midiChannel, 0x12],
-            key: (this.currentDeck === "[Channel1]")?"vu_meter_left":"vu_meter_right",
+            key: (this.currentDeck === "[Channel1]" || this.currentDeck === "[Channel3]")?"vu_meter_left":"vu_meter_right",
             group: "[Main]",
             max: 0x68
         });
