@@ -2386,17 +2386,8 @@ void YouTubeService::downloadViaInnerTubeClient(
         }
     };
 
-    QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/player"));
-    // The API key is optional for these endpoints — the client context is what
-    // identifies the request. Only append it when one is configured, and never
-    // for clients (e.g. ANDROID_VR) that authenticate purely via context.
-    if (c.apiKey[0] != '\0') {
-        QUrlQuery query;
-        query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
-        reqUrl.setQuery(query);
-    }
-
-    QJsonObject client = innerTubeClientContext(c);
+    // The /player request itself is built in requestPlayerWithPoToken (which
+    // re-resolves the client by index) after the async PO-token fetch.
 #if defined(Q_OS_ANDROID)
     // Fetch on-device PO tokens first (WebView BotGuard). The player request
     // carries serviceIntegrityDimensions.poToken; stream URLs get &pot=.
@@ -2418,6 +2409,13 @@ void YouTubeService::downloadViaInnerTubeClient(
                         onAllFailed);
             });
     return;
+#else
+    // Desktop/other: no WebView PO tokens — proceed tokenless (TVHTML5 needs
+    // none; other clients fail over to yt-dlp as before).
+    requestPlayerWithPoToken(videoId, cacheDir, clientIdx, userAgent,
+            QString(), QString(), tryNext, onAllFailed);
+    return;
+#endif
 }
 
 void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
@@ -2434,8 +2432,13 @@ void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
         return;
     }
     const InnerTubeClient& c = clients.at(clientIdx);
+    QUrl reqUrl(QStringLiteral("https://www.youtube.com/youtubei/v1/player"));
+    if (c.apiKey[0] != '\0') {
+        QUrlQuery query;
+        query.addQueryItem(QStringLiteral("key"), QString::fromLatin1(c.apiKey));
+        reqUrl.setQuery(query);
+    }
     QJsonObject client = innerTubeClientContext(c);
-#endif
     QJsonObject context;
     context.insert(QStringLiteral("client"), client);
     QJsonObject body;
