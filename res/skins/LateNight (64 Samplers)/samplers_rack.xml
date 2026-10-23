@@ -152,7 +152,7 @@
               <Template src="skins:LateNight/samplers/samplers_4decks.xml"/>
             </Children>
             <Connection>
-              <ConfigKey>[LateNight],show_4samplers</ConfigKey>
+              <ConfigKey persist="true">[LateNight],show_4samplers</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -166,7 +166,7 @@
               </SingletonContainer>
             </Children>
             <Connection>
-              <ConfigKey>[LateNight],show_8samplers</ConfigKey>
+              <ConfigKey persist="true">[LateNight],show_8samplers</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -183,7 +183,7 @@
               </SingletonContainer>
             </Children>
             <Connection>
-              <ConfigKey>[LateNight],show_16samplers</ConfigKey>
+              <ConfigKey persist="true">[LateNight],show_16samplers</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -203,7 +203,7 @@
               </SingletonContainer>
             </Children>
             <Connection>
-              <ConfigKey>[LateNight],show_32samplers</ConfigKey>
+              <ConfigKey persist="true">[LateNight],show_32samplers</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -226,7 +226,7 @@
               </SingletonContainer>
             </Children>
             <Connection>
-              <ConfigKey>[LateNight],show_48samplers</ConfigKey>
+              <ConfigKey persist="true">[LateNight],show_48samplers</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -252,7 +252,7 @@
               </SingletonContainer>
             </Children>
             <Connection>
-              <ConfigKey>[LateNight],show_64samplers</ConfigKey>
+              <ConfigKey persist="true">[LateNight],show_64samplers</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

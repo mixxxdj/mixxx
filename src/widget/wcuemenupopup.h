@@ -1,9 +1,13 @@
 #pragma once
 
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QPushButton>
+#include <QVBoxLayout>
+#include <array>
+#include <vector>
 
 #include "control/pollingcontrolproxy.h"
 #include "preferences/colorpalettesettings.h"
@@ -13,6 +17,12 @@
 #include "widget/wcolorpicker.h"
 
 class ControlProxy;
+class PlayerManager;
+
+struct SamplerLayout {
+    QList<int> samplerNumbers; // sampler nrs in visual order
+    QList<int> columnsPerRow;  // columns in each row
+};
 
 // Custom PushButton which emit a custom signal when right-clicked
 class CueMenuPushButton : public QPushButton {
@@ -79,6 +89,9 @@ class WCueMenuPopup : public QWidget {
     void slotSavedLoopCueManual();
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
+    void slotExportCue();
+    void slotExportToSampler(int samplerIndex);
+
   private:
     void updateTypeAndColorIfDefault(mixxx::CueType newType);
     mixxx::audio::FramePos getCurrentPlayPositionWithQuantize() const;
@@ -100,6 +113,54 @@ class WCueMenuPopup : public QWidget {
     std::unique_ptr<CueMenuPushButton> m_pStandardCue;
     std::unique_ptr<CueMenuPushButton> m_pSavedLoopCue;
     std::unique_ptr<CueMenuPushButton> m_pSavedJumpCue;
+
+    QString buildExportPath(const QString& trackId,
+            const QString& artist,
+            const QString& title,
+            const QString& tag,
+            const QString& ext) const;
+
+    bool trackHasStems() const;
+
+    std::unique_ptr<CueMenuPushButton> m_pExportCue;
+    QString m_group;
+
+    void updateExportToSamplerButtons();
+    QString exportCueToFile(bool blocking);
+    bool exportLoopByStreamCopy(const QString& src,
+            const mixxx::audio::FramePos& start,
+            const mixxx::audio::FramePos& end,
+            const QString& dst,
+            const QString& title,
+            bool isStemFile,
+            bool blocking);
+
+    bool exportLoopByRendering(const mixxx::audio::FramePos& start,
+            const mixxx::audio::FramePos& end,
+            const std::array<double, 4>& stemGains,
+            bool isStemFile,
+            const QString& dst,
+            const QString& title,
+            bool blocking);
+
+    void getStemState(std::array<double, 4>& stemGains) const;
+
+    bool isFileLoadedInAnySampler(const QString& path) const;
+
+    PlayerManager* m_pPlayerManager = nullptr;
+
+    SamplerLayout currentSamplerLayout() const;
+    void rebuildExportToSamplerButtons();
+    void clearExportToSamplerButtons();
+
+    std::vector<std::unique_ptr<CueMenuPushButton>> m_pExportToSamplerButtons;
+    std::vector<QHBoxLayout*> m_pSamplerButtonRows;
+    QVBoxLayout* m_pLeftLayout = nullptr;
+
+    bool samplerIsPlaying(const QString& group) const;
+    bool samplerHasLoadedTrack(PlayerManager* pPlayerManager,
+            const QString& group) const;
+    bool samplerIsLooping(const QString& group) const;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
