@@ -229,6 +229,30 @@ jobs:
             artifacts_path: build/*.AppImage
             artifacts_slug: linux-appimage
             arch: x86_64
+          - name: AppImage Linux aarch64
+            os: ubuntu-22.04-arm
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/usr
+              -DCMAKE_INSTALL_LIBDIR=lib
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
+            ctest_args: []
+            cpack_generator: AppImage
+            crosscompile: false
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            compiler_cache_max_size: 10G
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/appimage_release_buildenv.sh
+            artifacts_name: AppImage Linux aarch64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage-arm64
+            arch: aarch64
 
     env:
       # macOS codesigning
@@ -584,6 +608,20 @@ jobs:
           command: |
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
+
+      - name: "[AppImage] Check floor dependencies"
+        # The AppImage delegates fontconfig, freetype, harfbuzz, alsa and the
+        # base system stack to the host, so the shipped binary must not
+        # reference symbols or symbol versions the Ubuntu 22.04 floor cannot
+        # provide.  Headers from newer vcpkg ports can introduce them; walk
+        # the packaged AppImage's dynamic-linking closure against its bundled
+        # libraries and the build host's own libraries and fail on anything
+        # unsatisfiable.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Checking ${APPIMAGE}"
+          python3 tools/check_appimage_floor_deps.py "${APPIMAGE}"
 
       - name: "[AppImage] Upload AppImage"
         if: matrix.cpack_generator == 'AppImage'
