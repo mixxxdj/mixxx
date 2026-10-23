@@ -2813,7 +2813,7 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
 // process. The update is a one-shot best-effort network call; we don't want to
 // repeat it on every download.
 namespace {
-std::atomic<bool> s_ytdlpUpdateAttempted{false};
+// (fresh yt-dlp is baked into the APK at build time; no runtime update)
 } // namespace
 
 void YouTubeService::downloadViaAndroidBundled(
@@ -2868,31 +2868,11 @@ void YouTubeService::downloadViaAndroidBundled(
             return;
         }
 
-        // The yt-dlp packaged inside the AAR is whatever version was bundled at
-        // the library's build time and goes stale quickly — YouTube regularly
-        // breaks older extractors, which is the usual reason downloads stop
-        // working ("gave us songs at some point and now nothing"). Update to the
-        // latest stable yt-dlp release before downloading. Best-effort and
-        // one-shot per process: if there's no network or GitHub is unreachable
-        // we simply proceed with the bundled version.
-        if (!s_ytdlpUpdateAttempted.exchange(true)) {
-            QJniObject channel = QJniObject::getStaticObjectField(
-                    "com/yausername/youtubedl_android/YoutubeDL$UpdateChannel$STABLE",
-                    "INSTANCE",
-                    "Lcom/yausername/youtubedl_android/YoutubeDL$UpdateChannel$STABLE;");
-            if (channel.isValid()) {
-                kLogger.info() << "Updating bundled yt-dlp to latest stable…";
-                ytdl.callObjectMethod("updateYoutubeDL",
-                        "(Landroid/content/Context;"
-                        "Lcom/yausername/youtubedl_android/YoutubeDL$UpdateChannel;)"
-                        "Lcom/yausername/youtubedl_android/YoutubeDL$UpdateStatus;",
-                        context.object(),
-                        channel.object());
-            }
-            // A failed update (network/rate-limit/parse) must not block the
-            // download — clear any pending Java exception and carry on.
-            env.checkAndClearExceptions();
-        }
+        // The yt-dlp packaged inside the AAR is rebuilt at configure time from
+        // the pinned YTDLP_VERSION wheel (see FetchYtDlp.cmake), so it is
+        // always current — no in-app update needed. (The old
+        // updateYoutubeDL() self-update crashed on Android with
+        // ExceptionInInitializerError from commons-io 2.5 and is removed.)
 
         // Build the request: URL + options.
         QString videoUrl = "https://www.youtube.com/watch?v=" + videoId;

@@ -27,7 +27,7 @@
 
 set(
   YTDLP_VERSION
-  "2026.08.19"
+  "2026.10.21"
   CACHE STRING
   "Pinned yt-dlp release tag to bundle inside Mixxx"
 )
@@ -39,14 +39,14 @@ if(WIN32)
   set(_ytdlp_asset "yt-dlp.exe")
   set(
     _ytdlp_sha256
-    "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a"
+    "33121d192d706e62f684a06f80918e3f3a8ba52ac3a65213b6951c39c7d9f555"
   )
   set(_ytdlp_install_name "yt-dlp.exe")
 elseif(APPLE)
   set(_ytdlp_asset "yt-dlp_macos")
   set(
     _ytdlp_sha256
-    "0f192b7ec147ab6288885d6351d9ab67367640029b4377576ef46dd79cf7b202"
+    "7a6fe71d7d680f1fb0ac18d4949873d77db2859e90017c0f44bd94b23be4ee40"
   )
   set(_ytdlp_install_name "yt-dlp")
 elseif(UNIX)
@@ -57,7 +57,7 @@ elseif(UNIX)
     set(_ytdlp_asset "yt-dlp_linux")
     set(
       _ytdlp_sha256
-      "58162f9bfdc27458ea47bfcb311cf47028f17d8154a8bf7d689861d46399230a"
+      "d8bd33fca9d5b23bd5b9952b3fca36db5c46331933fda9f598a3da14ce2c243f"
     )
     set(_ytdlp_install_name "yt-dlp")
   endif()
@@ -349,6 +349,47 @@ if(ANDROID)
         message(FATAL_ERROR "Failed to extract youtubedl-android AAR")
       endif()
     endif()
+
+    # The yt-dlp zipimport blob inside the AAR (res/raw/ytdlp) goes stale
+    # within months — YouTube breaks old extractors, which 403s every
+    # download. Rebuild it at configure time from the pinned YTDLP_VERSION
+    # wheel on PyPI (+ matching yt-dlp-ejs from the wheel's METADATA), so
+    # the APK always ships a working extractor instead of the year-old one
+    # baked into youtubedl-android 0.18.1 (2025.11.12).
+    set(_ytdlp_fresh_blob "${_ytdlp_android_dir}/ytdlp")
+    if(NOT EXISTS "${_ytdlp_fresh_blob}")
+      message(STATUS "Rebuilding yt-dlp blob ${YTDLP_VERSION} for Android AAR...")
+      execute_process(
+        COMMAND
+          ${CMAKE_COMMAND} -DYTDLP_VERSION=${YTDLP_VERSION}
+          -DOUT_BLOB=${_ytdlp_fresh_blob}
+          -P ${CMAKE_SOURCE_DIR}/cmake/modules/RebuildYtdlpBlob.cmake
+        RESULT_VARIABLE _ytdlp_rebuild_result
+      )
+      if(NOT _ytdlp_rebuild_result EQUAL 0)
+        message(FATAL_ERROR "Failed to rebuild yt-dlp blob for Android")
+      endif()
+    endif()
+    file(
+      COPY "${_ytdlp_fresh_blob}"
+      DESTINATION "${_ytdlp_aar_extracted}/res/raw"
+    )
+    # Repack the AAR from the patched tree so Gradle merges the fresh blob.
+    set(_ytdlp_aar_patched "${_ytdlp_android_dir}/library-patched.aar")
+    if(NOT EXISTS "${_ytdlp_aar_patched}")
+      message(STATUS "Repacking youtubedl-android AAR with fresh yt-dlp...")
+      execute_process(
+        COMMAND
+          ${CMAKE_COMMAND} -E tar cf "${_ytdlp_aar_patched}" --format=zip
+          -- R.txt AndroidManifest.xml classes.jar res jni META-INF
+        WORKING_DIRECTORY "${_ytdlp_aar_extracted}"
+        RESULT_VARIABLE _repack_result
+      )
+      if(NOT _repack_result EQUAL 0)
+        message(FATAL_ERROR "Failed to repack youtubedl-android AAR")
+      endif()
+    endif()
+    set(_ytdlp_aar_path "${_ytdlp_aar_patched}")
 
     # ---------------------------------------------------------------------------
     # Bundle the youtubedl-android AARs whole into packaging/android/libs/.
