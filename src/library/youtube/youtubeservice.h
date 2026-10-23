@@ -247,6 +247,21 @@ class YouTubeService : public QObject {
             const QString& streamUserAgent,
             const std::function<void(const QString&)>& onFailure);
 
+#if defined(Q_OS_ANDROID)
+    /// Fetch on-device PO tokens (player + GVS/streaming + visitorData) via
+    /// the bundled BotGuard WebView. Runs the blocking JNI call on a worker
+    /// thread and invokes cb on the caller's thread context. Empty playerPot
+    /// means tokens unavailable — caller proceeds without them.
+    void fetchPoTokens(const QString& videoId,
+            const std::function<void(const QString& playerPot,
+                    const QString& streamingPot,
+                    const QString& visitorData)>& cb);
+    /// Append &pot=<streamingPot> to a googlevideo stream URL (returns the
+    /// URL unchanged when pot is empty or already present).
+    static QString withPoTokenParam(const QString& streamUrl,
+            const QString& streamingPot);
+#endif
+
     /// Try the YouTube InnerTube player API as a secondary download backend.
     /// POSTs to /youtubei/v1/player with a sequence of mobile/embedded client
     /// contexts (Android, iOS, ...), which return non-cipher stream URLs.
@@ -265,6 +280,21 @@ class YouTubeService : public QObject {
             const QString& cacheDir,
             int clientIdx,
             const std::function<void(const QString& lastError)>& onAllFailed);
+
+#if defined(Q_OS_ANDROID)
+    /// InnerTube /player POST with PO tokens attached (serviceIntegrity-
+    /// Dimensions.poToken) plus &pot= on the returned stream URLs. Split out
+    /// of downloadViaInnerTubeClient so the async token fetch can resume here.
+    void requestPlayerWithPoToken(const QString& videoId,
+            const QString& cacheDir,
+            int clientIdx,
+            const InnerTubeClient& c,
+            const QString& userAgent,
+            const QString& playerPot,
+            const QString& streamingPot,
+            const std::function<void(const QString&)>& tryNext,
+            const std::function<void(const QString&)>& onAllFailed);
+#endif
 
     // ----- yt-dlp (binary fallback — desktop and Termux-on-Android) -----
 
@@ -303,6 +333,12 @@ class YouTubeService : public QObject {
     /// This is the primary fallback on Android when Piped fails.
     /// No external Python, Termux, or system dependency needed.
     void downloadViaAndroidBundled(const QString& videoId, const QString& cacheDir);
+    /// JNI worker behind downloadViaAndroidBundled: runs bundled yt-dlp with
+    /// our on-device PO tokens attached. Fully in-app — no Termux needed.
+    void runAndroidBundled(const QString& videoId,
+            const QString& cacheDir,
+            const QString& playerPot,
+            const QString& streamingPot);
 #endif
 
     // ----- shared -----

@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import org.qtproject.qt.android.QtActivityBase;
+import org.mixxx.youtube.PoTokenManager;
 
 public class MainActivity extends QtActivityBase {
     private static final int MEDIA_PERMISSION_REQUEST = 1001;
@@ -25,6 +26,10 @@ public class MainActivity extends QtActivityBase {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // ─── PO tokens: warm up the on-device BotGuard WebView early so the
+        // YouTube downloader can mint tokens without waiting on first use.
+        PoTokenManager.getInstance().init(getApplicationContext());
 
         // ─── Performance: keep CPU awake and screen on during mixing ───
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

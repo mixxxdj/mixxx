@@ -2397,6 +2397,40 @@ void YouTubeService::downloadViaInnerTubeClient(
     }
 
     QJsonObject client = innerTubeClientContext(c);
+#if defined(Q_OS_ANDROID)
+    // Fetch on-device PO tokens first (WebView BotGuard). The player request
+    // carries serviceIntegrityDimensions.poToken; stream URLs get &pot=.
+    // On failure (no WebView, no network) tokens stay empty and we proceed
+    // exactly as before — TVHTML5 needs none, fallback chain unchanged.
+    QPointer<YouTubeService> potGuard(this);
+    fetchPoTokens(videoId,
+            [this, potGuard, videoId, cacheDir, clientIdx, c, userAgent,
+                    tryNext, onAllFailed](const QString& playerPot,
+                    const QString& streamingPot, const QString& freshVd) {
+                if (!potGuard) {
+                    return;
+                }
+                if (!freshVd.isEmpty() && m_visitorData.isEmpty()) {
+                    m_visitorData = freshVd;
+                }
+                requestPlayerWithPoToken(videoId, cacheDir, clientIdx, c,
+                        userAgent, playerPot, streamingPot, tryNext,
+                        onAllFailed);
+            });
+    return;
+}
+
+void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
+        const QString& cacheDir,
+        int clientIdx,
+        const InnerTubeClient& c,
+        const QString& userAgent,
+        const QString& playerPot,
+        const QString& streamingPot,
+        const std::function<void(const QString&)>& tryNext,
+        const std::function<void(const QString&)>& onAllFailed) {
+    QJsonObject client = innerTubeClientContext(c);
+#endif
     QJsonObject context;
     context.insert(QStringLiteral("client"), client);
     QJsonObject body;
@@ -2415,6 +2449,18 @@ void YouTubeService::downloadViaInnerTubeClient(
     playbackContext.insert(
             QStringLiteral("contentPlaybackContext"), contentPlaybackContext);
     body.insert(QStringLiteral("playbackContext"), playbackContext);
+#if defined(Q_OS_ANDROID)
+    // PO token: proves to YouTube the request came from a genuine client.
+    // Matches yt-dlp's serviceIntegrityDimensions (player) + pot URL param
+    // (streaming) split.
+    if (!playerPot.isEmpty()) {
+        QJsonObject sid;
+        sid.insert(QStringLiteral("poToken"), playerPot);
+        playbackContext.insert(
+                QStringLiteral("serviceIntegrityDimensions"), sid);
+        body.insert(QStringLiteral("playbackContext"), playbackContext);
+    }
+#endif
 
     QNetworkRequest req(reqUrl);
     req.setHeader(QNetworkRequest::ContentTypeHeader,
@@ -2542,6 +2588,13 @@ void YouTubeService::downloadViaInnerTubeClient(
                     if (streamUrl.isEmpty()) {
                         continue;
                     }
+#if defined(Q_OS_ANDROID)
+                    // GVS (streaming) PO token as &pot= — without it
+                    // googlevideo 403s Range requests for token-gated clients.
+                    const QString potUrl = withPoTokenParam(streamUrl, streamingPot);
+#else
+                    const QString potUrl = streamUrl;
+#endif
                     // Extract codec string from e.g. "audio/mp4; codecs=\"mp4a.40.2\""
                     QString codec;
                     const int cIdx = mime.indexOf(QStringLiteral("codecs=\""));
@@ -2553,7 +2606,7 @@ void YouTubeService::downloadViaInnerTubeClient(
                         }
                     }
                     QJsonObject stream;
-                    stream.insert(QStringLiteral("url"), streamUrl);
+                    stream.insert(QStringLiteral("url"), potUrl);
                     stream.insert(QStringLiteral("mimeType"), mime);
                     stream.insert(QStringLiteral("codec"), codec);
                     stream.insert(QStringLiteral("bitrate"),
@@ -2582,6 +2635,65 @@ void YouTubeService::downloadViaInnerTubeClient(
                         videoId, cacheDir, audioStreams, tryNext, userAgent);
             });
 }
+
+#if defined(Q_OS_ANDROID)
+void YouTubeService::fetchPoTokens(const QString& videoId,
+        const std::function<void(const QString& playerPot,
+                const QString& streamingPot,
+                const QString& visitorData)>& cb) {
+    QPointer<YouTubeService> guard(this);
+    // The JNI call blocks up to ~105s (init + 2 mints); offload so neither
+    // the UI thread (WebView callbacks need it) nor the download stalls.
+    QThreadPool::globalInstance()->start([guard, videoId, cb]() {
+        QString playerPot, streamingPot, visitorData;
+        QJniObject manager = QJniObject::callStaticObjectMethod(
+                "org/mixxx/youtube/PoTokenManager",
+                "getInstance",
+                "()Lorg/mixxx/youtube/PoTokenManager;");
+        if (manager.isValid()) {
+            QJniObject tokens = manager.callObjectMethod(
+                    "fetchTokens",
+                    "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+                    QJniObject::fromString(videoId).object(),
+                    QJniObject::fromString(QString()).object());
+            if (tokens.isValid()) {
+                const QStringList parts =
+                        tokens.toString().split(QLatin1Char('\n'));
+                if (parts.size() >= 3) {
+                    playerPot = parts.at(0);
+                    streamingPot = parts.at(1);
+                    visitorData = parts.at(2);
+                }
+            }
+        }
+        if (!guard) {
+            return;
+        }
+        // Back onto the service thread to continue the download chain.
+        QMetaObject::invokeMethod(
+                guard,
+                [guard, playerPot, streamingPot, visitorData, cb]() {
+                    if (guard) {
+                        cb(playerPot, streamingPot, visitorData);
+                    }
+                },
+                Qt::QueuedConnection);
+    });
+}
+
+QString YouTubeService::withPoTokenParam(
+        const QString& streamUrl, const QString& streamingPot) {
+    if (streamingPot.isEmpty() || streamUrl.contains(QStringLiteral("&pot=")) ||
+            streamUrl.contains(QStringLiteral("?pot="))) {
+        return streamUrl;
+    }
+    QUrl url(streamUrl);
+    QUrlQuery q(url.query());
+    q.addQueryItem(QStringLiteral("pot"), streamingPot);
+    url.setQuery(q);
+    return url.toString(QUrl::FullyEncoded);
+}
+#endif
 
 // =============================================================================
 // yt-dlp (binary fallback — desktop and Termux-on-Android)
@@ -2806,7 +2918,7 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
 // =============================================================================
-// Bundled youtubedl-android (JNI-based, no external dependencies)
+// Bundled youtubedl-android (JNI-based, fully in-app — no Termux needed)
 // =============================================================================
 
 // Whether we've already attempted to self-update the bundled yt-dlp this
@@ -2820,11 +2932,35 @@ void YouTubeService::downloadViaAndroidBundled(
         const QString& videoId, const QString& cacheDir) {
     kLogger.info() << "[Android] downloadViaAndroidBundled: videoId=" << videoId
                    << "cacheDir=" << cacheDir;
+    // Mint PO tokens first (worker thread), then run the JNI download with
+    // them passed as extractor args — same tokens as the direct path.
+    QPointer<YouTubeService> guard(this);
+    fetchPoTokens(videoId,
+            [guard, videoId, cacheDir](const QString& playerPot,
+                    const QString& streamingPot, const QString& freshVd) {
+                if (!guard) {
+                    return;
+                }
+                if (!freshVd.isEmpty() && guard->m_visitorData.isEmpty()) {
+                    guard->m_visitorData = freshVd;
+                }
+                guard->runAndroidBundled(videoId, cacheDir, playerPot,
+                        streamingPot);
+            });
+}
+
+void YouTubeService::runAndroidBundled(const QString& videoId,
+        const QString& cacheDir,
+        const QString& playerPot,
+        const QString& streamingPot) {
+    kLogger.info() << "[Android] runAndroidBundled: videoId=" << videoId
+                   << "poToken=" << (!playerPot.isEmpty() ? "yes" : "no");
+    QPointer<YouTubeService> guard(this);
     // Run the JNI download on a worker thread so we don't block the UI.
     // Use a QPointer to guard against YouTubeService being destroyed
     // before the thread completes.
-    QPointer<YouTubeService> guard(this);
-    QThread* thread = QThread::create([guard, videoId, cacheDir]() {
+    QThread* thread = QThread::create([guard, videoId, cacheDir, playerPot,
+                                              streamingPot]() {
         QJniObject context = QNativeInterface::QAndroidApplication::context();
         if (!context.isValid()) {
             kLogger.warning() << "[Android] downloadViaAndroidBundled:"
@@ -2923,6 +3059,18 @@ void YouTubeService::downloadViaAndroidBundled(
                 "YoutubeDLRequest;",
                 QJniObject::fromString("--socket-timeout").object(),
                 QJniObject::fromString("30").object());
+        if (!playerPot.isEmpty() && !streamingPot.isEmpty()) {
+            // Our on-device PO tokens as extractor args — same shape ytdlnis
+            // uses: youtube:player_client=web;po_token=web.gvs+...+web.player+...
+            const QString args = QStringLiteral(
+                    "youtube:player_client=web;po_token=web.gvs+%1+web.player+%2")
+                                         .arg(streamingPot, playerPot);
+            request.callMethod<QJniObject>("addOption",
+                    "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
+                    "YoutubeDLRequest;",
+                    QJniObject::fromString("--extractor-args").object(),
+                    QJniObject::fromString(args).object());
+        }
 
         // Execute the download (blocks this thread until complete). The
         // youtubedl-android API method is execute(YoutubeDLRequest) (with a
