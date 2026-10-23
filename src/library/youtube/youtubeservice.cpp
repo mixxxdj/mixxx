@@ -2882,12 +2882,18 @@ void YouTubeService::downloadViaAndroidBundled(
                 "(Ljava/lang/String;)V",
                 QJniObject::fromString(videoUrl).object());
 
-        // Add download options.
+        // Add download options. Prefer a muxed m4a (AAC in MP4) over raw
+        // Opus-in-WebM: raw bestaudio Opus streams carry no seekable duration
+        // header, so SoundSourceFFmpeg refuses them ("Unknown or unlimited
+        // stream duration"). MP4 muxing via --merge-output-format writes a
+        // proper moov box FFmpeg and TagLib both accept.
         request.callMethod<QJniObject>("addOption",
                 "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
                 "YoutubeDLRequest;",
                 QJniObject::fromString("-f").object(),
-                QJniObject::fromString("bestaudio").object());
+                QJniObject::fromString(
+                        "bestaudio[ext=m4a]/bestaudio[acodec^=mp4a]/bestaudio")
+                        .object());
         request.callMethod<QJniObject>("addOption",
                 "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
                 "YoutubeDLRequest;",
@@ -2908,6 +2914,18 @@ void YouTubeService::downloadViaAndroidBundled(
         request.callMethod<QJniObject>("addOption",
                 "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
                 QJniObject::fromString("--no-mtime").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
+                "YoutubeDLRequest;",
+                QJniObject::fromString("--merge-output-format").object(),
+                QJniObject::fromString("m4a").object());
+        // Bound network stalls: without this, a hung connection blocks
+        // execute() forever, and teardown joins this thread -> ANR.
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
+                "YoutubeDLRequest;",
+                QJniObject::fromString("--socket-timeout").object(),
+                QJniObject::fromString("30").object());
 
         // Execute the download (blocks this thread until complete). The
         // youtubedl-android API method is execute(YoutubeDLRequest) (with a
