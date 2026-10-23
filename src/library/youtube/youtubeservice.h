@@ -288,7 +288,6 @@ class YouTubeService : public QObject {
     void requestPlayerWithPoToken(const QString& videoId,
             const QString& cacheDir,
             int clientIdx,
-            const InnerTubeClient& c,
             const QString& userAgent,
             const QString& playerPot,
             const QString& streamingPot,

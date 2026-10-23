@@ -2404,7 +2404,7 @@ void YouTubeService::downloadViaInnerTubeClient(
     // exactly as before — TVHTML5 needs none, fallback chain unchanged.
     QPointer<YouTubeService> potGuard(this);
     fetchPoTokens(videoId,
-            [this, potGuard, videoId, cacheDir, clientIdx, c, userAgent,
+            [this, potGuard, videoId, cacheDir, clientIdx, userAgent,
                     tryNext, onAllFailed](const QString& playerPot,
                     const QString& streamingPot, const QString& freshVd) {
                 if (!potGuard) {
@@ -2413,7 +2413,7 @@ void YouTubeService::downloadViaInnerTubeClient(
                 if (!freshVd.isEmpty() && m_visitorData.isEmpty()) {
                     m_visitorData = freshVd;
                 }
-                requestPlayerWithPoToken(videoId, cacheDir, clientIdx, c,
+                requestPlayerWithPoToken(videoId, cacheDir, clientIdx,
                         userAgent, playerPot, streamingPot, tryNext,
                         onAllFailed);
             });
@@ -2423,12 +2423,17 @@ void YouTubeService::downloadViaInnerTubeClient(
 void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
         const QString& cacheDir,
         int clientIdx,
-        const InnerTubeClient& c,
         const QString& userAgent,
         const QString& playerPot,
         const QString& streamingPot,
         const std::function<void(const QString&)>& tryNext,
         const std::function<void(const QString&)>& onAllFailed) {
+    const QVector<InnerTubeClient>& clients = innerTubeClients();
+    if (clientIdx < 0 || clientIdx >= clients.size()) {
+        onAllFailed(tr("All InnerTube clients failed"));
+        return;
+    }
+    const InnerTubeClient& c = clients.at(clientIdx);
     QJsonObject client = innerTubeClientContext(c);
 #endif
     QJsonObject context;
