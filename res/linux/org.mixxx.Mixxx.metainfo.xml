@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.7" type="development" date="2026-10-15" timestamp="1792040358">
+    <release version="2.5.7" type="development" date="2026-10-22" timestamp="1792663166">
       <description>
  <p>
   Controller Mappings
@@ -109,12 +109,34 @@
    #16496
   </li>
   <li>
+   Numark DJ2GO2 Touch: fix bug with preview deck
+   #16844
+  </li>
+  <li>
    Numark Mixtrack 3: fix settings bool evaluation
    #16708
   </li>
   <li>
+   Pioneer DDJ-400: unmap headphones mixing knob
+   #17121
+  </li>
+  <li>
    Vestax VCI-400: fix VU meters, midi.sendShortMsg()
    #16180
+  </li>
+ </ul>
+ <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Fix brake in reverse playback
+   #17295
+  </li>
+  <li>
+   Clear focus on the effect unit being switched away from
+   #17071
+   #17070
   </li>
  </ul>
  <p>
@@ -158,6 +180,95 @@
    #16895
    #16894
   </li>
+  <li>
+   Track table header: throw warning when storing the state fails
+   #17072
+  </li>
+  <li>
+   Row colors: fix missing opacity of track colors
+   #17043
+   #17037
+   #17251
+  </li>
+  <li>
+   Row colors: fix missing library feedback when resetting the color of tracks
+   #17170
+   #10241
+   #12758
+  </li>
+  <li>
+   Tracks view: enforce selection on cursor move with just one row and no selection
+   #17273
+  </li>
+  <li>
+   Skip beat grid creation when importing a BPM without a valid sample rate
+   #17282
+   16846
+  </li>
+  <li>
+   Track menu &gt; Crates: Enter toggles checkbox
+   #17320
+  </li>
+  <li>
+   Track header menu: fix Enter keypress behavior
+   #17324
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   EngineBuffer: Reset sample counter after indicator update
+   #16245
+  </li>
+  <li>
+   Avoid spurious play control update
+   #16912
+   #16910
+  </li>
+  <li>
+   Respect
+   repeat
+   in slip mode when enabled before slip, like looping
+   #16982
+  </li>
+  <li>
+   Mixdown headphone and booth outputs in mono mode
+   #17013
+   #16942
+  </li>
+  <li>
+   Clear Booth buffer if it is not used, to fix audible artefacts after disabling
+   #17028
+  </li>
+  <li>
+   Don't reset
+   beatloop_size
+   to 1/32 when loop doesn't match any of the pre-defined sizes
+   #16881
+   #16880
+  </li>
+  <li>
+   Fix Hotcue 350 hours before song start, caused by a race condition with quantize control
+   #16743
+   #16320
+  </li>
+ </ul>
+ <p>
+  Preferences
+ </p>
+ <ul>
+  <li>
+   Fix warning/violated debug assertion when opening Preferences (backport
+   #16257
+   )
+   #16274
+  </li>
+  <li>
+   Color Preferences: avoid crash when saving palette after color row drag'n'drop
+   #17228
+  </li>
  </ul>
  <p>
   Target support
@@ -197,9 +308,21 @@
    #16720
   </li>
   <li>
-   Flatpack: prevent branches to delete each other
+   Flatpak: prevent branches to delete each other
    #16779
    #16810
+  </li>
+  <li>
+   Flatpak: generate public key from Github secrets.
+   #17239
+   #17257
+  </li>
+  <li>
+   Fix Upload PPA issues
+   #16990
+   #16981
+   #17107
+   #17124
   </li>
  </ul>
  <p>
@@ -228,18 +351,17 @@
    #16003
   </li>
   <li>
-   EngineBuffer: Reset sample counter after indicator update
-   #16245
-  </li>
-  <li>
-   libfdk_aac: SoundSourceProxyTest.seekBoundaries fix
-   #16440
-   #14624
-  </li>
-  <li>
    FFmpeg: fix of gap bug fix
    #16439
    #10464
+  </li>
+  <li>
+   FFmpeg: fix DEBUG_ASSERT when reading past the end
+   #17096
+  </li>
+  <li>
+   FFmpeg: use the default AAC decoder and warn about known seeking issues.
+   #17218
   </li>
   <li>
    Fix flaky unittests test
@@ -249,29 +371,13 @@
    #16290
    #16162
    #16693
+   #17003
+   #17260
+   #17337
   </li>
   <li>
-   Fix warning/violated debug assertion when opening Preferences (backport
-   #16257
-   )
-   #16274
-  </li>
-  <li>
-   Don't reset
-   beatloop_size
-   to 1/32 when loop doesn't match any of the pre-defined sizes
-   #16881
-   #16880
-  </li>
-  <li>
-   Fix last played time being wiped on history deletion
-   #16178
-   #14427
-  </li>
-  <li>
-   Fix Hotcue 350 hours before song start, caused by a race condition with quantize control
-   #16743
-   #16320
+   Run all tests
+   #17058
   </li>
   <li>
    Skins: Fix tiny battery icons
@@ -284,20 +390,37 @@
    #16592
   </li>
   <li>
-   Avoid spurious play control update
-   #16912
-   #16910
+   Fix SoundSourceProxyTest.openEmptyFile on Qt 6.11.1
+   #17116
   </li>
   <li>
-   Respect
-   repeat
-   in slip mode when enabled before slip, like looping
-   #16982
+   Speed up CI
+   #17152
+   #17145
+   #17147
+   #17137
+   #17224
+   #17259
+   #17258
+   #17226
   </li>
   <li>
-   Mixdown headphone and booth outputs in mono mode
-   #17013
-   #16942
+   Fix warning when parsing macOs music xml
+   #17084
+  </li>
+  <li>
+   Vinyl Control: fix reverse decoder for SWITCH_POLARITY timecodes
+   #17242
+   #16259
+  </li>
+  <li>
+   Vinyl Control: fix vinyl control startup sample rate
+   #17188
+  </li>
+  <li>
+   Fix MIDI learning wizard not showing up
+   #17343
+   #17155
   </li>
  </ul>
 </description>
@@ -509,7 +632,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-10-15" timestamp="1792040358">
+    <release version="2.5.5" type="development" date="2026-10-22" timestamp="1792663166">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.
