@@ -22,6 +22,9 @@ bool isColumnExported(BaseSqlTableModel* pPlaylistTableModel, int column) {
         // This is the bas64 encoded image which may hit the maximum line length of spreadsheet applications
         return false;
     }
+    if (pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LOADED_DECK) == column) {
+        return false;
+    }
     return true;
 }
 

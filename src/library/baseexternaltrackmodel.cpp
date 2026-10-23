@@ -21,6 +21,7 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
     QStringList columns;
     columns << "id";
     columns << "'' AS " + LIBRARYTABLE_PREVIEW;
+    columns << "'' AS " + LIBRARYTABLE_LOADED_DECK;
 
     QSqlQuery query(m_database);
     FieldEscaper f(m_database);
@@ -38,11 +39,17 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
     }
 
     columns[1] = LIBRARYTABLE_PREVIEW;
+    columns[2] = LIBRARYTABLE_LOADED_DECK;
     setTable(viewTable, columns[0], columns, trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
 }
 
 BaseExternalTrackModel::~BaseExternalTrackModel() {
+}
+
+QString BaseExternalTrackModel::normalizeTrackLocationForLoadedDecks(
+        const QString& location) const {
+    return resolveLocation(location);
 }
 
 TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
