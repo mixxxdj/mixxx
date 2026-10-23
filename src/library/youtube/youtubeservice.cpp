@@ -2467,7 +2467,7 @@ void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
     }
 #endif
 
-    QNetworkRequest req(reqUrl);
+    QNetworkRequest req{reqUrl};
     req.setHeader(QNetworkRequest::ContentTypeHeader,
             QStringLiteral("application/json"));
     req.setRawHeader("User-Agent", userAgent.toUtf8());
@@ -2526,7 +2526,7 @@ void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
     connect(reply,
             &QNetworkReply::finished,
             this,
-            [this, reply, videoId, cacheDir, userAgent, tryNext, onAllFailed]() {
+            [this, reply, videoId, cacheDir, userAgent, streamingPot, tryNext, onAllFailed]() {
                 reply->deleteLater();
                 const int httpStatus = reply->attribute(
                                                     QNetworkRequest::HttpStatusCodeAttribute)
