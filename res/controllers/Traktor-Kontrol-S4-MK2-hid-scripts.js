@@ -442,6 +442,15 @@ TraktorS4MK2.registerOutputPackets = function() {
         Output2.addOutput("deck2", "beatlooproll_0.25_activate", 0x22, "B");
         Output2.addOutput("deck2", "beatlooproll_0.5_activate", 0x23, "B");
         Output2.addOutput("deck2", "beatlooproll_1_activate", 0x24, "B");
+    } else if (TraktorS4MK2.RemixSlotButtonAction === "HOTCUES") {
+        Output2.addOutput("deck1", "hotcue_5_enabled", 0x19, "B");
+        Output2.addOutput("deck1", "hotcue_6_enabled", 0x1A, "B");
+        Output2.addOutput("deck1", "hotcue_7_enabled", 0x1B, "B");
+        Output2.addOutput("deck1", "hotcue_8_enabled", 0x1C, "B");
+        Output2.addOutput("deck2", "hotcue_5_enabled", 0x21, "B");
+        Output2.addOutput("deck2", "hotcue_6_enabled", 0x22, "B");
+        Output2.addOutput("deck2", "hotcue_7_enabled", 0x23, "B");
+        Output2.addOutput("deck2", "hotcue_8_enabled", 0x24, "B");
     }
 
     this.controller.registerOutputPacket(Output2);
@@ -551,6 +560,11 @@ TraktorS4MK2.registerOutputPackets = function() {
         TraktorS4MK2.linkDeckOutputs("beatlooproll_0.25_activate", TraktorS4MK2.outputCallback);
         TraktorS4MK2.linkDeckOutputs("beatlooproll_0.5_activate", TraktorS4MK2.outputCallback);
         TraktorS4MK2.linkDeckOutputs("beatlooproll_1_activate", TraktorS4MK2.outputCallback);
+    } else if (TraktorS4MK2.RemixSlotButtonAction === "HOTCUES") {
+        TraktorS4MK2.linkDeckOutputs("hotcue_5_enabled", TraktorS4MK2.outputCallback);
+        TraktorS4MK2.linkDeckOutputs("hotcue_6_enabled", TraktorS4MK2.outputCallback);
+        TraktorS4MK2.linkDeckOutputs("hotcue_7_enabled", TraktorS4MK2.outputCallback);
+        TraktorS4MK2.linkDeckOutputs("hotcue_8_enabled", TraktorS4MK2.outputCallback);
     }
 
     engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
@@ -1204,6 +1218,15 @@ TraktorS4MK2.remixHandler = function(field) {
         } else {
             var loop_size = Math.pow(2, buttonNumber - 4);
             engine.setValue(field.group, "beatlooproll_" + loop_size + "_activate", field.value);
+        }
+    } else if (TraktorS4MK2.RemixSlotButtonAction === "HOTCUES") {
+        var buttonNumber = parseInt(field.name[field.name.length - 1]);
+
+        TraktorS4MK2.slipAutoHandler(field.group, field.value);
+        if (TraktorS4MK2.controller.shift_pressed[group]) {
+            engine.setValue(field.group, "hotcue_" + (buttonNumber + 4) + "_clear", field.value);
+        } else {
+            engine.setValue(field.group, "hotcue_" + (buttonNumber + 4) + "_activate", field.value);
         }
     } else {
         print ("Traktor S4 WARNING: Invalid RemixSlotButtonAction picked.  Must be either SAMPLES " +
