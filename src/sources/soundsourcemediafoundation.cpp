@@ -134,7 +134,7 @@ SoundSource::OpenResult SoundSourceMediaFoundation::tryOpen(
     }
     // Initialize the Media Foundation platform.
     m_hrMFStartup = MFStartup(MF_VERSION);
-    if (FAILED(m_hrCoInitialize)) {
+    if (FAILED(m_hrMFStartup)) {
         kLogger.warning()
                 << "failed to initialize Media Foundation";
         return OpenResult::Failed;
@@ -401,7 +401,19 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
             DEBUG_ASSERT(pSample == nullptr);
             break; // abort
         }
-        DEBUG_ASSERT(pSample != nullptr);
+        if (pSample == nullptr) {
+            // ReadSample() may succeed without a sample, e.g. for
+            // MF_SOURCE_READERF_STREAMTICK. The timestamp of a stream tick
+            // marks the start of a gap and must not be used to resolve the
+            // position after seeking.
+            // https://learn.microsoft.com/en-us/windows/win32/api/mfreadwrite/nf-mfreadwrite-imfsourcereader-readsample
+            kLogger.warning()
+                    << "IMFSourceReader::ReadSample()"
+                    << "returned no sample with flags"
+                    << dwFlags
+                    << "-> read next sample";
+            continue; // read next sample
+        }
         SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
         // TODO: Fix debug assertion in else arm. It has been commented
         // out deliberately to prevent crashes in debug builds.

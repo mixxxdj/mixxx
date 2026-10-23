@@ -111,6 +111,15 @@ if(SndFile_FOUND)
         )
       endif()
 
+      find_package(Opus)
+      if(Opus_FOUND)
+        set_property(
+          TARGET SndFile::sndfile
+          APPEND
+          PROPERTY INTERFACE_LINK_LIBRARIES Opus::Opus
+        )
+      endif()
+
       # The mpg123 dependency was introduced in libsndfile 1.1.0
       if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
         find_package(mpg123 CONFIG)

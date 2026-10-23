@@ -142,6 +142,10 @@ class WOverview : public WWidget, public TrackDropTarget {
         }
     }
 
+    /// Returns the menu pointer.
+    /// Creates and connects the menu on first call
+    WCueMenuPopup* getMenu();
+    bool menuIsCreated();
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
@@ -158,7 +162,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_endOfTrack;
     bool m_bPassthroughEnabled;
 
+    /// Note: the menu should not be used directly since it is created only on
+    /// demand to reduce skin loading time.
+    /// Use getMenu() menuIsCreated() instead.
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+
     bool m_bShowCueTimes;
 
     int m_iPosSeconds;

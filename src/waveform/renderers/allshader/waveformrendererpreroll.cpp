@@ -3,12 +3,16 @@
 #include <QDomNode>
 #include <QPainterPath>
 
+#include "engine/engine.h"
 #include "moc_waveformrendererpreroll.cpp"
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/patternmaterial.h"
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
 #include "skin/legacy/skincontext.h"
+#include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
 namespace {
@@ -123,6 +127,11 @@ bool WaveformRendererPreroll::preprocessInner() {
         return false;
     }
 
+    const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
+            trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
+    const bool splitStemTracks = isStemTrack &&
+            WaveformWidgetFactory::instance()->isStemSplitTracks();
+
     const double playMarkerPosition = m_waveformRenderer->getPlayMarkerPosition();
     const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
     const double numberOfVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
@@ -130,9 +139,12 @@ bool WaveformRendererPreroll::preprocessInner() {
     const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample(positionType);
     const int totalVSamples = m_waveformRenderer->getTotalVSample();
 
-    const float markerBreadth = m_waveformRenderer->getBreadth() * 0.4f;
+    const float breadth = m_waveformRenderer->getBreadth();
+    const int numBoxes = splitStemTracks ? mixxx::kMaxSupportedStems : 1;
+    const float boxBreadth = breadth / static_cast<float>(numBoxes);
+    const float halfBoxBreadth = boxBreadth * 0.5f;
 
-    const float halfBreadth = m_waveformRenderer->getBreadth() * 0.5f;
+    const float markerBreadth = boxBreadth * 0.4f;
     const float halfMarkerBreadth = markerBreadth * 0.5f;
 
     const float markerLength = 40.f / static_cast<float>(vSamplesPerPixel);
@@ -156,8 +168,9 @@ bool WaveformRendererPreroll::preprocessInner() {
                                 m_color)));
     }
 
-    const int reservedVertexCount = (preRollVisible ? numVerticesPerRectangle : 0) +
-            (postRollVisible ? numVerticesPerRectangle : 0);
+    const int reservedVertexCount = ((preRollVisible ? numVerticesPerRectangle : 0) +
+                                            (postRollVisible ? numVerticesPerRectangle : 0)) *
+            numBoxes;
 
     geometry().allocate(reservedVertexCount);
 
@@ -180,12 +193,17 @@ bool WaveformRendererPreroll::preprocessInner() {
 
         const float repetitions = x / markerLength;
 
-        vertexUpdater.addRectangle({x, halfBreadth - halfMarkerBreadth},
-                {0,
-                        m_isSlipRenderer ? halfBreadth
-                                         : halfBreadth + halfMarkerBreadth},
-                {0.f, 0.f},
-                {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+        for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
+            const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
+            vertexUpdater.addRectangle(
+                    {x, boxCenterY - halfMarkerBreadth},
+                    {0.f,
+                            m_isSlipRenderer
+                                    ? boxCenterY
+                                    : boxCenterY + halfMarkerBreadth},
+                    {0.f, 0.f},
+                    {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+        }
     }
 
     if (postRollVisible) {
@@ -204,12 +222,17 @@ bool WaveformRendererPreroll::preprocessInner() {
 
         const float repetitions = (end - x) / markerLength;
 
-        vertexUpdater.addRectangle({x, halfBreadth - halfMarkerBreadth},
-                {end,
-                        m_isSlipRenderer ? halfBreadth
-                                         : halfBreadth + halfMarkerBreadth},
-                {0.f, 0.f},
-                {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+        for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
+            const float boxCenterY = boxIdx * boxBreadth + halfBoxBreadth;
+            vertexUpdater.addRectangle(
+                    {x, boxCenterY - halfMarkerBreadth},
+                    {end,
+                            m_isSlipRenderer
+                                    ? boxCenterY
+                                    : boxCenterY + halfMarkerBreadth},
+                    {0.f, 0.f},
+                    {repetitions, m_isSlipRenderer ? 0.5f : 1.f});
+        }
     }
 
     DEBUG_ASSERT(reservedVertexCount == vertexUpdater.index());

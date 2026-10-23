@@ -80,6 +80,10 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
         return false;
     }
 
+    if (m_remainingTimeTriggerSeconds <= 0) {
+        return false;
+    }
+
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
     const double blinkIntensity =

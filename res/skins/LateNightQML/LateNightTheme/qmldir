@@ -1,2 +1,3 @@
 singleton ColorScheme 0.1 ColorScheme.qml
 singleton LateNightTheme 0.1 LateNightTheme.qml
+singleton SpinnyCoverState 0.1 SpinnyCoverState.qml

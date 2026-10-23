@@ -71,13 +71,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
 }
 
 void DlgPrefSoundItem::addDevice(const SoundDevicePointer pDevice) {
-    // SoundDeviceId oldDev =
-    // deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     deviceComboBox->addItem(pDevice->getDisplayName(), QVariant::fromValue(pDevice->getDeviceId()));
-
-    // int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));
-    // deviceComboBox->setCurrentIndex(newIndex);
-
     m_devices.push_back(pDevice);
 }
 
@@ -114,31 +108,6 @@ void DlgPrefSoundItem::updateDeviceChannels(SoundDevicePointer pDevice) {
         channelComboBox->setCurrentIndex(newIndex);
         m_emitSettingChanged = true;
     }
-}
-
-void DlgPrefSoundItem::updateDeviceRoute(const SoundDeviceId& id, const AudioPath* pPath) {
-    if (pPath->getType() != m_type || pPath->getIndex() != m_index) {
-        return;
-    }
-
-    // qWarning() << "DlgPrefSoundItem::updateDevice" << id.name;
-    int index = deviceComboBox->findData(QVariant::fromValue(id));
-
-    VERIFY_OR_DEBUG_ASSERT(index >= 0) {
-        return;
-    }
-
-    if (index != deviceComboBox->currentIndex()) {
-        deviceComboBox->blockSignals(true);
-        deviceComboBox->setCurrentIndex(index);
-        deviceComboBox->blockSignals(false);
-        deviceChanged(index);
-    }
-
-    auto channelGroup = pPath->getChannelGroup();
-    QPoint point = QPoint(channelGroup.getChannelBase(), channelGroup.getChannelCount());
-    int channelIndex = channelComboBox->findData(QVariant::fromValue(point));
-    channelComboBox->setCurrentIndex(channelIndex);
 }
 
 /// Slot called when the device combo box selection changes. Updates the channel

@@ -42,6 +42,7 @@
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 
+#include "qml/qmlapplicationproxy.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
@@ -369,8 +370,8 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
-    // Only record stats in developer mode.
-    if (m_cmdlineArgs.getDeveloper()) {
+    // Only record stats in developer mode or when --stats is specified.
+    if (m_cmdlineArgs.getStats()) {
         StatsManager::createInstance();
     }
     mixxx::Translations::initializeTranslations(
@@ -386,7 +387,7 @@ CoreServices::~CoreServices() {
     // Tear down remaining stuff that was initialized in the constructor.
     CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
 
-    if (m_cmdlineArgs.getDeveloper()) {
+    if (m_cmdlineArgs.getStats()) {
         StatsManager::destroy();
     }
 
@@ -809,6 +810,10 @@ void CoreServices::initializeQMLSingletons() {
     // singletons to that they can be accessed by components instantiated by
     // QML, which would also be suboptimal.
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(getEffectsManager());
+    mixxx::qml::QmlApplicationProxy::registerUserSettings(getSettings());
+    mixxx::qml::QmlApplicationProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
+    mixxx::qml::QmlApplicationProxy::registerVinylControlManager(
+            getVinylControlManager().get());
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
@@ -820,10 +825,13 @@ void CoreServices::initializeQMLSingletons() {
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
-    // Currently, it is required to enforce QQuickWindow RHI backend to use
-    // OpenGL on all platforms to allow offscreen rendering to function as
-    // expected
+    // Qt Quick's native graphics backends are preferred on macOS and Windows.
+    // Offscreen rendering for controller screens is currently implemented only
+    // on Linux and Android, so those platforms retain the established OpenGL
+    // scene-graph backend used by the QML waveform renderers.
+#if !defined(Q_OS_MACOS) && !defined(Q_OS_WIN)
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
 #endif
 }
 
@@ -878,7 +886,8 @@ bool CoreServices::initializeDatabase() {
     return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
-std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
+std::shared_ptr<QDialog> CoreServices::makeDlgPreferences(
+        bool includeWaveformPreferences) const {
     // Note: We return here the base class pointer to make the coreservices.h usable
     // in test classes where header included from dlgpreferences.h are not accessible.
     auto pSkinLoader = std::make_shared<mixxx::skin::SkinLoader>(getSettings());
@@ -890,7 +899,8 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
-            getLibrary());
+            getLibrary(),
+            includeWaveformPreferences);
     return pDlgPreferences;
 }
 
@@ -906,6 +916,9 @@ void CoreServices::finalize() {
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerUserSettings(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerKeyboardEventFilter(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerVinylControlManager(nullptr);
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);

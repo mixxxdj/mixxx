@@ -206,6 +206,37 @@ class AudioInputBuffer : public AudioInput {
     CSAMPLE* m_pBuffer;
 };
 
+namespace std {
+
+template<>
+struct hash<AudioInput> {
+    size_t operator()(const AudioInput& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+template<>
+struct hash<AudioOutput> {
+    size_t operator()(const AudioOutput& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+template<>
+struct hash<AudioInputBuffer> {
+    size_t operator()(const AudioInputBuffer& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+template<>
+struct hash<AudioOutputBuffer> {
+    size_t operator()(const AudioOutputBuffer& b) const noexcept {
+        return b.hashValue();
+    }
+};
+
+} // namespace std
 
 class AudioSource {
   public:

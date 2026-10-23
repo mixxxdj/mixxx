@@ -282,6 +282,8 @@ Popup {
                     }
                     Settings.Interface {
                     }
+                    Settings.Waveform {
+                    }
                     Settings.MixerEffect {
                     }
                     Settings.AutoDJ {

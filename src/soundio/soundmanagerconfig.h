@@ -72,6 +72,11 @@ class SoundManagerConfig {
     static const int kDefaultSyncBuffers;
 
     bool readFromDisk();
+    // NOTE(pri-yan-shu) separate config reading and device validation, to allow
+    // asynchronous API's like PipeWire to validate the devices
+    // after they are enumerated, while keeping the logic which expects
+    // other parts of the config to already be loaded.
+    bool validateDevices();
     bool writeToDisk() const;
     QString getAPI() const;
     void setAPI(const QString& api);
@@ -98,6 +103,8 @@ class SoundManagerConfig {
     void addInput(const SoundDeviceId& device, const AudioInput& in);
     QMultiHash<SoundDeviceId, AudioOutput> getOutputs() const;
     QMultiHash<SoundDeviceId, AudioInput> getInputs() const;
+    QMultiHash<SoundDeviceId, AudioOutput>& getOutputsRef();
+    QMultiHash<SoundDeviceId, AudioInput>& getInputsRef();
     void clearOutputs();
     void clearInputs();
     bool hasMicInputs();
@@ -123,4 +130,5 @@ class SoundManagerConfig {
     int m_iNumMicInputs;
     bool m_bExternalRecordBroadcastConnected;
     SoundManager* m_pSoundManager;
+    QDomDocument m_doc;
 };

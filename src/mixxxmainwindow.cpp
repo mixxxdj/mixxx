@@ -53,6 +53,7 @@
 #include "track/track.h"
 #include "util/debug.h"
 #include "util/desktophelper.h"
+#include "util/menubarhelper.h"
 #include "util/sandbox.h"
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
@@ -69,25 +70,6 @@
 #endif
 
 namespace {
-#ifdef __LINUX__
-// Detect if the desktop supports a global menu to decide whether we need to rebuild
-// and reconnect the menu bar when switching to/from fullscreen mode.
-// Compared to QMenuBar::isNativeMenuBar() (requires a set menu bar) and
-// Qt::AA_DontUseNativeMenuBar, which may both change, this is way more reliable
-// since it's rather unlikely that the Appmenu.Registrar service is unloaded/stopped
-// while Mixxx is running.
-// This is a reimplementation of QGenericUnixTheme > checkDBusGlobalMenuAvailable()
-inline bool supportsGlobalMenu() {
-#ifndef QT_NO_DBUS
-    QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto* pIface = conn.interface()) {
-        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
-    }
-#endif
-    return false;
-}
-#endif
-
 const ConfigKey kHideMenuBarConfigKey = ConfigKey("[Config]", "hide_menubar");
 const ConfigKey kMenuBarHintConfigKey = ConfigKey("[Config]", "show_menubar_hint");
 } // namespace
@@ -105,7 +87,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_noAuxInputDialog(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
-          m_supportsGlobalMenuBar(supportsGlobalMenu()),
+          m_supportsGlobalMenuBar(mixxx::desktopSupportsGlobalMenuBar()),
 #endif
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
@@ -391,7 +373,11 @@ void MixxxMainWindow::initialize() {
     // that says "mixxx will barely work with no outs".
     // In case of persisting errors, the user has already received a message
     // above. So we can just check the output count here.
-    while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().isEmpty()) {
+    while (m_pCoreServices->getSoundManager()
+                    ->getConfig()
+                    .getOutputs()
+                    .isEmpty() &&
+            !m_pCoreServices->getSoundManager()->pipewireSkipConfig()) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
         bool continueClicked = false;

@@ -1,8 +1,11 @@
 #pragma once
 #include <QAbstractListModel>
 #include <QQmlEngine>
+#include <memory>
 
 #include "effects/defs.h"
+
+class EffectsManager;
 
 namespace mixxx {
 namespace qml {
@@ -10,15 +13,23 @@ namespace qml {
 class QmlChainPresetModel : public QAbstractListModel {
     Q_OBJECT
     QML_NAMED_ELEMENT(ChainPresetModel)
-    QML_UNCREATABLE("Only accessible via Mixxx.EffectsManager.quickEffectPresetsModel")
+    QML_UNCREATABLE("Only accessible via Mixxx.EffectsManager preset model properties")
   public:
+    enum class PresetType {
+        Standard,
+        Quick,
+    };
+
     enum Roles {
-        EffectIdRole = Qt::UserRole + 1,
+        NameRole = Qt::UserRole + 1,
+        ReadOnlyRole,
+        PresetDisplayRole,
     };
     Q_ENUM(Roles)
 
     explicit QmlChainPresetModel(
-            EffectChainPresetManagerPointer effectChainPresetManager,
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            PresetType presetType,
             QObject* parent = nullptr);
 
     QVariant data(const QModelIndex& index, int role) const override;
@@ -30,7 +41,9 @@ class QmlChainPresetModel : public QAbstractListModel {
     void slotUpdated();
 
   private:
+    const std::shared_ptr<EffectsManager> m_pEffectsManager;
     const EffectChainPresetManagerPointer m_pEffectChainPresetManager;
+    const PresetType m_presetType;
     QList<EffectChainPresetPointer> m_effectChainPresets;
 };
 

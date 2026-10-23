@@ -6,4 +6,5 @@ typeinfo mixxx-lib.qmltypes
 import QtQuick
 prefer :/mixxx.org/imports/Mixxx/
 MathUtils 1.0 MathUtils.mjs
+singleton DurationFormatter 1.0 DurationFormatter.qml
 PlayerDropArea 1.0 PlayerDropArea.qml
