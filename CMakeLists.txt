@@ -4715,7 +4715,6 @@ else()
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::QmlCore
-          Qt${QT_VERSION_MAJOR}::QmlModels
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
