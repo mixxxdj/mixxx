@@ -2,12 +2,6 @@
 Reloop Mixtour controller script
 */
 
-// most buttons use the following shift settings, its easier to correct them for the few others
-components.Component.prototype.shiftOffset = 0x3F;
-components.Component.prototype.shiftControl = true;
-components.Component.prototype.sendShifted = true;
-// the color for most buttons is green, just change for hotcue buttons directly
-components.Button.prototype.on = 0x01;
 // override Component prototype to prevent double connections
 // original connect function will override connections[0] and
 // this way looses control of existing connection
@@ -207,6 +201,14 @@ ReloopMixtour.Deck = class extends components.Deck {
             if (component.group === undefined) {
                 component.group = this.currentDeck;
             };
+            if (component.shiftOffset === 0) {
+                component.shiftOffset = 0x3F;
+            };
+            component.shiftControl = true;
+            component.sendShifted = true;
+            if (component.on === 127) { // value not changed from default
+                component.on = 0x01;    // color for most buttons is green
+            }
         });
     }
 };
@@ -347,6 +349,14 @@ ReloopMixtour.Mixer = class extends components.Deck {
             if (component.group === undefined) {
                 component.group = this.currentDeck;
             };
+            if (component.shiftOffset === 0) {  // if value not changed from default
+                component.shiftOffset = 0x3F;   // offset for most buttons is 0x3F
+            };
+            component.shiftControl = true;
+            component.sendShifted = true;
+            if (component.on === 0x7F) {        // if value not changed from default
+                component.on = 0x01;            // color for most buttons is green
+            }
         });
     }
 
