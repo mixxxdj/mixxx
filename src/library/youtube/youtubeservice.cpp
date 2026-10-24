@@ -2934,10 +2934,10 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
             QStringLiteral("--ignore-config"),
             QStringLiteral("--no-mtime"),
             // Download audio in parallel fragments for faster throughput on
-            // good connections (yt-dlp splits the stream into 4 concurrent
+            // good connections (yt-dlp splits the stream into 8 concurrent
             // range requests and reassembles on disk).
             QStringLiteral("--concurrent-fragments"),
-            QStringLiteral("4"),
+            QStringLiteral("8"),
             QStringLiteral("-o"),
             outTemplate,
             QStringLiteral("--print"),
@@ -3130,6 +3130,14 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         request.callMethod<QJniObject>("addOption",
                 "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
                 QJniObject::fromString("--no-mtime").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;Ljava/lang/String;)Lcom/yausername/youtubedl_android/"
+                "YoutubeDLRequest;",
+                QJniObject::fromString("--concurrent-fragments").object(),
+                QJniObject::fromString("8").object());
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("--force-ipv4").object());
         // Bound network stalls: without this, a hung connection blocks
         // execute() forever, and teardown joins this thread -> ANR.
         request.callMethod<QJniObject>("addOption",
