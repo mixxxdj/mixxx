@@ -981,7 +981,7 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
         return;
     }
 #if defined(Q_OS_ANDROID)
-    kLogger.info() << "[Android] downloadVideo: videoId=" << videoId
+    kLogger.debug() << "[Android] downloadVideo: videoId=" << videoId
                    << "cacheDir=" << cacheDir
                    << "ytDlpPath=" << m_ytDlpPath;
 #endif
@@ -2401,7 +2401,7 @@ void YouTubeService::downloadViaInnerTubeClient(
     const InnerTubeClient& c = clients.at(clientIdx);
     const QString userAgent = QString::fromLatin1(c.userAgent);
 #if defined(Q_OS_ANDROID)
-    kLogger.info() << "[Android] downloadViaInnerTubeClient: videoId=" << videoId
+    kLogger.debug() << "[Android] downloadViaInnerTubeClient: videoId=" << videoId
                    << "client=" << c.clientName
                    << "clientIdx=" << clientIdx;
 #endif
@@ -3029,7 +3029,7 @@ namespace {
 
 void YouTubeService::downloadViaAndroidBundled(
         const QString& videoId, const QString& cacheDir) {
-    kLogger.info() << "[Android] downloadViaAndroidBundled: videoId=" << videoId
+    kLogger.debug() << "[Android] downloadViaAndroidBundled: videoId=" << videoId
                    << "cacheDir=" << cacheDir;
     // Straight to the JNI download with no PO-token fetch: the bundled
     // yt-dlp uses player_client=android_vr which needs no tokens, and the
@@ -3043,7 +3043,7 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         const QString& cacheDir,
         const QString& playerPot,
         const QString& streamingPot) {
-    kLogger.info() << "[Android] runAndroidBundled: videoId=" << videoId
+    kLogger.debug() << "[Android] runAndroidBundled: videoId=" << videoId
                    << "poToken=" << (!playerPot.isEmpty() ? "yes" : "no");
     QPointer<YouTubeService> guard(this);
     // Run the JNI download on a worker thread so we don't block the UI.
@@ -3084,7 +3084,7 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         // every download, so guard with a static flag.
         static std::atomic<bool> s_ytdlInitialized{false};
         if (!s_ytdlInitialized.exchange(true)) {
-            kLogger.info() << "[Android] downloadViaAndroidBundled:"
+            kLogger.debug() << "[Android] downloadViaAndroidBundled:"
                            << "initializing YoutubeDL for" << videoId;
             ytdl.callMethod<void>("init",
                     "(Landroid/content/Context;)V",
@@ -3182,7 +3182,7 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         // YoutubeDLResponse return) — the previous code called a non-existent
         // "exec" method, so every bundled download threw NoSuchMethodError and
         // silently failed. This is the core download fix.
-        kLogger.info() << "[Android] downloadViaAndroidBundled:"
+        kLogger.debug() << "[Android] downloadViaAndroidBundled:"
                        << "executing yt-dlp request for" << videoId;
         QJniObject response = ytdl.callObjectMethod(
                 "execute",
@@ -3225,7 +3225,7 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         }
 
         if (!outputPath.isEmpty() && QFileInfo::exists(outputPath)) {
-            kLogger.info() << "[Android] downloadViaAndroidBundled:"
+            kLogger.debug() << "[Android] downloadViaAndroidBundled:"
                            << "download complete for" << videoId
                            << "→" << outputPath;
             // Route through finalizeDownload for SponsorBlock/post-processing,

@@ -1210,11 +1210,23 @@ void AIBroFeature::slotDownloadFinished(
 
 void AIBroFeature::slotDownloadFailed(
         const QString& videoId, const QString& error) {
-    Q_UNUSED(videoId);
     kLogger.warning() << "AI Bro: download failed:" << error;
     m_downloading = false;
     m_downloadingTitle.clear();
     m_downloadingUploader.clear();
+
+    // Circuit breaker: a permanently-undownloadable video (bad id, region
+    // block, broken extractor) must not spin the retry loop forever — mark
+    // it played so pickBestCandidate skips it next round. 3 strikes.
+    if (!videoId.isEmpty()) {
+        int fails = ++m_videoFailCount[videoId];
+        if (fails >= 3) {
+            kLogger.warning() << "AI Bro: giving up on" << videoId
+                              << "after" << fails << "failures — skipping";
+            m_playedVideoIds.insert(videoId);
+            m_videoFailCount.remove(videoId);
+        }
+    }
 
     // Clear garbage track
     const QString currentLower = m_currentTrackTitle.toLower();

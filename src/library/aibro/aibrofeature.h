@@ -169,6 +169,10 @@ class AIBroFeature : public QObject {
 
     /// Played video IDs this session.
     QSet<QString> m_playedVideoIds;
+    /// Consecutive download failures per videoId. A video that fails
+    /// repeatedly (e.g. permanently undownloadable) is skipped instead of
+    /// retried forever — one poison id spun 3,400+ download attempts.
+    QMap<QString, int> m_videoFailCount;
     /// Played song keys (title lowercased).
     QSet<QString> m_playedSongKeys;
 
