@@ -43,7 +43,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_trackSamples(0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
-          m_passthroughEnabled(false) {
+          m_passthroughEnabled(false),
+          m_slipActive(false) {
     //qDebug() << "WaveformWidgetRenderer";
     for (int type = ::WaveformRendererAbstract::Play;
             type <= ::WaveformRendererAbstract::Slip;
@@ -114,6 +115,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
             m_pos[type] = -1.0;
             m_truePosSample[type] = -1.0;
         }
+        m_slipActive = false;
         return;
     }
 
@@ -146,7 +148,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     double truePos[2]{0};
     m_visualPlayPosition->getPlaySlipAtNextVSync(vsyncThread,
             truePos + ::WaveformRendererAbstract::Play,
-            truePos + ::WaveformRendererAbstract::Slip);
+            truePos + ::WaveformRendererAbstract::Slip,
+            &m_slipActive);
     // truePlayPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
     if (m_audioSamplePerPixel > 0) {
@@ -185,6 +188,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
             m_pos[type] = -1.0; // disable renderers
             m_truePosSample[type] = -1.0;
         }
+        m_slipActive = false;
     }
 
     // qDebug() << "WaveformWidgetRenderer::onPreRender" <<
