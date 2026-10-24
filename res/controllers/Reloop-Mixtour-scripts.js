@@ -55,10 +55,10 @@ ReloopMixtour.init = function() {
 
     this.connectFourDeckControl = function() {
         for (let i = 1; i <= 4; i++) {
-            engine.makeConnection("[Skin]", `highlight_deck_[Channel${i}]`, function(_value, _group, _control) {
+            this[`highlightDeckConnection_[Channel${i}]`] = engine.makeConnection("[Skin]", `highlight_deck_[Channel${i}]`, function(_value, _group, _control) {
                 ReloopMixtour.reSelectDecks();
             });
-            engine.makeConnection("[Skin]", `highlight_mixer_[Channel${i}]`, function(_value, _group, _control) {
+            this[`highlightMixerConnection_[Channel${i}]`] = engine.makeConnection("[Skin]", `highlight_mixer_[Channel${i}]`, function(_value, _group, _control) {
                 ReloopMixtour.reSelectMixer();
             });
         }
@@ -81,6 +81,14 @@ ReloopMixtour.init = function() {
     this.shutdown = function() {
         ReloopMixtour.decks.shutdown();
         ReloopMixtour.mixer.shutdown();
+        for (let i = 1; i <= 4; i++) {
+            if (this[`highlightDeckConnection_[Channel${i}]`] !== undefined) {
+                this[`highlightDeckConnection_[Channel${i}]`].disconnect();
+            };
+            if (this[`highlightMixerConnection_[Channel${i}]`] !== undefined) {
+                this[`highlightMixerConnection_[Channel${i}]`].disconnect();
+            };
+        }
     };
 
     // there is one shift button, map it to the decks
