@@ -7,6 +7,7 @@ var ReloopMixtour = {};
 
 // midi-components-0.0.js does not prevent re-connecting some already connected
 // component. The following mixing and the local classes solve this problem.
+// Additionally some shutdown method added to all local components.
 ReloopMixtour.controlledConnections = (Base) => class extends Base {
     connect() {
         if (this.connections[0] === undefined) {
@@ -16,6 +17,10 @@ ReloopMixtour.controlledConnections = (Base) => class extends Base {
     disconnect() {
         super.disconnect();
         this.connections = [];
+    };
+    shutdown() {
+        if (super.shutdown !== undefined) { super.shutdown(); }
+        this.disconnect();
     };
 };
 ReloopMixtour.Button = class extends ReloopMixtour.controlledConnections(components.Button) {};
@@ -61,6 +66,17 @@ ReloopMixtour.init = function() {
         }
     };
 
+    this.disconnectFourDeckControl = function() {
+        for (let i = 1; i <= 4; i++) {
+            if (this[`highlightDeckConnection_[Channel${i}]`] !== undefined) {
+                this[`highlightDeckConnection_[Channel${i}]`].disconnect();
+            };
+            if (this[`highlightMixerConnection_[Channel${i}]`] !== undefined) {
+                this[`highlightMixerConnection_[Channel${i}]`].disconnect();
+            };
+        };
+    };
+
     const leftDeckConfig = parseInt(engine.getSetting("leftControls"));
     const rightDeckConfig = parseInt(engine.getSetting("rightControls"));
     this.decks = new components.ComponentContainer({
@@ -76,16 +92,10 @@ ReloopMixtour.init = function() {
     }
 
     this.shutdown = function() {
-        ReloopMixtour.decks.shutdown();
-        ReloopMixtour.mixer.shutdown();
-        for (let i = 1; i <= 4; i++) {
-            if (this[`highlightDeckConnection_[Channel${i}]`] !== undefined) {
-                this[`highlightDeckConnection_[Channel${i}]`].disconnect();
-            };
-            if (this[`highlightMixerConnection_[Channel${i}]`] !== undefined) {
-                this[`highlightMixerConnection_[Channel${i}]`].disconnect();
-            };
-        }
+        this.decks.shutdown();
+        this.mixer.shutdown();
+        this.disconnectFourDeckControl();
+        this.backBtn.shutdown();
     };
 
     // there is one shift button, map it to the decks
