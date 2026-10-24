@@ -247,7 +247,7 @@ ReloopMixtour.Mixer = class extends components.Deck {
             secondOutKey: "enabled",
             group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
             // set preset to first real fx. if available at all this is number 2
-            fxPreset: (engine.getValue(this.group, "num_chain_presets") > 2)?2:0,
+            fxPreset: (engine.getValue(`[QuickEffectRack1_${theMixer.currentDeck}]`, "num_chain_presets") > 2)?2:0,
             nextPreset: function() {
                 const nChainPresets = engine.getValue(this.group, "num_chain_presets");
                 this.fxPreset = (this.fxPreset + 1) % nChainPresets;
