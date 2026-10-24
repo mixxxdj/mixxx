@@ -259,17 +259,22 @@ ReloopMixtour.Mixer = class extends components.Deck {
                 // only act on button-press and if fx are available
                 if (value && engine.getValue(this.group, "num_chain_presets") > 2) {
                     if (control < this.shiftOffset) {
+                        const tmpSuper1Value = engine.getValue(this.group, "super1");
                         if (this.inGetValue() !== 1) {                  // current FX is not the 'Filter'
-                            this.fxPreset = this.inGetValue() || 2;    // store current FX (but not 0)
+                            this.fxPreset = this.inGetValue() || 2;     // store current FX (but not 0)
                             this.inSetValue(1);                         // activate the 'Filter'
                         } else {
-                            this.inSetValue(this.fxPreset);            // activate last stored FX
+                            this.inSetValue(this.fxPreset);             // activate last stored FX
                         }
-                    } else {
-                        this.nextPreset();                              // select and store next FX
-                        if (this.inGetValue() !== 1) {                  // if FX is active
-                            this.inSetValue(this.fxPreset);            // activate (new) FX
+                        if (this.lastSuper1Value !== undefined) {       // activate last stored super1
+                            engine.softTakeover(this.group, "super1", false);
+                            engine.setValue(this.group, "super1", this.lastSuper1Value);
+                            engine.softTakeover(this.group, "super1", true);
                         }
+                        this.lastSuper1Value = tmpSuper1Value;
+                    } else if (this.inGetValue() !== 1) {               // if FX is active
+                        this.nextPreset();                          // select and store next FX
+                        this.inSetValue(this.fxPreset);             // activate (new) FX
                     }
                 }
             },
