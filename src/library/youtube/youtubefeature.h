@@ -3,6 +3,7 @@
 #include <QHash>
 #include <QNetworkAccessManager>
 #include <QPointer>
+#include <QQueue>
 #include <QSet>
 #include <QSharedPointer>
 #include <QTimer>
@@ -156,6 +157,10 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     void fetchThumbnails(const QList<mixxx::YouTubeVideoInfo>& videos);
     /// Set of videoIds whose thumbnails are currently being downloaded.
     QSet<QString> m_thumbnailsDownloading;
+    /// Pending thumbnail videoIds waiting for a download slot. Caps parallel
+    /// thumbnail TCP+TLS handshakes (mobile data) — see kMaxParallelThumbs.
+    QQueue<QString> m_thumbnailQueue;
+    void pumpThumbnailQueue();
 
     parented_ptr<TreeItemModel> m_pSidebarModel;
     QPointer<WLibraryTextBrowser> m_pHomeView;

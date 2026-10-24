@@ -835,9 +835,6 @@ QString YouTubeFeature::thumbnailDir() const {
 
 void YouTubeFeature::fetchThumbnails(
         const QList<mixxx::YouTubeVideoInfo>& videos) {
-    if (!m_pSamplesNam) {
-        m_pSamplesNam = new QNetworkAccessManager(this);
-    }
     const QString tDir = thumbnailDir();
     for (const mixxx::YouTubeVideoInfo& info : videos) {
         if (info.id.isEmpty()) {
@@ -848,14 +845,37 @@ void YouTubeFeature::fetchThumbnails(
         if (QFileInfo::exists(destPath)) {
             continue; // already on disk
         }
-        if (m_thumbnailsDownloading.contains(info.id)) {
-            continue; // in flight
+        if (m_thumbnailsDownloading.contains(info.id) ||
+                m_thumbnailQueue.contains(info.id)) {
+            continue; // in flight or queued
         }
-        m_thumbnailsDownloading.insert(info.id);
+        m_thumbnailQueue.enqueue(info.id);
+    }
+    pumpThumbnailQueue();
+}
+
+void YouTubeFeature::pumpThumbnailQueue() {
+    // Cap parallel thumbnail downloads: 50 results firing 50 simultaneous
+    // TCP+TLS handshakes on mobile data congests the radio and slows the
+    // first paint. 8 in flight keeps the pipe full without the burst.
+    constexpr int kMaxParallelThumbs = 8;
+    if (!m_pSamplesNam) {
+        m_pSamplesNam = new QNetworkAccessManager(this);
+    }
+    const QString tDir = thumbnailDir();
+    while (!m_thumbnailQueue.isEmpty() &&
+            m_thumbnailsDownloading.size() < kMaxParallelThumbs) {
+        const QString videoId = m_thumbnailQueue.dequeue();
+        const QString destPath =
+                tDir + QLatin1Char('/') + videoId + QStringLiteral(".jpg");
+        if (QFileInfo::exists(destPath)) {
+            continue; // landed while queued
+        }
+        m_thumbnailsDownloading.insert(videoId);
         // default.jpg (120x90) keeps search fast on mobile data (~3KB vs
         // ~15KB for mqdefault); list cells are small so the difference
         // is barely visible.
-        const QUrl url(QStringLiteral("https://i.ytimg.com/vi/") + info.id +
+        const QUrl url(QStringLiteral("https://i.ytimg.com/vi/") + videoId +
                 QStringLiteral("/default.jpg"));
         QNetworkRequest req(url);
         req.setTransferTimeout(10 * 1000); // 10 s
@@ -863,9 +883,11 @@ void YouTubeFeature::fetchThumbnails(
         connect(reply,
                 &QNetworkReply::finished,
                 this,
-                [this, reply, destPath, videoId = info.id]() {
+                [this, reply, destPath, videoId]() {
                     reply->deleteLater();
                     m_thumbnailsDownloading.remove(videoId);
+                    // Free slot -> launch next queued thumbnail.
+                    pumpThumbnailQueue();
                     if (reply->error() != QNetworkReply::NoError) {
                         return; // non-fatal: no thumbnail is fine
                     }
