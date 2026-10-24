@@ -1,0 +1,87 @@
+# clang-tidy configuration for xwax <https://xwax.org>
+
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  -bugprone-macro-parentheses,
+  -bugprone-reserved-identifier,
+  -bugprone-switch-missing-default-case,
+  -bugprone-multi-level-implicit-pointer-conversion,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-assignment-in-if-condition,
+  cert-*,
+  -cert-err33-c,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp,
+  -cert-dcl03-c,
+  -cert-msc30-c,
+  -cert-msc50-cpp,
+  -cert-msc24-c,
+  -cert-msc33-c,
+  -cert-err34-c,
+  clang-analyzer-*,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -clang-analyzer-security.insecureAPI.vfork,
+  misc-*,
+  -misc-include-cleaner,
+  -misc-unused-parameters,
+  -misc-no-recursion,
+  -misc-static-assert,
+  -misc-predictable-rand,
+  -misc-confusable-identifiers,
+  performance-*,
+  -performance-no-int-to-ptr,
+  portability-*,
+  readability-*,
+  -readability-identifier-length,
+  -readability-braces-around-statements,
+  -readability-inconsistent-ifelse-braces,
+  -readability-magic-numbers,
+  -readability-isolate-declaration,
+  -readability-math-missing-parentheses,
+  -readability-implicit-bool-conversion,
+  -readability-else-after-return,
+  -readability-function-cognitive-complexity,
+  -readability-avoid-const-params-in-decls,
+  -readability-uppercase-literal-suffix,
+  -readability-use-concise-preprocessor-directives,
+  -readability-redundant-parentheses,
+  -readability-avoid-nested-conditional-operator,
+  -readability-enum-initial-value,
+  -cert-int09-c
+
+# Report on xwax's own headers, but not on SDL/ALSA/JACK headers,
+# which are included with -I rather than -isystem
+HeaderFilterRegex: '.*'
+ExcludeHeaderFilterRegex: '^/usr/.*'
+SystemHeaders: false
+
+FormatStyle: file
+
+CheckOptions:
+  # Naming: everything lower_case except constants and macros
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: lower_case
+  - key: readability-identifier-naming.StructCase
+    value: lower_case
+  - key: readability-identifier-naming.UnionCase
+    value: lower_case
+  - key: readability-identifier-naming.EnumCase
+    value: lower_case
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.TypedefCase
+    value: lower_case
+  - key: readability-identifier-naming.MemberCase
+    value: lower_case
+  - key: bugprone-suspicious-string-compare.WarnOnImplicitComparison
+    value: false
+
