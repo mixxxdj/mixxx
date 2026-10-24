@@ -2686,8 +2686,10 @@ void YouTubeService::fetchPoTokens(const QString& videoId,
                                       << videoId << "parts=" << parts.size();
                 }
             } else {
+                QJniObject err = manager.callObjectMethod(
+                        "getLastError", "()Ljava/lang/String;");
                 kLogger.warning() << "PO tokens: fetchTokens returned null for"
-                                  << videoId;
+                                  << videoId << "—" << err.toString();
             }
         }
         if (!guard) {

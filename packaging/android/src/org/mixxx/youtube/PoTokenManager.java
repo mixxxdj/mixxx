@@ -27,6 +27,8 @@ public class PoTokenManager {
     private PoTokenManager() {
     }
 
+    private volatile String mLastError = "never attempted";
+
     public static synchronized PoTokenManager getInstance() {
         if (sInstance == null) {
             sInstance = new PoTokenManager();
@@ -36,6 +38,17 @@ public class PoTokenManager {
 
     public void init(Context context) {
         mAppContext = context.getApplicationContext();
+        mLastError = "init ok, generator not yet created";
+    }
+
+    /** Last failure reason, for surfacing Java-side errors to C++ logs. */
+    public String getLastError() {
+        return mLastError;
+    }
+
+    private void setError(String e) {
+        mLastError = e;
+        Log.e(TAG, e);
     }
 
     private boolean ensureGenerator() {
@@ -46,7 +59,7 @@ public class PoTokenManager {
             mGenerator = null;
         }
         if (mAppContext == null) {
-            Log.e(TAG, "ensureGenerator: no context (init() not called)");
+            setError("ensureGenerator: no context (MainActivity.init not called?)");
             return false;
         }
         final CountDownLatch latch = new CountDownLatch(1);
@@ -63,17 +76,18 @@ public class PoTokenManager {
 
             @Override
             public void onError(String error) {
-                Log.e(TAG, "generator init failed: " + error);
+                setError("generator init failed: " + error);
                 latch.countDown();
             }
         });
         try {
             if (!latch.await(INIT_TIMEOUT_SEC, TimeUnit.SECONDS)) {
-                Log.e(TAG, "generator init timed out");
+                setError("generator init timed out after " + INIT_TIMEOUT_SEC + "s");
                 return false;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            setError("generator init interrupted");
             return false;
         }
         synchronized (mLock) {
@@ -118,17 +132,18 @@ public class PoTokenManager {
 
             @Override
             public void onError(String error) {
-                Log.e(TAG, "token failed for " + identifier + ": " + error);
+                setError("token failed for " + identifier + ": " + error);
                 latch.countDown();
             }
         });
         try {
             if (!latch.await(TOKEN_TIMEOUT_SEC, TimeUnit.SECONDS)) {
-                Log.e(TAG, "token timed out for " + identifier);
+                setError("token timed out for " + identifier);
                 return null;
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            setError("token mint interrupted for " + identifier);
             return null;
         }
         return out[0];
