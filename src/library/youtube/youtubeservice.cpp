@@ -1496,9 +1496,28 @@ void YouTubeService::searchViaInnerTube(const QString& emittedQuery,
 void YouTubeService::fetchMoreSearchResults(
         const QString& emittedQuery, int cap) {
     if (m_searchContinuationToken.isEmpty()) {
+        // The token is cleared at search start and set when the first page
+        // lands (~800 ms window). fetchMore firing inside that window used
+        // to give up silently, capping the user at 20 results. Defer
+        // briefly — bounded, so a genuinely tokenless response still ends.
+        static constexpr int kMaxTokenWaits = 3;
+        static constexpr int kTokenWaitMs = 1000;
+        int& waits = m_fetchMoreTokenWaits[emittedQuery];
+        if (waits < kMaxTokenWaits) {
+            waits++;
+            QPointer<YouTubeService> guard(this);
+            QTimer::singleShot(kTokenWaitMs, this, [guard, emittedQuery, cap]() {
+                if (guard) {
+                    guard->fetchMoreSearchResults(emittedQuery, cap);
+                }
+            });
+            return;
+        }
+        m_fetchMoreTokenWaits.remove(emittedQuery);
         kLogger.debug() << "fetchMoreSearchResults: no continuation token";
         return;
     }
+    m_fetchMoreTokenWaits.remove(emittedQuery);
     const QVector<InnerTubeClient>& clients = innerTubeSearchClients();
     if (clients.isEmpty()) {
         return;

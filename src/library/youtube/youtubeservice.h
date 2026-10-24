@@ -424,6 +424,9 @@ class YouTubeService : public QObject {
     /// Non-empty when there are more results to fetch via fetchMoreSearchResults().
     /// Cleared at the start of every new searchVideos() call.
     QString m_searchContinuationToken;
+    /// Bounded deferral counters for fetchMore arriving before the first
+    /// page sets the token (per query). Prevents silent 20-result cap.
+    QMap<QString, int> m_fetchMoreTokenWaits;
     /// Hardcoded fallback list of Piped API instances. Tried in order on
     /// per-request failure. The expanded list provides better resilience
     /// against community-maintained instances going offline.
