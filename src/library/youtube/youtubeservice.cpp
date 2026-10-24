@@ -3485,18 +3485,14 @@ QStringList YouTubeService::ytDlpAntiBotArgs() const {
     //    Prefer IPv4: on mobile the IPv6 googlevideo route throttles hard
     //    (log: 85-135s per 3-4MB track at ~40KB/s over 2a02:... URLs).
     args << QStringLiteral("--extractor-args")
-         << QStringLiteral("youtube:player_client=android_vr,mediaconnect");
+         << QStringLiteral("youtube:player_client=android_vr");
     args << QStringLiteral("--force-ipv4");
 
-    // 3. Sleep between downloads in a playlist scenario only. For single-video
-    //    downloads these are no-ops. Do NOT use --sleep-requests here: it
-    //    inserts a forced pause between every extraction API call (including
-    //    the initial video-info fetch), adding 1–3 s of latency to every
-    //    yt-dlp download for no bot-avoidance benefit on single-item requests.
-    args << QStringLiteral("--sleep-interval")
-         << QStringLiteral("2");
-    args << QStringLiteral("--max-sleep-interval")
-         << QStringLiteral("5");
+    // 3. No sleep intervals on the download path. yt-dlp's --sleep-interval
+    //    delays every extraction API call including the first one, adding
+    //    seconds of latency per track for no benefit on single-video
+    //    downloads (bot-avoidance sleeps belong on bulk/search paths only).
+    //    Retry backoff below still applies on actual failures.
 
     // 4. User-agent override: use a recent Chrome UA to avoid being flagged
     //    by the default yt-dlp UA string.
