@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.0.0+">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.5.0+">
     <info>
         <name>Pioneer DDJ-FLX2</name>
         <author>CupoMeridio, RaduTek</author>
         <description>2-deck USB and Bluetooth MIDI controller. This mapping implements a custom 4-deck layer mode, manual soft takeover for faders, and asymmetric shift functions.</description>
-        <forum>https://mixxx.discourse.group/t/ddj-flx2-mapping/31083</forum>
+        <forums>https://mixxx.discourse.group/t/ddj-flx2-mapping/31083</forums>
         <manual>pioneer_ddj_flx2</manual>
     </info>
     <settings>
