@@ -193,6 +193,18 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     /// we give up and surface the error to the user.
     QHash<QString, int> m_downloadRetryCount;
     static constexpr int kMaxDownloadRetries = 2;
+#ifdef Q_OS_ANDROID
+    static constexpr int kMaxParallelDownloads = 2;
+#else
+    static constexpr int kMaxParallelDownloads = 4;
+#endif
+    /// FIFO of videoIds waiting for a download slot. On Android 8+ parallel
+    /// yt-dlp downloads shared one radio at ~40 KB/s each (log: 85-135s per
+    /// 3-4 MB track); 2-at-a-time finishes the queue sooner and leaves CPU
+    /// for the analyzer/library writes.
+    QList<QString> m_downloadQueue;
+    /// Start queued downloads while slots are free.
+    void pumpDownloadQueue();
     /// Last error message reported by the underlying YouTubeService for the
     /// current `m_lastQuery`. Cleared when a new search is started or when
     /// results arrive successfully. When non-empty, the home pane shows the

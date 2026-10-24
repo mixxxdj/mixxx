@@ -2418,6 +2418,18 @@ void YouTubeService::downloadViaInnerTubeClient(
                 if (!freshVd.isEmpty() && m_visitorData.isEmpty()) {
                     m_visitorData = freshVd;
                 }
+                // TV clients never return playable streams without a session
+                // ("The page needs to be reloaded." on every attempt in the
+                // wild). With no PO tokens, ANDROID_VR/IOS/ANDROID will 403
+                // too — skip straight to bundled yt-dlp instead of burning
+                // ~6s cycling 6 dead clients per track.
+                if (playerPot.isEmpty() || streamingPot.isEmpty()) {
+                    kLogger.warning()
+                            << "PO tokens unavailable for" << videoId
+                            << "— skipping InnerTube clients, straight to yt-dlp";
+                    onAllFailed(tr("PO tokens unavailable — using yt-dlp fallback"));
+                    return;
+                }
                 requestPlayerWithPoToken(videoId, cacheDir, clientIdx,
                         userAgent, playerPot, streamingPot, tryNext,
                         onAllFailed);
@@ -2726,10 +2738,15 @@ void YouTubeService::fetchPoTokens(const QString& videoId,
         if (!guard) {
             return;
         }
-        // Cache for the fallback path's reuse (even empties: a second mint
-        // would fail the same way, so don't pay for it twice).
-        guard->m_poTokenCache.insert(
-                videoId, {playerPot, streamingPot, visitorData});
+        // Cache only successful mints: caching empties poisons every retry
+        // and every parallel download of the same video (log showed 5+
+        // "cache hit" lines with no tokens). A failed mint is retried cheaply
+        // only if BotGuard recovers; the JNI call itself off-thread is fast
+        // to fail once Origin headers are fixed.
+        if (!playerPot.isEmpty() && !streamingPot.isEmpty()) {
+            guard->m_poTokenCache.insert(
+                    videoId, {playerPot, streamingPot, visitorData});
+        }
         // Back onto the service thread to continue the download chain.
         QMetaObject::invokeMethod(
                 guard,
@@ -3465,8 +3482,11 @@ QStringList YouTubeService::ytDlpAntiBotArgs() const {
 
     // 2. Tell yt-dlp to use the same ANDROID_VR client we use for InnerTube.
     //    This avoids the WEB client which is more heavily rate-limited.
+    //    Prefer IPv4: on mobile the IPv6 googlevideo route throttles hard
+    //    (log: 85-135s per 3-4MB track at ~40KB/s over 2a02:... URLs).
     args << QStringLiteral("--extractor-args")
          << QStringLiteral("youtube:player_client=android_vr,mediaconnect");
+    args << QStringLiteral("--force-ipv4");
 
     // 3. Sleep between downloads in a playlist scenario only. For single-video
     //    downloads these are no-ops. Do NOT use --sleep-requests here: it

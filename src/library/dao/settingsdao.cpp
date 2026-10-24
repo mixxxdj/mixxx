@@ -31,9 +31,10 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     QSqlQuery query(m_database);
     if (!query.prepare(statement)) {
         // Prepare is expected to fail for a fresh database
-        // when the schema is still empty!
-        kLogger.info()
-                << "Failed to prepare query:"
+        // when the schema is still empty (first launch after install)!
+        // Demoted to debug: it looks like an error but is normal startup.
+        qDebug()
+                << "SettingsDAO prepare failed (fresh DB, normal):"
                 << "Returning default value"
                 << defaultValue
                 << "for"

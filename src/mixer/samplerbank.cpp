@@ -178,20 +178,21 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
 
     QFile file(samplerBankPath);
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not read sampler bank file" << samplerBankPath;
+        // Missing/corrupt bank on a fresh install is normal (no user state
+        // yet) — don't warn, just start empty. Only warn for real XML errors.
         return false;
     }
 
     QDomDocument doc;
 
     if (!doc.setContent(file.readAll())) {
-        qWarning() << "Could not read sampler bank file" << samplerBankPath;
+        qWarning() << "Could not parse sampler bank file" << samplerBankPath;
         return false;
     }
 
     QDomElement root = doc.documentElement();
     if (root.tagName() != "samplerbank") {
-        qWarning() << "Could not read sampler bank file" << samplerBankPath;
+        qWarning() << "Could not parse sampler bank file" << samplerBankPath;
         return false;
     }
 

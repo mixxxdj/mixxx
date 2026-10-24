@@ -1295,12 +1295,39 @@ void YouTubeFeature::requestDownloadFile(const QString& videoId) {
         onDownloadFinished(videoId, dir.filePath(f));
         return;
     }
-    if (m_videoIdsDownloading.contains(videoId)) {
+    if (m_videoIdsDownloading.contains(videoId) ||
+            m_downloadQueue.contains(videoId)) {
+        return;
+    }
+    // Cap parallel downloads: queue the rest FIFO. Player-requested tracks
+    // jump the queue so deck loads stay snappy.
+    const bool priority = !m_pendingPlayerLoads.value(videoId).isEmpty();
+    if (m_videoIdsDownloading.size() >= kMaxParallelDownloads) {
+        if (priority) {
+            m_downloadQueue.prepend(videoId);
+        } else {
+            m_downloadQueue.append(videoId);
+        }
+        kLogger.info() << "Queuing YouTube download" << videoId
+                       << "(active" << m_videoIdsDownloading.size() << ")";
         return;
     }
     m_videoIdsDownloading.insert(videoId);
     kLogger.info() << "Downloading YouTube video" << videoId;
     m_service.downloadVideo(videoId, cacheDir());
+}
+
+void YouTubeFeature::pumpDownloadQueue() {
+    while (m_videoIdsDownloading.size() < kMaxParallelDownloads &&
+            !m_downloadQueue.isEmpty()) {
+        const QString next = m_downloadQueue.takeFirst();
+        if (m_videoIdsDownloading.contains(next)) {
+            continue;
+        }
+        m_videoIdsDownloading.insert(next);
+        kLogger.info() << "Downloading queued YouTube video" << next;
+        m_service.downloadVideo(next, cacheDir());
+    }
 }
 
 void YouTubeFeature::requestPrefetch(const QString& videoId) {
@@ -1334,6 +1361,7 @@ void YouTubeFeature::onDownloadFinished(
         const QString& videoId, const QString& localPath) {
     m_videoIdsDownloading.remove(videoId);
     m_downloadRetryCount.remove(videoId);
+    pumpDownloadQueue();
     if (!QFileInfo::exists(localPath)) {
         kLogger.warning() << "Downloaded file disappeared:" << localPath;
         return;
@@ -1458,6 +1486,7 @@ void YouTubeFeature::onDownloadFinished(
 
 void YouTubeFeature::onDownloadFailed(const QString& videoId, const QString& error) {
     m_videoIdsDownloading.remove(videoId);
+    pumpDownloadQueue();
     int& retries = m_downloadRetryCount[videoId];
     if (retries < kMaxDownloadRetries) {
         retries++;

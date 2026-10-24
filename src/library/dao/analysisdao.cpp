@@ -348,7 +348,8 @@ void AnalysisDao::saveTrackAnalyses(
 
     qDebug() << (success ? "Saved" : "Failed to save")
                  << "waveform analysis for trackId" << trackId
-                 << "analysisId" << analysis.analysisId;
+                 << "analysisId" << analysis.analysisId
+                 << "(trackId -1 = analysis raced track unload, benign)";
 
     // Clear analysisId since we are reusing the AnalysisInfo
     analysis.analysisId = -1;

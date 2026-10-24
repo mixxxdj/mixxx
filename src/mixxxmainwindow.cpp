@@ -1662,11 +1662,11 @@ bool MixxxMainWindow::handleAndroidBack() {
         active->close();
         return true;
     }
-    // BIG LIBRARY (`[Master],maximize_library` is the legacy name; aliased
-    // to `[Skin],show_maximized_library`). Collapse it back to deck view
-    // when on, so the user can return to the decks without exiting.
+    // BIG LIBRARY — use the canonical [Skin],show_maximized_library key
+    // directly ([Master],maximize_library is only a legacy alias and logs a
+    // deprecation warning on every back-press).
     const ConfigKey kMaximizeLibrary(
-            QStringLiteral("[Master]"), QStringLiteral("maximize_library"));
+            QStringLiteral("[Skin]"), QStringLiteral("show_maximized_library"));
     if (ControlObject::toBool(kMaximizeLibrary)) {
         ControlObject::set(kMaximizeLibrary, 0.0);
         return true;

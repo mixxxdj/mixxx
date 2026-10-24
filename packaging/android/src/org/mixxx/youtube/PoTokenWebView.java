@@ -262,6 +262,10 @@ public class PoTokenWebView {
         c.setRequestProperty("Content-Type", "application/json+protobuf");
         c.setRequestProperty("x-goog-api-key", GOOGLE_API_KEY);
         c.setRequestProperty("x-user-agent", "grpc-web-javascript/0.1");
+        // BotGuard validates the web origin; without these the Create call
+        // 400s (seen in the wild: every mint failing, all downloads slow).
+        c.setRequestProperty("Origin", "https://www.youtube.com");
+        c.setRequestProperty("Referer", "https://www.youtube.com/");
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         OutputStream os = c.getOutputStream();
         os.write(bytes);

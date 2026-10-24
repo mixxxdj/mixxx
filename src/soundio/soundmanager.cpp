@@ -708,13 +708,12 @@ void SoundManager::unconfigureInput(const AudioInput& input) {
 
 void SoundManager::configureOutput(const AudioOutput& output) {
     // Check if any AudioSource is registered for this AudioOutput and
-    // call the onOutputConnected method.
-    qWarning() << "SoundManager::configureOutput";
+    // call the onOutputConnected method. (Unconditional qWarning here spams
+    // the log on every startup; the call below is the real work.)
     m_registeredSources.value(output)->onOutputConnected(output);
 }
 
 void SoundManager::unconfigureOutput(const AudioOutput& output) {
-    qWarning() << "SoundManager::unconfigureOutput";
     m_registeredSources.value(output)->onOutputDisconnected(output);
 }
 

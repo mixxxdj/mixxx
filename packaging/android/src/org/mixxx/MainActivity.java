@@ -158,6 +158,12 @@ public class MainActivity extends QtActivityBase {
     public void onRequestPermissionsResult(
         int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != MEDIA_PERMISSION_REQUEST &&
+                requestCode != BLUETOOTH_PERMISSION_REQUEST) {
+            // Stale result from an older app version's request code — ignore
+            // instead of warning ("Found no valid pending permission request").
+            return;
+        }
         if (requestCode == MEDIA_PERMISSION_REQUEST) {
             mWaitingForMediaPermission = false;
             requestBluetoothPermissions();

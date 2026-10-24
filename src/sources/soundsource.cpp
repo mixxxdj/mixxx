@@ -35,6 +35,13 @@ QString SoundSource::getTypeFromUrl(const QUrl& url) {
 QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix().toLower().trimmed();
 
+    if (fileSuffix == QLatin1String("m4a") || fileSuffix == QLatin1String("mp4")) {
+        // Our own cache files (YouTube .m4a) are valid AAC-in-MP4; content
+        // sniffing fails on them while the phone is busy and spams the log
+        // on every open (analyzer + reader + cache each re-sniff). Trust
+        // the suffix — FFmpeg validates the container on actual decode.
+        return fileSuffix;
+    }
     if (fileSuffix == QLatin1String("opus")) {
         // Bypass the insufficient mime type lookup from content for opus files
         // Files with "opus" suffix are of mime type "audio/x-opus+ogg" or "audio/opus".

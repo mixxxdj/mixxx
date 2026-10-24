@@ -662,7 +662,20 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     if (pDecoder->id == AV_CODEC_ID_AAC ||
             pDecoder->id == AV_CODEC_ID_AAC_LATM) {
-        if (std::strcmp(pDecoder->name, "libfdk_aac") == 0) {
+        // Prefer FFmpeg's native AAC decoder: libfdk_aac has broken seeking
+        // without fix #24528 (crackling + timing offsets after seek), and the
+        // native decoder does not need the patch. Fixes the per-track
+        // "Using libfdk_aac without FFmpeg fix" warning on Android builds
+        // where the bundled FFmpeg predates the fix.
+        const AVCodec* pNativeAac =
+                avcodec_find_decoder(AV_CODEC_ID_AAC);
+        if (pNativeAac != nullptr &&
+                std::strcmp(pDecoder->name, "libfdk_aac") == 0 &&
+                std::strcmp(pNativeAac->name, "libfdk_aac") != 0) {
+            kLogger.info() << "Using native AAC decoder"
+                           << pNativeAac->name << "instead of libfdk_aac";
+            pDecoder = pNativeAac;
+        } else if (std::strcmp(pDecoder->name, "libfdk_aac") == 0) {
             if (!isAvcodecPatchedForPr24528()) {
                 qWarning()
                         << "Using libfdk_aac without FFmpeg fix #24528. This "

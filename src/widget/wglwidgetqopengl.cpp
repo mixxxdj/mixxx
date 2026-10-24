@@ -59,6 +59,12 @@ bool WGLWidget::isContextValid() const {
 }
 
 void WGLWidget::makeCurrentIfNeeded() {
+    // On Android the Surface is destroyed on pause/rotation while the
+    // QOpenGLWindow outlives it — makeCurrent() then spews "no EGLSurface"
+    // and leaves a dead current context (18x in one session log). Skip.
+    if (!shouldRender()) {
+        return;
+    }
     if (m_pOpenGLWindow && m_pOpenGLWindow->context() != QOpenGLContext::currentContext()) {
         m_pOpenGLWindow->makeCurrent();
     }
@@ -103,11 +109,20 @@ bool WGLWidget::shouldRender() const {
     // is not exposed but the widget is visible. This works around a Qt bug
     // where isExposed() incorrectly returns false during certain UI updates.
     // See: https://github.com/mixxxdj/mixxx/issues/15103
+    // Fallback: if the widget itself is visible, render anyway — but only
+    // when the GL context is actually valid. An exposed window with a dead
+    // context (Android Surface destroyed) must not render: swapBuffers on
+    // it fails with EGL_BAD_SURFACE and makeCurrent spews warnings.
     if (m_pOpenGLWindow->isExposed()) {
-        return true;
+        auto* ctx = m_pOpenGLWindow->context();
+        return ctx != nullptr && ctx->isValid() && ctx->surface() != nullptr;
     }
     // Fallback: if the widget itself is visible, render anyway
-    return isVisible();
+    if (isVisible()) {
+        auto* ctx = m_pOpenGLWindow->context();
+        return ctx != nullptr && ctx->isValid() && ctx->surface() != nullptr;
+    }
+    return false;
 }
 
 QOpenGLWindow* WGLWidget::getOpenGLWindow() const {

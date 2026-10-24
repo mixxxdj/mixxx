@@ -279,10 +279,12 @@ void CueControl::createControls() {
             ConfigKey(m_group, "outro_end_activate"));
 
     if (PlayerManager::isDeckGroup(m_group)) {
+        // VinylControlControl creates these engine-side; ControlProxy here may
+        // query before that when the deck loads (28x NULL warnings in logs).
         m_pVinylControlEnabled = std::make_unique<ControlProxy>(
-                m_group, "vinylcontrol_enabled");
+                m_group, "vinylcontrol_enabled", nullptr, ControlFlag::NoWarnIfMissing);
         m_pVinylControlMode = std::make_unique<ControlProxy>(
-                m_group, "vinylcontrol_mode");
+                m_group, "vinylcontrol_mode", nullptr, ControlFlag::NoWarnIfMissing);
     }
 
     m_pHotcueFocus = std::make_unique<ControlObject>(ConfigKey(m_group, "hotcue_focus"));
