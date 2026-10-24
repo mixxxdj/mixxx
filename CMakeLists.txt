@@ -2782,6 +2782,12 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E make_directory
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/translations
+      # androiddeployqt drops empty dirs from the APK, which makes Mixxx
+      # log "Translations directory does not exist" on every startup.
+      # A zero-byte placeholder keeps the dir alive (cost: nothing).
+      COMMAND
+        ${CMAKE_COMMAND} -E touch
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/translations/.keep
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     )
     add_dependencies(mixxx copy-resource-android android-strip-libomp)
