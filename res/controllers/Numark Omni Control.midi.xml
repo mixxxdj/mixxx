@@ -2,10 +2,12 @@
 <MixxxControllerPreset mixxxVersion="2.5.6+" schemaVersion="1">
     <info>
         <name>Numark Omni Control</name>
-        <author>gonzo.LE</author>
+        <author>gonzo-LE</author>
         <description>Adaptation from the work of Baxter, Smashuu and David Gnedt</description>
+		<manual>numark_omni_control</manual>
+		<forums>https://mixxx.discourse.group/t/mapping-update-for-numark-omni-control/34170/5</forums>
     </info>
-    <controller id="Numark">
+    <controller id="Numark Omni Control">
         <scriptfiles>
             <file filename="Numark-Omni-Control-scripts.js" functionprefix="NumarkOmniControl"/>
         </scriptfiles>
@@ -271,7 +273,7 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
+                <group>[Library]</group>
                 <key>NumarkOmniControl.selectKnob</key>
                 <description>TRACK</description>
                 <status>0xB0</status>
@@ -371,7 +373,7 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
+                <group>[Library]</group>
                 <key>NumarkOmniControl.toggleScratchMode</key>
                 <description>PAR_ONOFF -> CUSTOM: SCRATCH</description>
                 <status>0x90</status>
@@ -411,7 +413,7 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
+                <group>[Library]</group>
                 <key>NumarkOmniControl.toggleExtendedLooping</key>
                 <description>PAR_ONOFF -> CUSTOM: EXTENDEDLOOPING</description>
                 <status>0x90</status>
@@ -521,7 +523,7 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
+                <group>[Library]</group>
                 <key>NumarkOmniControl.toggleDirectoryMode</key>
                 <description>DIRECTORY</description>
                 <status>0x90</status>
@@ -591,7 +593,7 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
+                <group>[Library]</group>
                 <key>NumarkOmniControl.pressTrackKnob</key>
                 <description>TRACK</description>
                 <status>0x90</status>
@@ -998,6 +1000,34 @@
                 <on>0x64</on>
                 <minimum>1</minimum>
             </output>
+            <output>
+                <group>[Library]</group>
+                <key>focused_widget</key>
+                <description>DIRECTORY</description>
+                <status>0x90</status>
+                <midino>0x56</midino>
+                <on>0x64</on>
+                <minimum>2</minimum>
+                <maximum>2</maximum>
+            </output>
         </outputs>
     </controller>
+	<settings>
+		<group label="Autostart">
+			<option variable="extendedLooping" type="boolean" default="true" label="Enables 'Extended Looping' (aka right channel: ON/OFF)" description="Please see online help for full explanation."/>
+			<option variable="scratchMode" type="boolean" default="false" label="Enables 'Scratch-Mode'(aka left channel: ON/OFF)" description=""/>
+			<option variable="enableQuickEffects" type="boolean" default="false" label="Enable QuickEffects on both decks" description=""/>
+			<option variable="enableSoftTakeover" type="boolean" default="false" label="Enable SoftTakeover for rate sliders" description="Use this option for rate sliders to avoid sudden jumps in when the slider in the GUI doesn’t match the physical. If you select this option, you won’t be able to perform super-fast motions as easily."/>
+		</group>
+		<group label="FinePitch and JogWheel Adjustment">
+			<option variable="finePitchAdjustment" type="real" default="9" min="1" max="20" step="0.1" precision="2" label="FinePitch: the higher the value, the smaller the impact by FinePitch rotation" description="Exponential impact; small changes recommended. The value of '6' means same impact as rate sliders."/>
+			<option variable="jogScratchAdjustment" type="real" default="3" min="1" max="5" step="0.1" precision="2" label="JogWheel (in Scratch-Mode): the higher the value, the lower the impact on JogWheel rotation" description="Exponential impact; small changes recommended"/>
+			<option variable="jogMoveAdjustment" type="real" default="3" min="1" max="20" step="0.1" precision="2" label="JogWheel (not in Scratch-Mode): the higher the value, the higher the impact by JowWheel rotation" description="TODO"/>
+		</group>
+		<group label="Advanced">
+			<option variable="simpleCue" type="boolean" default="true" label="CUE doesn't stop playing deck" description="Pressing the CUE button while playing, doesn't stop the deck; if disabled, CUE button pauses the deck."/>
+			<option variable="simplePFL" type="boolean" default="true" label="only one PFL enabled at time" description="If one PFL is enabled, it disables the PFL on the opposite site."/>
+		</group>
+	</settings>
+
 </MixxxControllerPreset>

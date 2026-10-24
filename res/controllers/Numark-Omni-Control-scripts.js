@@ -1,49 +1,43 @@
 function NumarkOmniControl() {}
 NumarkOmniControl.LoadUserSettings = function () {
 
-    // Quality functions (no buttons assigned, so must be changed here)
-    NumarkOmniControl.SetUserDefaults("simpleCue", true); // true = CUE doesn't stop playing deck
-    NumarkOmniControl.SetUserDefaults("simplePFL", true); // true = if PFL is activated, it disables the PFL on the opposite site
+    // Autostart values for functions with buttons
+    NumarkOmniControl.toggleExtendedLooping(null, null, engine.getSetting("extendedLooping"), null, null);
+    NumarkOmniControl.toggleScratchMode(null, null, engine.getSetting("scratchMode"), null, null);
 
-    // Modes which also have buttons to switch on and off
-    NumarkOmniControl.SetUserDefaults("extendedLooping", true); // enables extendedLooping // button: right channel: ON/OFF
-    NumarkOmniControl.SetUserDefaults("ScratchMode", false); // enables scratchMode  // button: left channel: ON/OFF
-    NumarkOmniControl.SetUserDefaults("DirectoryMode", false); // enables directoryMode  // button: master: directory
+    // QuickEffects for both channels
+    engine.setValue("[QuickEffectRack1_[Channel1]]", "enabled", engine.getSetting("enableQuickEffects"));
+    engine.setValue("[QuickEffectRack1_[Channel2]]", "enabled", engine.getSetting("enableQuickEffects"));
 
-    // Adjust JogWheel and FinePitch
-    NumarkOmniControl.FinePitchAdjustment = 9; // the higher the value, the finer the changes done by FinePitch (exponential!) // 6 = same as rate sliders
-    NumarkOmniControl.JogScratchAdjustment = 3; // the higher the value, the slower the scratches by JogWheel rotation (only when ScratchMode enabled) (exponential!)
-    NumarkOmniControl.JogMoveAdjustment = 3; // the higher the value, the faster the "movement" by JowWheel rotation (only when ScratchMode disabled)
+    // softTakeover only if user wants it
+    engine.softTakeover("[Channel1]", "rate", engine.getSetting("enableSoftTakeover"));
+    engine.softTakeover("[Channel2]", "rate", engine.getSetting("enableSoftTakeover"));
+
+    // Cached values of JogWheel and FinePitch for less jumps to engine
+    NumarkOmniControl.finePitchAdjustment = engine.getSetting("finePitchAdjustment");
+    NumarkOmniControl.jogScratchAdjustment = engine.getSetting("jogScratchAdjustment");
+    NumarkOmniControl.jogMoveAdjustment = engine.getSetting("jogMoveAdjustment");
+
+    // Advanced settings
+    NumarkOmniControl.simpleCue = engine.getSetting("simpleCue");
+    NumarkOmniControl.simplePFL = engine.getSetting("simplePFL");
+
+    // get all current positions from controller
+    NumarkOmniControl.ReadAllControllerValues();
 }
 
 NumarkOmniControl.init = function (id) { // called when the MIDI device is opened & set up
     NumarkOmniControl.id = id; // Store the ID of this device for later use
 
-    // features & defaults (in case of LoadUserSettings are removed)
-    NumarkOmniControl.simpleCue = true
-    NumarkOmniControl.simplePFL = true;
-    
-	NumarkOmniControl.extendedLooping = true;
-	NumarkOmniControl.directoryMode = false;
-    NumarkOmniControl.scratchMode = false;
-    
-	NumarkOmniControl.FinePitchAdjustment = 9; // (recommendation)
-    NumarkOmniControl.JogScratchAdjustment = 3; // (recommendation)
-    NumarkOmniControl.JogMoveAdjustment = 3; // (recommendation)
-	
-	NumarkOmniControl.scratchTimer = [-1, -1];
-
-    // ensure, QuickEffects aren't active
-    engine.setValue("[QuickEffectRack1_[Channel1]]", "enabled", false);
-    engine.setValue("[QuickEffectRack1_[Channel2]]", "enabled", false);
+    NumarkOmniControl.scratchTimer = [-1, -1, -1]; // Master (unused yet), left channel, right channel  // -1 for not set
 
     // LED-mapping
     NumarkOmniControl.leds = [
         // Common
         {
-            "scratchMode": 0x32, // aka Channel 1 - ON/OFF
-            "extendedLooping": 0x46, // aka Channel 2 - ON/OFF
-            "directory": 0x56
+            "scratchMode": 0x32, // button: left channel: ON/OFF
+            "extendedLooping": 0x46, // button: right channel: ON/OFF
+            "directoryMode": 0x56 // button: master: directory
         },
         // Deck 1
         {
@@ -92,26 +86,26 @@ NumarkOmniControl.init = function (id) { // called when the MIDI device is opene
     ];
 
     NumarkOmniControl.SetAllLED(true); // check LED health
+
     engine.beginTimer(500, function () {
         NumarkOmniControl.SetAllLED(false);
-        NumarkOmniControl.ReadAllControllerValues(); // and get all current positions from controller
     }, 1);
 
-    engine.beginTimer(2000, function () { // loading user defaults and give MIXXX some time to react to ReadAllContollerValues()
+    engine.beginTimer(1000, function () { // loading user defaults from Settings -> Controller and give MIXXX some time to react to ReadAllContollerValues()
         NumarkOmniControl.LoadUserSettings();
     }, 1);
 }
 
 NumarkOmniControl.ReadAllControllerValues = function () { // just send; OmniControl sends back state of all buttons and faders and MIXXX applies to engine itself
-    // 0xF0 = Start // 0x00, 0x01, 0x3F = Numark // 0x00, 0x74 = Omni Controll // 0x60, 0x00, 0x04, 0x00, 0x0D, 0x00, 0x00 = "Tell me your knobs" // 0xF7 = End
-    // WARNING!!! change it only, if you know what you are do
+    // 0xF0 = Start // 0x00, 0x01, 0x3F = Numark // 0x00, 0x74 = Omni Control // 0x60, 0x00, 0x04, 0x00, 0x0D, 0x00, 0x00 = "Tell me your knobs" // 0xF7 = End
+    // WARNING!!! change it only, if you know what you are doing
     const byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x00, 0x74, 0x60, 0x00, 0x04, 0x00, 0x0D, 0x00, 0x00, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 }
 
-NumarkOmniControl.SetAllLED = function (newvalue) {
+NumarkOmniControl.SetAllLED = function (value) {
     for (var i = 0x30; i <= 0x56; i++) {
-        NumarkOmniControl.setLED(i, newvalue);
+        NumarkOmniControl.setLED(i, value);
     }
 }
 
@@ -121,8 +115,8 @@ NumarkOmniControl.shutdown = function (id) { // called when the MIDI device is c
 
 NumarkOmniControl.groupToDeck = function (group) {
     var matches = group.match(/\[Channel(\d+)\]/);
-    // var matches = group.match(/^\[Channel(\d+)\]$/);
-    if (matches == null) {
+
+    if (matches === null) {
         return -1;
     } else {
         return matches[1];
@@ -151,32 +145,21 @@ NumarkOmniControl.selectKnob = function (channel, control, value, status, group)
     if (value > 63) {
         value = value - 128;
     }
-    if (NumarkOmniControl.directoryMode) {
-        if (value > 0) {
-            for (var i = 0; i < value; i++) {
-                engine.setValue(group, "SelectNextPlaylist", 1);
-            }
-        } else {
-            for (var i = 0; i < -value; i++) {
-                engine.setValue(group, "SelectPrevPlaylist", 1);
-            }
-        }
-    } else {
-        engine.setValue(group, "SelectTrackKnob", value);
-    }
+    engine.setValue(group, "MoveVertical", value);
 }
 
 NumarkOmniControl.pressTrackKnob = function (channel, control, value, status, group) {
-    if (value == 0) {
-        return;
+    if (value) {
+        switch (engine.getValue(group, "focused_widget")) {
+        case 2: // Folder
+            engine.setValue(group, "MoveRight", 1); // aka open sub-folders
+            break;
+        case 3: // Tracklist
+            engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+            break;
+        default: // somewhere else --> ignore
+        }
     };
-    if (NumarkOmniControl.directoryMode) {
-        engine.setValue("[Library]", "focused_widget", 2);
-        engine.setValue("[Library]", "MoveRight", true); // aka open sub-folders
-    } else {
-        engine.setValue("[Library]", "focused_widget", 3);
-        engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", true);
-    }
 }
 
 NumarkOmniControl.loopIn = function (channel, control, value, status, group) {
@@ -193,8 +176,8 @@ NumarkOmniControl.loopOut = function (channel, control, value, status, group) {
     if (value) {
         var start = engine.getValue(group, "loop_start_position");
         var end = engine.getValue(group, "loop_end_position");
-        if (start != -1) {
-            if (end != -1) {
+        if (start !== -1) {
+            if (end !== -1) {
                 // Loop In and Out set -> call Reloop/Exit
                 engine.setValue(group, "reloop_toggle", 1);
             } else {
@@ -206,17 +189,17 @@ NumarkOmniControl.loopOut = function (channel, control, value, status, group) {
 
 NumarkOmniControl.leftFunction = function (channel, control, value, status, group) {
     if (engine.getValue(group, "loop_enabled") && NumarkOmniControl.extendedLooping) {
-        engine.setValue(group, "loop_halve", value)
+        engine.setValue(group, "loop_halve", value);
     } else {
-        engine.setValue(group, "rate_temp_down", value)
+        engine.setValue(group, "rate_temp_down", value);
     }
 }
 
 NumarkOmniControl.rightFunction = function (channel, control, value, status, group) {
     if (engine.getValue(group, "loop_enabled") && NumarkOmniControl.extendedLooping) {
-        engine.setValue(group, "loop_double", value)
+        engine.setValue(group, "loop_double", value);
     } else {
-        engine.setValue(group, "rate_temp_up", value)
+        engine.setValue(group, "rate_temp_up", value);
     }
 }
 
@@ -224,11 +207,11 @@ NumarkOmniControl.finePitch = function (channel, control, value, status, group) 
     if (value > 63) {
         value = value - 128;
     }
-    engine.setValue(group, "rate", engine.getValue(group, "rate") - value / (2 ** NumarkOmniControl.FinePitchAdjustment));
+    engine.setValue(group, "rate", engine.getValue(group, "rate") - value / (2 ** NumarkOmniControl.finePitchAdjustment));
 }
 
 NumarkOmniControl.playFromCue = function (channel, control, value, status, group) { // If playing, stutters from cuepoint; otherwise jumps to cuepoint and stops
-    if (NumarkOmniControl.simpleCue) {
+    if (engine.getSetting("simpleCue")) {
         if (value) {
             if (engine.getValue(group, "play")) {
                 engine.setValue(group, "cue_goto", 1);
@@ -255,29 +238,29 @@ NumarkOmniControl.playFromCue = function (channel, control, value, status, group
 NumarkOmniControl.jogWheel = function (channel, control, value, status, group) {
     var deck = NumarkOmniControl.groupToDeck(group);
     var adjustedJog = parseFloat(value);
-    var posNeg = 1;
+    var signMultiplier = 1;
     if (adjustedJog > 63) { // Counter-clockwise
-        posNeg = -1;
+        signMultiplier = -1;
         adjustedJog = value - 128;
     }
 
     if (NumarkOmniControl.scratchMode) {
-        if (NumarkOmniControl.scratchTimer[deck - 1] == -1) {
-            var alpha = 1.0 / (2 ** NumarkOmniControl.JogScratchAdjustment);
+        if (NumarkOmniControl.scratchTimer[deck] === -1) {
+            var alpha = 1.0 / (2 ** NumarkOmniControl.jogScratchAdjustment);
             var beta = alpha / 32;
             engine.scratchEnable(deck, 128, 33 + 1 / 3, alpha, beta);
         } else {
-            engine.stopTimer(NumarkOmniControl.scratchTimer[deck - 1]);
+            engine.stopTimer(NumarkOmniControl.scratchTimer[deck]);
         }
         engine.scratchTick(deck, adjustedJog);
-        NumarkOmniControl.scratchTimer[deck - 1] = engine.beginTimer(20, () => NumarkOmniControl.jogWheelStopScratch(deck), true);
+        NumarkOmniControl.scratchTimer[deck] = engine.beginTimer(20, () => NumarkOmniControl.jogWheelStopScratch(deck), true);
     } else {
         var gammaInputRange = 64; // Max jog speed
         var maxOutFraction = 0.5; // Where on the curve it should peak; 0.5 is half-way
         var sensitivity = 0.5; // Adjustment gamma
-        var gammaOutputRange = NumarkOmniControl.JogMoveAdjustment; // Max rate change
+        var gammaOutputRange = NumarkOmniControl.jogMoveAdjustment; // Max rate change
         if (engine.getValue(group, "play")) {
-            adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction), sensitivity);
+            adjustedJog = signMultiplier * gammaOutputRange * Math.pow(Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction), sensitivity);
         } else {
             adjustedJog = gammaOutputRange * adjustedJog / (gammaInputRange * maxOutFraction);
         }
@@ -286,15 +269,14 @@ NumarkOmniControl.jogWheel = function (channel, control, value, status, group) {
 }
 
 NumarkOmniControl.jogWheelStopScratch = function (deck) {
-    NumarkOmniControl.scratchTimer[deck - 1] = -1;
+    NumarkOmniControl.scratchTimer[deck] = -1;
     engine.scratchDisable(deck);
 }
 
 NumarkOmniControl.toggleDirectoryMode = function (channel, control, value, status, group) {
-    // Toggle setting and light
+    // Toggle setting; light is set via XML mapping
     if (value) {
-        NumarkOmniControl.directoryMode = !NumarkOmniControl.directoryMode;
-        NumarkOmniControl.setLED(NumarkOmniControl.leds[0]["directory"], NumarkOmniControl.directoryMode);
+        engine.setValue(group, "focused_widget", (engine.getValue(group, "focused_widget") === 2) ? 3 : 2);
     }
 }
 
@@ -330,7 +312,6 @@ NumarkOmniControl.selectQuickEffect = function (channel, control, value, status,
 
 NumarkOmniControl.toggleQuickEffect = function (channel, control, value, status, group) { // JS parser stops if buttons are direct assigned via mapping
     // Toggle setting and light
-    // should be [QuickEffectRack1_[Channel2]_Effect1] but it's not responding, so using [QuickEffectRack1_[Channel2]] instead
     if (value) {
         var newvalue = !engine.getValue(group, "enabled");
         engine.setValue(group, "enabled", newvalue);
@@ -340,10 +321,10 @@ NumarkOmniControl.toggleQuickEffect = function (channel, control, value, status,
 }
 
 NumarkOmniControl.tooglePFL = function (channel, control, value, status, group) { // scrolls throught possible FX/Filter effects
-    if (NumarkOmniControl.simplePFL && engine.getValue(group, "pfl") == false && value) {
-        var opposite = (group == "[Channel1]") ? "[Channel2]" : "[Channel1]";
-        engine.setValue(group, "pfl", true);
-        engine.setValue(opposite, "pfl", false);
+    if (NumarkOmniControl.simplePFL && !engine.getValue(group, "pfl") && value) {
+        var opposite = (group === "[Channel1]") ? "[Channel2]" : "[Channel1]";
+        engine.setValue(group, "pfl", 1);
+        engine.setValue(opposite, "pfl", 0);
     } else if (value) {
         engine.setValue(group, "pfl", !engine.getValue(group, "pfl"));
     }
@@ -354,26 +335,4 @@ NumarkOmniControl.jumpBeats = function (channel, control, value, status, group) 
         value = value - 128;
     }
     engine.setValue(group, "beatjump", value);
-}
-
-NumarkOmniControl.SetUserDefaults = function (setting, value) { // keeps LoadUserDefaults smaller
-    switch (setting) {
-    case "simpleCue":
-        NumarkOmniControl.simpleCue = value;
-        break;
-    case "extendedLooping":
-        NumarkOmniControl.toggleExtendedLooping(null, null, value, null, null);
-        break;
-    case "ScratchMode":
-        NumarkOmniControl.toggleScratchMode(null, null, value, null, null);
-        break;
-    case "DirectoryMode":
-        NumarkOmniControl.toggleDirectoryMode(null, null, value, null, null);
-        break;
-    case "simplePFL":
-        NumarkOmniControl.simplePFL = value;
-        break;
-    default:
-        // unknown setting -> do nothing
-    }
 }
