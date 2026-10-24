@@ -2,31 +2,28 @@
 Reloop Mixtour controller script
 */
 
-// override Component prototype to prevent double connections
-// original connect function will override connections[0] and
-// this way looses control of existing connection
-components.Component.prototype.connect = function() {
-    if (this.connections[0] === undefined &&      // <-- added this condition
-        undefined !== this.group &&
-        undefined !== this.outKey &&
-        undefined !== this.output &&
-        typeof this.output === "function") {
-        this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
-    }
-};
-// override Component prototype to reset connection after disconnect
-// original disconnect will never reset connections[0] to undefined
-components.Component.prototype.disconnect = function() {
-    if (this.connections[0] !== undefined) {
-        this.connections.forEach(function(conn) {
-            conn.disconnect();
-        });
-    }
-    this.connections = [];              // <-- added this
-};
-
 // eslint-disable-next-line no-var
 var ReloopMixtour = {};
+
+// midi-components-0.0.js does not prevent re-connecting some already connected
+// component. The following mixing and the local classes solve this problem.
+ReloopMixtour.controlledConnections = (Base) => class extends Base {
+    connect() {
+        if (this.connections[0] === undefined) {
+            super.connect();
+        };
+    };
+    disconnect() {
+        super.disconnect();
+        this.connections = [];
+    };
+};
+ReloopMixtour.Button = class extends ReloopMixtour.controlledConnections(components.Button) {};
+ReloopMixtour.PlayButton = class extends ReloopMixtour.controlledConnections(components.PlayButton) {};
+ReloopMixtour.CueButton = class extends ReloopMixtour.controlledConnections(components.CueButton) {};
+ReloopMixtour.HotcueButton = class extends ReloopMixtour.controlledConnections(components.HotcueButton) {};
+ReloopMixtour.Pot = class extends ReloopMixtour.controlledConnections(components.Pot) {};
+ReloopMixtour.Component = class extends ReloopMixtour.controlledConnections(components.Component) {};
 
 ReloopMixtour.init = function() {
     // initialize Mixxx with current values on control surface
@@ -92,7 +89,7 @@ ReloopMixtour.init = function() {
     };
 
     // there is one shift button, map it to the decks
-    this.shiftButton = new components.Button({
+    this.shiftButton = new ReloopMixtour.Button({
         input: function(_channel, _control, value, _status, _g) {
             if (value) {
                 ReloopMixtour.decks.shift();
@@ -104,7 +101,7 @@ ReloopMixtour.init = function() {
         },
     });
 
-    this.backBtn = new components.Button({
+    this.backBtn = new ReloopMixtour.Button({
         midi: [0x90, 0x08],
         group: "[Skin]",
         key: "show_maximized_library",
@@ -112,7 +109,7 @@ ReloopMixtour.init = function() {
     });
 
     // the rotarySelector only works if mixxx windows is focused, don't be surprised :)
-    this.rotarySelector = new components.Button({
+    this.rotarySelector = new ReloopMixtour.Button({
         group: "[Library]",
         input: function(channel, control, value, status, group) {
             if (value === 0x01) {
@@ -135,7 +132,7 @@ ReloopMixtour.Deck = class extends components.Deck {
 
         const theDeck = this;
 
-        this.load = new components.Button({
+        this.load = new ReloopMixtour.Button({
             midi: [0x90 + midiChannel, 0x02],
             key: "LoadSelectedTrack",
             shiftKey: midiChannel?"MoveRight":"MoveLeft",
@@ -150,7 +147,7 @@ ReloopMixtour.Deck = class extends components.Deck {
             },
         });
 
-        this.pfl = new components.Button({
+        this.pfl = new ReloopMixtour.Button({
             midi: [0x90 + midiChannel, 0x03],
             key: "pfl",
             shiftOffset: 0x40,
@@ -165,7 +162,7 @@ ReloopMixtour.Deck = class extends components.Deck {
             },
         });
 
-        this.loop = new components.Button({
+        this.loop = new ReloopMixtour.Button({
             midi: [0x90 + midiChannel, 0x09],
             inKey: "beatloop_activate",
             outKey: "loop_enabled",
@@ -177,7 +174,7 @@ ReloopMixtour.Deck = class extends components.Deck {
             },
         });
 
-        this.beatSync = new components.Button({
+        this.beatSync = new ReloopMixtour.Button({
             midi: [0x90 + midiChannel, 0x0A],
             type: components.Button.prototype.types.toggle,
             key: "sync_enabled",
@@ -189,16 +186,16 @@ ReloopMixtour.Deck = class extends components.Deck {
             },
         });
 
-        this.play = new components.PlayButton({
+        this.play = new ReloopMixtour.PlayButton({
             midi: [0x90 + midiChannel, 0x0C],
         });
 
-        this.cue = new components.CueButton({
+        this.cue = new ReloopMixtour.CueButton({
             midi: [0x90 + midiChannel, 0x0B],
         });
 
         for (let i = 1; i <= 4; i++) {
-            this[`hotcue${i}`] = new components.HotcueButton({
+            this[`hotcue${i}`] = new ReloopMixtour.HotcueButton({
                 midi: [0x90 + midiChannel, 0x0C + i],
                 number: i,
                 on: 0x2B,
@@ -227,11 +224,11 @@ ReloopMixtour.Mixer = class extends components.Deck {
 
         const theMixer = this;
 
-        this.gain = new components.Pot({
+        this.gain = new ReloopMixtour.Pot({
             key: "pregain",
         });
 
-        this.fxKnob = new components.Pot({
+        this.fxKnob = new ReloopMixtour.Pot({
             key: "super1",
             group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
         });
@@ -240,7 +237,7 @@ ReloopMixtour.Mixer = class extends components.Deck {
         // 0 is the empty/passthrough preset
         // -1 indicates an unsaved preset (no idea if this index can be selected)
         // 1 should be the default (Filter) preset. This can be configured by the user in the pref dialog
-        this.effect = new components.Button({
+        this.effect = new ReloopMixtour.Button({
             midi: [0x90 + midiChannel, 0x01],
             shiftOffset: 0x40,
             key: "loaded_chain_preset",
@@ -296,47 +293,47 @@ ReloopMixtour.Mixer = class extends components.Deck {
             },
         });
 
-        this.highEq = new components.Pot({
+        this.highEq = new ReloopMixtour.Pot({
             key: "parameter3",
             group: `[EqualizerRack1_${theMixer.currentDeck}_Effect1]`,
         });
 
-        this.midEq = new components.Pot({
+        this.midEq = new ReloopMixtour.Pot({
             key: "parameter2",
             group: `[EqualizerRack1_${theMixer.currentDeck}_Effect1]`,
         });
 
-        this.lowEq = new components.Pot({
+        this.lowEq = new ReloopMixtour.Pot({
             key: "parameter1",
             group: `[EqualizerRack1_${theMixer.currentDeck}_Effect1]`,
         });
 
-        this.volumeFader = new components.Pot({
+        this.volumeFader = new ReloopMixtour.Pot({
             inKey: "volume",
         });
 
-        this.faderStart = new components.Button({
+        this.faderStart = new ReloopMixtour.Button({
             key: "cue_gotoandplay",
         });
 
-        this.faderStop = new components.Button({
+        this.faderStop = new ReloopMixtour.Button({
             key: "cue_gotoandstop",
         });
 
-        this.pflMeter = new components.Component({
+        this.pflMeter = new ReloopMixtour.Component({
             midi: [0x90 + midiChannel, 0x11],
             key: "vu_meter",
             max: 0x68
         });
 
-        this.masterMeter = new components.Component({
+        this.masterMeter = new ReloopMixtour.Component({
             midi: [0x90 + midiChannel, 0x12],
             key: (this.currentDeck === "[Channel1]" || this.currentDeck === "[Channel3]")?"vu_meter_left":"vu_meter_right",
             group: "[Main]",
             max: 0x68
         });
 
-        this.fxIndicator = new components.Component({
+        this.fxIndicator = new ReloopMixtour.Component({
             midi: [0x90 + midiChannel, 0x00],
             key: "super1",
             secondOutKey: "enabled",
