@@ -448,6 +448,9 @@ class YouTubeService : public QObject {
     /// visitorData field in some responses; echoing it back reduces bot
     /// detection likelihood by maintaining session continuity.
     QString m_visitorData;
+    // Per-video PO tokens: minted once (direct path), reused by the bundled
+    // yt-dlp fallback instead of a second WebView round-trip.
+    QHash<QString, QStringList> m_poTokenCache;
 
     /// Persistent cookie jar path for YouTube session cookies.
     QString m_cookieJarPath;

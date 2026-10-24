@@ -2068,8 +2068,22 @@ void YouTubeService::downloadAudioStreamRanked(const QString& videoId,
     const qint64 contentLength =
             best.value(QStringLiteral("contentLength")).toVariant().toLongLong();
     // On CDN failure try the next ranked stream before failing the client.
-    auto tryNextStream = [this, videoId, cacheDir, rest, onFailure, streamUserAgent](
-                                 const QString& err) {
+    // Fail fast when tokenless: a 403 on a URL with no &pot= means YouTube
+    // is gating this client — every sibling URL will 403 the same way, so
+    // skip the rest instead of burning ~1s per stream (~15s per track).
+    auto tryNextStream = [this, videoId, cacheDir, rest, onFailure,
+                                 streamUserAgent, streamUrl](const QString& err) {
+        const bool tokenless403 =
+                (err.contains(QStringLiteral("403")) ||
+                        err.contains(QStringLiteral("Forbidden"))) &&
+                !streamUrl.contains(QStringLiteral("pot="));
+        if (tokenless403 && !rest.isEmpty()) {
+            kLogger.info() << "Stream 403 without PO token for" << videoId
+                           << "— skipping" << rest.size()
+                           << "remaining streams (client is gated)";
+            onFailure(err);
+            return;
+        }
         if (rest.isEmpty()) {
             onFailure(err);
             return;
@@ -2653,6 +2667,23 @@ void YouTubeService::fetchPoTokens(const QString& videoId,
                 const QString& streamingPot,
                 const QString& visitorData)>& cb) {
     QPointer<YouTubeService> guard(this);
+    // Reuse: the direct path already minted for this video — the bundled
+    // yt-dlp fallback must not pay for a second WebView round-trip.
+    const auto cached = m_poTokenCache.constFind(videoId);
+    if (cached != m_poTokenCache.constEnd() && cached->size() >= 3) {
+        kLogger.info() << "PO tokens: cache hit for" << videoId;
+        const QString playerPot = cached->at(0);
+        const QString streamingPot = cached->at(1);
+        const QString visitorData = cached->at(2);
+        QMetaObject::invokeMethod(this,
+                [guard, playerPot, streamingPot, visitorData, cb]() {
+                    if (guard) {
+                        cb(playerPot, streamingPot, visitorData);
+                    }
+                },
+                Qt::QueuedConnection);
+        return;
+    }
     // The JNI call blocks up to ~105s (init + 2 mints); offload so neither
     // the UI thread (WebView callbacks need it) nor the download stalls.
     QThreadPool::globalInstance()->start([guard, videoId, cb]() {
@@ -2695,6 +2726,10 @@ void YouTubeService::fetchPoTokens(const QString& videoId,
         if (!guard) {
             return;
         }
+        // Cache for the fallback path's reuse (even empties: a second mint
+        // would fail the same way, so don't pay for it twice).
+        guard->m_poTokenCache.insert(
+                videoId, {playerPot, streamingPot, visitorData});
         // Back onto the service thread to continue the download chain.
         QMetaObject::invokeMethod(
                 guard,
