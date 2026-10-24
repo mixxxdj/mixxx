@@ -336,8 +336,10 @@ ReloopMixtour.Mixer = class extends components.Deck {
             key: "super1",
             secondOutKey: "enabled",
             group: `[QuickEffectRack1_${theMixer.currentDeck}]`,
-            outValueScale(value) {
-                return (engine.getValue(this.group, this.secondOutKey) && (Math.abs(0.5 - value) > 0.01))?0x7F:0x00;
+            outValueScale() {
+                const super1Value = engine.getValue(this.group, this.outKey);
+                const enabledValue = engine.getValue(this.group, this.secondOutKey);
+                return (enabledValue && (Math.abs(0.5 - super1Value) > 0.01))?0x7F:0x00;
             },
             connect: function() {
                 // use two connections for the LED, one to check for any real FX (id > 2) and the other to check
