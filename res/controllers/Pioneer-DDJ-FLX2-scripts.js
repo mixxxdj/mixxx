@@ -406,6 +406,7 @@ DDJFLX2.shutdown = function() {
         engine.stopTimer(DDJFLX2.blinkTimerID);
         DDJFLX2.blinkTimerID = 0;
     }
+    DDJFLX2.releaseAllPadFx();
     DDJFLX2.allLEDsOff();
 };
 
@@ -753,6 +754,9 @@ DDJFLX2.toggleFourDeckMode = function(
     }
 
     DDJFLX2.fourDeckMode = !DDJFLX2.fourDeckMode;
+
+    // Release any active Pad FX overrides before changing deck layers.
+    DDJFLX2.releaseAllPadFx();
 
     // Reset all LEDs first to avoid stale states.
     DDJFLX2.LEDsOff();
@@ -1198,6 +1202,23 @@ DDJFLX2.hotcueNClear = function(
     );
 };
 
+// Restore any active Pad FX overrides to their original state and clear tracking.
+DDJFLX2.releaseAllPadFx = function() {
+    for (const stateKey of Object.keys(DDJFLX2.padFxState)) {
+        const saved = DDJFLX2.padFxState[stateKey];
+        if (saved) {
+            engine.setValue(saved.fxGroup, "enabled", saved.enabled);
+            engine.setValue(saved.fxGroup, "mix", saved.mix);
+            engine.setValue(saved.effectGroup, "enabled", saved.effectEnabled);
+            engine.setValue(saved.effectGroup, "meta", saved.meta);
+            for (let i = 1; i <= 4; i++) {
+                engine.setValue(saved.fxGroup, `group_[Channel${i}]_enable`, saved.routing[i]);
+            }
+        }
+    }
+    DDJFLX2.padFxState = {};
+};
+
 DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
     const pad = DDJFLX2.padFxPadFromControl(control);
     const deck = DDJFLX2.resolveDeck(group);
@@ -1277,6 +1298,8 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
             routing[i] = engine.getValue(fxGroup, `group_[Channel${  i  }]_enable`);
         }
         DDJFLX2.padFxState[stateKey] = {
+            fxGroup: fxGroup,
+            effectGroup: effectGroup,
             enabled: engine.getValue(fxGroup, "enabled"),
             mix: engine.getValue(fxGroup, "mix"),
             effectEnabled: engine.getValue(effectGroup, "enabled"),
