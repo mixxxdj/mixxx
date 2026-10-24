@@ -1,6 +1,10 @@
 #include "engine/enginebuffer.h"
 
 #include <QtDebug>
+#ifdef Q_OS_ANDROID
+#include <QJniObject>
+#include <QNativeInterface>
+#endif
 
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
@@ -837,6 +841,22 @@ void EngineBuffer::slotControlPlayRequest(double v) {
 #endif // __ANDROID__
 
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
+
+#ifdef Q_OS_ANDROID
+    // Lazy-start the foreground playback service on first actual deck play
+    // (not at app startup): the wake lock + notification + audio focus only
+    // make sense while the user is mixing. The service self-guards repeat
+    // starts (re-acquire is a no-op), so calling per play press is free.
+    if (verifiedPlay && !oldPlay) {
+        QNativeInterface::QAndroidApplication::runOnAndroidMainThread([] {
+            QJniObject::callStaticMethod<void>(
+                    "org/mixxx/PlaybackService",
+                    "startFromNative",
+                    "(Landroid/content/Context;)V",
+                    QNativeInterface::QAndroidApplication::context().object());
+        });
+    }
+#endif
 
     if (!oldPlay && verifiedPlay) {
         if (m_quantize.toBool()

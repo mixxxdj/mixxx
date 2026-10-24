@@ -68,11 +68,11 @@ public class MainActivity extends QtActivityBase {
 
         requestMusicLibraryPermissions();
 
-        // ─── Background audio survival (AI-agent change, needs human review)
-        // Start the foreground playback service so the mix survives screen-off
-        // and backgrounding. See PlaybackService.java. The service is stopped
-        // only on explicit quit in onDestroy() — never here, never on pause.
-        PlaybackService.start(this);
+        // Background audio: PlaybackService is lazy-started from native on
+        // first deck play (EngineBuffer slotControlPlayRequest) — not here.
+        // Starting it in onCreate held a wake lock + notification from
+        // second zero even if the user never pressed play. onPause/onStop
+        // below still re-assert it so backgrounding mid-mix stays protected.
     }
 
     private void requestBluetoothPermissions() {
