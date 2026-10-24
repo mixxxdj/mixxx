@@ -29,6 +29,7 @@ namespace mixxx {
 class ControlIndicatorTimer;
 class DbConnectionPool;
 class ScreensaverManager;
+class RemoteControl;
 
 class CoreServices : public QObject {
     Q_OBJECT
@@ -99,6 +100,12 @@ class CoreServices : public QObject {
     std::shared_ptr<ScreensaverManager> getScreensaverManager() const {
         return m_pScreensaverManager;
     }
+    
+#ifdef HTTP_REMOTE
+    std::shared_ptr<mixxx::RemoteControl> getRemoteControl() const {
+        return m_RemoteControl;
+    }
+#endif
 
     // Creates the native preferences dialog. QML can temporarily suppress
     // the legacy Waveforms page while its dedicated settings page is being
@@ -142,6 +149,8 @@ class CoreServices : public QObject {
     std::shared_ptr<Library> m_pLibrary;
 
     std::shared_ptr<KeyboardEventFilter> m_pKeyboardEventFilter;
+
+    std::shared_ptr<mixxx::RemoteControl> m_RemoteControl;
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 

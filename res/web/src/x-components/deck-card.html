@@ -1,0 +1,67 @@
+<!--
+  deck-card.html — Deck summary card: title, artist, seek bar, time display.
+  Used in the deck tabs (Mixer section).
+
+  Expected context (Alpine scope):
+    d: { id, visible }
+    Decks: object of Deck models
+    deckSeeking: boolean
+    selectedDeck: number
+    onDeckSeekInput(value): function
+    onDeckSeekCommit(value): function
+    toggleDeckPlay(deckId): function
+    cycleTimeDisplay(deckId): function
+    formatDeckTime(deckId): function
+    formatTime(seconds): function
+-->
+<template id="deck-card">
+  <div class="card card-border bg-base-100">
+    <div class="p-4 card-body">
+      <div class="flex justify-between items-start">
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm card-title" x-text="'Deck ' + d.id"></h3>
+          <div class="font-bold truncate" x-text="Decks[d.id].title || 'No track loaded'"></div>
+          <div class="text-xs truncate opacity-75" x-text="Decks[d.id].artist || ''"></div>
+        </div>
+        <div class="flex gap-3 items-start ml-4 shrink-0">
+          <div class="text-center">
+            <div class="text-xs font-semibold uppercase opacity-60" x-text="Decks[d.id].key || '–'"></div>
+            <div class="text-xs opacity-60" x-text="Decks[d.id].bpm ? Decks[d.id].bpm.toFixed(1) + ' BPM' : '–'"></div>
+          </div>
+          <button
+            class="btn btn-sm btn-square"
+            :class="Decks[d.id].play ? 'btn-warning' : 'btn-success'"
+            @click="toggleDeckPlay(d.id)"
+          >
+            <span
+              class="text-base"
+              :class="Decks[d.id].play ? 'iconify mdi--pause' : 'iconify mdi--play'"
+            ></span>
+          </button>
+        </div>
+      </div>
+      <!-- Seek bar (editable position) -->
+      <div class="mt-3">
+        <input
+          type="range"
+          min="0"
+          max="1000"
+          :value="Math.floor(Decks[d.id].pos * 1000)"
+          @input="onDeckSeekInput($event.target.value)"
+          @change="onDeckSeekCommit($event.target.value)"
+          @mouseup="deckSeeking = false"
+          @mousedown="deckSeeking = true"
+          class="w-full range range-xs range-primary"
+        />
+        <div class="flex justify-between mt-1 text-xs opacity-60">
+          <span class="text-xs tabular-nums whitespace-nowrap cursor-pointer select-none hover:opacity-80"
+            title="Click to cycle time display"
+            @click="cycleTimeDisplay(d.id)"
+            x-text="formatDeckTime(d.id)"
+          ></span>
+          <span class="tabular-nums" x-text="formatTime(Decks[d.id].duration)"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
