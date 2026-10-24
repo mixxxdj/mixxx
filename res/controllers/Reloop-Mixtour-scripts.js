@@ -381,8 +381,4 @@ ReloopMixtour.Mixer = class extends components.Deck {
             }
         });
     }
-
-    setCurrentDeck(newGroup) {
-        super.setCurrentDeck(newGroup);
-    }
 };
