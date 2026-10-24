@@ -361,7 +361,6 @@ ReloopMixtour.Mixer = class extends components.Deck {
     }
 
     setCurrentDeck(newGroup) {
-        this.effect.reconnect(newGroup);
         super.setCurrentDeck(newGroup);
     }
 };
