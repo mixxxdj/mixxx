@@ -10,8 +10,6 @@
 
 class QString;
 
-// A dialog for interacting with the track exporter in an interactive manner.
-// Handles errors and user interactions.
 class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     Q_OBJECT
   public:
@@ -21,11 +19,9 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
         SKIP_ALL,
     };
 
-    // The dialog is prepared, but not shown on construction.  Does not
-    // take ownership of the export worker.
-    TrackExportDlg(QWidget *parent, UserSettingsPointer pConfig,
-                   TrackExportWorker* worker);
-    virtual ~TrackExportDlg() { }
+    TrackExportDlg(QWidget* parent, UserSettingsPointer pConfig, TrackExportWorker* worker);
+    virtual ~TrackExportDlg() {
+    }
 
   public slots:
     void slotProgress(const QString& filename, int progress, int count);
@@ -35,16 +31,15 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     void cancelButtonClicked();
 
   protected:
-    // First pops up a directory selector on show(), then does the actual
-    // copying.
     void showEvent(QShowEvent* event) override;
 
   private:
     // Called when progress is complete or the procedure has been canceled.
     // Displays a final message box indicating success or failure.
     // Makes sure the exporter thread has exited.
-    void finish();
+    void finish(bool completed = true);
 
+    bool m_finished = false;
     UserSettingsPointer m_pConfig;
     TrackPointerList m_tracks;
     TrackExportWorker* m_worker;

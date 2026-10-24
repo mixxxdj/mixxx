@@ -1,6 +1,8 @@
 #include "library/export/trackexportworker.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QFile>
 #include <QFileInfo>
 
 #include "moc_trackexportworker.cpp"
@@ -12,23 +14,13 @@ namespace {
 const mixxx::Logger kLogger("TrackExportWorker");
 
 QString rewriteFilename(const mixxx::FileInfo& fileinfo, int index) {
-    // We don't have total control over the inputs, so definitely
-    // don't use .arg().arg().arg().
     const QString index_str = QString("%1").arg(index, 4, 10, QChar('0'));
     return QString("%1-%2.%3").arg(fileinfo.baseName(), index_str, fileinfo.completeSuffix());
 }
 
-// Iterate over a list of tracks and generate a minimal set of files to copy.
-// Finds duplicate filenames. Munges filenames if they refer to different files,
-// and skips if they refer to the same disk location. Returns a map from
-// QString (the destination possibly-munged filenames) to QFileInfo (the source
-// file information). Missing files are recorded in failedTracks.
 QMap<QString, mixxx::FileInfo> createCopylist(
         const TrackPointerList& tracks,
         QStringList& failedTracks) {
-    // QMap is a non-obvious return value, but it's easy for callers to use
-    // in practice and is the best object for producing the final list
-    // efficiently.
     QMap<QString, mixxx::FileInfo> copylist;
     for (const auto& pTrack : tracks) {
         VERIFY_OR_DEBUG_ASSERT(pTrack != nullptr) {
@@ -39,7 +31,6 @@ QMap<QString, mixxx::FileInfo> createCopylist(
             kLogger.warning()
                     << "File not found or inaccessible while exporting"
                     << fileInfo;
-            // Track missing file and skip
             const QString location = fileInfo.location();
             failedTracks.append(location.isEmpty() ? pTrack->getTitle() : location);
             continue;
@@ -51,13 +42,10 @@ QMap<QString, mixxx::FileInfo> createCopylist(
         do {
             const auto duplicateIter = copylist.find(destFileName);
             if (duplicateIter == copylist.end()) {
-                // Usual case -- haven't seen this filename before, so add it.
                 copylist[destFileName] = fileInfo;
                 break;
             }
             if (fileInfo.canonicalLocation() == duplicateIter->canonicalLocation()) {
-                // Silently ignore and skip duplicate files that point
-                // to the same location on disk
                 break;
             }
             if (++duplicateCounter >= 10000) {
@@ -69,39 +57,39 @@ QMap<QString, mixxx::FileInfo> createCopylist(
                 failedTracks.append(fileInfo.location());
                 break;
             }
-            // Next round
             destFileName = rewriteFilename(fileInfo, duplicateCounter);
         } while (!destFileName.isEmpty());
     }
     return copylist;
 }
 
-}  // namespace
+} // namespace
 
 void TrackExportWorker::run() {
-    QMap<QString, mixxx::FileInfo> copy_list = createCopylist(m_tracks, m_failedTracks);
-    
-    // If all tracks were missing or skipped, the copy list is empty.
-    // Emit progress to trigger finish() on the dialog so it shows the summary box.
-    if (copy_list.isEmpty()) {
-        emit progress(QString(), 0, 0);
-        return;
-    }
+    m_failedTracks.clear();
+    m_errorMessage.clear();
 
-    int i = 0;
-    for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
-        // We emit progress twice per loop, which may seem excessive, but it
-        // guarantees that we emit a sane progress before we start and after
-        // we end. In between, each filename will get its own visible tick
-        // on the bar, which looks really nice.
-        emit progress(it->fileName(), i, copy_list.size());
-        copyFile(*it, it.key());
-        if (m_bStop.loadAcquire()) {
+    QMap<QString, mixxx::FileInfo> copylist = createCopylist(m_tracks, m_failedTracks);
+
+    int totalCount = copylist.size() + m_failedTracks.size();
+    int currentCount = m_failedTracks.size();
+
+    emit progress(QString(), currentCount, totalCount);
+
+    for (auto it = copylist.constBegin(); it != copylist.constEnd(); ++it) {
+        if (m_bStop) {
             emit canceled();
             return;
         }
-        ++i;
-        emit progress(it->fileName(), i, copy_list.size());
+
+        copyFile(it.value(), it.key());
+
+        if (m_bStop) {
+            return;
+        }
+
+        currentCount++;
+        emit progress(it.key(), currentCount, totalCount);
     }
 }
 
@@ -114,7 +102,6 @@ void TrackExportWorker::copyFile(
 
     if (dest_fileinfo.exists()) {
         switch (m_overwriteMode) {
-        // Give the user the option to overwrite existing files in the destination.
         case OverwriteMode::ASK:
             switch (makeOverwriteRequest(dest_path)) {
             case OverwriteAnswer::SKIP:
@@ -136,13 +123,13 @@ void TrackExportWorker::copyFile(
         case OverwriteMode::OVERWRITE_ALL:;
         }
 
-        // Remove the existing file in preparation for overwriting.
         QFile dest_file(dest_path);
         kLogger.debug() << "removing existing file" << dest_path;
         if (!dest_file.remove()) {
             const QString error_message = tr(
-                    "Error removing file %1: %2. Stopping.").arg(
-                    dest_path, dest_file.errorString());
+                    "Error removing file %1: %2. Stopping.")
+                                                  .arg(
+                                                          dest_path, dest_file.errorString());
             kLogger.warning() << error_message;
             m_failedTracks.append(sourceFilename);
             m_errorMessage = error_message;
@@ -155,8 +142,9 @@ void TrackExportWorker::copyFile(
     QFile source_file(sourceFilename);
     if (!source_file.copy(dest_path)) {
         const QString error_message = tr(
-                "Error exporting track %1 to %2: %3. Stopping.").arg(
-                sourceFilename, dest_path, source_file.errorString());
+                "Error exporting track %1 to %2: %3. Stopping.")
+                                              .arg(
+                                                      sourceFilename, dest_path, source_file.errorString());
         kLogger.warning() << error_message;
         m_failedTracks.append(sourceFilename);
         m_errorMessage = error_message;
@@ -167,19 +155,14 @@ void TrackExportWorker::copyFile(
 
 TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
         const QString& filename) {
-    // QT's QFuture is not quite right for this type of threaded question-and-answer.
-    // std::future works fine, even with signals and slots.
     QScopedPointer<std::promise<OverwriteAnswer>> mode_promise(
             new std::promise<OverwriteAnswer>());
     std::future<OverwriteAnswer> mode_future = mode_promise->get_future();
 
     emit askOverwriteMode(filename, mode_promise.data());
 
-    // Block until the user tells us the answer.
     mode_future.wait();
 
-    // We can be either canceled from the other thread, or as a return value
-    // from this call. First check for a call from the other thread.
     if (m_bStop.loadAcquire()) {
         return OverwriteAnswer::CANCEL;
     }
@@ -200,7 +183,6 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
         m_overwriteMode = OverwriteMode::OVERWRITE_ALL;
         break;
     case OverwriteAnswer::CANCEL:
-        // Handle cancellation as a result of the question.
         m_errorMessage = tr("Error exporting tracks");
         stop();
         break;
@@ -211,6 +193,5 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
 }
 
 void TrackExportWorker::stop() {
-    // We'll wait for the current file to finish copying, then stop.
     m_bStop = true;
 }
