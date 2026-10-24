@@ -62,7 +62,7 @@ constexpr int kDownloadTimeoutMs = 10 * 60 * 1000; // 10 min
 // surface fast so we can fail over to the next one without burning too long
 // per dead instance. With 10 instances at 10s each, worst case is ~100s.
 constexpr int kPipedHttpTimeoutMs = 10 * 1000;
-// Minimum file size before we switch from a single-connection download to 4
+// Minimum file size before we switch from a single-connection download to 8
 // parallel Range requests. Below this threshold the connection-setup overhead
 // outweighs the gain; above it, 8 TCP streams typically deliver 2-4x higher
 // throughput on cellular links where a single window saturates slowly.
