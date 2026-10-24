@@ -28,6 +28,7 @@
 #include "util/parented_ptr.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
+#include "util/timer.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
@@ -242,7 +243,7 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
     m_activeTalkoverChannels.clear();
     m_activeChannels.clear();
 
-    // ScopedTimer timer(QStringLiteral("EngineMixer::processChannels"));
+    ScopedTimer timer(QStringLiteral("EngineMixer::processChannels"));
     EngineChannel* pLeaderChannel = m_pEngineSync->getLeaderChannel();
     // Reserve the first place for the main channel which
     // should be processed first
@@ -361,7 +362,7 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
 
 void EngineMixer::process(const std::size_t bufferSize) {
     DEBUG_ASSERT(bufferSize <= static_cast<int>(kMaxEngineSamples));
-
+    ScopedTimer t(QStringLiteral("EngineMixer::process"));
     static bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
