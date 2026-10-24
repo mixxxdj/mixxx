@@ -369,9 +369,6 @@ DDJFLX2.init = function() {
                 DDJFLX2.updateLoopPadLEDs(vDeckNo);
             }
         );
-
-        // Enable Pioneer CDJ cue behavior.
-        engine.setValue(vgroup, "cue_cdj", true);
     }
 
     DDJFLX2.allLEDsOff();
