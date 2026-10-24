@@ -183,7 +183,7 @@ public class PoTokenWebView {
     public void downloadAndRunBotguard() {
         mIo.execute(() -> {
             try {
-                String challenge = postJson("https://www.youtube.com/api/jnn/v1/Create",
+                String challenge = postJson("https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/Create",
                         new JSONArray().put(REQUEST_KEY).toString());
                 final String parsed = PoTokenJs.parseChallengeData(challenge);
                 mMain.post(() -> mWebView.evaluateJavascript(
@@ -215,7 +215,7 @@ public class PoTokenWebView {
     public void onRunBotguardResult(String botguardResponse) {
         mIo.execute(() -> {
             try {
-                String resp = postJson("https://www.youtube.com/api/jnn/v1/GenerateIT",
+                String resp = postJson("https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT",
                         new JSONArray().put(REQUEST_KEY).put(botguardResponse).toString());
                 String[] parsed = PoTokenJs.parseIntegrityTokenData(resp);
                 mIntegrityTokenJs = parsed[0];
@@ -262,10 +262,6 @@ public class PoTokenWebView {
         c.setRequestProperty("Content-Type", "application/json+protobuf");
         c.setRequestProperty("x-goog-api-key", GOOGLE_API_KEY);
         c.setRequestProperty("x-user-agent", "grpc-web-javascript/0.1");
-        // BotGuard validates the web origin; without these the Create call
-        // 400s (seen in the wild: every mint failing, all downloads slow).
-        c.setRequestProperty("Origin", "https://www.youtube.com");
-        c.setRequestProperty("Referer", "https://www.youtube.com/");
         byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
         OutputStream os = c.getOutputStream();
         os.write(bytes);

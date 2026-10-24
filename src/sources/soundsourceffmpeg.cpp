@@ -668,7 +668,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         // "Using libfdk_aac without FFmpeg fix" warning on Android builds
         // where the bundled FFmpeg predates the fix.
         const AVCodec* pNativeAac =
-                avcodec_find_decoder(AV_CODEC_ID_AAC);
+                avcodec_find_decoder_by_name("aac");
         if (pNativeAac != nullptr &&
                 std::strcmp(pDecoder->name, "libfdk_aac") == 0 &&
                 std::strcmp(pNativeAac->name, "libfdk_aac") != 0) {
