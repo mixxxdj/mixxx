@@ -4,6 +4,7 @@
       <name>Numark NS6</name>
       <author>maurojuniorr</author>
       <description>4 channel MIDI Mapping for Numark NS6</description>
+      <forums>https://mixxx.discourse.group/t/numark-ns6-mapping/31035</forums>
       <manual>numark_ns6</manual>
   </info>
   <settings>
@@ -34,7 +35,7 @@
         precision="0"
         label="Scratch Sensitivity">
         <description>
-          Adjusts how much the track moves while touching the jog wheel or scrubbing a stopped deck. 50% matches the current djay-like response. Lower values require more platter rotation; higher values are more responsive. Fast forward and backward throws follow the jog after release. During playback they return to normal speed; while paused they slow to zero without starting the deck.
+          Adjusts how much the track moves while touching the jog wheel or scrubbing a stopped deck. 50% matches the current djay-like response. Lower values require more platter rotation; higher values are more responsive.
         </description>
       </option>
     </group>
@@ -2555,17 +2556,8 @@
       <!-- Faders -->
       <control>
           <group>[Master]</group>
-          <key>NumarkNS6.setFaderStartLeft</key>
+          <key>NumarkNS6.toggleFaderStartLeft</key>
           <status>0x90</status>
-          <midino>0x02</midino>
-          <options>
-              <script-binding/>
-          </options>
-      </control>
-      <control>
-          <group>[Master]</group>
-          <key>NumarkNS6.setFaderStartLeft</key>
-          <status>0x80</status>
           <midino>0x02</midino>
           <options>
               <script-binding/>
@@ -2574,17 +2566,8 @@
 
       <control>
           <group>[Master]</group>
-          <key>NumarkNS6.setFaderStartRight</key>
+          <key>NumarkNS6.toggleFaderStartRight</key>
           <status>0x90</status>
-          <midino>0x03</midino>
-          <options>
-              <script-binding/>
-          </options>
-      </control>
-      <control>
-          <group>[Master]</group>
-          <key>NumarkNS6.setFaderStartRight</key>
-          <status>0x80</status>
           <midino>0x03</midino>
           <options>
               <script-binding/>
@@ -2631,16 +2614,8 @@
         <key>headMix</key>
         <status>0xB0</status>
         <midino>0x12</midino>
-        <options><fourteen-bit-msb/></options>
-        <description>NS6 headphone CUE/MIX knob: CC 18 MSB</description>
-      </control>
-      <control>
-        <group>[Master]</group>
-        <key>headMix</key>
-        <status>0xB0</status>
-        <midino>0x32</midino>
-        <options><fourteen-bit-lsb/></options>
-        <description>NS6 headphone CUE/MIX knob: CC 50 LSB</description>
+        <options><soft-takeover/></options>
+        <description>NS6 headphone CUE/MIX knob: CC 18, full 7-bit range</description>
       </control>
       <control>
         <group>[Master]</group>
