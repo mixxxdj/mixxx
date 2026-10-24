@@ -3052,6 +3052,7 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
     QThread* thread = QThread::create([guard, videoId, cacheDir, playerPot,
                                               streamingPot]() {
         QJniObject context = QNativeInterface::QAndroidApplication::context();
+        QJniEnvironment env; // function scope: used by init + execute checks
         if (!context.isValid()) {
             kLogger.warning() << "[Android] downloadViaAndroidBundled:"
                               << "QAndroidApplication::context() invalid for"
@@ -3085,7 +3086,6 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         if (!s_ytdlInitialized.exchange(true)) {
             kLogger.info() << "[Android] downloadViaAndroidBundled:"
                            << "initializing YoutubeDL for" << videoId;
-            QJniEnvironment env;
             ytdl.callMethod<void>("init",
                     "(Landroid/content/Context;)V",
                     context.object());
