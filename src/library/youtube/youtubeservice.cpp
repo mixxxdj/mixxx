@@ -30,6 +30,7 @@
 #include <QVector>
 #include <algorithm>
 #include <atomic>
+#include <memory>
 #include <utility>
 
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)

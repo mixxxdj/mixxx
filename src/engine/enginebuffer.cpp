@@ -3,7 +3,9 @@
 #include <QtDebug>
 #ifdef Q_OS_ANDROID
 #include <QJniObject>
-#include <QNativeInterface>
+#if __has_include(<QNativeInterface/QAndroidApplication>)
+#include <QNativeInterface/QAndroidApplication>
+#endif
 #endif
 
 #include "control/controllinpotmeter.h"
@@ -842,7 +844,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
 
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
-#ifdef Q_OS_ANDROID
+#if defined(Q_OS_ANDROID) && __has_include(<QNativeInterface/QAndroidApplication>)
     // Lazy-start the foreground playback service on first actual deck play
     // (not at app startup): the wake lock + notification + audio focus only
     // make sense while the user is mixing. The service self-guards repeat
