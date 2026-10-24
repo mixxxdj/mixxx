@@ -2468,6 +2468,8 @@ void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
                 QStringLiteral("serviceIntegrityDimensions"), sid);
         body.insert(QStringLiteral("playbackContext"), playbackContext);
     }
+#else
+    Q_UNUSED(playerPot);
 #endif
 
     QNetworkRequest req{reqUrl};
@@ -2602,6 +2604,7 @@ void YouTubeService::requestPlayerWithPoToken(const QString& videoId,
                     const QString potUrl = withPoTokenParam(streamUrl, streamingPot);
 #else
                     const QString potUrl = streamUrl;
+                    Q_UNUSED(streamingPot);
 #endif
                     // Extract codec string from e.g. "audio/mp4; codecs=\"mp4a.40.2\""
                     QString codec;
