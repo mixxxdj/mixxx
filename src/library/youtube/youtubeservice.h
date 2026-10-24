@@ -285,6 +285,8 @@ class YouTubeService : public QObject {
     /// InnerTube /player POST with PO tokens attached (serviceIntegrity-
     /// Dimensions.poToken) plus &pot= on the returned stream URLs. Split out
     /// of downloadViaInnerTubeClient so the async token fetch can resume here.
+    /// On non-Android the tokens are empty (tokenless request, as before).
+#endif
     void requestPlayerWithPoToken(const QString& videoId,
             const QString& cacheDir,
             int clientIdx,
@@ -293,7 +295,6 @@ class YouTubeService : public QObject {
             const QString& streamingPot,
             const std::function<void(const QString&)>& tryNext,
             const std::function<void(const QString&)>& onAllFailed);
-#endif
 
     // ----- yt-dlp (binary fallback — desktop and Termux-on-Android) -----
 
