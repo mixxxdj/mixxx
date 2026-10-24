@@ -2661,6 +2661,11 @@ void YouTubeService::fetchPoTokens(const QString& videoId,
                 "org/mixxx/youtube/PoTokenManager",
                 "getInstance",
                 "()Lorg/mixxx/youtube/PoTokenManager;");
+        if (!manager.isValid()) {
+            kLogger.warning() << "PO tokens: PoTokenManager JNI class/method not found";
+        } else {
+            kLogger.info() << "PO tokens: PoTokenManager found, fetching for" << videoId;
+        }
         if (manager.isValid()) {
             QJniObject tokens = manager.callObjectMethod(
                     "fetchTokens",
@@ -2674,7 +2679,15 @@ void YouTubeService::fetchPoTokens(const QString& videoId,
                     playerPot = parts.at(0);
                     streamingPot = parts.at(1);
                     visitorData = parts.at(2);
+                    kLogger.info() << "PO tokens: got player+streaming tokens for"
+                                   << videoId;
+                } else {
+                    kLogger.warning() << "PO tokens: malformed result for"
+                                      << videoId << "parts=" << parts.size();
                 }
+            } else {
+                kLogger.warning() << "PO tokens: fetchTokens returned null for"
+                                  << videoId;
             }
         }
         if (!guard) {
