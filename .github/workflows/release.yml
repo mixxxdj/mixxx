@@ -21,12 +21,21 @@ jobs:
   checks:
     uses: ./.github/workflows/checks.yml
 
+  pre-commit:
+    if: github.event_name == 'push' && github.ref_type == 'branch'
+    uses: ./.github/workflows/pre-commit.yml
+    with:
+      install_only: true
+
   changelog:
     uses: ./.github/workflows/changelog.yml
     secrets:
       MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT: ${{ secrets.MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT }}
 
   build:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches
     uses: ./.github/workflows/build.yml
     with:
       publish: true
@@ -42,14 +51,15 @@ jobs:
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
       MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
       NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
-      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+      PPA_SSH_PRIVATE_KEY: ${{ secrets.PPA_SSH_PRIVATE_KEY }}
 
   benchmark:
     uses: ./.github/workflows/benchmark.yml
     with:
       branch: ${{ github.head_ref || github.ref_name }}
 
-  publish:
+  publish-flatpak:
     needs:
       - build
     uses: ./.github/workflows/flatpak.yml
@@ -57,11 +67,10 @@ jobs:
     if: ${{ (github.ref_type == 'tag' && !contains('-', github.ref_name)) || github.ref_name == '2.6' || github.ref_name == 'main' }}
     with:
       ref: ${{ github.ref }}
-      update_repo: ${{ github.ref_name == 'main' }}
       run_id: ${{ github.run_id }}
     secrets:
       DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
-      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
   sync:
     if: ${{ github.ref_type != 'tag' && github.ref != 'refs/heads/main' && github.repository == 'mixxxdj/mixxx' }}

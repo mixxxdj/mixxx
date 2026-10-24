@@ -2406,7 +2406,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                 m_database,
                 QStringLiteral(
                         "UPDATE library SET "
-                        "timesplayed=0,"
+                        "timesplayed=0 "
                         "WHERE id NOT IN("
                         "SELECT PlaylistTracks.track_id "
                         "FROM PlaylistTracks "

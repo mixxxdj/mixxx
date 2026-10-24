@@ -44,11 +44,18 @@ class WHotcueButton : public WPushButton {
     ConfigKey createConfigKey(const QString& name);
     void updateStyleSheet();
 
+    /// getCueMenuPopup lazy-loads the popup menu to speed up skin load time.
+    /// On skins with many hotcue buttons, popup menu creation time is a
+    /// significant source of load latency.
+    WCueMenuPopup* getCueMenuPopup();
+
     const QString m_group;
     int m_hotcue;
     bool m_hoverCueColor;
     parented_ptr<ControlProxy> m_pCoColor;
     parented_ptr<ControlProxy> m_pCoType;
+    /// Callers should not use m_pCueMenuPopup directly because it is lazy-loaded.
+    /// Use getCueMenuPopup() instead to ensure the menu is populated.
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
     int m_cueColorDimThreshold;
     bool m_bCueColorDimmed;
@@ -56,4 +63,6 @@ class WHotcueButton : public WPushButton {
     bool m_bCueColorIsDark;
     QString m_type;
     QMargins m_dndRectMargins;
+
+    UserSettingsPointer m_pConfig;
 };

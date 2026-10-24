@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QMutex>
 #include <QStorageInfo>
+#include <QTemporaryFile>
 
 #include "control/controlpushbutton.h"
 #include "engine/enginemixer.h"
@@ -15,6 +16,33 @@
 #include "recording/defs_recording.h"
 
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
+
+namespace {
+
+/// Checks that a recording file can be created in dir and that it
+/// ends up on persistent storage.
+bool isUsableRecordingDir(const QString& dir) {
+    // Files on a RAM-backed filesystem are lost on reboot. This also
+    // catches the Flatpak sandbox: a path that is not exported to the
+    // app does not fail but is created in the sandbox's in-memory root
+    // and is lost when Mixxx quits.
+    const QByteArray fsType = QStorageInfo(dir).fileSystemType();
+    if (fsType == "tmpfs" || fsType == "ramfs") {
+        qWarning() << "Recordings folder" << dir
+                   << "is on a non-persistent" << fsType << "filesystem";
+        return false;
+    }
+    // Test write. The probe file is removed when it goes out of scope.
+    QTemporaryFile probe(QDir(dir).filePath(QStringLiteral("mixxx-write-test-XXXXXX")));
+    if (!probe.open()) {
+        qWarning() << "Recordings folder" << dir
+                   << "is not writable:" << probe.errorString();
+        return false;
+    }
+    return true;
+}
+
+} // namespace
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEngine)
         : m_pConfig(pConfig),
@@ -99,6 +127,13 @@ qint64 RecordingManager::getFreeSpace() {
 }
 
 void RecordingManager::startRecording() {
+    const QString recordingDir = getRecordingDir();
+    if (!isUsableRecordingDir(recordingDir)) {
+        // Reset the checkable record buttons and show the
+        // "Could not create audio file" dialog.
+        slotIsRecording(false, true);
+        return;
+    }
     QString encodingType = m_pConfig->getValueString(
             ConfigKey(RECORDING_PREF_KEY, "Encoding"));
     QString fileExtension = EncoderFactory::getFactory()
@@ -127,7 +162,7 @@ void RecordingManager::startRecording() {
                               .arg(date_time_str, fileExtension);
 
     // Storing the absolutePath of the recording file without file extension.
-    m_recording_base_file = getRecordingDir();
+    m_recording_base_file = recordingDir;
     m_recording_base_file.append("/").append(date_time_str);
     // Appending file extension to get the filelocation.
     m_recordingLocation = m_recording_base_file + QChar('.') + fileExtension;

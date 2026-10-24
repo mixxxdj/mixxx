@@ -71,6 +71,9 @@ jobs:
     if: needs.stop-build.outputs.result == 'false'
     needs:
       - stop-build
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches
     uses: ./.github/workflows/build.yml
     with:
       branch: ${{ github.head_ref || github.ref_name }}

@@ -1,4 +1,5 @@
 <Template>
+  <SetVariable name="DeckGroup">Deck</SetVariable>
   <WidgetGroup>
     <Layout>vertical</Layout>
     <SizePolicy>max,min</SizePolicy>

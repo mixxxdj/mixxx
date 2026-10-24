@@ -1,6 +1,9 @@
 #pragma once
 
 #include <portaudio.h>
+#ifdef __WINDOWS__
+#include <pa_win_wasapi.h>
+#endif
 
 #include <QString>
 #include <condition_variable>
@@ -74,10 +77,15 @@ class SoundDevicePortAudio : public SoundDevice {
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
     PaStreamParameters m_inputParams;
+#ifdef __WINDOWS__
+    // WASAPI options for both directions, referenced by the stream
+    // parameters above.
+    PaWasapiStreamInfo m_wasapiStreamInfo;
+#endif
     std::unique_ptr<FIFO<CSAMPLE>> m_outputFifo;
     std::unique_ptr<FIFO<CSAMPLE>> m_inputFifo;
-    bool m_outputDrift;
-    bool m_inputDrift;
+    int m_outputDrift;
+    int m_inputDrift;
 
     // A string describing the last PortAudio error to occur.
     QString m_lastError;

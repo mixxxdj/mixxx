@@ -283,7 +283,9 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
 
     const mixxx::Bpm bpm = pBeats->getBpmInRange(
             mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
-    // FIXME: calling bpm.value() without checking bpm.isValid()
+    if (!bpm.isValid()) {
+        return;
+    }
     const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
     mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
             centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);

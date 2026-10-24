@@ -376,8 +376,11 @@ void DlgPrefController::showLearningWizard() {
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
+    // It is created without a parent, because the preferences dialog is
+    // hidden during learning. Some window managers (e.g. GNOME on Wayland)
+    // hide transient child windows together with their parent.
     m_pDlgControllerLearning =
-            new DlgControllerLearning(this, m_pController, m_pControlPickerMenu);
+            new DlgControllerLearning(nullptr, m_pController, m_pControlPickerMenu);
     m_pDlgControllerLearning->show();
     ControllerLearningEventFilter* pControllerLearning =
             m_pControllerManager->getControllerLearningEventFilter();

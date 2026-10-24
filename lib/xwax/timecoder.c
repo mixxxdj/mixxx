@@ -634,11 +634,15 @@ static void process_sample(struct timecoder *tc,
             pitch_kalman_update(&tc->pitch_kalman, dx);
     }
 
+    /* SWITCH_POLARITY must only be valid in the forwards direction */
+
+    bool switch_polarity = (tc->def->flags & SWITCH_POLARITY) && tc->forwards;
+
     /* If we have crossed the primary channel in the right polarity,
      * it's time to read off a timecode 0 or 1 value */
 
     if (tc->secondary.swapped &&
-       tc->primary.positive == ((tc->def->flags & SWITCH_POLARITY) == 0))
+       tc->primary.positive == !switch_polarity)
     {
         signed int m;
 
