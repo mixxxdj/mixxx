@@ -976,13 +976,21 @@ void YouTubeFeature::activate() {
         m_trendingFetchInFlight = true;
         rebuildSidebar();
         kLogger.info() << "Fetching YouTube trending for region" << country;
-        m_service.fetchTrending(country, kSearchResultsMax, kSearchResultsMax);
+        // minResults 20 (not cap): first screen paints as soon as 20 land
+        // instead of waiting for all 50; the rest streams in via the
+        // existing infinite-scroll continuation path.
+        m_service.fetchTrending(country, kSearchResultsMax, 20);
     }
     // Auto-discover genres from YouTube Music for the user's region. Only
     // fetched once per session — the results are cached in m_discoveredGenres.
-    if (m_discoveredGenres.isEmpty()) {
+    // Deferred 5 s so it doesn't contend with the trending fetch on first
+    // open (two simultaneous InnerTube POSTs + thumbnail burst).
+    if (m_discoveredGenres.isEmpty() && !m_genresFetchScheduled) {
+        m_genresFetchScheduled = true;
         const QString country = resolvedTrendingRegion();
-        m_service.fetchMusicGenres(country);
+        QTimer::singleShot(5000, this, [this, country]() {
+            m_service.fetchMusicGenres(country);
+        });
     }
 }
 
@@ -1121,7 +1129,7 @@ void YouTubeFeature::searchAndActivate(const QString& query) {
         m_pTrackModel->setSearch(query);
     }
     replaceTrackTable({});
-    m_service.searchVideos(query, kSearchResultsMax, kSearchResultsMax);
+    m_service.searchVideos(query, kSearchResultsMax, 20);
 }
 
 void YouTubeFeature::onSearchResultsReady(

@@ -185,6 +185,8 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     bool m_thumbnailsDirty = false;
     QString m_lastQuery;
     QList<mixxx::YouTubeVideoInfo> m_lastResults;
+    /// Guards the deferred one-shot genre fetch in activate().
+    bool m_genresFetchScheduled = false;
     // videoId -> human-readable label (used for the "Downloaded" branch).
     QHash<QString, QString> m_downloadedTracks;
     struct PendingPlayerLoad {
