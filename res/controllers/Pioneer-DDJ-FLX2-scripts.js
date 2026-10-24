@@ -378,16 +378,6 @@ DDJFLX2.init = function() {
     // Keep it enabled so platter rotation uses the scratch-capable 0x22 path.
     DDJFLX2.setVinylMode(true);
 
-    // Focus the library after startup.
-    // A short delay avoids initialization timing issues.
-    engine.beginTimer(
-        500,
-        function() {
-            engine.setValue("[Library]", "MoveFocus", 1);
-        },
-        true
-    );
-
     // Request current hardware control positions from the controller.
     // Sysex structure (Pioneer proprietary):
     // F0 00 40 05 (Pioneer ID) 00 00 (Sub ID) 02 0a 00 03 01 (Request Cmd) F7
