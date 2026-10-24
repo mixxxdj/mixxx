@@ -2597,25 +2597,35 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>gain</key>
+        <key>NumarkNS6.masterGain</key>
         <status>0xB0</status>
         <midino>0x43</midino>
+        <options><script-binding/></options>
         <description>NS6 MASTER knob: CC 67 controls Mixxx Master volume</description>
       </control>
       <control>
         <group>[Master]</group>
-        <key>headGain</key>
+        <key>NumarkNS6.headGain</key>
         <status>0xB0</status>
         <midino>0x42</midino>
+        <options><script-binding/></options>
         <description>NS6 headphone level knob: CC 66 controls Mixxx headphone volume</description>
       </control>
       <control>
         <group>[Master]</group>
-        <key>headMix</key>
+        <key>NumarkNS6.headMixMSB</key>
         <status>0xB0</status>
         <midino>0x12</midino>
-        <options><soft-takeover/></options>
-        <description>NS6 headphone CUE/MIX knob: CC 18, full 7-bit range</description>
+        <options><script-binding/></options>
+        <description>NS6 headphone CUE/MIX knob: CC 18 MSB</description>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>NumarkNS6.headMixLSB</key>
+        <status>0xB0</status>
+        <midino>0x32</midino>
+        <options><script-binding/></options>
+        <description>NS6 headphone CUE/MIX knob: CC 50 LSB</description>
       </control>
       <control>
         <group>[Master]</group>
