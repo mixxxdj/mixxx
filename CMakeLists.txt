@@ -2756,6 +2756,15 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/res/schema.xml
         ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/schema.xml
+      # PO token BotGuard page: loaded by PoTokenWebView from the app assets
+      # (no network needed for the page itself). Lives in packaging/android
+      # next to the Java sources — NOT in packaging/android/assets/, because
+      # androiddeployqt would use that dir instead of the generated
+      # android-build/assets tree and ship an APK with no skins.
+      COMMAND
+        ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/packaging/android/po_token.html
+        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets/po_token.html
       # Skins: LateNight + the shared *.qss only.
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory
