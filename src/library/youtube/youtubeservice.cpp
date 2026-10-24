@@ -64,10 +64,10 @@ constexpr int kDownloadTimeoutMs = 10 * 60 * 1000; // 10 min
 constexpr int kPipedHttpTimeoutMs = 10 * 1000;
 // Minimum file size before we switch from a single-connection download to 4
 // parallel Range requests. Below this threshold the connection-setup overhead
-// outweighs the gain; above it, 4 TCP streams typically deliver 2-4x higher
+// outweighs the gain; above it, 8 TCP streams typically deliver 2-4x higher
 // throughput on cellular links where a single window saturates slowly.
 constexpr qint64 kChunkedDownloadThresholdBytes = 2LL * 1024 * 1024; // 2 MB
-constexpr int kParallelDownloadChunks = 4;
+constexpr int kParallelDownloadChunks = 8;
 constexpr int kMaxPipedSearchPages = 5;
 // SponsorBlock API timeout — prevents indefinite hangs if the service is slow.
 // 4 s is generous for a single HTTP GET backed by a CDN; most responses arrive
@@ -107,13 +107,12 @@ constexpr int kRateLimitWindowMs = 10 * 1000; // 10 second window
 constexpr int kRateLimitBurst = 8;            // max 8 requests per window
 // Minimum inter-request gap in milliseconds. Even under burst we space
 // requests by this much to avoid looking like a bot.
-constexpr int kMinRequestGapMs = 300;
+constexpr int kMinRequestGapMs = 200;
 // Jitter range: random delay added to minimum gap to look more human.
 // Each request gets a random delay in [kMinRequestGapMs, kMaxJitterMs].
-// Capped at 800 ms (was 1500 ms) so normal user interactions — quick search
-// then scroll — are not unnecessarily delayed. The bot-detection benefit of
-// larger jitter values is marginal for normal single-user usage patterns.
-constexpr int kMaxJitterMs = 800;
+// Capped at 500 ms so rapid search-then-scroll feels instant; the
+// bot-detection benefit of larger jitter is marginal for single-user use.
+constexpr int kMaxJitterMs = 500;
 // Desktop yt-dlp self-update timeout — generous because it downloads a ~40 MB
 // binary from GitHub Releases.
 constexpr int kYtDlpUpdateTimeoutMs = 120 * 1000; // 2 min
@@ -2064,7 +2063,7 @@ void YouTubeService::downloadAudioStreamRanked(const QString& videoId,
 
     // Use parallel Range requests when InnerTube told us the file size upfront.
     // On cellular links a single TCP stream saturates its congestion window
-    // slowly; 4 concurrent streams typically deliver 2-4x higher throughput.
+    // slowly; 8 concurrent streams typically deliver 2-4x higher throughput.
     const qint64 contentLength =
             best.value(QStringLiteral("contentLength")).toVariant().toLongLong();
     // On CDN failure try the next ranked stream before failing the client.

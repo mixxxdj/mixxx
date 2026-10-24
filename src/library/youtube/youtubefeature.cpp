@@ -852,10 +852,11 @@ void YouTubeFeature::fetchThumbnails(
             continue; // in flight
         }
         m_thumbnailsDownloading.insert(info.id);
-        // mqdefault.jpg (320×180) is a good balance of visual quality and
-        // download size. hqdefault.jpg (480×360) sometimes has black bars.
+        // default.jpg (120x90) keeps search fast on mobile data (~3KB vs
+        // ~15KB for mqdefault); list cells are small so the difference
+        // is barely visible.
         const QUrl url(QStringLiteral("https://i.ytimg.com/vi/") + info.id +
-                QStringLiteral("/mqdefault.jpg"));
+                QStringLiteral("/default.jpg"));
         QNetworkRequest req(url);
         req.setTransferTimeout(10 * 1000); // 10 s
         QNetworkReply* reply = m_pSamplesNam->get(req);
