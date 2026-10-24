@@ -330,8 +330,8 @@ class YouTubeService : public QObject {
     // ----- bundled youtubedl-android (Android only, no external deps) -----
 
     /// Download using the bundled youtubedl-android runtime via JNI.
-    /// This is the primary fallback on Android when Piped fails.
-    /// No external Python, Termux, or system dependency needed.
+    /// Primary path on Android. No external Python, Termux, or system
+    /// dependency needed.
     void downloadViaAndroidBundled(const QString& videoId, const QString& cacheDir);
     /// JNI worker behind downloadViaAndroidBundled: runs bundled yt-dlp with
     /// our on-device PO tokens attached. Fully in-app — no Termux needed.

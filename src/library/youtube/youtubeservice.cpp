@@ -1016,20 +1016,41 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
     // back to the (frequently-dead) Piped instances and then yt-dlp if every
     // InnerTube client fails — this avoids the long stall the user hit while
     // cycling through unreachable Piped hosts before each download.
+#if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
+    // On Android the bundled yt-dlp (android_vr, no tokens needed) is the
+    // path that actually works — InnerTube direct needs PO tokens that 400
+    // (BotGuard), burning ~0.5s per download before falling through here
+    // anyway. So bundled goes first; if it fails for this videoId, fall
+    // back to InnerTube direct via a one-shot downloadFailed tap.
+    if (m_ytDlpPath == QStringLiteral("android-bundled")) {
+        auto pConn = std::make_shared<QMetaObject::Connection>();
+        *pConn = connect(this, &YouTubeService::downloadFailed,
+                [this, videoId, cacheDir, pConn](
+                        const QString& failedId, const QString&) {
+                    if (failedId != videoId) {
+                        return; // some other track
+                    }
+                    QObject::disconnect(*pConn);
+                    kLogger.warning() << "Bundled yt-dlp failed for" << videoId
+                                      << "— falling back to InnerTube direct";
+                    downloadViaInnerTube(videoId, cacheDir,
+                            [this, videoId](const QString& innerTubeError) {
+                                Q_EMIT downloadFailed(videoId, innerTubeError);
+                            });
+                });
+        downloadViaAndroidBundled(videoId, cacheDir);
+        return;
+    }
+#endif
     downloadViaInnerTube(videoId,
             cacheDir,
             [this, videoId, cacheDir](const QString& innerTubeError) {
 #if defined(Q_OS_ANDROID) && defined(HAVE_YTDLP_ANDROID)
-                // On Android, skip the Piped detour entirely: the community
-                // instances are mostly dead, so cycling 5×10s through them only
-                // adds ~50s of lag before the download finally fails. The
-                // bundled yt-dlp (real Python yt-dlp via JNI) is the reliable
-                // path that actually downloads the song, so go straight to it.
+                // Bundled-first already tried and failed before InnerTube was
+                // attempted (see above) — retrying it here would loop forever.
+                // Surface the failure.
                 if (m_ytDlpPath == QStringLiteral("android-bundled")) {
-                    kLogger.warning() << "InnerTube download failed for"
-                                      << videoId << ":" << innerTubeError
-                                      << "— falling back to bundled yt-dlp (JNI)";
-                    downloadViaAndroidBundled(videoId, cacheDir);
+                    Q_EMIT downloadFailed(videoId, innerTubeError);
                     return;
                 }
 #endif
@@ -3056,20 +3077,27 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         }
 
         // Initialize with the Android context (required before first download).
-        kLogger.info() << "[Android] downloadViaAndroidBundled:"
-                       << "initializing YoutubeDL for" << videoId;
-        QJniEnvironment env;
-        ytdl.callMethod<void>("init",
-                "(Landroid/content/Context;)V",
-                context.object());
-        if (env.checkAndClearExceptions()) {
-            kLogger.warning() << "[Android] downloadViaAndroidBundled:"
-                              << "YoutubeDL.init() threw exception for"
-                              << videoId;
-            if (guard)
-                Q_EMIT guard->downloadFailed(
-                        videoId, "yt-dlp init failed (youtubedl-android)");
-            return;
+        // One-time per process: YoutubeDL is a singleton and init() extracts
+        // the Python env (~0.7 s). Re-running it per track wastes that on
+        // every download, so guard with a static flag.
+        static std::atomic<bool> s_ytdlInitialized{false};
+        if (!s_ytdlInitialized.exchange(true)) {
+            kLogger.info() << "[Android] downloadViaAndroidBundled:"
+                           << "initializing YoutubeDL for" << videoId;
+            QJniEnvironment env;
+            ytdl.callMethod<void>("init",
+                    "(Landroid/content/Context;)V",
+                    context.object());
+            if (env.checkAndClearExceptions()) {
+                s_ytdlInitialized.store(false); // retry next time
+                kLogger.warning() << "[Android] downloadViaAndroidBundled:"
+                                  << "YoutubeDL.init() threw exception for"
+                                  << videoId;
+                if (guard)
+                    Q_EMIT guard->downloadFailed(
+                            videoId, "yt-dlp init failed (youtubedl-android)");
+                return;
+            }
         }
 
         // The yt-dlp packaged inside the AAR is rebuilt at configure time from
