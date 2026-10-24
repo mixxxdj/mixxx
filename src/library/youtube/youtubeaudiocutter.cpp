@@ -91,7 +91,12 @@ bool cutAudioRanges(const QString& path, const QList<SponsorSegment>& segments) 
         return true;
     }
 
-    const QString tmpPath = path + QStringLiteral(".cut.tmp");
+    // Keep the input's extension on the temp file: FFmpeg guesses the output
+    // container from the filename when format_name is null, and ".tmp"
+    // matches nothing (avformat_alloc_output_context2 returns null, every
+    // cut fails). ".cut.<ext>" preserves the container across the rename.
+    const QString suffix = path.mid(path.lastIndexOf(QLatin1Char('.')));
+    const QString tmpPath = path + QStringLiteral(".cut") + suffix;
     const QByteArray inPath = path.toUtf8();
     const QByteArray outPath = tmpPath.toUtf8();
 
