@@ -1011,8 +1011,9 @@ DDJFLX2.eqLSB = function(channel, control, value, status, _group) {
     const eqGroup = `[EqualizerRack1_${  vgroup  }_Effect1]`;
 
     const msb = (DDJFLX2.vDeck[virtualDeck].eqMSB || {})[control - 0x20] || 0;
-    const combined = ((msb << 7) + value) / 0x3fff;
-    const val = script.absoluteNonLin(combined * 127, 0, 1, 4);
+    const rawValue = (msb << 7) + value;
+    const combined = rawValue / 0x3fff;
+    const val = script.absoluteNonLin(rawValue, 0, 1, 4, 0, 0x3fff);
 
     let eq;
     let controlKey;
@@ -1045,7 +1046,8 @@ DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
     const qfxGroup = `[QuickEffectRack1_${  vgroup  }]`;
 
     const msb = DDJFLX2.vDeck[virtualDeck].cfxMSB || 0;
-    const combined = ((msb << 7) + value) / 0x3fff;
+    const rawValue = (msb << 7) + value;
+    const combined = rawValue / 0x3fff;
 
     let mode;
     if (DDJFLX2.cfxKnobBehavior === "filter") {
@@ -1082,11 +1084,10 @@ DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
     }
 
     if (mode === "gain") {
-        const val = script.absoluteNonLin(combined * 127, 0, 1, 4);
+        const val = script.absoluteNonLin(rawValue, 0, 1, 4, 0, 0x3fff);
         engine.setValue(vgroup, "pregain", val);
     } else {
-        const val = script.absoluteNonLin(combined * 127, 0, 0.5, 1);
-        engine.setValue(qfxGroup, "super1", val);
+        engine.setValue(qfxGroup, "super1", combined);
     }
 };
 
