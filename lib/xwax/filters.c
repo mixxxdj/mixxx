@@ -298,6 +298,9 @@ size_t savgol_window_size(size_t polyorder, double cutoff)
     if (min % 2 == 0)
         min++;
 
+    if (cutoff >= 0.5)
+        return min;
+
     size_t best = min;
 
     for (size_t n = min; n <= SAVGOL_MAX_WINDOW_SIZE; n += 2) {

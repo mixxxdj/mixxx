@@ -136,6 +136,7 @@ TEST(VinylControlXwaxLibSavitzkyGolayTest, WindowSizeIsAtLeastTheSmallestValidWi
     EXPECT_EQ(5, savgol_window_size(3, 0.5));
     EXPECT_EQ(5, savgol_window_size(4, 0.5));
     EXPECT_EQ(3, savgol_window_size(1, 0.5));
+    EXPECT_EQ(5, savgol_window_size(3, 1.0));
 }
 
 TEST(VinylControlXwaxLibSavitzkyGolayTest, WindowSizeGrowsWithSampleRate) {
