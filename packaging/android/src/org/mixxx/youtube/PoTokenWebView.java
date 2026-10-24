@@ -73,17 +73,23 @@ public class PoTokenWebView {
         mWebView.addJavascriptInterface(this, JS_INTERFACE);
     }
 
-    /** Async init: loads BotGuard, runs challenge, obtains integrityToken. */
+    /** Async init: loads BotGuard, runs challenge, obtains integrityToken.
+     * Safe to call from any thread: construction happens on the main thread
+     * (WebView requires a Looper). */
     public static void create(Context context, InitCallback cb) {
-        final PoTokenWebView gen;
-        try {
-            gen = new PoTokenWebView(context);
-        } catch (Exception e) {
-            cb.onError("WebView unavailable: " + e.getMessage());
-            return;
-        }
-        gen.mInitCallback = cb;
-        new Handler(Looper.getMainLooper()).post(() -> gen.loadHtmlAndObtainBotguard());
+        final Context appContext = context.getApplicationContext();
+        // WebView must be constructed on a Looper thread — post everything.
+        new Handler(Looper.getMainLooper()).post(() -> {
+            final PoTokenWebView gen;
+            try {
+                gen = new PoTokenWebView(appContext);
+            } catch (Exception e) {
+                cb.onError("WebView unavailable: " + e.getMessage());
+                return;
+            }
+            gen.mInitCallback = cb;
+            gen.loadHtmlAndObtainBotguard();
+        });
     }
 
     public boolean isExpired() {
