@@ -3009,21 +3009,12 @@ void YouTubeService::downloadViaAndroidBundled(
         const QString& videoId, const QString& cacheDir) {
     kLogger.info() << "[Android] downloadViaAndroidBundled: videoId=" << videoId
                    << "cacheDir=" << cacheDir;
-    // Mint PO tokens first (worker thread), then run the JNI download with
-    // them passed as extractor args — same tokens as the direct path.
-    QPointer<YouTubeService> guard(this);
-    fetchPoTokens(videoId,
-            [guard, videoId, cacheDir](const QString& playerPot,
-                    const QString& streamingPot, const QString& freshVd) {
-                if (!guard) {
-                    return;
-                }
-                if (!freshVd.isEmpty() && guard->m_visitorData.isEmpty()) {
-                    guard->m_visitorData = freshVd;
-                }
-                guard->runAndroidBundled(videoId, cacheDir, playerPot,
-                        streamingPot);
-            });
+    // Straight to the JNI download with no PO-token fetch: the bundled
+    // yt-dlp uses player_client=android_vr which needs no tokens, and the
+    // token fetch (WebView BotGuard challenge or 400 round-trips) added
+    // 0.5-3 s per download for zero benefit on this path. Tokens are
+    // still fetched for search/player where they matter.
+    runAndroidBundled(videoId, cacheDir, QString(), QString());
 }
 
 void YouTubeService::runAndroidBundled(const QString& videoId,
