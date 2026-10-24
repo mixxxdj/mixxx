@@ -418,16 +418,6 @@
                 </options>
             </control>
             <control>
-                <group>[Library]</group>
-                <key>ReloopMixtour.backBtn.input</key>
-                <description>Shift [BACK]</description>
-                <status>0x90</status>
-                <midino>0x47</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[Master]</group>
                 <key>crossfader</key>
                 <description>[CROSSFADER]crossfader</description>
