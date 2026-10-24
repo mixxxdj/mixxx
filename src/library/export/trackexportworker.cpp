@@ -141,10 +141,11 @@ void TrackExportWorker::copyFile(
     kLogger.debug() << "copying" << sourceFilename << "to" << dest_path;
     QFile source_file(sourceFilename);
     if (!source_file.copy(dest_path)) {
-        const QString error_message = tr(
-                "Error exporting track %1 to %2: %3. Stopping.")
-                                              .arg(
-                                                      sourceFilename, dest_path, source_file.errorString());
+        const QString error_message =
+                tr("Error exporting track %1 to %2: %3. Stopping.")
+                        .arg(sourceFilename,
+                                dest_path,
+                                source_file.errorString());
         kLogger.warning() << error_message;
         m_failedTracks.append(sourceFilename);
         m_errorMessage = error_message;
