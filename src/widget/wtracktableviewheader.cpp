@@ -4,6 +4,7 @@
 #include <QContextMenuEvent>
 #include <QLabel>
 #include <QPainter>
+#include <QSignalBlocker>
 #include <QStyleOptionHeader>
 #include <QTextOption>
 #include <QWidgetAction>
@@ -274,6 +275,13 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* pModel) {
         m_menu.addAction(pShuffleAction);
     }
 
+    auto pResetAction = make_parented<QAction>(tr("Reset Columns"), &m_menu);
+    connect(pResetAction,
+            &QAction::triggered,
+            this,
+            &WTrackTableViewHeader::slotResetColumns);
+    m_menu.addAction(pResetAction);
+
     // Safety check against someone getting stuck with all columns hidden
     // (produces an empty library table). Just re-show them all.
     if (hiddenCount() == columns) {
@@ -373,6 +381,45 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
             pCheckBox->setChecked(true);
         }
     }
+}
+
+void WTrackTableViewHeader::slotResetColumns() {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    // Forget the widths of hidden columns, else saveHeaderState() would
+    // persist them instead of the default widths.
+    m_hiddenColumnSizes.clear();
+
+    // Restore the visibility, width and position a column has when Mixxx
+    // starts without a stored header state.
+    QAbstractItemModel* pModel = model();
+    for (int i = 0; i < count(); ++i) {
+        const bool hidden = pTrackModel->isColumnInternal(i) ||
+                pTrackModel->isColumnHiddenByDefault(i);
+        setSectionHidden(i, hidden);
+        auto it = m_columnCheckBoxes.constFind(i);
+        if (it != m_columnCheckBoxes.constEnd()) {
+            // Don't trigger showOrHideColumn(), we already set the visibility.
+            const QSignalBlocker blocker(it.value());
+            it.value()->setChecked(!hidden);
+        }
+
+        int size = pModel->headerData(i, orientation(), TrackModel::kHeaderWidthRole)
+                           .toInt();
+        if (size <= 0) {
+            // Not all models provide a default width, e.g. BrowseTableModel
+            size = defaultSectionSize();
+        }
+        // Note: setting the size works even if the column is hidden.
+        resizeSection(i, math_max(size, WTTVH_MINIMUM_SECTION_SIZE));
+
+        moveSection(visualIndex(i), i);
+    }
+
+    saveHeaderState();
 }
 
 int WTrackTableViewHeader::getWidthOfHiddenColumn(int column) const {
