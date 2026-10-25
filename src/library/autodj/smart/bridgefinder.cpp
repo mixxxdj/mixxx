@@ -276,8 +276,10 @@ QList<TrackFeatures> BridgeFinder::extend(const TrackFeatures& last,
         return a.hasKey() && a.camelotNumber == b.camelotNumber &&
                 a.camelotMinor == b.camelotMinor;
     };
+    QVector<std::pair<double, const TrackFeatures*>> options;
+    options.reserve(candidates.size());
     while (static_cast<int>(chain.size()) < count) {
-        QVector<std::pair<double, const TrackFeatures*>> options;
+        options.clear();
         for (const TrackFeatures& x : candidates) {
             if (!x.hasKey() || !x.hasBpm() || excludeIds.contains(x.id) ||
                     (!x.displayName.isEmpty() && excludeNames.contains(nameKey(x)))) {
@@ -468,8 +470,8 @@ QList<BridgeSuggestion> BridgeFinder::findPairs(const TrackFeatures& from,
         lasts = lasts.mid(0, kMaxPerSide);
     }
     QList<BridgeSuggestion> found;
-    for (const auto& [firstCost, pFirst] : firsts) {
-        for (const auto& [lastCost, pSecond] : lasts) {
+    for (const auto& [firstCost, pFirst] : std::as_const(firsts)) {
+        for (const auto& [lastCost, pSecond] : std::as_const(lasts)) {
             if (pFirst->id == pSecond->id ||
                     (!pFirst->displayName.isEmpty() && !pSecond->displayName.isEmpty() &&
                             nameKey(*pFirst) == nameKey(*pSecond))) {

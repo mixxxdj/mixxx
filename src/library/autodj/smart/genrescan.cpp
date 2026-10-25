@@ -35,7 +35,7 @@ QString recordingQuery(const QString& artist, const QString& title) {
     if (a.isEmpty() || t.isEmpty()) {
         return QString();
     }
-    const auto quoted = [](QString s) {
+    const auto quoted = [](QString s) -> QString {
         s.replace(QChar('\\'), QStringLiteral("\\\\"));
         s.replace(QChar('"'), QStringLiteral("\\\""));
         return QChar('"') + s + QChar('"');
@@ -147,7 +147,8 @@ QString displayGenre(const QString& name) {
         }
         word.clear();
     };
-    for (const QChar c : name.trimmed()) {
+    const QString trimmed = name.trimmed();
+    for (const QChar c : std::as_const(trimmed)) {
         if (c == QChar(' ') || c == QChar('-') || c == QChar('/')) {
             flush();
             out += c;

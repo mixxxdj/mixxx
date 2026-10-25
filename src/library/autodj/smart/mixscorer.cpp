@@ -9,7 +9,7 @@ constexpr double kUnknownBpmCost = 2.0;
 constexpr double kUnknownEnergyCost = 0.5;
 } // namespace
 
-MixScorer::MixScorer(MixScoreWeights weights)
+MixScorer::MixScorer(const MixScoreWeights& weights)
         : m_weights(weights) {
 }
 

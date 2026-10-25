@@ -44,7 +44,7 @@ class MixScorer {
     static constexpr double kClashKeyCost = 3.0;
     static constexpr double kClashTempoCost = 5.0;
 
-    explicit MixScorer(MixScoreWeights weights = MixScoreWeights());
+    explicit MixScorer(const MixScoreWeights& weights = MixScoreWeights());
 
     MixScore score(const TrackFeatures& from, const TrackFeatures& to) const;
 
