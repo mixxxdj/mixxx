@@ -1,6 +1,5 @@
 function NumarkOmniControl() {}
-NumarkOmniControl.LoadUserSettings = function () {
-
+NumarkOmniControl.loadUserSettings = function () {
     // Autostart values for functions with buttons
     NumarkOmniControl.toggleExtendedLooping(null, null, engine.getSetting("extendedLooping"), null, null);
     NumarkOmniControl.toggleScratchMode(null, null, engine.getSetting("scratchMode"), null, null);
@@ -10,8 +9,8 @@ NumarkOmniControl.LoadUserSettings = function () {
     engine.setValue("[QuickEffectRack1_[Channel2]]", "enabled", engine.getSetting("enableQuickEffects"));
 
     // softTakeover only if user wants it
-    engine.softTakeover("[Channel1]", "rate", engine.getSetting("enableSoftTakeover"));
-    engine.softTakeover("[Channel2]", "rate", engine.getSetting("enableSoftTakeover"));
+	engine.softTakeover("[Channel1]", "rate", engine.getSetting("enableSoftTakeover"));
+	engine.softTakeover("[Channel2]", "rate", engine.getSetting("enableSoftTakeover"));
 
     // Cached values of JogWheel and FinePitch for less jumps to engine
     NumarkOmniControl.finePitchAdjustment = engine.getSetting("finePitchAdjustment");
@@ -21,9 +20,6 @@ NumarkOmniControl.LoadUserSettings = function () {
     // Advanced settings
     NumarkOmniControl.simpleCue = engine.getSetting("simpleCue");
     NumarkOmniControl.simplePFL = engine.getSetting("simplePFL");
-
-    // get all current positions from controller
-    NumarkOmniControl.ReadAllControllerValues();
 }
 
 NumarkOmniControl.init = function (id) { // called when the MIDI device is opened & set up
@@ -85,51 +81,43 @@ NumarkOmniControl.init = function (id) { // called when the MIDI device is opene
         }
     ];
 
-    NumarkOmniControl.SetAllLED(true); // check LED health
+    NumarkOmniControl.setAllLED(true); // check LED health
+    // get all current positions from controller
+    NumarkOmniControl.readAllControllerValues();
 
     engine.beginTimer(500, function () {
-        NumarkOmniControl.SetAllLED(false);
+        NumarkOmniControl.setAllLED(false);
     }, 1);
 
     engine.beginTimer(1000, function () { // loading user defaults from Settings -> Controller and give MIXXX some time to react to ReadAllContollerValues()
-        NumarkOmniControl.LoadUserSettings();
+        NumarkOmniControl.loadUserSettings();
     }, 1);
 }
 
-NumarkOmniControl.ReadAllControllerValues = function () { // just send; OmniControl sends back state of all buttons and faders and MIXXX applies to engine itself
+NumarkOmniControl.readAllControllerValues = function () { // just send; OmniControl sends back state of all buttons and faders and MIXXX applies to engine itself
     // 0xF0 = Start // 0x00, 0x01, 0x3F = Numark // 0x00, 0x74 = Omni Control // 0x60, 0x00, 0x04, 0x00, 0x0D, 0x00, 0x00 = "Tell me your knobs" // 0xF7 = End
     // WARNING!!! change it only, if you know what you are doing
     const byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x00, 0x74, 0x60, 0x00, 0x04, 0x00, 0x0D, 0x00, 0x00, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 }
 
-NumarkOmniControl.SetAllLED = function (value) {
+NumarkOmniControl.setAllLED = function (value) {
     for (var i = 0x30; i <= 0x56; i++) {
         NumarkOmniControl.setLED(i, value);
     }
 }
 
 NumarkOmniControl.shutdown = function (id) { // called when the MIDI device is closed
-    NumarkOmniControl.SetAllLED(false);
+    NumarkOmniControl.setAllLED(false);
 }
 
 NumarkOmniControl.groupToDeck = function (group) {
     var matches = group.match(/\[Channel(\d+)\]/);
-
     if (matches === null) {
         return -1;
     } else {
         return matches[1];
     }
-}
-
-NumarkOmniControl.samplesPerBeat = function (group) {
-    var sampleRate = engine.getValue(group, "track_samplerate");
-    // FIXME: Get correct channel count for current deck
-    // gonzo.LE: property would be "[App],num_decks", but is it not always 2 for stereo?!
-    var channels = 2;
-    var bpm = engine.getValue(group, "file_bpm");
-    return channels * sampleRate * 60 / bpm;
 }
 
 NumarkOmniControl.setLED = function (value, status) {
@@ -310,13 +298,11 @@ NumarkOmniControl.selectQuickEffect = function (channel, control, value, status,
     }
 }
 
-NumarkOmniControl.toggleQuickEffect = function (channel, control, value, status, group) { // JS parser stops if buttons are direct assigned via mapping
-    // Toggle setting and light
+NumarkOmniControl.toggleQuickEffect = function (channel, control, value, status, group) {
+    // Toggle setting; light is set via XML mapping
+	// TODO: button can be mapped via MIDI once it's supported; in version 2.5.6 its still rasing error
     if (value) {
-        var newvalue = !engine.getValue(group, "enabled");
-        engine.setValue(group, "enabled", newvalue);
-        var deck = NumarkOmniControl.groupToDeck(group);
-        NumarkOmniControl.setLED(NumarkOmniControl.leds[deck]["filter_onoff"], newvalue);
+        engine.setValue(group, "enabled", !engine.getValue(group, "enabled"));
     }
 }
 

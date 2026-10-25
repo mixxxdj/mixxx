@@ -1010,23 +1010,41 @@
                 <minimum>2</minimum>
                 <maximum>2</maximum>
             </output>
+			<output>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>enabled</key>
+                <description>FILTER_ONOFF</description>
+                <status>0x90</status>
+                <midino>0x31</midino>
+                <on>0x64</on>
+                <minimum>1</minimum>
+            </output>
+			<output>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>enabled</key>
+                <description>FILTER_ONOFF</description>
+                <status>0x90</status>
+                <midino>0x45</midino>
+                <on>0x64</on>
+                <minimum>1</minimum>
+            </output>
         </outputs>
     </controller>
 	<settings>
 		<group label="Autostart">
-			<option variable="extendedLooping" type="boolean" default="true" label="Enables 'Extended Looping' (aka right channel: ON/OFF)" description="Please see online help for full explanation."/>
 			<option variable="scratchMode" type="boolean" default="false" label="Enables 'Scratch-Mode'(aka left channel: ON/OFF)" description=""/>
-			<option variable="enableQuickEffects" type="boolean" default="false" label="Enable QuickEffects on both decks" description=""/>
-			<option variable="enableSoftTakeover" type="boolean" default="false" label="Enable SoftTakeover for rate sliders" description="Use this option for rate sliders to avoid sudden jumps in when the slider in the GUI doesn’t match the physical. If you select this option, you won’t be able to perform super-fast motions as easily."/>
+			<option variable="extendedLooping" type="boolean" default="true" label="Enables 'Extended Looping' (aka right channel: ON/OFF)" description="Please see online help for full explanation."/>
+			<option variable="enableQuickEffects" type="boolean" default="false" label="Enable 'QuickEffects' on both decks" description=""/>
+			<option variable="enableSoftTakeover" type="boolean" default="false" label="Enable 'SoftTakeover' for rate sliders" description="Use this option for rate sliders to avoid sudden jumps in when the slider in the GUI doesn’t match the physical. If you select this option, you won’t be able to perform super-fast motions as easily."/>
 		</group>
 		<group label="FinePitch and JogWheel Adjustment">
-			<option variable="finePitchAdjustment" type="real" default="9" min="1" max="20" step="0.1" precision="2" label="FinePitch: the higher the value, the smaller the impact by FinePitch rotation" description="Exponential impact; small changes recommended. The value of '6' means same impact as rate sliders."/>
-			<option variable="jogScratchAdjustment" type="real" default="3" min="1" max="5" step="0.1" precision="2" label="JogWheel (in Scratch-Mode): the higher the value, the lower the impact on JogWheel rotation" description="Exponential impact; small changes recommended"/>
-			<option variable="jogMoveAdjustment" type="real" default="3" min="1" max="20" step="0.1" precision="2" label="JogWheel (not in Scratch-Mode): the higher the value, the higher the impact by JowWheel rotation" description="TODO"/>
+			<option variable="finePitchAdjustment" type="real" default="9" min="1" max="20" step="0.1" precision="2" label="FinePitch: the higher the value, the smaller the impact by FINE PITCH  rotation" description="The value of '6' means same impact as rate sliders."/>
+			<option variable="jogScratchAdjustment" type="real" default="3" min="1" max="5" step="0.1" precision="2" label="JogWheel (in Scratch-Mode): the higher the value, the lower the impact on JOGWHEEL rotation" description="Exponential impact; small changes recommended"/>
+			<option variable="jogMoveAdjustment" type="real" default="3" min="1" max="20" step="0.1" precision="2" label="JogWheel (not in Scratch-Mode): the higher the value, the higher the impact by JOGWHEEL rotation" description=""/>
 		</group>
 		<group label="Advanced">
 			<option variable="simpleCue" type="boolean" default="true" label="CUE doesn't stop playing deck" description="Pressing the CUE button while playing, doesn't stop the deck; if disabled, CUE button pauses the deck."/>
-			<option variable="simplePFL" type="boolean" default="true" label="only one PFL enabled at time" description="If one PFL is enabled, it disables the PFL on the opposite site."/>
+			<option variable="simplePFL" type="boolean" default="true" label="only one PFL enabled at time" description="If PFL is enabled by pressing the button 1 (aka PFL) it disables the PFL on the opposite site."/>
 		</group>
 	</settings>
 
