@@ -9,6 +9,7 @@
 
 #include "mixer/basetrackplayer.h"
 #include "qml/qmlbeatsmodel.h"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmlcuesmodel.h"
 #include "qml/qmlstemsmodel.h"
 #include "track/track_decl.h"
@@ -16,8 +17,6 @@
 
 namespace mixxx {
 namespace qml {
-
-class QmlConfigProxy;
 
 class QmlTrackProxy : public QObject {
     Q_OBJECT

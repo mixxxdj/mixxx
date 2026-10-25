@@ -11,7 +11,6 @@
 #include <QTimer>
 #include <chrono>
 
-#include "qml/qmlplayerproxy.h"
 #include "qml/qmlwaveformrenderer.h"
 #include "track/track.h"
 #include "util/performancetimer.h"
