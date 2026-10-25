@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "control/controlproxy.h"
-#include "qmltrackproxy.h"
+#include "qml/qmltrackproxy.h"
 #include "waveform/waveform.h"
 
 class ControlProxy;

@@ -46,7 +46,8 @@ phrasealign::Grid AnalyzerEnergy::beatGrid(const TrackPointer& pTrack) {
     double bpm = 0.0;
     double firstBeatSec = 0.0;
     if (!gridOf(pTrack, &bpm, &firstBeatSec)) {
-        return phrasealign::Grid();
+        phrasealign::Grid empty;
+        return empty;
     }
     const phrasealign::Grid steady{firstBeatSec, 60.0 / bpm};
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();

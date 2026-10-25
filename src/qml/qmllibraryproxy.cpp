@@ -21,7 +21,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmllibrarytracklistmodel.h"
-#include "qmltrackproxy.h"
+#include "qml/qmltrackproxy.h"
 #include "track/cue.h"
 #include "track/track.h"
 #include "util/assert.h"
