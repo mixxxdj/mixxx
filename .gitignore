@@ -72,3 +72,6 @@ src/mixxx.rc.include
 src/mixxx.res
 src/test/**/*.actual
 res/qrc_mixxx.cc
+
+# Generated Android USB device filter (build-time, from res/controllers/*.hid.xml)
+packaging/android/res/xml/usb_device_filter.xml

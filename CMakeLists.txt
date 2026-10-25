@@ -2723,10 +2723,16 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
         ${CMAKE_CURRENT_BINARY_DIR}/android
+      # The manifest (QT_ANDROID_PACKAGE_SOURCE_DIR = packaging/android)
+      # references @xml/usb_device_filter, so the generated file must land
+      # in the package source tree where androiddeployqt picks it up.
+      COMMAND
+        ${CMAKE_COMMAND} -E make_directory
+        ${CMAKE_SOURCE_DIR}/packaging/android/res/xml
       COMMAND
         ${CMAKE_COMMAND}
         -DTEMPLATE_FILE="${CMAKE_SOURCE_DIR}/packaging/android/usb_device_filter.xml.in"
-        -DTARGET_FILE="${CMAKE_CURRENT_BINARY_DIR}/android/res/xml/usb_device_filter.xml"
+        -DTARGET_FILE="${CMAKE_SOURCE_DIR}/packaging/android/res/xml/usb_device_filter.xml"
         -P ${CMAKE_SOURCE_DIR}/cmake/modules/gen_usb_device_filter.cmake
       # We deliberately copy a subset of res/ to keep the APK small. The bits
       # we drop are pure desktop-platform clutter on Android (and DeX, the

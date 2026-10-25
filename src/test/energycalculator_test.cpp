@@ -248,7 +248,10 @@ double gridDrift(const std::vector<float>& mono, const phrasealign::Grid& grid) 
 }
 
 double gridDrift(const std::vector<float>& mono, double firstBeatSec, double beatSec) {
-    return gridDrift(mono, phrasealign::Grid{firstBeatSec, beatSec});
+    phrasealign::Grid grid;
+    grid.firstBeatSec = firstBeatSec;
+    grid.beatSec = beatSec;
+    return gridDrift(mono, grid);
 }
 
 } // namespace
