@@ -14,6 +14,7 @@
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
+#include "util/androidcrashreport.h"
 #include "util/assert.h"
 #include "util/cache.h"
 #include "util/cmdlineargs.h"
@@ -118,6 +119,9 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
     // doesn't show a cursor by default for external mice/trackpads.
     // Setting a visible cursor makes the pointer usable.
     setOverrideCursor(QCursor(Qt::ArrowCursor));
+
+    // Install crash reporter to write tombstones to removable storage
+    mixxx::android::installCrashReporter();
 #endif
 }
 
