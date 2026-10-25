@@ -441,6 +441,15 @@ DDJXP2.PadModeSlicer = class extends DDJXP2.PadMode {
     // activate the slicer with option to renew the start position
     activate(enter = 0, renewStart = 1) {
         if (enter && engine.getValue(this.group, "track_loaded")) {
+            const bpm = engine.getValue(this.group, "local_bpm");
+            const sampleRate = engine.getValue(this.group, "track_samplerate");
+            if (!Number.isFinite(bpm) || bpm <= 0 || !Number.isFinite(sampleRate) || sampleRate <= 0) {
+                if (this.bpmConnection === undefined) {
+                    this.bpmConnection = engine.makeConnection(this.group, "local_bpm", this.trackLoadedAndBPMDetected.bind(this));
+                }
+                return;
+            }
+
             if (renewStart) {
                 this.startPos = engine.getValue(this.group, "beat_closest");
             }
