@@ -25,6 +25,7 @@ class AudioLatencyCalibrator;
 class EngineMixer;
 class ControlObject;
 class PipewireEnumerator;
+class SoundManagerAndroid;
 
 #define SOUNDMANAGER_DISCONNECTED 0
 #define SOUNDMANAGER_CONNECTING 1
@@ -238,6 +239,13 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverload;
 
     std::unique_ptr<SoundDeviceEnumerator> m_pEnumerator;
+
+#ifdef Q_OS_ANDROID
+    // Android auto-routing to DJ controllers + speaker fallback.
+    // SoundManagerAndroid lives in its own file to stay conflict-free.
+    friend class SoundManagerAndroid;
+    SoundManagerAndroid* m_pAndroid = nullptr;
+#endif
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;
