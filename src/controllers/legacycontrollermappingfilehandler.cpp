@@ -369,6 +369,12 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
 
     QString deviceId = controller.attribute("id", "");
     mapping->setDeviceId(deviceId);
+    // Empty namespace is forbidden. If a controller wants to use shared data,
+    // they must specify an non-empty string.
+    QString sharedDataNamespace = controller.attribute("namespace", "");
+    if (!sharedDataNamespace.isEmpty()) {
+        mapping->setSharedDataNamespace(sharedDataNamespace);
+    }
 
     // See TODO in LegacyControllerMapping::DeviceDirection - `direction` should
     // only be used as a workaround till the bulk integration gets refactored

@@ -9,6 +9,7 @@
 
 class MidiOutputHandler;
 class MidiController;
+class ControllerSharedData;
 
 class MidiInputHandleJSProxy final : public QObject {
     Q_OBJECT

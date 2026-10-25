@@ -9,6 +9,7 @@
 
 class ControllerJSProxy;
 class ControllerScriptEngineLegacy;
+class ControllerSharedData;
 
 enum class PhysicalTransportProtocol {
     UNKNOWN,
@@ -120,6 +121,10 @@ class Controller : public QObject {
 
   protected:
     virtual bool applyMapping(const QString& resourcePath);
+    // Runtime-shared-data overload (acolombier feat/controller-runtime-shared-data):
+    // MIDI path passes per-mapping runtime state; default forwards to 1-arg.
+    virtual bool applyMapping(const QString& resourcePath,
+            std::shared_ptr<ControllerSharedData> runtimeData);
 
     template<typename SpecificMappingType>
         requires(std::is_final_v<SpecificMappingType> == true)
