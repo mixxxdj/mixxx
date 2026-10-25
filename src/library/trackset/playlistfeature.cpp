@@ -4,6 +4,7 @@
 #include <QSqlTableModel>
 #include <QtDebug>
 
+#include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/playlisttablemodel.h"
@@ -170,28 +171,36 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
-            "AS SELECT "
-            "  Playlists.id AS id, "
-            "  Playlists.name AS name, "
-            "  LOWER(Playlists.name) AS sort_name, "
-            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
-            "    AS count, "
-            "  SUM(case library.mixxx_deleted "
-            "    when 0 then library.duration else 0 end) AS durationSeconds "
-            "FROM Playlists "
-            "LEFT JOIN PlaylistTracks "
-            "  ON PlaylistTracks.playlist_id = Playlists.id "
-            "LEFT JOIN library "
-            "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = %2 "
-            "  GROUP BY Playlists.id")
-                                  .arg(m_countsDurationTableName,
-                                          QString::number(
-                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+            "SELECT "
+            "  %6.%7 AS id, "
+            "  %6.%8 AS name, "
+            "  LOWER(%6.%8) AS sort_name, "
+            "  COUNT(CASE %2.%5 WHEN 0 THEN 1 ELSE NULL END) AS count, "
+            "  SUM(CASE %2.%5 WHEN 0 THEN %2.%4 ELSE 0 END) AS durationSeconds "
+            "FROM %2 "
+            "LEFT JOIN %10 ON %2.%3 = %10.%11 "
+            "LEFT JOIN %6 ON %10.%12 = %6.%7 "
+            "WHERE %6.%9 = %13 "
+            "GROUP BY %6.%7")
+                                  .arg(m_countsDurationTableName, // 1
+                                          LIBRARY_TABLE,
+                                          LIBRARYTABLE_ID,
+                                          LIBRARYTABLE_DURATION,
+                                          LIBRARYTABLE_MIXXXDELETED, // 5
+                                          PLAYLIST_TABLE,
+                                          PLAYLISTTABLE_ID,
+                                          PLAYLISTTABLE_NAME,
+                                          PLAYLISTTABLE_HIDDEN,
+                                          PLAYLIST_TRACKS_TABLE, // 10
+                                          PLAYLISTTRACKSTABLE_TRACKID,
+                                          PLAYLISTTRACKSTABLE_PLAYLISTID,
+                                          QString::number(PlaylistDAO::PLHT_NOT_HIDDEN)); // 13
+
     queryString.append(
-            mixxx::DbConnection::collateLexicographically(
-                    " ORDER BY sort_name"));
+            mixxx::DbConnection::collateLexicographically(" ORDER BY sort_name"));
+
+    // qDebug() << "[PlaylistFeature] -> queryString: " << queryString;
     QSqlQuery query(database);
     if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
