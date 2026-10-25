@@ -134,7 +134,7 @@ DDJXP2.ThreeButtonSelector = class extends DDJXP2.Button {
                 }
             } else {
                 if (this.groupArray[i] === group) {
-                    // dectivating of button when pressed again
+                    // deactivating of button when pressed again
                     if (this.outTrigger) {
                         this.send(this.outValueScale(value), i);
                     }
@@ -330,7 +330,7 @@ DDJXP2.PadModeSlicer = class extends DDJXP2.PadMode {
         return Number.isFinite(this.samplesBetweenSlices);
     }
     // If at least one button is pressed, create a loop between those points,
-    // else show some area indications (SlicereLoop) or create overall loop (SlicerLoopRoll)
+    // else show some area indications (SlicerLoop) or create overall loop (SlicerLoopRoll)
     updateLoop() {
         const startPad = this.pressed.indexOf(true);
         const endPad = this.pressed.lastIndexOf(true);
