@@ -1,5 +1,6 @@
 #include "soundio/soundmanager.h"
 
+#include <portaudio.h>
 #include <qlogging.h>
 
 #include <QLibrary>
@@ -20,7 +21,6 @@
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
-#include <portaudio.h>
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
