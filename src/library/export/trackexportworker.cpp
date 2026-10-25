@@ -69,27 +69,36 @@ void TrackExportWorker::run() {
     m_failedTracks.clear();
     m_errorMessage.clear();
 
-    QMap<QString, mixxx::FileInfo> copylist = createCopylist(m_tracks, m_failedTracks);
+    const QMap<QString, mixxx::FileInfo> copylist =
+            createCopylist(m_tracks, m_failedTracks);
 
-    int totalCount = copylist.size() + m_failedTracks.size();
+    const int totalCount = copylist.size() + m_failedTracks.size();
     int currentCount = m_failedTracks.size();
 
     emit progress(QString(), currentCount, totalCount);
 
     for (auto it = copylist.constBegin(); it != copylist.constEnd(); ++it) {
-        if (m_bStop) {
-            emit canceled();
-            return;
+        if (m_bStop.loadAcquire()) {
+            break;
         }
 
+        // copyFile() calls stop() on cancel or on a fatal error.
         copyFile(it.value(), it.key());
 
-        if (m_bStop) {
-            return;
+        if (m_bStop.loadAcquire()) {
+            break;
         }
 
-        currentCount++;
+        ++currentCount;
         emit progress(it.key(), currentCount, totalCount);
+    }
+
+    // Single exit point: any stop request ends in canceled(),
+    // never in progressFinished().
+    if (m_bStop.loadAcquire()) {
+        emit canceled();
+    } else {
+        emit progressFinished();
     }
 }
 
@@ -112,7 +121,6 @@ void TrackExportWorker::copyFile(
             case OverwriteAnswer::OVERWRITE_ALL:
                 break;
             case OverwriteAnswer::CANCEL:
-                m_errorMessage = tr("Export process was canceled");
                 stop();
                 return;
             }
@@ -164,18 +172,12 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
 
     mode_future.wait();
 
+    // stop() may have been called from another thread while we were blocked.
     if (m_bStop.loadAcquire()) {
         return OverwriteAnswer::CANCEL;
     }
 
-    if (!mode_future.valid()) {
-        kLogger.warning() << "invalid answer from future";
-        m_errorMessage = tr("Error exporting tracks");
-        stop();
-        return OverwriteAnswer::CANCEL;
-    }
-
-    OverwriteAnswer answer = mode_future.get();
+    const OverwriteAnswer answer = mode_future.get();
     switch (answer) {
     case OverwriteAnswer::SKIP_ALL:
         m_overwriteMode = OverwriteMode::SKIP_ALL;
@@ -184,12 +186,13 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
         m_overwriteMode = OverwriteMode::OVERWRITE_ALL;
         break;
     case OverwriteAnswer::CANCEL:
-        m_errorMessage = tr("Error exporting tracks");
+        // Normal user action: stop the export, but do NOT set m_errorMessage.
         stop();
         break;
-    default:;
+    case OverwriteAnswer::SKIP:
+    case OverwriteAnswer::OVERWRITE:
+        break;
     }
-
     return answer;
 }
 
