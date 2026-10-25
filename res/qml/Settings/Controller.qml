@@ -35,8 +35,58 @@ Category {
 
     label: "Controllers"
 
+    // Rescan feedback: briefly shows progress after a USB re-enumeration
+    // (idea from JaviLabarumDJ/mixxx-android, adapted to this page).
+    property bool isRescanning: false
+
+    Timer {
+        id: rescanFeedbackTimer
+        interval: 1500
+        repeat: false
+        onTriggered: root.isRescanning = false
+    }
+
     Component.onCompleted: {
         load();
+    }
+
+    // USB status + Rescan bar above the controller cards.
+    Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        color: "#1c202a"
+        height: statusRow.implicitHeight + 16
+        radius: 8
+        border.color: "#2a364f"
+        border.width: 1
+
+        RowLayout {
+            id: statusRow
+            anchors.fill: parent
+            anchors.margins: 8
+            spacing: 10
+
+            Text {
+                Layout.fillWidth: true
+                text: manager.knownDevices.length > 0
+                        ? qsTr("%1 controller(s) connected").arg(manager.knownDevices.length)
+                        : qsTr("No USB/MIDI controller detected")
+                font.pixelSize: 12
+                color: manager.knownDevices.length > 0 ? "#4caf50" : "#9e9e9e"
+                elide: Text.ElideRight
+            }
+
+            Button {
+                text: root.isRescanning ? qsTr("Scanning…") : qsTr("Rescan USB")
+                enabled: !root.isRescanning
+                onClicked: {
+                    root.isRescanning = true;
+                    manager.rescan();
+                    rescanFeedbackTimer.restart();
+                }
+            }
+        }
     }
 
     ScrollView {
@@ -47,6 +97,7 @@ Category {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
+        anchors.topMargin: statusRow.implicitHeight + 24
 
         ColumnLayout {
             spacing: root.selectedController ? 18 : 0

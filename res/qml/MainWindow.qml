@@ -152,6 +152,18 @@ Item {
                     checkable: true
                     text: "Effects"
                 }
+                // XY touch FX pad (from JaviLabarumDJ/mixxx-android):
+                // opens a floating overlay, no layout changes.
+                Skin.Button {
+                    id: showXyPadButton
+
+                    activeColor: Theme.white
+                    checkable: true
+                    checked: xyPadOverlay.visible
+                    text: "XY"
+
+                    onClicked: xyPadOverlay.visible = !xyPadOverlay.visible
+                }
                 Skin.Button {
                     id: showAuxButton
 
@@ -718,5 +730,15 @@ Item {
                 }
             }
         }
+    }
+    // Floating XY touch FX pad overlay (from JaviLabarumDJ/mixxx-android).
+    Skin.XYPad {
+        id: xyPadOverlay
+        visible: false
+        z: 90
+        anchors.centerIn: parent
+        width: Math.min(680, parent.width - 24)
+        height: Math.min(380, parent.height - 50)
+        onCloseRequested: visible = false
     }
 }

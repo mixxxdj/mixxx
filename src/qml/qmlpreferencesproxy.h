@@ -265,6 +265,7 @@ class QmlControllerManagerProxy : public QObject {
 
   public slots:
     void refreshKnownDevices();
+    Q_INVOKABLE void rescan();
     void refreshMappings();
     void loadNewMapping(mixxx::qml::QmlControllerDeviceProxy::Type type, const MappingInfo& mapping);
     void updateExistingMapping(mixxx::qml::QmlControllerMappingProxy* pMapping, const MappingInfo& mapping);

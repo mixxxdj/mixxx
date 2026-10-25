@@ -8,8 +8,13 @@ import QtQuick.Shapes
 import "../Theme"
 
 ColumnLayout {
+    id: root
+
     required property var currentTrack
     required property string group
+    // JaviLabarumDJ/mixxx-android passes minimized from Deck.qml; default
+    // false keeps desktop behavior unchanged.
+    property bool minimized: false
 
     Mixxx.ControlProxy {
         id: keylockCO

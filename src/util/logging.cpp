@@ -15,6 +15,9 @@
 #include <QThread>
 #include <atomic>
 #include <string_view>
+#if defined(Q_OS_ANDROID)
+#include <android/log.h>
+#endif
 
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
@@ -375,6 +378,27 @@ void handleMessage(
     }
 
     writeToLog(type, context, input, writeFlags);
+
+#if defined(Q_OS_ANDROID)
+    // Mirror to logcat so on-device debugging works without pulling the
+    // log file (from JaviLabarumDJ/mixxx-android). Kept after the normal
+    // routing so existing desktop behavior is unchanged.
+    android_LogPriority prio = ANDROID_LOG_INFO;
+    if (type == QtDebugMsg) {
+        prio = ANDROID_LOG_DEBUG;
+    } else if (type == QtWarningMsg) {
+        prio = ANDROID_LOG_WARN;
+    } else if (type == QtCriticalMsg) {
+        prio = ANDROID_LOG_ERROR;
+    } else if (type == QtFatalMsg) {
+        prio = ANDROID_LOG_FATAL;
+    }
+    __android_log_print(prio,
+            "MixxxNative",
+            "[%s] %s",
+            context.category ? context.category : "default",
+            input.toLocal8Bit().constData());
+#endif
 }
 
 } // anonymous namespace

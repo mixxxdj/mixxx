@@ -442,6 +442,16 @@ void QmlControllerManagerProxy::refreshKnownDevices() {
     Q_EMIT deviceListChanged();
 }
 
+// Re-enumerates attached controllers (USB hot-plug) and refreshes the
+// known/unknown device lists. Bound to the Rescan button in the
+// Controller settings page (idea from JaviLabarumDJ/mixxx-android).
+void QmlControllerManagerProxy::rescan() {
+    if (m_pControllerManager) {
+        m_pControllerManager->setUpDevices();
+    }
+    refreshKnownDevices();
+}
+
 void QmlControllerManagerProxy::refreshMappings() {
     m_knownMappings.clear();
     loadMappingFromEnumerator(m_pControllerManager->getMainThreadSystemMappingEnumerator());
