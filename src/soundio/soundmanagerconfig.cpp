@@ -579,7 +579,7 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
             }
 #ifdef __WINDOWS__
             if (defaultOutputIndex >= 0 &&
-                    pDevice->getDeviceId().portAudioIndex == defaultOutputIndex) {
+                    pDevice->getDeviceId().deviceIndex == defaultOutputIndex) {
                 pMainDevice = pDevice;
                 break;
             }
