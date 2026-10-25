@@ -144,15 +144,41 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
             .global_remove = registryEventGlobalRemoveOuter,
     };
 
-    static int metadataProperty(void* data,
+    static int metadataEventSetting(void* data,
             uint32_t id,
+            const char* key,
+            const char* type,
+            const char* value) {
+        return static_cast<PipewireEnumerator*>(data)->metadataEventSetting(id, key, type, value);
+    }
+
+    int metadataEventSetting(uint32_t id,
             const char* key,
             const char* type,
             const char* value);
 
-    static constexpr struct pw_metadata_events metadataEvents = {
+    static constexpr struct pw_metadata_events metadataEventsSetting{
             .version = PW_VERSION_METADATA_EVENTS,
-            .property = metadataProperty};
+            .property = metadataEventSetting,
+    };
+
+    static int metadataEventDefault(void* data,
+            uint32_t id,
+            const char* key,
+            const char* type,
+            const char* value) {
+        return static_cast<PipewireEnumerator*>(data)->metadataEventDefault(id, key, type, value);
+    }
+
+    int metadataEventDefault(uint32_t id,
+            const char* key,
+            const char* type,
+            const char* value);
+
+    static constexpr struct pw_metadata_events metadataEventsDefault{
+            .version = PW_VERSION_METADATA_EVENTS,
+            .property = metadataEventDefault,
+    };
 
     static void callback(void* data, spa_io_position* pos) {
         ((PipewireEnumerator*)data)->callback(pos);
@@ -188,7 +214,7 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
 
     std::string createLink(uint32_t outNodeId,
             uint32_t outPortId,
-            uint32_t inNodeI,
+            uint32_t inNodeId,
             uint32_t inPortId);
     void destroyLink(uint32_t id);
 
@@ -215,12 +241,14 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     pw_context* m_pPwContext;
     pw_core* m_pPwCore;
     pw_registry* m_pPwRegistry;
-    pw_metadata* m_pPwMetadata;
+    pw_metadata* m_pPwMetadataSetting;
+    pw_metadata* m_pPwMetadataDefault;
     pw_filter* m_pPwFilter;
     spa_hook m_pwCoreListener;
     spa_hook m_pwRegistryListener;
     spa_hook m_pwFilterListener;
-    spa_hook m_pwMetadataListener;
+    spa_hook m_pwMetadataSettingListener;
+    spa_hook m_pwMetadataDefaultListener;
 
     std::unordered_map<uint32_t, QSharedPointer<SoundDevicePipewire>> m_soundDevices;
 
@@ -233,6 +261,8 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     std::unordered_map<AudioInput, PortPair> m_inputs;
     std::unordered_map<AudioOutput, PortPair> m_outputs;
 
+    uint32_t m_framesPerBuffer;
+
     PollingControlProxy m_audioLatencyUsage;
     ControlObject m_coPipewirePatchbaySync;
     ControlObject m_coBufferSize;
@@ -242,14 +272,16 @@ class PipewireEnumerator : public SoundDeviceEnumerator {
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     uint32_t m_filterId;
-    // Handle all connections made to/from Mixxx node
-    // If we do not, then we only track connections made in the
-    // preference page, and leave the external patchbay connections
-    // If we do, then all connections to Mixxx will be affected, even
-    // the ones made with external patchbay
     int m_coreSyncSeq;
     bool m_forceQuantum;
     bool m_forceSamplerate;
+
+    uint32_t m_defaultSourceId;
+    uint32_t m_defaultSinkId;
+    std::string m_defaultSourceName;
+    std::string m_defaultSinkName;
     uint32_t m_samplerate;
     uint32_t m_bufferSize;
+
+    static constexpr uint32_t kDefaultDeviceId = PW_ID_ANY;
 };

@@ -61,6 +61,7 @@ class SoundManagerAndroid : public QObject {
             QSet<SoundDeviceId>* pDevicesNotFound);
 
     SoundManager* m_pSoundManager;
-    // NOTE(djsugar): USB hotplug timer/listener not ported yet (needs Javi's
-    // mixxx::android::addDevicesChangedListener + refreshAndroidUsbDevices).
+    /// Debounces USB hotplug notifications
+    QTimer* m_pUsbTimer = nullptr;
+    int m_usbListenerId = 0;
 };
