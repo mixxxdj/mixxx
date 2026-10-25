@@ -197,4 +197,3 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
 } // namespace qml
 } // namespace mixxx
-
