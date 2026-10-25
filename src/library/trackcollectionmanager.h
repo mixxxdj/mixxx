@@ -18,6 +18,7 @@
 
 class LibraryScanner;
 class TrackCollection;
+class TrackMetadataExportThread;
 class ExternalTrackCollection;
 class RelocatedTrack;
 
@@ -52,7 +53,8 @@ class TrackCollectionManager : public QObject,
     }
 
     TrackPointer getTrackById(
-            TrackId trackId) const;
+            TrackId trackId,
+            bool updateTrackFromSource = true) const;
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
     QList<TrackId> resolveTrackIds(
@@ -127,6 +129,12 @@ class TrackCollectionManager : public QObject,
     // Callback for GlobalTrackCache
     void saveEvictedTrack(Track* pTrack) noexcept override;
 
+    // Invoked with a queued connection after the export of track
+    // metadata into a source file has finished on the worker thread.
+    void slotTrackExported(
+            TrackPointer pTrack,
+            ExportTrackMetadataResult result);
+
     // Might be called from any thread
     enum class TrackMetadataExportMode {
         Immediate,
@@ -147,6 +155,10 @@ class TrackCollectionManager : public QObject,
 
     // TODO: Extract and decouple LibraryScanner from TrackCollectionManager
     std::unique_ptr<LibraryScanner> m_pScanner;
+
+    // Keeps slow file I/O for exporting track metadata off the GUI
+    // thread. Nullptr in tests to keep the synchronous behavior.
+    std::unique_ptr<TrackMetadataExportThread> m_pExportThread;
     std::atomic_bool m_libraryScanActive{false};
     std::mutex m_libraryScanSummaryMutex;
     std::optional<LibraryScanResultSummary> m_pendingLibraryScanSummary;
