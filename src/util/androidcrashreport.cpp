@@ -161,7 +161,7 @@ namespace android {
 
 QString crashReportDirectory() {
     const QString path = QDir::toNativeSeparators(
-        QDir::homePath() + "/Mixxx/logs");
+            QDir::homePath() + "/Mixxx/logs");
     QDir().mkpath(path);
     return path;
 }

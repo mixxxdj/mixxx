@@ -4,10 +4,10 @@
 
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
-#include "track/track.h"
-#include "track/cue.h"
 #include "track/beats.h"
+#include "track/cue.h"
 #include "track/cueinfo.h"
+#include "track/track.h"
 
 namespace mixxx {
 namespace android {
