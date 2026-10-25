@@ -43,7 +43,7 @@ DDJXP2.RGBPioneerCode = function(r, g, b, dim = 0) {
     const n = Math.min(Math.min(r, g), b);
     const v = Math.max(Math.max(r, g), b);
     const m = v - n;
-    let h = 0;
+    let h;
     if (v === 0) {
         h = 0x00;    // black
     } else if (m === 0) {
