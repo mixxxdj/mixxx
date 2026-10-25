@@ -594,10 +594,14 @@ bool insertTrackLocation(
         // is already present in the table. Any other error (e.g.
         // SQLITE_BUSY because another connection is currently holding the
         // write lock) must NOT be misinterpreted as a duplicate!
-        const auto errorCode =
+        // Qt's SQLite driver exposes the numeric code as a string via
+        // nativeErrorCode(). Mask to the primary result code: extended
+        // codes like SQLITE_CONSTRAINT_UNIQUE (2067) share the low byte
+        // with SQLITE_CONSTRAINT (19). Avoids sqlite3.h extended-code
+        // macros, which the Android NDK headers lack.
+        const int errorCode =
                 pTrackLocationInsert->lastError().nativeErrorCode().toInt();
-        *pDuplicateLocation = errorCode == SQLITE_CONSTRAINT ||
-                errorCode == SQLITE_CONSTRAINT_UNIQUE;
+        *pDuplicateLocation = (errorCode & 0xFF) == 19; // SQLITE_CONSTRAINT
         LOG_FAILED_QUERY(*pTrackLocationInsert)
                 << "Failed to insert track location" << fileInfo.location();
         return false;
