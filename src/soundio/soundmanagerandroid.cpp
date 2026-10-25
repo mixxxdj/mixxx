@@ -5,6 +5,7 @@
 
 #include "control/controlobject.h"
 #include "engine/enginemixer.h"
+#include "moc_soundmanagerandroid.cpp"
 #include "preferences/configobject.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceportaudio.h"

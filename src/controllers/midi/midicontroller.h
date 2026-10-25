@@ -83,6 +83,7 @@ class MidiController : public Controller {
             unsigned char control,
             const QJSValue& scriptCode);
 
+    using Controller::applyMapping;
     bool applyMapping(const QString& resourcePath) override;
     int close() override;
 
