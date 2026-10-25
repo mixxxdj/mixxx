@@ -4,7 +4,7 @@
 
 #include "control/controlproxy.h"
 #include "moc_qmlwaveformoverview.cpp"
-#include "qmlconfigproxy.h"
+#include "qml/qmlconfigproxy.h"
 #include "qmltrackproxy.h"
 #include "track/track.h"
 #include "util/math.h"
