@@ -108,9 +108,12 @@ bool Controller::applyMapping(const QString& resourcePath, std::shared_ptr<Contr
     Q_UNUSED(resourcePath);
 #endif
 
-    const auto& ns = pMapping->sharedDataNamespace();
-    if (!ns.isEmpty() && runtimeData != nullptr) {
-        m_pScriptEngineLegacy->setSharedData(runtimeData->namespaced(ns));
+    const auto pMapping = getMapping();
+    if (pMapping && runtimeData != nullptr) {
+        const auto& ns = pMapping->sharedDataNamespace();
+        if (!ns.isEmpty()) {
+            m_pScriptEngineLegacy->setSharedData(runtimeData->namespaced(ns));
+        }
     }
     return m_pScriptEngineLegacy->initialize();
 }
