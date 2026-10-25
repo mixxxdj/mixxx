@@ -9,8 +9,8 @@ NumarkOmniControl.loadUserSettings = function () {
     engine.setValue("[QuickEffectRack1_[Channel2]]", "enabled", engine.getSetting("enableQuickEffects"));
 
     // softTakeover only if user wants it
-	engine.softTakeover("[Channel1]", "rate", engine.getSetting("enableSoftTakeover"));
-	engine.softTakeover("[Channel2]", "rate", engine.getSetting("enableSoftTakeover"));
+    engine.softTakeover("[Channel1]", "rate", engine.getSetting("enableSoftTakeover"));
+    engine.softTakeover("[Channel2]", "rate", engine.getSetting("enableSoftTakeover"));
 
     // Cached values of JogWheel and FinePitch for less jumps to engine
     NumarkOmniControl.finePitchAdjustment = engine.getSetting("finePitchAdjustment");
