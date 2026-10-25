@@ -370,8 +370,8 @@ DDJXP2.PadModeSlicer = class extends DDJXP2.PadMode {
     samplesPerBeat(group) {
         const sampleRate = engine.getValue(group, "track_samplerate");
         const bpm = engine.getValue(group, "local_bpm");
-        // The sample rate includes both channels (i.e. it is double the framerate)
-        // Hence, we multiply by 2*60 (120) instead of 60 to get the correct sample rate
+        // Positions such as track_samples/loop positions are treated as stereo sample units,
+        // so we need an extra factor of 2 here even though track_samplerate is per-channel.
         const secondsPerBeat = 120/bpm;
         const samplesPerBeat = secondsPerBeat * sampleRate;
         return samplesPerBeat;
