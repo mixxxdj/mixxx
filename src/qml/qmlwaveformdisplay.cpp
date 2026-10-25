@@ -12,6 +12,7 @@
 #include <QtQuick/QSGTextureProvider>
 #include <algorithm>
 #include <cmath>
+#include <map>
 
 #include "library/library.h"
 #include "mixer/basetrackplayer.h"
@@ -351,6 +352,15 @@ void QmlWaveformDisplay::geometryChange(const QRectF& newGeometry, const QRectF&
     QQuickItem::geometryChange(newGeometry, oldGeometry);
 }
 
+const QmlWaveformRendererFactory::Renderer& QmlWaveformDisplay::createOrCached(
+        QmlWaveformRendererFactory* pQmlRenderer) {
+    auto name = std::string{pQmlRenderer->metaObject()->className()};
+    if (!m_rendererCache.contains(name)) {
+        m_rendererCache[name] = std::move(pQmlRenderer->create(this, m_options));
+    }
+    return m_rendererCache[name];
+}
+
 QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*) {
     if (m_dirtyFlag.testFlag(DirtyFlag::Window)) {
         delete node;
@@ -393,7 +403,7 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 qWarning() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
                 continue;
             }
-            auto renderer = pQmlRenderer->create(this, m_options);
+            auto& renderer = createOrCached(pQmlRenderer);
             // FIXME Some renderer will return nullptr till
             // WaveformRendererTextured is supported (#14990)
             // It is also expected for the stem renderer to return a null value in
@@ -402,7 +412,8 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 continue;
             }
             addRenderer(renderer.renderer);
-            pTopNode->appendChildNode(std::move(renderer.node));
+            renderer.node->setFlag(QSGNode::OwnedByParent, false);
+            static_cast<QSGNode*>(pTopNode)->appendChildNode(renderer.node.get());
         }
 
         pBgNode->appendChildNode(pTopNode);

@@ -165,6 +165,9 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
     void setCurrentTrack(TrackPointer pTrack);
     void requestUpdateAtFrameRate();
 
+    const QmlWaveformRendererFactory::Renderer& createOrCached(
+            QmlWaveformRendererFactory* pQmlRenderer);
+
     // Properties
     QPointer<QmlPlayerProxy> m_pPlayer;
     QColor m_backgroundColor{QColor(0, 0, 0, 255)};
@@ -187,6 +190,8 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
     DirtyFlags m_dirtyFlag{DirtyFlag::None};
     QList<QmlWaveformRendererFactory*> m_waveformRenderers;
+
+    std::map<std::string, QmlWaveformRendererFactory::Renderer> m_rendererCache;
     WaveformRendererSignalBaseOptions m_options{
             allshader::WaveformRendererSignalBase::Option::None};
 };

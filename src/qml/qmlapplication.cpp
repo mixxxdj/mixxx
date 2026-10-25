@@ -370,6 +370,7 @@ QmlApplication::~QmlApplication() {
     // factory while the engine is tearing down its object tree.
     m_pAppEngine.reset();
     // Delete all the QML singletons in order to prevent leak detection in CoreService
+    QmlCoreServices::destroy();
     QmlDlgPreferencesProxy::s_pInstance.reset();
     if (m_ownsWaveformWidgetFactory) {
         WaveformWidgetFactory::destroy();
