@@ -15,9 +15,11 @@ QString searchTitle(const QString& title) {
     static const QRegularExpression kBrackets(
             QStringLiteral("[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]"));
     t.remove(kBrackets);
-    static const QRegularExpression kVersionEnding(QStringLiteral(
-                                                           "\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|extended|dub|instrumental|"
-                                                           "live|remaster|remastered|radio|club|single|album|original)\\b.*$"),
+    static const QRegularExpression kVersionEnding(
+            QStringLiteral("\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|"
+                           "extended|dub|instrumental|"
+                           "live|remaster|remastered|radio|club|single|album|"
+                           "original)\\b.*$"),
             QRegularExpression::CaseInsensitiveOption);
     t.remove(kVersionEnding);
     static const QRegularExpression kFeaturing(

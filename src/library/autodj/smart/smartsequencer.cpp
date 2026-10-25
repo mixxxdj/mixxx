@@ -406,8 +406,9 @@ SequenceResult SmartSequencer::solve(const QVector<TrackFeatures>& tracks,
                     gap.k = k;
                     gap.fromText = MixScorer::trackText(from);
                     gap.toText = MixScorer::trackText(to);
-                    for (const BridgeSuggestion& option :
-                            findBridges(queuedIds, queuedNames, SequenceResult::kMaxBridgeOptions)) {
+                    for (const BridgeSuggestion& option : findBridges(queuedIds,
+                                 queuedNames,
+                                 SequenceResult::kMaxBridgeOptions)) {
                         gap.options.append(idsOf(option));
                         gap.optionTexts.append(textOf(option));
                     }

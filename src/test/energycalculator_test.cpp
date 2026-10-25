@@ -291,7 +291,12 @@ TEST(EnergyCalculatorTest, GridWithTheWrongTempoDrifts) {
 
 TEST(EnergyCalculatorTest, DrummerWhoSlowsDownDrifts) {
     // Steady for the first half, then 1% slower: no steady grid fits.
-    const auto loop = drumLoop(200, [](int n) { return n < 200 ? 0.3 + 0.5 * n : 100.3 + 0.505 * (n - 200); }, false);
+    const auto loop = drumLoop(
+            200,
+            [](int n) {
+                return n < 200 ? 0.3 + 0.5 * n : 100.3 + 0.505 * (n - 200);
+            },
+            false);
     EXPECT_GT(gridDrift(loop, 0.3, 0.5), EnergyCalculator::kGridMaxDriftBeats);
 }
 

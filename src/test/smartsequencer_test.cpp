@@ -738,7 +738,12 @@ TEST(BridgeFinderTest, LiveAssistantRanksTheBestNextTracks) {
             makeTrack(6, 8, false, 129, 6), // relative key
             makeTrack(7, 0, true, 128, 6),  // no key: cannot judge
     };
-    const QStringList names = {"B - One", "C - Two", "D - Three", "E - Four", "F - Five", "G - Six"};
+    const QStringList names = {"B - One",
+            "C - Two",
+            "D - Three",
+            "E - Four",
+            "F - Five",
+            "G - Six"};
     for (int i = 0; i < library.size(); ++i) {
         library[i].displayName = names[i];
     }

@@ -166,9 +166,11 @@ QString BridgeFinder::normalizeTitle(const QString& title, const QString& normal
             QStringLiteral("[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]"));
     t.remove(kBrackets);
     // A version ending after " - ": "Blue Monday - 1988 Remix".
-    static const QRegularExpression kVersionEnding(QStringLiteral(
-                                                           "\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|extended|dub|instrumental|"
-                                                           "live|remaster|remastered|radio|club|single|album|original)\\b.*$"),
+    static const QRegularExpression kVersionEnding(
+            QStringLiteral("\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|"
+                           "extended|dub|instrumental|"
+                           "live|remaster|remastered|radio|club|single|album|"
+                           "original)\\b.*$"),
             QRegularExpression::CaseInsensitiveOption);
     t.remove(kVersionEnding);
     // "feat. X", "ft. X", "featuring X" up to the end.

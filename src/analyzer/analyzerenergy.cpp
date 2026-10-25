@@ -235,9 +235,12 @@ void AnalyzerEnergy::setAutoMarkers(
             after.outroStartSec != before.outroStartSec) {
         EnergyStore::saveAutoMarkers(m_db, m_trackId, after);
     }
-    qDebug() << "AnalyzerEnergy: markers" << pTrack->getInfo()
-             << "intro end" << (introFree ? QString::number(after.introEndSec) : QStringLiteral("kept (set by DJ)"))
-             << "outro start" << (outroFree ? QString::number(after.outroStartSec) : QStringLiteral("kept (set by DJ)"));
+    qDebug() << "AnalyzerEnergy: markers" << pTrack->getInfo() << "intro end"
+             << (introFree ? QString::number(after.introEndSec)
+                           : QStringLiteral("kept (set by DJ)"))
+             << "outro start"
+             << (outroFree ? QString::number(after.outroStartSec)
+                           : QStringLiteral("kept (set by DJ)"));
 }
 
 void AnalyzerEnergy::cleanup() {
