@@ -8,12 +8,11 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "mixer/basetrackplayer.h"
+#include "qml/qmltrackproxy.h"
 #include "track/track_decl.h"
 
 namespace mixxx {
 namespace qml {
-
-class QmlTrackProxy;
 
 class QmlPlayerProxy : public QObject {
     Q_OBJECT

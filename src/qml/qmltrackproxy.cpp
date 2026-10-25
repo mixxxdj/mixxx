@@ -1,4 +1,5 @@
 #include "qml/qmltrackproxy.h"
+#include "qml/qmlconfigproxy.h"
 
 #include <QBuffer>
 
