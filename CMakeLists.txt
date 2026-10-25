@@ -1254,6 +1254,7 @@ add_library(
   EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
   src/analyzer/analyzerenergy.cpp
+  src/analyzer/energycalculator.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
