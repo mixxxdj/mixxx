@@ -303,26 +303,31 @@ DDJXP2.PadModeSlicer = class extends DDJXP2.PadMode {
         // move slicer window one samplesBetweenSlices-Size left
         this.parameterLeft = new DDJXP2.Button({
             input(_channel, _control, value, _status, _group) {
-                if (value) {
-                    SlicerContainer.startPos -= SlicerContainer.samplesBetweenSlices;
-                    SlicerContainer.activate(1, 0); // re-activate with provided startPos
-                    SlicerContainer.updateLoop();
+                if (!value || !SlicerContainer.canMoveSlicerWindow()) {
+                    return;
                 }
+                SlicerContainer.startPos -= SlicerContainer.samplesBetweenSlices;
+                SlicerContainer.activate(1, 0); // re-activate with provided startPos
+                SlicerContainer.updateLoop();
             }
         });
         // move slicer window one samplesBetweenSlices-Size right
         this.parameterRight = new DDJXP2.Button({
             input(_channel, _control, value, _status, _group) {
-                if (value) {
-                    SlicerContainer.startPos += SlicerContainer.samplesBetweenSlices;
-                    SlicerContainer.activate(1, 0); // re-activate with provided startPos
-                    SlicerContainer.updateLoop();
+                if (!value || !SlicerContainer.canMoveSlicerWindow()) {
+                    return;
                 }
+                SlicerContainer.startPos += SlicerContainer.samplesBetweenSlices;
+                SlicerContainer.activate(1, 0); // re-activate with provided startPos
+                SlicerContainer.updateLoop();
             }
         });
 
         // always update the slicer if a new track is loaded
         this.loadConnection = engine.makeConnection(this.group, "track_loaded", this.trackLoaded.bind(this));
+    }
+    canMoveSlicerWindow() {
+        return Number.isFinite(this.samplesBetweenSlices);
     }
     // If at least one button is pressed, create a loop between those points,
     // else show some area indications (SlicereLoop) or create overall loop (SlicerLoopRoll)
