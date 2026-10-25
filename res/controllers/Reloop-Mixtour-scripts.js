@@ -292,13 +292,9 @@ ReloopMixtour.Mixer = class extends components.Deck {
             connect: function() {
                 // use two connections for the LED, one to check for any real FX (id > 2) and the other to check
                 // if effect is enabled
-                if (this.connections[0] === undefined &&
-                undefined !== this.group &&
-                undefined !== this.outKey &&
-                undefined !== this.output &&
-                typeof this.output === "function") {
-                    this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
-                    this.connections[1] = engine.makeConnection(this.group, this.secondOutKey, this.output.bind(this));
+                if (this.connections[0] === undefined) {
+                    this.connections.push(engine.makeConnection(this.group, this.outKey, this.output.bind(this)));
+                    this.connections.push(engine.makeConnection(this.group, this.secondOutKey, this.output.bind(this)));
                 }
             },
         });
@@ -356,13 +352,9 @@ ReloopMixtour.Mixer = class extends components.Deck {
             connect: function() {
                 // use two connections for the LED, one to check for any real FX (id > 2) and the other to check
                 // if effect is enabled
-                if (this.connections[0] === undefined &&
-                undefined !== this.group &&
-                undefined !== this.outKey &&
-                undefined !== this.output &&
-                typeof this.output === "function") {
-                    this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
-                    this.connections[1] = engine.makeConnection(this.group, this.secondOutKey, this.output.bind(this));
+                if (this.connections[0] === undefined) {
+                    this.connections.push(engine.makeConnection(this.group, this.outKey, this.output.bind(this)));
+                    this.connections.push(engine.makeConnection(this.group, this.secondOutKey, this.output.bind(this)));
                 }
             },
         });
