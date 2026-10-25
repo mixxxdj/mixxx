@@ -670,7 +670,6 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
-<<<<<<< HEAD
 
     checkBoxRampUpEnabled->setChecked(false);
     checkBoxRampDownEnabled->setChecked(false);
@@ -679,8 +678,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     checkBoxRampUpIncludePitch->setChecked(true);
     sliderRampUpTime->setValue(kDefaultRampTimePercent);
     sliderRampDownTime->setValue(kDefaultRampTimePercent);
-=======
-    // TrackFileCache
+
+// TrackFileCache
     checkBoxTrackFileCacheEnabled->setChecked(CachingReader::kDefaultTrackFileCacheEnabled);
 
     // Reset path to the platform default. Passing nullptr returns the default
@@ -702,7 +701,6 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     // Sync dependent widget enable/disable state with the checkbox.
     slotTrackFileCacheEnabledChanged(CachingReader::kDefaultTrackFileCacheEnabled);
->>>>>>> origin/port/eve-picks
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -931,7 +929,6 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(
             ConfigKey(kControlsGroup, QStringLiteral("RatePermRight")),
             m_dRatePermFine);
-<<<<<<< HEAD
 
     const int rampDownMode = radioButtonRampDownPowerCut->isChecked() ? 1 : 0;
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")),
@@ -961,8 +958,8 @@ void DlgPrefDeck::slotApply() {
     RateControl::setRampIncludePitch(checkBoxRampUpIncludePitch->isChecked());
     RateControl::setRampUpTimeFactor(sliderRampUpTime->value() / 100.0);
     RateControl::setRampDownTimeFactor(sliderRampDownTime->value() / 100.0);
-=======
-    // TrackFileCache (only its own keys)
+
+// TrackFileCache (only its own keys)
     saveTrackFileCacheSettings();
 }
 
@@ -1022,7 +1019,6 @@ void DlgPrefDeck::saveTrackFileCacheSettings() {
             checkBoxTrackFileCacheSamplers->isChecked());
     m_pConfig->setValue(ConfigKey("[TrackFileCache]", "PreviewDeck"),
             checkBoxTrackFileCachePreviewDeck->isChecked());
->>>>>>> origin/port/eve-picks
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
@@ -1111,7 +1107,6 @@ int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
     return 0;
 }
 
-<<<<<<< HEAD
 void DlgPrefDeck::updateRampTimeLabels() {
     const int rpmMode = comboBoxRampUpMode->currentIndex();
     const int rampDownMode = radioButtonRampDownPowerCut->isChecked() ? 1 : 0;
@@ -1128,7 +1123,7 @@ void DlgPrefDeck::updateRampTimeLabels() {
     const int downPercent = sliderRampDownTime->value();
     labelRampDownTimeValue->setText(timeText(downPercent,
             RateControl::spinDownTime(rpmMode, rampDownMode, downPercent / 100.0)));
-=======
+
 void DlgPrefDeck::populateTrackFileCacheSizeComboBox() {
     comboBoxMaxTrackFileCacheSize->clear();
 
@@ -1222,5 +1217,4 @@ void DlgPrefDeck::slotBrowseTrackFileCacheLocation() {
         }
         lineEditTrackFileCacheLocation->setText(dir + '/');
     }
->>>>>>> origin/port/eve-picks
 }
