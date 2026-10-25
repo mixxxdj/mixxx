@@ -36,6 +36,9 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
+#ifdef Q_OS_ANDROID
+#include "track/androidautocue.h"
+#endif
 #include "skin/skincontrols.h"
 #include "skin/skinloader.h"
 #ifdef MIXXX_USE_QML
@@ -593,6 +596,11 @@ void CoreServices::initialize(QGuiApplication* pApp) {
     }
 
     m_pPlayerManager->addConfiguredDecks();
+
+#ifdef Q_OS_ANDROID
+    // Snap analysis cues to nearest beat on load for Android
+    mixxx::android::snapAutoCuesOnLoad(m_pPlayerManager.get());
+#endif
 
     for (int i = 0; i < kSamplerCount; ++i) {
         m_pPlayerManager->addSampler();

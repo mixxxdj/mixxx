@@ -2224,6 +2224,12 @@ if(ANDROID)
   # Android microphone capture for audio calibration (bypasses BT SCO)
   target_sources(mixxx-lib PRIVATE src/engine/androidmiccapture.cpp)
 
+  # Native crash reporter + auto-cue snap (from JaviLabarumDJ/mixxx-android)
+  target_sources(
+    mixxx-lib
+    PRIVATE src/util/androidcrashreport.cpp src/track/androidautocue.cpp
+  )
+
   # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
   # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
