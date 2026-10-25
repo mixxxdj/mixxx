@@ -52,9 +52,39 @@ Deck n = 0/1:                                   Midi in         Midi out
 // eslint-disable-next-line no-var
 var DDJ200 = { };
 
-components.Component.prototype.shiftOffset = 1;
-components.Component.prototype.shiftChannel = true;
-components.Component.prototype.sendShifted = true;
+// midi-components-0.0.js does not prevent re-connecting some already connected
+// component. The following mixin and the local classes solve this problem.
+// Additionally some shutdown method and some default settings added to all local components.
+DDJ200.controlledConnections = (Base) => class extends Base {
+    constructor(options) {
+        super(options);
+        // if shift settings not changed, set default values for the few others
+        if (!("shiftOffset" in options)) { this.shiftOffset = 1; };
+        if (!("shiftChannel" in options)) { this.shiftChannel = true; };
+        if (!("sendShifted" in options)) { this.sendShifted = true; };
+    }
+    connect() {
+        if (this.connections[0] === undefined) {
+            super.connect();
+        };
+    };
+    disconnect() {
+        super.disconnect();
+        this.connections = [];
+    };
+    shutdown() {
+        if (super.shutdown !== undefined) { super.shutdown(); }
+        this.disconnect();
+    };
+};
+DDJ200.Button = class extends DDJ200.controlledConnections(components.Button) {};
+DDJ200.SamplerButton = class extends DDJ200.controlledConnections(components.SamplerButton) {};
+DDJ200.PlayButton = class extends DDJ200.controlledConnections(components.PlayButton) {};
+DDJ200.CueButton = class extends DDJ200.controlledConnections(components.CueButton) {};
+DDJ200.HotcueButton = class extends DDJ200.controlledConnections(components.HotcueButton) {};
+DDJ200.Pot = class extends DDJ200.controlledConnections(components.Pot) {};
+DDJ200.JogWheelBasic = class extends DDJ200.controlledConnections(components.JogWheelBasic) {};
+DDJ200.Component = class extends DDJ200.controlledConnections(components.Component) {};
 
 DDJ200.PadMode = class extends components.ComponentContainer {
     constructor(options) {
@@ -74,7 +104,7 @@ DDJ200.PadModeContainers = {
         constructor(deckOffset, group) {
             super();
 
-            super.constructPads(i => new components.HotcueButton({
+            super.constructPads(i => new DDJ200.HotcueButton({
                 midi: [0x97 + deckOffset, i],
                 number: i + 1,
                 group,
@@ -92,7 +122,7 @@ DDJ200.PadModeContainers = {
             const theContainer = this;
             this.currentBaseLoopSize = parseInt(engine.getSetting("defaultLoopRootSize"));
 
-            super.constructPads(i => new components.Component({
+            super.constructPads(i => new DDJ200.Component({
                 midi: [0x97 + deckOffset, i],
                 unshift: function() {
                     this.inKey = "beatloop_activate";
@@ -139,12 +169,12 @@ DDJ200.PadModeContainers = {
 
             super.constructPads(i => {
                 if (i < 4) {
-                    return new components.SamplerButton({
+                    return new DDJ200.SamplerButton({
                         midi: [0x97 + deckOffset, i],
                         number: deckOffset * 2 + i + 1,
                     });
                 } else if (i < 7) {
-                    return new components.Button({
+                    return new DDJ200.Button({
                         midi: [0x97 + deckOffset, i],
                         group: `[EffectRack1_EffectUnit${script.deckFromGroup(group)}_Effect${i - 3}]`,
                         inKey: "enabled",
@@ -167,7 +197,7 @@ DDJ200.PadModeContainers = {
                         },
                     });
                 } else {
-                    return new components.Button({
+                    return new DDJ200.Button({
                         midi: [0x97 + deckOffset, i],
                         group,
                         outConnect: false,
@@ -193,7 +223,7 @@ DDJ200.PadModeContainers = {
             const theContainer = this;
             this.currentBaseBeatJumpSize = parseInt(engine.getSetting("defaultBeatJumpRootSize"));
 
-            super.constructPads(i => new components.Component({
+            super.constructPads(i => new DDJ200.Component({
                 midi: [0x97 + deckOffset, i],
                 unshift: function() {
                     this.inKey = "beatjump_forward";
@@ -325,7 +355,7 @@ DDJ200.init = function() {
         right: new DDJ200.Deck([2, 4], 2),
     });
 
-    this.headMixButton = new components.Component({
+    this.headMixButton = new DDJ200.Component({
         midi: [0x96, 0x63],
         key: "headMix",
         group: "[Master]",
@@ -364,7 +394,7 @@ DDJ200.init = function() {
     engine.makeConnection("[Skin]", "show_4decks", this.headMixButton.indicateDeck);
 
 
-    this.transFxButton = new components.Button({
+    this.transFxButton = new DDJ200.Button({
         midi: [0x96, 0x59],
         shiftChannel: false,
         shiftControl: true,
@@ -426,7 +456,7 @@ DDJ200.Deck = class extends components.Deck {
         const theDeck = this;
         this.padUnit = new DDJ200.PadModeContainers.ModeSelector(this.currentDeck);
 
-        this.jogWheel = new components.JogWheelBasic({
+        this.jogWheel = new DDJ200.JogWheelBasic({
             wheelResolution: 128, // how many ticks per revolution the jogwheel has
             alpha: 1 / 8, // alpha-filter
             beta: 1 / 8 / 32,
@@ -462,7 +492,7 @@ DDJ200.Deck = class extends components.Deck {
             },
         });
 
-        this.shiftButton = new components.Button({
+        this.shiftButton = new DDJ200.Button({
             pressed: 0,
             clickTime: 0,
             input: function(_channel, _control, value, _status, _g) {
@@ -485,7 +515,7 @@ DDJ200.Deck = class extends components.Deck {
             },
         });
 
-        this.syncButton = new components.Button({
+        this.syncButton = new DDJ200.Button({
             midi: [0x8F + midiChannel, 0x58],
             key: "sync_enabled",
             shiftChannel: false,
@@ -523,21 +553,21 @@ DDJ200.Deck = class extends components.Deck {
             },
         });
 
-        this.playButton = new components.PlayButton({
+        this.playButton = new DDJ200.PlayButton({
             midi: [0x8F + midiChannel, 0x0B],
             shiftChannel: false,
             shiftControl: true,
             shiftOffset: 0x3C,
         });
 
-        this.cueButton = new components.CueButton({
+        this.cueButton = new DDJ200.CueButton({
             midi: [0x8F + midiChannel, 0x0C],
             shiftChannel: false,
             shiftControl: true,
             shiftOffset: 0x3C,
         });
 
-        this.faderStartButton = new components.Button({
+        this.faderStartButton = new DDJ200.Button({
             midi: [0x8F + midiChannel, 0x66],
             key: "cue_gotoandplay",
             input: function(channel, control, value, status, _g) {
@@ -549,50 +579,50 @@ DDJ200.Deck = class extends components.Deck {
             },
         });
 
-        this.faderStopButton = new components.Button({
+        this.faderStopButton = new DDJ200.Button({
             midi: [0x8F + midiChannel, 0x52],
             // according the manual:
             // the track instantly jumps back to the cue point and playback pauses
             key: "cue_gotoandstop",
         });
 
-        this.pflButton = new components.Button({
+        this.pflButton = new DDJ200.Button({
             midi: [0x8F + midiChannel, 0x54],
             sendShifted: false,
             key: "pfl",
             type: components.Button.prototype.types.toggle,
         });
 
-        this.loadTrack = new components.Button({
+        this.loadTrack = new DDJ200.Button({
             midi: [0x8F + midiChannel, 0x68],
             sendShifted: false,
             inKey: "LoadSelectedTrack",
         });
 
-        this.volume = new components.Pot({
+        this.volume = new DDJ200.Pot({
             inKey: "volume",
         });
 
-        this.rate = new components.Pot({
+        this.rate = new DDJ200.Pot({
             inKey: "rate",
             invert: 1,
         });
 
         this.eqKnob = [];
         for (let i = 0; i < 3; i++) {
-            this.eqKnob[i] = new components.Pot({
+            this.eqKnob[i] = new DDJ200.Pot({
                 group: `[EqualizerRack1_${this.currentDeck}_Effect1]`,
                 inKey: `parameter${i + 1}`,
             });
         };
 
         if (engine.getSetting("useSuperAsGain")) {
-            this.super1 = new components.Pot({
+            this.super1 = new DDJ200.Pot({
                 group: theDeck.currentDeck,
                 inKey: "pregain",
             });
         } else {
-            this.super1 = new components.Pot({
+            this.super1 = new DDJ200.Pot({
                 group: `[QuickEffectRack1_${this.currentDeck}]`,
                 inKey: "super1",
             });
