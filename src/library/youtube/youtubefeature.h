@@ -201,14 +201,15 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
     QHash<QString, int> m_downloadRetryCount;
     static constexpr int kMaxDownloadRetries = 2;
 #ifdef Q_OS_ANDROID
-    static constexpr int kMaxParallelDownloads = 2;
+    static constexpr int kMaxParallelDownloads = 3;
 #else
     static constexpr int kMaxParallelDownloads = 4;
 #endif
-    /// FIFO of videoIds waiting for a download slot. On Android 8+ parallel
-    /// yt-dlp downloads shared one radio at ~40 KB/s each (log: 85-135s per
-    /// 3-4 MB track); 2-at-a-time finishes the queue sooner and leaves CPU
-    /// for the analyzer/library writes.
+    /// FIFO of videoIds waiting for a download slot. Parallel yt-dlp
+    /// downloads share one radio; 3-at-a-time on Android fills the pipe
+    /// while the user browses (log: 5-14s per track, radio is no longer
+    /// the 40KB/s trickle this cap was tuned for) and leaves CPU for the
+    /// analyzer/library writes.
     QList<QString> m_downloadQueue;
     /// Start queued downloads while slots are free.
     void pumpDownloadQueue();

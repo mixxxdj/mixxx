@@ -1,5 +1,8 @@
 #include "sources/soundsourceffmpeg.h"
 
+#include <atomic>
+#include <cstring>
+
 extern "C" {
 
 #include <libavutil/avutil.h>
@@ -677,9 +680,15 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
             pDecoder = pNativeAac;
         } else if (std::strcmp(pDecoder->name, "libfdk_aac") == 0) {
             if (!isAvcodecPatchedForPr24528()) {
-                qWarning()
-                        << "Using libfdk_aac without FFmpeg fix #24528. This "
-                           "may cause crackling and timing offsets after seek.";
+                // One-time per session: this fires for every track opened
+                // and spams the log (34x in one session) for a condition
+                // that cannot change at runtime (bundled FFmpeg build).
+                static std::atomic<bool> s_warned{false};
+                if (!s_warned.exchange(true)) {
+                    qWarning()
+                            << "Using libfdk_aac without FFmpeg fix #24528. This "
+                               "may cause crackling and timing offsets after seek.";
+                }
             }
         }
     }
