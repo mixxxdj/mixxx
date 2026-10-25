@@ -16,6 +16,7 @@ Item {
     property var sidebar: librarySources.sidebar()
 
     function applySearch() {
+        searchDebounce.stop();
         if (root.sidebar && root.sidebar.tracklist) {
             root.sidebar.tracklist.search(searchField.text);
         }
@@ -37,7 +38,21 @@ Item {
         anchors.top: parent.top
         placeholderText: qsTranslate("WSearchLineEdit", "Search...")
 
-        onTextChanged: root.applySearch()
+        onTextChanged: searchDebounce.restart()
+
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Escape) {
+                searchField.clear();
+                event.accepted = true;
+            }
+        }
+    }
+
+    Timer {
+        id: searchDebounce
+        interval: 150
+        repeat: false
+        onTriggered: root.applySearch()
     }
 
     // "Up Next" suggestions strip pinned to the top of the library area.
