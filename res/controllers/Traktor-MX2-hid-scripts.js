@@ -528,7 +528,13 @@ class TraktorMX2Class {
             this.outputHandler(1, field.group, "patterns");
             this.outputHandler(0, field.group, "loops");
             // Light LEDs as play_indicators
-            this.patternOutputHandler(field.value, field.group, field.name);
+            if (this.usePatternModeForSamplers) {
+                this.patternOutputHandler(field.value, field.group, field.name);
+            } else {
+                for (let padIdx = 1; padIdx <= 8; padIdx++) {
+        			this.outputHandler(this.baseColors.off, field.group, `pad_${padIdx}`);
+    			}
+            }
             break;
 
         case "!loops":
@@ -548,6 +554,9 @@ class TraktorMX2Class {
 
     padHandler(field) {
         const padNumber = parseInt(field.id[field.id.length - 1]);
+        if (field.value === 0 && padNumber >= 5) {
+        	this.padPressed[field.group][padNumber] = false;
+    	}
         switch (this.padModeState[field.group]) {
         case 0:
             // Hotcues mode
@@ -556,7 +565,6 @@ class TraktorMX2Class {
             } else {
                 engine.setValue(field.group, `hotcue_${padNumber}_activate`, field.value);
             }
-
             break;
 
         case 1:
@@ -657,18 +665,18 @@ class TraktorMX2Class {
                 if (this.padPressed[field.group][padNum]) {
                     const samplerNum = (padNum - 4) + (field.group[field.group.length - 2] - 1) * 4;
                     if (delta > 0) {
-                        script.toggleControl(`[Sampler${samplerNum}]`, "pregain_up_small");
+                        script.triggerControl(`[Sampler${samplerNum}]`, "pregain_up_small");
                     } else {
-                        script.toggleControl(`[Sampler${samplerNum}]`, "pregain_down_small");
+                        script.triggerControl(`[Sampler${samplerNum}]`, "pregain_down_small");
                     }
                 }
             }
         } else if (engine.getValue("[PreviewDeck1]", "play")) {
             // Change Functionality when Preview Deck is playing: seek through the Preview Deck
             if (delta > 0) {
-                script.toggleControl("[PreviewDeck1]", "playposition_up_small");
+                script.triggerControl("[PreviewDeck1]", "playposition_up_small");
             } else {
-                script.toggleControl("[PreviewDeck1]", "playposition_down_small");
+                script.triggerControl("[PreviewDeck1]", "playposition_down_small");
             }
         } else {
         	if (this.shiftPressed[field.group]) {
@@ -684,6 +692,8 @@ class TraktorMX2Class {
 
     loadTrackHandler(field) {
         if (this.shiftPressed[field.group]) {
+            engine.setValue("[Library]", "GoToItem", field.value);
+        } else if (engine.getValue("[Library]", "focused_widget") === 2) {
             engine.setValue("[Library]", "GoToItem", field.value);
         } else if (engine.getValue("[Library]", "focused_widget") === 3) {
             if (this.padModeState[field.group] === 2 && Object.values(this.padPressed[field.group]).reduce((v, a) => v || a, false)) {
@@ -1157,7 +1167,7 @@ class TraktorMX2Class {
             const paramIndex = field.name[6];
             const group = `[EffectRack1_${unit}_Effect${mode}]`;
             if (this.shiftPressed[channel]) {
-                script.triggerControl(group, "next_effect");
+                script.triggerControl(`[EffectRack1_${unit}_${field.name}]`, "next_effect");
             } else {
                 script.toggleControl(group, `button_parameter${paramIndex}`);
             }
@@ -1634,14 +1644,22 @@ class TraktorMX2Class {
 
                     this.outputHandler(color, channel, "fx_misc");
                 } else if (name.startsWith("button_parameter")) {
-                    const paramNum = name[name.length - 1];
+                    const paramNum = parseInt(name[name.length - 1]);
 
-                    if (paramNum <=engine.getValue(group, "num_button_parameters")) {
+                    if (paramNum <= engine.getValue(group, "num_button_parameters")) {
                         this.outputHandler(engine.getValue(group, name), channel, `fx_${paramNum}`);
                     } else {
-                        this.outputHandler(this.baseColors.off, channel, `fx_${paramNum}`);
+                    	// Parameter does not exist on the focused effect: send the raw off
+                     	// value, as outputHandler would map 0 to the dimmed "inactive" color.
+                     	this.controller.setOutput(channel, `fx_${paramNum}`, this.baseColors.off, true);
                     }
-                }
+                } else if (name === "next_effect") {
+        			// Effect in the focused slot changed: refresh all button-parameter
+           			// LEDs, since unchanged ControlObject values do not emit a signal.
+              		for (let i = 1; i <= 3; i++) {
+                		this.fxOutputHandler(0, group, `button_parameter${i}`);
+                	}
+    			}
             }
         } else { // Group mode
             if (name === "enabled") {
