@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QSet>
+#include <atomic>
 #include <vector>
 
 #include "preferences/usersettings.h"
@@ -16,6 +17,13 @@ class SoundManager;
 ///
 /// It lives in its own file so that merging upstream Mixxx stays
 /// conflict-free: SoundManager only calls it at a few points.
+namespace mixxx {
+/// USB permission flag polled by SoundManagerAndroid. The Android USB
+/// permission flow (Java side) sets this when the user grants access;
+/// slotUsbDevicesChanged() consumes it to trigger an immediate rescan.
+inline std::atomic<bool> s_usbPermissionGranted{false};
+} // namespace mixxx
+
 class SoundManagerAndroid : public QObject {
     Q_OBJECT
   public:
@@ -63,5 +71,5 @@ class SoundManagerAndroid : public QObject {
     SoundManager* m_pSoundManager;
     /// Debounces USB hotplug notifications
     QTimer* m_pUsbTimer = nullptr;
-    int m_usbListenerId = 0;
+    bool m_usbListenerSeen = false;
 };

@@ -29,7 +29,7 @@ SoundManagerAndroid::SoundManagerAndroid(SoundManager* pSoundManager)
     m_pUsbTimer->start();
 
     // Listen for USB permission grants to trigger an immediate rescan
-    m_usbListenerId = mixxx::android::s_usbPermissionGranted.load();
+    m_usbListenerSeen = mixxx::s_usbPermissionGranted.load();
 }
 
 SoundManagerAndroid::~SoundManagerAndroid() {
@@ -78,8 +78,8 @@ void SoundManagerAndroid::finishSetup(const std::vector<SoundDevicePointer>& dev
 
 void SoundManagerAndroid::slotUsbDevicesChanged() {
     // Check if USB permission was granted recently
-    if (mixxx::android::s_usbPermissionGranted.load()) {
-        mixxx::android::s_usbPermissionGranted = false;
+    if (mixxx::s_usbPermissionGranted.load()) {
+        mixxx::s_usbPermissionGranted = false;
         // Trigger a device rescan through SoundManager
         emit m_pSoundManager->configInvalidated();
     }
