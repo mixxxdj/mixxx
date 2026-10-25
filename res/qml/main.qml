@@ -111,11 +111,61 @@ ApplicationWindow {
         }
     }
 
-    Component.onCompleted: {
-        clampTimer.start()
-        root.updateVisibility()
+    // Qt cascades a new window near the top-left of its screen and, on a
+    // multi-monitor desktop, can leave the title bar above the screen edge.
+    // Place the window deterministically: centred on its screen, then clamped
+    // so the title bar is always reachable. Skipped on mobile (fullscreen).
+    function clampOntoScreen() {
+        if (isMobile || visibility !== Window.Windowed)
+            return ;
+
+        let s = root.screen;
+        if (!s) {
+            const all = Qt.application.screens;
+            for (let i = 0; i < all.length; ++i) {
+                if (all[i].virtualX === 0 && all[i].virtualY === 0) {
+                    s = all[i];
+                    break;
+                }
+            }
+            if (!s && all.length > 0)
+                s = all[0];
+        }
+        if (!s)
+            return ;
+
+        // NOTE: Screen.desktopAvailableWidth/Height is the VIRTUAL desktop,
+        // not this screen. Screen.width/height is this screen only.
+        const sw = s.width;
+        const sh = s.height;
+
+        root.width = Math.min(root.width, sw);
+        root.height = Math.min(root.height, sh);
+
+        root.x = s.virtualX + Math.round((sw - root.width) / 2);
+        root.y = s.virtualY + Math.round((sh - root.height) / 2);
+
+        root.x = Math.min(Math.max(root.x, s.virtualX), s.virtualX + sw - root.width);
+        root.y = Math.min(Math.max(root.y, s.virtualY), s.virtualY + sh - root.height);
     }
 
+    onScreenChanged: root.clampOntoScreen()
+
+    Timer {
+        id: clampTimer
+
+        property int passes: 0
+
+        interval: 400
+        repeat: true
+        onTriggered: {
+            root.clampOntoScreen();
+            if (++passes >= 3)
+                stop();
+        }
+    }
+
+    Component.onCompleted: { root.updateVisibility(); clampTimer.start() }
     Loader {
         id: content
 
