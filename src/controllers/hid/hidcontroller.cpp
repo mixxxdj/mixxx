@@ -19,6 +19,17 @@ class LegacyControllerMapping;
 #ifndef __ANDROID__
 namespace {
 constexpr size_t kMaxHidErrorMessageSize = 512;
+
+// The hidraw backend of hidapi is not thread-safe: hid_open_path() and
+// hid_open() both internally call hid_enumerate(), which calls
+// udev_enumerate_scan_devices(). When multiple HidController objects are
+// constructed at startup each spawns a background fetch thread via
+// fetchReportDescriptorInBackground(), and those threads race inside
+// udev, corrupting the heap (manifesting as "free(): chunks in smallbin
+// corrupted" from an unrelated free() later on). This mutex serialises
+// the hid_open* calls made by the background fetch threads so only one
+// thread touches udev at a time.
+std::mutex s_hidOpenMutex;
 } // namespace
 #endif
 
@@ -432,18 +443,26 @@ void HidController::fetchReportDescriptorInBackground() {
             return;
         }
 
-        hid_device* pHidDevice = hid_open_path(this->m_deviceInfo.pathRaw());
-        if (!pHidDevice) {
-            pHidDevice = hid_open(this->m_deviceInfo.getVendorId(),
-                    this->m_deviceInfo.getProductId(),
-                    this->m_deviceInfo.serialNumberRaw());
+        // Serialise hid_open* calls across all background fetch threads to
+        // avoid concurrent udev access (see s_hidOpenMutex comment above).
+        hid_device* pHidDevice;
+        {
+            std::lock_guard<std::mutex> openLock(s_hidOpenMutex);
+            pHidDevice = hid_open_path(this->m_deviceInfo.pathRaw());
+            if (!pHidDevice) {
+                pHidDevice = hid_open(this->m_deviceInfo.getVendorId(),
+                        this->m_deviceInfo.getProductId(),
+                        this->m_deviceInfo.serialNumberRaw());
+            }
+            if (!pHidDevice) {
+                pHidDevice = hid_open(this->m_deviceInfo.getVendorId(),
+                        this->m_deviceInfo.getProductId(),
+                        nullptr);
+            }
         }
         if (!pHidDevice) {
-            pHidDevice = hid_open(this->m_deviceInfo.getVendorId(),
-                    this->m_deviceInfo.getProductId(),
-                    nullptr);
-        }
-        if (!pHidDevice) {
+            lock.unlock();
+            QThread::currentThread()->quit();
             return;
         }
         hid_set_nonblocking(pHidDevice, 1);
@@ -459,6 +478,8 @@ void HidController::fetchReportDescriptorInBackground() {
             m_deviceUsesReportIds = m_reportDescriptor->isDeviceWithReportIds();
         }
         hid_close(pHidDevice);
+        lock.unlock();
+        QThread::currentThread()->quit();
     });
 #else
     Q_UNUSED(m_reportDescriptorFuture);
