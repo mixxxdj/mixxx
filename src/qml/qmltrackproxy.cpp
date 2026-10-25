@@ -1,11 +1,11 @@
 #include "qml/qmltrackproxy.h"
-#include "qml/qmlconfigproxy.h"
 
 #include <QBuffer>
 
 #include "mixer/basetrackplayer.h"
 #include "moc_qmltrackproxy.cpp"
 #include "qml/asyncimageprovider.h"
+#include "qml/qmlconfigproxy.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
 
