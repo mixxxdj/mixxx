@@ -1,7 +1,9 @@
 #include "widget/wlibrarysidebar.h"
 
 #include <QHeaderView>
+#ifdef Q_OS_ANDROID
 #include <QScroller>
+#endif
 #include <QUrl>
 #include <QtDebug>
 
@@ -27,17 +29,10 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setAcceptDrops(true);
     setAutoScroll(true);
     setAttribute(Qt::WA_MacShowFocusRect, false);
-    // Required for QScroller-driven kinetic touch scrolling to map finger
-    // movement 1:1 to pixels. Without this, the vertical scrollbar's range
-    // is in row-units, so QScroller scrolls by a number of rows proportional
-    // to the drag distance, which feels amplified and worsens on long lists.
+#ifdef Q_OS_ANDROID
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-
-    // Enable kinetic scrolling via touch (single-finger swipe) on touchscreens.
-    // Without this, Qt's Windows platform plugin converts single-finger touch
-    // to mouse-press + mouse-move, which is interpreted as drag-and-drop
-    // instead of scrolling.
     QScroller::grabGesture(viewport(), QScroller::TouchGesture);
+#endif
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);

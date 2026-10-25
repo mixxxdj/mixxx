@@ -3,7 +3,6 @@
 #include <QDrag>
 #include <QModelIndex>
 #include <QScrollBar>
-#include <QScroller>
 #include <QSet>
 #include <QShortcut>
 #include <QStylePainter>
@@ -60,12 +59,6 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false),
           m_dropRow(-1) {
-    // Enable kinetic scrolling via touch (single-finger swipe) on touchscreens.
-    // Without this, Qt's Windows platform plugin converts single-finger touch
-    // to mouse-press + mouse-move, which Mixxx interprets as drag-and-drop
-    // instead of scrolling.
-    QScroller::grabGesture(viewport(), QScroller::TouchGesture);
-
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
@@ -769,13 +762,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     }
     // qDebug() << "MouseMoveEvent";
 
-    // Don't start a track drag for touch input: on touchscreens this event
-    // is a synthesized mouse-move from a single-finger swipe, which is
-    // handled as kinetic scrolling (see QScroller::grabGesture() in the
-    // constructor). Starting a blocking QDrag here would race with and
-    // sometimes win over gesture recognition, hijacking swipes into drags.
-    if (pEvent->source() == Qt::MouseEventNotSynthesized &&
-            DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+    if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         // Iterate over selected rows and append each item's URL to a list.
         // Use getTrackUrl() instead of getTrackLocation() so external/library
         // rows that are not plain local files (notably youtube://VIDEOID
