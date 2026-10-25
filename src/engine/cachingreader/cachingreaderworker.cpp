@@ -423,10 +423,10 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             updateTrackFileCacheTrackUsage(m_group, "");
             openAudioSource(trackToOpen
 #ifdef __STEM__
-                ,
-                stemMask
+                    ,
+                    stemMask
 #endif
-        );
+            );
             return;
         }
         if (sDebugCachingReaderWorker) {
@@ -530,10 +530,10 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // -> 2: Open AudioSource ///
     openAudioSource(trackToOpen
 #ifdef __STEM__
-                ,
-                stemMask
+            ,
+            stemMask
 #endif
-        );
+    );
 }
 
 // Helper function to open audio source (extracted for clarity)
