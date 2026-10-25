@@ -18,6 +18,8 @@
 #include <QProcess>
 #include <QRandomGenerator>
 #include <QRegularExpression>
+#include <QMutex>
+#include <QWaitCondition>
 #include <QSet>
 #include <QSettings>
 #include <QStandardPaths>
@@ -1024,9 +1026,34 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
     // anyway. So bundled goes first; if it fails for this videoId, fall
     // back to InnerTube direct via a one-shot downloadFailed tap.
     if (m_ytDlpPath == QStringLiteral("android-bundled")) {
+        // In-flight guard: downloadFailed for the same videoId is emitted by
+        // BOTH runAndroidBundled (service's own one-shot tap below) AND the
+        // feature-level retry, so without this the tap re-fires once per
+        // retry. The old log showed downloadVideo called 340x for one id.
+        if (m_androidBundledFallbackInFlight.contains(videoId)) {
+            return;
+        }
+        m_androidBundledFallbackInFlight.insert(videoId);
+        // Clear the guard when THIS video settles either way.
+        auto clearGuard = [this, videoId]() {
+            m_androidBundledFallbackInFlight.remove(videoId);
+        };
+        auto pDoneConn = std::make_shared<QMetaObject::Connection>();
+        *pDoneConn = connect(this, &YouTubeService::downloadFinished,
+                this, [this, videoId, pDoneConn](
+                        const QString& finishedId, const QString&) {
+                    // Only this id's own completion clears its guard entry;
+                    // other tracks finishing must not touch it. Disconnects
+                    // itself (handle-scoped, so the feature's own
+                    // onDownloadFinished slot is untouched).
+                    if (finishedId == videoId) {
+                        m_androidBundledFallbackInFlight.remove(videoId);
+                        QObject::disconnect(*pDoneConn);
+                    }
+                });
         auto pConn = std::make_shared<QMetaObject::Connection>();
         *pConn = connect(this, &YouTubeService::downloadFailed,
-                [this, videoId, cacheDir, pConn](
+                [this, videoId, cacheDir, pConn, clearGuard](
                         const QString& failedId, const QString&) {
                     if (failedId != videoId) {
                         return; // some other track
@@ -1035,7 +1062,9 @@ void YouTubeService::downloadVideo(const QString& videoId, const QString& cacheD
                     kLogger.warning() << "Bundled yt-dlp failed for" << videoId
                                       << "— falling back to InnerTube direct";
                     downloadViaInnerTube(videoId, cacheDir,
-                            [this, videoId](const QString& innerTubeError) {
+                            [this, videoId, clearGuard](
+                                    const QString& innerTubeError) {
+                                clearGuard();
                                 Q_EMIT downloadFailed(videoId, innerTubeError);
                             });
                 });
@@ -3073,7 +3102,7 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
     QThread* thread = QThread::create([guard, videoId, cacheDir, playerPot,
                                               streamingPot]() {
         QJniObject context = QNativeInterface::QAndroidApplication::context();
-        QJniEnvironment env; // function scope: used by init + execute checks
+        QJniEnvironment env; // function scope: used by the init check
         if (!context.isValid()) {
             kLogger.warning() << "[Android] downloadViaAndroidBundled:"
                               << "QAndroidApplication::context() invalid for"
@@ -3101,17 +3130,42 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
 
         // Initialize with the Android context (required before first download).
         // One-time per process: YoutubeDL is a singleton and init() extracts
-        // the Python env (~0.7 s). Re-running it per track wastes that on
-        // every download, so guard with a static flag.
-        static std::atomic<bool> s_ytdlInitialized{false};
-        if (!s_ytdlInitialized.exchange(true)) {
+        // the Python env (~0.7 s). The static exchange() flag was racy: a
+        // second download starting while the first was still inside init()
+        // skipped init and hit execute() -> "instance not initialized",
+        // failing every parallel/prefetch track. Serialize with a mutex and
+        // wait for the in-flight init instead.
+        static QMutex s_initMutex;
+        static QWaitCondition s_initCond;
+        static bool s_initDone = false;
+        static bool s_initInProgress = false;
+        bool needInit = false;
+        {
+            QMutexLocker locker(&s_initMutex);
+            if (!s_initDone && !s_initInProgress) {
+                s_initInProgress = true;
+                needInit = true;
+            } else {
+                while (s_initInProgress) {
+                    s_initCond.wait(&s_initMutex);
+                }
+            }
+        }
+        if (needInit) {
+            bool initOk = false;
             kLogger.debug() << "[Android] downloadViaAndroidBundled:"
                            << "initializing YoutubeDL for" << videoId;
             ytdl.callMethod<void>("init",
                     "(Landroid/content/Context;)V",
                     context.object());
-            if (env.checkAndClearExceptions()) {
-                s_ytdlInitialized.store(false); // retry next time
+            initOk = !env.checkAndClearExceptions();
+            {
+                QMutexLocker locker(&s_initMutex);
+                s_initDone = initOk;
+                s_initInProgress = false;
+                s_initCond.wakeAll();
+            }
+            if (!initOk) {
                 kLogger.warning() << "[Android] downloadViaAndroidBundled:"
                                   << "YoutubeDL.init() threw exception for"
                                   << videoId;
@@ -3218,13 +3272,45 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
                 "Lcom/yausername/youtubedl_android/YoutubeDLResponse;",
                 request.object());
 
-        if (env.checkAndClearExceptions() || !response.isValid()) {
+        // Pull the exception message BEFORE clearing: the JNI exception
+        // carries yt-dlp's stderr (bot-check, 403, format-missing, …).
+        // The old log showed "YoutubeDLException:" with an EMPTY body,
+        // so nobody could tell network-ban from bad-request.
+        // NOTE: check first, clear after — checkAndClearExceptions()
+        // would destroy the message before we can read it.
+        QString errDetail;
+        bool hasJniException = false;
+        {
+            QJniEnvironment excEnv;
+            if (excEnv->ExceptionCheck()) {
+                hasJniException = true;
+                QJniObject exc(excEnv->ExceptionOccurred());
+                excEnv->ExceptionClear();
+                if (exc.isValid()) {
+                    QJniObject msg = exc.callObjectMethod(
+                            "toString", "()Ljava/lang/String;");
+                    if (msg.isValid()) {
+                        errDetail = msg.toString();
+                    }
+                }
+            } else {
+                excEnv.checkAndClearExceptions();
+            }
+        }
+        if (hasJniException || !response.isValid()) {
             kLogger.warning() << "[Android] downloadViaAndroidBundled:"
                               << "execute() failed or returned invalid for"
-                              << videoId;
-            if (guard)
+                              << videoId << ":" << errDetail;
+            if (guard) {
                 Q_EMIT guard->downloadFailed(videoId,
-                        "yt-dlp download failed (youtubedl-android)");
+                        errDetail.isEmpty()
+                                ? QStringLiteral(
+                                          "yt-dlp download failed "
+                                          "(youtubedl-android)")
+                                : QStringLiteral(
+                                          "yt-dlp download failed: %1")
+                                          .arg(errDetail.left(300)));
+            }
             return;
         }
 

@@ -5,6 +5,7 @@
 #include <QList>
 #include <QObject>
 #include <QRandomGenerator>
+#include <QSet>
 #include <QSettings>
 #include <QString>
 #include <QStringList>
@@ -480,6 +481,15 @@ class YouTubeService : public QObject {
     int m_remoteConfigVersion = 0;
     /// Timer that triggers periodic re-fetch of the remote config.
     QTimer* m_pRemoteConfigTimer = nullptr;
+
+    /// VideoIds with a bundled-yt-dlp → InnerTube fallback already armed.
+    /// Guards downloadVideo() against re-entry: downloadFailed is emitted
+    /// once per attempt, and each attempt reconnects a one-shot tap, so
+    /// without this the tap multiplies — one id spun 340 downloadVideo
+    /// calls (feature retry x per-attempt fallback fan-out). Cleared when
+    /// the video settles (downloadFinished, or the fallback's
+    /// onAllFailed → downloadFailed).
+    QSet<QString> m_androidBundledFallbackInFlight;
 };
 
 } // namespace mixxx
