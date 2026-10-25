@@ -2978,6 +2978,8 @@ void YouTubeService::downloadViaYtDlp(const QString& videoId, const QString& cac
             // range requests and reassembles on disk).
             QStringLiteral("--concurrent-fragments"),
             QStringLiteral("8"),
+            // Skip per-format availability probes with our explicit -f.
+            QStringLiteral("--no-check-formats"),
             QStringLiteral("-o"),
             outTemplate,
             QStringLiteral("--print"),
@@ -3176,6 +3178,12 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         request.callMethod<QJniObject>("addOption",
                 "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
                 QJniObject::fromString("--force-ipv4").object());
+        // Skip format availability probes: with an explicit -f selector we
+        // don't need yt-dlp to HEAD-check every format before downloading.
+        // Cuts 1-3 player-API round-trips before the first byte.
+        request.callMethod<QJniObject>("addOption",
+                "(Ljava/lang/String;)Lcom/yausername/youtubedl_android/YoutubeDLRequest;",
+                QJniObject::fromString("--no-check-formats").object());
         // Bound network stalls: without this, a hung connection blocks
         // execute() forever, and teardown joins this thread -> ANR.
         request.callMethod<QJniObject>("addOption",
