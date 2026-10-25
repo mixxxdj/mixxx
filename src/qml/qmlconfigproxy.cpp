@@ -9,6 +9,7 @@
 #include "library/library_prefs.h"
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "qml/qmlwaveformdisplay.h"
 #include "preferences/constants.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "waveform/waveformwidgetfactory.h"
