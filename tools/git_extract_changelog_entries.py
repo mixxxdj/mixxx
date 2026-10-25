@@ -24,6 +24,7 @@ import git
 def extract_pull_requests(repo_path, start_commit, end_commit):
     repo = git.Repo(repo_path)
     pr_pattern = re.compile(r"Merge pull request #(\d+)")
+    sync_branch_pattern = re.compile(r"mixxxdj\/sync-branch-[\d.]+-to-\S+")
 
     # Read existing CHANGELOG.md contents to skip duplicate PR entries
     changelog_path = os.path.join(repo.working_tree_dir, "CHANGELOG.md")
@@ -33,7 +34,13 @@ def extract_pull_requests(repo_path, start_commit, end_commit):
             existing_changelog = f.read()
 
     for commit in repo.iter_commits(rev=f"{start_commit}..{end_commit}"):
-        match = pr_pattern.search(commit.summary)
+        summary = commit.summary
+
+        # Skip sync branch merges
+        if sync_branch_pattern.search(summary):
+            continue
+
+        match = pr_pattern.search(summary)
         if match:
             pr_number = match.group(1)
             pr_tag = f"[#{pr_number}]"
