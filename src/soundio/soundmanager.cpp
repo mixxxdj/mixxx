@@ -1,5 +1,9 @@
 #include "soundio/soundmanager.h"
 
+#ifdef Q_OS_ANDROID
+#include "soundio/soundmanagerandroid.h"
+#endif
+
 #include <qlogging.h>
 
 #include <QLibrary>
@@ -90,6 +94,9 @@ SoundManager::SoundManager(
     if (!m_config.readFromDisk()) {
         m_config.loadDefaults(this, SoundManagerConfig::API | SoundManagerConfig::OTHER);
     }
+#ifdef Q_OS_ANDROID
+    m_pAndroid = new SoundManagerAndroid(this);
+#endif
 
     if (!isPipewireSelected()) {
         devicesEnumerated();
@@ -337,6 +344,9 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     m_audioLatencyOverloadCount.set(0);
 
+#ifdef Q_OS_ANDROID
+    m_pAndroid->prepareSetup();
+#endif
     // load with all configured devices.
     // all found devices are removed below
     QSet<SoundDeviceId> devicesNotFound = m_config.getDevices();
@@ -435,7 +445,15 @@ SoundDeviceStatus SoundManager::setupDevices() {
         // Don't use network clock unless forced with PipeWire
         // as PipeWire callbacks run even without any devices configured
         const bool isNetworkDevice = pDevice->getDeviceId().name == kNetworkDeviceInternalName;
+#ifdef Q_OS_ANDROID
+        // Without PipeWire the network device would become the clock
+        // reference, and the fallback output that SoundManagerAndroid opens
+        // when no physical output works would drive the engine as well.
+        const bool deviceAllowedClockReference =
+                isPipewireSelected() != isNetworkDevice && !isNetworkDevice;
+#else
         const bool deviceAllowedClockReference = isPipewireSelected() != isNetworkDevice;
+#endif
 
         // If we have not yet set a clock source then we use the first
         // output pDevice
@@ -454,6 +472,12 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
         status = pDevice->open(pNewMainClockRef == pDevice, syncBuffers);
         if (status != SoundDeviceStatus::Ok) {
+#ifdef Q_OS_ANDROID
+            if (m_pAndroid->skipFailedDevice(pDevice, &pNewMainClockRef)) {
+                status = SoundDeviceStatus::Ok;
+                continue;
+            }
+#endif
             goto closeAndError;
         }
         devicesNotFound.remove(pDevice->getDeviceId());
@@ -465,6 +489,9 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     }
 
+#ifdef Q_OS_ANDROID
+    m_pAndroid->finishSetup(devices, &pNewMainClockRef, &outputDevicesOpened, &devicesNotFound);
+#endif
     if (pNewMainClockRef) {
         qDebug() << "Using" << pNewMainClockRef->getDisplayName()
                  << "as output sound device clock reference";

@@ -2230,6 +2230,10 @@ if(ANDROID)
     PRIVATE src/util/androidcrashreport.cpp src/track/androidautocue.cpp
   )
 
+  # Android DJ-controller auto-routing + speaker fallback
+  # (SoundManagerAndroid from JaviLabarumDJ/mixxx-android)
+  target_sources(mixxx-lib PRIVATE src/soundio/soundmanagerandroid.cpp)
+
   # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
   # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
