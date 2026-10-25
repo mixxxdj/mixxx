@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ported from mixxxdj/mixxx#16667 (acolombier). Build-time template:
+     The ENTRIES line below is replaced by gen_usb_device_filter.cmake with
+     one <usb-device> line per VID/PID found in res/controllers/*.hid.xml.
+     The hand-kept generic entries below cover class-compliant controllers
+     that carry no per-device mapping yet (e.g. DDJ-FLX4 over USB). -->
+<resources>
+    @USB_DEVICE_ENTRIES@
+    <!-- Generic MIDI streaming: class 1 (Audio), subclass 3 (MIDI) -->
+    <usb-device class="1" subclass="3" />
+    <!-- Generic HID: class 3 -->
+    <usb-device class="3" />
+</resources>
