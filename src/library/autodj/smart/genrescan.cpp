@@ -12,11 +12,12 @@ namespace genrescan {
 
 QString searchTitle(const QString& title) {
     QString t = title;
-    static const QRegularExpression kBrackets(QStringLiteral("[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]"));
+    static const QRegularExpression kBrackets(
+            QStringLiteral("[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]"));
     t.remove(kBrackets);
     static const QRegularExpression kVersionEnding(QStringLiteral(
-            "\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|extended|dub|instrumental|"
-            "live|remaster|remastered|radio|club|single|album|original)\\b.*$"),
+                                                           "\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|extended|dub|instrumental|"
+                                                           "live|remaster|remastered|radio|club|single|album|original)\\b.*$"),
             QRegularExpression::CaseInsensitiveOption);
     t.remove(kVersionEnding);
     static const QRegularExpression kFeaturing(
@@ -42,9 +43,12 @@ QString recordingQuery(const QString& artist, const QString& title) {
 
 std::optional<Match> pickRecording(
         const QByteArray& searchJson, const QString& artist, const QString& title) {
-    const QJsonArray recordings =
-            QJsonDocument::fromJson(searchJson).object().value(QStringLiteral("recordings")).toArray();
-    const QString ourTitle = BridgeFinder::normalizeTitle(title, BridgeFinder::normalizeArtist(artist));
+    const QJsonArray recordings = QJsonDocument::fromJson(searchJson)
+                                          .object()
+                                          .value(QStringLiteral("recordings"))
+                                          .toArray();
+    const QString ourTitle = BridgeFinder::normalizeTitle(
+            title, BridgeFinder::normalizeArtist(artist));
     const QString ourArtist = BridgeFinder::normalizeArtist(artist);
     if (ourTitle.isEmpty() || ourArtist.isEmpty()) {
         return std::nullopt;
@@ -61,7 +65,10 @@ std::optional<Match> pickRecording(
         }
         const QJsonArray credits = rec.value(QStringLiteral("artist-credit")).toArray();
         for (const QJsonValue& creditValue : credits) {
-            const QJsonObject artistObj = creditValue.toObject().value(QStringLiteral("artist")).toObject();
+            const QJsonObject artistObj =
+                    creditValue.toObject()
+                            .value(QStringLiteral("artist"))
+                            .toObject();
             const QString theirArtist = BridgeFinder::normalizeArtist(
                     artistObj.value(QStringLiteral("name")).toString());
             if (theirArtist.isEmpty() ||

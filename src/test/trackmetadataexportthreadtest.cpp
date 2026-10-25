@@ -77,7 +77,10 @@ TEST_F(TrackMetadataExportThreadTest, exportQueuedTrackMetadata) {
 
     // Verify that the file tags have actually been written
     TrackPointer pReimportedTrack = Track::newTemporary(exportTrackPath);
-    SoundSourceProxy(pReimportedTrack).updateTrackFromSource(SoundSourceProxy::UpdateTrackFromSourceMode::Always, SyncTrackMetadataParams());
+    SoundSourceProxy(pReimportedTrack)
+            .updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+                    SyncTrackMetadataParams());
     EXPECT_EQ(pReimportedTrack->getTitle(), QStringLiteral("Queued Title"));
     EXPECT_EQ(pReimportedTrack->getArtist(), QStringLiteral("Queued Artist"));
 

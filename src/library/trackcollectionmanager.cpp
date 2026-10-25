@@ -33,14 +33,14 @@ inline parented_ptr<TrackCollection> createInternalTrackCollection(
 
 } // anonymous namespace
 
-TrackCollectionManager::TrackCollectionManager(
-        QObject* parent,
+TrackCollectionManager::TrackCollectionManager(QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
         : QObject(parent),
           m_pConfig(pConfig),
-          m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
+          m_pInternalCollection(createInternalTrackCollection(
+                  this, pConfig, deleteTrackForTestingFn)) {
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking

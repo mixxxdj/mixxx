@@ -1,3 +1,5 @@
+#include "library/autodj/smart/smartsequencer.h"
+
 #include <gtest/gtest.h>
 
 #include <QElapsedTimer>
@@ -9,7 +11,6 @@
 
 #include "library/autodj/smart/bridgefinder.h"
 #include "library/autodj/smart/mixscorer.h"
-#include "library/autodj/smart/smartsequencer.h"
 #include "library/autodj/smart/trackfeatures.h"
 
 namespace {
@@ -138,7 +139,7 @@ TEST(MixScorerTest, TempoCost) {
     EXPECT_DOUBLE_EQ(0.0, MixScorer::tempoCost(124, 124, 5, true));
     EXPECT_NEAR(1.0, MixScorer::tempoCost(100, 105, 5, true), 0.03);
     EXPECT_LT(MixScorer::tempoCost(124, 126, 5, true), 1.0);
-    EXPECT_NEAR(0.0, MixScorer::tempoCost(87, 174, 5, true), 1e-9);  // double time
+    EXPECT_NEAR(0.0, MixScorer::tempoCost(87, 174, 5, true), 1e-9); // double time
     EXPECT_GE(MixScorer::tempoCost(87, 174, 5, false), MixScorer::kClashTempoCost);
     EXPECT_GE(MixScorer::tempoCost(100, 120, 5, true), MixScorer::kClashTempoCost);
     EXPECT_DOUBLE_EQ(2.0, MixScorer::tempoCost(0, 124, 5, true)); // unknown
@@ -189,7 +190,7 @@ TEST(MixScorerTest, ClashLabel) {
     MixScorer scorer;
     EXPECT_TRUE(MixScorer::clashLabel(
             scorer.score(makeTrack(1, 8, true, 124), makeTrack(2, 9, true, 124)))
-                        .isEmpty());
+                    .isEmpty());
     EXPECT_EQ(QStringLiteral("key clash"),
             MixScorer::clashLabel(
                     scorer.score(makeTrack(1, 8, true, 124), makeTrack(2, 2, true, 124))));

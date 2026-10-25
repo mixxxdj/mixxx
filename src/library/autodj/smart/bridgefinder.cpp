@@ -133,7 +133,9 @@ double BridgeFinder::genreCost(const QString& genreA, const QString& genreB) {
         const unsigned fa = genreFamilies(a);
         const unsigned fb = genreFamilies(b);
         if (fa && fb) {
-            return (fa & fb) ? 0.0 : ((relatedFamilies(fa) & fb) ? kRelatedGenreCost : kOtherGenreCost);
+            return (fa & fb) ? 0.0
+                             : ((relatedFamilies(fa) & fb) ? kRelatedGenreCost
+                                                           : kOtherGenreCost);
         }
         return kUnknownGenreCost;
     }
@@ -160,12 +162,13 @@ QString BridgeFinder::normalizeArtist(const QString& artist) {
 QString BridgeFinder::normalizeTitle(const QString& title, const QString& normalizedArtist) {
     QString t = title;
     // Bracketed tags: (12" Version), [Remastered], {Live}.
-    static const QRegularExpression kBrackets(QStringLiteral("[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]"));
+    static const QRegularExpression kBrackets(
+            QStringLiteral("[\\(\\[\\{][^\\)\\]\\}]*[\\)\\]\\}]"));
     t.remove(kBrackets);
     // A version ending after " - ": "Blue Monday - 1988 Remix".
     static const QRegularExpression kVersionEnding(QStringLiteral(
-            "\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|extended|dub|instrumental|"
-            "live|remaster|remastered|radio|club|single|album|original)\\b.*$"),
+                                                           "\\s[-\\x{2013}]\\s.*\\b(mix|remix|version|edit|extended|dub|instrumental|"
+                                                           "live|remaster|remastered|radio|club|single|album|original)\\b.*$"),
             QRegularExpression::CaseInsensitiveOption);
     t.remove(kVersionEnding);
     // "feat. X", "ft. X", "featuring X" up to the end.
@@ -309,7 +312,9 @@ QList<TrackFeatures> BridgeFinder::extend(const TrackFeatures& last,
             }
         }
         const TrackFeatures* pBest =
-                options[static_cast<qsizetype>(std::uniform_int_distribution<int>(0, pool - 1)(rng))]
+                options[static_cast<qsizetype>(
+                                std::uniform_int_distribution<int>(0, pool - 1)(
+                                        rng))]
                         .second;
         sameKeyRun = sameKey(current, *pBest) ? sameKeyRun + 1 : 1;
         chain.append(*pBest);
@@ -386,9 +391,11 @@ double videoCost(const TrackFeatures& x, const TrackFeatures& from, const TrackF
 }
 
 void sortAndCut(QList<BridgeSuggestion>* pFound, int maxResults) {
-    std::sort(pFound->begin(), pFound->end(), [](const BridgeSuggestion& a, const BridgeSuggestion& b) {
-        return a.cost < b.cost;
-    });
+    std::sort(pFound->begin(),
+            pFound->end(),
+            [](const BridgeSuggestion& a, const BridgeSuggestion& b) {
+                return a.cost < b.cost;
+            });
     if (pFound->size() > maxResults) {
         *pFound = pFound->mid(0, maxResults);
     }

@@ -1,14 +1,13 @@
 #include "library/autodj/smart/smartsequencer.h"
 
-#include <QSet>
-
-#include "library/autodj/smart/bridgefinder.h"
-
 #include <QElapsedTimer>
+#include <QSet>
 #include <algorithm>
 #include <limits>
 #include <random>
 #include <vector>
+
+#include "library/autodj/smart/bridgefinder.h"
 
 namespace {
 constexpr double kEps = 1e-9;

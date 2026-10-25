@@ -240,7 +240,7 @@ declare namespace engine {
      */
     function makeConnection<TGroup extends MixxxControls.Group>(group: TGroup, name: MixxxControls.Ctrl<TGroup>, callback: CoCallback<TGroup>): ScriptConnection | undefined;
 
-    type RuntimeSharedDataCallback = (value: SharedDataValue) => void
+    type RuntimeSharedDataCallback = (value: SharedDataValue) => void;
 
     /**
      * Register callback function to be triggered when the shared data is updated

@@ -241,10 +241,12 @@ bool AndroidUsbAudioDevice::open(DirectMode mode, bool waitForPermission) {
     if (rawDescriptors.isValid()) {
         jbyte* bytes = QJniEnvironment::getJNIEnv()->GetByteArrayElements(
                 rawDescriptors.object<jbyteArray>(), nullptr);
-        jsize length = QJniEnvironment::getJNIEnv()->GetArrayLength(rawDescriptors.object<jbyteArray>());
+        jsize length = QJniEnvironment::getJNIEnv()->GetArrayLength(
+                rawDescriptors.object<jbyteArray>());
         m_description = usbaudio::parse(
                 reinterpret_cast<const uint8_t*>(bytes), length);
-        QJniEnvironment::getJNIEnv()->ReleaseByteArrayElements(rawDescriptors.object<jbyteArray>(), bytes, JNI_ABORT);
+        QJniEnvironment::getJNIEnv()->ReleaseByteArrayElements(
+                rawDescriptors.object<jbyteArray>(), bytes, JNI_ABORT);
     }
 
     const usbaudio::StreamFormat* pFormat = usbaudio::chooseOutput(m_description);
@@ -256,7 +258,8 @@ bool AndroidUsbAudioDevice::open(DirectMode mode, bool waitForPermission) {
 
     if (m_outputFormat.syncType == usbaudio::SyncType::Asynchronous &&
             m_outputFormat.feedbackEndpoint == 0) {
-        const usbaudio::StreamFormat* pImplicit = usbaudio::implicitFeedbackSource(m_description, m_outputFormat);
+        const usbaudio::StreamFormat* pImplicit =
+                usbaudio::implicitFeedbackSource(m_description, m_outputFormat);
         if (pImplicit) {
             m_implicitFormat = *pImplicit;
             m_hasImplicitFeedback = true;
@@ -319,7 +322,8 @@ bool AndroidUsbAudioDevice::claimInterface(int interfaceNumber) {
         }
     }
     if (result < 0) {
-        qWarning() << "Failed to claim interface" << interfaceNumber << ":" << libusb_error_name(result);
+        qWarning() << "Failed to claim interface" << interfaceNumber << ":"
+                   << libusb_error_name(result);
         return false;
     }
     m_claimedInterfaces.push_back(interfaceNumber);
@@ -415,13 +419,17 @@ bool AndroidUsbAudioDevice::startOutput(int sampleRate,
     applySampleRate(sampleRate);
 
     // Set altsetting
-    if (libusb_set_interface_alt_setting(m_pHandle, m_outputFormat.interfaceNumber, m_outputFormat.altSetting) < 0) {
+    if (libusb_set_interface_alt_setting(m_pHandle,
+                m_outputFormat.interfaceNumber,
+                m_outputFormat.altSetting) < 0) {
         qWarning() << "Failed to set altsetting for output";
         return false;
     }
     if (m_hasImplicitFeedback &&
             m_implicitFormat.interfaceNumber != m_outputFormat.interfaceNumber) {
-        if (libusb_set_interface_alt_setting(m_pHandle, m_implicitFormat.interfaceNumber, m_implicitFormat.altSetting) < 0) {
+        if (libusb_set_interface_alt_setting(m_pHandle,
+                    m_implicitFormat.interfaceNumber,
+                    m_implicitFormat.altSetting) < 0) {
             qWarning() << "Failed to set altsetting for implicit feedback";
             return false;
         }
@@ -445,7 +453,8 @@ bool AndroidUsbAudioDevice::startOutput(int sampleRate,
     m_outputTransfers.clear();
     m_outputTransfers.reserve(numTransfers);
     for (int i = 0; i < numTransfers; ++i) {
-        libusb_transfer* transfer = libusb_alloc_transfer(framesPerTransfer * 2 / m_outputFormat.maxPacketSize + 2);
+        libusb_transfer* transfer = libusb_alloc_transfer(
+                framesPerTransfer * 2 / m_outputFormat.maxPacketSize + 2);
         auto* buffer = static_cast<unsigned char*>(std::calloc(transferSize, 1));
         libusb_fill_iso_transfer(transfer,
                 m_pHandle,
@@ -466,14 +475,18 @@ bool AndroidUsbAudioDevice::startOutput(int sampleRate,
         m_feedbackTransfers.reserve(kFeedbackTransfers);
         for (int i = 0; i < kFeedbackTransfers; ++i) {
             libusb_transfer* transfer = libusb_alloc_transfer(kFeedbackPacketsPerTransfer);
-            auto* buffer = static_cast<unsigned char*>(std::calloc(kFeedbackPacketsPerTransfer * kFeedbackPacketSize, 1));
+            auto* buffer = static_cast<unsigned char*>(std::calloc(
+                    kFeedbackPacketsPerTransfer * kFeedbackPacketSize, 1));
             libusb_fill_iso_transfer(transfer,
                     m_pHandle,
-                    m_outputFormat.feedbackEndpoint ? m_outputFormat.feedbackEndpoint : m_implicitFormat.endpoint,
+                    m_outputFormat.feedbackEndpoint
+                            ? m_outputFormat.feedbackEndpoint
+                            : m_implicitFormat.endpoint,
                     buffer,
                     kFeedbackPacketsPerTransfer * kFeedbackPacketSize,
                     kFeedbackPacketsPerTransfer,
-                    m_outputFormat.feedbackEndpoint ? feedbackTransferCallback : implicitTransferCallback,
+                    m_outputFormat.feedbackEndpoint ? feedbackTransferCallback
+                                                    : implicitTransferCallback,
                     this,
                     0);
             transfer->flags = LIBUSB_TRANSFER_FREE_BUFFER;
@@ -540,7 +553,8 @@ int AndroidUsbAudioDevice::nextPacketFrames() {
     return static_cast<int>(framesPerPacket + 0.5);
 }
 
-void AndroidUsbAudioDevice::cancelAndFree(std::vector<libusb_transfer*>* pTransfers, std::atomic<int>* pPending) {
+void AndroidUsbAudioDevice::cancelAndFree(
+        std::vector<libusb_transfer*>* pTransfers, std::atomic<int>* pPending) {
     for (auto* transfer : *pTransfers) {
         libusb_cancel_transfer(transfer);
     }
@@ -783,7 +797,10 @@ void AndroidUsbAudioDevice::implicitTransferCallback(libusb_transfer* pTransfer)
             for (int f : pThis->m_implicitPacketFrames)
                 sum += f;
             uint32_t avg16_16 = static_cast<uint32_t>(
-                    (static_cast<double>(sum) / pThis->m_implicitPacketFrames.size()) * 65536.0 + 0.5);
+                    (static_cast<double>(sum) /
+                            pThis->m_implicitPacketFrames.size()) *
+                            65536.0 +
+                    0.5);
             pThis->m_framesPerPacket = avg16_16;
             pThis->m_fractionalFrames = 0;
         }

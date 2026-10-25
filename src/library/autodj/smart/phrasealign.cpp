@@ -191,7 +191,7 @@ std::optional<Plan> plan(const Grid& from,
     }
     const double phraseStartBeat =
             std::floor((lastStartBeat + kEpsSec / from.beatSecAt(fromLimitSec)) /
-                               kBeatsPerPhrase) *
+                    kBeatsPerPhrase) *
             kBeatsPerPhrase;
     const double fadeBegin = from.beatTime(phraseStartBeat);
     // Auto DJ re-plans on every tempo step (e.g. while a track glides back

@@ -679,7 +679,7 @@ void DlgPrefDeck::slotResetToDefaults() {
     sliderRampUpTime->setValue(kDefaultRampTimePercent);
     sliderRampDownTime->setValue(kDefaultRampTimePercent);
 
-// TrackFileCache
+    // TrackFileCache
     checkBoxTrackFileCacheEnabled->setChecked(CachingReader::kDefaultTrackFileCacheEnabled);
 
     // Reset path to the platform default. Passing nullptr returns the default
@@ -959,7 +959,7 @@ void DlgPrefDeck::slotApply() {
     RateControl::setRampUpTimeFactor(sliderRampUpTime->value() / 100.0);
     RateControl::setRampDownTimeFactor(sliderRampDownTime->value() / 100.0);
 
-// TrackFileCache (only its own keys)
+    // TrackFileCache (only its own keys)
     saveTrackFileCacheSettings();
 }
 
@@ -1124,97 +1124,97 @@ void DlgPrefDeck::updateRampTimeLabels() {
     labelRampDownTimeValue->setText(timeText(downPercent,
             RateControl::spinDownTime(rpmMode, rampDownMode, downPercent / 100.0)));
 
-void DlgPrefDeck::populateTrackFileCacheSizeComboBox() {
-    comboBoxMaxTrackFileCacheSize->clear();
+    void DlgPrefDeck::populateTrackFileCacheSizeComboBox() {
+        comboBoxMaxTrackFileCacheSize->clear();
 
-    // Add predefined sizes
-    comboBoxMaxTrackFileCacheSize->addItem("128 MB", 128);
-    comboBoxMaxTrackFileCacheSize->addItem("256 MB", 256);
-    comboBoxMaxTrackFileCacheSize->addItem("512 MB", 512);
-    comboBoxMaxTrackFileCacheSize->addItem("1 GB", 1024);
-    comboBoxMaxTrackFileCacheSize->addItem("2 GB", 2048);
+        // Add predefined sizes
+        comboBoxMaxTrackFileCacheSize->addItem("128 MB", 128);
+        comboBoxMaxTrackFileCacheSize->addItem("256 MB", 256);
+        comboBoxMaxTrackFileCacheSize->addItem("512 MB", 512);
+        comboBoxMaxTrackFileCacheSize->addItem("1 GB", 1024);
+        comboBoxMaxTrackFileCacheSize->addItem("2 GB", 2048);
 
-    // larger sizes > +1GB increments
-    for (int i = 3; i <= 16; i++) {
-        comboBoxMaxTrackFileCacheSize->addItem(QString("%1 GB").arg(i), i * 1024);
-    }
-}
-
-void DlgPrefDeck::loadTrackFileCacheSettings() {
-    bool trackFileCacheEnabled = m_pConfig->getValue<bool>(
-            ConfigKey("[TrackFileCache]", "Enabled"),
-            CachingReader::kDefaultTrackFileCacheEnabled);
-    checkBoxTrackFileCacheEnabled->setChecked(trackFileCacheEnabled);
-
-    QString trackFileCachePath =
-            CachingReader::getTrackFileCachePathFromConfig(m_pConfig);
-    lineEditTrackFileCacheLocation->setText(trackFileCachePath);
-
-    int trackFileCacheMaxSizeMB = m_pConfig->getValue<int>(
-            ConfigKey("[TrackFileCache]", "MaxSizeMB"),
-            CachingReader::kDefaultTrackFileCacheMaxSizeMB);
-
-    int trackFileCacheIndex = comboBoxMaxTrackFileCacheSize->findData(trackFileCacheMaxSizeMB);
-    if (trackFileCacheIndex != -1) {
-        comboBoxMaxTrackFileCacheSize->setCurrentIndex(trackFileCacheIndex);
-    } else {
-        comboBoxMaxTrackFileCacheSize->addItem(
-                QString("%1 MB").arg(trackFileCacheMaxSizeMB),
-                trackFileCacheMaxSizeMB);
-        comboBoxMaxTrackFileCacheSize->setCurrentIndex(
-                comboBoxMaxTrackFileCacheSize->count() - 1);
+        // larger sizes > +1GB increments
+        for (int i = 3; i <= 16; i++) {
+            comboBoxMaxTrackFileCacheSize->addItem(QString("%1 GB").arg(i), i * 1024);
+        }
     }
 
-    bool trackFileCacheDecksEnabled = m_pConfig->getValue<bool>(
-            ConfigKey("[TrackFileCache]", "Decks"),
-            CachingReader::kDefaultTrackFileCacheDecks);
-    checkBoxTrackFileCacheDecks->setChecked(trackFileCacheDecksEnabled);
+    void DlgPrefDeck::loadTrackFileCacheSettings() {
+        bool trackFileCacheEnabled = m_pConfig->getValue<bool>(
+                ConfigKey("[TrackFileCache]", "Enabled"),
+                CachingReader::kDefaultTrackFileCacheEnabled);
+        checkBoxTrackFileCacheEnabled->setChecked(trackFileCacheEnabled);
 
-    bool trackFileCacheSamplersEnabled = m_pConfig->getValue<bool>(
-            ConfigKey("[TrackFileCache]", "Samplers"),
-            CachingReader::kDefaultTrackFileCacheSamplers);
-    checkBoxTrackFileCacheSamplers->setChecked(trackFileCacheSamplersEnabled);
+        QString trackFileCachePath =
+                CachingReader::getTrackFileCachePathFromConfig(m_pConfig);
+        lineEditTrackFileCacheLocation->setText(trackFileCachePath);
 
-    bool trackFileCachePreviewDeckEnabled = m_pConfig->getValue<bool>(
-            ConfigKey("[TrackFileCache]", "PreviewDeck"),
-            CachingReader::kDefaultTrackFileCachePreviewDeck);
-    checkBoxTrackFileCachePreviewDeck->setChecked(trackFileCachePreviewDeckEnabled);
+        int trackFileCacheMaxSizeMB = m_pConfig->getValue<int>(
+                ConfigKey("[TrackFileCache]", "MaxSizeMB"),
+                CachingReader::kDefaultTrackFileCacheMaxSizeMB);
 
-    slotTrackFileCacheEnabledChanged(trackFileCacheEnabled);
-}
+        int trackFileCacheIndex = comboBoxMaxTrackFileCacheSize->findData(trackFileCacheMaxSizeMB);
+        if (trackFileCacheIndex != -1) {
+            comboBoxMaxTrackFileCacheSize->setCurrentIndex(trackFileCacheIndex);
+        } else {
+            comboBoxMaxTrackFileCacheSize->addItem(
+                    QString("%1 MB").arg(trackFileCacheMaxSizeMB),
+                    trackFileCacheMaxSizeMB);
+            comboBoxMaxTrackFileCacheSize->setCurrentIndex(
+                    comboBoxMaxTrackFileCacheSize->count() - 1);
+        }
 
-void DlgPrefDeck::slotTrackFileCacheEnabledChanged(bool enabled) {
-    lineEditTrackFileCacheLocation->setEnabled(enabled);
-    pushButtonBrowseTrackFileCacheLocation->setEnabled(enabled);
-    comboBoxMaxTrackFileCacheSize->setEnabled(enabled);
-    checkBoxTrackFileCacheDecks->setEnabled(enabled);
-    checkBoxTrackFileCacheSamplers->setEnabled(enabled);
-    checkBoxTrackFileCachePreviewDeck->setEnabled(enabled);
-}
+        bool trackFileCacheDecksEnabled = m_pConfig->getValue<bool>(
+                ConfigKey("[TrackFileCache]", "Decks"),
+                CachingReader::kDefaultTrackFileCacheDecks);
+        checkBoxTrackFileCacheDecks->setChecked(trackFileCacheDecksEnabled);
 
-void DlgPrefDeck::slotBrowseTrackFileCacheLocation() {
-    QString currentPath = lineEditTrackFileCacheLocation->text();
+        bool trackFileCacheSamplersEnabled = m_pConfig->getValue<bool>(
+                ConfigKey("[TrackFileCache]", "Samplers"),
+                CachingReader::kDefaultTrackFileCacheSamplers);
+        checkBoxTrackFileCacheSamplers->setChecked(trackFileCacheSamplersEnabled);
 
-    // On Linux, start in /dev/shm if it exists
+        bool trackFileCachePreviewDeckEnabled = m_pConfig->getValue<bool>(
+                ConfigKey("[TrackFileCache]", "PreviewDeck"),
+                CachingReader::kDefaultTrackFileCachePreviewDeck);
+        checkBoxTrackFileCachePreviewDeck->setChecked(trackFileCachePreviewDeckEnabled);
+
+        slotTrackFileCacheEnabledChanged(trackFileCacheEnabled);
+    }
+
+    void DlgPrefDeck::slotTrackFileCacheEnabledChanged(bool enabled) {
+        lineEditTrackFileCacheLocation->setEnabled(enabled);
+        pushButtonBrowseTrackFileCacheLocation->setEnabled(enabled);
+        comboBoxMaxTrackFileCacheSize->setEnabled(enabled);
+        checkBoxTrackFileCacheDecks->setEnabled(enabled);
+        checkBoxTrackFileCacheSamplers->setEnabled(enabled);
+        checkBoxTrackFileCachePreviewDeck->setEnabled(enabled);
+    }
+
+    void DlgPrefDeck::slotBrowseTrackFileCacheLocation() {
+        QString currentPath = lineEditTrackFileCacheLocation->text();
+
+        // On Linux, start in /dev/shm if it exists
 #ifdef Q_OS_LINUX
-    if (currentPath.isEmpty() && QDir("/dev/shm").exists()) {
-        currentPath = "/dev/shm";
-    }
+        if (currentPath.isEmpty() && QDir("/dev/shm").exists()) {
+            currentPath = "/dev/shm";
+        }
 #endif
 
-    QString dir = QFileDialog::getExistingDirectory(
-            this,
-            tr("Select Cache Location"),
-            currentPath,
-            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+        QString dir = QFileDialog::getExistingDirectory(
+                this,
+                tr("Select Cache Location"),
+                currentPath,
+                QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    if (!dir.isEmpty()) {
-        while (dir.endsWith('/')) {
-            dir.chop(1);
+        if (!dir.isEmpty()) {
+            while (dir.endsWith('/')) {
+                dir.chop(1);
+            }
+            if (!dir.endsWith(QStringLiteral("/MixxxTmp"))) {
+                dir += QStringLiteral("/MixxxTmp");
+            }
+            lineEditTrackFileCacheLocation->setText(dir + '/');
         }
-        if (!dir.endsWith(QStringLiteral("/MixxxTmp"))) {
-            dir += QStringLiteral("/MixxxTmp");
-        }
-        lineEditTrackFileCacheLocation->setText(dir + '/');
     }
-}

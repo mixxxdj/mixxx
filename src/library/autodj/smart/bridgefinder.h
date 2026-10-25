@@ -25,7 +25,7 @@ struct BridgeSuggestion {
 /// Live Assistant: one suggested next track.
 struct NextSuggestion {
     TrackFeatures track;
-    MixScore score; ///< now -> this track
+    MixScore score;    ///< now -> this track
     double cost = 0.0; ///< score + genre cost, lower is better
 };
 

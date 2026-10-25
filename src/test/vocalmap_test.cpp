@@ -1,10 +1,11 @@
+#include "library/autodj/smart/vocalmap.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
 #include <vector>
 
 #include "library/autodj/smart/beatmatch.h"
-#include "library/autodj/smart/vocalmap.h"
 
 namespace {
 

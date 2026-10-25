@@ -1,7 +1,6 @@
 #include "analyzer/analyzerenergy.h"
 
 #include <QtDebug>
-
 #include <cmath>
 
 #include "analyzer/analyzertrack.h"
@@ -237,10 +236,8 @@ void AnalyzerEnergy::setAutoMarkers(
         EnergyStore::saveAutoMarkers(m_db, m_trackId, after);
     }
     qDebug() << "AnalyzerEnergy: markers" << pTrack->getInfo()
-             << "intro end" << (introFree ? QString::number(after.introEndSec)
-                                          : QStringLiteral("kept (set by DJ)"))
-             << "outro start" << (outroFree ? QString::number(after.outroStartSec)
-                                            : QStringLiteral("kept (set by DJ)"));
+             << "intro end" << (introFree ? QString::number(after.introEndSec) : QStringLiteral("kept (set by DJ)"))
+             << "outro start" << (outroFree ? QString::number(after.outroStartSec) : QStringLiteral("kept (set by DJ)"));
 }
 
 void AnalyzerEnergy::cleanup() {

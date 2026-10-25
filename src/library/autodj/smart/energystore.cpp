@@ -1,9 +1,9 @@
 #include "library/autodj/smart/energystore.h"
 
 #include <QSet>
-#include <QStringList>
 #include <QSqlError>
 #include <QSqlQuery>
+#include <QStringList>
 #include <QVariant>
 #include <cmath>
 
@@ -31,10 +31,11 @@ bool EnergyStore::ensureTable(const QSqlDatabase& db) {
             columns.insert(query.value(1).toString());
         }
     }
-    for (const QString& column : {QStringLiteral("body_start_sec"), QStringLiteral("body_end_sec")}) {
+    for (const QString& column : {QStringLiteral("body_start_sec"),
+                 QStringLiteral("body_end_sec")}) {
         if (!columns.contains(column) &&
                 !query.exec(QStringLiteral("ALTER TABLE autodj_energy ADD COLUMN %1 REAL")
-                                    .arg(column))) {
+                                .arg(column))) {
             LOG_FAILED_QUERY(query);
             return false;
         }

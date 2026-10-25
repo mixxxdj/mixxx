@@ -80,7 +80,8 @@ void Controller::stopEngine() {
     emit engineStopped();
 }
 
-bool Controller::applyMapping(const QString& resourcePath, std::shared_ptr<ControllerSharedData> runtimeData) {
+bool Controller::applyMapping(const QString& resourcePath,
+        std::shared_ptr<ControllerSharedData> runtimeData) {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
     // Load the script code into the engine

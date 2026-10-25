@@ -1,10 +1,10 @@
+#include "analyzer/energycalculator.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
 #include <random>
 #include <vector>
-
-#include "analyzer/energycalculator.h"
 
 namespace {
 
@@ -24,7 +24,9 @@ std::vector<float> stereo(double seconds, F f) {
     return out;
 }
 
-bool analyse(const std::vector<float>& samples, EnergyCalculator::Result* pResult, int channels = 2) {
+bool analyse(const std::vector<float>& samples,
+        EnergyCalculator::Result* pResult,
+        int channels = 2) {
     EnergyCalculator calc(kRate, channels);
     // Feed in chunks like the analyzer thread does.
     constexpr std::size_t kChunk = 4096 * 2;
@@ -78,7 +80,10 @@ TEST(EnergyCalculatorTest, NoiseIsBrighterThanBass) {
     EnergyCalculator::Result white;
     EnergyCalculator::Result bass;
     ASSERT_TRUE(analyse(stereo(20, [&](double) { return noise(rng); }), &white));
-    ASSERT_TRUE(analyse(stereo(20, [](double t) { return 0.3 * std::sin(2 * kPi * 60 * t); }), &bass));
+    ASSERT_TRUE(analyse(
+            stereo(20,
+                    [](double t) { return 0.3 * std::sin(2 * kPi * 60 * t); }),
+            &bass));
     EXPECT_GT(white.brightRatio, 0.3);
     EXPECT_LT(bass.brightRatio, 0.01);
     EXPECT_GT(bass.bassRatio, 0.6); // gentle 12 dB/oct filters: 60 Hz keeps ~74%
@@ -286,9 +291,7 @@ TEST(EnergyCalculatorTest, GridWithTheWrongTempoDrifts) {
 
 TEST(EnergyCalculatorTest, DrummerWhoSlowsDownDrifts) {
     // Steady for the first half, then 1% slower: no steady grid fits.
-    const auto loop = drumLoop(200,
-            [](int n) { return n < 200 ? 0.3 + 0.5 * n : 100.3 + 0.505 * (n - 200); },
-            false);
+    const auto loop = drumLoop(200, [](int n) { return n < 200 ? 0.3 + 0.5 * n : 100.3 + 0.505 * (n - 200); }, false);
     EXPECT_GT(gridDrift(loop, 0.3, 0.5), EnergyCalculator::kGridMaxDriftBeats);
 }
 

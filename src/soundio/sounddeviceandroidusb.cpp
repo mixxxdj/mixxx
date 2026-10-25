@@ -40,9 +40,12 @@ SoundDeviceStatus SoundDeviceAndroidUsb::open(bool isClkRefDevice, int syncBuffe
     const int sampleRate = m_pConfig->getValue(ConfigKey("[App]", "sample_rate"), 44100);
     const int numTransfers = 4;
 
-    if (!m_pDevice->startOutput(sampleRate, transferMillis, numTransfers, [this](uint8_t* pDestination, int frames) {
-            this->render(pDestination, frames);
-        })) {
+    if (!m_pDevice->startOutput(sampleRate,
+                transferMillis,
+                numTransfers,
+                [this](uint8_t* pDestination, int frames) {
+                    this->render(pDestination, frames);
+                })) {
         m_lastError = tr("Failed to start USB output");
         return SoundDeviceStatus::Error;
     }

@@ -4,10 +4,10 @@
 
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerebur128.h"
+#include "analyzer/analyzerenergy.h"
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerkey.h"
 #include "analyzer/analyzersilence.h"
-#include "analyzer/analyzerenergy.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
 #include "library/dao/analysisdao.h"
@@ -138,12 +138,12 @@ void AnalyzerThread::doRun() {
                     m_pConfig->getValue(
                             mixxx::library::prefs::kSyncTrackMetadataConfigKey,
                             false))
-                    ? SoundSourceProxy::UpdateTrackFromSourceMode::Newer
-                    : SoundSourceProxy::UpdateTrackFromSourceMode::Once;
+            ? SoundSourceProxy::UpdateTrackFromSourceMode::Newer
+            : SoundSourceProxy::UpdateTrackFromSourceMode::Once;
     const auto syncTrackMetadataParams =
             m_pConfig
-                    ? SyncTrackMetadataParams::readFromUserSettings(*m_pConfig)
-                    : SyncTrackMetadataParams{};
+            ? SyncTrackMetadataParams::readFromUserSettings(*m_pConfig)
+            : SyncTrackMetadataParams{};
 
     while (awaitWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack.has_value());

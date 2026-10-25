@@ -1,10 +1,10 @@
+#include "library/autodj/smart/beatmatch.h"
+
 #include <gtest/gtest.h>
 
 #include <algorithm>
 #include <cmath>
 #include <vector>
-
-#include "library/autodj/smart/beatmatch.h"
 
 TEST(BeatmatchTest, MatchesCloseTempos) {
     // 120 BPM track under a 124 BPM track plays 3.3% faster.
@@ -167,15 +167,15 @@ TEST(BeatmatchTest, BeatLockFollowsADrummerWhoSpeedsUp) {
     const auto fromBeatLen = [](double t) { return 0.5 / (1.0 + 0.0008 * t); };
     double fromBeat = 0.0;
     double toBeat = 0.0;
-    const double toLen = 60.0 / 122.0;
+    const double token = 60.0 / 122.0;
     double worst = 0.0;
     for (double t = 0.0; t < 60.0; t += 0.02) {
         // The beat length Auto DJ measures is an average over a few beats,
         // so it lags about 2 s behind.
         const double measured = fromBeatLen(std::max(0.0, t - 2.0));
-        const double ratio = beatmatch::followRatio(fromBeat, measured, toBeat, toLen);
+        const double ratio = beatmatch::followRatio(fromBeat, measured, toBeat, token);
         fromBeat += 0.02 / fromBeatLen(t);
-        toBeat += 0.02 * ratio / toLen;
+        toBeat += 0.02 * ratio / token;
         double slip = fromBeat - toBeat;
         slip -= std::round(slip);
         worst = std::max(worst, std::fabs(slip));

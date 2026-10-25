@@ -134,8 +134,8 @@ class EnergyCalculator {
     double m_blockSumHigh = 0.0;
 
     // Per-block results.
-    std::vector<float> m_blockDb;    // full-band level of each 20 ms block
-    std::vector<float> m_blockLowDb; // bass-band level of each 20 ms block
+    std::vector<float> m_blockDb;     // full-band level of each 20 ms block
+    std::vector<float> m_blockLowDb;  // bass-band level of each 20 ms block
     std::vector<float> m_blockHighDb; // treble-band level of each 20 ms block
 
     // Totals over non-silent blocks.

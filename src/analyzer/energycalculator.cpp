@@ -11,7 +11,7 @@ constexpr double kTwoPi = 2.0 * kPi;
 constexpr double kBlockSeconds = 0.02; // 20 ms analysis blocks
 constexpr int kBlocksPerWindow = 50;   // 1 s loudness windows
 constexpr double kWindowSeconds = kBlockSeconds * kBlocksPerWindow;
-constexpr int kBodySpanWindows = 4;    // "sustained" = 4 s
+constexpr int kBodySpanWindows = 4; // "sustained" = 4 s
 // Body start: where the bass AND the overall level first reach the track's
 // typical level (its 40th percentile, 1 s windows) and stay there for 4 s.
 // "Loud" alone misses intros that are loud but have no drums; tuned on 5
@@ -312,8 +312,9 @@ bool EnergyCalculator::finish(Result* pResult) const {
     const double onsetsPerSec = onsets / soundSeconds;
 
     // Body: the first/last 4-second stretch whose average level is close
-    // enough to the loud level (see kBodyStartDropDb / kBodyEndDropDb). A short dip (a breakdown) inside the
-    // track does not matter; only the ends are looked for.
+    // enough to the loud level (see kBodyStartDropDb / kBodyEndDropDb). A short
+    // dip (a breakdown) inside the track does not matter; only the ends are
+    // looked for.
     const double bodyStartThresholdDb = loudnessDb - kBodyStartDropDb;
     const double bodyEndThresholdDb = loudnessDb - kBodyEndDropDb;
     const int span = kBodySpanWindows;

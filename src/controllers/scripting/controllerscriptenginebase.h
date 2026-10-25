@@ -7,9 +7,9 @@
 #include <QWaitCondition>
 #include <memory>
 
+#include "controllers/controllershareddata.h"
 #include "javascriptplayerproxy.h"
 #include "mixer/playermanager.h"
-#include "controllers/controllershareddata.h"
 #include "util/runtimeloggingcategory.h"
 #ifdef MIXXX_USE_QML
 #include "controllers/controllerenginethreadcontrol.h"

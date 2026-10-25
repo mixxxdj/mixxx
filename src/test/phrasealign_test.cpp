@@ -1,9 +1,9 @@
+#include "library/autodj/smart/phrasealign.h"
+
 #include <gtest/gtest.h>
 
 #include <cmath>
 #include <vector>
-
-#include "library/autodj/smart/phrasealign.h"
 
 using phrasealign::Grid;
 

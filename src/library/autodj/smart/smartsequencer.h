@@ -5,15 +5,14 @@
 #include <QStringList>
 #include <QVector>
 #include <optional>
-
 #include <utility>
 
 #include "library/autodj/smart/mixscorer.h"
 
 /// A clash in the sorted order and the library tracks that could bridge it.
 struct BridgeGap {
-    int k = 0;              ///< the bridge goes right after the k-th track (from 1)
-    QString fromText;       ///< the two tracks either side, for the DJ
+    int k = 0;        ///< the bridge goes right after the k-th track (from 1)
+    QString fromText; ///< the two tracks either side, for the DJ
     QString toText;
     /// Best first; empty = nothing bridges this gap. Each option is one
     /// track, or two (played in that order) when no single track bridges.

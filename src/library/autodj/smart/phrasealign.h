@@ -3,13 +3,15 @@
 #include <optional>
 #include <vector>
 
-/// Auto DJ 2.0 plus Video Mixing, phase 2: line a transition up with musical phrases.
+/// Auto DJ 2.0 plus Video Mixing, phase 2: line a transition up with musical
+/// phrases.
 ///
 /// Assumes 4/4 time and that the first beat of the beat grid is a downbeat
-/// (bar 1). The tempo may bend (a beat map): all the maths counts beats. Phrases are counted in 8-bar blocks from
-/// there. If Mixxx's beat grid does not start on a real downbeat, phrases
-/// will be off by a whole number of beats; the DJ can move the grid.
-/// Pure maths, no Mixxx types, so it can be unit-tested.
+/// (bar 1). The tempo may bend (a beat map): all the maths counts beats.
+/// Phrases are counted in 8-bar blocks from there. If Mixxx's beat grid does
+/// not start on a real downbeat, phrases will be off by a whole number of
+/// beats; the DJ can move the grid. Pure maths, no Mixxx types, so it can be
+/// unit-tested.
 namespace phrasealign {
 
 constexpr int kBeatsPerBar = 4;
@@ -99,11 +101,12 @@ int barsForSeconds(double wantedSec, double beatSec);
 ///        intro (negative = unknown). Measured values are rough (1 s steps)
 ///        and get snapped to a nearby phrase or bar.
 /// @param toBodyMarked true when the DJ marked the beat by hand (the Intro
-///        End marker): it is trusted and only snapped to the nearest beat. The incoming track is started so its
-///        beat kicks in at the MIDDLE of the fade, exactly where the bass
-///        swaps and the crossfader has the incoming track at full volume:
-///        the outgoing beat hands over straight to the incoming beat, with
-///        no gap for the dancers. A long intro is partly skipped for this.
+///        End marker): it is trusted and only snapped to the nearest beat. The
+///        incoming track is started so its beat kicks in at the MIDDLE of the
+///        fade, exactly where the bass swaps and the crossfader has the
+///        incoming track at full volume: the outgoing beat hands over straight
+///        to the incoming beat, with no gap for the dancers. A long intro is
+///        partly skipped for this.
 std::optional<Plan> plan(const Grid& from,
         const Grid& to,
         double fromNowSec,

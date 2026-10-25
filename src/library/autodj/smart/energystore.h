@@ -65,7 +65,7 @@ class EnergyStore {
         double bpm = 0.0;
         double firstBeatSec = 0.0;
         double driftBeats = -1.0; ///< -1 = could not tell
-        int version = 0; ///< EnergyCalculator::kGridCheckVersion (or ...MapVersion)
+        int version = 0;          ///< EnergyCalculator::kGridCheckVersion (or ...MapVersion)
         /// True if this check was made on that grid (the DJ has not
         /// changed it since), with the current or the previous version of
         /// the check (a previous result counts until the track is analysed
