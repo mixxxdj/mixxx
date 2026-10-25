@@ -83,8 +83,9 @@ class MidiController : public Controller {
             unsigned char control,
             const QJSValue& scriptCode);
 
-    using Controller::applyMapping;
     bool applyMapping(const QString& resourcePath) override;
+    bool applyMapping(const QString& resourcePath,
+            std::shared_ptr<ControllerSharedData> runtimeData) override;
     int close() override;
 
   protected slots:
