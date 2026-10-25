@@ -277,6 +277,106 @@ WaveformMark::WaveformMark(const QString& group,
     m_disabledOpacity = context.selectDouble(node, "DisabledOpacity", 0.5);
 }
 
+std::atomic<int> WaveformMark::s_styleGeneration{0};
+std::atomic<bool> WaveformMark::s_hotCueLetters{false};
+std::atomic<int> WaveformMark::s_hotCueLabelPlacement{
+        static_cast<int>(HotCueLabelPlacement::SkinDefault)};
+std::atomic<int> WaveformMark::s_hotCueLabelStyle{static_cast<int>(HotCueLabelStyle::Mixxx)};
+
+// static
+void WaveformMark::setHotCueLetters(bool letters) {
+    if (s_hotCueLetters.exchange(letters) != letters) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+bool WaveformMark::hotCueLetters() {
+    return s_hotCueLetters.load();
+}
+
+// static
+void WaveformMark::setHotCueLabelPlacement(HotCueLabelPlacement placement) {
+    const int value = static_cast<int>(placement);
+    if (s_hotCueLabelPlacement.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+WaveformMark::HotCueLabelPlacement WaveformMark::hotCueLabelPlacement() {
+    switch (s_hotCueLabelPlacement.load()) {
+    case static_cast<int>(HotCueLabelPlacement::Top):
+        return HotCueLabelPlacement::Top;
+    case static_cast<int>(HotCueLabelPlacement::Bottom):
+        return HotCueLabelPlacement::Bottom;
+    default:
+        return HotCueLabelPlacement::SkinDefault;
+    }
+}
+
+// static
+void WaveformMark::setHotCueLabelStyle(HotCueLabelStyle style) {
+    const int value = static_cast<int>(style);
+    if (s_hotCueLabelStyle.exchange(value) != value) {
+        s_styleGeneration.fetch_add(1);
+    }
+}
+
+// static
+WaveformMark::HotCueLabelStyle WaveformMark::hotCueLabelStyle() {
+    return s_hotCueLabelStyle.load() == static_cast<int>(HotCueLabelStyle::Rekordbox)
+            ? HotCueLabelStyle::Rekordbox
+            : HotCueLabelStyle::Mixxx;
+}
+
+bool WaveformMark::isRekordboxStyleLabel() const {
+    return m_iHotCue != Cue::kNoHotCue && hotCueLabelStyle() == HotCueLabelStyle::Rekordbox;
+}
+
+// static
+QString WaveformMark::hotCueName(int hotCue) {
+    constexpr int kNumLetters = 26;
+    if (s_hotCueLetters.load() && hotCue >= 0 && hotCue < kNumLetters) {
+        return QString(QChar('A' + hotCue));
+    }
+    return QString::number(hotCue + 1);
+}
+
+bool WaveformMark::isMainCue() const {
+    return m_pPositionCO && m_pPositionCO->getKey().item == QStringLiteral("cue_point");
+}
+
+QString WaveformMark::displayText() const {
+    if (s_hotCueLetters.load() && m_iHotCue == Cue::kNoHotCue && isMainCue() &&
+            m_text.trimmed().size() == 1) {
+        return QStringLiteral("CUE");
+    }
+    return m_text;
+}
+
+Qt::Alignment WaveformMark::labelAlign() const {
+    if (m_iHotCue == Cue::kNoHotCue) {
+        return m_align;
+    }
+    if (isRekordboxStyleLabel()) {
+        // Centered on the cue line, at the top unless placed at the bottom.
+        return Qt::AlignHCenter |
+                (hotCueLabelPlacement() == HotCueLabelPlacement::Bottom
+                                ? Qt::AlignBottom
+                                : Qt::AlignTop);
+    }
+    switch (hotCueLabelPlacement()) {
+    case HotCueLabelPlacement::Top:
+        return (m_align & Qt::AlignHorizontal_Mask) | Qt::AlignTop;
+    case HotCueLabelPlacement::Bottom:
+        return (m_align & Qt::AlignHorizontal_Mask) | Qt::AlignBottom;
+    case HotCueLabelPlacement::SkinDefault:
+    default:
+        return m_align;
+    }
+}
+
 std::variant<WaveformMarkPointer, WaveformMark::WaveformMarkConstructionError> WaveformMark::create(
         const QString& group,
         const QString& positionControl,
@@ -531,7 +631,10 @@ QImage WaveformMark::performImageGeneration(float devicePixelRatio,
     const bool useIcon = iconPath != "";
 
     // Determine drawing geometries
-    const MarkerGeometry markerGeometry{text, useIcon, m_align, m_breadth, m_level};
+    // End marks have no label; for labels use the effective alignment
+    // (e.g. hotcue letters are drawn at the top).
+    const MarkerGeometry markerGeometry{
+            text, useIcon, labelMark ? labelAlign() : m_align, m_breadth, m_level};
 
     float linePos;
     if (labelMark) {
@@ -601,13 +704,17 @@ QImage WaveformMark::performImageGeneration(float devicePixelRatio,
             markerGeometry.imageSize().height()));
 
     if (useIcon || text.length() != 0) {
+        // Rekordbox style: cue colored badge without outline, black text.
+        const bool rekordboxStyle = labelMark && isRekordboxStyleLabel();
         painter.setPen(borderColor());
 
         // Draw the label rounded rect with border
         QPainterPath path;
         path.addRoundedRect(markerGeometry.labelRect(), 2.f, 2.f);
         painter.fillPath(path, fillColor());
-        painter.drawPath(path);
+        if (!rekordboxStyle) {
+            painter.drawPath(path);
+        }
 
         // Center m_contentRect.width() and m_contentRect.height() inside labelRectMarl
         // and apply the offset x,y so the text ends up in the centered width,height.
@@ -628,7 +735,7 @@ QImage WaveformMark::performImageGeneration(float devicePixelRatio,
         } else {
             // Draw the text
             painter.setBrush(Qt::transparent);
-            painter.setPen(labelColor());
+            painter.setPen(rekordboxStyle ? QColor(Qt::black) : labelColor());
             painter.setFont(markerGeometry.font());
 
             painter.drawText(pos, text);
@@ -683,15 +790,16 @@ std::optional<WaveformMark::WaveformMarkConstructionError> WaveformMark::validat
 
 QImage WaveformMark::generateImage(float devicePixelRatio) {
     DEBUG_ASSERT(needsImageUpdate());
+    m_styleGeneration = s_styleGeneration.load();
 
-    QString label = m_text;
+    QString label = displayText();
 
     // Determine mark text.
     if (getHotCue() >= 0) {
         if (!label.isEmpty()) {
             label.prepend(": ");
         }
-        label.prepend(QString::number(getHotCue() + 1));
+        label.prepend(hotCueName(getHotCue()));
     }
 
     return performImageGeneration(devicePixelRatio, m_pixmapPath, label, &m_label, m_iconPath);

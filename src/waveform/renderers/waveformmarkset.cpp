@@ -166,7 +166,7 @@ void WaveformMarkSet::update() {
             prevSamplePosition = pMark->getSamplePosition();
             levels.clear();
         }
-        pMark->setLevel(levels[pMark->m_align]++);
+        pMark->setLevel(levels[pMark->labelAlign()]++);
     }
 }
 
