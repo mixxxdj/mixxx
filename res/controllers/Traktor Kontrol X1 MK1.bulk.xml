@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="1.11+" schemaVersion="1">
+    <info>
+        <name>Traktor Kontrol X1 MK1</name>
+        <author>Jan Claußen</author>
+        <description>Traktor Kontrol X1 MK1 mapping</description>
+        <manual>native_instruments_traktor_kontrol_x1_mk1</manual>
+        <devices>
+            <product protocol="bulk" vendor_id="0x17cc" product_id="0x2305" in_epaddr1="0x81" in_epaddr2="0x84" out_epaddr="0x01" />
+        </devices>
+    </info>
+    <controller id="Traktor Kontrol X1 MK1">
+        <scriptfiles>
+            <file functionprefix="" filename="common-bulk-midi.js"/>
+            <file filename="Traktor Kontrol X1 MK1 bulk scripts.js" functionprefix="TraktorX1MK1" />
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>

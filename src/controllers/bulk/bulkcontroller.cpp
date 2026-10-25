@@ -171,9 +171,13 @@ BulkController::BulkController(libusb_context* pContext,
                   get_string(pHandle, pDesc->iSerialNumber))),
           m_pContext(pContext),
           m_pHandle(pHandle),
-          m_inEndpointAddr(0),
+          m_inEndpointAddr1(0),
+          m_inLength1(0),
+          m_inEndpointAddr2(0),
+          m_inLength2(0),
           m_outEndpointAddr(0),
-          m_pReader(nullptr) {
+          m_pReader(nullptr),
+          m_pReader2(nullptr) {
     m_vendorId = pDesc->idVendor;
     m_productId = pDesc->idProduct;
 
@@ -192,9 +196,13 @@ BulkController::BulkController(const QJniObject& usbDevice)
           m_pContext(nullptr),
           m_pHandle(nullptr),
           m_androidUsbDevice(usbDevice),
-          m_inEndpointAddr(0),
+          m_inEndpointAddr1(0),
+          m_inLength1(0),
+          m_inEndpointAddr2(0),
+          m_inLength2(0),
           m_outEndpointAddr(0),
-          m_pReader(nullptr) {
+          m_pReader(nullptr),
+          m_pReader2(nullptr) {
     m_vendorId = static_cast<unsigned short>(usbDevice.callMethod<jint>("getVendorId"));
     m_productId = static_cast<unsigned short>(usbDevice.callMethod<jint>("getProductId"));
 
@@ -305,8 +313,10 @@ int BulkController::open(const QString& resourcePath) {
         qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
-    m_inEndpointAddr = pDevice->endpoints.in_epaddr;
-    m_inLength = static_cast<int>(pDevice->endpoints.in_length);
+    m_inEndpointAddr1 = pDevice->endpoints.in_epaddr1;
+    m_inLength1 = static_cast<int>(pDevice->endpoints.in_length1);
+    m_inEndpointAddr2 = pDevice->endpoints.in_epaddr2;
+    m_inLength2 = static_cast<int>(pDevice->endpoints.in_length2);
     m_outEndpointAddr = pDevice->endpoints.out_epaddr;
     m_interfaceNumber = pDevice->endpoints.interface_number;
 
@@ -412,7 +422,7 @@ int BulkController::open(const QString& resourcePath) {
                     "setup.";
     } else {
         m_pReader = std::make_unique<BulkReader>(
-                m_pHandle, m_pContext, m_inEndpointAddr, m_inLength);
+                m_pHandle, m_pContext, m_inEndpointAddr1, m_inLength1);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
         connect(m_pReader.get(), &BulkReader::incomingData, this, &BulkController::receive);
@@ -420,6 +430,16 @@ int BulkController::open(const QString& resourcePath) {
         // Controller input needs to be prioritized since it can affect the
         // audio directly, like when scratching
         m_pReader->start(QThread::HighPriority);
+
+        if (m_inEndpointAddr2 != 0) {
+            m_pReader2 = std::make_unique<BulkReader>(
+                    m_pHandle, m_pContext, m_inEndpointAddr2, m_inLength2);
+            m_pReader2->setObjectName(
+                    QString("BulkReader %1 (second input endpoint)")
+                            .arg(getName()));
+            connect(m_pReader2.get(), &BulkReader::incomingData, this, &BulkController::receive);
+            m_pReader2->start(QThread::HighPriority);
+        }
     }
     applyMapping(resourcePath);
     setOpen(true);
@@ -445,6 +465,12 @@ int BulkController::close() {
         m_pReader->stop();
         qCInfo(m_logBase) << "  Waiting on reader to finish";
         m_pReader->wait();
+    }
+    if (m_pReader2) {
+        disconnect(m_pReader2.get(), &BulkReader::incomingData, this, &BulkController::receive);
+        m_pReader2->stop();
+        qCInfo(m_logBase) << "  Waiting on second reader to finish";
+        m_pReader2->wait();
     }
 
     // Stop controller engine here to ensure it's done before the device is
