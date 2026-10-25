@@ -60,6 +60,15 @@ Variables:
     <ObjectName>DeckContainer</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
+    <Connection>
+      <ConfigKey>[Skin],highlight_deck_<Variable name="group"/></ConfigKey>
+      <BindProperty>highlight_deck</BindProperty>
+    </Connection>
+    <Connection>
+      <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
+      <BindProperty>highlight_input_allow</BindProperty>
+    </Connection>
+
     <Children>
 
       <WidgetGroup><Size>5f,1min</Size></WidgetGroup>

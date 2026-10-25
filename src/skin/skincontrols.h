@@ -19,4 +19,17 @@ class SkinControls {
     ControlPushButton m_showSettings;
     ControlPushButton m_showSpinnies;
     ControlPushButton m_showVinylControl;
+    ControlPushButton m_hightlightInputAllow;
+    ControlPushButton m_hightlightMixerChannel1;
+    ControlPushButton m_hightlightMixerChannel2;
+    ControlPushButton m_hightlightMixerChannel3;
+    ControlPushButton m_hightlightMixerChannel4;
+    ControlPushButton m_hightlightDeckChannel1;
+    ControlPushButton m_hightlightDeckChannel2;
+    ControlPushButton m_hightlightDeckChannel3;
+    ControlPushButton m_hightlightDeckChannel4;
+    ControlPushButton m_hightlightWaveformChannel1;
+    ControlPushButton m_hightlightWaveformChannel2;
+    ControlPushButton m_hightlightWaveformChannel3;
+    ControlPushButton m_hightlightWaveformChannel4;
 };
