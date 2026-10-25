@@ -73,6 +73,24 @@ QUrl YouTubeTrackModel::getTrackUrl(const QModelIndex& index) const {
         url.setPath(rawLocation.mid(kPlaceholderScheme.size()));
         return url;
     }
+    // Row points at a real cache-dir path, but the file may have been
+    // released after eject (maybeReleaseCachedTrack deletes bytes + purges
+    // the DB row). Handing that dead path to a deck gives "File not found"
+    // + TagLib warnings; returning youtube:// instead routes every
+    // consumer (double-click, drag, deck drop) back through
+    // requestDownloadToPlayer, which re-downloads and loads on arrival.
+    // The videoId is the comment field for downloaded rows.
+    if (!rawLocation.isEmpty() && !QFileInfo::exists(rawLocation)) {
+        const QString videoId = getFieldString(
+                index, ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
+        if (!videoId.isEmpty() && !videoId.contains(QLatin1Char('/')) &&
+                !videoId.contains(QLatin1Char(':'))) {
+            QUrl url;
+            url.setScheme(QStringLiteral("youtube"));
+            url.setPath(videoId);
+            return url;
+        }
+    }
     return BaseExternalTrackModel::getTrackUrl(index);
 }
 
