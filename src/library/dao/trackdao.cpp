@@ -563,11 +563,23 @@ void TrackDAO::addTracksFinish(bool rollback) {
     m_tracksAddedSet.clear();
 }
 
+void TrackDAO::addTracksCommitAndRestart() {
+    // Commit the current batch of track additions and immediately start a
+    // new transaction. Used by the library scanner to release the write
+    // lock after every imported track, so that other threads (e.g. the
+    // GUI thread) can write to the database and no deadlock can occur
+    // between the scanner and the GlobalTrackCache mutex (see the comment
+    // in LibraryScanner::slotAddNewTrack).
+    addTracksFinish(false);
+    addTracksPrepare();
+}
+
 namespace {
 
 bool insertTrackLocation(
         QSqlQuery* pTrackLocationInsert,
-        const mixxx::FileInfo& fileInfo) {
+        const mixxx::FileInfo& fileInfo,
+        bool* pDuplicateLocation) {
     DEBUG_ASSERT(pTrackLocationInsert);
     pTrackLocationInsert->bindValue(":location", fileInfo.location());
     pTrackLocationInsert->bindValue(":directory", fileInfo.locationPath());
@@ -578,8 +590,20 @@ bool insertTrackLocation(
     if (pTrackLocationInsert->exec()) {
         return true;
     } else {
+        // Only a UNIQUE constraint violation indicates that the location
+        // is already present in the table. Any other error (e.g.
+        // SQLITE_BUSY because another connection is currently holding the
+        // write lock) must NOT be misinterpreted as a duplicate!
+        // Qt's SQLite driver exposes the numeric code as a string via
+        // nativeErrorCode(). Mask to the primary result code: extended
+        // codes like SQLITE_CONSTRAINT_UNIQUE (2067) share the low byte
+        // with SQLITE_CONSTRAINT (19). Avoids sqlite3.h extended-code
+        // macros, which the Android NDK headers lack.
+        const int errorCode =
+                pTrackLocationInsert->lastError().nativeErrorCode().toInt();
+        *pDuplicateLocation = (errorCode & 0xFF) == 19; // SQLITE_CONSTRAINT
         LOG_FAILED_QUERY(*pTrackLocationInsert)
-                << "Skip inserting duplicate track location" << fileInfo.location();
+                << "Failed to insert track location" << fileInfo.location();
         return false;
     }
 }
@@ -752,10 +776,24 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     // Insert the track location into the corresponding table. This will fail
     // silently if the location is already in the table because it has a UNIQUE
     // constraint.
-    if (!insertTrackLocation(m_pQueryTrackLocationInsert.get(), fileInfo)) {
-        DEBUG_ASSERT(pTrack->getDateAdded().isValid());
-        // Inserting into track_locations failed, so the file already
-        // exists. Query for its trackLocationId.
+    bool duplicateLocation = false;
+    if (!insertTrackLocation(
+                m_pQueryTrackLocationInsert.get(),
+                fileInfo,
+                &duplicateLocation)) {
+        if (!duplicateLocation) {
+            // The INSERT failed for a reason other than a duplicate
+            // location, e.g. SQLITE_BUSY because another connection (like
+            // the library scanner) is currently holding the write lock.
+            // The track has NOT been added: abort and let the caller roll
+            // back the transaction instead of running the
+            // duplicate-handling logic below, which would only produce
+            // misleading warnings and assertion failures.
+            return TrackId();
+        }
+        // Inserting into track_locations failed with a UNIQUE constraint
+        // violation, so the location is already in the table. Query for
+        // its trackLocationId.
         m_pQueryTrackLocationSelect->bindValue(":location", fileInfo.location());
         if (!m_pQueryTrackLocationSelect->exec()) {
             // We can't even select this, something is wrong.
