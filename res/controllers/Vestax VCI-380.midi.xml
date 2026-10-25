@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset mixxxVersion="2.5.0" schemaVersion="1">
+  <info>
+    <name>Vestax VCI-380</name>
+    <author>JM Jacinto</author>
+    <description>Mapping for the Vestax VCI-380: 2 decks, hot cues, beat grid, loops, stems, sampler, quick effects, touch strip.</description>
+    <forums>https://mixxx.discourse.group/t/vestax-vci-380-mapping/14713</forums>
+    <manual>vestax_vci_380</manual>
+  </info>
+  <settings>
+    <option
+        variable="cfCurveKnob"
+        type="boolean"
+        default="false"
+        label="CF CURVE knob also sets the Mixxx crossfader curve">
+      <description>
+        If enabled, the CF CURVE knob also sets the crossfader curve of Mixxx, from smooth (left) to sharp cut (right),
+        in place of the crossfader curve slider of Preferences > Mixer. Without this option, the knob only acts on the external inputs, in the controller.
+      </description>
+    </option>
+  </settings>
+  <controller id="VestaxVCI380">
+    <scriptfiles>
+      <file functionprefix="" filename="midi-components-0.0.js"/>
+      <file functionprefix="VestaxVCI380" filename="Vestax-VCI-380-scripts.js"/>
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI380.incomingData</key>
+        <description>SysEx from the controller: identity reply at startup, then soft takeover</description>
+        <status>0xF0</status>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI380.onCrossfader</key>
+        <description>Crossfader (SHIFT: main balance)</description>
+        <status>0xB7</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Mixer Profile]</group>
+        <key>VestaxVCI380.onCrossfaderCurve</key>
+        <description>CF CURVE knob: Mixxx crossfader curve, smooth (left) to sharp (right)</description>
+        <status>0xB7</status>
+        <midino>0x56</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.wheelTouch</key>
+        <description>Left jog wheel touch: scratch on/off</description>
+        <status>0x97</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.wheelTouch</key>
+        <description>Right jog wheel touch: scratch on/off</description>
+        <status>0x98</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.wheelTouch</key>
+        <description>SHIFT + Left jog wheel touch: scratch on/off</description>
+        <status>0x99</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.wheelTouch</key>
+        <description>SHIFT + Right jog wheel touch: scratch on/off</description>
+        <status>0x9A</status>
+        <midino>0x44</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.deck1.volume.input</key>
+        <description>Left channel volume fader</description>
+        <status>0xB7</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 8 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.deck2.volume.input</key>
+        <description>Right channel volume fader</description>
+        <status>0xB8</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 8 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPlay</key>
+        <description>Left PLAY button: play/pause (SHIFT: brake / soft start)</description>
+        <status>0x97</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 8 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onEQ</key>
+        <description>Left EQ HIGH knob (SHIFT: kill)</description>
+        <status>0xB7</status>
+        <midino>0x48</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPlay</key>
+        <description>Right PLAY button: play/pause (SHIFT: brake / soft start)</description>
+        <status>0x98</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 8 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x43</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onEQ</key>
+        <description>Right EQ HIGH knob (SHIFT: kill)</description>
+        <status>0xB8</status>
+        <midino>0x48</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPlay</key>
+        <description>SHIFT + Left PLAY button: play/pause (SHIFT: brake / soft start)</description>
+        <status>0x99</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPlay</key>
+        <description>SHIFT + Right PLAY button: play/pause (SHIFT: brake / soft start)</description>
+        <status>0x9A</status>
+        <midino>0x17</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onFXSelect</key>
+        <description>Left FX SELECT encoder: quick effect chain preset</description>
+        <status>0xB7</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 7 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onFXSelect</key>
+        <description>Right FX SELECT encoder: quick effect chain preset</description>
+        <status>0xB8</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 7 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onEQ</key>
+        <description>Left EQ MID knob (SHIFT: kill)</description>
+        <status>0xB7</status>
+        <midino>0x47</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_default</key>
+        <description>Left CUE button</description>
+        <status>0x97</status>
+        <midino>0x16</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 7 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onEQ</key>
+        <description>Right EQ MID knob (SHIFT: kill)</description>
+        <status>0xB8</status>
+        <midino>0x47</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_default</key>
+        <description>Right CUE button</description>
+        <status>0x98</status>
+        <midino>0x16</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 7 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x42</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_set</key>
+        <description>SHIFT + Left CUE: set the cue point</description>
+        <status>0x99</status>
+        <midino>0x16</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_set</key>
+        <description>SHIFT + Right CUE: set the cue point</description>
+        <status>0x9A</status>
+        <midino>0x16</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 6 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 6 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onEQ</key>
+        <description>Left EQ LOW knob (SHIFT: kill)</description>
+        <status>0xB7</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 6 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onEQ</key>
+        <description>Right EQ LOW knob (SHIFT: kill)</description>
+        <status>0xB8</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 6 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x41</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 5 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 5 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.wheelTurn</key>
+        <description>Left jog wheel: scratch, jog (SHIFT: beatjump), library scroll with JOG SCROLL</description>
+        <status>0xB7</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 5 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.wheelTurn</key>
+        <description>Right jog wheel: scratch, jog (SHIFT: beatjump), library scroll with JOG SCROLL</description>
+        <status>0xB8</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 5 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x40</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.wheelTurn</key>
+        <description>SHIFT + Left jog wheel: scratch, jog (SHIFT: beatjump), library scroll with JOG SCROLL</description>
+        <status>0xB9</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.wheelTurn</key>
+        <description>SHIFT + Right jog wheel: scratch, jog (SHIFT: beatjump), library scroll with JOG SCROLL</description>
+        <status>0xBA</status>
+        <midino>0x45</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 4 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 4 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 4 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatsync</key>
+        <description>Left SYNC button: beat sync</description>
+        <status>0x97</status>
+        <midino>0x13</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 4 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x3F</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatsync</key>
+        <description>Right SYNC button: beat sync</description>
+        <status>0x98</status>
+        <midino>0x13</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beats_translate_curpos</key>
+        <description>SHIFT + Left SYNC: move the beat grid to the play position</description>
+        <status>0x99</status>
+        <midino>0x13</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>MoveFocusForward</key>
+        <description>SCROLL push: focus the next library pane (TAB)</description>
+        <status>0x97</status>
+        <midino>0x54</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beats_translate_curpos</key>
+        <description>SHIFT + Right SYNC: move the beat grid to the play position</description>
+        <status>0x9A</status>
+        <midino>0x13</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 3 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 3 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 3 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 3 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x3E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.deck2.rate.inputMSB</key>
+        <description>Right pitch fader, 14-bit MSB</description>
+        <status>0xB8</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.deck2.rate.inputLSB</key>
+        <description>Right pitch fader, 14-bit LSB</description>
+        <status>0xB8</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>MoveLeft</key>
+        <description>BACK button: library move left</description>
+        <status>0x97</status>
+        <midino>0x53</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>MoveRight</key>
+        <description>FWD button: library move right</description>
+        <status>0x97</status>
+        <midino>0x4F</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 2 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 2 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 2 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 2 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x3D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>sort_focused_column</key>
+        <description>SORT button: sort by the focused column</description>
+        <status>0x97</status>
+        <midino>0x52</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Left performance pad 1 (depends on the pad mode)</description>
+        <status>0x97</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>Right performance pad 1 (depends on the pad mode)</description>
+        <status>0x98</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Left performance pad 1 (depends on the pad mode)</description>
+        <status>0x99</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadTap</key>
+        <description>SHIFT + Right performance pad 1 (depends on the pad mode)</description>
+        <status>0x9A</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>LoadSelectedTrackAndPlay</key>
+        <description>VIEW button: play the selected track on the preview deck</description>
+        <status>0x97</status>
+        <midino>0x51</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Left ROLL button: stems pad mode</description>
+        <status>0x97</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Right ROLL button: stems pad mode</description>
+        <status>0x98</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>GoToItem</key>
+        <description>AREA button: go to the selected library item</description>
+        <status>0x97</status>
+        <midino>0x50</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Left AUTO LOOP button: loop pad mode</description>
+        <status>0x97</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>VestaxVCI380.onSelectTrackKnob</key>
+        <description>SCROLL encoder: library move up/down (fast: page up/down)</description>
+        <status>0xB7</status>
+        <midino>0x55</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Right AUTO LOOP button: loop pad mode</description>
+        <status>0x98</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Left SLICER button: beat grid pad mode</description>
+        <status>0x97</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Right SLICER button: beat grid pad mode</description>
+        <status>0x98</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Left HOT CUE button: hot cues pad mode</description>
+        <status>0x97</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>Right HOT CUE button: hot cues pad mode</description>
+        <status>0x98</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onShift</key>
+        <description>Left SHIFT button</description>
+        <status>0x97</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>SHIFT + Left HOT CUE: sampler pad mode</description>
+        <status>0x99</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onShift</key>
+        <description>Right SHIFT button</description>
+        <status>0x98</status>
+        <midino>0x0C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onSelectPadMode</key>
+        <description>SHIFT + Right HOT CUE: sampler pad mode</description>
+        <status>0x9A</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onLoad</key>
+        <description>JOG SCROLL + CUE A: load the selected track into deck 1</description>
+        <status>0x97</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB7</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onLoad</key>
+        <description>JOG SCROLL + CUE B: load the selected track into deck 2</description>
+        <status>0x98</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB8</status>
+        <midino>0x3B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Left touch strip (sampler mode): needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB7</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Right touch strip (sampler mode): needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB8</status>
+        <midino>0x3C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onHeadCue</key>
+        <description>CUE A: headphone cue (PFL) of deck 1, toggled by the controller, which sends its state</description>
+        <status>0x99</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onHeadCue</key>
+        <description>CUE B: headphone cue (PFL) of deck 2, toggled by the controller, which sends its state</description>
+        <status>0x9A</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onJogScroll</key>
+        <description>JOG SCROLL button: jog wheels scroll the library while held</description>
+        <status>0x97</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB7</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB8</status>
+        <midino>0x3A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadFXSelect</key>
+        <description>Left PAD FX encoder: library move up/down</description>
+        <status>0xB7</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadFXSelect</key>
+        <description>Right PAD FX encoder: library move left/right</description>
+        <status>0xB8</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadFXSelect</key>
+        <description>SHIFT + Left PAD FX encoder: library page scroll</description>
+        <status>0xB9</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadFXSelect</key>
+        <description>SHIFT + Right PAD FX encoder: waveform zoom</description>
+        <status>0xBA</status>
+        <midino>0x0E</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB7</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB8</status>
+        <midino>0x39</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.deck1.rate.inputMSB</key>
+        <description>Left pitch fader, 14-bit MSB</description>
+        <status>0xB7</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.deck1.rate.inputLSB</key>
+        <description>Left pitch fader, 14-bit LSB</description>
+        <status>0xB7</status>
+        <midino>0x2D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPadFXPush</key>
+        <description>Left PAD FX push: go to item (SHIFT: clone the other deck)</description>
+        <status>0x97</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB7</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPadFXPush</key>
+        <description>Right PAD FX push: go to item (SHIFT: clone the other deck)</description>
+        <status>0x98</status>
+        <midino>0x1D</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onStrip</key>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <status>0xB8</status>
+        <midino>0x38</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onFXOnOff</key>
+        <description>Left FX ON/OFF switch: quick effect on/off (hardware toggle, state sent)</description>
+        <status>0x97</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onFXSelectPush</key>
+        <description>Left FX SELECT push: load the first quick effect chain preset</description>
+        <status>0x97</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onFXOnOff</key>
+        <description>Right FX ON/OFF switch: quick effect on/off (hardware toggle, state sent)</description>
+        <status>0x98</status>
+        <midino>0x1C</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onFXSelectPush</key>
+        <description>Right FX SELECT push: load the first quick effect chain preset</description>
+        <status>0x98</status>
+        <midino>0x06</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>quantize</key>
+        <description>Left RANGE button: quantize</description>
+        <status>0x97</status>
+        <midino>0x1B</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>quantize</key>
+        <description>Right RANGE button: quantize</description>
+        <status>0x98</status>
+        <midino>0x1B</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <description>SHIFT + Left RANGE: keylock</description>
+        <status>0x99</status>
+        <midino>0x1B</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <description>SHIFT + Right RANGE: keylock</description>
+        <status>0x9A</status>
+        <midino>0x1B</midino>
+        <options>
+          <button/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onFXDepth</key>
+        <description>Left DEPTH knob: quick effect super knob (selected stem in stems mode)</description>
+        <status>0xB7</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onFXDepth</key>
+        <description>Right DEPTH knob: quick effect super knob (selected stem in stems mode)</description>
+        <status>0xB8</status>
+        <midino>0x0A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onVinyl</key>
+        <description>Left VINYL button: slip mode</description>
+        <status>0x97</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onVinyl</key>
+        <description>Right VINYL button: slip mode</description>
+        <status>0x98</status>
+        <midino>0x1A</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.deck1.pregain.input</key>
+        <description>Left GAIN knob</description>
+        <status>0xB7</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.deck2.pregain.input</key>
+        <description>Right GAIN knob</description>
+        <status>0xB8</status>
+        <midino>0x09</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+    </controls>
+    <outputs>
+      <output>
+        <group>[Channel2]</group>
+        <key>cue_indicator</key>
+        <status>0x98</status>
+        <midino>0x16</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>cue_indicator</key>
+        <status>0x97</status>
+        <midino>0x16</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[PreviewDeck1]</group>
+        <key>play_indicator</key>
+        <status>0x97</status>
+        <midino>0x51</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>play_indicator</key>
+        <status>0x98</status>
+        <midino>0x17</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>play_indicator</key>
+        <status>0x97</status>
+        <midino>0x17</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>beat_active</key>
+        <status>0x98</status>
+        <midino>0x13</midino>
+        <on>0x48</on>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel1]</group>
+        <key>beat_active</key>
+        <status>0x97</status>
+        <midino>0x13</midino>
+        <on>0x48</on>
+        <minimum>0.5</minimum>
+      </output>
+    </outputs>
+  </controller>
+</MixxxControllerPreset>
