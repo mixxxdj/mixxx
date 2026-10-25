@@ -82,8 +82,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
   set(
     ANDROID_ABI
     "arm64-v8a"
-    CACHE
-    STRING
+    CACHE STRING
     "Android ABI to build for (arm64-v8a, x86_64, armeabi-v7a, x86)"
   )
   set_property(
