@@ -252,7 +252,7 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     // Empty out the list of devices we currently have.
     m_pErrorDevice.clear();
 
-    // deinitialize in case of PortAudio so the devices are updated
+    // deinitialize in case of PipeWire so the devices are updated
     if (isPipewireSelected()) {
         m_pEnumerator->deinitialize();
     }
@@ -718,17 +718,13 @@ void SoundManager::unconfigureOutput(const AudioOutput& output) {
 }
 
 void SoundManager::devicesEnumerated() {
-    qDebug() << "SoundManager::devicesEnumerated";
-    for (const auto& device : m_pEnumerator->queryDevices()) {
-        qDebug() << device->getDisplayName();
-    }
-
     // currently PipeWire has no sane default device options, we need to obtain
     // it from metadata, and select it in SoundManagerConfig::loadDefaults
     if (!m_config.validateDevices() && !isPipewireSelected()) {
         qDebug() << "!m_config.validateDevices()";
         m_config.loadDefaults(this, SoundManagerConfig::DEVICES);
     }
+    emit devicesUpdated();
 }
 
 void SoundManager::invalidateConfig() {
