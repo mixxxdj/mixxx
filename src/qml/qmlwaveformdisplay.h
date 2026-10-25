@@ -197,3 +197,10 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
 
 } // namespace qml
 } // namespace mixxx
+
+// QmlPlayerProxy and QmlTrackProxy are only forward-declared above (to avoid
+// an include cycle via qmlplayerproxy.h -> qmltrackproxy.h -> qmlconfigproxy.h
+// -> qmlwaveformdisplay.h), but are used in Q_PROPERTY. Declare the pointer
+// meta-types opaque so moc output compiles without complete types.
+Q_DECLARE_OPAQUE_POINTER(mixxx::qml::QmlPlayerProxy*)
+Q_DECLARE_OPAQUE_POINTER(mixxx::qml::QmlTrackProxy*)
