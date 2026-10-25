@@ -43,7 +43,8 @@ void SoundManagerAndroid::prepareSetup() {
     // pre-setup Android-specific initialization.
 }
 
-bool SoundManagerAndroid::skipFailedDevice(const SoundDevicePointer& pDevice, SoundDevicePointer* pMainClockRef) {
+bool SoundManagerAndroid::skipFailedDevice(
+        const SoundDevicePointer& pDevice, SoundDevicePointer* pMainClockRef) {
     Q_UNUSED(pMainClockRef);
     // If the failed device is a network device, we can continue without it
     if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {

@@ -21,7 +21,8 @@ SoundDeviceAndroidUsb::SoundDeviceAndroidUsb(
           m_open(false),
           m_audioLatencyUsage(ConfigKey("[App]", "audio_latency_usage")),
           m_timeInAudioCallback(0),
-          m_framesSinceAudioLatencyUsageUpdate(0) {}
+          m_framesSinceAudioLatencyUsageUpdate(0) {
+}
 
 SoundDeviceAndroidUsb::~SoundDeviceAndroidUsb() {
     close();
@@ -39,10 +40,9 @@ SoundDeviceStatus SoundDeviceAndroidUsb::open(bool isClkRefDevice, int syncBuffe
     const int sampleRate = m_pConfig->getValue(ConfigKey("[App]", "sample_rate"), 44100);
     const int numTransfers = 4;
 
-    if (!m_pDevice->startOutput(sampleRate, transferMillis, numTransfers,
-            [this](uint8_t* pDestination, int frames) {
-                this->render(pDestination, frames);
-            })) {
+    if (!m_pDevice->startOutput(sampleRate, transferMillis, numTransfers, [this](uint8_t* pDestination, int frames) {
+            this->render(pDestination, frames);
+        })) {
         m_lastError = tr("Failed to start USB output");
         return SoundDeviceStatus::Error;
     }
@@ -116,7 +116,7 @@ void SoundDeviceAndroidUsb::processEngine() {
 void SoundDeviceAndroidUsb::updateAudioLatencyUsage(SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
     if (m_framesSinceAudioLatencyUsageUpdate >= m_pConfig->getValue(
-            ConfigKey("[App]", "sample_rate"), 44100)) {
+                                                        ConfigKey("[App]", "sample_rate"), 44100)) {
         m_audioLatencyUsage.set(static_cast<double>(m_timeInAudioCallback.count()) /
                 m_framesSinceAudioLatencyUsageUpdate * 100.0);
         m_framesSinceAudioLatencyUsageUpdate = 0;

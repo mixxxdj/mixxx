@@ -1,7 +1,6 @@
 #include "analyzer/analyzerenergy.h"
 
 #include <QtDebug>
-
 #include <cmath>
 
 #include "analyzer/analyzertrack.h"
@@ -178,9 +177,12 @@ void AnalyzerEnergy::setAutoMarkers(
         }
     }
 
-    qDebug() << "AnalyzerEnergy: markers" << pTrack->getInfo()
-             << "intro end" << (introFree ? QString::number(introEndSec) : QStringLiteral("kept (set by DJ)"))
-             << "outro start" << (outroFree ? QString::number(outroStartSec) : QStringLiteral("kept (set by DJ)"));
+    qDebug() << "AnalyzerEnergy: markers" << pTrack->getInfo() << "intro end"
+             << (introFree ? QString::number(introEndSec)
+                           : QStringLiteral("kept (set by DJ)"))
+             << "outro start"
+             << (outroFree ? QString::number(outroStartSec)
+                           : QStringLiteral("kept (set by DJ)"));
 }
 
 void AnalyzerEnergy::storeGridCheck(const TrackPointer& pTrack, const EnergyCalculator::Result* pResult) {
@@ -196,6 +198,6 @@ void AnalyzerEnergy::storeGridCheck(const TrackPointer& pTrack, const EnergyCalc
             << "bpm" << pTrack->getBpm() << (grid.isMap() ? "(beat map)" : "(steady grid)")
             << "drift" << drift << "beats"
             << (drift > EnergyCalculator::kGridMaxDriftBeats
-                           ? "-> grid does NOT stay on the beat, Auto DJ will not beatmatch it"
-                           : (drift < 0.0 ? "(cannot tell)" : "(OK)"));
+                               ? "-> grid does NOT stay on the beat, Auto DJ will not beatmatch it"
+                               : (drift < 0.0 ? "(cannot tell)" : "(OK)"));
 }

@@ -1,5 +1,6 @@
 #include "soundio/androidusbaudiodevice.h"
 
+#include <QtCore/private/qandroidextras_p.h>
 #include <libusb.h>
 #include <pthread.h>
 #include <sys/resource.h>
@@ -8,7 +9,6 @@
 #include <QDebug>
 #include <QJniEnvironment>
 #include <QSet>
-#include <QtCore/private/qandroidextras_p.h>
 #include <chrono>
 #include <cmath>
 #include <condition_variable>
@@ -120,9 +120,17 @@ AndroidUsbAudioDevice::AndroidUsbAudioDevice(const QJniObject& usbDevice)
           m_midiInRunning(false),
           m_midiInPending(false),
           m_pMidiInTransfer(nullptr) {
-    m_productName = usbDevice.callObjectMethod("getProductName", "()Ljava/lang/CharSequence;").toString();
-    m_manufacturerName = usbDevice.callObjectMethod("getManufacturerName", "()Ljava/lang/CharSequence;").toString();
-    m_usbDeviceName = usbDevice.callObjectMethod("getDeviceName", "()Ljava/lang/String;").toString();
+    m_productName = usbDevice
+                            .callObjectMethod("getProductName",
+                                    "()Ljava/lang/CharSequence;")
+                            .toString();
+    m_manufacturerName = usbDevice
+                                 .callObjectMethod("getManufacturerName",
+                                         "()Ljava/lang/CharSequence;")
+                                 .toString();
+    m_usbDeviceName =
+            usbDevice.callObjectMethod("getDeviceName", "()Ljava/lang/String;")
+                    .toString();
     m_vendorId = static_cast<uint16_t>(usbDevice.callMethod<jint>("getVendorId"));
     m_productId = static_cast<uint16_t>(usbDevice.callMethod<jint>("getProductId"));
 }
@@ -207,8 +215,10 @@ bool AndroidUsbAudioDevice::open(DirectMode mode, bool waitForPermission) {
                 QJniObject manager = usbManager();
                 if (manager.isValid()) {
                     manager.callMethod<void>("requestPermission",
-                            "(Landroid/hardware/usb/UsbDevice;Landroid/app/PendingIntent;)V",
-                            m_usbDevice.object<jobject>(), mixxx::android::getIntent().object<jobject>());
+                            "(Landroid/hardware/usb/UsbDevice;Landroid/app/"
+                            "PendingIntent;)V",
+                            m_usbDevice.object<jobject>(),
+                            mixxx::android::getIntent().object<jobject>());
                 }
             }).waitForFinished();
         }
@@ -229,9 +239,11 @@ bool AndroidUsbAudioDevice::open(DirectMode mode, bool waitForPermission) {
     // Parse descriptors
     QJniObject rawDescriptors = connection.callObjectMethod("getRawDescriptors", "()[B");
     if (rawDescriptors.isValid()) {
-        jbyte* bytes = QJniEnvironment::getJNIEnv()->GetByteArrayElements(rawDescriptors.object<jbyteArray>(), nullptr);
+        jbyte* bytes = QJniEnvironment::getJNIEnv()->GetByteArrayElements(
+                rawDescriptors.object<jbyteArray>(), nullptr);
         jsize length = QJniEnvironment::getJNIEnv()->GetArrayLength(rawDescriptors.object<jbyteArray>());
-        m_description = usbaudio::parse(reinterpret_cast<const uint8_t*>(bytes), length);
+        m_description = usbaudio::parse(
+                reinterpret_cast<const uint8_t*>(bytes), length);
         QJniEnvironment::getJNIEnv()->ReleaseByteArrayElements(rawDescriptors.object<jbyteArray>(), bytes, JNI_ABORT);
     }
 
@@ -242,7 +254,8 @@ bool AndroidUsbAudioDevice::open(DirectMode mode, bool waitForPermission) {
     }
     m_outputFormat = *pFormat;
 
-    if (m_outputFormat.syncType == usbaudio::SyncType::Asynchronous && m_outputFormat.feedbackEndpoint == 0) {
+    if (m_outputFormat.syncType == usbaudio::SyncType::Asynchronous &&
+            m_outputFormat.feedbackEndpoint == 0) {
         const usbaudio::StreamFormat* pImplicit = usbaudio::implicitFeedbackSource(m_description, m_outputFormat);
         if (pImplicit) {
             m_implicitFormat = *pImplicit;
@@ -327,7 +340,8 @@ void AndroidUsbAudioDevice::queryUac2SampleRates() {
 }
 
 bool AndroidUsbAudioDevice::setSampleRate(const usbaudio::StreamFormat& format, int sampleRate) {
-    if (!m_claimed) return false;
+    if (!m_claimed)
+        return false;
 
     uint8_t data[4];
     data[0] = sampleRate & 0xff;
@@ -338,8 +352,12 @@ bool AndroidUsbAudioDevice::setSampleRate(const usbaudio::StreamFormat& format, 
     int request = (format.uacVersion == 1) ? kRequestGetCurUac1 : kRequestCur;
     int result = libusb_control_transfer(m_pHandle,
             LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_ENDPOINT,
-            request, kSamplingFreqControl, format.endpoint,
-            data, 4, kControlTimeoutMillis);
+            request,
+            kSamplingFreqControl,
+            format.endpoint,
+            data,
+            4,
+            kControlTimeoutMillis);
     return result == 4;
 }
 
@@ -348,8 +366,12 @@ int AndroidUsbAudioDevice::readSampleRate(const usbaudio::StreamFormat& format) 
     int request = (format.uacVersion == 1) ? kRequestGetCurUac1 : kRequestCur;
     int result = libusb_control_transfer(m_pHandle,
             LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_ENDPOINT,
-            request, kSamplingFreqControl, format.endpoint,
-            data, 4, kControlTimeoutMillis);
+            request,
+            kSamplingFreqControl,
+            format.endpoint,
+            data,
+            4,
+            kControlTimeoutMillis);
     if (result == 4) {
         return readLittleEndian(data, 4);
     }
@@ -758,7 +780,8 @@ void AndroidUsbAudioDevice::implicitTransferCallback(libusb_transfer* pTransfer)
         }
         if (!pThis->m_implicitPacketFrames.empty()) {
             int sum = 0;
-            for (int f : pThis->m_implicitPacketFrames) sum += f;
+            for (int f : pThis->m_implicitPacketFrames)
+                sum += f;
             uint32_t avg16_16 = static_cast<uint32_t>(
                     (static_cast<double>(sum) / pThis->m_implicitPacketFrames.size()) * 65536.0 + 0.5);
             pThis->m_framesPerPacket = avg16_16;

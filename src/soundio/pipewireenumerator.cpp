@@ -591,6 +591,8 @@ int PipewireEnumerator::metadataEventSetting(uint32_t id,
         const char* key,
         const char* type,
         const char* value) {
+    Q_UNUSED(id);
+    Q_UNUSED(type);
     if (strcmp(key, "clock.rate") == 0) {
         m_defaultSampleRate = mixxx::audio::SampleRate(std::atoi(value));
     }
@@ -602,6 +604,8 @@ int PipewireEnumerator::metadataEventDefault(uint32_t id,
         const char* key,
         const char* type,
         const char* value) {
+    Q_UNUSED(id);
+    Q_UNUSED(type);
     if (strcmp(key, "default.configured.audio.source") == 0) {
         QJsonParseError error;
         QJsonDocument doc = QJsonDocument::fromJson(value, &error);

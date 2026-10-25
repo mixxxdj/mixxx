@@ -93,7 +93,7 @@ StemBlend stemBlend(double progress, const VocalPlan& plan, bool fadeDrums = fal
 ///         slipped back in line within about kLockBeats beats. A slip of
 ///         less than kLockDeadBeats is left alone (no needless wobble).
 constexpr double kLockBeats = 2.0;
-constexpr double kMaxLockNudge = 0.06; // 6 % (key lock keeps the pitch)
+constexpr double kMaxLockNudge = 0.06;  // 6 % (key lock keeps the pitch)
 constexpr double kLockDeadBeats = 0.01; // 5 ms at 120 BPM
 /// Early in the mix (the incoming song still quiet), a slip bigger than
 /// this is not pulled back slowly: the incoming song jumps in line.
