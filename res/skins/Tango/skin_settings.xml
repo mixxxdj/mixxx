@@ -705,6 +705,11 @@ Description:
             <SetVariable name="Setting">[Skin],show_library_coverart</SetVariable>
           </Template>
 
+          <Template src="skins:Tango/controls/skin_settings_button_2state.xml">
+            <SetVariable name="TooltipId">highlight_input_allow</SetVariable>
+            <SetVariable name="text">Allow Highlighting</SetVariable>
+            <SetVariable name="Setting">[Skin],highlight_input_allow</SetVariable>
+          </Template>
           <WidgetGroup><!-- Sampler rows -->
             <MinimumSize>182,13</MinimumSize>
             <MaximumSize>182,20</MaximumSize>

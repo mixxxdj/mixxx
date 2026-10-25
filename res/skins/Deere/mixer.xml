@@ -2,12 +2,15 @@
 <!--
   Description:
     The mixer section.
+  Variables:
+    i: The deck number (1-indexed)
 -->
 <Template>
   <WidgetGroup>
     <ObjectName>MixerBorder</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>min,me</SizePolicy>
+
     <Children>
       <WidgetGroup>
         <ObjectName>Mixer</ObjectName>
