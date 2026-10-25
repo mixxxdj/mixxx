@@ -78,6 +78,11 @@ const ConfigKey mixxx::library::prefs::kBpmColumnPrecisionConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("BpmColumnPrecision")};
 
+const ConfigKey mixxx::library::prefs::kApplyTrackColorConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("ApplyTrackColor")};
+
 const ConfigKey mixxx::library::prefs::kApplyPlayedTrackColorConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,

@@ -517,15 +517,17 @@ void allshader::WaveformRenderMark::update() {
 
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 
-    const float playMarkerPos = static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
-            m_waveformRenderer->getLength());
+    const auto playMarkerPos = QPointF(
+            static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
+                    m_waveformRenderer->getLength()),
+            static_cast<float>(m_waveformRenderer->getBreadth()));
     if (m_lastPlayMarkerPos != playMarkerPos) {
-        const float drawOffset = roundToPixel(playMarkerPos + kPlayPosOffset);
+        const float drawOffset = roundToPixel(playMarkerPos.x() + kPlayPosOffset);
         TexturedVertexUpdater vertexUpdater{
                 m_pPlayPosNode->geometry()
                         .vertexDataAs<Geometry::TexturedPoint2D>()};
         vertexUpdater.addRectangle({drawOffset, 0.f},
-                {drawOffset + kPlayPosWidth, static_cast<float>(m_waveformRenderer->getBreadth())},
+                {drawOffset + kPlayPosWidth, static_cast<float>(playMarkerPos.y())},
                 {0.f, 0.f},
                 {1.f, 1.f});
         m_pPlayPosNode->markDirtyGeometry();
@@ -534,7 +536,7 @@ void allshader::WaveformRenderMark::update() {
 
     if (hasWaveform && (m_untilMarkShowBeats || m_untilMarkShowTime)) {
         updateUntilMark(playPosition, nextMarkPosition);
-        updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos + 20.f));
+        updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos.x() + 20.f));
     } else {
         m_pDigitsRenderNode->clear();
     }

@@ -91,6 +91,11 @@ class Track : public QObject {
         return m_fileAccess.info();
     }
 
+    mixxx::FileAccess getFileAccess() const {
+        const auto locked = lockMutex(&m_qMutex);
+        return m_fileAccess;
+    }
+
     TrackId getId() const;
 
     // Returns absolute path to the file, including the filename.
@@ -589,6 +594,11 @@ class Track : public QObject {
     /// Returns true if the track has been modified and false otherwise.
     bool mergeExtraMetadataFromSource(
             const mixxx::TrackMetadata& importedMetadata);
+
+    /// Checks if any properties that are merged lazily from file tags
+    /// are still missing and could be backfilled by
+    /// mergeExtraMetadataFromSource().
+    bool mayMergeExtraMetadataFromSource() const;
 
     bool exportSeratoMetadata();
 

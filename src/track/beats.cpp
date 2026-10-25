@@ -685,28 +685,64 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
         return nullptr;
     }
 
-    std::vector<BeatMarker> markers;
-    markers.reserve(m_markers.size());
-    for (const auto& marker : std::as_const(m_markers)) {
-        const double beatsTillNextMarkerFractional = marker.beatsTillNextMarker() * scaleFactor;
-        const int beatsTillNextMarker = static_cast<int>(std::trunc(beatsTillNextMarkerFractional));
-        if (beatsTillNextMarkerFractional != beatsTillNextMarker) {
-            qWarning() << "Marker with" << marker.beatsTillNextMarker()
-                       << "beats till next marker cannot be scaled by"
-                       << scaleFactor;
-            return std::nullopt;
-        }
-
-        markers.push_back({marker.position(), beatsTillNextMarker});
+    if (hasConstantTempo()) {
+        // Constant tempo: there are no markers, scale only the BPM and
+        // keep the position of the first beat.
+        return BeatsPointer(new Beats(m_markers,
+                m_lastMarkerPosition,
+                m_lastMarkerBpm * scaleFactor,
+                m_sampleRate,
+                m_subVersion));
     }
 
-    Bpm lastMarkerBpm = m_lastMarkerBpm * scaleFactor;
+    // Variable tempo: resample the beats by beat index instead of scaling
+    // the integer beat counts of the markers: beat m of the scaled beats is
+    // placed at the position of the original beat with the (fractional)
+    // index m / scaleFactor. This way the BPM curve of the track is scaled
+    // on the y-axis only, while the beat counts -- which have to be
+    // integers -- are chosen freely instead of having to satisfy
+    // beatsTillNextMarker * scaleFactor is an integer for every single
+    // marker.
+    const audio::FramePos anchor = *cfirstmarker();
+    int totalBeats = 0;
+    for (const auto& marker : std::as_const(m_markers)) {
+        totalBeats += marker.beatsTillNextMarker();
+    }
+    // Add an epsilon in case the product is an integer mathematically, but
+    // slightly below it due to floating point rounding.
+    const int lastBeatIndex =
+            static_cast<int>(std::floor(scaleFactor * totalBeats + 1e-9));
 
-    return BeatsPointer(new Beats(markers,
-            m_lastMarkerPosition,
-            lastMarkerBpm,
-            m_sampleRate,
-            m_subVersion));
+    QVector<audio::FramePos> positions;
+    positions.reserve(lastBeatIndex + 1);
+    for (int m = 0; m <= lastBeatIndex; ++m) {
+        const auto position =
+                findNBeatsFromPosition(anchor, m / scaleFactor)
+                        .toNearestFrameBoundary();
+        // Rounding to the frame boundary may let a beat collide with the
+        // previous beat if their distance is less than half a frame. Such
+        // beat positions cannot be represented.
+        if (!positions.isEmpty() && position <= positions.last()) {
+            qWarning() << "Can not scale BPM by" << scaleFactor << ", aborting."
+                       << "Beat" << m
+                       << "would overlap with the previous beat.";
+            return std::nullopt;
+        }
+        positions.append(position);
+    }
+
+    if (positions.size() < 2) {
+        qWarning() << "Scaling by" << scaleFactor << "results in less than two beats";
+        return std::nullopt;
+    }
+
+    // Rebuild the beats from the scaled beat positions, using the same code
+    // path as the deserialization of a beat map.
+    const auto pScaledBeats = fromBeatPositions(m_sampleRate, positions, m_subVersion);
+    if (!pScaledBeats) {
+        return std::nullopt;
+    }
+    return pScaledBeats;
 }
 
 std::optional<BeatsPointer> Beats::trySetBpm(mixxx::Bpm bpm) const {

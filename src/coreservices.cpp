@@ -1020,6 +1020,7 @@ std::shared_ptr<QDialog> CoreServices::makeDlgPreferences(
             getEffectsManager(),
             getSettingsManager(),
             getLibrary(),
+            getPlayerManager(),
             includeWaveformPreferences);
     return pDlgPreferences;
 }
