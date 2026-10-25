@@ -1032,15 +1032,15 @@
     </controller>
     <settings>
         <group label="Autostart">
-            <option variable="scratchMode" type="boolean" default="false" label="Enables 'Scratch-Mode'(aka left channel: ON/OFF)" description=""/>
+            <option variable="scratchMode" type="boolean" default="false" label="Enables 'Scratch-Mode' (aka left channel: ON/OFF)" description=""/>
             <option variable="extendedLooping" type="boolean" default="true" label="Enables 'Extended Looping' (aka right channel: ON/OFF)" description="Please see online help for full explanation."/>
             <option variable="enableQuickEffects" type="boolean" default="false" label="Enable 'QuickEffects' on both decks" description=""/>
             <option variable="enableSoftTakeover" type="boolean" default="false" label="Enable 'SoftTakeover' for rate sliders" description="Use this option for rate sliders to avoid sudden jumps in when the slider in the GUI doesn’t match the physical. If you select this option, you won’t be able to perform super-fast motions as easily."/>
         </group>
         <group label="FinePitch and JogWheel Adjustment">
-            <option variable="finePitchAdjustment" type="real" default="9" min="1" max="20" step="0.1" precision="2" label="FinePitch: the higher the value, the smaller the impact by FINE PITCH  rotation" description="The value of '6' means same impact as rate sliders."/>
-            <option variable="jogScratchAdjustment" type="real" default="3" min="1" max="5" step="0.1" precision="2" label="JogWheel (in Scratch-Mode): the higher the value, the lower the impact on JOGWHEEL rotation" description="Exponential impact; small changes recommended"/>
-            <option variable="jogMoveAdjustment" type="real" default="3" min="1" max="20" step="0.1" precision="2" label="JogWheel (not in Scratch-Mode): the higher the value, the higher the impact by JOGWHEEL rotation" description=""/>
+            <option variable="finePitchAdjustment" type="real" default="9" min="1" max="20" step="0.1" precision="2" label="FINE PITCH: the higher the value, the smaller the impact by FINE PITCH rotation" description="The value of '6' means same impact as rate sliders."/>
+            <option variable="jogScratchAdjustment" type="real" default="3" min="1" max="5" step="0.1" precision="2" label="JOGWHEEL (in Scratch-Mode): the higher the value, the lower the impact on JOGWHEEL rotation" description="Exponential impact; small changes recommended"/>
+            <option variable="jogMoveAdjustment" type="real" default="3" min="1" max="20" step="0.1" precision="2" label="JOGWHEEL (not in Scratch-Mode): the higher the value, the higher the impact by JOGWHEEL rotation" description=""/>
         </group>
         <group label="Advanced">
             <option variable="simpleCue" type="boolean" default="true" label="CUE doesn't stop playing deck" description="Pressing the CUE button while playing, doesn't stop the deck; if disabled, CUE button pauses the deck."/>
