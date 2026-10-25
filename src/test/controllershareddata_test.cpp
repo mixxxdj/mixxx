@@ -110,7 +110,8 @@ TEST_F(ControllerSharedDataBackendTest, UpdateSignalEmitted) {
 
     QObject::connect(m_pSharedData.get(),
             &ControllerSharedData::updated,
-            [&](const QString& ns,
+            m_pSharedData.get(),
+            [received](const QString& ns,
                     const QString& entity,
                     const QString& key,
                     const QVariant& value,
@@ -178,7 +179,8 @@ TEST_F(NamespacedSharedDataTest, OnlyReceivesOwnNamespace) {
 
     QObject::connect(m_pNamespaced.get(),
             &ControllerNamespacedSharedData::updated,
-            [&](const QString& entity,
+            m_pNamespaced.get(),
+            [received](const QString& entity,
                     const QString& key,
                     const QVariant& value,
                     QObject* sender) {
@@ -205,7 +207,8 @@ TEST_F(NamespacedSharedDataTest, UpdateSignalIncludesSender) {
 
     QObject::connect(m_pNamespaced.get(),
             &ControllerNamespacedSharedData::updated,
-            [&](const QString& entity,
+            m_pNamespaced.get(),
+            [received](const QString& entity,
                     const QString& key,
                     const QVariant& value,
                     QObject* sender) {

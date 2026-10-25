@@ -354,7 +354,7 @@ TEST(SmartSequencerTest, HeuristicAlsoBuildsEnergy) {
     const auto r = seq.solve(tracks);
     ASSERT_EQ(20, r.order.size());
     auto energyOf = [&](const TrackId& id) {
-        for (const auto& t : tracks) {
+        for (const auto& t : std::as_const(tracks)) {
             if (t.id == id) {
                 return t.energy;
             }
@@ -387,8 +387,10 @@ TEST(SmartSequencerTest, ExactSolverMatchesBruteForce) {
     std::uniform_real_distribution<double> energy(1.0, 10.0);
     MixScorer scorer;
     SmartSequencer seq(scorer);
+    QVector<TrackFeatures> tracks;
+    tracks.reserve(7);
     for (int round = 0; round < 20; ++round) {
-        QVector<TrackFeatures> tracks;
+        tracks.clear();
         for (int i = 1; i <= 7; ++i) {
             tracks.push_back(makeTrack(i, key(rng), letter(rng) == 1, bpm(rng), energy(rng)));
         }
@@ -751,7 +753,7 @@ TEST(BridgeFinderTest, LiveAssistantRanksTheBestNextTracks) {
     const auto list = finder.suggestNext(now, library, {}, {}, 10, false);
     ASSERT_EQ(3, list.size());
     EXPECT_TRUE(list[0].track.id == TrackId(QVariant(2)));
-    for (const auto& s : list) {
+    for (const auto& s : std::as_const(list)) {
         EXPECT_FALSE(s.track.id == TrackId(QVariant(4)));
         EXPECT_FALSE(s.track.id == TrackId(QVariant(5)));
         EXPECT_FALSE(s.track.id == TrackId(QVariant(7)));
@@ -787,7 +789,7 @@ TEST(BridgeFinderTest, LiveAssistantSkipsUsedSongsAndSameArtist) {
     // The same song in another version never; a played track never.
     auto list = finder.suggestNext(now, library, {played.id}, {}, 10, false);
     ASSERT_EQ(2, list.size());
-    for (const auto& s : list) {
+    for (const auto& s : std::as_const(list)) {
         EXPECT_FALSE(s.track.id == otherVersion.id);
         EXPECT_FALSE(s.track.id == played.id);
     }
