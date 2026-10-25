@@ -54,6 +54,7 @@ var DDJFLX2 = {
 
     loopPadSizes: [0.125, 0.25, 0.5, 1, 2, 4, 8, 16],
     padFxState: {},
+    padFxUnitState: {},
 
     // Which pad mode (if any) is replaced by Beat Jump.
     // Values: "off" | "sampler" | "padfx" — loaded from Mixxx preferences.
@@ -1207,16 +1208,23 @@ DDJFLX2.releaseAllPadFx = function() {
     for (const stateKey of Object.keys(DDJFLX2.padFxState)) {
         const saved = DDJFLX2.padFxState[stateKey];
         if (saved) {
-            engine.setValue(saved.fxGroup, "enabled", saved.enabled);
-            engine.setValue(saved.fxGroup, "mix", saved.mix);
             engine.setValue(saved.effectGroup, "enabled", saved.effectEnabled);
             engine.setValue(saved.effectGroup, "meta", saved.meta);
-            for (let i = 1; i <= 4; i++) {
-                engine.setValue(saved.fxGroup, `group_[Channel${i}]_enable`, saved.routing[i]);
-            }
         }
     }
     DDJFLX2.padFxState = {};
+
+    for (const fxGroup of Object.keys(DDJFLX2.padFxUnitState)) {
+        const unitSaved = DDJFLX2.padFxUnitState[fxGroup];
+        if (unitSaved) {
+            engine.setValue(fxGroup, "enabled", unitSaved.enabled);
+            engine.setValue(fxGroup, "mix", unitSaved.mix);
+            for (let i = 1; i <= 4; i++) {
+                engine.setValue(fxGroup, `group_[Channel${i}]_enable`, unitSaved.routing[i]);
+            }
+        }
+    }
+    DDJFLX2.padFxUnitState = {};
 };
 
 DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
@@ -1272,39 +1280,62 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
 
     // BUTTON RELEASED: Restore original effect state.
     // We read the values we saved when the button was first pressed and
-    // re-apply them to the effect unit, effectively "cleaning up" after the FX.
+    // re-apply them to the effect slot and unit, effectively "cleaning up" after the FX.
     if (!value) {
         const saved = DDJFLX2.padFxState[stateKey];
         if (saved) {
-            engine.setValue(fxGroup, "enabled", saved.enabled);
-            engine.setValue(fxGroup, "mix", saved.mix);
-            engine.setValue(effectGroup, "enabled", saved.effectEnabled);
-            engine.setValue(effectGroup, "meta", saved.meta);
-            for (let i = 1; i <= 4; i++) {
-                engine.setValue(fxGroup, `group_[Channel${  i  }]_enable`, saved.routing[i]);
-            }
+            engine.setValue(saved.effectGroup, "enabled", saved.effectEnabled);
+            engine.setValue(saved.effectGroup, "meta", saved.meta);
             delete DDJFLX2.padFxState[stateKey];
         }
+
+        // Check if any other override pads are still held for this shared effect unit.
+        const hasOtherActivePads = Object.values(DDJFLX2.padFxState).some(
+            function(s) {
+                return s.fxGroup === fxGroup;
+            }
+        );
+
+        // When the final held pad for this unit is released, restore the shared unit baseline.
+        if (!hasOtherActivePads) {
+            const unitSaved = DDJFLX2.padFxUnitState[fxGroup];
+            if (unitSaved) {
+                engine.setValue(fxGroup, "enabled", unitSaved.enabled);
+                engine.setValue(fxGroup, "mix", unitSaved.mix);
+                for (let i = 1; i <= 4; i++) {
+                    engine.setValue(fxGroup, `group_[Channel${  i  }]_enable`, unitSaved.routing[i]);
+                }
+                delete DDJFLX2.padFxUnitState[fxGroup];
+            }
+        }
+
         midi.sendShortMsg(ledStatus, control, 0x00);
         return;
     }
 
     // BUTTON PRESSED: Snapshot current state and apply FX.
+    // 1. Snapshot shared effect-unit state once, before its first active override.
     // Before we take over the effect unit, we save its current configuration
     // (which decks it's routed to, its mix level, etc.) so we can restore it later.
-    if (!DDJFLX2.padFxState[stateKey]) {
+    if (!DDJFLX2.padFxUnitState[fxGroup]) {
         const routing = {};
         for (let i = 1; i <= 4; i++) {
             routing[i] = engine.getValue(fxGroup, `group_[Channel${  i  }]_enable`);
         }
+        DDJFLX2.padFxUnitState[fxGroup] = {
+            enabled: engine.getValue(fxGroup, "enabled"),
+            mix: engine.getValue(fxGroup, "mix"),
+            routing: routing,
+        };
+    }
+
+    // 2. Snapshot per-slot state.
+    if (!DDJFLX2.padFxState[stateKey]) {
         DDJFLX2.padFxState[stateKey] = {
             fxGroup: fxGroup,
             effectGroup: effectGroup,
-            enabled: engine.getValue(fxGroup, "enabled"),
-            mix: engine.getValue(fxGroup, "mix"),
             effectEnabled: engine.getValue(effectGroup, "enabled"),
             meta: engine.getValue(effectGroup, "meta"),
-            routing: routing,
         };
     }
 
