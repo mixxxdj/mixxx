@@ -522,7 +522,8 @@ void allshader::WaveformRenderMark::update() {
                     m_waveformRenderer->getLength()),
             static_cast<float>(m_waveformRenderer->getBreadth()));
     if (m_lastPlayMarkerPos != playMarkerPos) {
-        const float drawOffset = roundToPixel(playMarkerPos.x() + kPlayPosOffset);
+        const float drawOffset = roundToPixel(
+                static_cast<float>(playMarkerPos.x() + kPlayPosOffset));
         TexturedVertexUpdater vertexUpdater{
                 m_pPlayPosNode->geometry()
                         .vertexDataAs<Geometry::TexturedPoint2D>()};
@@ -536,7 +537,8 @@ void allshader::WaveformRenderMark::update() {
 
     if (hasWaveform && (m_untilMarkShowBeats || m_untilMarkShowTime)) {
         updateUntilMark(playPosition, nextMarkPosition);
-        updateDigitsNodeForUntilMark(roundToPixel(playMarkerPos.x() + 20.f));
+        updateDigitsNodeForUntilMark(
+                roundToPixel(static_cast<float>(playMarkerPos.x()) + 20.f));
     } else {
         m_pDigitsRenderNode->clear();
     }

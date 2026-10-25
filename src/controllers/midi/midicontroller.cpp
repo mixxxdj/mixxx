@@ -102,10 +102,15 @@ bool MidiController::matchMapping(const MappingInfo& mapping) {
     return false;
 }
 
+bool MidiController::applyMapping(const QString& resourcePath) {
+    return applyMapping(resourcePath, nullptr);
+}
+
 bool MidiController::applyMapping(const QString& resourcePath,
         std::shared_ptr<ControllerSharedData> runtimeData) {
     // Handles the engine
-    bool result = Controller::applyMapping(resourcePath, std::move(runtimeData));
+    bool result = runtimeData ? Controller::applyMapping(resourcePath, std::move(runtimeData))
+                              : Controller::applyMapping(resourcePath);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {

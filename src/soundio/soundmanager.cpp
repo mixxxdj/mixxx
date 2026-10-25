@@ -20,6 +20,7 @@
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
+#include <portaudio.h>
 #include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
@@ -122,6 +123,27 @@ SoundManager::~SoundManager() {
     }
 
     m_inputBuffers.clear();
+}
+
+int SoundManager::getDefaultOutputDeviceIndex(const QString& api) const {
+    const QList<SoundDevicePointer> outputDevices = getDeviceList(api, true, false);
+    if (outputDevices.isEmpty()) {
+        return -1;
+    }
+    // Prefer the OS default output device when it is a PortAudio device.
+    const PaDeviceIndex defaultIndex = Pa_GetDefaultOutputDevice();
+    for (const auto& pDevice : outputDevices) {
+        if (pDevice->getDeviceId().deviceIndex == defaultIndex) {
+            return defaultIndex;
+        }
+    }
+    // Fall back to the first usable output (>= 2 channels when available).
+    for (const auto& pDevice : outputDevices) {
+        if (pDevice->getNumOutputChannels() >= 2) {
+            return pDevice->getDeviceId().deviceIndex;
+        }
+    }
+    return outputDevices.first()->getDeviceId().deviceIndex;
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
