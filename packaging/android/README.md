@@ -34,7 +34,7 @@ handlers is what allows two decks to be operated at the same time:
 | Pinch on the waveform            | Waveform zoom (mouse wheel equivalent)     |
 | Drag on the spinny               | Scratch (independently per deck)           |
 | Drag on a knob or fader          | Change the value                           |
-| Long press on a hotcue           | Open the hotcue popup (right click on desktop) |
+| Long press on a hotcue           | Open hotcue popup (right-click desktop)    |
 
 ## Permissions
 
