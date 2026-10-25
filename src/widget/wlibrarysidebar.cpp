@@ -33,11 +33,13 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     // to the drag distance, which feels amplified and worsens on long lists.
     setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
 
-    // Enable kinetic scrolling via touch (single-finger swipe) on touchscreens.
-    // Without this, Qt's Windows platform plugin converts single-finger touch
-    // to mouse-press + mouse-move, which is interpreted as drag-and-drop
-    // instead of scrolling.
+#ifdef Q_OS_WIN
+    // Upstream mixxxdj/mixxx#16572 (Windows only): grab the touch gesture so
+    // single-finger swipes scroll kinetically instead of being interpreted
+    // as mouse drags. Scoped to Windows: on Android this eats double-tap
+    // (doubleClicked never fires).
     QScroller::grabGesture(viewport(), QScroller::TouchGesture);
+#endif
     header()->setStretchLastSection(false);
     header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);

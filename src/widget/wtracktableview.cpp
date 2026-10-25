@@ -60,11 +60,17 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false),
           m_dropRow(-1) {
-    // Enable kinetic scrolling via touch (single-finger swipe) on touchscreens.
-    // Without this, Qt's Windows platform plugin converts single-finger touch
-    // to mouse-press + mouse-move, which Mixxx interprets as drag-and-drop
-    // instead of scrolling.
+#ifdef Q_OS_WIN
+    // Upstream mixxxdj/mixxx#16572: on Windows, single-finger touch swipes
+    // arrive as synthesized mouse-press/move, which Mixxx would otherwise
+    // interpret as drag-and-drop instead of scrolling. Grab the touch gesture
+    // so swipes scroll kinetically. Scoped to Windows only: on Android the
+    // platform delivers native touch scrolling, and grabbing here both eats
+    // double-tap (doubleClicked never fires) and -- together with the
+    // MouseEventNotSynthesized guard in mouseMoveEvent() -- disables
+    // finger-dragging tracks to decks entirely.
     QScroller::grabGesture(viewport(), QScroller::TouchGesture);
+#endif
 
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
@@ -771,31 +777,39 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     }
     // qDebug() << "MouseMoveEvent";
 
-    // Don't start a track drag for touch input: on touchscreens this event
-    // is a synthesized mouse-move from a single-finger swipe, which is
-    // handled as kinetic scrolling (see QScroller::grabGesture() in the
-    // constructor). Starting a blocking QDrag here would race with and
-    // sometimes win over gesture recognition, hijacking swipes into drags.
-    if (pEvent->source() == Qt::MouseEventNotSynthesized &&
-            DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
-        // Iterate over selected rows and append each item's URL to a list.
-        // Use getTrackUrl() instead of getTrackLocation() so external/library
-        // rows that are not plain local files (notably youtube://VIDEOID
-        // placeholders) can still be dragged to decks and playlists.
-        QList<QUrl> urls;
-        const QModelIndexList indices = getSelectedRows();
-
-        for (const QModelIndex& index : indices) {
-            if (!index.isValid()) {
-                continue;
-            }
-            const QUrl url = pTrackModel->getTrackUrl(index);
-            if (url.isValid()) {
-                urls.append(url);
-            }
-        }
-        DragAndDropHelper::dragTrackUrls(urls, this, "library");
+#ifdef Q_OS_WIN
+    // Upstream mixxxdj/mixxx#16572 (Windows only): don't start a track drag
+    // for touch-synthesized mouse moves; they are single-finger swipes that
+    // QScroller handles as kinetic scrolling. Starting a blocking QDrag
+    // would race gesture recognition and hijack swipes into drags. On
+    // Android there is no QScroller grab (see ctor), so finger-drags to
+    // decks must stay enabled.
+    if (pEvent->source() != Qt::MouseEventNotSynthesized ||
+            !DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+        return;
     }
+#else
+    if (!DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+        return;
+    }
+#endif
+    // Iterate over selected rows and append each item's URL to a list.
+    // Use getTrackUrl() instead of getTrackLocation() so external/library
+    // rows that are not plain local files (notably youtube://VIDEOID
+    // placeholders) can still be dragged to decks and playlists.
+    QList<QUrl> urls;
+    const QModelIndexList indices = getSelectedRows();
+
+    for (const QModelIndex& index : indices) {
+        if (!index.isValid()) {
+            continue;
+        }
+        const QUrl url = pTrackModel->getTrackUrl(index);
+        if (url.isValid()) {
+            urls.append(url);
+        }
+    }
+    DragAndDropHelper::dragTrackUrls(urls, this, "library");
 }
 
 // Drag enter event, happens when a dragged item hovers over the track table view
