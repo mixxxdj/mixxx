@@ -146,7 +146,7 @@ void WTrackTableView::selectionChanged(
 }
 
 void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
-    if (!isVisible()) {
+    if (!isVisibleTo(window())) {
         // Don't proceed if this isn't visible.
         return;
     }
@@ -1885,7 +1885,7 @@ void WTrackTableView::selectTracksById(const QList<TrackId>& trackIds, int prevC
 void WTrackTableView::applySortingIfVisible() {
     // There are multiple instances of WTrackTableView, but we only want to
     // apply the sorting to the currently visible instance
-    if (!isVisible()) {
+    if (!isVisibleTo(window())) {
         return;
     }
 
