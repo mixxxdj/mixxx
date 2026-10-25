@@ -9,6 +9,7 @@
 
 #include "javascriptplayerproxy.h"
 #include "mixer/playermanager.h"
+#include "controllers/controllershareddata.h"
 #include "util/runtimeloggingcategory.h"
 #ifdef MIXXX_USE_QML
 #include "controllers/controllerenginethreadcontrol.h"
@@ -55,6 +56,13 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
+    /// Takes ownership of `runtimeData`
+    void setSharedData(ControllerNamespacedSharedData* runtimeData);
+
+    ControllerNamespacedSharedData* getSharedData() {
+        return m_runtimeData.get();
+    }
+
     static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager);
 
     static void registerTrackCollectionManager(
@@ -93,6 +101,7 @@ class ControllerScriptEngineBase : public QObject {
     bool m_bQmlMode;
 #endif
     bool m_bTesting;
+    std::unique_ptr<ControllerNamespacedSharedData> m_runtimeData;
 
   private:
     static inline std::shared_ptr<PlayerManager> s_pPlayerManager;

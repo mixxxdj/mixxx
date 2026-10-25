@@ -21,10 +21,26 @@ class ScriptConnectionJSProxy : public QObject {
     bool readIsConnected() const {
         return m_isConnected;
     }
-    Q_INVOKABLE bool disconnect();
-    Q_INVOKABLE void trigger();
+    Q_INVOKABLE virtual bool disconnect();
+    Q_INVOKABLE virtual void trigger();
 
   private:
+    QString m_idString;
+
+  protected:
     ScriptConnection m_scriptConnection;
     bool m_isConnected;
+};
+
+/// ScriptRuntimeConnectionJSProxy provides scripts with an interface to
+/// controller runtime update callback.
+class ScriptRuntimeConnectionJSProxy : public ScriptConnectionJSProxy {
+    Q_OBJECT
+  public:
+    ScriptRuntimeConnectionJSProxy(const ScriptConnection& conn)
+            : ScriptConnectionJSProxy(conn) {
+    }
+
+    Q_INVOKABLE bool disconnect() override;
+    Q_INVOKABLE void trigger() override;
 };

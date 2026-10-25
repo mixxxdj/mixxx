@@ -1298,6 +1298,7 @@ add_library(
   src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/controllershareddata.cpp
   src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/legacycontrollermapping.cpp
   src/controllers/delegates/controldelegate.cpp
