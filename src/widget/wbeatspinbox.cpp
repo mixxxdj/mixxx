@@ -83,6 +83,7 @@ void WBeatSpinBox::slotSpinboxValueChanged(double newValue) {
 }
 
 void WBeatSpinBox::slotLineTextChanged(const QString& text) {
+    Q_UNUSED(text);
     // (Re-)Start debounce timer
     m_debouncingTimer.stop();
     m_debouncingTimer.start();
