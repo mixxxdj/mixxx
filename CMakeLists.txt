@@ -1298,6 +1298,7 @@ add_library(
   src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/controllershareddata.cpp
   src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/legacycontrollermapping.cpp
   src/controllers/delegates/controldelegate.cpp
@@ -1902,6 +1903,7 @@ add_library(
   src/widget/wrecordingduration.cpp
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
+  src/widget/wsearchpopup.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
   src/widget/wsettingscheckboxlabel.cpp
   src/widget/wsingletoncontainer.cpp
@@ -3306,6 +3308,7 @@ if(BUILD_TESTING)
     src/test/controller_mapping_settings_test.cpp
     src/test/controllers/controller_columnid_regression_test.cpp
     src/test/controllerscriptenginelegacy_test.cpp
+    src/test/controllershareddata_test.cpp
     src/test/controlobjecttest.cpp
     src/test/controlobjectaliastest.cpp
     src/test/controlobjectscripttest.cpp
