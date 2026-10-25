@@ -366,7 +366,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         TrackPointer trackToOpen = pTrack;
         trackToOpen->setURL(pTrack->getURL());
         updateTrackFileCacheTrackUsage(m_group, "");
-        openAudioSource(trackToOpen, stemMask);
+        openAudioSource(trackToOpen
+#ifdef __STEM__
+                ,
+                stemMask
+#endif
+        );
         return;
     }
 
@@ -395,7 +400,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         TrackPointer trackToOpen = pTrack;
         trackToOpen->setURL(pTrack->getURL());
         updateTrackFileCacheTrackUsage(m_group, "");
-        openAudioSource(trackToOpen, stemMask);
+        openAudioSource(trackToOpen
+#ifdef __STEM__
+                ,
+                stemMask
+#endif
+        );
         return;
     }
 
@@ -411,7 +421,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
             TrackPointer trackToOpen = pTrack;
             trackToOpen->setURL(pTrack->getURL());
             updateTrackFileCacheTrackUsage(m_group, "");
-            openAudioSource(trackToOpen, stemMask);
+            openAudioSource(trackToOpen
+#ifdef __STEM__
+                ,
+                stemMask
+#endif
+        );
             return;
         }
         if (sDebugCachingReaderWorker) {
@@ -513,16 +528,21 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
 
     // -> 2: Open AudioSource ///
-    openAudioSource(trackToOpen, stemMask);
+    openAudioSource(trackToOpen
+#ifdef __STEM__
+                ,
+                stemMask
+#endif
+        );
 }
 
 // Helper function to open audio source (extracted for clarity)
-void CachingReaderWorker::openAudioSource(const TrackPointer& trackToOpen,
+void CachingReaderWorker::openAudioSource(const TrackPointer& trackToOpen
 #ifdef __STEM__
-        mixxx::StemChannelSelection stemMask) {
-#else
-) {
+        ,
+        mixxx::StemChannelSelection stemMask
 #endif
+) {
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(m_maxSupportedChannel);
 
