@@ -11,7 +11,7 @@
 #include "qml/qmlbeatsmodel.h"
 #include "qml/qmlcuesmodel.h"
 #include "qml/qmlstemsmodel.h"
-#include "qmlconfigproxy.h"
+#include "qml/qmlconfigproxy.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
