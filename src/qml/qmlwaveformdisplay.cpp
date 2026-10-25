@@ -413,7 +413,7 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
             }
             addRenderer(renderer.renderer);
             renderer.node->setFlag(QSGNode::OwnedByParent, false);
-            pTopNode->appendChildNode(renderer.node.get());
+            static_cast<QSGNode*>(pTopNode)->appendChildNode(renderer.node.get());
         }
 
         pBgNode->appendChildNode(pTopNode);
