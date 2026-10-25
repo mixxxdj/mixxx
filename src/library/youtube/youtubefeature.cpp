@@ -1335,6 +1335,17 @@ void YouTubeFeature::requestDownloadFile(const QString& videoId) {
     }
     if (m_videoIdsDownloading.contains(videoId) ||
             m_downloadQueue.contains(videoId)) {
+        // Already queued/in-flight: a player load arriving after the queue
+        // entry must still jump ahead. Without this, a double-tap that lands
+        // while 3 prefetches are active waits behind all of them (60-120 s
+        // at throttled rates) instead of loading next.
+        if (!m_pendingPlayerLoads.value(videoId).isEmpty() &&
+                m_downloadQueue.removeAll(videoId) > 0) {
+            m_downloadQueue.prepend(videoId);
+            kLogger.info() << "Promoted queued YouTube download to front:"
+                           << videoId;
+            pumpDownloadQueue();
+        }
         return;
     }
     // Cap parallel downloads: queue the rest FIFO. Player-requested tracks
