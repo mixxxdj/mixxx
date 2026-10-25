@@ -3203,6 +3203,7 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         // silently failed. This is the core download fix.
         kLogger.debug() << "[Android] downloadViaAndroidBundled:"
                        << "executing yt-dlp request for" << videoId;
+        const qint64 execStartMs = QDateTime::currentMSecsSinceEpoch();
         QJniObject response = ytdl.callObjectMethod(
                 "execute",
                 "(Lcom/yausername/youtubedl_android/YoutubeDLRequest;)"
@@ -3244,6 +3245,17 @@ void YouTubeService::runAndroidBundled(const QString& videoId,
         }
 
         if (!outputPath.isEmpty() && QFileInfo::exists(outputPath)) {
+            // Throughput telemetry (info: survives log-level filters) so
+            // on-device speed can be compared across builds/flags from
+            // uploaded logs: size + wall time + KB/s per download.
+            const qint64 execMs =
+                    QDateTime::currentMSecsSinceEpoch() - execStartMs;
+            const qint64 bytes = QFileInfo(outputPath).size();
+            const double kbPerSec =
+                    execMs > 0 ? (bytes / 1024.0) / (execMs / 1000.0) : 0.0;
+            kLogger.info() << "[Android] download complete:" << videoId
+                           << bytes / 1024 << "KB in" << execMs << "ms"
+                           << QString::number(kbPerSec, 'f', 1) << "KB/s";
             kLogger.debug() << "[Android] downloadViaAndroidBundled:"
                            << "download complete for" << videoId
                            << "→" << outputPath;

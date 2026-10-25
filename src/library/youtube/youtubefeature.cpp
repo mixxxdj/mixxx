@@ -902,6 +902,13 @@ void YouTubeFeature::pumpThumbnailQueue() {
                         if (m_thumbnailTimer) {
                             m_thumbnailTimer->start();
                         }
+                        // Backfill cover art on an already-downloaded track:
+                        // if the user loaded the deck before this thumb
+                        // arrived, the Track object has no cover and the
+                        // vinyl widget stays blank. Look up the downloaded
+                        // row by videoId and push the cover to the live
+                        // Track so decks pick it up without reload.
+                        backfillCoverArt(videoId, destPath);
                     }
                 });
     }
@@ -2160,6 +2167,40 @@ void YouTubeFeature::appendToTrackTable(
 
     m_pTrackCache->buildIndex();
     m_pTrackModel->select();
+}
+
+/// Push a newly-arrived thumbnail onto the live Track object when the
+/// audio file was already downloaded (deck loaded before the thumb).
+/// Without this the vinyl widget stays blank until reload.
+void YouTubeFeature::backfillCoverArt(
+        const QString& videoId, const QString& thumbPath) {
+    if (!m_pLibrary || videoId.isEmpty()) {
+        return;
+    }
+    QSqlDatabase db = m_pTrackCollection->database();
+    QSqlQuery q(db);
+    q.prepare(QStringLiteral(
+            "SELECT location FROM youtube_library WHERE comment = :comment LIMIT 1"));
+    q.bindValue(QStringLiteral(":comment"), videoId);
+    if (!q.exec() || !q.next()) {
+        return; // not downloaded yet — download path sets cover directly
+    }
+    const QString location = q.value(0).toString();
+    if (location.isEmpty() || location.startsWith(QStringLiteral("youtube://"))) {
+        return; // placeholder row, no real file yet
+    }
+    TrackRef ref = TrackRef::fromFilePath(location);
+    TrackPointer pTrack =
+            m_pLibrary->trackCollectionManager()->getOrAddTrack(ref);
+    if (!pTrack) {
+        return;
+    }
+    CoverInfo coverInfo;
+    coverInfo.type = CoverInfo::FILE;
+    coverInfo.source = CoverInfo::GUESSED;
+    coverInfo.setImageDigest(videoId.toUtf8(), /*legacyHash=*/0);
+    coverInfo.coverLocation = thumbPath;
+    pTrack->setCoverInfo(coverInfo);
 }
 
 void YouTubeFeature::upsertDownloadedRow(const QString& videoId,

@@ -145,6 +145,9 @@ class YouTubeFeature : public BaseExternalLibraryFeature {
             const QString& title,
             const QString& uploader,
             int durationSec);
+    /// Push a newly-arrived thumbnail onto the live Track when the audio
+    /// file was already downloaded (deck loaded before the thumb).
+    void backfillCoverArt(const QString& videoId, const QString& thumbPath);
 
     // ----- Cover art (YouTube thumbnails) -----
 
