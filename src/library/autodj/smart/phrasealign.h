@@ -34,8 +34,8 @@ struct Grid {
     double beatSec = 0.0;      ///< length of one beat (a map: the average); 0 = no grid
     std::vector<double> beats; ///< a beat map: every beat (empty = steady grid)
 
-    constexpr Grid() = default;
-    constexpr Grid(double firstBeatSecIn, double beatSecIn)
+    Grid() = default;
+    Grid(double firstBeatSecIn, double beatSecIn)
             : firstBeatSec(firstBeatSecIn),
               beatSec(beatSecIn) {
     }
