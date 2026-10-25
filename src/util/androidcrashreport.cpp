@@ -81,7 +81,7 @@ void writeAddress(int fd, int index, uintptr_t address) {
     writeString(fd, "\n");
 }
 
-void onCrash(int signalNumber, siginfo_t* pInfo, void* pContext) {
+void onCrash(int signalNumber, siginfo_t* pInfo, void* /*pContext*/) {
     // A fault while writing the report goes to the system's handler
     restorePreviousActions();
 
@@ -169,14 +169,14 @@ QString crashReportDirectory() {
 void installCrashReporter() {
     // Prepare the directory string once (not async-signal-safe)
     const QString dir = crashReportDirectory();
-    if (dir.length() >= sizeof(s_directory)) {
+    if (static_cast<size_t>(dir.length()) >= sizeof(s_directory)) {
         return;
     }
     strcpy(s_directory, dir.toUtf8().constData());
 
     // Prepare the build string
     const QString build = VersionStore::gitVersion();
-    if (build.length() >= sizeof(s_build)) {
+    if (static_cast<size_t>(build.length()) >= sizeof(s_build)) {
         strncpy(s_build, build.toUtf8().constData(), sizeof(s_build) - 1);
         s_build[sizeof(s_build) - 1] = '\0';
     } else {
