@@ -5,6 +5,7 @@
 #include <QQmlEngineExtensionPlugin>
 #include <QQuickStyle>
 #include <QQuickWindow>
+#include <QSurfaceFormat>
 #include <QTextDocument>
 #include <memory>
 #include <utility>
@@ -125,6 +126,13 @@ QmlApplication::QmlApplication(
 #ifdef MIXXX_USE_QML
     WaveformWidgetFactory::setQmlMode(true);
 #endif
+    // 4x MSAA so QtQuick.Shapes strokes (knob value arcs, waveform markers)
+    // are antialiased; the Shape "antialiasing" property is a no-op without a
+    // multisampled surface. Must be set before any QQuickWindow is created.
+    QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+    format.setSamples(4);
+    QSurfaceFormat::setDefaultFormat(format);
+
     QQuickStyle::setStyle("Basic");
 
 #if defined(Q_OS_ANDROID)

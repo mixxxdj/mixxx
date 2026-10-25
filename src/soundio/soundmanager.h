@@ -66,6 +66,11 @@ class SoundManager : public QObject {
 
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
+
+    /// The PortAudio index of the host API's default output device, or -1
+    /// if the API is unknown or has none.
+    int getDefaultOutputDeviceIndex(const QString& api) const;
+
     SoundManagerConfig getConfig() const;
     SoundDeviceStatus setConfig(const SoundManagerConfig& config);
     // Due to a bug in in PulseAudio, we must give at least 5 seconds of cool

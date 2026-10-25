@@ -59,6 +59,7 @@ class SoundManagerConfig {
     static const QString kAPIOss;
     static const QString kAPIAsio;
     static const QString kAPIDirectSound;
+    static const QString kAPIWasapi;
     static const QString kAPIIosAudio;
     static const QString kAPICoreAudio;
     static const QString kAPIPipewire;
