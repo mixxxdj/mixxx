@@ -121,9 +121,14 @@ class ControllerScriptInterfaceLegacy : public QObject {
     bool removeRuntimeDataConnection(const ScriptConnection& conn);
     /// Execute a runtime-data ScriptConnection's JS callback
     void triggerRuntimeDataConnection(const ScriptConnection& conn);
+    Q_INVOKABLE QJSValue getSharedData();
+    Q_INVOKABLE void setSharedData(const QJSValue& value);
+    Q_INVOKABLE QJSValue makeSharedDataConnection(const QJSValue& callback);
 
   public slots:
-    void onRuntimeDataUpdated(const QVariant& value);
+    void onRuntimeDataUpdated(const QString& entity,
+            const QString& key,
+            const QVariant& value);
 
     /// Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent* event);

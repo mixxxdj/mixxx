@@ -84,6 +84,14 @@ class ControllerNamespacedSharedData : public QObject {
     /// Returns entity -> key -> value.
     QHash<QString, QHash<QString, QVariant>> getAll() const;
 
+    /// Flat snapshot of the whole namespace (JS runtime-data API).
+    QVariant get() const;
+
+    /// Flat write of a whole-namespace snapshot (JS runtime-data API).
+    /// Accepts {entity: {key: value}} or a flat {key: value} map (stored
+    /// under an empty entity).
+    void set(const QVariant& snapshot, QObject* sender = nullptr);
+
     const QString& ns() const {
         return m_namespace;
     }

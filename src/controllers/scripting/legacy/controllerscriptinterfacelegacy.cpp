@@ -243,7 +243,11 @@ QJSValue ControllerScriptInterfaceLegacy::makeSharedDataConnection(const QJSValu
             new ScriptRuntimeConnectionJSProxy(m_runtimeDataConnections.last()));
 }
 
-void ControllerScriptInterfaceLegacy::onRuntimeDataUpdated(const QVariant& value) {
+void ControllerScriptInterfaceLegacy::onRuntimeDataUpdated(const QString& entity,
+        const QString& key,
+        const QVariant& value) {
+    Q_UNUSED(entity);
+    Q_UNUSED(key);
     auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
     const auto args = QJSValueList{
             pJsEngine->toScriptValue(value),

@@ -131,3 +131,43 @@ void ControllerNamespacedSharedData::setMultiple(
     static_cast<ControllerSharedData*>(parent())->setMultiple(
             m_namespace, values, sender);
 }
+
+QVariant ControllerNamespacedSharedData::get() const {
+    QVariantMap snapshot;
+    const auto all = getAll();
+    for (auto it = all.constBegin(); it != all.constEnd(); ++it) {
+        QVariantMap keys;
+        for (auto jt = it.value().constBegin(); jt != it.value().constEnd(); ++jt) {
+            keys.insert(jt.key(), jt.value());
+        }
+        snapshot.insert(it.key(), keys);
+    }
+    return snapshot;
+}
+
+void ControllerNamespacedSharedData::set(
+        const QVariant& snapshot, QObject* sender) {
+    const QVariantMap map = snapshot.toMap();
+    QHash<QString, QHash<QString, QVariant>> nested;
+    QHash<QString, QVariant> flat;
+    for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
+        if (it.value().canConvert<QVariantMap>()) {
+            const QVariantMap keys = it.value().toMap();
+            QHash<QString, QVariant> inner;
+            for (auto jt = keys.constBegin(); jt != keys.constEnd(); ++jt) {
+                inner.insert(jt.key(), jt.value());
+            }
+            nested.insert(it.key(), inner);
+        } else {
+            flat.insert(it.key(), it.value());
+        }
+    }
+    if (!nested.isEmpty()) {
+        setMultiple(nested, sender);
+    }
+    if (!flat.isEmpty()) {
+        QHash<QString, QHash<QString, QVariant>> wrapped;
+        wrapped.insert(QString(), flat);
+        setMultiple(wrapped, sender);
+    }
+}
