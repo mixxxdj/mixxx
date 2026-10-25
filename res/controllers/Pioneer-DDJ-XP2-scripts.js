@@ -49,18 +49,15 @@ DDJXP2.RGBPioneerCode = function(r, g, b, dim = 0) {
     } else if (m === 0) {
         h = 0x40;    // white
     } else if (r === n) {
-        h = 3 + (b - g)/m;
+        h = 3 + (b - g) / m;
     } else if (g === n) {
-        h = 5 + (r - b)/m;
+        h = 5 + (r - b) / m;
     } else {
-        h = 1 + (g - r)/m;
+        h = 1 + (g - r) / m;
     }
-    h = 10.2*((10 - h) % 6) + 1; // re-aligned colorwheel
-    if (dim) {
-        return h + 0x40;
-    } else {
-        return h;
-    }
+    h = 10.2 * ((10 - h) % 6) + 1; // re-aligned colorwheel
+    const code = dim ? h + 0x40 : h;
+    return Math.max(0, Math.min(0x7F, Math.round(code)));
 };
 
 // this implements a one-out-of-three selector button. The FX buttons are hardware controlled
