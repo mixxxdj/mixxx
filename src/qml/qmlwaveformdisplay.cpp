@@ -16,7 +16,6 @@
 
 #include "library/library.h"
 #include "mixer/basetrackplayer.h"
-#include "moc_qmlwaveformdisplay.cpp"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmlplayerproxy.h"
 #include "qmllibraryproxy.h"
@@ -24,6 +23,7 @@
 #include "rendergraph/node.h"
 #include "util/assert.h"
 #include "waveform/visualplayposition.h"
+#include "moc_qmlwaveformdisplay.cpp"
 
 using namespace allshader;
 
