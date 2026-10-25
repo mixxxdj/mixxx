@@ -1,6 +1,7 @@
 #include "library/scanner/recursivescandirectorytask.h"
 
 #include <QCryptographicHash>
+#include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
 
@@ -64,6 +65,11 @@ void RecursiveScanDirectoryTask::run() {
                     supportedExtensionsRegex.match(fileName);
             if (supportedExtensionsMatch.hasMatch()) {
                 hasher.addData(currentFile.toUtf8());
+                // Include the modification time so that files edited in place
+                // (e.g. tags updated without renaming the file) change the
+                // directory hash and trigger a rescan.
+                hasher.addData(QByteArray::number(
+                        currentFileInfo.lastModified().toMSecsSinceEpoch()));
                 filesToImport.push_back(currentFileInfo);
                 // Record the canonical track location used by track_locations
                 // so the unchanged-hash path can clear fs_deleted only for
