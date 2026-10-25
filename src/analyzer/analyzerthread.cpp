@@ -7,6 +7,7 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerkey.h"
 #include "analyzer/analyzersilence.h"
+#include "analyzer/analyzerenergy.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
 #include "library/dao/analysisdao.h"
@@ -115,6 +116,10 @@ void AnalyzerThread::doRun() {
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerKey>(m_pConfig)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerSilence>(m_pConfig)));
+    if (dbConnectionPooler.isPooling()) {
+        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_dbConnectionPool);
+        m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerEnergy>(dbConnection)));
+    }
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 

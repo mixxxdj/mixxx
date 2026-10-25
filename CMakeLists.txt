@@ -1281,6 +1281,8 @@ add_library(
   STATIC
   EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
+  src/analyzer/analyzerenergy.cpp
+  src/analyzer/energycalculator.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
@@ -1507,6 +1509,15 @@ add_library(
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
+  src/library/autodj/smart/beatmatch.cpp
+  src/library/autodj/smart/bridgefinder.cpp
+  src/library/autodj/smart/energystore.cpp
+  src/library/autodj/smart/genrescan.cpp
+  src/library/autodj/smart/mixscorer.cpp
+  src/library/autodj/smart/phrasealign.cpp
+  src/library/autodj/smart/smartsequencer.cpp
+  src/library/autodj/smart/trackfeatures.cpp
+  src/library/autodj/smart/vocalmap.cpp
   src/library/aibro/aibrofeature.cpp
   src/library/aibro/musicmatcherclient.cpp
   src/library/banshee/bansheedbconnection.cpp
@@ -3316,6 +3327,7 @@ if(BUILD_TESTING)
     src/test/autodjprocessor_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
+    src/test/beatmatch_test.cpp
     src/test/beatstest.cpp
     src/test/beatstranslatetest.cpp
     src/test/borrowabletest.cpp
@@ -3350,6 +3362,7 @@ if(BUILD_TESTING)
     src/test/directorydaotest.cpp
     src/test/duration_test.cpp
     src/test/durationutiltest.cpp
+    src/test/energycalculator_test.cpp
     #TODO: write useful tests for refactored effects system
     #src/test/effectchainslottest.cpp
     src/test/enginebufferscalelineartest.cpp
@@ -3377,8 +3390,7 @@ if(BUILD_TESTING)
     src/test/mathutiltest.cpp
     src/test/matrixapitest.cpp
     src/test/metadatatest.cpp
-    #TODO: make this build again
-    #src/test/metaknob_link_test.cpp
+    src/test/phrasealign_test.cpp
     src/test/midicontrollertest.cpp
     src/test/mixxxtest.cpp
     src/test/mock_networkaccessmanager.cpp
@@ -3406,6 +3418,7 @@ if(BUILD_TESTING)
     src/test/seratotagstest.cpp
     src/test/signalpathtest.cpp
     src/test/skincontext_test.cpp
+    src/test/smartsequencer_test.cpp
     src/test/softtakeover_test.cpp
     src/test/soundproxy_test.cpp
     src/test/soundsourceproviderregistrytest.cpp
@@ -3422,6 +3435,7 @@ if(BUILD_TESTING)
     src/test/trackreftest.cpp
     src/test/trackupdate_test.cpp
     src/test/uuid_test.cpp
+    src/test/vocalmap_test.cpp
     src/test/wbatterytest.cpp
     src/test/wpushbutton_test.cpp
     src/test/wwidgetstack_test.cpp
