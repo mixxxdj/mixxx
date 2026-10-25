@@ -8,7 +8,7 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "mixer/basetrackplayer.h"
-#include "qmltrackproxy.h"
+#include "qml/qmltrackproxy.h"
 #include "track/track_decl.h"
 
 namespace mixxx {

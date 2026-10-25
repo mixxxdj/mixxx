@@ -75,12 +75,40 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
   if((NOT ANDROID_SDK_ROOT) AND DEFINED ENV{ANDROID_SDK})
     set(ANDROID_SDK_ROOT "$ENV{ANDROID_SDK}")
   endif()
-  set(ANDROID_ABI arm64-v8a)
+  # The target ABI. arm64-v8a covers phones and ARM tablets/Chromebooks,
+  # x86_64 is needed for Intel Chromebooks and the emulator. Note that a
+  # matching vcpkg dependency tree has to be available for the chosen ABI,
+  # see tools/android_buildenv.sh.
+  set(
+    ANDROID_ABI
+    "arm64-v8a"
+    CACHE STRING
+    "Android ABI to build for (arm64-v8a, x86_64, armeabi-v7a, x86)"
+  )
+  set_property(
+    CACHE ANDROID_ABI
+    PROPERTY STRINGS arm64-v8a x86_64 armeabi-v7a x86
+  )
+  if(ANDROID_ABI STREQUAL "arm64-v8a")
+    set(ANDROID_TOOLCHAIN_TRIPLE "aarch64-linux-android")
+    set(ANDROID_LLVM_ARCH "aarch64")
+  elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+    set(ANDROID_TOOLCHAIN_TRIPLE "arm-linux-androideabi")
+    set(ANDROID_LLVM_ARCH "arm")
+  elseif(ANDROID_ABI STREQUAL "x86_64")
+    set(ANDROID_TOOLCHAIN_TRIPLE "x86_64-linux-android")
+    set(ANDROID_LLVM_ARCH "x86_64")
+  elseif(ANDROID_ABI STREQUAL "x86")
+    set(ANDROID_TOOLCHAIN_TRIPLE "i686-linux-android")
+    set(ANDROID_LLVM_ARCH "i386")
+  else()
+    message(FATAL_ERROR "Unsupported ANDROID_ABI '${ANDROID_ABI}'")
+  endif()
   set(ANDROID_NDK_HOST_SYSTEM_NAME linux-x86_64)
   set(CMAKE_SYSTEM_VERSION 35) # API level
   set(ANDROID_PLATFORM "android-${CMAKE_SYSTEM_VERSION}")
   set(ANDROID_API_VERSION "android-${CMAKE_SYSTEM_VERSION}")
-  set(CMAKE_ANDROID_ARCH_ABI "${ANDROID_ABI}") # or x86_64, armeabi-v7a, etc.
+  set(CMAKE_ANDROID_ARCH_ABI "${ANDROID_ABI}")
   set(CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION clang)
   set(CMAKE_ANDROID_STL_TYPE c++_shared)
   set(
@@ -94,7 +122,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
   )
   set(
     CMAKE_LIBRARY_PATH
-    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/aarch64-linux-android/${CMAKE_SYSTEM_VERSION}/;${CMAKE_LIBRARY_PATH}"
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/sysroot/usr/lib/${ANDROID_TOOLCHAIN_TRIPLE}/${CMAKE_SYSTEM_VERSION}/;${CMAKE_LIBRARY_PATH}"
   )
 endif()
 
@@ -1253,6 +1281,8 @@ add_library(
   STATIC
   EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
+  src/analyzer/analyzerenergy.cpp
+  src/analyzer/energycalculator.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
@@ -1298,6 +1328,7 @@ add_library(
   src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/controllershareddata.cpp
   src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/legacycontrollermapping.cpp
   src/controllers/delegates/controldelegate.cpp
@@ -1479,6 +1510,15 @@ add_library(
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
+  src/library/autodj/smart/beatmatch.cpp
+  src/library/autodj/smart/bridgefinder.cpp
+  src/library/autodj/smart/energystore.cpp
+  src/library/autodj/smart/genrescan.cpp
+  src/library/autodj/smart/mixscorer.cpp
+  src/library/autodj/smart/phrasealign.cpp
+  src/library/autodj/smart/smartsequencer.cpp
+  src/library/autodj/smart/trackfeatures.cpp
+  src/library/autodj/smart/vocalmap.cpp
   src/library/aibro/aibrofeature.cpp
   src/library/aibro/musicmatcherclient.cpp
   src/library/banshee/bansheedbconnection.cpp
@@ -1583,6 +1623,7 @@ add_library(
   src/library/trackcollectioniterator.cpp
   src/library/trackcollectionmanager.cpp
   src/library/trackloader.cpp
+  src/library/trackmetadataexportthread.cpp
   src/library/trackmodeliterator.cpp
   src/library/trackprocessing.cpp
   src/library/trackset/baseplaylistfeature.cpp
@@ -1902,6 +1943,7 @@ add_library(
   src/widget/wrecordingduration.cpp
   src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
+  src/widget/wsearchpopup.cpp
   src/widget/wsearchrelatedtracksmenu.cpp
   src/widget/wsettingscheckboxlabel.cpp
   src/widget/wsingletoncontainer.cpp
@@ -2195,6 +2237,16 @@ endif()
 if(ANDROID)
   # Android microphone capture for audio calibration (bypasses BT SCO)
   target_sources(mixxx-lib PRIVATE src/engine/androidmiccapture.cpp)
+
+  # Native crash reporter + auto-cue snap (from JaviLabarumDJ/mixxx-android)
+  target_sources(
+    mixxx-lib
+    PRIVATE src/util/androidcrashreport.cpp src/track/androidautocue.cpp
+  )
+
+  # Android DJ-controller auto-routing + speaker fallback
+  # (SoundManagerAndroid from JaviLabarumDJ/mixxx-android)
+  target_sources(mixxx-lib PRIVATE src/soundio/soundmanagerandroid.cpp)
 
   # Define QT_OPENGL_ES_2 so the deprecated desktop-GL-only renderers
   # (which include QOpenGLFunctions_2_1) are properly excluded on Android.
@@ -2517,7 +2569,7 @@ if(QT6)
       mixxx-lib
       PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
     )
-    set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
+    set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "${ANDROID_ABI}")
     target_compile_definitions(
       mixxx-lib
       PUBLIC ANDROID_PACKAGE_NAME="org.mixxx"
@@ -2536,7 +2588,7 @@ if(QT6)
     )
     set_target_properties(
       mixxx
-      PROPERTIES QT_ANDROID_APPLICATION_ARGUMENTS "--log-level warning"
+      PROPERTIES QT_ANDROID_APPLICATION_ARGUMENTS "--new-ui"
     )
     qt_add_android_permission(mixxx
     NAME android.permission.ACCESS_NETWORK_STATE
@@ -2597,34 +2649,19 @@ if(QT6)
     # bumped (r27 ships Clang 18, r28 ships Clang 19, r29+ will ship newer).
     # Glob the single Clang version directory the NDK installs and pick that.
     file(
-      GLOB _android_clang_runtime_dirs
-      LIST_DIRECTORIES true
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/*"
+      GLOB ANDROID_LIBOMP_CANDIDATES
+      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/*/lib/linux/${ANDROID_LLVM_ARCH}/libomp.so"
     )
-    list(LENGTH _android_clang_runtime_dirs _android_clang_runtime_count)
-    if(_android_clang_runtime_count EQUAL 0)
+    if(NOT ANDROID_LIBOMP_CANDIDATES)
       message(
         FATAL_ERROR
-        "Could not locate Clang runtime directory under "
-        "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/. "
-        "Is the NDK installed correctly?"
+        "Could not find libomp.so for ${ANDROID_LLVM_ARCH} in the NDK at ${CMAKE_ANDROID_NDK}"
       )
     endif()
     # Pick the highest-numbered (most recent) entry; an NDK normally ships
     # exactly one but be defensive if a side-by-side install ever happens.
-    list(SORT _android_clang_runtime_dirs)
-    list(GET _android_clang_runtime_dirs -1 _android_clang_runtime_dir)
-    set(
-      _android_libomp_path
-      "${_android_clang_runtime_dir}/lib/linux/aarch64/libomp.so"
-    )
-    if(NOT EXISTS "${_android_libomp_path}")
-      message(
-        FATAL_ERROR
-        "Expected NDK libomp.so at ${_android_libomp_path} but the file is "
-        "missing. Did the NDK layout change?"
-      )
-    endif()
+    list(SORT ANDROID_LIBOMP_CANDIDATES)
+    list(GET ANDROID_LIBOMP_CANDIDATES -1 ANDROID_LIBOMP)
     # Ship a stripped copy of libomp.so. The NDK ships it unstripped
     # (~600 KiB); `llvm-strip --strip-unneeded` brings it down to ~200 KiB
     # without affecting OpenMP runtime behaviour. The stripped copy lives
@@ -2643,10 +2680,10 @@ if(QT6)
         ${CMAKE_COMMAND} -E make_directory
         "${CMAKE_CURRENT_BINARY_DIR}/android-stripped"
       COMMAND
-        ${CMAKE_COMMAND} -E copy_if_different "${_android_libomp_path}"
+        ${CMAKE_COMMAND} -E copy_if_different "${ANDROID_LIBOMP}"
         "${_android_libomp_stripped}"
       COMMAND "${_android_strip}" --strip-unneeded "${_android_libomp_stripped}"
-      DEPENDS "${_android_libomp_path}"
+      DEPENDS "${ANDROID_LIBOMP}"
       COMMENT "Stripping libomp.so for APK packaging"
       VERBATIM
     )
@@ -2686,6 +2723,17 @@ if(QT6)
       COMMAND
         ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
         ${CMAKE_CURRENT_BINARY_DIR}/android
+      # The manifest (QT_ANDROID_PACKAGE_SOURCE_DIR = packaging/android)
+      # references @xml/usb_device_filter, so the generated file must land
+      # in the package source tree where androiddeployqt picks it up.
+      COMMAND
+        ${CMAKE_COMMAND} -E make_directory
+        ${CMAKE_SOURCE_DIR}/packaging/android/res/xml
+      COMMAND
+        ${CMAKE_COMMAND}
+        -DTEMPLATE_FILE="${CMAKE_SOURCE_DIR}/packaging/android/usb_device_filter.xml.in"
+        -DTARGET_FILE="${CMAKE_SOURCE_DIR}/packaging/android/res/xml/usb_device_filter.xml"
+        -P ${CMAKE_SOURCE_DIR}/cmake/modules/gen_usb_device_filter.cmake
       # We deliberately copy a subset of res/ to keep the APK small. The bits
       # we drop are pure desktop-platform clutter on Android (and DeX, the
       # primary target for this build, doesn't need icon themes from
@@ -3288,6 +3336,7 @@ if(BUILD_TESTING)
     src/test/autodjprocessor_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
+    src/test/beatmatch_test.cpp
     src/test/beatstest.cpp
     src/test/beatstranslatetest.cpp
     src/test/borrowabletest.cpp
@@ -3306,6 +3355,7 @@ if(BUILD_TESTING)
     src/test/controller_mapping_settings_test.cpp
     src/test/controllers/controller_columnid_regression_test.cpp
     src/test/controllerscriptenginelegacy_test.cpp
+    src/test/controllershareddata_test.cpp
     src/test/controlobjecttest.cpp
     src/test/controlobjectaliastest.cpp
     src/test/controlobjectscripttest.cpp
@@ -3322,6 +3372,7 @@ if(BUILD_TESTING)
     src/test/directorydaotest.cpp
     src/test/duration_test.cpp
     src/test/durationutiltest.cpp
+    src/test/energycalculator_test.cpp
     #TODO: write useful tests for refactored effects system
     #src/test/effectchainslottest.cpp
     src/test/enginebufferscalelineartest.cpp
@@ -3349,8 +3400,7 @@ if(BUILD_TESTING)
     src/test/mathutiltest.cpp
     src/test/matrixapitest.cpp
     src/test/metadatatest.cpp
-    #TODO: make this build again
-    #src/test/metaknob_link_test.cpp
+    src/test/phrasealign_test.cpp
     src/test/midicontrollertest.cpp
     src/test/mixxxtest.cpp
     src/test/mock_networkaccessmanager.cpp
@@ -3378,6 +3428,7 @@ if(BUILD_TESTING)
     src/test/seratotagstest.cpp
     src/test/signalpathtest.cpp
     src/test/skincontext_test.cpp
+    src/test/smartsequencer_test.cpp
     src/test/softtakeover_test.cpp
     src/test/soundproxy_test.cpp
     src/test/soundsourceproviderregistrytest.cpp
@@ -3390,10 +3441,12 @@ if(BUILD_TESTING)
     src/test/trackexport_test.cpp
     src/test/trackmetadata_test.cpp
     src/test/trackmetadataexport_test.cpp
+    src/test/trackmetadataexportthreadtest.cpp
     src/test/tracknumberstest.cpp
     src/test/trackreftest.cpp
     src/test/trackupdate_test.cpp
     src/test/uuid_test.cpp
+    src/test/vocalmap_test.cpp
     src/test/wbatterytest.cpp
     src/test/wpushbutton_test.cpp
     src/test/wwidgetstack_test.cpp

@@ -137,6 +137,13 @@ class TrackRecord final {
     bool mergeExtraMetadataFromSource(
             const TrackMetadata& importedMetadata);
 
+    // Checks if any of the properties that are merged lazily from file
+    // tags by mergeExtraMetadataFromSource() are still missing and
+    // could be backfilled. This is a cheap pre-check that allows to
+    // skip the parsing of file tags entirely if nothing could be
+    // merged anyway.
+    bool mayMergeExtraMetadataFromSource() const;
+
     /// Update the stream info after opening the audio stream during
     /// a session.
     /// Returns true if the corresponding metadata properties have been

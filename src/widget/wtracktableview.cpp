@@ -215,8 +215,10 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* pNewModel, bool restore
     // which would cause a small GUI freeze
     TrackModel* pCurrModel = getTrackModel();
     if (pCurrModel == pNewTrackModel) {
-        // Re-sort the table even if the track model is the same. This triggers
-        // a select() if the table is dirty.
+        // Re-sort the table even if the track model is the same. This only
+        // re-orders the tracks of the current result set, it does not
+        // re-collect the rows from the database. The model has been
+        // refreshed by its feature, e.g. on activation or after changes.
         doSortByColumn(horizontalHeader()->sortIndicatorSection(),
                 horizontalHeader()->sortIndicatorOrder());
 

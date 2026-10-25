@@ -15,7 +15,7 @@
 #include "library/trackset/crate/cratefeature.h"
 #include "library/trackset/playlistfeature.h"
 #include "library/treeitem.h"
-#include "qmlconfigproxy.h"
+#include "qml/qmlconfigproxy.h"
 #include "qmllibrarytracklistmodel.h"
 #include "util/parented_ptr.h"
 

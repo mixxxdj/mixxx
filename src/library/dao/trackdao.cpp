@@ -563,11 +563,23 @@ void TrackDAO::addTracksFinish(bool rollback) {
     m_tracksAddedSet.clear();
 }
 
+void TrackDAO::addTracksCommitAndRestart() {
+    // Commit the current batch of track additions and immediately start a
+    // new transaction. Used by the library scanner to release the write
+    // lock after every imported track, so that other threads (e.g. the
+    // GUI thread) can write to the database and no deadlock can occur
+    // between the scanner and the GlobalTrackCache mutex (see the comment
+    // in LibraryScanner::slotAddNewTrack).
+    addTracksFinish(false);
+    addTracksPrepare();
+}
+
 namespace {
 
 bool insertTrackLocation(
         QSqlQuery* pTrackLocationInsert,
-        const mixxx::FileInfo& fileInfo) {
+        const mixxx::FileInfo& fileInfo,
+        bool* pDuplicateLocation) {
     DEBUG_ASSERT(pTrackLocationInsert);
     pTrackLocationInsert->bindValue(":location", fileInfo.location());
     pTrackLocationInsert->bindValue(":directory", fileInfo.locationPath());
@@ -578,8 +590,20 @@ bool insertTrackLocation(
     if (pTrackLocationInsert->exec()) {
         return true;
     } else {
+        // Only a UNIQUE constraint violation indicates that the location
+        // is already present in the table. Any other error (e.g.
+        // SQLITE_BUSY because another connection is currently holding the
+        // write lock) must NOT be misinterpreted as a duplicate!
+        // Qt's SQLite driver exposes the numeric code as a string via
+        // nativeErrorCode(). Mask to the primary result code: extended
+        // codes like SQLITE_CONSTRAINT_UNIQUE (2067) share the low byte
+        // with SQLITE_CONSTRAINT (19). Avoids sqlite3.h extended-code
+        // macros, which the Android NDK headers lack.
+        const int errorCode =
+                pTrackLocationInsert->lastError().nativeErrorCode().toInt();
+        *pDuplicateLocation = (errorCode & 0xFF) == 19; // SQLITE_CONSTRAINT
         LOG_FAILED_QUERY(*pTrackLocationInsert)
-                << "Skip inserting duplicate track location" << fileInfo.location();
+                << "Failed to insert track location" << fileInfo.location();
         return false;
     }
 }
@@ -752,10 +776,24 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     // Insert the track location into the corresponding table. This will fail
     // silently if the location is already in the table because it has a UNIQUE
     // constraint.
-    if (!insertTrackLocation(m_pQueryTrackLocationInsert.get(), fileInfo)) {
-        DEBUG_ASSERT(pTrack->getDateAdded().isValid());
-        // Inserting into track_locations failed, so the file already
-        // exists. Query for its trackLocationId.
+    bool duplicateLocation = false;
+    if (!insertTrackLocation(
+                m_pQueryTrackLocationInsert.get(),
+                fileInfo,
+                &duplicateLocation)) {
+        if (!duplicateLocation) {
+            // The INSERT failed for a reason other than a duplicate
+            // location, e.g. SQLITE_BUSY because another connection (like
+            // the library scanner) is currently holding the write lock.
+            // The track has NOT been added: abort and let the caller roll
+            // back the transaction instead of running the
+            // duplicate-handling logic below, which would only produce
+            // misleading warnings and assertion failures.
+            return TrackId();
+        }
+        // Inserting into track_locations failed with a UNIQUE constraint
+        // violation, so the location is already in the table. Query for
+        // its trackLocationId.
         m_pQueryTrackLocationSelect->bindValue(":location", fileInfo.location());
         if (!m_pQueryTrackLocationSelect->exec()) {
             // We can't even select this, something is wrong.
@@ -1373,7 +1411,9 @@ struct ColumnPopulator {
 
 }  // namespace
 
-TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
+TrackPointer TrackDAO::getTrackById(
+        TrackId trackId,
+        bool updateTrackFromSource) const {
     if (!trackId.isValid()) {
         return nullptr;
     }
@@ -1576,43 +1616,47 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // Synchronize the track's metadata with the corresponding source
     // file. This import might have never been completed successfully
     // before, so just check and try for every track that has been
-    // freshly loaded from the database.
-    auto updateTrackFromSourceMode =
-            SoundSourceProxy::UpdateTrackFromSourceMode::Once;
-    if (m_pConfig &&
-            m_pConfig->getValue(
-                    mixxx::library::prefs::kSyncTrackMetadataConfigKey,
-                    false)) {
-        // An implicit re-import and update is performed if the
-        // user has enabled export of file tags in the preferences.
-        // Either they want to keep their file tags synchronized or
-        // not, no exceptions!
-        updateTrackFromSourceMode =
-                SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
-    }
-    DEBUG_ASSERT(!pTrack->isDirty());
-    const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
-    const auto result =
-            SoundSourceProxy(pTrack).updateTrackFromSource(
-                    updateTrackFromSourceMode,
-                    SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
-    if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
-        // At least the source synchronization time stamp must have changed
-        DEBUG_ASSERT(pTrack->isDirty());
-        const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
-        DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
-        if (sourceSynchronizedAtBefore.isValid()) {
-            // Only log subsequent re-imports but not the initial import of metadata
-            DEBUG_ASSERT(updateTrackFromSourceMode ==
-                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
-            DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
-            kLogger.info()
-                    << "Re-imported and updated outdated track metadata in library ("
-                    << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
-                    << ") with tags from modified file ("
-                    << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
-                    << "):"
-                    << pTrack->getMetadata();
+    // freshly loaded from the database. Accessing the source file is
+    // skipped upon request, e.g. for tracks that will be analyzed on
+    // a worker thread where the deferred import is then performed.
+    if (updateTrackFromSource) {
+        auto updateTrackFromSourceMode =
+                SoundSourceProxy::UpdateTrackFromSourceMode::Once;
+        if (m_pConfig &&
+                m_pConfig->getValue(
+                        mixxx::library::prefs::kSyncTrackMetadataConfigKey,
+                        false)) {
+            // An implicit re-import and update is performed if the
+            // user has enabled export of file tags in the preferences.
+            // Either they want to keep their file tags synchronized or
+            // not, no exceptions!
+            updateTrackFromSourceMode =
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Newer;
+        }
+        DEBUG_ASSERT(!pTrack->isDirty());
+        const auto sourceSynchronizedAtBefore = pTrack->getSourceSynchronizedAt();
+        const auto result =
+                SoundSourceProxy(pTrack).updateTrackFromSource(
+                        updateTrackFromSourceMode,
+                        SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
+        if (result == SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated) {
+            // At least the source synchronization time stamp must have changed
+            DEBUG_ASSERT(pTrack->isDirty());
+            const auto sourceSynchronizedAtAfter = pTrack->getSourceSynchronizedAt();
+            DEBUG_ASSERT(sourceSynchronizedAtAfter.isValid());
+            if (sourceSynchronizedAtBefore.isValid()) {
+                // Only log subsequent re-imports but not the initial import of metadata
+                DEBUG_ASSERT(updateTrackFromSourceMode ==
+                        SoundSourceProxy::UpdateTrackFromSourceMode::Newer);
+                DEBUG_ASSERT(sourceSynchronizedAtBefore < sourceSynchronizedAtAfter);
+                kLogger.info()
+                        << "Re-imported and updated outdated track metadata in library ("
+                        << sourceSynchronizedAtBefore.toString(Qt::ISODateWithMs)
+                        << ") with tags from modified file ("
+                        << sourceSynchronizedAtAfter.toString(Qt::ISODateWithMs)
+                        << "):"
+                        << pTrack->getMetadata();
+            }
         }
     }
 

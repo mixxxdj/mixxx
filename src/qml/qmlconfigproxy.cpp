@@ -10,6 +10,7 @@
 #include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/constants.h"
+#include "qml/qmlwaveformdisplay.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "waveform/waveformwidgetfactory.h"
 
@@ -610,19 +611,19 @@ void QmlConfigProxy::set_waveformEndOfTrackWarningTime(int value) {
 }
 PROPERTY_IMPL_GETTER(kWaveformGroup,
         kWaveformTypeKey,
-        QmlWaveformDisplay::Type,
+        int,
         waveformType,
-        QmlWaveformDisplay::Type::RGB);
-void QmlConfigProxy::set_waveformType(QmlWaveformDisplay::Type type) {
+        static_cast<int>(QmlWaveformDisplay::Type::RGB));
+void QmlConfigProxy::set_waveformType(int type) {
     if (WaveformWidgetFactory::isCreated()) {
         WaveformWidgetFactory::instance()->setWidgetType(
                 static_cast<WaveformWidgetType::Type>(type));
         emit waveformTypeChanged();
     } else {
-        setConfigValueAndNotify<QmlWaveformDisplay::Type>(kWaveformGroup,
+        setConfigValueAndNotify<int>(kWaveformGroup,
                 kWaveformTypeKey,
                 type,
-                QmlWaveformDisplay::Type::RGB,
+                static_cast<int>(QmlWaveformDisplay::Type::RGB),
                 &QmlConfigProxy::waveformTypeChanged);
     }
     emit waveformEnabledChanged();
@@ -640,7 +641,7 @@ void QmlConfigProxy::set_waveformEnabled(bool enabled) {
         return;
     }
     if (enabled) {
-        set_waveformType(QmlWaveformDisplay::Type::RGB);
+        set_waveformType(static_cast<int>(QmlWaveformDisplay::Type::RGB));
     } else {
         if (WaveformWidgetFactory::isCreated()) {
             WaveformWidgetFactory::instance()->setWidgetType(WaveformWidgetType::Empty);
@@ -653,19 +654,19 @@ void QmlConfigProxy::set_waveformEnabled(bool enabled) {
         emit waveformEnabledChanged();
     }
 }
-QmlWaveformDisplay::Options QmlConfigProxy::waveformOptions() const {
-    return QmlWaveformDisplay::Options::fromInt(m_pConfig->getValue<int>(
+int QmlConfigProxy::waveformOptions() const {
+    return m_pConfig->getValue<int>(
             ConfigKey(kWaveformGroup,
                     kWaveformOptionsKey),
-            static_cast<int>(QmlWaveformDisplay::Option::None)));
+            static_cast<int>(QmlWaveformDisplay::Option::None));
 }
 
-void QmlConfigProxy::set_waveformOptions(QmlWaveformDisplay::Options value) {
-    if (value == QmlWaveformDisplay::Option::None) {
+void QmlConfigProxy::set_waveformOptions(int value) {
+    if (value ==
+            static_cast<int>(QmlWaveformDisplay::Option::None)) {
         m_pConfig->remove(ConfigKey(kWaveformGroup, kWaveformOptionsKey));
     } else {
-        m_pConfig->setValue(ConfigKey(kWaveformGroup, kWaveformOptionsKey),
-                static_cast<int>(value));
+        m_pConfig->setValue(ConfigKey(kWaveformGroup, kWaveformOptionsKey), value);
     }
     emit waveformOptionsChanged();
 }

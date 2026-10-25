@@ -9,6 +9,7 @@
 
 class MidiOutputHandler;
 class MidiController;
+class ControllerSharedData;
 
 class MidiInputHandleJSProxy final : public QObject {
     Q_OBJECT
@@ -83,6 +84,8 @@ class MidiController : public Controller {
             const QJSValue& scriptCode);
 
     bool applyMapping(const QString& resourcePath) override;
+    bool applyMapping(const QString& resourcePath,
+            std::shared_ptr<ControllerSharedData> runtimeData) override;
     int close() override;
 
   protected slots:

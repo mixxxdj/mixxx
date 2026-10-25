@@ -5,7 +5,7 @@
 
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlplayerproxy.cpp"
-#include "qmltrackproxy.h"
+#include "qml/qmltrackproxy.h"
 #include "track/track.h"
 
 namespace mixxx {

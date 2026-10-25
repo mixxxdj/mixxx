@@ -3,6 +3,7 @@
 #include <QJSValue>
 #include <QObject>
 
+#include "controllers/scripting/legacy/scriptconnection.h"
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
 #include "util/runtimeloggingcategory.h"
@@ -117,6 +118,17 @@ class ControllerScriptInterfaceLegacy : public QObject {
     bool removeScriptConnection(const ScriptConnection& conn);
     /// Execute a ScriptConnection's JS callback
     void triggerScriptConnection(const ScriptConnection& conn);
+    bool removeRuntimeDataConnection(const ScriptConnection& conn);
+    /// Execute a runtime-data ScriptConnection's JS callback
+    void triggerRuntimeDataConnection(const ScriptConnection& conn);
+    Q_INVOKABLE QJSValue getSharedData();
+    Q_INVOKABLE void setSharedData(const QJSValue& value);
+    Q_INVOKABLE QJSValue makeSharedDataConnection(const QJSValue& callback);
+
+  public slots:
+    void onRuntimeDataUpdated(const QString& entity,
+            const QString& key,
+            const QVariant& value);
 
     /// Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent* event);
@@ -155,5 +167,6 @@ class ControllerScriptInterfaceLegacy : public QObject {
     double getDeckRate(const QString& group);
 
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
+    QList<ScriptConnection> m_runtimeDataConnections;
     const RuntimeLoggingCategory m_logger;
 };

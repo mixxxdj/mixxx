@@ -17,7 +17,6 @@
 #include "preferences/interface.h"
 #include "preferences/usersettings.h"
 #include "qml/qmlconfigproxybase.h"
-#include "qml/qmlwaveformdisplay.h"
 
 class ControlObject;
 
@@ -30,10 +29,6 @@ class ControlObject;
 
 namespace mixxx {
 namespace qml {
-
-// The following typedefs are used to prevent clazy warnings
-typedef QmlWaveformDisplay::Type QmlWaveformDisplayType;
-typedef QmlWaveformDisplay::Options QmlWaveformDisplayOptions;
 
 class QmlConfigProxy : public QmlConfigProxyBase {
     Q_OBJECT
@@ -113,9 +108,9 @@ class QmlConfigProxy : public QmlConfigProxyBase {
             int waveformEndOfTrackWarningTime READ waveformEndOfTrackWarningTime
                     WRITE set_waveformEndOfTrackWarningTime NOTIFY
                             waveformEndOfTrackWarningTimeChanged);
-    Q_PROPERTY(QmlWaveformDisplayType waveformType READ waveformType WRITE
+    Q_PROPERTY(int waveformType READ waveformType WRITE
                     set_waveformType NOTIFY waveformTypeChanged);
-    Q_PROPERTY(QmlWaveformDisplayOptions waveformOptions READ waveformOptions
+    Q_PROPERTY(int waveformOptions READ waveformOptions
                     WRITE set_waveformOptions NOTIFY waveformOptionsChanged);
     // Percent, 0..100
     Q_PROPERTY(double waveformBeatGridAlpha READ waveformBeatGridAlpha WRITE
@@ -389,8 +384,8 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     PROPERTY_DECL_ACCESSOR(double, waveformVisualGainHigh);
     // Seconds
     PROPERTY_DECL_ACCESSOR(int, waveformEndOfTrackWarningTime);
-    PROPERTY_DECL_ACCESSOR(QmlWaveformDisplayType, waveformType);
-    PROPERTY_DECL_ACCESSOR(QmlWaveformDisplayOptions, waveformOptions);
+    PROPERTY_DECL_ACCESSOR(int, waveformType);
+    PROPERTY_DECL_ACCESSOR(int, waveformOptions);
     // Percent, 0..100
     PROPERTY_DECL_ACCESSOR(double, waveformBeatGridAlpha);
     PROPERTY_DECL_ACCESSOR(double, waveformStemOpacity);

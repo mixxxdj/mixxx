@@ -25,6 +25,7 @@ class AudioLatencyCalibrator;
 class EngineMixer;
 class ControlObject;
 class PipewireEnumerator;
+class SoundManagerAndroid;
 
 #define SOUNDMANAGER_DISCONNECTED 0
 #define SOUNDMANAGER_CONNECTING 1
@@ -66,6 +67,11 @@ class SoundManager : public QObject {
 
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
+
+    /// The PortAudio index of the host API's default output device, or -1
+    /// if the API is unknown or has none.
+    int getDefaultOutputDeviceIndex(const QString& api) const;
+
     SoundManagerConfig getConfig() const;
     SoundDeviceStatus setConfig(const SoundManagerConfig& config);
     // Due to a bug in in PulseAudio, we must give at least 5 seconds of cool
@@ -238,6 +244,13 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverload;
 
     std::unique_ptr<SoundDeviceEnumerator> m_pEnumerator;
+
+#ifdef Q_OS_ANDROID
+    // Android auto-routing to DJ controllers + speaker fallback.
+    // SoundManagerAndroid lives in its own file to stay conflict-free.
+    friend class SoundManagerAndroid;
+    SoundManagerAndroid* m_pAndroid = nullptr;
+#endif
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;

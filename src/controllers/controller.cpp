@@ -3,6 +3,7 @@
 #include <QJSEngine>
 #include <algorithm>
 
+#include "controllers/controllershareddata.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller.cpp"
 #include "util/cmdlineargs.h"
@@ -79,7 +80,8 @@ void Controller::stopEngine() {
     emit engineStopped();
 }
 
-bool Controller::applyMapping(const QString& resourcePath) {
+bool Controller::applyMapping(const QString& resourcePath,
+        std::shared_ptr<ControllerSharedData> runtimeData) {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
     // Load the script code into the engine
@@ -106,7 +108,20 @@ bool Controller::applyMapping(const QString& resourcePath) {
 #else
     Q_UNUSED(resourcePath);
 #endif
+
+    const auto pMapping = getMapping();
+    if (pMapping && runtimeData != nullptr) {
+        const auto& ns = pMapping->sharedDataNamespace();
+        if (!ns.isEmpty()) {
+            m_pScriptEngineLegacy->setSharedData(runtimeData->namespaced(ns));
+        }
+    }
     return m_pScriptEngineLegacy->initialize();
+}
+
+// Compatibility overload: HID/bulk/PortMIDI paths call the 1-arg form.
+bool Controller::applyMapping(const QString& resourcePath) {
+    return applyMapping(resourcePath, nullptr);
 }
 
 void Controller::startLearning() {

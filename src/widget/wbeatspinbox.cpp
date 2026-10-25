@@ -11,6 +11,7 @@
 
 namespace {
 const QRegularExpression kBlockListRegex(QStringLiteral("[^0-9.,/ ]"));
+constexpr int kDebounceTimeout = 300;
 } // namespace
 
 WBeatSpinBox::WBeatSpinBox(QWidget* parent,
@@ -39,7 +40,17 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
             &WBeatSpinBox::slotSpinboxValueChanged);
+    connect(lineEdit(),
+            &QLineEdit::textChanged,
+            this,
+            &WBeatSpinBox::slotLineTextChanged);
     m_valueControl.connectValueChanged(this, &WBeatSpinBox::slotControlValueChanged);
+
+    m_debouncingTimer.setSingleShot(true);
+    m_debouncingTimer.setInterval(kDebounceTimeout);
+    m_debouncingTimer.callOnTimeout(
+            this,
+            &WBeatSpinBox::slotDebounceTimeout);
 }
 
 void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {
@@ -68,6 +79,23 @@ void WBeatSpinBox::stepBy(int steps) {
 void WBeatSpinBox::slotSpinboxValueChanged(double newValue) {
     // Do not call QDoubleSpinBox::setValue directly in case
     // the new value of the ControlObject needs to be confirmed.
+    m_valueControl.set(newValue);
+}
+
+void WBeatSpinBox::slotLineTextChanged(const QString& text) {
+    Q_UNUSED(text);
+    // (Re-)Start debounce timer
+    m_debouncingTimer.stop();
+    m_debouncingTimer.start();
+}
+
+void WBeatSpinBox::slotDebounceTimeout() {
+    QString currText = text();
+    int pos = 0;
+    if (validate(currText, pos) != QValidator::Acceptable) {
+        return;
+    }
+    double newValue = valueFromText(currText);
     m_valueControl.set(newValue);
 }
 

@@ -638,12 +638,371 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           </property>
          </spacer>
         </item>
+         <!-- New Physical Spin-up Ramp Settings -->
+         <item row="12" column="0">
+           <widget class="QLabel" name="labelPhysicalRamp">
+             <property name="text">
+               <string>Physical spin-up/spin-down ramp</string>
+             </property>
+             <property name="buddy">
+               <cstring>checkBoxRampUpEnabled</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="12" column="1" colspan="2">
+           <widget class="QCheckBox" name="checkBoxRampUpEnabled">
+             <property name="text">
+               <string>Enable physical spin-up ramp</string>
+             </property>
+           </widget>
+         </item>
+         <item row="13" column="1" colspan="2">
+           <widget class="QCheckBox" name="checkBoxRampDownEnabled">
+             <property name="text">
+               <string>Enable physical spin-down ramp</string>
+             </property>
+           </widget>
+         </item>
+         <item row="14" column="0">
+           <widget class="QLabel" name="labelRampDownMode">
+             <property name="text">
+               <string>Spin-down type</string>
+             </property>
+             <property name="buddy">
+               <cstring>radioButtonRampDownBrake</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="14" column="1">
+           <widget class="QRadioButton" name="radioButtonRampDownBrake">
+             <property name="toolTip">
+               <string>Stop button: the electronic brake stops the platter quickly</string>
+             </property>
+             <property name="text">
+               <string>Brake</string>
+             </property>
+             <attribute name="buttonGroup">
+               <string notr="true">buttonGroupRampDownMode</string>
+             </attribute>
+           </widget>
+         </item>
+         <item row="14" column="2">
+           <widget class="QRadioButton" name="radioButtonRampDownPowerCut">
+             <property name="toolTip">
+               <string>Power switch off: no brake, the platter coasts slowly to a standstill</string>
+             </property>
+             <property name="text">
+               <string>Power cut</string>
+             </property>
+             <attribute name="buttonGroup">
+               <string notr="true">buttonGroupRampDownMode</string>
+             </attribute>
+           </widget>
+         </item>
+         <item row="15" column="0">
+           <widget class="QLabel" name="labelRampMode">
+             <property name="text">
+               <string>Platter type</string>
+             </property>
+             <property name="buddy">
+               <cstring>comboBoxRampUpMode</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="15" column="1" colspan="2">
+           <widget class="QComboBox" name="comboBoxRampUpMode">
+             <item>
+               <property name="text">
+                 <string>33 RPM (Heavier)</string>
+               </property>
+             </item>
+             <item>
+               <property name="text">
+                 <string>45 RPM (Lighter)</string>
+               </property>
+             </item>
+           </widget>
+         </item>
+         <item row="16" column="0">
+           <widget class="QLabel" name="labelRampPitchRange">
+             <property name="text">
+               <string>Target range</string>
+             </property>
+             <property name="buddy">
+               <cstring>checkBoxRampUpIncludePitch</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="16" column="1" colspan="2">
+           <widget class="QCheckBox" name="checkBoxRampUpIncludePitch">
+             <property name="text">
+               <string>Ramp up to RPM + Pitch Slider</string>
+             </property>
+           </widget>
+         </item>
+         <item row="17" column="0">
+           <widget class="QLabel" name="labelRampUpTime">
+             <property name="text">
+               <string>Spin-up time</string>
+             </property>
+             <property name="buddy">
+               <cstring>sliderRampUpTime</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="17" column="1">
+           <widget class="QSlider" name="sliderRampUpTime">
+             <property name="toolTip">
+               <string>Time the platter needs to reach its speed after pressing Play.
+100 % is a Technics SL-1210. 25 % starts 4x faster, 400 % 4x slower.</string>
+             </property>
+             <property name="minimum">
+               <number>25</number>
+             </property>
+             <property name="maximum">
+               <number>400</number>
+             </property>
+             <property name="singleStep">
+               <number>5</number>
+             </property>
+             <property name="pageStep">
+               <number>25</number>
+             </property>
+             <property name="value">
+               <number>100</number>
+             </property>
+             <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+             </property>
+             <property name="tickInterval">
+               <number>25</number>
+             </property>
+           </widget>
+         </item>
+         <item row="17" column="2">
+           <widget class="QLabel" name="labelRampUpTimeValue">
+             <property name="text">
+               <string notr="true">100 %</string>
+             </property>
+           </widget>
+         </item>
+         <item row="18" column="0">
+           <widget class="QLabel" name="labelRampDownTime">
+             <property name="text">
+               <string>Spin-down time</string>
+             </property>
+             <property name="buddy">
+               <cstring>sliderRampDownTime</cstring>
+             </property>
+           </widget>
+         </item>
+         <item row="18" column="1">
+           <widget class="QSlider" name="sliderRampDownTime">
+             <property name="toolTip">
+               <string>Time the platter needs to stop after pressing Pause, for both brake and power cut.
+100 % is a Technics SL-1210. 25 % stops 4x faster, 400 % 4x slower.</string>
+             </property>
+             <property name="minimum">
+               <number>25</number>
+             </property>
+             <property name="maximum">
+               <number>400</number>
+             </property>
+             <property name="singleStep">
+               <number>5</number>
+             </property>
+             <property name="pageStep">
+               <number>25</number>
+             </property>
+             <property name="value">
+               <number>100</number>
+             </property>
+             <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+             </property>
+             <property name="tickInterval">
+               <number>25</number>
+             </property>
+           </widget>
+         </item>
+         <item row="18" column="2">
+           <widget class="QLabel" name="labelRampDownTimeValue">
+             <property name="text">
+               <string notr="true">100 %</string>
+             </property>
+           </widget>
+         </item>
        </layout>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+    <!-- TrackFileCache Begin-->
+    <item row="2" column="0">
+      <widget class="QGroupBox" name="groupBoxTrackFileCache">
+        <property name="title">
+          <string>TrackFileCache</string>
+        </property>
+        <property name="toolTip">
+          <string>Copy track files to a cache location for faster loading and reduced disk access during performance</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayoutTrackFileCache">
+          <property name="spacing">
+            <number>10</number>
+          </property>
+
+          <!-- TrackFileCache: Enable  -->
+          <item row="0" column="0" colspan="3">
+            <widget class="QCheckBox" name="checkBoxTrackFileCacheEnabled">
+              <property name="text">
+                <string>Enable Track File Cache</string>
+              </property>
+              <property name="toolTip">
+                <string>Copy tracks to cache location for faster loading</string>
+              </property>
+            </widget>
+          </item>
+
+          <!-- TrackFileCache: Location -->
+          <item row="1" column="0">
+            <widget class="QLabel" name="labelTrackFileCacheLocation">
+              <property name="text">
+                <string>TrackFileCache location</string>
+              </property>
+              <property name="buddy">
+                <cstring>lineEditTrackFileCacheLocation</cstring>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="1">
+            <widget class="QLineEdit" name="lineEditTrackFileCacheLocation">
+              <property name="toolTip">
+                <string>Location where Mixxx will create the cache folder. Use fast storage like RAM disks or SSDs for best performance.</string>
+              </property>
+            </widget>
+          </item>
+          <item row="1" column="2">
+            <widget class="QPushButton" name="pushButtonBrowseTrackFileCacheLocation">
+              <property name="text">
+                <string>Browse...</string>
+              </property>
+              <property name="toolTip">
+                <string>Select cache location</string>
+              </property>
+            </widget>
+          </item>
+
+          <!-- TrackFileCache Max Size -->
+          <item row="2" column="0" colspan="2">
+            <widget class="QLabel" name="labelMaxTrackFileCacheSize">
+              <property name="text">
+                <string>Max cache size:</string>
+              </property>
+              <property name="buddy">
+                <cstring>comboBoxMaxTrackFileCacheSize</cstring>
+              </property>
+            </widget>
+          </item>
+          <item row="2" column="2" colspan="1">
+            <widget class="QComboBox" name="comboBoxMaxTrackFileCacheSize">
+              <property name="toolTip">
+                <string>Maximum disk space used by the cache. Larger values allow more tracks to be cached.</string>
+              </property>
+            </widget>
+          </item>
+
+          <!-- TrackFileCache settings for Decks/Samplers/PreviewDeck -->
+          <item row="2" column="0">
+            <widget class="QLabel" name="labelTrackFileCachePlayers">
+              <property name="text">
+                <string>Cache for players</string>
+              </property>
+            </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+            <layout class="QHBoxLayout" name="horizontalLayoutPlayers">
+              <item>
+                <widget class="QCheckBox" name="checkBoxTrackFileCacheDecks">
+                  <property name="text">
+                    <string>Decks</string>
+                  </property>
+                  <property name="toolTip">
+                    <string>Enable caching of tracks loaded in decks</string>
+                  </property>
+                  <property name="checked">
+                    <bool>true</bool>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QCheckBox" name="checkBoxTrackFileCacheSamplers">
+                  <property name="text">
+                    <string>Samplers</string>
+                  </property>
+                  <property name="toolTip">
+                    <string>Enable caching of tracks loaded in samplers</string>
+                  </property>
+                  <property name="checked">
+                    <bool>true</bool>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QCheckBox" name="checkBoxTrackFileCachePreviewDeck">
+                  <property name="text">
+                    <string>Preview Deck</string>
+                  </property>
+                  <property name="toolTip">
+                    <string>Enable caching of tracks loaded in preview deck</string>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+
+          <!-- TrackFileCache Text -->
+          <item row="4" column="0" colspan="3">
+            <widget class="QLabel" name="labelTrackFileCacheDescription">
+              <property name="text">
+                <string>Track File Cache copies audio files to a fast storage location (RAM disk, SSD) for reduced loading times and improved performance during sets. Tracks are automatically managed and cleaned up when no longer needed.</string>
+              </property>
+              <property name="wordWrap">
+                <bool>true</bool>
+              </property>
+              <property name="alignment">
+                <set>Qt::AlignJustify</set>
+              </property>
+              <property name="styleSheet">
+                <string notr="true">color: #666; font-size: 10px;</string>
+              </property>
+            </widget>
+          </item>
+          <item row="5" column="0" colspan="3">
+            <widget class="QLabel" name="labelCacheWarning">
+              <property name="text">
+                <string>
+                  ⚠️ Note: Enabling/ Disabling the TrackFileCache or changing the location, size or setting requires restarting Mixxx. Manual cleanup of the old cache location may be needed.
+                </string>
+              </property>
+              <property name="wordWrap">
+                <bool>true</bool>
+              </property>
+              <property name="styleSheet">
+                <string notr="true">color: #d35400; background-color: #fef5e7; padding: 8px; border: 1px solid #f39c12; border-radius: 4px;</string>
+              </property>
+            </widget>
+          </item>
+        </layout>
+      </widget>
+    </item>
+    <!-- TrackFileCache End-->
+   <item row="3" column="0">
     <spacer name="verticalSpacer2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -685,6 +1044,9 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>spinBoxTemporaryRateCoarse</tabstop>
   <tabstop>spinBoxPermanentRateFine</tabstop>
   <tabstop>spinBoxPermanentRateCoarse</tabstop>
+  <tabstop>checkBoxRampUpEnabled</tabstop>
+  <tabstop>comboBoxRampUpMode</tabstop>
+  <tabstop>checkBoxRampUpIncludePitch</tabstop>
  </tabstops>
  <resources/>
  <buttongroups>
@@ -693,5 +1055,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <buttongroup name="buttonGroupKeyLockMode"/>
   <buttongroup name="buttonGroupSpeedBendBehavior"/>
   <buttongroup name="buttonGroupSyncMode"/>
+  <buttongroup name="buttonGroupRampDownMode"/>
  </buttongroups>
 </ui>
