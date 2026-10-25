@@ -14,7 +14,9 @@
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
+#ifdef Q_OS_ANDROID
 #include "util/androidcrashreport.h"
+#endif
 #include "util/assert.h"
 #include "util/cache.h"
 #include "util/cmdlineargs.h"
