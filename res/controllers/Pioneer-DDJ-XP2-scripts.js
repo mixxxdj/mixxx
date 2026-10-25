@@ -1524,6 +1524,12 @@ DDJXP2.DeckControls2Deck = class extends components.Deck {
 
         this.fader = new DDJXP2.Pot({
             softTakeover: false,
+            input: function(channel, control, value, status, group) {
+                if (this.inKey === undefined) {
+                    return;
+                }
+                components.Pot.prototype.input.call(this, channel, control, value, status, group);
+            },
             resetFader: function(_channel, control, value, status, group) {
                 this.inputMSB(_channel, control, 0x00, status, group);
                 this.inputLSB(_channel, control, 0x00, status, group);
