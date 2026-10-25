@@ -6,7 +6,7 @@ Reloop Mixtour controller script
 var ReloopMixtour = {};
 
 // midi-components-0.0.js does not prevent re-connecting some already connected
-// component. The following mixing and the local classes solve this problem.
+// component. The following mixin and the local classes solve this problem.
 // Additionally some shutdown method added to all local components.
 ReloopMixtour.controlledConnections = (Base) => class extends Base {
     connect() {
