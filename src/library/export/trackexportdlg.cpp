@@ -6,9 +6,9 @@
 #include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
 
-TrackExportDlg::TrackExportDlg(QWidget *parent,
-                               UserSettingsPointer pConfig,
-                               TrackExportWorker* worker)
+TrackExportDlg::TrackExportDlg(QWidget* parent,
+        UserSettingsPointer pConfig,
+        TrackExportWorker* worker)
         : QDialog(parent),
           Ui::DlgTrackExport(),
           m_pConfig(pConfig),
@@ -41,9 +41,6 @@ TrackExportDlg::TrackExportDlg(QWidget *parent,
 void TrackExportDlg::showEvent(QShowEvent* event) {
     QDialog::showEvent(event);
     VERIFY_OR_DEBUG_ASSERT(m_worker) {
-        // It's not worth checking for m_exporter != nullptr elsewhere in this
-        // class... it'll be clear very quickly that someone screwed up and
-        // forgot to call selectDestinationDirectory().
         qDebug() << "Programming error: did not initialize m_exporter, about to crash";
         return;
     }
@@ -53,7 +50,7 @@ void TrackExportDlg::showEvent(QShowEvent* event) {
 void TrackExportDlg::slotProgress(const QString& filename, int progress, int count) {
     if (progress == count) {
         statusLabel->setText(tr("Export finished"));
-        finish();
+        finish(true);
     } else {
         statusLabel->setText(tr("Exporting %1").arg(filename));
     }
@@ -99,20 +96,41 @@ void TrackExportDlg::slotAskOverwriteMode(
 }
 
 void TrackExportDlg::cancelButtonClicked() {
-    finish();
+    finish(false);
 }
 
-void TrackExportDlg::finish() {
+void TrackExportDlg::finish(bool completed) {
+    if (m_finished) {
+        return;
+    }
+    m_finished = true;
+
     m_worker->stop();
     m_worker->wait();
+
     if (!m_worker->errorMessage().isEmpty()) {
         QMessageBox::warning(
-                nullptr,
+                this,
                 tr("Export Error"),
                 m_worker->errorMessage(),
                 QMessageBox::Ok,
                 QMessageBox::Ok);
+    } else if (completed && m_worker->failedCount() > 0) {
+        const QString summaryText = tr(
+                "Export completed, but %1 file(s) could not be exported "
+                "because they were missing or inaccessible.")
+                                            .arg(m_worker->failedCount());
+
+        QMessageBox warningBox(
+                QMessageBox::Warning,
+                tr("Export Summary"),
+                summaryText,
+                QMessageBox::Ok,
+                this);
+        warningBox.setDetailedText(m_worker->failedTracks().join("\n"));
+        warningBox.exec();
     }
+
     hide();
     accept();
 }
