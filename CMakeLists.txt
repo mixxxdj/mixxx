@@ -2602,8 +2602,7 @@ if(MSVC)
     FILES $<TARGET_PDB_FILE:mixxx>
     CONFIGURATIONS Debug RelWithDebInfo
     DESTINATION "${MIXXX_INSTALL_BINDIR}"
-    COMPONENT
-      PDB # No spaces allowed
+    COMPONENT PDB # No spaces allowed
   )
 endif()
 
