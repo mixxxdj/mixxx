@@ -2078,19 +2078,11 @@
                 <options><script-binding/></options>
             </control>
             <control>
-                <description>BROWSE push: open/load item</description>
-                <group>[Library]</group>
-                <key>GoToItem</key>
-                <status>0x96</status>
-                <midino>0x41</midino>
-                <options><normal/></options>
-            </control>
-            <control>
-                <description>SHIFT+BROWSE push: switch library pane</description>
+                <description>BROWSE push: cycle focus (sources/tracks/search)</description>
                 <group>[Library]</group>
                 <key>MoveFocusForward</key>
                 <status>0x96</status>
-                <midino>0x42</midino>
+                <midino>0x41</midino>
                 <options><normal/></options>
             </control>
         </controls>
