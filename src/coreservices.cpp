@@ -935,6 +935,9 @@ void CoreServices::finalize() {
     m_pTrackCollectionManager->stopLibraryScan();
     m_pLibrary->stopPendingTasks();
 
+#ifdef __VINYLCONTROL__
+    m_pVCManager->saveEnabledStates();
+#endif
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "saving configuration";
     m_pSettingsManager->save();
 
