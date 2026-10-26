@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QGridLayout>
+#include <QGroupBox>
+#include <QSlider>
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
@@ -93,6 +96,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void updateDeviceChannels(SoundDevicePointer pDevice);
     void updateSampleRates(const QList<mixxx::audio::SampleRate>& sampleRates);
     void invalidateConfig();
+    void refreshHardwareDevices();
 
   private:
     void initializePaths();
@@ -100,6 +104,12 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
+#ifdef __PIPEWIRE__
+    void initPipewire();
+    void updateGraphDriver(int driverId);
+#endif
+    void hardwareVolumeAdded(uint32_t deviceId, const QString& name, uint32_t index, bool isInput);
+    void addHardwareVolume(uint32_t deviceId, const QString& name, uint32_t index);
 
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
@@ -137,5 +147,19 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     parented_ptr<ControlProxy> m_cpBufferSize;
     parented_ptr<ControlProxy> m_cpLatencyParamsMismatch;
     QLabel* m_latencyParamsMismatchText;
+    parented_ptr<ControlProxy> m_pNodeDriver;
+    QLabel* m_pPipewireDriver;
 #endif
+
+    struct HardwareDevice {
+        QString name;
+        std::unordered_map<uint32_t, QString> volumes;
+    };
+    parented_ptr<ControlProxy> m_cpMainVolumeRoute;
+    parented_ptr<ControlProxy> m_cpHeadVolumeRoute;
+    parented_ptr<ControlProxy> m_cpBoothVolumeRoute;
+    parented_ptr<ControlProxy> m_cpMainVolumeDevice;
+    parented_ptr<ControlProxy> m_cpHeadVolumeDevice;
+    parented_ptr<ControlProxy> m_cpBoothVolumeDevice;
+    std::unordered_map<uint32_t, HardwareDevice> m_hardwareDevices;
 };
