@@ -3,8 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
 
@@ -35,18 +34,18 @@ class DeckVisuals {
     int m_SlowTickCnt;
     bool m_trackLoaded;
 
-    std::unique_ptr<ControlProxy> m_pPlayButton;
-    std::unique_ptr<ControlProxy> m_pLoopEnabled;
+    PollingControlProxy m_playButton;
+    PollingControlProxy m_loopEnabled;
 
-    std::unique_ptr<ControlProxy> m_pEngineBpm;
-    std::unique_ptr<ControlProxy> m_pVisualBpm;
+    PollingControlProxy m_engineBpm;
+    PollingControlProxy m_visualBpm;
 
-    std::unique_ptr<ControlProxy> m_pEngineKey;
-    std::unique_ptr<ControlProxy> m_pVisualKey;
+    PollingControlProxy m_engineKey;
+    PollingControlProxy m_visualKey;
 
-    std::unique_ptr<ControlProxy> m_pTimeElapsed;
-    std::unique_ptr<ControlProxy> m_pTimeRemaining;
-    std::unique_ptr<ControlProxy> m_pEndOfTrack;
+    PollingControlProxy m_timeElapsed;
+    PollingControlProxy m_timeRemaining;
+    PollingControlProxy m_endOfTrack;
 
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
 };
