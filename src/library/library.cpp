@@ -348,7 +348,12 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             m_pConfig->getValue(
                     kSidebarHoverExpandDelayConfigKey,
                     kSidebarHoverExpandDelayDefault);
-    pSidebarWidget->slotSetExpandOnHoverDelay(sidebarHoverExpandDelay);
+    const auto sidebarHoverCollapseDelay =
+            m_pConfig->getValue(
+                    kSidebarHoverCollapseDelayConfigKey,
+                    kSidebarHoverCollapseDelayDefault);
+    pSidebarWidget->slotSetExpandCollapseOnHoverDelay(
+            sidebarHoverExpandDelay, sidebarHoverCollapseDelay);
 
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
@@ -397,9 +402,9 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::slotSetFont);
 
     connect(this,
-            &Library::setSidebarHoverExpandDelay,
+            &Library::setSidebarHoverDelay,
             pSidebarWidget,
-            &WLibrarySidebar::slotSetExpandOnHoverDelay);
+            &WLibrarySidebar::slotSetExpandCollapseOnHoverDelay);
 
     for (const auto& feature : std::as_const(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
