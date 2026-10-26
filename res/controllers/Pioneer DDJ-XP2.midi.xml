@@ -4,7 +4,7 @@
     <name>Pioneer DDJ-XP2</name>
     <author>Rene (mixxx at absorb.it)</author>
     <description>USB MIDI controller.</description>
-    <forum>https://mixxx.discourse.group/t/new-mapping-for-pioneer-ddj-xp2/33094</forum>
+    <forums>https://mixxx.discourse.group/t/new-mapping-for-pioneer-ddj-xp2/33094</forums>
     <manual>pioneer_ddj_xp2</manual>
   </info>
   <settings>
