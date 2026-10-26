@@ -450,7 +450,7 @@
       </item>
 
       <item row="11" column="0" colspan="4">
-       <widget class="QPushButton" name="btnImportMetadataFromFile">
+       <widget class="WBasicPushButton" name="btnImportMetadataFromFile">
         <property name="text">
          <string>Re-Import Metadata from files</string>
         </property>
@@ -727,6 +727,13 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>WBasicPushButton</class>
+   <extends>QPushButton</extends>
+   <header>widget/wbasicpushbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>txtTitle</tabstop>
   <tabstop>txtArtist</tabstop>
