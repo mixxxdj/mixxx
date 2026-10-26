@@ -49,6 +49,7 @@ PioneerDDJWeGO.init = function() {
     // Soft-takeover is a setting; engine.softTakeover only affects values set
     // from the script, so these controls are script-routed.
     const softTakeover = engine.getSetting("softTakeover");
+    const blinkingSync = engine.getSetting("blinkingSync");
     PioneerDDJWeGO.jogFxScratch = engine.getSetting("jogFxScratch");
     const addMixer = function(midino, group, key) {
         PioneerDDJWeGO.mixer14[midino] = {group: group, key: key, msb: 0};
@@ -95,9 +96,18 @@ PioneerDDJWeGO.init = function() {
             PioneerDDJWeGO.led(note, 0x0C, value);
             PioneerDDJWeGO.led(note, 0x48, value);
         });
-        connectDeck(group, engine.getSetting("blinkingSync") ? "beat_active" : "sync_enabled", function(value) {
-            PioneerDDJWeGO.led(note, 0x58, value);
-        });
+        // SYNC LED shows sync state. With blinkingSync it blinks on the beat
+        // while sync is on, and stays off when sync is off (so the state is
+        // still visible), instead of blinking regardless of sync state.
+        const syncLed = function() {
+            const enabled = engine.getValue(group, "sync_enabled");
+            PioneerDDJWeGO.led(note, 0x58,
+                blinkingSync ? enabled && engine.getValue(group, "beat_active") : enabled);
+        };
+        connectDeck(group, "sync_enabled", syncLed);
+        if (blinkingSync) {
+            connectDeck(group, "beat_active", syncLed);
+        }
         connectDeck(group, "sync_leader", function(value) {
             PioneerDDJWeGO.led(note, 0x5C, value);
         });
