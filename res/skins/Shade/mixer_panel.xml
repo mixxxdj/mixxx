@@ -528,7 +528,7 @@
 
               <StatusLight>
                 <Pos>113,27</Pos>
-                <TooltipId>audio_latency_usage</TooltipId>
+                <TooltipId>audio_latency_and_overload_indicator</TooltipId>
                 <PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
                 <PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
                 <Connection>
@@ -542,7 +542,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
-                    <TooltipId>audio_latency_usage</TooltipId>
+                    <TooltipId>audio_latency_and_overload_indicator</TooltipId>
                     <PathVu>skin:/audio_latency/audio_latency_usage.png</PathVu>
                     <PathBack>skin:/audio_latency/audio_latency_usage_back.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>

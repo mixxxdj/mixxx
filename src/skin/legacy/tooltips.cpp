@@ -991,7 +991,7 @@ void Tooltips::addStandardTooltips() {
                "processing.");
     add("audio_latency_overload") << latencyOverload;
     // Combined tooltip for usage + overload combo widgets
-    add("audio_latency_and overload_indicator")
+    add("audio_latency_and_overload_indicator")
             << latencyUsage
             << QStringLiteral("\n\n")
             << tr("Flashing frame:")
