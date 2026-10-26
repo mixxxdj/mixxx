@@ -1,10 +1,14 @@
 #include "waveform/renderers/allshader/waveformrenderertextured.h"
 
+#include <QMatrix4x4>
+#include <QOpenGLContext>
 #include <QOpenGLFramebufferObject>
+#include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 
 #include "moc_waveformrenderertextured.cpp"
 #include "track/track.h"
+#include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 
@@ -15,11 +19,11 @@ QString WaveformRendererTextured::fragShaderForType(WaveformRendererTextured::Ty
     using Type = WaveformRendererTextured::Type;
     switch (t) {
     case Type::Filtered:
-        return QLatin1String(":/shaders/filteredsignal.frag");
+        return QLatin1String(":/shaders/texturedfilteredsignal.frag");
     case Type::RGB:
-        return QLatin1String(":/shaders/rgbsignal.frag");
+        return QLatin1String(":/shaders/texturedrgbsignal.frag");
     case Type::Stacked:
-        return QLatin1String(":/shaders/stackedsignal.frag");
+        return QLatin1String(":/shaders/texturedstackedsignal.frag");
     default:
         break;
     }
@@ -30,12 +34,14 @@ QString WaveformRendererTextured::fragShaderForType(WaveformRendererTextured::Ty
 WaveformRendererTextured::WaveformRendererTextured(WaveformWidgetRenderer* waveformWidget,
         Type t)
         : WaveformRendererSignalBase(waveformWidget),
-          m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
           m_shadersValid(false),
           m_type(t),
-          m_pFragShader(fragShaderForType(t)) {
+          m_pFragShader(fragShaderForType(t)),
+          m_matrixLocation(-1),
+          m_positionLocation(-1),
+          m_texcoordLocation(-1) {
 }
 
 WaveformRendererTextured::~WaveformRendererTextured() {
@@ -60,7 +66,7 @@ bool WaveformRendererTextured::loadShaders() {
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
                 QOpenGLShader::Vertex,
-                ":/shaders/passthrough.vert")) {
+                ":/shaders/texturedsignalpassthrough.vert")) {
         qDebug() << "WaveformRendererTextured::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
@@ -85,6 +91,10 @@ bool WaveformRendererTextured::loadShaders() {
         return false;
     }
 
+    m_matrixLocation = m_frameShaderProgram->uniformLocation("matrix");
+    m_positionLocation = m_frameShaderProgram->attributeLocation("position");
+    m_texcoordLocation = m_frameShaderProgram->attributeLocation("texcoord");
+
     m_shadersValid = true;
     return true;
 }
@@ -100,8 +110,6 @@ bool WaveformRendererTextured::loadTexture() {
             data = pWaveform->data();
         }
     }
-
-    glEnable(GL_TEXTURE_2D);
 
     if (m_textureId == 0) {
         glGenTextures(1, &m_textureId);
@@ -147,60 +155,49 @@ bool WaveformRendererTextured::loadTexture() {
         m_textureId = 0;
     }
 
-    glDisable(GL_TEXTURE_2D);
-
     return true;
-}
-
-void WaveformRendererTextured::createGeometry() {
-    if (m_unitQuadListId != -1) {
-        return;
-    }
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    m_unitQuadListId = glGenLists(1);
-    glNewList(m_unitQuadListId, GL_COMPILE);
-    {
-        glBegin(GL_QUADS);
-        {
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(-1.0f, -1.0f, 0.0f);
-
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(1.0f, -1.0f, 0.0f);
-
-            glTexCoord2f(1.0, 1.0);
-            glVertex3f(1.0f, 1.0f, 0.0f);
-
-            glTexCoord2f(0.0, 1.0);
-            glVertex3f(-1.0f, 1.0f, 0.0f);
-        }
-        glEnd();
-    }
-    glEndList();
 }
 
 void WaveformRendererTextured::createFrameBuffers() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    // We create a frame buffer that is 4x the size of the renderer itself to
-    // "oversample" the texture relative to the surface we're drawing on.
+    const int baseWidth = static_cast<int>(m_waveformRenderer->getWidth() * devicePixelRatio);
+    const int baseHeight = static_cast<int>(m_waveformRenderer->getHeight() * devicePixelRatio);
+
+    // We create a frame buffer that is up to 4x the size of the renderer
+    // itself to "oversample" the texture relative to the surface we're
+    // drawing on. On a very wide and/or high-DPI surface (e.g. an ultrawide
+    // monitor in fullscreen), naively multiplying by a fixed factor of 4 can
+    // request a framebuffer larger than the GPU's maximum texture size. That
+    // silently produces an invalid framebuffer, which used to be logged and
+    // then used anyway, rendering a blank waveform. Back off the
+    // oversampling factor as needed to fit within the GPU's limit.
+    //
+    // Query through QOpenGLContext::functions() rather than calling
+    // glGetIntegerv() directly: at this point in the renderer's lifecycle
+    // the context is valid but is not necessarily current via the classic
+    // WGL/opengl32.dll thread-local state that a raw call relies on, and
+    // Qt's function table is the safe way to reach it regardless.
+    GLint maxTextureSize = 0;
+    if (QOpenGLContext* context = QOpenGLContext::currentContext()) {
+        context->functions()->glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+    }
+
     constexpr int oversamplingFactor = 4;
-    const auto bufferWidth = oversamplingFactor *
-            static_cast<int>(m_waveformRenderer->getWidth() * devicePixelRatio);
-    const auto bufferHeight = oversamplingFactor *
-            static_cast<int>(
-                    m_waveformRenderer->getHeight() * devicePixelRatio);
+    const int bufferWidth = maxTextureSize > 0
+            ? math_min(baseWidth * oversamplingFactor, maxTextureSize)
+            : baseWidth * oversamplingFactor;
+    const int bufferHeight = maxTextureSize > 0
+            ? math_min(baseHeight * oversamplingFactor, maxTextureSize)
+            : baseHeight * oversamplingFactor;
 
     m_framebuffer = std::make_unique<QOpenGLFramebufferObject>(bufferWidth,
             bufferHeight);
 
     if (!m_framebuffer->isValid()) {
-        qWarning() << "WaveformRendererTextured::createFrameBuffer - frame buffer not valid";
+        qWarning() << "WaveformRendererTextured::createFrameBuffer - frame buffer not valid"
+                   << "requested size" << bufferWidth << "x" << bufferHeight
+                   << "GL_MAX_TEXTURE_SIZE" << maxTextureSize;
+        m_framebuffer.reset();
     }
 }
 
@@ -216,8 +213,8 @@ void WaveformRendererTextured::initializeGL() {
     if (!loadShaders()) {
         return;
     }
+    m_textureShader.init();
     createFrameBuffers();
-    createGeometry();
     if (!loadTexture()) {
         return;
     }
@@ -292,6 +289,13 @@ void WaveformRendererTextured::paintGL() {
         return;
     }
 
+    if (!m_framebuffer || !m_framebuffer->isValid()) {
+        // The framebuffer failed to allocate (e.g. the requested oversampled
+        // size exceeded the GPU's maximum texture size). Skip drawing rather
+        // than blitting an invalid/blank texture.
+        return;
+    }
+
     // NOTE(vRince): completion can change during loadTexture
     // do not remove currenCompletion temp variable !
     const int currentCompletion = pWaveform->getCompletion();
@@ -320,23 +324,18 @@ void WaveformRendererTextured::paintGL() {
 
     // paint into frame buffer
     {
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadIdentity();
+        QMatrix4x4 matrix;
         if (m_orientation == Qt::Vertical) {
-            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
-            glScalef(-1.0f, 1.0f, 1.0f);
+            matrix.rotate(90.0f, 0.0f, 0.0f, 1.0f);
+            matrix.scale(-1.0f, 1.0f, 1.0f);
         }
-        glOrtho(firstVisualIndex, lastVisualIndex, -1.0, 1.0, -10.0, 10.0);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadIdentity();
-        glTranslatef(.0f, .0f, .0f);
+        matrix.ortho(firstVisualIndex, lastVisualIndex, -1.0f, 1.0f, -10.0f, 10.0f);
 
         m_frameShaderProgram->bind();
 
         glViewport(0, 0, m_framebuffer->width(), m_framebuffer->height());
+
+        m_frameShaderProgram->setUniformValue(m_matrixLocation, matrix);
 
         m_frameShaderProgram->setUniformValue("framebufferSize",
                 QVector2D(m_framebuffer->width(), m_framebuffer->height()));
@@ -409,7 +408,6 @@ void WaveformRendererTextured::paintGL() {
                             1.0));
         }
 
-        glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, m_textureId);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -417,47 +415,47 @@ void WaveformRendererTextured::paintGL() {
         m_framebuffer->bind();
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        // glCallList(m_unitQuadListId);
 
-        glBegin(GL_QUADS);
-        {
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(firstVisualIndex, -1.0f, 0.0f);
+        // Quad spanning [firstVisualIndex, lastVisualIndex] x [-1, 1], in
+        // (bottom-left, bottom-right, top-left, top-right) order to draw as
+        // a triangle strip.
+        const float posarray[] = {
+                firstVisualIndex,
+                -1.0f,
+                lastVisualIndex,
+                -1.0f,
+                firstVisualIndex,
+                1.0f,
+                lastVisualIndex,
+                1.0f,
+        };
+        const float texarray[] = {
+                0.0f,
+                0.0f,
+                1.0f,
+                0.0f,
+                0.0f,
+                1.0f,
+                1.0f,
+                1.0f,
+        };
 
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(lastVisualIndex, -1.0f, 0.0f);
+        m_frameShaderProgram->enableAttributeArray(m_positionLocation);
+        m_frameShaderProgram->setAttributeArray(
+                m_positionLocation, GL_FLOAT, posarray, 2);
+        m_frameShaderProgram->enableAttributeArray(m_texcoordLocation);
+        m_frameShaderProgram->setAttributeArray(
+                m_texcoordLocation, GL_FLOAT, texarray, 2);
 
-            glTexCoord2f(1.0, 1.0);
-            glVertex3f(lastVisualIndex, 1.0f, 0.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            glTexCoord2f(0.0, 1.0);
-            glVertex3f(firstVisualIndex, 1.0f, 0.0f);
-        }
-        glEnd();
+        m_frameShaderProgram->disableAttributeArray(m_positionLocation);
+        m_frameShaderProgram->disableAttributeArray(m_texcoordLocation);
 
         m_framebuffer->release();
 
         m_frameShaderProgram->release();
-
-        glPopMatrix();
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
     }
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glOrtho(-1.0, 1.0, -1.0, 1.0, -10.0, 10.0);
-
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glTranslatef(0.0, 0.0, 0.0);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_TEXTURE_2D);
 
     // paint buffer into viewport
     {
@@ -471,45 +469,52 @@ void WaveformRendererTextured::paintGL() {
                         devicePixelRatio * m_waveformRenderer->getWidth()),
                 static_cast<GLsizei>(
                         devicePixelRatio * m_waveformRenderer->getHeight()));
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // Fullscreen quad in NDC, so an identity matrix suffices.
+        const QMatrix4x4 matrix;
+
+        const float posarray[] = {-1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f};
+        const float texarray[] = {0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f};
+
+        m_textureShader.bind();
+
+        const int matrixLocation = m_textureShader.matrixLocation();
+        const int textureLocation = m_textureShader.textureLocation();
+        const int positionLocation = m_textureShader.positionLocation();
+        const int texcoordLocation = m_textureShader.texcoordLocation();
+
+        m_textureShader.setUniformValue(matrixLocation, matrix);
+        m_textureShader.setUniformValue(textureLocation, 0);
+
+        m_textureShader.enableAttributeArray(positionLocation);
+        m_textureShader.setAttributeArray(positionLocation, GL_FLOAT, posarray, 2);
+        m_textureShader.enableAttributeArray(texcoordLocation);
+        m_textureShader.setAttributeArray(texcoordLocation, GL_FLOAT, texarray, 2);
+
         glBindTexture(GL_TEXTURE_2D, m_framebuffer->texture());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glBegin(GL_QUADS);
-        {
-            glTexCoord2f(0.0, 0.0);
-            glVertex3f(-1.0f, -1.0f, 0.0f);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            glTexCoord2f(1.0, 0.0);
-            glVertex3f(1.0f, -1.0f, 0.0f);
+        m_textureShader.disableAttributeArray(positionLocation);
+        m_textureShader.disableAttributeArray(texcoordLocation);
+        m_textureShader.release();
 
-            glTexCoord2f(1.0, 1.0);
-            glVertex3f(1.0f, 1.0f, 0.0f);
-
-            glTexCoord2f(0.0, 1.0);
-            glVertex3f(-1.0f, 1.0f, 0.0f);
-        }
-        glEnd();
+        // Other renderers sharing this widget (e.g. cue/hotcue marks) bind
+        // their own textures through QOpenGLTexture::bind(), which caches
+        // the last-bound texture ID per unit and can skip the real
+        // glBindTexture() call if it believes its texture is already
+        // current. Our raw glBindTexture() calls above bypass that cache
+        // entirely, leaving it out of sync with the GL state we actually
+        // set. Explicitly unbinding here guarantees the next renderer's
+        // QOpenGLTexture::bind() call always performs a real state change
+        // instead of silently no-op'ing against stale bookkeeping.
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
-
-    glDisable(GL_TEXTURE_2D);
-
-    // DEBUG
-    /*
-    glBegin(GL_LINE_LOOP);
-    {
-        glColor4f(0.5,1.0,0.5,0.75);
-        glVertex3f(-1.0f,-1.0f, 0.0f);
-        glVertex3f(1.0f, 1.0f, 0.0f);
-        glVertex3f(1.0f,-1.0f, 0.0f);
-        glVertex3f(-1.0f, 1.0f, 0.0f);
-    }
-    glEnd();
-    */
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
 }
 
 } // namespace allshader
