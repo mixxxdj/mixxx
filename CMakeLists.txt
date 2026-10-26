@@ -3196,8 +3196,7 @@ if(ENGINEPRIME)
     set(DJINTEROP_EXTRA_CMAKE_ARGS "")
     if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
       list(
-        APPEND
-        DJINTEROP_EXTRA_CMAKE_ARGS
+        APPEND DJINTEROP_EXTRA_CMAKE_ARGS
         -DCMAKE_CXX_FLAGS=-Wno-error=deprecated-literal-operator
       )
     endif()
