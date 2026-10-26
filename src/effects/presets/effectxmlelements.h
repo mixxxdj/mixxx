@@ -43,5 +43,6 @@ const QString kParameterId(QStringLiteral("Id"));
 const QString kParameterValue(QStringLiteral("Value"));
 const QString kParameterLinkType(QStringLiteral("LinkType"));
 const QString kParameterLinkInversion(QStringLiteral("LinkInversion"));
+const QString kParameterDisplayOrder(QStringLiteral("DisplayOrder"));
 const QString kParameterHidden(QStringLiteral("Hidden"));
 } // namespace EffectXml
