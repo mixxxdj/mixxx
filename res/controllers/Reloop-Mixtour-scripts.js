@@ -329,7 +329,11 @@ ReloopMixtour.Mixer = class extends components.Deck {
         this.pflMeter = new ReloopMixtour.Component({
             midi: [0x90 + midiChannel, 0x11],
             key: "vu_meter",
-            max: 0x68
+            max: 0x68,
+            disconnect: function() {
+                components.Component.prototype.disconnect.call(this);
+                this.output(0);
+            },
         });
 
         this.masterMeter = new ReloopMixtour.Component({
