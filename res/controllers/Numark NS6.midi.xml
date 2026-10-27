@@ -832,6 +832,13 @@
 
       <control>
           <group>[Skin]</group>
+          <key>show_samplers</key>
+          <description>Toggle Samplers Container</description>
+          <status>0x90</status>
+          <midino>0x2E</midino>
+      </control>
+      <control>
+          <group>[Skin]</group>
           <key>NumarkNS6.toggleEffects</key>
           <description>Toggle Effects Container</description>
           <status>0x90</status>
@@ -1557,16 +1564,6 @@
         <options><script-binding /></options>
       </control>
 
-
-      <control>
-        <group>[Master]</group>
-        <key>NumarkNS6.Mixer.pflVuMeter</key>
-        <status>0xB0</status>
-        <midino>0x5C</midino>
-        <options>
-          <script-binding />
-        </options>
-      </control>
 
       <control>
         <group>[Channel1]</group>
@@ -2602,16 +2599,14 @@
         <midino>0x43</midino>
         <options><script-binding/></options>
         <description>NS6 MASTER knob: CC 67 controls Mixxx Master volume</description>
-      </control>
-      <control>
+      </control>      <control>
         <group>[Master]</group>
         <key>NumarkNS6.headGain</key>
         <status>0xB0</status>
         <midino>0x42</midino>
         <options><script-binding/></options>
         <description>NS6 headphone level knob: CC 66 controls Mixxx headphone volume</description>
-      </control>
-      <control>
+      </control>      <control>
         <group>[Master]</group>
         <key>NumarkNS6.headMixMSB</key>
         <status>0xB0</status>
@@ -2627,6 +2622,7 @@
         <options><script-binding/></options>
         <description>NS6 headphone CUE/MIX knob: CC 50 LSB</description>
       </control>
+
       <control>
         <group>[Master]</group>
         <key>NumarkNS6.Mixer.splitCueSwitch.input</key>
