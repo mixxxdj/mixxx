@@ -10,6 +10,13 @@ import QtQuick.Layouts
 Rectangle {
     id: root
 
+    readonly property real referencePointSize: 13 // placeholder, tested on macOS
+    readonly property real fontScale: Mixxx.FontScale.basePointSize / referencePointSize
+
+    function px(n) {
+        return Math.round(n * fontScale);
+    }
+
     enum DeckSize {
         Mini = 0,
         Compact = 1,
@@ -1366,7 +1373,7 @@ Rectangle {
                 Text {
                     color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
-                    font.pixelSize: 13
+                    font.pixelSize: root.px(13)
                     text: "decks"
                 }
             }
@@ -1379,7 +1386,7 @@ Rectangle {
                 Text {
                     color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
-                    font.pixelSize: 12
+                    font.pixelSize: root.px(12)
                     text: "Deck Size:"
                 }
                 Item {
@@ -1402,7 +1409,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         color: hideMixerMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
-                        font.pixelSize: 12
+                        font.pixelSize: root.px(12)
                         text: "hide mixer to select"
                     }
 
@@ -1688,7 +1695,7 @@ Rectangle {
                     Text {
                         color: LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
-                        font.pixelSize: 13
+                        font.pixelSize: root.px(13)
                         text: "units"
                     }
                 }
@@ -1808,7 +1815,7 @@ Rectangle {
                         Layout.leftMargin: 5
                         color: LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
-                        font.pixelSize: 13
+                        font.pixelSize: root.px(13)
                         text: "sample decks"
                     }
                 }
@@ -1845,7 +1852,7 @@ Rectangle {
                         anchors.fill: parent
                         color: loadBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
-                        font.pixelSize: 12
+                        font.pixelSize: root.px(12)
                         horizontalAlignment: Text.AlignHCenter
                         text: "Load"
                         verticalAlignment: Text.AlignVCenter
@@ -1868,7 +1875,7 @@ Rectangle {
                     Layout.preferredWidth: 6
                     color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
-                    font.pixelSize: 12
+                    font.pixelSize: root.px(12)
                     horizontalAlignment: Text.AlignHCenter
                     text: "/"
                     verticalAlignment: Text.AlignVCenter
@@ -1891,7 +1898,7 @@ Rectangle {
                         anchors.fill: parent
                         color: saveBankMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                         font.family: "Open Sans"
-                        font.pixelSize: 12
+                        font.pixelSize: root.px(12)
                         horizontalAlignment: Text.AlignHCenter
                         text: "Save"
                         verticalAlignment: Text.AlignVCenter
@@ -1913,7 +1920,7 @@ Rectangle {
                     Layout.alignment: Qt.AlignVCenter
                     color: LateNightTheme.toolbarSettingsTextColor
                     font.family: "Open Sans"
-                    font.pixelSize: 12
+                    font.pixelSize: root.px(12)
                     horizontalAlignment: Text.AlignLeft
                     text: "Sampler Bank"
                     Layout.fillWidth: true
@@ -1986,7 +1993,7 @@ Rectangle {
             color: broadcastIndicator.status > 0 ? LateNightTheme.toolbarButtonActiveTextColor : LateNightTheme.toolbarButtonInactiveTextColor
             font {
                 family: "Open Sans"
-                pixelSize: 11
+                pixelSize: root.px(11)
                 styleName: "Bold"
                 weight: Font.Bold
             }
@@ -2002,7 +2009,7 @@ Rectangle {
         Layout.preferredWidth: 82
         color: LateNightTheme.toolbarClockTextColor
         font.family: "Open Sans"
-        font.pixelSize: 16
+        font.pixelSize: root.px(16)
         horizontalAlignment: Text.AlignHCenter
         text: "--:-- --"
         verticalAlignment: Text.AlignVCenter
@@ -2061,7 +2068,7 @@ Rectangle {
             elide: Text.ElideRight
             font {
                 family: "Open Sans"
-                pixelSize: 11
+                pixelSize: root.px(11)
                 styleName: "Bold"
                 weight: Font.Bold
             }
@@ -2170,7 +2177,7 @@ Rectangle {
                 color: LateNightTheme.toolbarLatencyLabelColor
                 font.bold: LateNightTheme.isClassic
                 font.family: "Open Sans"
-                font.pixelSize: LateNightTheme.isClassic ? 10 : 8
+                font.pixelSize: root.px(LateNightTheme.isClassic ? 10 : 8)
                 height: 10
                 horizontalAlignment: Text.AlignHCenter
                 text: "Buffer %"
@@ -2212,7 +2219,7 @@ Rectangle {
                 color: recordingIndicator.active ? LateNightTheme.toolbarButtonActiveTextColor : LateNightTheme.toolbarButtonInactiveTextColor
                 elide: Text.ElideRight
                 font.family: "Open Sans"
-                font.pixelSize: 16
+                font.pixelSize: root.px(16)
                 horizontalAlignment: Text.AlignHCenter
                 text: recordingIndicator.status === 2.0 || recordingIndicator.status === 3.0 ? recordingIndicator.durationText : "REC"
                 verticalAlignment: Text.AlignVCenter
@@ -2287,7 +2294,7 @@ Rectangle {
             color: appMenuTabMouseArea.containsMouse || appMenuTab.selected || appMenuTab.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
-            font.pixelSize: 12
+            font.pixelSize: root.px(12)
             text: appMenuTab.text
             width: parent.width - anchors.leftMargin
         }
@@ -2407,7 +2414,7 @@ Rectangle {
             color: appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
-            font.pixelSize: 12
+            font.pixelSize: root.px(12)
             text: appMenuAction.text
         }
         Text {
@@ -2418,7 +2425,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             color: appMenuActionMouseArea.containsMouse || appMenuAction.selected || appMenuAction.activeFocus ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarMenuTextColor
             font.family: "Open Sans"
-            font.pixelSize: 10
+            font.pixelSize: root.px(10)
             text: appMenuAction.shortcut
             visible: text.length > 0
         }
@@ -2459,7 +2466,7 @@ Rectangle {
             anchors.centerIn: parent
             color: inlineMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : (inlineChoice.checked ? LateNightTheme.toolbarSettingsTextColor : LateNightTheme.toolbarMenuDisabledTextColor)
             font.family: "Open Sans"
-            font.pixelSize: 13
+            font.pixelSize: root.px(13)
             font.underline: inlineChoice.checked && !inlineMouseArea.containsMouse
             text: inlineChoice.text
         }
@@ -2481,7 +2488,7 @@ Rectangle {
             color: LateNightTheme.toolbarSettingsTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
-            font.pixelSize: 13
+            font.pixelSize: root.px(13)
             text: section.title
             visible: section.showTitle
         }
@@ -2492,7 +2499,7 @@ Rectangle {
 
         color: hovered ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
         font.family: "Open Sans"
-        font.pixelSize: 13
+        font.pixelSize: root.px(13)
         horizontalAlignment: Text.AlignHCenter
         text: checked ? "\u2714" : "\u2610"
         verticalAlignment: Text.AlignVCenter
@@ -2555,7 +2562,7 @@ Rectangle {
                 color: headerToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
                 elide: Text.ElideRight
                 font.family: "Open Sans"
-                font.pixelSize: 13
+                font.pixelSize: root.px(13)
                 text: sectionToggle.title
                 width: parent.width - anchors.leftMargin
             }
@@ -2610,7 +2617,7 @@ Rectangle {
             color: menuToggleMouseArea.containsMouse ? LateNightTheme.toolbarMenuHoverTextColor : LateNightTheme.toolbarSettingsTextColor
             elide: Text.ElideRight
             font.family: "Open Sans"
-            font.pixelSize: 13
+            font.pixelSize: root.px(13)
             text: parent.text
             width: parent.width - anchors.leftMargin
         }
