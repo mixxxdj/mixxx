@@ -90,11 +90,15 @@ def parse_changelog(content, development_release_date):
         for tag in soup.find_all("code"):
             tag.replace_with(tag.get_text())
 
-        desc = soup.new_tag("description")
-        desc.extend(soup.contents)
-
         release = etree.Element("release", attrib=attrib)
-        release.append(etree.fromstring(desc.prettify()))
+
+        # The description is optional, but if present it must not be empty.
+        # Otherwise, `appstreamcli validate` will complain about releases
+        # without any changelog entries yet (e.g. the upcoming release).
+        if soup.get_text(strip=True):
+            desc = soup.new_tag("description")
+            desc.extend(soup.contents)
+            release.append(etree.fromstring(desc.prettify()))
         yield release
 
 
