@@ -1076,9 +1076,8 @@ void DlgPrefMixer::slotEqKillAutoResetToggled(bool checked) {
 }
 
 void DlgPrefMixer::updateEqKillAutoResetState() {
-    const bool eqReset = CheckBoxEqAutoReset->isChecked();
-    CheckBoxEqKillAutoReset->setEnabled(!eqReset);
-    CheckBoxEqKillAutoReset->setChecked(eqReset || m_eqKillAutoReset);
+    CheckBoxEqKillAutoReset->setEnabled(!m_eqAutoReset);
+    CheckBoxEqKillAutoReset->setChecked(m_eqAutoReset || m_eqKillAutoReset);
 }
 
 void DlgPrefMixer::slotGainAutoResetToggled(bool checked) {
