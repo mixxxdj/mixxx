@@ -57,7 +57,7 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
             qreal devicePixelRatio) {
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
         const float epsilon = 1e-6f;
-        auto roundToPixel = createFunctionRoundToPixel(devicePixelRatio);
+        auto roundToPixel = createFunctionRoundToPixel(static_cast<float>(devicePixelRatio));
         DEBUG_ASSERT(std::abs(x - roundToPixel(x)) < epsilon);
         DEBUG_ASSERT(std::abs(yOffset - roundToPixel(yOffset)) < epsilon);
 #endif
