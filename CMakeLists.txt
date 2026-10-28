@@ -130,7 +130,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
           )
           message(
             STATUS
-            "Retry downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
+            "Retrying download of file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
           )
         else()
           message(
