@@ -60,6 +60,8 @@ constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
 
+constexpr char kCrateIdProp[] = "crateId";
+
 const QString samplerTrString(int i) {
     return QObject::tr("Sampler %1").arg(i);
 }
@@ -1649,7 +1651,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
         auto pCheckBox = make_parented<WMenuCheckBox>(
                 mixxx::escapeTextPropertyWithoutShortcuts(crate.getName()),
                 m_pCrateMenu);
-        pCheckBox->setProperty("crateId", QVariant::fromValue(crate.getId()));
+        pCheckBox->setProperty(kCrateIdProp, QVariant::fromValue(crate.getId()));
         pCheckBox->setEnabled(!crate.isLocked());
         // Strangely, the normal styling of QActions does not automatically
         // apply to QWidgetActions. The :selected pseudo-state unfortunately
@@ -1678,7 +1680,13 @@ void WTrackMenu::slotPopulateCrateMenu() {
         }
 
         m_pCrateMenu->addAction(pAction.get());
-        connect(pAction.get(), &QAction::triggered, this, [this, pCheckBox{pCheckBox.get()}] { updateSelectionCrates(pCheckBox); });
+        connect(pAction.get(),
+                &QAction::triggered,
+                this,
+                [this, pCheckBox{pCheckBox.get()}] {
+                    pCheckBox->toggle();
+                    updateSelectionCrates(pCheckBox);
+                });
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
         connect(pCheckBox.get(),
@@ -1701,10 +1709,16 @@ void WTrackMenu::slotPopulateCrateMenu() {
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
-        qWarning() << "crateId is not of CrateId type";
+        qWarning() << "WTrackMenu::updateSelectionCrates:"
+                   << "widget is not a QCheckbox";
         return;
     }
-    CrateId crateId = pCheckBox->property("crateId").value<CrateId>();
+    CrateId crateId = pCheckBox->property(kCrateIdProp).value<CrateId>();
+    VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
+        qWarning() << "WTrackMenu::updateSelectionCrates:"
+                   << "checkbox property is not of CrateId type";
+        return;
+    }
 
     const TrackIdList trackIds = getTrackIds();
 
@@ -1716,23 +1730,14 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     // we need to disable tristate again as the mixed state will now be gone and can't be brought back
     pCheckBox->setTristate(false);
     if (!pCheckBox->isChecked()) {
-        if (crateId.isValid()) {
-            m_pLibrary->trackCollectionManager()
-                    ->internalCollection()
-                    ->removeCrateTracks(crateId, trackIds);
-        }
+        m_pLibrary->trackCollectionManager()
+                ->internalCollection()
+                ->removeCrateTracks(crateId, trackIds);
     } else {
-        if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
-            crateId = CrateFeatureHelper(
-                    m_pLibrary->trackCollectionManager()->internalCollection(), m_pConfig)
-                              .createEmptyCrate();
-        }
-        if (crateId.isValid()) {
-            m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
-            m_pLibrary->trackCollectionManager()
-                    ->internalCollection()
-                    ->addCrateTracks(crateId, trackIds);
-        }
+        m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
+        m_pLibrary->trackCollectionManager()
+                ->internalCollection()
+                ->addCrateTracks(crateId, trackIds);
     }
 }
 

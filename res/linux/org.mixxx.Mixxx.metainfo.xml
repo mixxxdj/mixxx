@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2026-09-06" timestamp="1788699229">
+    <release version="2.6.0" type="development" date="2026-10-22" timestamp="1792663166">
       <description>
  <p>
   STEM file support
@@ -1743,6 +1743,335 @@
  </ul>
 </description>
     </release>
+    <release version="2.5.7" type="development" date="2026-10-22" timestamp="1792663166">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Allen &amp; Heath Xone K3: Update midi mappings (backport
+   #16453
+   )
+   #16496
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: fix bug with preview deck
+   #16844
+  </li>
+  <li>
+   Numark Mixtrack 3: fix settings bool evaluation
+   #16708
+  </li>
+  <li>
+   Pioneer DDJ-400: unmap headphones mixing knob
+   #17121
+  </li>
+  <li>
+   Vestax VCI-400: fix VU meters, midi.sendShortMsg()
+   #16180
+  </li>
+ </ul>
+ <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Fix brake in reverse playback
+   #17295
+  </li>
+  <li>
+   Clear focus on the effect unit being switched away from
+   #17071
+   #17070
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Fix color column sorting for dirty tracks
+   #16662
+  </li>
+  <li>
+   Fix relocate directory: remove old dir if new is child of a root dir
+   #16203
+  </li>
+  <li>
+   Fix library scanner: allow resuming canceled scan by clearing hashes of unfinished dirs
+   #16300
+   #16198
+  </li>
+  <li>
+   Fix missing tracks showing up in Hidden, Missing empty
+   #16419
+  </li>
+  <li>
+   Adjust FocusWidget: GoToItem emulates Space key in WSearchRelatedTracksMenu
+   #13282
+  </li>
+  <li>
+   Fixing last played time being wiped on history deletion
+   #16178
+   #14427
+   #16911
+  </li>
+  <li>
+   Fix false-positive missing tracks
+   #16685
+   #13533
+  </li>
+  <li>
+   Rekordbox: detect databases in hidden .PIONEER directory
+   #16895
+   #16894
+  </li>
+  <li>
+   Track table header: throw warning when storing the state fails
+   #17072
+  </li>
+  <li>
+   Row colors: fix missing opacity of track colors
+   #17043
+   #17037
+   #17251
+  </li>
+  <li>
+   Row colors: fix missing library feedback when resetting the color of tracks
+   #17170
+   #10241
+   #12758
+  </li>
+  <li>
+   Tracks view: enforce selection on cursor move with just one row and no selection
+   #17273
+  </li>
+  <li>
+   Skip beat grid creation when importing a BPM without a valid sample rate
+   #17282
+   16846
+  </li>
+  <li>
+   Track menu &gt; Crates: Enter toggles checkbox
+   #17320
+  </li>
+  <li>
+   Track header menu: fix Enter keypress behavior
+   #17324
+  </li>
+ </ul>
+ <p>
+  Engine
+ </p>
+ <ul>
+  <li>
+   EngineBuffer: Reset sample counter after indicator update
+   #16245
+  </li>
+  <li>
+   Avoid spurious play control update
+   #16912
+   #16910
+  </li>
+  <li>
+   Respect
+   repeat
+   in slip mode when enabled before slip, like looping
+   #16982
+  </li>
+  <li>
+   Mixdown headphone and booth outputs in mono mode
+   #17013
+   #16942
+  </li>
+  <li>
+   Clear Booth buffer if it is not used, to fix audible artefacts after disabling
+   #17028
+  </li>
+  <li>
+   Don't reset
+   beatloop_size
+   to 1/32 when loop doesn't match any of the pre-defined sizes
+   #16881
+   #16880
+  </li>
+  <li>
+   Fix Hotcue 350 hours before song start, caused by a race condition with quantize control
+   #16743
+   #16320
+  </li>
+ </ul>
+ <p>
+  Preferences
+ </p>
+ <ul>
+  <li>
+   Fix warning/violated debug assertion when opening Preferences (backport
+   #16257
+   )
+   #16274
+  </li>
+  <li>
+   Color Preferences: avoid crash when saving palette after color row drag'n'drop
+   #17228
+  </li>
+ </ul>
+ <p>
+  Target support
+ </p>
+ <ul>
+  <li>
+   Support Ubuntu Stonking 26.10
+   #16507
+   #16619
+   #16614
+  </li>
+  <li>
+   Retire Ubuntu Questing 25.10
+   #16780
+  </li>
+  <li>
+   Support Windows 11 25H2
+   #16401
+  </li>
+  <li>
+   Add Arch Linux build environment script
+   #16594
+  </li>
+  <li>
+   Fix race condition in fonts-ubuntu check in Debian environment script
+   #16575
+  </li>
+  <li>
+   Fix various warnings when using recent build environments
+   #16537
+   #16514
+   #16592
+   #16368
+  </li>
+  <li>
+   Flatpak: fix building with Soundtouch, update to 2.4.1
+   #16720
+  </li>
+  <li>
+   Flatpak: prevent branches to delete each other
+   #16779
+   #16810
+  </li>
+  <li>
+   Flatpak: generate public key from Github secrets.
+   #17239
+   #17257
+  </li>
+  <li>
+   Fix Upload PPA issues
+   #16990
+   #16981
+   #17107
+   #17124
+  </li>
+ </ul>
+ <p>
+  Miscellaneous
+ </p>
+ <ul>
+  <li>
+   macOS: fix system theme in preferences after switch rendering and icons
+   #16661
+   #13643
+  </li>
+  <li>
+   macOS: request security scoped bookmark for files in imported playlists
+   #16369
+  </li>
+  <li>
+   macOS: Discover both Effect and MusicEffect AudioUnits in one pass
+   #16287
+  </li>
+  <li>
+   Fix killing Analysis worker threads during shutdown, possible data loss.
+   #16064
+  </li>
+  <li>
+   MIDI: guard against null script engine in makeInputHandler
+   #16003
+  </li>
+  <li>
+   FFmpeg: fix of gap bug fix
+   #16439
+   #10464
+  </li>
+  <li>
+   FFmpeg: fix DEBUG_ASSERT when reading past the end
+   #17096
+  </li>
+  <li>
+   FFmpeg: use the default AAC decoder and warn about known seeking issues.
+   #17218
+  </li>
+  <li>
+   Fix flaky unittests test
+   #16275
+   #12554
+   #16332
+   #16290
+   #16162
+   #16693
+   #17003
+   #17260
+   #17337
+  </li>
+  <li>
+   Run all tests
+   #17058
+  </li>
+  <li>
+   Skins: Fix tiny battery icons
+   #16801
+  </li>
+  <li>
+   Fix broadcasting using libshout-idjc &gt;= 2.4.6, by using the correct usage flag
+   #16816
+   #16783
+   #16592
+  </li>
+  <li>
+   Fix SoundSourceProxyTest.openEmptyFile on Qt 6.11.1
+   #17116
+  </li>
+  <li>
+   Speed up CI
+   #17152
+   #17145
+   #17147
+   #17137
+   #17224
+   #17259
+   #17258
+   #17226
+  </li>
+  <li>
+   Fix warning when parsing macOs music xml
+   #17084
+  </li>
+  <li>
+   Vinyl Control: fix reverse decoder for SWITCH_POLARITY timecodes
+   #17242
+   #16259
+  </li>
+  <li>
+   Vinyl Control: fix vinyl control startup sample rate
+   #17188
+  </li>
+  <li>
+   Fix MIDI learning wizard not showing up
+   #17343
+   #17155
+  </li>
+ </ul>
+</description>
+    </release>
     <release version="2.5.6" type="stable" date="2026-03-25" timestamp="1774396800">
       <description>
  <p>
@@ -1950,7 +2279,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-09-06" timestamp="1788699229">
+    <release version="2.5.5" type="development" date="2026-10-22" timestamp="1792663166">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.
@@ -6297,7 +6626,7 @@
   </li>
   <li>
    macOS: Visual glitches with the main EQ sliders
-   #12517
+   #12630
   </li>
   <li>
    Linux: possible crash when enabling a MIDI controller
