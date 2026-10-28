@@ -16,6 +16,7 @@ const QString SoundManagerConfig::kAPIAlsa = QStringLiteral("ALSA");
 const QString SoundManagerConfig::kAPIOss = QStringLiteral("OSS");
 const QString SoundManagerConfig::kAPIAsio = QStringLiteral("ASIO");
 const QString SoundManagerConfig::kAPIDirectSound = QStringLiteral("Windows DirectSound");
+const QString SoundManagerConfig::kAPIWasapi = QStringLiteral("Windows WASAPI");
 // NOTE: This is what our patched version of PortAudio uses for the Core Audio
 // backend on iOS. If/when upstream supports iOS officially
 // (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
@@ -536,14 +537,16 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
             }
 #endif
 #ifdef __WINDOWS__
-            //Existence of ASIO doesn't necessarily mean you've got ASIO devices
-            //Do something more advanced one day if you like - Adam
-            // hoping this counts as more advanced, tests if ASIO is an option
-            // and then that we have at least one ASIO output device -- bkgood
+            // WASAPI works with the built-in audio of any Windows machine and
+            // shares the device with other applications. ASIO is not a safe
+            // default: most built-in audio has no ASIO driver, and one that
+            // does can still reject every sample rate (Realtek ASIO does),
+            // which left a fresh install without sound. DirectSound is a
+            // legacy API, kept only for a system without WASAPI
             auto deviceList = soundManager->getDeviceList(
-                    SoundManagerConfig::kAPIAsio, true, false);
-            if (apiList.contains(SoundManagerConfig::kAPIAsio) && !deviceList.isEmpty()) {
-                m_api = SoundManagerConfig::kAPIAsio;
+                    SoundManagerConfig::kAPIWasapi, true, false);
+            if (apiList.contains(SoundManagerConfig::kAPIWasapi) && !deviceList.isEmpty()) {
+                m_api = SoundManagerConfig::kAPIWasapi;
             } else {
                 m_api = SoundManagerConfig::kAPIDirectSound;
             }
@@ -562,19 +565,37 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         clearInputs();
         const QList<SoundDevicePointer> outputDevices =
                 soundManager->getDeviceList(m_api, true, false);
-        if (!outputDevices.isEmpty()) {
-            for (const auto& pDevice : outputDevices) {
-                if (pDevice->getNumOutputChannels() < 2) {
-                    continue;
-                }
-                AudioOutput mainOut(AudioPathType::Main,
-                        0,
-                        mixxx::audio::ChannelCount::stereo(),
-                        0);
-                addOutput(pDevice->getDeviceId(), mainOut);
-                defaultSampleRate = pDevice->getDefaultSampleRate();
+        SoundDevicePointer pMainDevice;
+#ifdef __WINDOWS__
+        // Unlike DirectSound, WASAPI does not list the system's default
+        // output first, so pick it explicitly.
+        const int defaultOutputIndex =
+                soundManager->getDefaultOutputDeviceIndex(m_api);
+#endif
+        for (const auto& pDevice : outputDevices) {
+            if (pDevice->getNumOutputChannels() < 2) {
+                continue;
+            }
+            if (!pMainDevice) {
+                pMainDevice = pDevice;
+            }
+#ifdef __WINDOWS__
+            if (defaultOutputIndex >= 0 &&
+                    pDevice->getDeviceId().deviceIndex == defaultOutputIndex) {
+                pMainDevice = pDevice;
                 break;
             }
+#else
+            break;
+#endif
+        }
+        if (pMainDevice) {
+            AudioOutput mainOut(AudioPathType::Main,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    0);
+            addOutput(pMainDevice->getDeviceId(), mainOut);
+            defaultSampleRate = pMainDevice->getDefaultSampleRate();
         }
     }
     if (flags & SoundManagerConfig::OTHER) {

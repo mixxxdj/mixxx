@@ -9,5 +9,9 @@ if(WIN32)
     PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/packaging/wix"
       PREFIX ""
+      # Use static linking of the CRT,
+      # because the MSI-Installer must also work on systems
+      # without the Microsoft Visual C++ Redistributable
+      MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
   )
 endif()
