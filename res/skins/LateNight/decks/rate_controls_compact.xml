@@ -51,6 +51,10 @@
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
                         </Connection>
+                        <Connection>
+                          <ConfigKey>[Skin],show_bpm</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
                       </Number>
                       <NumberRate>
                         <TooltipId>rate_display</TooltipId>
