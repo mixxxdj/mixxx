@@ -39,10 +39,8 @@ const SINT kMaxReadFrameCount = kBufferSizes[sizeof(kBufferSizes) / sizeof(kBuff
 
 const CSAMPLE kMaxDecodingError = 0.01f;
 
-// Must not query the registered SoundSource providers, because it is also used
-// to instantiate the parametrized tests during static initialization.
-std::vector<std::string> availableFileNameSuffixes() {
-    return {
+std::vector<std::string> supportedFileNameSuffixes() {
+    const std::vector<std::string> availableFileNameSuffixes = {
             ".aiff",
             "-alac.caf",
             ".flac",
@@ -73,6 +71,22 @@ std::vector<std::string> availableFileNameSuffixes() {
             ".wma",
             ".wv",
     };
+
+    // Parameter generators run in InitGoogleTest(), after static initialization.
+    // Register providers here so discovery also excludes unsupported formats.
+    struct ProviderRegistration : SoundSourceProviderRegistration {};
+    const ProviderRegistration registration;
+    std::vector<std::string> supportedFileNameSuffixes;
+    for (const auto& suffix : availableFileNameSuffixes) {
+        const auto fileNameSuffix = QString::fromStdString(suffix);
+        // Check the whole file name, including compound suffixes like .stem.mp4.
+        if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
+            supportedFileNameSuffixes.push_back(suffix);
+        } else {
+            qInfo() << "Ignoring unsupported file type" << fileNameSuffix;
+        }
+    }
+    return supportedFileNameSuffixes;
 }
 
 } // anonymous namespace
@@ -80,22 +94,11 @@ std::vector<std::string> availableFileNameSuffixes() {
 class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
   protected:
     static QStringList getFileNameSuffixes() {
-        const std::vector<std::string> availableFileNameSuffixes =
-                ::availableFileNameSuffixes();
-
-        QStringList supportedFileNameSuffixes;
-        for (const auto& suffix : availableFileNameSuffixes) {
-            const auto fileNameSuffix = QString::fromStdString(suffix);
-            // We need to check for the whole file name here!
-            if (SoundSourceProxy::isFileNameSupported(fileNameSuffix)) {
-                supportedFileNameSuffixes << fileNameSuffix;
-            } else {
-                qInfo()
-                        << "Ignoring unsupported file type"
-                        << fileNameSuffix;
-            }
+        QStringList fileNameSuffixes;
+        for (const auto& suffix : supportedFileNameSuffixes()) {
+            fileNameSuffixes << QString::fromStdString(suffix);
         }
-        return supportedFileNameSuffixes;
+        return fileNameSuffixes;
     }
 
     QStringList getFilePaths() {
@@ -227,12 +230,6 @@ class SoundSourceProxyFileTest
         : public SoundSourceProxyTest,
           public ::testing::WithParamInterface<std::string> {
   protected:
-    void SetUp() override {
-        if (!SoundSourceProxy::isFileNameSupported(getFileNameSuffix())) {
-            GTEST_SKIP() << "Unsupported file type" << GetParam();
-        }
-    }
-
     QString getFileNameSuffix() const {
         return QString::fromStdString(GetParam());
     }
@@ -245,7 +242,7 @@ class SoundSourceProxyFileTest
 INSTANTIATE_TEST_SUITE_P(
         SoundSourceProxyTest,
         SoundSourceProxyFileTest,
-        ::testing::ValuesIn(availableFileNameSuffixes()),
+        ::testing::ValuesIn(supportedFileNameSuffixes()),
         [](const testing::TestParamInfo<SoundSourceProxyFileTest::ParamType>& info) {
             // Test names may only contain alphanumeric characters and underscores
             std::string name;
