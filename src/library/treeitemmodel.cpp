@@ -107,19 +107,20 @@ QModelIndex TreeItemModel::index(int row, int column, const QModelIndex &parent)
         return QModelIndex();
     }
 
-    TreeItem *parentItem;
-    if (parent.isValid()) {
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
-    } else {
-        parentItem = getRootItem();
-    }
+    TreeItem* pParentItem = parent.isValid()
+            ? static_cast<TreeItem*>(parent.internalPointer())
+            : m_pRootItem.get();
 
-    TreeItem *childItem = parentItem->child(row);
-    if (childItem) {
-        return createIndex(row, column, childItem);
-    } else {
+    if (!pParentItem) {
         return QModelIndex();
     }
+
+    TreeItem* pChildItem = pParentItem->child(row);
+    if (pChildItem) {
+        return createIndex(row, column, pChildItem);
+    }
+
+    return QModelIndex();
 }
 
 QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
@@ -127,15 +128,19 @@ QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
         return QModelIndex();
     }
 
-    TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
-    TreeItem *parentItem = childItem->parent();
-    if (!parentItem) {
+    TreeItem* pChildItem = static_cast<TreeItem*>(index.internalPointer());
+    if (!pChildItem) {
         return QModelIndex();
-    } else if (parentItem == getRootItem()) {
-        return createIndex(0, 0, getRootItem());
-    } else {
-        return createIndex(parentItem->parentRow(), 0, parentItem);
     }
+
+    TreeItem* pParentItem = pChildItem->parent();
+
+    if (!pParentItem || pParentItem == m_pRootItem.get()) {
+        return QModelIndex();
+    }
+
+
+    return createIndex(pParentItem->parentRow(), 0, pParentItem);
 }
 
 int TreeItemModel::rowCount(const QModelIndex& parent) const {
@@ -143,13 +148,11 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
         return 0;
     }
 
-    TreeItem* pParentItem;
-    if (parent.isValid()) {
-        pParentItem = static_cast<TreeItem*>(parent.internalPointer());
-    } else {
-        pParentItem = getRootItem();
-    }
-    return pParentItem->childRows();
+    TreeItem* pParentItem = parent.isValid()
+            ? static_cast<TreeItem*>(parent.internalPointer())
+            : m_pRootItem.get();
+
+    return pParentItem ? pParentItem->childRows() : 0;
 }
 
 // Populates the model and notifies the view.
