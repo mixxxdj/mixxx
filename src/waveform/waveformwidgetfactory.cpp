@@ -1224,7 +1224,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createVSyncTestWaveformWidget(
 #ifdef MIXXX_USE_QOPENGL
     return new GLVSyncTestWidget(pViewer->getGroup(), pViewer);
 #else
-    return new EmptyWaveformWidget(viewer->getGroup(), viewer);
+    return new EmptyWaveformWidget(pViewer->getGroup(), pViewer);
 #endif
 }
 

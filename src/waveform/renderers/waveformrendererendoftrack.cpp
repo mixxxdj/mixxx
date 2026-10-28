@@ -82,9 +82,9 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
     painter->setBrush(m_color);
     painter->drawRects(m_backRects);
     // This is significant slower
-    //painter->setOpacity(0.5 * criticalIntensity * blinkIntensity);
-    //painter->fillRect(m_waveformRenderer->getWidth()/2, 1,
-    //        m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2,
+    // painter->setOpacity(0.5 * criticalIntensity * blinkIntensity);
+    // painter->fillRect(m_pWaveformRenderer->getWidth()/2, 1,
+    //        m_pWaveformRenderer->getWidth() - 2, m_pWaveformRenderer->getHeight() - 2,
     //        m_gradient);
 }
 
@@ -106,8 +106,8 @@ void WaveformRendererEndOfTrack::generateBackRects() {
         }
     }
     // This is significant slower
-    //m_gradient.setStart(m_waveformRenderer->getWidth() / 2, 0);
-    //m_gradient.setFinalStop(m_waveformRenderer->getWidth(), 0);
-    //m_gradient.setColorAt(0, Qt::transparent);
-    //m_gradient.setColorAt(1, m_color);
+    // m_gradient.setStart(m_pWaveformRenderer->getWidth() / 2, 0);
+    // m_gradient.setFinalStop(m_pWaveformRenderer->getWidth(), 0);
+    // m_gradient.setColorAt(0, Qt::transparent);
+    // m_gradient.setColorAt(1, m_color);
 }
