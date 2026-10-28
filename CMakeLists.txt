@@ -2551,6 +2551,7 @@ if(WIN32)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY true)
   endif()
+  set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
   include(InstallRequiredSystemLibraries)
 endif()
 
@@ -2874,6 +2875,7 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/basetrackcache_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp
@@ -2889,6 +2891,7 @@ if(BUILD_TESTING)
     src/test/colorconfig_test.cpp
     src/test/colormapperjsproxy_test.cpp
     src/test/colorpalette_test.cpp
+    src/test/colorpaletteeditormodel_test.cpp
     src/test/configobject_test.cpp
     src/test/controller_mapping_validation_test.cpp
     src/test/controller_mapping_settings_test.cpp

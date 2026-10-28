@@ -1174,7 +1174,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    WaveformRendererSignalBase::Options options = getWaveformOptions();
+    // The stored options may contain flags that are not supported by the
+    // current GL context, e.g. HighDetail from a previous desktop OpenGL
+    // session when running on OpenGL ES. Mask them out here, so an
+    // unsupported renderer like WaveformRendererTextured is never created.
+    WaveformRendererSignalBase::Options options = getWaveformOptions() &
+            getWaveformOptionsSupportedByType(type, WaveformWidgetBackend::AllShader);
     return new allshader::WaveformWidget(viewer, type, viewer->getGroup(), options);
 }
 

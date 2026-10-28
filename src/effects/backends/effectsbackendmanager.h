@@ -10,6 +10,12 @@ class EffectProcessor;
 class EffectsBackendManager {
   public:
     EffectsBackendManager();
+
+    /// Audio Units are instantiated asynchronously and out-of-process, which
+    /// is slow and leaves pending instantiations behind when a test process
+    /// exits. No test needs them, so tests disable loading them entirely.
+    static void disableAudioUnitsDuringTests();
+
     ~EffectsBackendManager() = default;
 
     const QList<EffectManifestPointer>& getManifests() const {
