@@ -8,7 +8,88 @@ const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 const defaultPadMode = engine.getSetting("defaultPadMode");
 const useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
+const useAdditionalScratchbanks = engine.getSetting("useAdditionalScratchbanks");
 const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratching");
+
+/**
+ * Auto-scratch routines for Scratch Banks mode (momentary).
+ * Each routine defines:
+ * - ticks: displacement per step (+ = forward, - = backward).
+ * - fader: volume multiplier per step (1 = open, 0 = muted).
+ */
+const autoScratchPatternDefs = {
+    "baby_scratch": {
+        name: "Baby Scratch",
+        ticks: [45, 85, 85, 45, -45, -85, -85, -45],
+        fader: [1, 1, 1, 1, 1, 1, 1, 1]
+    },
+
+    "forward_cut": {
+        name: "Forward Cut",
+        ticks: [50, 80, 70, 40, 20, -70, -110, -80],
+        fader: [1, 1, 1, 1, 1, 0, 0, 0]
+    },
+
+    "chirp": {
+        name: "Chirp",
+        ticks: [50, 80, 80, 30, 20, -20, -30, -80, -80, -50],
+        fader: [1, 1, 1, 0, 0, 0, 0, 1, 1, 1]
+    },
+
+    "transform": {
+        name: "Transform",
+        ticks: [30, 60, 80, 60, 30, 0, -30, -60, -80, -60, -30, 0],
+        fader: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+    },
+
+    "stab": {
+        name: "Stab",
+        ticks: [50, 90, 80, 40, -40, -90, -90, -40],
+        fader: [1, 1, 1, 1, 0, 0, 0, 0]
+    },
+
+    "tear": {
+        name: "Tear",
+        ticks: [30, 50, 40, 50, 90, -30, -50, -60, -50, -40, -20, -10],
+        fader: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0]
+    },
+
+    "flare": {
+        name: "Flare",
+        ticks: [40, 70, 80, 50, 20, -20, -50, -80, -70, -40],
+        fader: [1, 1, 0, 1, 1, 1, 1, 0, 1, 1]
+    },
+
+    "double_cut": {
+        name: "Double Cut",
+        ticks: [30, 60, 80, 60, 30, 0, -30, -60, -80, -60, -30, 0],
+        fader: [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1]
+    }
+};
+
+const scratchbanksPadPatterns = [
+    null,
+    engine.getSetting("scratchbanksPad1") || "baby_scratch",
+    engine.getSetting("scratchbanksPad2") || "forward_cut",
+    engine.getSetting("scratchbanksPad3") || "chirp",
+    engine.getSetting("scratchbanksPad4") || "transform",
+    engine.getSetting("scratchbanksPad5") || "stab",
+    engine.getSetting("scratchbanksPad6") || "tear",
+    engine.getSetting("scratchbanksPad7") || "flare",
+    engine.getSetting("scratchbanksPad8") || "double_cut"
+];
+
+const scratchbanksPadDurations = [
+    null,
+    parseFloat(engine.getSetting("scratchbanksPad1Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad2Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad3Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad4Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad5Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad6Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad7Duration")) || 1,
+    parseFloat(engine.getSetting("scratchbanksPad8Duration")) || 1
+];
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -126,6 +207,12 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
     const button = new components.Button({
         input: function(channel, control, value, status, group) {
             NS4FX.dbg(`Transport pad ${padNumber} on deck ${deck.number} pressed with value ${value}`);
+            if (useAdditionalScratchbanks && deck.padmode_str === "scratchbanks") {
+                if (deck.scratchbanks_buttons && deck.scratchbanks_buttons[padNumber + 4]) {
+                    deck.scratchbanks_buttons[padNumber + 4].input(channel, control, value, status, group);
+                }
+                return;
+            }
             const isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === "hotcue";
 
             if (isHotcueModeForTransport) {
@@ -416,6 +503,8 @@ NS4FX.init = function(id, debug) {
 };
 
 NS4FX.shutdown = function() {
+    NS4FX.stopAutoScratch(null, true);
+
     // note: not all of this appears to be strictly necessary, things work fine
     // with out this, but Serato has been observed sending these led reset
     // messages during shutdown. The last sysex message may be necessary to
@@ -1126,6 +1215,66 @@ NS4FX.Deck = function(number, midi_chan) {
 
     }
     // Combine the two rows of hotcue pads into a single container for easier management in pad modes.
+    this.scratchbanks_buttons = new components.ComponentContainer({
+        updateLEDs: function(_deckGroup) {
+            const count = useAdditionalScratchbanks ? 8 : 4;
+            for (let i = 1; i <= count; ++i) {
+                if (deck.scratchbanks_buttons[i]) {
+                    deck.scratchbanks_buttons[i].output(0);
+                }
+            }
+        }
+    });
+
+    for (let i = 1; i <= 4; ++i) {
+        const midiNote = 0x13 + i;
+        this.scratchbanks_buttons[i] = new components.Button({
+            midi: [0x94 + midi_chan, midiNote],
+            number: i,
+            output: function(value) {
+                midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
+            },
+            input: function(_channel, _control, value, _status) {
+                if (deck.padmode_str !== "scratchbanks") {
+                    return;
+                }
+                if (value === 0x7F) {
+                    NS4FX.dbg(`[SCRATCHBANKS] Deck ${deck.number} Pad ${this.number} Pressed`);
+                    NS4FX.startAutoScratch(deck.number, this.number);
+                } else {
+                    NS4FX.dbg(`[SCRATCHBANKS] Deck ${deck.number} Pad ${this.number} Released`);
+                    NS4FX.stopAutoScratch(deck.number);
+                }
+                this.output(value === 0x7F ? 1 : 0);
+            }
+        });
+
+        if (useAdditionalScratchbanks) {
+            // Transport pads 1-4 correspond to scratchbanks patterns 5-8 (notes 0x18-0x1B)
+            const transportMidiNote = 0x18 + (i - 1);
+            this.scratchbanks_buttons[i + 4] = new components.Button({
+                midi: [0x94 + midi_chan, transportMidiNote],
+                number: i + 4, // Uses pattern i + 4 (5-8)
+                output: function(value) {
+                    midi.sendShortMsg(this.midi[0], this.midi[1], value ? 0x7F : 0x01); // LED on/off
+                },
+                input: function(_channel, _control, value, _status) {
+                    if (deck.padmode_str !== "scratchbanks") {
+                        return;
+                    }
+                    if (value === 0x7F) {
+                        NS4FX.dbg(`[SCRATCHBANKS] Deck ${deck.number} Transport Pad ${this.number} Pressed`);
+                        NS4FX.startAutoScratch(deck.number, this.number);
+                    } else {
+                        NS4FX.dbg(`[SCRATCHBANKS] Deck ${deck.number} Transport Pad ${this.number} Released`);
+                        NS4FX.stopAutoScratch(deck.number);
+                    }
+                    this.output(value === 0x7F ? 1 : 0);
+                }
+            });
+        }
+    }
+
     this.hotcue_buttons = new components.ComponentContainer({
         updateLEDs: function() {
             NS4FX.dbg(`Updating hotcue LEDs for deck ${deck.number}`);
@@ -1149,6 +1298,9 @@ NS4FX.Deck = function(number, midi_chan) {
 
     this.change_padmode = function(padmode) {
         NS4FX.dbg(`Deck ${this.number} change_padmode: from ${this.padmode_str} to ${padmode}`);
+        if (this.padmode_str === "scratchbanks") {
+            NS4FX.stopAutoScratch(this.number, true);
+        }
         this.padmode_str = padmode;
         // This is the main pad mode switching logic.
         // It disconnects the old set of pads and connects the new one.
@@ -1176,7 +1328,13 @@ NS4FX.Deck = function(number, midi_chan) {
         } else if (padmode === "slicer") {
             buttons = this.slicer_buttons;
         } else if (padmode === "scratchbanks") {
-            print("not implemented yet");
+            deck.scratchbanks_buttons.updateLEDs(`[Channel${this.number}]`);
+            if (useAdditionalScratchbanks) {
+                for (let p = 0x18; p <= 0x1B; p++) {
+                    midi.sendShortMsg(0x94 + this.midi_chan, p, 0x01);
+                }
+            }
+            buttons = this.scratchbanks_buttons;
         }
         this.hotcues.forEachComponent(function(component) {
             component.disconnect();
@@ -2220,5 +2378,193 @@ NS4FX.shiftToggle = function(_channel, control, value, _status, _group) {
         NS4FX.effectUnit.unshift();
         NS4FX.browse.unshift();
         NS4FX.head_gain.unshift();
+    }
+};
+
+NS4FX.autoScratchTimer = null;
+NS4FX.autoScratchStartTimer = null;
+NS4FX.autoScratchStopTimer = null;
+NS4FX.activeAutoScratch = null;
+NS4FX.autoScratchStep = 0;
+
+NS4FX.getAutoScratchInterval = function(effectiveBpm, stepsInPattern, durationBeats) {
+    const beats = durationBeats || 1;
+    const steps = stepsInPattern || 16;
+    return (beats * 60000 / effectiveBpm) / steps;
+};
+
+NS4FX.startAutoScratch = function(deckNum, padNumber) {
+    NS4FX.dbg(`[AUTOSCRATCH] startAutoScratch called for Deck ${deckNum}, Pad ${padNumber}`);
+
+    // Cancel any pending stop delay or prior scratch
+    if (NS4FX.autoScratchStopTimer) {
+        engine.stopTimer(NS4FX.autoScratchStopTimer);
+        NS4FX.autoScratchStopTimer = null;
+    }
+    NS4FX.stopAutoScratch(deckNum, true);
+
+    const deck = NS4FX.decks[deckNum];
+    if (!deck) {
+        NS4FX.dbg(`[AUTOSCRATCH] Error: Deck ${deckNum} not found.`);
+        return;
+    }
+
+    const patternId = scratchbanksPadPatterns[padNumber];
+    const pattern = autoScratchPatternDefs[patternId];
+    if (!pattern) {
+        NS4FX.dbg(`[AUTOSCRATCH] Error: Pattern "${patternId}" for pad ${padNumber} not found.`);
+        return;
+    }
+
+    // Save current channel volume before scratching
+    const currentVol = engine.getValue(deck.currentDeck, "volume");
+    deck.autoScratchSavedVolume = (currentVol > 0) ? currentVol : 1.0;
+    NS4FX.dbg(`[AUTOSCRATCH] Saved volume for ${deck.currentDeck}: ${deck.autoScratchSavedVolume.toFixed(3)}`);
+
+    // Ensure the track is playing so it keeps rolling after release
+    const isPlaying = engine.getValue(deck.currentDeck, "play");
+    if (!isPlaying) {
+        NS4FX.dbg(`[AUTOSCRATCH] Deck ${deck.currentDeck} is not playing. Starting playback.`);
+        engine.setValue(deck.currentDeck, "play", 1);
+    }
+
+    // Calculate BPM-based interval per step based on pattern length and configured duration
+    const deckBpm = engine.getValue(deck.currentDeck, "bpm") || engine.getValue(deck.currentDeck, "local_bpm") || 120;
+    const effectiveBpm = Math.max(20, deckBpm);
+    const durationBeats = scratchbanksPadDurations[padNumber] || 1;
+    const intervalMs = NS4FX.getAutoScratchInterval(effectiveBpm, pattern.ticks.length, durationBeats);
+    NS4FX.dbg(`[AUTOSCRATCH] Pattern "${pattern.name}" BPM: ${effectiveBpm.toFixed(2)}, duration: ${durationBeats} beat(s), interval: ${intervalMs.toFixed(2)} ms`);
+
+    const startScratching = function() {
+        NS4FX.autoScratchStartTimer = null;
+
+        // Save existing slip mode state and activate slip mode for the duration of the scratch
+        deck.autoScratchPreviousSlip = engine.getValue(deck.currentDeck, "slip_enabled");
+        if (!deck.autoScratchPreviousSlip) {
+            NS4FX.dbg(`[AUTOSCRATCH] Enabling slip mode for ${deck.currentDeck}`);
+            engine.setValue(deck.currentDeck, "slip_enabled", 1);
+        }
+
+        // Register active auto-scratch state
+        NS4FX.activeAutoScratch = {
+            deckNumber: deckNum,
+            padNumber: padNumber
+        };
+        NS4FX.autoScratchStep = 0;
+
+        // Enable scratch engine on the deck
+        const alpha = 1.0 / 8;
+        const beta = alpha / 32;
+        engine.scratchEnable(deckNum, 1240, 33 + 1 / 3, alpha, beta, false);
+
+        // Run the scratch sequence on a timer
+        NS4FX.autoScratchTimer = engine.beginTimer(intervalMs, function() {
+            const step = NS4FX.autoScratchStep % pattern.ticks.length;
+            const tickValue = pattern.ticks[step];
+            const faderMultiplier = pattern.fader[step];
+
+            // Apply jog movement
+            engine.scratchTick(deckNum, tickValue);
+
+            // Apply volume cut
+            engine.setValue(deck.currentDeck, "volume", faderMultiplier * deck.autoScratchSavedVolume);
+
+            NS4FX.autoScratchStep++;
+        });
+    };
+
+    const isQuantize = engine.getValue(deck.currentDeck, "quantize");
+    if (isQuantize && isPlaying && deckBpm > 0) {
+        const beatDistance = engine.getValue(deck.currentDeck, "beat_distance");
+        const remainingFraction = 1.0 - beatDistance;
+        if (remainingFraction <= 0.02 || remainingFraction >= 0.98) {
+            startScratching();
+        } else {
+            const delayMs = Math.round(remainingFraction * (60000 / deckBpm));
+            NS4FX.dbg(`[AUTOSCRATCH] Quantize active. Delaying start by ${delayMs} ms to hit next beat`);
+            NS4FX.autoScratchStartTimer = engine.beginTimer(delayMs, startScratching, true);
+        }
+    } else {
+        startScratching();
+    }
+};
+
+NS4FX.stopAutoScratch = function(deckNum, immediate) {
+    NS4FX.dbg(`[AUTOSCRATCH] stopAutoScratch called for Deck ${deckNum}, immediate=${immediate}`);
+    if (!deckNum && NS4FX.activeAutoScratch) {
+        deckNum = NS4FX.activeAutoScratch.deckNumber;
+    }
+
+    if (NS4FX.autoScratchStartTimer) {
+        engine.stopTimer(NS4FX.autoScratchStartTimer);
+        NS4FX.autoScratchStartTimer = null;
+        NS4FX.dbg("[AUTOSCRATCH] Start timer stopped.");
+    }
+
+    const deck = NS4FX.decks[deckNum];
+
+    const finishStop = function() {
+        NS4FX.autoScratchStopTimer = null;
+
+        if (NS4FX.autoScratchTimer) {
+            engine.stopTimer(NS4FX.autoScratchTimer);
+            NS4FX.autoScratchTimer = null;
+            NS4FX.dbg("[AUTOSCRATCH] Timer stopped.");
+        }
+
+        NS4FX.activeAutoScratch = null;
+        NS4FX.autoScratchStep = 0;
+
+        if (deckNum && deck) {
+            // Restore channel volume
+            if (deck.autoScratchSavedVolume !== undefined && deck.autoScratchSavedVolume !== null) {
+                engine.setValue(deck.currentDeck, "volume", deck.autoScratchSavedVolume);
+                NS4FX.dbg(`[AUTOSCRATCH] Restored ${deck.currentDeck} volume to ${deck.autoScratchSavedVolume.toFixed(3)}`);
+                deck.autoScratchSavedVolume = null;
+            }
+            // Leave playback running
+            engine.setValue(deck.currentDeck, "play", 1);
+
+            // Revert slip mode if it was enabled specifically by auto-scratch
+            if (deck.autoScratchPreviousSlip !== undefined && deck.autoScratchPreviousSlip !== null) {
+                if (!deck.autoScratchPreviousSlip) {
+                    NS4FX.dbg(`[AUTOSCRATCH] Disabling slip mode for ${deck.currentDeck}`);
+                    engine.setValue(deck.currentDeck, "slip_enabled", 0);
+                }
+                deck.autoScratchPreviousSlip = null;
+            }
+
+            // Disable scratching cleanly to resume regular playback from current point
+            engine.scratchDisable(deckNum, false);
+            NS4FX.dbg(`[AUTOSCRATCH] Scratch disabled for deck ${deckNum}`);
+        }
+    };
+
+    if (immediate) {
+        if (NS4FX.autoScratchStopTimer) {
+            engine.stopTimer(NS4FX.autoScratchStopTimer);
+            NS4FX.autoScratchStopTimer = null;
+        }
+        finishStop();
+        return;
+    }
+
+    // Check quantize to delay release until the next nearest beat
+    const isPlaying = deck ? engine.getValue(deck.currentDeck, "play") : 0;
+    const isQuantize = deck ? engine.getValue(deck.currentDeck, "quantize") : 0;
+    const deckBpm = deck ? (engine.getValue(deck.currentDeck, "bpm") || engine.getValue(deck.currentDeck, "local_bpm") || 0) : 0;
+
+    if (isQuantize && isPlaying && deckBpm > 0 && NS4FX.autoScratchTimer) {
+        const beatDistance = engine.getValue(deck.currentDeck, "beat_distance");
+        const remainingFraction = 1.0 - beatDistance;
+        if (remainingFraction <= 0.02 || remainingFraction >= 0.98) {
+            finishStop();
+        } else {
+            const delayMs = Math.round(remainingFraction * (60000 / deckBpm));
+            NS4FX.dbg(`[AUTOSCRATCH] Quantize active on release. Continuing scratch for ${delayMs} ms until next beat`);
+            NS4FX.autoScratchStopTimer = engine.beginTimer(delayMs, finishStop, true);
+        }
+    } else {
+        finishStop();
     }
 };
