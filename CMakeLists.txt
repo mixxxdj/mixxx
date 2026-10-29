@@ -131,7 +131,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
           )
           message(
             STATUS
-            "Retry downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
+            "Retrying download of file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
           )
           execute_process(
             COMMAND ${CMAKE_COMMAND} -E sleep ${BUILDENV_DOWNLOAD_WAIT_SECONDS}
@@ -145,7 +145,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
         else()
           message(
             FATAL_ERROR
-            "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} failed after ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS} attempts: ${BUILDENV_DOWNLOAD_STATUS_MESSAGE}"
+            "Failed to download ${BUILDENV_URL} to ${BUILDENV_BASEPATH} after ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS} attempts: ${BUILDENV_DOWNLOAD_STATUS_MESSAGE}"
           )
         endif()
       endforeach()
@@ -157,7 +157,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
     if(NOT ${BUILDENV_SHA256} STREQUAL "")
       message(
         STATUS
-        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+        "Verifying  SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
       )
       file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
 
