@@ -19,9 +19,8 @@ struct StemFileInfo {
     QString title;
 };
 
-static const std::array<StemFileInfo, 2> kStemFileInfos = {
-        StemFileInfo{QStringLiteral("stem01"), QStringLiteral("sin")},
-        StemFileInfo{QStringLiteral("stem02"), QStringLiteral("trance")}};
+static const std::array<StemFileInfo, 1> kStemFileInfos = {
+        StemFileInfo{QStringLiteral("stem01"), QStringLiteral("sin")}};
 
 } // namespace
 
