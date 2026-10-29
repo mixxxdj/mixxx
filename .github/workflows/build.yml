@@ -47,6 +47,9 @@ permissions:
 
 jobs:
   build:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches (gh cache delete)
     strategy:
       fail-fast: false
       matrix:
@@ -220,10 +223,6 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
-            # The AppImage build is fully static and produces far more ccache
-            # data than the default 2G; give it the actions/cache per-entry
-            # maximum so repeated runs can reuse the compiled objects.
-            compiler_cache_max_size: 10G
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/appimage_release_buildenv.sh
             artifacts_name: AppImage Linux x86_64
@@ -372,19 +371,6 @@ jobs:
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-      - name: "[AppImage] Cache buildenv"
-        # The buildenv is downloaded and extracted during the configure step
-        # (several GB).  Cache the extracted tree so re-runs of the AppImage
-        # job do not re-download it every time.  Keyed by BUILDENV_NAME, so a
-        # new buildenv (new hash suffix) naturally invalidates the entry.
-        # This step must come after "Set up build environment", which exports
-        # BUILDENV_NAME; the restore happens before "Configure" below.
-        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
-        uses: actions/cache@v6
-        with:
-          path: ${{ env.BUILDENV_BASEPATH }}/${{ env.BUILDENV_NAME }}
-          key: buildenv-${{ env.BUILDENV_NAME }}
-
       - name: "[Windows] Set up build environment"
         if: matrix.buildenv_script != null && runner.os == 'Windows'
         # With the cmd shell the ERRORLEVEL is checked
@@ -418,7 +404,7 @@ jobs:
         # build with debug info exceeds 2G and evicts its own objects.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=${{ matrix.compiler_cache_max_size || '2G' }}
+          ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -494,20 +480,44 @@ jobs:
           ${{ matrix.compiler_cache }} --cleanup
 
       - name: "[Ubuntu/macOS] Save ccache cache"
+        id: ccache_save
         if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
         uses: actions/cache/save@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ steps.ccache_cache.outputs.cache-primary-key }}
 
+      - name: "[Ubuntu/macOS] Delete outdated ccache caches"
+        # Every source change creates a new cache entry for this branch. Drop
+        # the older ones so they don't evict the caches of other branches.
+        if: steps.ccache_save.outcome == 'success'
+        run: |
+          # A build of a newer commit may have saved its cache already
+          if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
+            echo "$GITHUB_REF has newer commits, not deleting any caches"
+            exit 0
+          fi
+          gh cache list --ref "$GITHUB_REF" --key "$KEY_PREFIX" --limit 100 --json id,key \
+            --jq ".[] | select(.key != \"$KEY\") | .id" |
+          while read -r id; do
+            gh cache delete "$id"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEY: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+          # Also matches caches made with an outdated build environment
+          KEY_PREFIX: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-
+
       - name: "Test"
         if: matrix.crosscompile != true
-        run: ctest --timeout 45 ${{ matrix.ctest_args }}
+        # Some SoundSourceProxy tests take ~20s on the macOS Intel runner and
+        # 2-3x longer when tests run in parallel.
+        run: ctest --timeout 90 ${{ matrix.ctest_args }}
         working-directory: build
         env:
           GTEST_COLOR: 1
-          # Windows tests fail randomly if run in parallel
-          CTEST_PARALLEL_LEVEL: ${{ runner.os == 'Windows' && 1 || 3 }}
+          CTEST_PARALLEL_LEVEL: 3
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: "[Windows] Sign executables"
@@ -538,7 +548,7 @@ jobs:
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.1.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -551,6 +561,8 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # See "Sign executables"
+          cache-dependencies: false
 
       - name: "[Windows] Install WiX Toolset"
         if: runner.os == 'Windows'
@@ -856,10 +868,10 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           build-bundle: false
           upload-artifact: false
-          # The Flatpak caches (~1.4 GB per arch) are only saved on main to stay
-          # within the 10 GB quota. Other branches and pull requests can still
-          # restore the main cache.
-          save-cache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          # The Flatpak caches (~1.4 GB per arch) are only saved by branch pushes
+          # (main and the release branches) to stay within the 10 GB quota.
+          # Pull requests can still restore the cache of their base branch.
+          save-cache: ${{ github.event_name == 'push' && github.ref_type == 'branch' }}
 
       - name: "Create Flatpak bundle"
         run: |

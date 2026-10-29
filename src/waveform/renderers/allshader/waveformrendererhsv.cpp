@@ -76,6 +76,9 @@ bool WaveformRendererHSV::preprocessInner() {
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
+    if (visualIncrementPerPixel == 0.0) {
+        return false;
+    }
 
     float allGain = 1.0f;
     float lowGain = 1.0f;

@@ -80,7 +80,7 @@ repos:
           - eslint@^10.11.0
           - "@eslint/js"
           - typescript-eslint
-          - eslint-plugin-jsdoc@^v50.4.3
+          - eslint-plugin-jsdoc@^50.4.3
           - eslint-plugin-diff@^2.1.7
         exclude: ^res/translations/.*\.ts$
   - repo: local
@@ -103,7 +103,7 @@ repos:
       - id: black
         files: ^tools/.*$
   - repo: https://github.com/pycqa/flake8
-    rev: "7.3.0"
+    rev: "7.4.1"
     hooks:
       - id: flake8
         files: ^tools/.*$
@@ -117,7 +117,7 @@ repos:
     hooks:
       - id: markdownlint-cli2
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.38.0
+    rev: 0.38.2
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/pre-commit/mirrors-prettier

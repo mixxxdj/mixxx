@@ -24,6 +24,7 @@
 #endif
 #include "controllers/softtakeover.h"
 #include "helpers/log_test.h"
+#include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
 #ifdef MIXXX_USE_QML
 #include "qml/qmlmixxxcontrollerscreen.h"
@@ -94,6 +95,11 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
                 m_pSoundManager.get(),
                 m_pEffectsManager.get(),
                 m_pEngine.get());
+
+        // Background key analysis would otherwise race with tests that set keys
+        // manually and overwrite them once the analysis finishes.
+        KeyDetectionSettings keyDetectionSettings(config());
+        keyDetectionSettings.setKeyDetectionEnabled(false);
 
         m_pPlayerManager->addConfiguredDecks();
         m_pPlayerManager->addSampler();
