@@ -353,7 +353,6 @@ void DlgPrefInterface::slotUpdateSchemes() {
         }
     }
     ComboBoxSchemeconf->blockSignals(false);
-    
 }
 
 void DlgPrefInterface::slotUpdate() {

@@ -45,7 +45,8 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
           m_pCustomColorButton(nullptr) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setContentsMargins(0, 0, 0, 0);
-    pLayout->setSpacing(4); // <- Added: Beautiful 4px spacing between color swatches to fix the hover bug!
+    pLayout->setSpacing(4); // <- Added: Beautiful 4px spacing between color
+                            // swatches to fix the hover bug!
 
     // Unfortunately, not all styles supported by Qt support setting a
     // background color for QPushButtons (see
@@ -195,8 +196,8 @@ void WColorPicker::addNoColorButton(QGridLayout* pLayout, int row, int column) {
                         "QPushButton:hover {"
                         "  border-image: none;"
                         "  border: 2px solid %1;"
-                        "}").arg(highlightColor));
-
+                        "}")
+                        .arg(highlightColor));
 
         connect(pButton,
                 &QPushButton::clicked,
@@ -230,7 +231,8 @@ void WColorPicker::addCustomColorButton(QGridLayout* pLayout, int row, int colum
                         "QPushButton:hover {"
                         "  border-image: none;"
                         "  border: 2px solid %1;"
-                        "}").arg(highlightColor));
+                        "}")
+                        .arg(highlightColor));
 
         connect(pButton,
                 &QPushButton::clicked,
