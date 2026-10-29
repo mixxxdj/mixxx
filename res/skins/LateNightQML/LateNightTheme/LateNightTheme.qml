@@ -3,6 +3,8 @@ import QtQuick
 import "."
 
 QtObject {
+    property bool layoutAnimationsEnabled: true
+
     readonly property color accentColor: ColorScheme.accentColor
     readonly property color activePlayCueColor: isClassic ? "#db0000" : "#b24c12"
     readonly property url assetDeckArrowLeftUpButton: lateNightAsset("buttons", "btn__arrow_left_up.svg")
@@ -288,7 +290,7 @@ QtObject {
     readonly property color mixerVuClipColor: mixerAccentRed
     readonly property color mixerVuLevelColor: mixerAccentRed
     readonly property color micAuxDuckingArcColor: "#a00000"
-    readonly property color micAuxGainColor: isClassic ? "#db7700" : "#b24c12"
+    readonly property color micAuxGainColor: isClassic ? "#db7700" : "#b96300"
     readonly property color micAuxLabelTextColor: primaryDeckTextColor
     readonly property color micAuxPanelColor: isClassic ? "#1e1e1e" : "#1e1e20"
     readonly property color micAuxRackGutterColor: isClassic ? "#0f0f0f" : "#080808"
