@@ -103,6 +103,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
         "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
       )
 
+      set(BUILDENV_DOWNLOAD_WAIT_SECONDS 1)
       foreach(
         BUILDENV_DOWNLOAD_ATTEMPT
         RANGE 1 ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}
@@ -131,6 +132,15 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
           message(
             STATUS
             "Retry downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
+          )
+          execute_process(
+            COMMAND ${CMAKE_COMMAND} -E sleep ${BUILDENV_DOWNLOAD_WAIT_SECONDS}
+          )
+          # Exponential backoff: 1s, 2s, 4s, ...
+          math(
+            EXPR
+            BUILDENV_DOWNLOAD_WAIT_SECONDS
+            "${BUILDENV_DOWNLOAD_WAIT_SECONDS} * 2"
           )
         else()
           message(
