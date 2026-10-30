@@ -144,6 +144,10 @@ void PreviewButtonDelegate::paintItem(QPainter* painter,
         return;
     }
 
+    if (isEndMarkerRow(index)) {
+        return;
+    }
+
     // We only need m_pButton to have the right width/height, since we are
     // calling its render method directly. Every resize/translate of a widget
     // causes Qt to flush the backing store, so we need to avoid this whenever
