@@ -1,7 +1,8 @@
 #pragma once
 
-#include "engine/enginesidechaincompressor.h"
 #include "control/controlpushbutton.h"
+#include "engine/enginesidechaincompressor.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -17,7 +18,6 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
     };
 
     EngineTalkoverDucking(UserSettingsPointer pConfig, const QString& group);
-    virtual ~EngineTalkoverDucking();
 
     TalkoverDuckSetting getMode() const {
         return static_cast<TalkoverDuckSetting>(int(m_pTalkoverDucking->get()));
@@ -28,13 +28,16 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
   public slots:
     void slotSampleRateChanged(double);
     void slotDuckStrengthChanged(double);
-    void slotDuckModeChanged(double);
+    void slotDuckAttackTimeChanged(double);
+    void slotDuckDecayTimeChanged(double);
 
   private:
     UserSettingsPointer m_pConfig;
     const QString m_group;
 
-    ControlProxy* m_pSampleRate;
-    ControlPotmeter* m_pDuckStrength;
-    ControlPushButton* m_pTalkoverDucking;
+    parented_ptr<ControlProxy> m_pSampleRate;
+    std::unique_ptr<ControlPotmeter> m_pDuckStrength;
+    std::unique_ptr<ControlPotmeter> m_pDuckAttackTime;
+    std::unique_ptr<ControlPotmeter> m_pDuckDecayTime;
+    std::unique_ptr<ControlPushButton> m_pTalkoverDucking;
 };
