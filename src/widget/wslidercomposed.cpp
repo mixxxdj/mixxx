@@ -94,14 +94,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
                 bool m1ok;
                 bool m2ok;
                 QStringView marginsView(margins);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 double m1 = (marginsView.first(comma)).toDouble(&m1ok);
                 double m2 = (marginsView.sliced(comma + 1)).toDouble(&m2ok);
-#else
-                QLocale c(QLocale::C);
-                double m1 = c.toDouble(marginsView.left(comma), &m1ok);
-                double m2 = c.toDouble(marginsView.mid(comma + 1), &m2ok);
-#endif
                 if (m1ok && m2ok) {
                     m_dBarStart = m1 * scaleFactor;
                     m_dBarEnd = m2 * scaleFactor;
@@ -128,14 +122,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
                     bool m1ok;
                     bool m2ok;
                     QStringView bgMarginsView(bgMargins);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     double m1 = (bgMarginsView.first(comma)).toDouble(&m1ok);
                     double m2 = (bgMarginsView.sliced(comma + 1)).toDouble(&m2ok);
-#else
-                    QLocale c(QLocale::C);
-                    double m1 = c.toDouble(bgMarginsView.left(comma), &m1ok);
-                    double m2 = c.toDouble(bgMarginsView.mid(comma + 1), &m2ok);
-#endif
                     if (m1ok && m2ok) {
                         m_dBarBgStart = m1 * scaleFactor;
                         m_dBarBgEnd = m2 * scaleFactor;
