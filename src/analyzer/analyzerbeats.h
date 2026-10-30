@@ -6,6 +6,7 @@
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
+#include "library/dao/segmentsdao.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
 
@@ -28,6 +29,10 @@ class AnalyzerBeats : public Analyzer {
     void cleanup() override;
 
   private:
+    bool saveBpmSegmentsJson(TrackPointer pTrack, const QJsonArray& segmentsArray);
+    bool exportBeatsToCsv(TrackPointer pTrack,
+            const QVector<mixxx::audio::FramePos>& beats,
+            double sampleRate);
     bool shouldAnalyze(TrackPointer pTrack) const;
     static QHash<QString, QString> getExtraVersionInfo(
             const QString& pluginId, bool bPreferencesFastAnalysis);
@@ -45,4 +50,11 @@ class AnalyzerBeats : public Analyzer {
     mixxx::audio::ChannelCount m_channelCount;
     SINT m_maxFramesToProcess;
     SINT m_currentFrame;
+    UserSettingsPointer m_pConfig;
+
+    SegmentsDAO m_segmentsDao;
+    TrackPointer m_pTrack;
+
+    QSqlDatabase m_database;
+    std::unique_ptr<SegmentsDAO> m_pSegmentsDao;
 };

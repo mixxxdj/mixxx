@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QList>
 #include <QPixmap>
+#include <QVector>
 
 #include "analyzer/analyzerprogress.h"
 #include "track/track_decl.h"
@@ -21,6 +22,35 @@ class PlayerManager;
 class QDomNode;
 class SkinContext;
 
+struct OverviewBpmPoint {
+    double position;
+    double duration;
+    double bpm_start;
+    double bpm_end;
+    double range_start;
+    double range_end;
+    QString type; // "STABLE", "INCREASE", "DECREASE"
+
+    OverviewBpmPoint()
+            : position(0),
+              duration(0),
+              bpm_start(0),
+              bpm_end(0),
+              range_start(0),
+              range_end(0),
+              type("STABLE") {
+    }
+};
+
+struct OverviewKeyPoint {
+    double position;
+    double duration;
+    double range_start;
+    double range_end;
+    QString type;
+    double confidence;
+};
+
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
@@ -33,6 +63,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void setup(const QDomNode& node, const SkinContext& context);
     virtual void initWithTrack(TrackPointer pTrack);
 
+    void loadBpmCurveForTrack(TrackPointer pTrack);
+
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
@@ -43,9 +75,10 @@ class WOverview : public WWidget, public TrackDropTarget {
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
+    void requestBeatsAnalysis(TrackPointer pTrack);
+    void requestKeyAnalysis(TrackPointer pTrack);
 
   protected:
-
     void mouseMoveEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
@@ -72,7 +105,34 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotMinuteMarkersChanged(bool v);
     void slotScalingChanged();
 
+    void slotShowBpmCurveChanged(double value);
+    void slotShowBpmMarkersChanged(double value);
+    void slotShowKeyMarkersChanged(double value);
+
   private:
+    // BPM curve
+    PlayerManager* m_pPlayerManager;
+    QVector<OverviewBpmPoint> m_bpmCurvePoints;
+    bool m_showBpmCurve = true;
+    double m_minBpm;
+    double m_maxBpm;
+    double m_yMinBpm;
+    double m_yMaxBpm;
+
+    // KEY Markers
+    QVector<OverviewKeyPoint> m_keyCurvePoints;
+    bool m_showKeyMarkers = true;
+
+    void calculateBpmRange();
+    double mapBpmToOverviewY(double bpm, double height);
+    void drawBpmCurve(QPainter* painter, const QRect& widgetRect);
+    void triggerAnalysisForTrack(TrackPointer pTrack);
+    void checkAndRequestBpmCurve(TrackPointer pTrack);
+
+    void loadKeyCurveForTrack(TrackPointer pTrack);
+    void checkAndRequestKeyCurve(TrackPointer pTrack);
+    void drawKeyMarkers(QPainter* painter, const QRect& widgetRect);
+
     // Append the waveform overview pixmap according to available data
     // in waveform
     bool drawNextPixmapPart();
@@ -109,7 +169,7 @@ class WOverview : public WWidget, public TrackDropTarget {
         return static_cast<double>(position) / m_maxPixelPos;
     }
 
-    void updateCues(const QList<CuePointer> &loadedCues);
+    void updateCues(const QList<CuePointer>& loadedCues);
 
     inline int length() {
         return m_orientation == Qt::Horizontal ? width() : height();
@@ -218,7 +278,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     WaveformMarkLabel m_timeRulerPositionLabel;
     WaveformMarkLabel m_timeRulerDistanceLabel;
 
-
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
     QColor m_backgroundColor;
@@ -237,4 +296,17 @@ class WOverview : public WWidget, public TrackDropTarget {
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;
+
+    bool m_bpmCurveLoaded = false;
+    bool m_keyCurveLoaded = false;
+
+    parented_ptr<ControlProxy> m_pShowBpmCurve;
+    parented_ptr<ControlProxy> m_pShowBpmMarkers;
+    parented_ptr<ControlProxy> m_pShowKeyMarkers;
+
+    bool m_showCurve = true;
+    bool m_showMarkers = true;
+    bool m_showLabels = true;
+
+    bool m_showBpmMarkers = true;
 };

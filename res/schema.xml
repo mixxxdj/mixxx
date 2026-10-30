@@ -593,4 +593,46 @@ reapplying those migrations.
       ALTER TABLE library ADD COLUMN tuning_frequency_hz FLOAT DEFAULT 0.0;
     </sql>
   </revision>
+  <revision version="41" min_compatible="3">
+    <description>
+      Add BPM and Key segments tables for advanced beat and key analysis.
+      These tables store detailed segment information for tracks analyzed with the
+      extended Queen Mary plugins.
+    </description>
+    <sql>
+      -- BPM segments table
+      CREATE TABLE IF NOT EXISTS track_bpm_segments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      track_id INTEGER NOT NULL,
+      position REAL NOT NULL,
+      duration REAL NOT NULL,
+      bpm_start REAL NOT NULL,
+      bpm_end REAL NOT NULL,
+      range_start REAL NOT NULL,
+      range_end REAL NOT NULL,
+      type TEXT NOT NULL,
+      FOREIGN KEY (track_id) REFERENCES library(id) ON DELETE CASCADE
+      );
+      -- Key segments table
+      CREATE TABLE IF NOT EXISTS track_key_segments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      track_id INTEGER NOT NULL,
+      position REAL NOT NULL,
+      duration REAL NOT NULL,
+      key_id INTEGER NOT NULL,
+      key_text TEXT NOT NULL,
+      range_start REAL NOT NULL,
+      range_end REAL NOT NULL,
+      type TEXT NOT NULL,
+      confidence REAL NOT NULL,
+      FOREIGN KEY (track_id) REFERENCES library(id) ON DELETE CASCADE
+      );
+      -- Indexes for BPM segments
+      CREATE INDEX IF NOT EXISTS idx_bpm_segments_track_id ON track_bpm_segments(track_id);
+      CREATE INDEX IF NOT EXISTS idx_bpm_segments_position ON track_bpm_segments(track_id, position);
+      -- Indexes for Key segments
+      CREATE INDEX IF NOT EXISTS idx_key_segments_track_id ON track_key_segments(track_id);
+      CREATE INDEX IF NOT EXISTS idx_key_segments_position ON track_key_segments(track_id, position);
+    </sql>
+  </revision>
 </schema>
