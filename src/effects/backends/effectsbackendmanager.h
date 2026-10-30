@@ -25,6 +25,8 @@ class EffectsBackendManager {
     std::unique_ptr<EffectProcessor> createProcessor(const EffectManifestPointer pManifest);
 
   private:
+    friend class EffectsBackendManagerTest;
+
     void addBackend(EffectsBackendPointer pEffectsBackend);
 
     std::unique_ptr<ControlObject> m_pNumEffectsAvailable;
