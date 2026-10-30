@@ -92,15 +92,63 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
     endif()
 
     if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+      set(
+        BUILDENV_DOWNLOAD_MAX_ATTEMPTS
+        3
+        CACHE STRING
+        "Maximum number of attempts to download the build environment archive"
+      )
       message(
         STATUS
         "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
       )
-      file(
-        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
-        SHOW_PROGRESS
-        TLS_VERIFY ON
+
+      set(BUILDENV_DOWNLOAD_WAIT_SECONDS 1)
+      foreach(
+        BUILDENV_DOWNLOAD_ATTEMPT
+        RANGE 1 ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}
       )
+        file(
+          DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+          STATUS BUILDENV_DOWNLOAD_STATUS
+          SHOW_PROGRESS
+          TLS_VERIFY ON
+        )
+
+        # Extract status code and status message from file(DOWNLOAD ... STATUS ...)
+        list(GET BUILDENV_DOWNLOAD_STATUS 0 BUILDENV_DOWNLOAD_STATUS_CODE)
+        list(GET BUILDENV_DOWNLOAD_STATUS 1 BUILDENV_DOWNLOAD_STATUS_MESSAGE)
+
+        if(BUILDENV_DOWNLOAD_STATUS_CODE EQUAL 0)
+          break()
+        endif()
+
+        if(BUILDENV_DOWNLOAD_ATTEMPT LESS BUILDENV_DOWNLOAD_MAX_ATTEMPTS)
+          math(
+            EXPR
+            BUILDENV_DOWNLOAD_NEXT_ATTEMPT
+            "${BUILDENV_DOWNLOAD_ATTEMPT} + 1"
+          )
+          message(
+            STATUS
+            "Retrying download of file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
+          )
+          execute_process(
+            COMMAND ${CMAKE_COMMAND} -E sleep ${BUILDENV_DOWNLOAD_WAIT_SECONDS}
+          )
+          # Exponential backoff: 1s, 2s, 4s, ...
+          math(
+            EXPR
+            BUILDENV_DOWNLOAD_WAIT_SECONDS
+            "${BUILDENV_DOWNLOAD_WAIT_SECONDS} * 2"
+          )
+        else()
+          message(
+            FATAL_ERROR
+            "Failed to download ${BUILDENV_URL} to ${BUILDENV_BASEPATH} after ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS} attempts: ${BUILDENV_DOWNLOAD_STATUS_MESSAGE}"
+          )
+        endif()
+      endforeach()
     else()
       # Reference to suppress intentionally unused variable warnings
       set(_dummy "${BUILDENV_URL}")
@@ -109,7 +157,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
     if(NOT ${BUILDENV_SHA256} STREQUAL "")
       message(
         STATUS
-        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+        "Verifying  SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
       )
       file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
 
