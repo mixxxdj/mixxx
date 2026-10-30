@@ -1,6 +1,7 @@
 #include "controllers/controllerenginethreadcontrol.h"
 
 #include <QCoreApplication>
+#include <QMutexLocker>
 
 #include "moc_controllerenginethreadcontrol.cpp"
 #include "util/assert.h"
@@ -20,7 +21,7 @@ bool ControllerEngineThreadControl::pause() {
     VERIFY_OR_DEBUG_ASSERT_THIS_QOBJECT_THREAD_ANTI_AFFINITY() {
         return false;
     }
-    const auto lock = lockMutex(&m_pauseMutex);
+    const auto lock = QMutexLocker(&m_pauseMutex);
     m_pauseCount++;
 
     if (m_canPause && !m_isPaused) {
@@ -40,7 +41,7 @@ void ControllerEngineThreadControl::resume() {
     VERIFY_OR_DEBUG_ASSERT_THIS_QOBJECT_THREAD_ANTI_AFFINITY() {
         return;
     }
-    const auto lock = lockMutex(&m_pauseMutex);
+    const auto lock = QMutexLocker(&m_pauseMutex);
     if (m_pauseCount > 0) {
         m_pauseCount--;
     }
@@ -49,7 +50,7 @@ void ControllerEngineThreadControl::resume() {
 }
 void ControllerEngineThreadControl::setCanPause(bool canPause) {
     DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
-    auto lock = lockMutex(&m_pauseMutex);
+    auto lock = QMutexLocker(&m_pauseMutex);
     m_canPause = canPause;
 
     if (m_canPause) {
@@ -81,7 +82,7 @@ void ControllerEngineThreadControl::doPause() {
     VERIFY_OR_DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY() {
         return;
     }
-    const auto lock = lockMutex(&m_pauseMutex);
+    const auto lock = QMutexLocker(&m_pauseMutex);
     m_isPaused = m_pauseCount > 0;
     m_isPausedCondition.wakeOne();
 

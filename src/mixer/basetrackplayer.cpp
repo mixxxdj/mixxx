@@ -398,43 +398,10 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
         return;
     }
 
-    // Maybe adopt loop from channel to clone from.
-    // The loop in and out points must be set here and not in slotTrackLoaded
-    // so LoopingControl::trackLoaded can access them.
-    //
-    // Restore loop from the first loop cue with minimum hotcue number.
-    // For the volatile "most recent loop" the hotcue number will be -1.
-    // If no such loop exists, restore a saved loop cue.
-    double newLoopIn = kNoTrigger;
-    double newLoopOut = kNoTrigger;
-    CuePointer pLoopCue;
-    const QList<CuePointer> trackCues = m_pLoadedTrack->getCuePoints();
-    for (const auto& pCue : trackCues) {
-        if (pCue->getType() != mixxx::CueType::Loop) {
-            continue;
-        }
-        if (pLoopCue && pLoopCue->getHotCue() <= pCue->getHotCue()) {
-            continue;
-        }
-        pLoopCue = pCue;
-    }
-
-    if (pLoopCue) {
-        const auto loop = pLoopCue->getStartAndEndPosition();
-        if (loop.startPosition.isValid() && loop.endPosition.isValid() &&
-                loop.startPosition <= loop.endPosition) {
-            // TODO: For all loop cues, both end and start positions should
-            // be valid and the end position should be greater than the
-            // start position. We should use a VERIFY_OR_DEBUG_ASSERT to
-            // check this. To make this possible, we need to ensure that
-            // all invalid cues are discarded when saving cues to the
-            // database first.
-            newLoopIn = loop.startPosition.toEngineSamplePos();
-            newLoopOut = loop.endPosition.toEngineSamplePos();
-        }
-    }
-    m_pLoopInPoint->set(newLoopIn);
-    m_pLoopOutPoint->set(newLoopOut);
+    // Note: the track's saved loop is restored by
+    // LoopingControl::trackLoaded() only after the track has been handed
+    // over to the engine, so it can never be applied to the loop cue of the
+    // previously loaded track.
 
     if (m_pChannelToCloneFrom) {
 #ifdef __STEM__
@@ -459,33 +426,35 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         return;
     }
 
-    mixxx::Duration elapsed = m_ejectTimer.restart();
+    if (m_pPlayerManager) {
+        mixxx::Duration elapsed = m_ejectTimer.restart();
 
-    // Double-click always restores the last replaced track, i.e. un-eject the second
-    // last track: the first click ejects or unejects, and the second click reloads.
-    if (elapsed < mixxx::Duration::fromMillis(kUnreplaceDelay)) {
-        TrackPointer lastEjected = m_pPlayerManager->getSecondLastEjectedTrack();
-        if (lastEjected) {
-            slotLoadTrack(lastEjected,
+        // Double-click always restores the last replaced track, i.e. un-eject the second
+        // last track: the first click ejects or unejects, and the second click reloads.
+        if (elapsed < mixxx::Duration::fromMillis(kUnreplaceDelay)) {
+            TrackPointer lastEjected = m_pPlayerManager->getSecondLastEjectedTrack();
+            if (lastEjected) {
+                slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::StemChannelSelection(),
+                        mixxx::StemChannelSelection(),
 #endif
-                    false);
+                        false);
+            }
+            return;
         }
-        return;
-    }
 
-    // With no loaded track a single click reloads the last ejected track.
-    if (!m_pLoadedTrack) {
-        TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
-        if (lastEjected) {
-            slotLoadTrack(lastEjected,
+        // With no loaded track a single click reloads the last ejected track.
+        if (!m_pLoadedTrack) {
+            TrackPointer lastEjected = m_pPlayerManager->getLastEjectedTrack();
+            if (lastEjected) {
+                slotLoadTrack(lastEjected,
 #ifdef __STEM__
-                    mixxx::StemChannelSelection(),
+                        mixxx::StemChannelSelection(),
 #endif
-                    false);
+                        false);
+            }
+            return;
         }
-        return;
     }
 
     m_pChannel->getEngineBuffer()->ejectTrack();

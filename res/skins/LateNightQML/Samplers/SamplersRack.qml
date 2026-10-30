@@ -9,6 +9,8 @@ Rectangle {
     id: root
 
     color: LateNightTheme.layoutGutterColor
+    readonly property bool contentReady: numSamplersControl.initialized
+            && (numSamplersControl.value < 4 || loadedRack !== null)
     readonly property Item loadedRack: (mode === 0 ? fourSamplerLoader.item : samplerRowsLoader.item) as Item
     readonly property int mode: Math.max(0, Math.min(5, Math.round(samplerRowsControl.value)))
     readonly property bool modeControlsInitialized: show4SamplersControl.initialized && show8SamplersControl.initialized && show16SamplersControl.initialized && show32SamplersControl.initialized && show48SamplersControl.initialized && show64SamplersControl.initialized

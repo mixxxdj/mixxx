@@ -26,11 +26,6 @@ class TableItemDelegate : public DefaultDelegate {
     static bool isEndMarkerRow(const QModelIndex& index);
 
   protected:
-    static void paintItemBackground(
-            QPainter* painter,
-            const QStyleOptionViewItem& option,
-            const QModelIndex& index);
-
     // Only used by LocationDelegate's text elide.
     // Having this here avoids including QTableView there.
     int columnWidth(const QModelIndex &index) const;

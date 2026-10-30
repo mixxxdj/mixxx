@@ -1,13 +1,13 @@
 #include "engine/cachingreader/cachingreaderworker.h"
 
 #include <QAtomicInt>
+#include <QMutexLocker>
 #include <QtDebug>
 
 #include "analyzer/analyzersilence.h"
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/compatibility/qmutex.h"
 #include "util/event.h"
 #include "util/fifo.h"
 #include "util/logger.h"
@@ -100,7 +100,7 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack, mixxx::StemChannelSelect
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 #endif
     {
-        const auto locker = lockMutex(&m_newTrackMutex);
+        const auto locker = QMutexLocker(&m_newTrackMutex);
 #ifdef __STEM__
         m_pNewTrack = NewTrackRequest{
                 pTrack,
@@ -131,7 +131,7 @@ void CachingReaderWorker::run() {
             TrackPointer pLoadTrack;
 #endif
             { // locking scope
-                const auto locker = lockMutex(&m_newTrackMutex);
+                const auto locker = QMutexLocker(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
                 m_newTrackAvailable.storeRelease(0);
             } // implicitly unlocks the mutex
@@ -239,6 +239,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                     mixxx::audio::ChannelCount::mono() &&
             m_pAudioSource->getSignalInfo().getChannelCount() <=
                     m_maxSupportedChannel) {
+        // Cache the channel count before we reset the AudioSourcePointer
+        const int chCount = static_cast<int>(m_pAudioSource->getSignalInfo().getChannelCount());
         m_pAudioSource.reset(); // Close open file handles
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
@@ -246,8 +248,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
                 tr("The file '%1' could not be loaded because it contains %2 "
                    "channels, and only 1 to %3 are supported.")
                         .arg(QDir::toNativeSeparators(pTrack->getLocation()),
-                                QString::number(m_pAudioSource->getSignalInfo()
-                                                        .getChannelCount()),
+                                QString::number(chCount),
                                 QString::number(m_maxSupportedChannel)));
         return;
     }

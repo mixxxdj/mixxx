@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include "util/assert.h"
-#include "util/compatibility/qhash.h"
 #include "util/debug.h"
 
 // Class for the key for a specific configuration element. A key consists of a
@@ -63,9 +62,9 @@ inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
 }
 
 // QHash hash function for ConfigKey objects.
-inline qhash_seed_t qHash(
+inline size_t qHash(
         const ConfigKey& key,
-        qhash_seed_t seed = 0) {
+        size_t seed = 0) {
     return qHash(key.group, seed) ^
             qHash(key.item, seed);
 }
@@ -101,9 +100,9 @@ inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
     return !(lhs == rhs);
 }
 
-inline qhash_seed_t qHash(
+inline size_t qHash(
         const ConfigValue& key,
-        qhash_seed_t seed = 0) {
+        size_t seed = 0) {
     return qHash(key.value.toUpper(), seed);
 }
 
@@ -157,16 +156,27 @@ class ConfigObject {
     // returns QString().
     QString getValueString(const ConfigKey& key) const;
 
+    template<typename E>
+    struct is_qflags : std::false_type {};
+    template<typename E>
+    struct is_qflags<QFlags<E>> : std::true_type {};
+
     // Sets the value for key to ValueType(value), over-writing pre-existing
     // values. ResultType is serialized to string on a per-type basis.
     template<class ResultType>
+        requires(!std::is_enum_v<ResultType> && !is_qflags<ResultType>::value)
     void setValue(const ConfigKey& key, const ResultType& value);
     template<class EnumType>
-        requires std::is_enum_v<EnumType>
+        requires(std::is_enum_v<EnumType> && !is_qflags<EnumType>::value)
     // we need to take value as const ref otherwise the overload is ambiguous
     void setValue(const ConfigKey& key, const EnumType& value) {
         setValue<int>(key, static_cast<int>(value));
     };
+    template<class QFlagsType>
+        requires(is_qflags<QFlagsType>::value)
+    void setValue(const ConfigKey& key, const QFlagsType& value) {
+        setValue<int>(key, value.toInt());
+    }
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns ResultType().
@@ -180,14 +190,20 @@ class ConfigObject {
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns default_value.
-    template<class ResultType>
+    template<typename ResultType>
+        requires(!std::is_enum_v<ResultType> && !is_qflags<ResultType>::value)
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
     template<typename EnumType>
-        requires std::is_enum_v<EnumType>
+        requires(std::is_enum_v<EnumType> && !is_qflags<EnumType>::value)
     EnumType getValue(const ConfigKey& key, const EnumType& default_value) const {
         // we need to take default_value as const ref otherwise the overload is ambiguous
         return static_cast<EnumType>(getValue<int>(key, static_cast<int>(default_value)));
+    }
+    template<typename QFlagsType>
+        requires(is_qflags<QFlagsType>::value)
+    QFlagsType getValue(const ConfigKey& key, const QFlagsType& default_value) const {
+        return QFlagsType::fromInt(getValue<int>(key, default_value.toInt()));
     }
 
     QMultiHash<ValueType, ConfigKey> transpose() const;
