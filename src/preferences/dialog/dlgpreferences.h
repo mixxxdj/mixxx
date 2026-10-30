@@ -19,6 +19,7 @@ class DlgPrefControllers;
 class DlgPrefSound;
 class EffectsManager;
 class Library;
+class PlayerManager;
 class SoundManager;
 class VinylControlManager;
 
@@ -54,6 +55,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<EffectsManager> pEffectsManager,
             std::shared_ptr<SettingsManager> pSettingsManager,
             std::shared_ptr<Library> pLibrary,
+            std::shared_ptr<PlayerManager> pPlayerManager,
             bool includeWaveformPreferences = true);
     virtual ~DlgPreferences();
 

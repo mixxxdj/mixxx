@@ -228,6 +228,7 @@ class PlayerManager : public PlayerManagerInterface {
     void slotChangeNumPreviewDecks(double v);
     void slotChangeNumMicrophones(double v);
     void slotChangeNumAuxiliaries(double v);
+    void reanalyzeLoadedWaveforms();
 
   protected slots:
     FRIEND_TEST(PlayerManagerTest, UnEjectInvalidTrackIdTest);
