@@ -39,7 +39,8 @@ class WaveformWidgetRenderer {
     virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void onPreRender(VSyncTimeProvider* vsyncThread);
+    void fetchVSyncPositions(VSyncTimeProvider* pVsyncThread);
+    void onPreRender();
     void draw(QPainter* painter, QPaintEvent* event);
 
     const QString& getGroup() const {
@@ -138,7 +139,7 @@ class WaveformWidgetRenderer {
         return m_alphaBeatGrid;
     }
 
-    virtual void resizeRenderer(int width, int height, float devicePixelRatio);
+    virtual void resizeRenderer(int width, int height, qreal devicePixelRatio);
 
     int getHeight() const {
         return m_height;
@@ -146,7 +147,7 @@ class WaveformWidgetRenderer {
     int getWidth() const {
         return m_width;
     }
-    float getDevicePixelRatio() const {
+    qreal getDevicePixelRatio() const {
         return m_devicePixelRatio;
     }
     int getLength() const {
@@ -221,7 +222,7 @@ class WaveformWidgetRenderer {
     int m_dimBrightThreshold;
     int m_height;
     int m_width;
-    float m_devicePixelRatio;
+    qreal m_devicePixelRatio;
     WaveformSignalColors m_colors;
     QColor m_passthroughLabelColor;
 
@@ -274,6 +275,10 @@ private:
     void drawPassthroughLabel(QPainter* painter);
 
     bool m_passthroughEnabled;
+
+    // Stores play and slip positions (normalized 0.0 to 1.0) calculated for the next VSync
+    double m_truePos[2];
+
     double m_pos[2];
     double m_truePosSample[2];
 };

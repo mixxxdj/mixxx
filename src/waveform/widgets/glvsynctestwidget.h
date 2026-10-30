@@ -5,10 +5,10 @@
 class GLVSyncTestWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
-    GLVSyncTestWidget(const QString& group, QWidget* parent);
+    GLVSyncTestWidget(const QString& group, QWidget* pParent);
     virtual ~GLVSyncTestWidget();
 
-    virtual WaveformWidgetType::Type getType() const {
+    WaveformWidgetType::Type getType() const override {
         return WaveformWidgetType::VSyncTest;
     }
 
@@ -23,9 +23,9 @@ class GLVSyncTestWidget : public GLWaveformWidgetAbstract {
     }
 
   protected:
-    virtual void castToQWidget();
-    virtual void paintEvent(QPaintEvent* event);
-    virtual mixxx::Duration render();
+    void castToQWidget() override;
+    void paintEvent(QPaintEvent* event) override;
+    mixxx::Duration render() override;
 
   private:
     friend class WaveformWidgetFactory;

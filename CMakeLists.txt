@@ -2042,6 +2042,13 @@ else()
   )
 endif()
 
+# This can be uses to not optimize single files for better debugging
+# set_source_files_properties(
+#   src/...
+#   src/...
+#   PROPERTIES COMPILE_OPTIONS "-O0;-g;-fno-inline;-fno-omit-frame-pointer"
+# )
+
 set_source_files_properties(
   src/util/moc_included_test.cpp
   PROPERTIES SKIP_PRECOMPILE_HEADERS ON

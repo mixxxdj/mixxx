@@ -163,26 +163,46 @@ void WaveformWidget::paintGL() {
 }
 
 void WaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void WaveformWidget::initializeGL() {
 }
 
-void WaveformWidget::resizeRenderer(int, int, float) {
-    // This is called when the widget is resized, but as this is a WGLWidget, we
-    // also get the resizeGL call and use that instead, as it has the opengl
-    // context set.
+void WaveformWidget::resizeRenderer(int width, int height, qreal devicePixelRatio) {
+    // This is called before the widget is resized.
+    // We need to make sure that the texture fits to the resized image to not see a
+    // visual glitch of the old no longer fitting image
+
+    // NOTE: this is needed since we allocation buffer on resize
+    // and the Gl Context should be properly set
+    makeCurrentIfNeeded();
+    WaveformWidgetRenderer::resizeRenderer(width, height, devicePixelRatio);
+    onPreRender();
+
+    if (isContextValid()) { // During startup the context is not yet valid
+        // clear old no longer fitting texture (ignores glVieport)
+        glClearColor(0, 0, 0, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // Paint immediately the new waveform
+        // Disabled, because this shows a shifted version for unknown reasons
+        // m_pEngine->resize(width, height);
+        // paintGL();
+
+        swapBuffers();
+        glFlush();
+    }
+    doneCurrent();
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
-    w = static_cast<int>(std::lround(static_cast<qreal>(w) / devicePixelRatioF()));
-    h = static_cast<int>(std::lround(static_cast<qreal>(h) / devicePixelRatioF()));
+    // This virtual function is called via signal whenever the widget has been resized
+    // The widget has already the new size but maybe a sqized version of the texture
 
-    // Many allshader components relies on WaveformWidgetRenderer::getWidth and
-    // WaveformWidgetRenderer::getHeight to update their rendering stack, so we
-    // must resize the renderer first, before updating the rendergraph
-    WaveformWidgetRenderer::resizeRenderer(w, h, static_cast<float>(devicePixelRatio()));
+    // We have already a valid current context here
+    w = static_cast<int>(std::lround(w / devicePixelRatioF()));
+    h = static_cast<int>(std::lround(h / devicePixelRatioF()));
     m_pEngine->resize(w, h);
 }
 

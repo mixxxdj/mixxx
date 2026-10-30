@@ -22,7 +22,7 @@ void WaveformRendererHSV::onSetup(const QDomNode& node) {
 void WaveformRendererHSV::draw(
         QPainter* painter,
         QPaintEvent* /*event*/) {
-    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    ConstWaveformPointer pWaveform = m_pWaveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }
@@ -32,7 +32,7 @@ void WaveformRendererHSV::draw(
         return;
     }
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
 
     const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
@@ -44,7 +44,7 @@ void WaveformRendererHSV::draw(
         return;
     }
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_pWaveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -58,25 +58,25 @@ void WaveformRendererHSV::draw(
 
     // Rotate if drawing vertical waveforms
     // and revert devicePixelRatio scaling in x direction.
-    if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+    if (m_pWaveformRenderer->getOrientation() == Qt::Vertical) {
         painter->setTransform(QTransform(0, 1 / devicePixelRatio, 1, 0, 0, 0));
     } else {
         painter->setTransform(QTransform(1 / devicePixelRatio, 0, 0, 1, 0, 0));
     }
 
     const double firstVisualIndex =
-            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            m_pWaveformRenderer->getFirstDisplayedPosition() * trackSamples /
             audioVisualRatio;
     const double lastVisualIndex =
-            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            m_pWaveformRenderer->getLastDisplayedPosition() * trackSamples /
             audioVisualRatio;
 
     const double offset = firstVisualIndex;
-    const float length = m_waveformRenderer->getLength() * devicePixelRatio;
+    const qreal length = m_pWaveformRenderer->getLength() * devicePixelRatio;
 
     // Represents the # of waveform data points per horizontal pixel.
     const double gain = (lastVisualIndex - firstVisualIndex) / length;
-    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
+    const auto* pColors = m_pWaveformRenderer->getWaveformSignalColors();
 
     float allGain = 1.0;
     float lowGain = 1.0;
@@ -93,9 +93,9 @@ void WaveformRendererHSV::draw(
 
     QPen pen;
     pen.setCapStyle(Qt::FlatCap);
-    pen.setWidthF(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
+    pen.setWidthF(math_max(1.0, 1.0 / m_pWaveformRenderer->getVisualSamplePerPixel()));
 
-    const int breadth = m_waveformRenderer->getBreadth();
+    const int breadth = m_pWaveformRenderer->getBreadth();
     const float halfBreadth = static_cast<float>(breadth) / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / 255.0f;

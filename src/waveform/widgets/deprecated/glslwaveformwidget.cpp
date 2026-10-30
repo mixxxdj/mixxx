@@ -62,7 +62,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(
 }
 
 void GLSLWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {
@@ -84,7 +84,7 @@ mixxx::Duration GLSLWaveformWidget::render() {
     return t1; // return timer for painter setup
 }
 
-void GLSLWaveformWidget::resizeRenderer(int width, int height, float devicePixelRatio) {
+void GLSLWaveformWidget::resizeRenderer(int width, int height, qreal devicePixelRatio) {
     // NOTE: (vrince) this is needed since we allocation buffer on resize
     // and the Gl Context should be properly set
     makeCurrentIfNeeded();
