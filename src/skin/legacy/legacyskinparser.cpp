@@ -1447,13 +1447,10 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
     QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WSpinnyBase* pSpinny;
-#ifdef MIXXX_USE_QOPENGL
     if (pWaveformWidgetFactory->isOpenGlShaderAvailable() &&
             !CmdlineArgs::Instance().getUseLegacySpinny()) {
         pSpinny = new WSpinnyGLSL(pParent, group, m_pConfig, m_pVCManager, pPlayer);
-    } else
-#endif
-    {
+    } else {
         pSpinny = new WSpinny(pParent, group, m_pConfig, m_pVCManager, pPlayer);
     }
     if (!pParent) {
@@ -1528,12 +1525,9 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
     QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WVuMeterBase* pVuMeterWidget;
-#ifdef MIXXX_USE_QOPENGL
     if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
         pVuMeterWidget = new WVuMeterGLSL(pParent);
-    } else
-#endif
-    {
+    } else {
         pVuMeterWidget = new WVuMeter(pParent);
     }
     if (!pParent) {

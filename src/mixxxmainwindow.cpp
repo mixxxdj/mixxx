@@ -12,12 +12,10 @@
 #include <QDBusConnectionInterface>
 #endif
 
-#ifdef MIXXX_USE_QOPENGL
 #include <QGuiApplication>
 
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
-#endif
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "coreservices.h"
@@ -58,7 +56,7 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
@@ -129,7 +127,6 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     m_pVisualsManager = new VisualsManager();
 }
 
-#ifdef MIXXX_USE_QOPENGL
 void MixxxMainWindow::initializeQOpenGL() {
     // With EGLFS there is always exactly one native window and one EGL window surface
     // OpenGL windows cannot be embedded into our QWidgets main window we already have.
@@ -166,7 +163,6 @@ void MixxxMainWindow::initializeQOpenGL() {
     qInfo() << "Initializing without OpenGL";
     initialize();
 }
-#endif
 
 void MixxxMainWindow::initialize() {
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
@@ -177,10 +173,8 @@ void MixxxMainWindow::initialize() {
     m_toolTipsCfg = pConfig->getValue(
             ConfigKey("[Controls]", "Tooltips"),
             mixxx::preferences::Tooltips::On);
-#ifdef MIXXX_USE_QOPENGL
     ToolTipQOpenGL::singleton().setActive(
             m_toolTipsCfg == mixxx::preferences::Tooltips::On);
-#endif
 
 #ifdef __ENGINEPRIME__
     // Initialise library exporter
@@ -242,38 +236,6 @@ void MixxxMainWindow::initialize() {
                     m_pVisualsManager->addDeckIfNotExist(group);
                 }
             });
-
-#ifndef MIXXX_USE_QOPENGL
-    // Before creating the first skin we need to create a QGLWidget so that all
-    // the QGLWidget's we create can use it as a shared QGLContext.
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-        QGLFormat glFormat;
-        glFormat.setDirectRendering(true);
-        glFormat.setDoubleBuffer(true);
-        glFormat.setDepth(false);
-        // Disable waiting for vertical Sync
-        // This can be enabled when using a single Threads for each QGLContext
-        // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-#if defined(__APPLE__)
-        // On OS X, syncing to vsync has good performance FPS-wise and
-        // eliminates tearing.
-        glFormat.setSwapInterval(1);
-#else
-        // Otherwise, turn VSync off because it could cause horrible FPS on
-        // Linux.
-        // TODO(XXX): Make this configurable.
-        // TODO(XXX): What should we do on Windows?
-        glFormat.setSwapInterval(0);
-#endif
-        glFormat.setRgba(true);
-        QGLFormat::setDefaultFormat(glFormat);
-
-        WGLWidget* pContextWidget = new WGLWidget(this);
-        pContextWidget->setGeometry(QRect(0, 0, 3, 3));
-        pContextWidget->hide();
-        SharedGLContext::setWidget(pContextWidget);
-    }
-#endif
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
@@ -1312,10 +1274,8 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
     m_toolTipsCfg = tt;
     m_pCoreServices->getKeyboardEventFilter()->setShowOnlyKbdShortcuts(
             tt == mixxx::preferences::Tooltips::OnlyKbdShortcuts);
-#ifdef MIXXX_USE_QOPENGL
     ToolTipQOpenGL::singleton().setActive(
             m_toolTipsCfg == mixxx::preferences::Tooltips::On);
-#endif
 }
 
 void MixxxMainWindow::rebootMixxxView() {

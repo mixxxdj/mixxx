@@ -1,9 +1,5 @@
 #pragma once
 
-#ifndef WGLWIDGET_H
-#error "Do not include this file, include wglwidget.h instead"
-#endif
-
 #include <QWidget>
 
 ////////////////////////////////
