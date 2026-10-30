@@ -2989,7 +2989,6 @@ if(BUILD_TESTING)
     src/test/looping_control_test.cpp
     src/test/main.cpp
     src/test/mathutiltest.cpp
-    src/test/matrixapitest.cpp
     src/test/metadatatest.cpp
     #TODO: make this build again
     #src/test/metaknob_link_test.cpp
@@ -3011,7 +3010,6 @@ if(BUILD_TESTING)
     src/test/rgbcolor_test.cpp
     src/test/rotary_test.cpp
     src/test/samplebuffertest.cpp
-    src/test/savitzkygolaytest.cpp
     src/test/schemamanager_test.cpp
     src/test/searchqueryparsertest.cpp
     src/test/seratobeatgridtest.cpp
@@ -3108,7 +3106,7 @@ if(BUILD_TESTING)
   set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
   target_link_libraries(
     mixxx-test
-    PRIVATE mixxx-lib mixxx-gitinfostore mixxx-xwax GTest::gtest GTest::gmock
+    PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock
   )
 
   if(BUILD_BENCH)
@@ -5481,6 +5479,13 @@ if(VINYLCONTROL)
       lib/xwax/fmatrix.c
   )
   target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
+  if(BUILD_TESTING)
+    target_sources(
+      mixxx-test
+      PRIVATE src/test/matrixapitest.cpp src/test/savitzkygolaytest.cpp
+    )
+    target_link_libraries(mixxx-test PRIVATE mixxx-xwax)
+  endif()
   target_link_libraries(mixxx-lib PRIVATE mixxx-xwax)
 endif()
 
