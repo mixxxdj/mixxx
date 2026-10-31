@@ -391,10 +391,20 @@ void EngineMixer::process(const std::size_t bufferSize) {
     CSAMPLE mainMixGainInHeadphones = 0;
     if (mainEnabled) {
         const auto cf_val = static_cast<CSAMPLE_GAIN>(m_pHeadMix->get());
-        pflMixGainInHeadphones = 0.5f * (-cf_val + 1.0f);
-        mainMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
-        // qDebug() << "head val " << cf_val << ", head " << chead_gain
-        //          << ", main " << mainGain;
+        if (m_pHeadSplitEnabled->toBool()) {
+            // In split cue mode each ear carries a single signal (PFL in the
+            // left, main mix in the right), and both gains should be unity at
+            // headMix center. Only the signal that is faded away from gets
+            // ramped down.
+            pflMixGainInHeadphones = std::min<CSAMPLE_GAIN>(1.0f, 1.0f - cf_val);
+            mainMixGainInHeadphones = std::min<CSAMPLE_GAIN>(1.0f, 1.0f + cf_val);
+        } else {
+            // In merged cue mode each ear gets both PFL and main mix; the sum
+            // of the gains is 1.0 so that when the signals are added together
+            // they don't clip.
+            pflMixGainInHeadphones = 0.5f * (-cf_val + 1.0f);
+            mainMixGainInHeadphones = 0.5f * (cf_val + 1.0f);
+        }
     }
 
     // Mix all the PFL enabled channels together.
@@ -817,29 +827,36 @@ void EngineMixer::applyMainEffects(std::size_t bufferSize) {
 void EngineMixer::processHeadphones(
         const CSAMPLE_GAIN mainMixGainInHeadphones,
         std::size_t bufferSize) {
-    // Add main mix to headphones
-    SampleUtil::addWithRampingGain(
-            m_head.data(),
-            m_main.data(),
-            m_headphoneMainGainOld,
-            mainMixGainInHeadphones,
-            bufferSize);
-    m_headphoneMainGainOld = mainMixGainInHeadphones;
-
-    // If Head Split is enabled, replace the left channel of the pfl buffer
-    // with a mono mix of the headphone buffer, and the right channel of the pfl
-    // buffer with a mono mix of the main output buffer.
     if (m_pHeadSplitEnabled->toBool()) {
-        // note: NOT VECTORIZED because of in place copy
-        // with all compilers, except clang >= 14.
+        // Split cue mode: the left ear must carry only the PFL mix and the
+        // right ear only the main mix. Downmix the PFL-only headphone buffer
+        // to mono into the left channel first. Then downmix the main mix to
+        // mono in the right channel, scaled with the headMix-derived gain.
+        const CSAMPLE_GAIN gain_delta =
+                (mainMixGainInHeadphones - m_headphoneMainGainOld) /
+                static_cast<CSAMPLE_GAIN>(bufferSize / 2);
+        CSAMPLE_GAIN gain = m_headphoneMainGainOld;
         auto* const ph = m_head.data();
         auto* const pm = m_main.data();
         for (std::size_t i = 0; i + 1 < bufferSize; i += 2) {
             ph[i] = (ph[i] + ph[i + 1]) / 2;
-            ph[i + 1] = (pm[i] + pm[i + 1]) / 2;
+            gain += gain_delta;
+            ph[i + 1] = (pm[i] + pm[i + 1]) / 2 * gain;
         }
-    } else if (m_pMainMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_head.data(), bufferSize);
+        m_headphoneMainGainOld = mainMixGainInHeadphones;
+    } else {
+        // Add main mix to headphones
+        SampleUtil::addWithRampingGain(
+                m_head.data(),
+                m_main.data(),
+                m_headphoneMainGainOld,
+                mainMixGainInHeadphones,
+                bufferSize);
+        m_headphoneMainGainOld = mainMixGainInHeadphones;
+
+        if (m_pMainMonoMixdown->toBool()) {
+            SampleUtil::mixStereoToMono(m_head.data(), bufferSize);
+        }
     }
 
     // Apply headphone gain
