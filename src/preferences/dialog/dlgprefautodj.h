@@ -30,6 +30,7 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
 
   private:
     void considerRepeatPlaylistState(bool);
+    void updateRequeueIgnoreToolTip();
 
     UserSettingsPointer m_pConfig;
 };
