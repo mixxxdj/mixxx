@@ -396,8 +396,8 @@ void EngineMixer::process(const std::size_t bufferSize) {
             // left, main mix in the right), and both gains should be unity at
             // headMix center. Only the signal that is faded away from gets
             // ramped down.
-            pflMixGainInHeadphones = std::min<CSAMPLE_GAIN>(1.0, 1.0 - cf_val);
-            mainMixGainInHeadphones = std::min<CSAMPLE_GAIN>(1.0, 1.0 + cf_val);
+            pflMixGainInHeadphones = std::min<CSAMPLE_GAIN>(1.0f, 1.0f - cf_val);
+            mainMixGainInHeadphones = std::min<CSAMPLE_GAIN>(1.0f, 1.0f + cf_val);
         } else {
             // In merged cue mode each ear gets both PFL and main mix; the sum
             // of the gains is 1.0 so that when the signals are added together
