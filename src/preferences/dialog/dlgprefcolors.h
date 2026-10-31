@@ -56,7 +56,9 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
             const QString& hotcueColors,
             const QString& trackColors,
             int defaultHotcueColor,
-            int defaultLoopColor);
+            int defaultLoopColor,
+            int defaultJumpColor);
+    void updateKeyColorsCombobox();
 
     const UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;

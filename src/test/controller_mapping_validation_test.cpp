@@ -8,8 +8,8 @@
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
-#ifdef MIXXX_USE_QML
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/enginemixer.h"
@@ -17,10 +17,12 @@
 #include "library/library.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "track/track.h"
+#ifdef MIXXX_USE_QML
 #include "qml/qmlplayermanagerproxy.h"
-#include "soundio/soundmanager.h"
 #endif
 #include "moc_controller_mapping_validation_test.cpp"
+#include "soundio/soundmanager.h"
 
 namespace {
 const QRegularExpression kNonWordPattern(QStringLiteral("[^\\w]+"));
@@ -109,8 +111,12 @@ void FakeBulkControllerJSProxy::send(const QList<int>& data, unsigned int length
 
 FakeController::FakeController()
         : Controller("Test Controller"),
-          m_bMidiMapping(false),
-          m_bHidMapping(false) {
+          m_bMidiMapping(false)
+#ifdef __HID__
+          ,
+          m_bHidMapping(false)
+#endif
+{
     startEngine();
     getScriptEngine()->setTesting(true);
 }
@@ -185,6 +191,7 @@ void MappingTestFixture::SetUp() {
 
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(m_pPlayerManager);
+    ControllerScriptEngineBase::registerPlayerManager(m_pPlayerManager);
     ControllerScriptEngineBase::registerTrackCollectionManager(m_pTrackCollectionManager);
 #endif
 }
@@ -195,6 +202,7 @@ void MappingTestFixture::TearDown() {
     PlayerInfo::destroy();
     CoverArtCache::destroy();
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
 }
@@ -255,7 +263,7 @@ std::string PrintMappingName(const ::testing::TestParamInfo<std::string>& info) 
 }
 
 TEST_P(MappingTestFixture, ValidateMappingXML) {
-    QString mappingPath = QString::fromStdString(GetParam());
+    QFileInfo mappingPath = QFileInfo(QString::fromStdString(GetParam()));
     qDebug() << "ValidateMappingXML" << mappingPath;
 
     MappingInfo mapping(mappingPath);

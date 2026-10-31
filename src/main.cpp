@@ -28,6 +28,8 @@
 #if defined(__WINDOWS__)
 #include "nativeeventhandlerwin.h"
 #endif
+#include "skin/skin.h"
+#include "skin/skinloader.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -60,15 +62,33 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
+    auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 #ifdef MIXXX_USE_QML
-    if (args.isQml()) {
-        mixxx::qml::QmlApplication qmlApplication(pApp, args);
-        exitCode = pApp->exec();
+    QString mainQmlFilePath;
+    bool loadQml = args.isQml();
+    if (!loadQml && args.getDeveloper()) {
+        mixxx::skin::SkinLoader skinLoader(pCoreServices->getSettings());
+        const mixxx::skin::SkinPointer pSkin = skinLoader.getConfiguredSkin();
+        if (pSkin && pSkin->type() == mixxx::skin::SkinType::QML) {
+            loadQml = true;
+            mainQmlFilePath = pSkin->mainQmlFilePath();
+        }
+    }
+    if (loadQml) {
+        // This is a workaround to support Qt 6.4.2, currently shipped on
+        // Ubuntu 24.04 See
+        // https://github.com/mixxxdj/mixxx/pull/14514#issuecomment-2770811094
+        // for further details
+        qputenv("QT_QUICK_TABLEVIEW_COMPAT_VERSION", "6.4");
+        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices, mainQmlFilePath);
+        if (!qmlApplication.isReady()) {
+            exitCode = kFatalErrorOnStartupExitCode;
+        } else {
+            exitCode = pApp->exec();
+        }
     } else
 #endif
     {
-        auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
-
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
         // leaked COs may be triggered.
@@ -91,7 +111,12 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         QPixmapCache::setCacheLimit(static_cast<int>(kPixmapCacheLimitAt100PercentZoom *
                 pow(pApp->devicePixelRatio(), 2.0f)));
 
-        pCoreServices->initialize(pApp);
+        pCoreServices->initialize();
+
+        if (pCoreServices->getSettings()->getValue(
+                    ConfigKey("[Config]", "did_run_with_unstable"), false)) {
+            qInfo() << "User previously ran the unstable version on this profile";
+        }
 
 #ifdef MIXXX_USE_QOPENGL
         // Will call initialize when the initial wglwidget's
@@ -171,6 +196,18 @@ void applyStyleOverride(CmdlineArgs* pArgs) {
 
 } // anonymous namespace
 
+#ifdef Q_OS_ANDROID
+  // Currently, accessibility properties are not set, leading to a warning spam in
+  // the android logcat. Furthermore, there seems to be a few issues with the default setup,
+  // which leads to huge performance loss and occasional random crash.
+extern "C" {
+JNIEXPORT bool JNICALL
+Java_org_qtproject_qt_android_QtNativeAccessibility_accessibilitySupported(JNIEnv*, jobject) {
+    return false;
+}
+}
+#endif
+
 int main(int argc, char * argv[]) {
     Console console;
 
@@ -178,26 +215,14 @@ int main(int argc, char * argv[]) {
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
-    // High DPI scaling is always enabled in Qt6.
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // This needs to be set before initializing the QApplication.
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-#endif
 #ifdef MIXXX_USE_QOPENGL
     QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
 
-    // workaround for https://bugreports.qt.io/browse/QTBUG-84363
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)
-    qputenv("QV4_FORCE_INTERPRETER", QByteArrayLiteral("1"));
-#endif
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     // Follow whatever factor the user has selected in the system settings
     // By default the value is always rounded to the nearest int.
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
             Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
-#endif
 
 #ifdef __LINUX__
     // Needed by Wayland compositors to set proper app_id and window icon
@@ -218,8 +243,10 @@ int main(int argc, char * argv[]) {
         return kParseCmdlineArgsErrorExitCode;
     }
 
-    // If you change this here, you also need to change it in
-    // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
+    // Set a unique thread object name
+    //
+    // This is used for a check within ErrorDialogHandler::errorDialog()
+    // for earlier Qt versions
     QThread::currentThread()->setObjectName("Main");
 
     // Create the ErrorDialogHandler in the main thread, otherwise it will be

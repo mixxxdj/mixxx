@@ -3,7 +3,6 @@
 #include "rendergraph/material/rgbmaterial.h"
 #include "rendergraph/vertexupdaters/rgbvertexupdater.h"
 #include "track/track.h"
-#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -12,8 +11,9 @@ using namespace rendergraph;
 
 namespace allshader {
 
-WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRendererSignalBase(waveformWidget) {
+WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }
@@ -54,7 +54,7 @@ bool WaveformRendererHSV::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif
@@ -75,6 +75,9 @@ bool WaveformRendererHSV::preprocessInner() {
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
+    if (visualIncrementPerPixel == 0.0) {
+        return false;
+    }
 
     float allGain = 1.0f;
     float lowGain = 1.0f;
@@ -83,9 +86,7 @@ bool WaveformRendererHSV::preprocessInner() {
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
-    float h, s, v;
-    getHsvF(m_waveformRenderer->getWaveformSignalColors()->getLowColor(), &h, &s, &v);
-
+    float h = m_signalColor_h;
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 

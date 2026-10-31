@@ -1112,7 +1112,8 @@ WLabel#TrackComment {
     }
 
 WBeatSpinBox,
-#spinBoxTransition {
+#spinBoxTransition,
+#spinBoxRecentDays {
   /* Note(ronso0):
   make it 2px smaller in each dimension,
   border is added for final size.
@@ -1136,26 +1137,34 @@ WBeatSpinBox,
     padding: 1px 0px 1px 3px;
     margin: 0px 15px 0px 0px;
   }
-  #spinBoxTransition {
+  #spinBoxTransition,
+  #spinBoxRecentDays {
     /* Note(ronso0):
     Individual padding/margin in AutoDJ feature */
     padding: -1px 3px -1px 3px;
     margin: 0px 17px 3px 3px;
   }
   WBeatSpinBox:hover,
-  #spinBoxTransition:hover {
+  #spinBoxTransition:hover,
+  #spinBoxRecentDays:hover {
     border-color: #888;
   }
   WBeatSpinBox:focus,
-  #spinBoxTransition:focus {
+  #spinBoxTransition:focus,
+  #spinBoxRecentDays:focus {
     border-color: #ff6600;
     color: #ccc;
+  }
+  #spinBoxRecentDays:disabled {
+    color: #555;
   }
 
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   #spinBoxTransition::up-button,
-  #spinBoxTransition::down-button {
+  #spinBoxTransition::down-button,
+  #spinBoxRecentDays::up-button,
+  #spinBoxRecentDays::down-button {
     subcontrol-origin: padding;
     position: relative;
     background-color: #1e1e1e;
@@ -1165,12 +1174,15 @@ WBeatSpinBox,
     WBeatSpinBox::up-button:hover,
     WBeatSpinBox::down-button:hover,
     #spinBoxTransition::up-button:hover,
-    #spinBoxTransition::down-button:hover {
+    #spinBoxTransition::down-button:hover,
+    #spinBoxRecentDays::up-button:hover,
+    #spinBoxRecentDays::down-button:hover {
       background-color: #0f0f0f;
       }
 
   WBeatSpinBox::up-button,
-  #spinBoxTransition::up-button {
+  #spinBoxTransition::up-button,
+  #spinBoxRecentDays::up-button {
     subcontrol-position: center right;
     /* Note(ronso0):
     Regularly, up/down buttons would be stacked vertically.
@@ -1181,18 +1193,21 @@ WBeatSpinBox,
     image: url(skin:/../Tango/buttons/btn_beatbox_up.svg) no-repeat;
     }
     WBeatSpinBox::up-button:hover,
-    #spinBoxTransition::up-button:hover {
+    #spinBoxTransition::up-button:hover,
+    #spinBoxRecentDays::up-button:hover {
       image: url(skin:/../Tango/buttons/btn_beatbox_up_hover.svg) no-repeat;
     }
   WBeatSpinBox::down-button,
-  #spinBoxTransition::down-button {
+  #spinBoxTransition::down-button,
+  #spinBoxRecentDays::down-button {
     subcontrol-position: center right;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     image: url(skin:/../Tango/buttons/btn_beatbox_down.svg) no-repeat;
     }
     WBeatSpinBox::down-button:hover,
-    #spinBoxTransition::down-button:hover {
+    #spinBoxTransition::down-button:hover,
+    #spinBoxRecentDays::down-button:hover {
       image: url(skin:/../Tango/buttons/btn_beatbox_down_hover.svg) no-repeat;
     }
 
@@ -2485,7 +2500,35 @@ WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton,
+#CueDeleteButton {
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 26px;
+  height: 26px;
+  border: 1px solid #666;
+  background-color: #333;
+  border-radius: 2px;
+  qproperty-icon: url(skin:/../Tango/buttons/btn_delete.svg);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 16px;
+}
+#CueStandardButton {
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 26px;
+  height: 44px;
+  border: 1px solid #666;
+  background-color: #333;
+  border-radius: 2px;
+  qproperty-icon: url(skin:/../Tango/buttons/btn_hotcues_later.svg);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+}
+#CueStandardButton:checked {
+  background-color: #ff7b00;
+}
 #CueSavedLoopButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
@@ -2495,7 +2538,31 @@ WSearchRelatedTracksMenu #SearchSelectedAction::indicator {
   border: 1px solid #666;
   background-color: #333;
   border-radius: 2px;
-  }
+  qproperty-icon: url(skin:/../Tango/buttons/btn_loop_beatjump_off.svg);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+}
+#CueSavedLoopButton:checked {
+  background-color: #ff7b00;
+  qproperty-icon: url(skin:/../Tango/buttons/btn_loop_beatjump_on.svg);
+}
+#CueSavedJumpButton {
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 26px;
+  height: 44px;
+  border: 1px solid #666;
+  background-color: #333;
+  border-radius: 2px;
+  qproperty-icon: url(skin:/../Tango/buttons/btn_beatjump_forward.svg);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+}
+#CueSavedJumpButton:checked {
+  qproperty-icon: url(skin:/../Tango/buttons/btn_beatjump_forward_pressed.svg);
+  background-color: #ff7b00;
+}
   #CueDeleteButton {
     /* Note: we can't use qproperty-icon here because it's evauated only once
        and therefore won't style the checked state */
@@ -3122,6 +3189,10 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     #LibraryBPMSpinBox::down-button {
       image: url(skin:/../Tango/buttons/btn_lib_spinbox_down_white.svg) no-repeat;
     }
+
+#spinBoxRecentDays {
+  width: 60px;
+}
 
   /* Button in library "Preview" column */
   #LibraryPreviewButton {

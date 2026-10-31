@@ -1,8 +1,14 @@
 #pragma once
 
+#include <QFuture>
+#include <memory>
+#include <mutex>
+#include <optional>
+
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidiothread.h"
+#include "controllers/hid/hidreportdescriptor.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 
 /// HID controller backend
@@ -70,6 +76,15 @@ class HidController final : public Controller {
     QString getUsageDescription() const {
         return m_deviceInfo.getUsageDescription();
     }
+
+    std::shared_ptr<const hid::reportDescriptor::HidReportDescriptor> getReportDescriptor() const {
+        return m_reportDescriptor;
+    }
+
+    HidIoThread* getHidIoThread() const {
+        return m_pHidIoThread.get();
+    }
+
     bool isMappable() const override {
         if (!m_pMapping) {
             return false;
@@ -79,6 +94,12 @@ class HidController final : public Controller {
 
     bool matchMapping(const MappingInfo& mapping) override;
 
+    // Start fetching the device's HID report descriptor in a background thread.
+    // The fetched raw descriptor is stored inside the DeviceInfo owned by this
+    // HidController instance so it will be available later when the device is
+    // opened for real.
+    void fetchReportDescriptorInBackground();
+
   private:
     int open(const QString& resourcePath) override;
     int close() override;
@@ -87,10 +108,28 @@ class HidController final : public Controller {
     // 0x0.
     bool sendBytes(const QByteArray& data) override;
 
-    const mixxx::hid::DeviceInfo m_deviceInfo;
+    mixxx::hid::DeviceInfo m_deviceInfo;
+    // These optional members are not set before opening the device
+    std::shared_ptr<hid::reportDescriptor::HidReportDescriptor> m_reportDescriptor;
+    std::optional<bool> m_deviceUsesReportIds;
 
     std::unique_ptr<HidIoThread> m_pHidIoThread;
     std::unique_ptr<LegacyHidControllerMapping> m_pMapping;
+
+    // Background thread used to fetch raw HID report descriptor during
+    // enumeration so mapping detection can use it without blocking the startup.
+    QFuture<void> m_reportDescriptorFuture;
+
+    // Protects access to m_reportDescriptor and m_deviceUsesReportIds from
+    // concurrent access between the background fetch thread
+    // and the hid controller thread that opens the device.
+    mutable std::mutex m_reportDescriptorMutex;
+
+    // A persistent lock on m_reportDescriptorMutex, acquired in open() and
+    // released in close(). This prevents the background fetch thread from
+    // modifying the report descriptor while it is being used. When a
+    // unique_lock is reset, it automatically releases the mutex it holds.
+    std::optional<std::unique_lock<std::mutex>> m_reportDescriptorLock;
 
     friend class HidControllerJSProxy;
 };

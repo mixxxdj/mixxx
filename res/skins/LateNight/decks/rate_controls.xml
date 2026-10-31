@@ -20,40 +20,32 @@
         <SizePolicy>min,me</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- BPM + rate + Tap overlay-->
-            <ObjectName>BpmRateTapContainer</ObjectName>
+          <!-- [BPM + rate + Tap overlay] + SyncBox -->
+          <!-- We want the BPM display/edit box to be aligned with the Sync controls.
+               Since size policies are hard to control with the stacked BPM display/edit layout,
+               we put this into a separate container. -->
+          <WidgetGroup>
+            <ObjectName>BpmTapSyncContainer</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <MaximumSize>,46</MaximumSize>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
+
               <WidgetGroup>
                 <ObjectName>BpmTapContainer</ObjectName>
-                <Layout>stacked</Layout>
-                <Size>57f,-1me</Size>
+                <!-- same width as total width of SyncBox children (40 + 22) -->
+                <Size>62f,42f</Size>
                 <Children>
-                  <!-- invisible Tempo/BPM tap button on top of BPM display -->
-                  <PushButton>
-                    <TooltipId>tempo_tap_bpm_tap_visual_bpm</TooltipId>
-                    <ObjectName>BpmTap</ObjectName>
-                    <Size>57f,-1me</Size>
-                    <NumberStates>1</NumberStates>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,tempo_tap</ConfigKey>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                  </PushButton>
-                  <WidgetGroup><!-- BPM + rate -->
+                  <!-- BPM + rate -->
+                  <WidgetGroup>
                     <ObjectName>AlignCenter</ObjectName>
+                    <Pos>0,0</Pos>
                     <Layout>vertical</Layout>
-                    <Size>57f,-1me</Size>
+                    <Size>62f,-1me</Size>
                     <Children>
                       <Number>
                         <ObjectName>BpmText</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
-                        <Size>57f,22f</Size>
+                        <Size>62f,22f</Size>
                         <Alignment>center</Alignment>
                         <NumberOfDigits>2</NumberOfDigits>
                         <Connection>
@@ -69,43 +61,50 @@
                       </NumberRate>
                     </Children>
                   </WidgetGroup>
+                  <!-- invisible Tempo/BPM editor on top of BPM/rate displays -->
+                  <BpmEditor>
+                    <TooltipId>visual_bpm_edit</TooltipId>
+                    <Pos>0,0</Pos>
+                    <Size>62f,42f</Size>
+                    <Group><Variable name="Group"/></Group>
+                  </BpmEditor>
                 </Children>
-              </WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- BpmRateTapContainer -->
+              </WidgetGroup><!-- BpmTapContainer -->
 
-          <WidgetGroup>
-            <ObjectName>SyncBox</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <PushButton>
-                <TooltipId>sync_enabled</TooltipId>
-                <ObjectName>SyncDeck</ObjectName>
-                <Size>40f,22f</Size>
-                <NumberStates>2</NumberStates>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
-                <Connection>
-                  <ConfigKey><Variable name="Group"/>,sync_enabled</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-              </PushButton>
-              <PushButton>
-                <TooltipId>sync_leader</TooltipId>
-                <ObjectName>SyncLeader</ObjectName>
-                <Size>22f,22f</Size>
-                <NumberStates>3</NumberStates>
-                <Connection>
-                  <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <WidgetGroup>
+                <ObjectName>SyncBox</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <PushButton>
+                    <TooltipId>sync_enabled</TooltipId>
+                    <ObjectName>SyncDeck</ObjectName>
+                    <Size>40f,22f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,sync_enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <PushButton>
+                    <TooltipId>sync_leader</TooltipId>
+                    <ObjectName>SyncLeader</ObjectName>
+                    <Size>22f,22f</Size>
+                    <NumberStates>3</NumberStates>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- SyncBox -->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- BpmTapSyncContainer -->
 
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 

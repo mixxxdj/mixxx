@@ -1,0 +1,636 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>Traktor Kontrol S4 MK3 (Screens)</name>
+        <author>A. Colombier</author>
+        <description>Mapping for Traktor Kontrol S4 MK3 screens</description>
+        <manual>native_instruments_traktor_kontrol_s4_mk3</manual>
+        <devices>
+            <!--
+                On Windows, you will need to install a libusb-ready driver.
+                https://github.com/libusb/libusb/wiki/Windows#how-to-use-libusb-on-windows
+
+                Tested with WinUSB v6.1.7600.16385 installed with Zadig (https://github.com/pbatard/libwdi/wiki/Zadig)
+            -->
+            <product protocol="bulk" vendor_id="0x17cc" product_id="0x1720" out_epaddr="0x03" interface_number="0x04" />
+        </devices>
+    </info>
+    <settings>
+        <row>
+            <option
+                variable="theme"
+                type="enum"
+                label="Theme use for the screen">
+                <description>
+                    The theme used for the screens
+                </description>
+                <value label="Classic" default="true">stock</value>
+                <value label="Advanced">advanced</value>
+            </option>
+        </row>
+         <group label="Advanced theme settings">
+            <group label="Cosmetic">
+                <row>
+                    <option
+                        variable="idleBackground"
+                        type="file"
+                        pattern="Images (*.png *.gif *.jpg)"
+                        label="Idle deck background">
+                        <description>
+                            The background used for empty decks
+                        </description>
+                    </option>
+                    <option
+                        variable="accentColor"
+                        type="color"
+                        default="orange"
+                        label="Accent color">
+                        <description>
+                            The background used for empty decks
+                        </description>
+                    </option>
+                    <option
+                        variable="deckToShow"
+                        type="enum"
+                        label="Decks layout">
+                        <value label="All 4 decks">all</value>
+                        <value label="Only A and B">ab</value>
+                        <value label="Only C and D">cd</value>
+                    </option>
+                </row>
+            </group>
+
+            <group label="BPM/Tempo overlay fields">
+                <row>
+                    <option
+                        variable="alwaysShowTempoInfo"
+                        type="boolean"
+                        default="false"
+                        label="Always show the tempo info overlay"/>
+                    <option
+                        variable="bpmOverlayTimer"
+                        default="2"
+                        type="real"
+                        min="0.1"
+                        max="15"
+                        step="0.1"
+                        precision="2"
+                        description="amount of time the bpm overlay will stay on the screen"
+                        label="Tempo info overlay auto-hide period"/>
+                </row>
+                <row>
+                    <option
+                        variable="tempoDisplayLeft"
+                        type="enum"
+                        label="Left item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM" default="true">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayCenter"
+                        type="enum"
+                        label="Center item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM" default="true">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayRight"
+                        type="enum"
+                        label="Right item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo" default="true">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                </row>
+
+                <row>
+                    <option
+                        variable="tempoDisplayLeftShift"
+                        type="enum"
+                        label="Shifted left item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset" default="true">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayCenterShift"
+                        type="enum"
+                        label="Shifted center item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset">5</value>
+                        <value label="Master Deck Letter" default="true">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                    <option
+                        variable="tempoDisplayRightShift"
+                        type="enum"
+                        label="Shifted right item">
+                        <value label="Hidden">0</value>
+                        <value label="Master BPM">1</value>
+                        <value label="BPM">2</value>
+                        <value label="Tempo">3</value>
+                        <value label="BPM Offset">4</value>
+                        <value label="Tempo Offset" default="true">5</value>
+                        <value label="Master Deck Letter">6</value>
+                        <value label="Tempo Range">7</value>
+                        <value label="Key">8</value>
+                        <value label="Original BPM">9</value>
+                    </option>
+                </row>
+
+                <row>
+                    <option
+                        variable="hidePhase"
+                        type="boolean"
+                        default="false"
+                        label="Disable phase indicators"/>
+                </row>
+
+                <row>
+                    <option
+                        variable="hidePhrase"
+                        type="boolean"
+                        default="true"
+                        label="Disable phrase indicator"/>
+                </row>
+
+                <row>
+                    <option
+                        variable="showBPMGridAdjust"
+                        type="boolean"
+                        default="true"
+                        label="ShowBPMGridAdjust"/>
+                </row>
+
+                <row>
+                    <option
+                        variable="rateAdjustTimer"
+                        default="2"
+                        type="real"
+                        min="0.1"
+                        max="15"
+                        step="0.1"
+                        precision="2"
+                        label="Rate and waveform adjust timer"/>
+                </row>
+            </group>
+
+            <group label="BPM, tempo and cue color">
+                <row>
+                    <option
+                        variable="enableBpmTextColor"
+                        type="boolean"
+                        default="false"
+                        label="EnableBpmTextColor"/>
+                    <option
+                        variable="enableMasterBpmTextColor"
+                        type="boolean"
+                        default="false"
+                        label="EnableMasterBpmTextColor"/>
+                    <option
+                        variable="enableTempoTextColor"
+                        type="boolean"
+                        default="false"
+                        label="EnableTempoTextColor"/>
+                </row>
+
+                <row>
+                    <option
+                        variable="enableBpmOffsetTextColor"
+                        type="boolean"
+                        default="false"
+                        label="EnableBpmOffsetTextColor"/>
+                    <option
+                        variable="enableTempoOffsetTextColor"
+                        type="boolean"
+                        default="false"
+                        label="EnableTempoOffsetTextColor"/>
+                    <option
+                        variable="enableMasterDeckTextColor"
+                        type="boolean"
+                        default="false"
+                        label="EnableMasterDeckTextColor"/>
+                </row>
+
+                <row>
+                <option
+                        variable="cueCueColor"
+                        type="enum"
+                        default="10"
+                        label="CueCueColor">
+                        <value label="Red">0</value>
+                        <value label="Dark Orange">1</value>
+                        <value label="Light Orange">2</value>
+                        <value label="Default" default="true">3</value>
+                        <value label="Yellow">4</value>
+                        <value label="Lime">5</value>
+                        <value label="Green">6</value>
+                        <value label="Mint">7</value>
+                        <value label="Cyan">8</value>
+                        <value label="Turquoise">9</value>
+                        <value label="Blue">10</value>
+                        <value label="Plum">11</value>
+                        <value label="Violet">12</value>
+                        <value label="Purple">13</value>
+                        <value label="Magenta">14</value>
+                        <value label="Fuchsia">15</value>
+                        <value label="White">16</value>
+                        <value label="Warm Yellow">17</value>
+                    </option>
+                    <option
+                        variable="cueLoopColor"
+                        type="enum"
+                        label="CueLoopColor">
+                        <value label="Red">0</value>
+                        <value label="Dark Orange">1</value>
+                        <value label="Light Orange">2</value>
+                        <value label="Default" default="true">3</value>
+                        <value label="Yellow">4</value>
+                        <value label="Lime">5</value>
+                        <value label="Green">6</value>
+                        <value label="Mint">7</value>
+                        <value label="Cyan">8</value>
+                        <value label="Turquoise">9</value>
+                        <value label="Blue">10</value>
+                        <value label="Plum">11</value>
+                        <value label="Violet">12</value>
+                        <value label="Purple">13</value>
+                        <value label="Magenta">14</value>
+                        <value label="Fuchsia">15</value>
+                        <value label="White">16</value>
+                        <value label="Warm Yellow">17</value>
+                    </option>
+                </row>
+
+                <row>
+                    <option
+                        variable="phaseAColor"
+                        type="enum"
+                        label="Phase color for deck A">
+                        <value label="Red">0</value>
+                        <value label="Dark Orange">1</value>
+                        <value label="Light Orange">2</value>
+                        <value label="Default" default="true">3</value>
+                        <value label="Yellow">4</value>
+                        <value label="Lime">5</value>
+                        <value label="Green">6</value>
+                        <value label="Mint">7</value>
+                        <value label="Cyan">8</value>
+                        <value label="Turquoise">9</value>
+                        <value label="Blue">10</value>
+                        <value label="Plum">11</value>
+                        <value label="Violet">12</value>
+                        <value label="Purple">13</value>
+                        <value label="Magenta">14</value>
+                        <value label="Fuchsia">15</value>
+                        <value label="White">16</value>
+                        <value label="Warm Yellow">17</value>
+                    </option>
+                    <option
+                        variable="phaseBColor"
+                        type="enum"
+                        label="Phase color for deck B">
+                        <value label="Red">0</value>
+                        <value label="Dark Orange">1</value>
+                        <value label="Light Orange">2</value>
+                        <value label="Default" default="true">3</value>
+                        <value label="Yellow">4</value>
+                        <value label="Lime">5</value>
+                        <value label="Green">6</value>
+                        <value label="Mint">7</value>
+                        <value label="Cyan">8</value>
+                        <value label="Turquoise">9</value>
+                        <value label="Blue">10</value>
+                        <value label="Plum">11</value>
+                        <value label="Violet">12</value>
+                        <value label="Purple">13</value>
+                        <value label="Magenta">14</value>
+                        <value label="Fuchsia">15</value>
+                        <value label="White">16</value>
+                        <value label="Warm Yellow">17</value>
+                    </option>
+                    <option
+                        variable="phaseCColor"
+                        type="enum"
+                        label="Phase color for deck C">
+                        <value label="Red">0</value>
+                        <value label="Dark Orange">1</value>
+                        <value label="Light Orange">2</value>
+                        <value label="Default" default="true">3</value>
+                        <value label="Yellow">4</value>
+                        <value label="Lime">5</value>
+                        <value label="Green">6</value>
+                        <value label="Mint">7</value>
+                        <value label="Cyan">8</value>
+                        <value label="Turquoise">9</value>
+                        <value label="Blue">10</value>
+                        <value label="Plum">11</value>
+                        <value label="Violet">12</value>
+                        <value label="Purple">13</value>
+                        <value label="Magenta">14</value>
+                        <value label="Fuchsia">15</value>
+                        <value label="White">16</value>
+                        <value label="Warm Yellow">17</value>
+                    </option>
+                    <option
+                        variable="phaseDColor"
+                        type="enum"
+                        label="Phase color for deck D">
+                        <value label="Red">0</value>
+                        <value label="Dark Orange">1</value>
+                        <value label="Light Orange">2</value>
+                        <value label="Default" default="true">3</value>
+                        <value label="Yellow">4</value>
+                        <value label="Lime">5</value>
+                        <value label="Green">6</value>
+                        <value label="Mint">7</value>
+                        <value label="Cyan">8</value>
+                        <value label="Turquoise">9</value>
+                        <value label="Blue">10</value>
+                        <value label="Plum">11</value>
+                        <value label="Violet">12</value>
+                        <value label="Purple">13</value>
+                        <value label="Magenta">14</value>
+                        <value label="Fuchsia">15</value>
+                        <value label="White">16</value>
+                        <value label="Warm Yellow">17</value>
+                    </option>
+                </row>
+            </group>
+
+            <group label="Waveform">
+                <row>
+                    <option
+                        variable="hideWaveforms"
+                        type="boolean"
+                        default="false"
+                        label="Disable the scrolling waveform"/>
+                    <option
+                        variable="hideWaveformOverview"
+                        type="boolean"
+                        default="false"
+                        label="Disable the overview waveform"/>
+                </row>
+                <row>
+                    <option
+                        variable="alwaysShowLoopSize"
+                        type="boolean"
+                        default="false"
+                        label="Keep the loop size indicator visible"/>
+                    <option
+                        variable="loopOverlayTimer"
+                        default="2"
+                        type="real"
+                        min="0.1"
+                        max="15"
+                        step="0.1"
+                        precision="2"
+                        description="amount of time the loop overlay will stay on the screen"
+                        label="Loop overlay auto-hide period"/>
+                </row>
+
+                <row>
+                    <option
+                        variable="hideBeatgrid"
+                        type="boolean"
+                        default="false"
+                        label="Hide the beat grid"/>
+                    <option
+                        variable="beatgridVisibility"
+                        type="real"
+                        default="0.75"
+                        precision="2"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        label="Beat grid lines opacity"/>
+                </row>
+                <row>
+                    <option
+                        variable="showTimeToCue"
+                        type="boolean"
+                        default="false"
+                        label="Show time to next cue"/>
+                    <option
+                        variable="showBeatToCue"
+                        type="boolean"
+                        default="false"
+                        label="Show beats to next cue"/>
+                    <option
+                        variable="distanceToCueFontSize"
+                        type="integer"
+                        default="12"
+                        min="4"
+                        max="48"
+                        step="2"
+                        label="Label font size"/>
+                    <option
+                        variable="distanceToCueAlignment"
+                        type="enum"
+                        label="Label alignment">
+                        <value label="Top">top</value>
+                        <value label="Center">center</value>
+                        <value label="Bottom">bottom</value>
+                    </option>
+                </row>
+            </group>
+
+            <!--
+            // NOTE the following setting are currently unused due to the lack of QML support for Mixxx library
+            <row>
+                <option
+                    variable="enableBrowserMode"
+                    type="boolean"
+                    default="true"
+                    label="EnableBrowserMode"/>
+                <option
+                    variable="adjacentKeys"
+                    type="boolean"
+                    default="true"
+                    label="AdjacentKeys"/>
+                <option
+                    variable="camelotKey"
+                    type="boolean"
+                    default="false"
+                    label="Enable camelot key"/>
+            </row>
+
+            <row>
+                <option
+                    variable="disablePreviewPlayerToggle"
+                    type="boolean"
+                    default="false"
+                    label="DisablePreviewPlayerToggle"/>
+                <option
+                    variable="showBrowserOnFavourites"
+                    type="boolean"
+                    default="true"
+                    label="ShowBrowserOnFavourites"/>
+                <option
+                    variable="swapViewButtons"
+                    type="boolean"
+                    default="false"
+                    label="SwapViewButtons"/>
+            </row>
+
+            <row>
+                <option
+                    variable="showBrowserOnFullScreen"
+                    type="boolean"
+                    default="true"
+                    label="ShowBrowserOnFullScreen"/>
+                <option
+                    variable="disableSortButtonOutput"
+                    type="boolean"
+                    default="false"
+                    label="DisableSortButtonOutput"/>
+            </row>
+
+            <row>
+                <option
+                    variable="bpmBrowserTextColor"
+                    type="boolean"
+                    default="true"
+                    label="Determine the bpm text color in the browser"/>
+            </row> -->
+
+
+            <group label="Time">
+            <row>
+                <option
+                    variable="timeBox"
+                    type="enum"
+                    label="Displayed time">
+                    <value label="Remaining Time">0</value>
+                    <value label="Elapsed Time" default="true">1</value>
+                </option>
+
+                <option
+                    variable="timeBoxShift"
+                    type="enum"
+                    label="Displayed time while pressing :hwbtn:`SHIFT`">
+                    <value label="Remaining Time">0</value>
+                    <value label="Elapsed Time" default="true">1</value>
+                </option>
+                <option
+                    variable="timeTextColorChange"
+                    type="boolean"
+                    default="false"
+                    label="Alternative color when track end warning"/>
+            </row>
+            </group>
+
+            <group label="Overlays">
+            <row>
+                <option
+                    variable="hideHotcueOverlay"
+                    type="boolean"
+                    default="false"
+                    label="Disable the hotcue overlay"/>
+                <option
+                    variable="fxOverlays"
+                    type="enum"
+                    label="Effect overlays">
+                    <value label="Off">off</value>
+                    <value label="Left deck only">left</value>
+                    <value label="Right deck only">right</value>
+                    <value label="On both decks" default="true">both</value>
+                </option>
+                <option
+                    variable="fxOverlayTimer"
+                    default="2"
+                    type="real"
+                    min="0.1"
+                    max="15"
+                    step="0.1"
+                    precision="2"
+                    label="FxOverlayTimer"/>
+            </row>
+
+            <row>
+                <option
+                    variable="hideEffectsOverlay1"
+                    type="boolean"
+                    default="false"
+                    label="Disable the effects overlay on the left deck"/>
+                <option
+                    variable="hideEffectsOverlay2"
+                    type="boolean"
+                    default="false"
+                    label="Disable the effects overlay on the right deck"/>
+            </row>
+
+            <row>
+                <option
+                    variable="hideToneOverlay"
+                    type="boolean"
+                    default="false"
+                    label="Disable the tone overlay"/>
+                <option
+                    variable="hideLoopOverlay"
+                    type="boolean"
+                    default="false"
+                    label="Disable the loop overlay"/>
+                <option
+                    variable="hideRollOverlay"
+                    type="boolean"
+                    default="false"
+                    label="Disable the roll overlay"/>
+                <option
+                    variable="hideJumpOverlay"
+                    type="boolean"
+                    default="false"
+                    label="Disable the tone pads overlay appearing"/>
+            </row>
+            </group>
+         </group>
+     </settings>
+    <controller id="Traktor" direction="out" namespace="S4MK3">
+        <screens>
+            <screen identifier="leftdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+            <screen identifier="rightdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+        </screens>
+        <scriptfiles>
+            <file filename="TraktorKontrolS4MK3Screens.qml" />
+        </scriptfiles>
+        <qmllibraries>
+            <library path="TraktorKontrolS4MK3Screens" />
+        </qmllibraries>
+    </controller>
+</MixxxControllerPreset>

@@ -19,7 +19,9 @@ class allshader::WaveformRendererStem final
   public:
     explicit WaveformRendererStem(WaveformWidgetRenderer* waveformWidget,
             ::WaveformRendererAbstract::PositionSource type =
-                    ::WaveformRendererAbstract::Play);
+                    ::WaveformRendererAbstract::Play,
+            ::WaveformRendererSignalBase::Options options =
+                    ::WaveformRendererSignalBase::Option::None);
 
     // Pure virtual from WaveformRendererSignalBase, not used
     void onSetup(const QDomNode& node) override;
@@ -47,11 +49,11 @@ class allshader::WaveformRendererStem final
     }
     void setOutlineOpacity(float value) {
         m_outlineOpacity = value;
-        markDirtyMaterial();
+        markDirtyGeometry();
     }
     void setOpacity(float value) {
         m_opacity = value;
-        markDirtyMaterial();
+        markDirtyGeometry();
     }
 
   private:

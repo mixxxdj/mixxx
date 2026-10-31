@@ -7,6 +7,7 @@
 #include "engine/defs_keylock.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
+#include "preferences/interface.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -16,30 +17,7 @@ class QWidget;
 
 namespace {
 constexpr bool kDefaultCloneDeckOnLoad = true;
-}
-
-namespace TrackTime {
-    enum class DisplayMode {
-        ELAPSED,
-        REMAINING,
-        ELAPSED_AND_REMAINING,
-    };
-
-    enum class DisplayFormat {
-        TRADITIONAL,
-        TRADITIONAL_COARSE,
-        SECONDS,
-        SECONDS_LONG,
-        KILO_SECONDS,
-        HECTO_SECONDS,
-    };
-}
-
-enum class LoadWhenDeckPlaying {
-    Reject,
-    Allow,
-    AllowButStopDeck
-};
+} // namespace
 
 namespace {
 const ConfigKey kConfigKeyLoadWhenDeckPlaying = ConfigKey("[Controls]", "LoadWhenDeckPlaying");

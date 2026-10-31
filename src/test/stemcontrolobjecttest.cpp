@@ -9,16 +9,27 @@
 #include "mixxxtest.h"
 #include "test/signalpathtest.h"
 
-#define STEM_FILE QStringLiteral("stems/sin_%1.stem.mp4").arg(QString::fromStdString(GetParam()))
-
 namespace {
 const std::vector<std::string> supportedCodecs = {
         "AAC_256kbps_VBR",
         "ALAC_24bit"};
+
+struct StemFileInfo {
+    QString dir;
+    QString title;
+};
+
+static const std::array<StemFileInfo, 2> kStemFileInfos = {
+        StemFileInfo{QStringLiteral("stem01"), QStringLiteral("sin")},
+        StemFileInfo{QStringLiteral("stem02"), QStringLiteral("trance")}};
+
 } // namespace
 
+// must be a std::tuple for std::combine in INSTANTIATE_TEST_SUITE_P
+using StemParam = std::tuple<std::string, StemFileInfo>;
+
 class StemControlFixture : public BaseSignalPathTest,
-                           public ::testing::WithParamInterface<std::string> {
+                           public ::testing::WithParamInterface<StemParam> {
   public:
     QString getGroupForStem(QStringView deckGroup, int stemNr) {
         DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemNr <= 4);
@@ -27,6 +38,14 @@ class StemControlFixture : public BaseSignalPathTest,
     QString getFxGroupForStem(const QString& deckGroup, int stemNr) {
         return QStringLiteral("[QuickEffectRack1_%1]")
                 .arg(getGroupForStem(deckGroup, stemNr));
+    }
+    QString GetStemFilePath() {
+        const auto& [codec, info] = GetParam();
+        return getTestDir().filePath(getTestDir()
+                        .filePath("stems/%1/%2_%3.stem.mp4")
+                        .arg(info.dir,
+                                info.title,
+                                QString::fromStdString(codec)));
     }
 
     void SetUp() override {
@@ -51,8 +70,8 @@ class StemControlFixture : public BaseSignalPathTest,
             m_pEffectsManager->addStem(stemHandleGroup);
         }
 
-        const QString kStemFileLocationTest = getTestDir().filePath(STEM_FILE);
-        TrackPointer pStemFile(Track::newTemporary(kStemFileLocationTest));
+        const QString sourceStemPath = GetStemFilePath();
+        TrackPointer pStemFile(Track::newTemporary(sourceStemPath));
 
         loadTrack(m_pMixerDeck1.get(), pStemFile);
         loadTrack(m_pMixerDeck3.get(), pStemFile);
@@ -92,6 +111,15 @@ class StemControlFixture : public BaseSignalPathTest,
         m_pStem2FXEnabled->set(0.0);
         m_pStem3FXEnabled->set(0.0);
         m_pStem4FXEnabled->set(0.0);
+
+        m_pStem1VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 1), "vu_meter");
+        m_pStem2VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 2), "vu_meter");
+        m_pStem3VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 3), "vu_meter");
+        m_pStem4VuMeter = std::make_unique<PollingControlProxy>(
+                getGroupForStem(m_sGroup1, 4), "vu_meter");
 
         m_pStemCount = std::make_unique<PollingControlProxy>(m_sGroup1, "stem_count");
     }
@@ -149,6 +177,10 @@ class StemControlFixture : public BaseSignalPathTest,
     std::unique_ptr<PollingControlProxy> m_pStem2FXEnabled;
     std::unique_ptr<PollingControlProxy> m_pStem3FXEnabled;
     std::unique_ptr<PollingControlProxy> m_pStem4FXEnabled;
+    std::unique_ptr<PollingControlProxy> m_pStem1VuMeter;
+    std::unique_ptr<PollingControlProxy> m_pStem2VuMeter;
+    std::unique_ptr<PollingControlProxy> m_pStem3VuMeter;
+    std::unique_ptr<PollingControlProxy> m_pStem4VuMeter;
     std::unique_ptr<PollingControlProxy> m_pStemCount;
 };
 
@@ -161,7 +193,8 @@ TEST_P(StemControlFixture, StemCount) {
 
     EXPECT_EQ(m_pStemCount->get(), 0.0);
 
-    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
+    auto sourceStemPath = GetStemFilePath();
+    kTrackLocationTest = getTestDir().filePath(sourceStemPath);
     pTrack = Track::newTemporary(kTrackLocationTest);
     loadTrack(m_pMixerDeck1.get(), pTrack);
 
@@ -169,6 +202,7 @@ TEST_P(StemControlFixture, StemCount) {
 }
 
 TEST_P(StemControlFixture, StemColor) {
+    auto sourceStemPath = GetStemFilePath();
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
     EXPECT_EQ(m_pStem3Color->get(), 0x00 << 16 | 0xe8 << 8 | 0xe8);
@@ -183,7 +217,7 @@ TEST_P(StemControlFixture, StemColor) {
     EXPECT_EQ(m_pStem3Color->get(), -1.0);
     EXPECT_EQ(m_pStem4Color->get(), -1.0);
 
-    kTrackLocationTest = getTestDir().filePath(STEM_FILE);
+    kTrackLocationTest = getTestDir().filePath(sourceStemPath);
     pTrack = Track::newTemporary(kTrackLocationTest);
     loadTrack(m_pMixerDeck1.get(), pTrack);
 
@@ -332,10 +366,47 @@ TEST_P(StemControlFixture, Mute) {
             acceptableDelta);
 }
 
+TEST_P(StemControlFixture, VuMeter) {
+    m_pChannel1->getEngineBuffer()->queueNewPlaypos(
+            mixxx::audio::FramePos{0}, EngineBuffer::SEEK_STANDARD);
+    m_pPlay->set(1.0);
+
+    // Initial check: silence
+    EXPECT_EQ(m_pStem1VuMeter->get(), 0.0);
+
+    // Process buffer to play sound
+    // Run enough cycles to trigger VU meter update (30Hz update rate vs ~44kHz/buffer)
+    for (int i = 0; i < 50; ++i) {
+        m_pEngineMixer->process(kProcessBufferSize);
+    }
+
+    // Check if VU meters picked up the signal
+    EXPECT_GT(m_pStem1VuMeter->get(), 0.0);
+    EXPECT_GT(m_pStem2VuMeter->get(), 0.0);
+
+    // Mute Stem 1
+    m_pStem1Mute->set(1.0);
+
+    // Process enough buffers to allow VU meter to decay to 0
+    // Decay is exponential, so it takes time.
+    for (int i = 0; i < 600; ++i) {
+        m_pEngineMixer->process(kProcessBufferSize);
+    }
+
+    // VU Meter should be near zero (allow small epsilon for imperfect decay)
+    EXPECT_NEAR(m_pStem1VuMeter->get(), 0.0, 0.001);
+
+    // Stem 2 should still be playing
+    EXPECT_GT(m_pStem2VuMeter->get(), 0.0);
+}
+
 INSTANTIATE_TEST_SUITE_P(
         DISABLED_StemControlTest,
         StemControlFixture,
-        ::testing::ValuesIn(supportedCodecs),
+        ::testing::Combine(
+                ::testing::ValuesIn(supportedCodecs),
+                ::testing::ValuesIn(kStemFileInfos)),
         [](const testing::TestParamInfo<StemControlFixture::ParamType>& info) {
-            return info.param;
+            return std::get<0>(info.param) + "_" +
+                    std::get<1>(info.param).title.toStdString();
         });

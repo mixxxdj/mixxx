@@ -1,6 +1,8 @@
 #include "waveformmarkset.h"
 
 #include <QtDebug>
+#include <memory>
+#include <optional>
 #include <set>
 
 #include "util/defs.h"
@@ -65,11 +67,11 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     }
 }
 
-void WaveformMarkSet::setDefault(const QString& group,
+std::optional<WaveformMark::WaveformMarkConstructionError>
+WaveformMarkSet::setDefault(const QString& group,
         const DefaultMarkerStyle& model,
         const WaveformSignalColors& signalColors) {
-    m_pDefaultMark = WaveformMarkPointer::create(
-
+    auto mark = WaveformMark::create(
             group,
             model.positionControl,
             model.visibilityControl,
@@ -82,10 +84,14 @@ void WaveformMarkSet::setDefault(const QString& group,
             0,
             Cue::kNoHotCue,
             signalColors);
+    if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(mark)) {
+        return std::get<WaveformMark::WaveformMarkConstructionError>(mark);
+    }
+    m_pDefaultMark = std::get<WaveformMarkPointer>(mark);
+
     for (int i = 0; i < kMaxNumberOfHotcues; ++i) {
         if (m_hotCueMarks.value(i).isNull()) {
-            auto pMark = WaveformMarkPointer::create(
-
+            auto pMaybeMark = WaveformMark::create(
                     group,
                     model.positionControl,
                     model.visibilityControl,
@@ -97,11 +103,20 @@ void WaveformMarkSet::setDefault(const QString& group,
                     model.color,
                     i,
                     i,
-                    signalColors);
+                    signalColors,
+                    model.endPixmapPath,
+                    model.endIconPath,
+                    model.disabledOpacity,
+                    model.enabledOpacity);
+            if (std::holds_alternative<WaveformMark::WaveformMarkConstructionError>(pMaybeMark)) {
+                return std::get<WaveformMark::WaveformMarkConstructionError>(pMaybeMark);
+            }
+            auto pMark = std::get<WaveformMarkPointer>(pMaybeMark);
             m_marks.push_front(pMark);
             m_hotCueMarks.insert(pMark->getHotCue(), pMark);
         }
     }
+    return {};
 }
 
 WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {

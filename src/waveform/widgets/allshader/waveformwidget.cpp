@@ -4,6 +4,8 @@
 #include <QApplication>
 #include <QWheelEvent>
 
+#include "rendergraph/engine.h"
+#include "rendergraph/opacitynode.h"
 #include "waveform/renderers/allshader/waveformrenderbackground.h"
 #include "waveform/renderers/allshader/waveformrenderbeat.h"
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
@@ -25,7 +27,7 @@ namespace allshader {
 WaveformWidget::WaveformWidget(QWidget* parent,
         WaveformWidgetType::Type type,
         const QString& group,
-        WaveformRendererSignalBase::Options options)
+        ::WaveformRendererSignalBase::Options options)
         : WGLWidget(parent),
           WaveformWidgetAbstract(group),
           m_type(type),
@@ -103,10 +105,10 @@ WaveformWidget::~WaveformWidget() {
 
 std::unique_ptr<WaveformRendererSignalBase>
 WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
-        WaveformRendererSignalBase::Options options,
+        ::WaveformRendererSignalBase::Options options,
         ::WaveformRendererAbstract::PositionSource positionSource) {
 #ifndef QT_OPENGL_ES_2
-    if (options & WaveformRendererSignalBase::Option::HighDetail) {
+    if (options & ::WaveformRendererSignalBase::Option::HighDetail) {
         switch (type) {
         case ::WaveformWidgetType::RGB:
         case ::WaveformWidgetType::Filtered:
@@ -121,16 +123,16 @@ WaveformWidget::addWaveformSignalRenderer(WaveformWidgetType::Type type,
 
     switch (type) {
     case ::WaveformWidgetType::Simple:
-        return addWaveformSignalRenderer<WaveformRendererSimple>();
+        return addWaveformSignalRenderer<WaveformRendererSimple>(options);
     case ::WaveformWidgetType::RGB:
         return addWaveformSignalRenderer<WaveformRendererRGB>(positionSource, options);
     case ::WaveformWidgetType::HSV:
-        return addWaveformSignalRenderer<WaveformRendererHSV>();
+        return addWaveformSignalRenderer<WaveformRendererHSV>(options);
     case ::WaveformWidgetType::Filtered:
-        return addWaveformSignalRenderer<WaveformRendererFiltered>(false);
+        return addWaveformSignalRenderer<WaveformRendererFiltered>(false, options);
     case ::WaveformWidgetType::Stacked:
         return addWaveformSignalRenderer<WaveformRendererFiltered>(
-                true); // true for RGB Stacked
+                true, options); // true for RGB Stacked
     default:
         break;
     }
@@ -198,32 +200,6 @@ void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {
 void WaveformWidget::leaveEvent(QEvent* pEvent) {
     QApplication::sendEvent(parentWidget(), pEvent);
     pEvent->accept();
-}
-
-/* static */
-WaveformRendererSignalBase::Options WaveformWidget::supportedOptions(
-        WaveformWidgetType::Type type, bool useGles) {
-    WaveformRendererSignalBase::Options options = WaveformRendererSignalBase::Option::None;
-    switch (type) {
-    case WaveformWidgetType::Type::RGB:
-        options = WaveformRendererSignalBase::Option::AllOptionsCombined;
-        break;
-    case WaveformWidgetType::Type::Filtered:
-        options = WaveformRendererSignalBase::Option::HighDetail;
-        break;
-    case WaveformWidgetType::Type::Stacked:
-        options = WaveformRendererSignalBase::Option::HighDetail;
-        break;
-    default:
-        break;
-    }
-    if (useGles) {
-        // High detail (textured) waveforms are not supported on OpenGL ES.
-        // See https://github.com/mixxxdj/mixxx/issues/13385
-        options &= ~WaveformRendererSignalBase::Options(
-                WaveformRendererSignalBase::Option::HighDetail);
-    }
-    return options;
 }
 
 /* static */

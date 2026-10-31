@@ -6,8 +6,10 @@
 #include <QScreen>
 #include <QtGlobal>
 
+#include "base/Pitch.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
+#include "library/dateformatbroadcaster.h"
 #include "library/starrating.h"
 #include "library/tabledelegates/bpmdelegate.h"
 #include "library/tabledelegates/checkboxdelegate.h"
@@ -110,8 +112,42 @@ void BaseTrackTableModel::setKeyColorPalette(const ColorPalette& palette) {
 bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
         kApplyPlayedTrackColorDefault;
 
+// static
 void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
     s_bApplyPlayedTrackColor = apply;
+}
+
+const QString BaseTrackTableModel::kDateFormatDefault = QString();
+QString BaseTrackTableModel::s_dateFormat = BaseTrackTableModel::kDateFormatDefault;
+
+// static
+void BaseTrackTableModel::setDateFormat(const QString& format) {
+    if (format != s_dateFormat) {
+        s_dateFormat = format;
+        auto* broadcaster = DateFormatChangedBroadcaster::instance();
+        emit broadcaster->dateFormatChanged();
+    }
+}
+
+void BaseTrackTableModel::slotEmitDataChangedForDateColumns() {
+    // Notify the view to update.
+    // These are the columns that use s_dateFormat
+    QList<int> columns;
+    columns.append(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED));
+    columns.append(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED));
+    columns.append(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT));
+    const QVector<int> roles{Qt::DisplayRole};
+    QModelIndex topLeft;
+    QModelIndex bottomRight;
+    for (int i : columns) {
+        if (i == -1) {
+            // Skip if a certain model doesn't have this column
+            continue;
+        }
+        topLeft = index(0, i);
+        bottomRight = index(rowCount() - 1, i);
+        emit dataChanged(topLeft, bottomRight, roles);
+    }
 }
 
 BaseTrackTableModel::BaseTrackTableModel(
@@ -140,6 +176,12 @@ BaseTrackTableModel::BaseTrackTableModel(
                 this,
                 &BaseTrackTableModel::slotCoverFound);
     }
+
+    auto* dateFormatBroadcaster = DateFormatChangedBroadcaster::instance();
+    connect(dateFormatBroadcaster,
+            &DateFormatChangedBroadcaster::dateFormatChanged,
+            this,
+            &BaseTrackTableModel::slotEmitDataChangedForDateColumns);
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -461,6 +503,17 @@ QVariant BaseTrackTableModel::data(
         }
     }
 
+    // Handle tuning frequency role for key column
+    if (role == kTuningFrequencyRole) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_KEY) {
+            return rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY);
+        }
+        return QVariant();
+    }
+
     // Only retrieve a value for supported roles
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
@@ -677,18 +730,14 @@ QVariant BaseTrackTableModel::roleValue(
             if (field == ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED) {
                 // Timestamp column in history feature:
                 // Use localized date/time format without text: "5/20/98 03:40 AM"
-                return mixxx::displayLocalDateTime(dt);
+                return mixxx::displayLocalDateTime(dt, s_dateFormat);
             }
             // For Date Added, use just the date: "5/20/98"
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
             QDateTime lastPlayedAt;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             if (rawValue.metaType().id() == QMetaType::QString) {
-#else
-            if (rawValue.type() == QVariant::String) {
-#endif
                 // column value
                 lastPlayedAt = mixxx::sqlite::readGeneratedTimestamp(rawValue);
             } else {
@@ -706,7 +755,7 @@ QVariant BaseTrackTableModel::roleValue(
             if (role == Qt::ToolTipRole || role == kDataExportRole) {
                 return dt;
             }
-            return dt.date();
+            return mixxx::formatDate(dt.date(), s_dateFormat);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
@@ -761,6 +810,22 @@ QVariant BaseTrackTableModel::roleValue(
                     return QVariant();
                 }
             }
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            bool ok = false;
+            const double freq = rawValue.toDouble(&ok);
+            if (!ok || freq <= 0.0) {
+                return QVariant();
+            }
+            if (role == Qt::DisplayRole) {
+                return QString::number(freq, 'f', 0);
+            } else if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return QStringLiteral("%1 Hz").arg(freq, 0, 'f', 4);
+            }
+            return freq;
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_KEY:
             // The Key value is determined by either the KEY_ID or KEY column
@@ -872,7 +937,8 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE:
         case ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION:
-        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN:
+        case ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY: {
             // We need to cast to int due to a bug similar to
             // https://bugreports.qt.io/browse/QTBUG-67582
             return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
@@ -908,7 +974,40 @@ QVariant BaseTrackTableModel::roleValue(
             if (key == mixxx::track::io::key::INVALID || !s_keyColorPalette.has_value()) {
                 return QVariant();
             }
-            return QVariant::fromValue(KeyUtils::keyToColor(key, s_keyColorPalette.value()));
+
+            const float tuningHz = static_cast<float>(rawSiblingValue(
+                    index, ColumnCache::COLUMN_LIBRARYTABLE_TUNING_FREQUENCY)
+                            .value<double>());
+            QVariantMap colorRect;
+            if (tuningHz > 220 && tuningHz < 880) { // is the tuning valid?
+                float cents = 0;
+                int midiPitch = Pitch::getPitchForFrequency(tuningHz, &cents, 440.0f);
+                int keyOffset = midiPitch - 69; // Middle A is note 69
+                cents /= 100.0f;                // normalize for >= -0.5 and < 0.5
+                if (cents < 0) {
+                    colorRect["top"] = KeyUtils::keyToColor(
+                            KeyUtils::scaleKeySteps(key, keyOffset),
+                            s_keyColorPalette.value());
+                    colorRect["bottom"] =
+                            KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, keyOffset - 1),
+                                    s_keyColorPalette.value());
+                    colorRect["splitPoint"] = cents + 1;
+                } else {
+                    colorRect["top"] =
+                            KeyUtils::keyToColor(KeyUtils::scaleKeySteps(key, keyOffset + 1),
+                                    s_keyColorPalette.value());
+                    colorRect["bottom"] = KeyUtils::keyToColor(
+                            KeyUtils::scaleKeySteps(key, keyOffset),
+                            s_keyColorPalette.value());
+                    colorRect["splitPoint"] = cents;
+                }
+            } else {
+                colorRect["top"] = KeyUtils::keyToColor(key, s_keyColorPalette.value());
+                // KeyDelegate will not read a bottom color if splitPoint is 1
+                colorRect["splitPoint"] = 1;
+            }
+
+            return colorRect;
         }
         default:
             return QVariant();

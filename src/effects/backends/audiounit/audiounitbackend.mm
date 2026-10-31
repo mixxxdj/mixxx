@@ -9,6 +9,7 @@
 #include <QHash>
 #include <QList>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QString>
 #include <memory>
 
@@ -16,7 +17,6 @@
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "effects/backends/audiounit/audiounitmanifest.h"
 #include "effects/defs.h"
-#include "util/compatibility/qmutex.h"
 
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
@@ -38,17 +38,17 @@ class AudioUnitBackend : public EffectsBackend {
         // m_componentsById may not have a corresponding manifest yet, and
         // callers would get a null EffectManifestPointer from getManifest(),
         // which crashes downstream (e.g. EffectManifest::sortLexigraphically).
-        auto locker = lockMutex(&m_mutex);
+        auto locker = QMutexLocker(&m_mutex);
         return m_manifestsById.keys();
     }
 
     EffectManifestPointer getManifest(const QString& effectId) const override {
-        auto locker = lockMutex(&m_mutex);
+        auto locker = QMutexLocker(&m_mutex);
         return m_manifestsById.value(effectId);
     }
 
     const QList<EffectManifestPointer> getManifests() const override {
-        auto locker = lockMutex(&m_mutex);
+        auto locker = QMutexLocker(&m_mutex);
         return m_manifestsById.values();
     }
 
@@ -105,6 +105,14 @@ class AudioUnitBackend : public EffectsBackend {
         // Apple API-related stuff.
         dispatch_group_t group = dispatch_group_create();
 
+        // Limit concurrent manifest loads to avoid exhausting the GCD thread
+        // pool. Each manifest load blocks its thread in waitForAudioUnit for
+        // up to 2 seconds, so without a limit, having 64+ AUs would hit
+        // the macOS dispatch thread soft limit and crash the process.
+        const long MAX_CONCURRENT_LOADS = 8;
+        dispatch_semaphore_t semaphore =
+                dispatch_semaphore_create(MAX_CONCURRENT_LOADS);
+
         for (AVAudioUnitComponent* component in allComponents) {
             qDebug() << "Found audio unit" << [component name];
 
@@ -122,13 +130,18 @@ class AudioUnitBackend : public EffectsBackend {
                     DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
             dispatch_group_async(group, queue, ^{
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
                 // Load manifest (potentially slow blocking operation)
                 auto manifest = EffectManifestPointer(
                         new AudioUnitManifest(effectId, component));
 
                 // Register manifest
-                auto locker = lockMutex(&m_mutex);
+                auto locker = QMutexLocker(&m_mutex);
                 m_manifestsById[effectId] = manifest;
+                locker.unlock();
+
+                dispatch_semaphore_signal(semaphore);
             });
         }
 

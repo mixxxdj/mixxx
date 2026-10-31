@@ -11,6 +11,7 @@
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
 
@@ -63,11 +64,11 @@ class WaveformWidgetAbstractHandle {
     }
 
 #ifdef MIXXX_USE_QOPENGL
-    allshader::WaveformRendererSignalBase::Options supportedOptions(
+    WaveformRendererSignalBase::Options supportedOptions(
             WaveformWidgetBackend backend) const {
         return backend == WaveformWidgetBackend::AllShader
                 ? m_supportedOption
-                : allshader::WaveformRendererSignalBase::Option::None;
+                : WaveformRendererSignalBase::Option::None;
     }
 #endif
 
@@ -79,7 +80,7 @@ class WaveformWidgetAbstractHandle {
     QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
     // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
-    allshader::WaveformRendererSignalBase::Options m_supportedOption;
+    WaveformRendererSignalBase::Options m_supportedOption;
 #endif
 
     friend class WaveformWidgetFactory;
@@ -112,6 +113,15 @@ class WaveformWidgetFactory : public QObject,
     Q_OBJECT
   public:
     bool setConfig(UserSettingsPointer config);
+
+#ifdef MIXXX_USE_QML
+    static void setQmlMode(bool enabled) {
+        s_qmlMode = enabled;
+    }
+    static bool isQmlMode() {
+        return s_qmlMode;
+    }
+#endif
 
     /// Creates the waveform widget using the type set with setWidgetType
     /// and binds it to the viewer.
@@ -239,6 +249,16 @@ class WaveformWidgetFactory : public QObject,
     }
     static bool isOverviewNormalizedDefault();
 
+    WaveformWidgetBackend setAcceleration(bool enabled);
+
+    allshader::WaveformRendererSignalBase::Options getWaveformOptions();
+    allshader::WaveformRendererSignalBase::Options getWaveformOptionsSupportedByType(
+            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void setWaveformOption(allshader::WaveformRendererSignalBase::Option option,
+            bool enabled,
+            WaveformWidgetType::Type type);
+    void resetWaveformOptions();
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }
@@ -249,6 +269,17 @@ class WaveformWidgetFactory : public QObject,
     void addVuMeter(WVuMeterBase* pWidget);
 
     void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager, bool useQML);
+
+    // QML waveforms are refreshed by Qt Quick rather than VSyncThread. Keep
+    // the shared preferences page's frame-rate telemetry working by reporting
+    // completed scene-graph frames through the same signal used by legacy
+    // waveforms.
+    // Returns true when a new one-second average was published.
+    bool reportQmlFrame();
+
+    double actualFrameRate() const {
+        return m_actualFrameRate;
+    }
 
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
@@ -305,7 +336,8 @@ class WaveformWidgetFactory : public QObject,
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createAllshaderWaveformWidget(
-            WaveformWidgetType::Type type, WWaveformViewer* viewer);
+            WaveformWidgetType::Type type,
+            WWaveformViewer* pViewer);
     WaveformWidgetAbstract* createWaveformWidget(
             WaveformWidgetType::Type type, WWaveformViewer* pViewer);
     int findIndexOf(WWaveformViewer* viewer) const;
@@ -318,6 +350,10 @@ class WaveformWidgetFactory : public QObject,
 
     //Currently in use widgets/visual/node
     std::vector<WaveformWidgetHolder> m_waveformWidgetHolders;
+
+#ifdef MIXXX_USE_QML
+    static inline bool s_qmlMode{false};
+#endif
 
     WaveformWidgetType::Type m_type;
     WaveformWidgetType::Type m_configType;
@@ -345,7 +381,9 @@ class WaveformWidgetFactory : public QObject,
     std::unique_ptr<ControlObject> m_pStemSplitTracksControl;
 
     bool m_openGlAvailable;
+#ifdef MIXXX_USE_QOPENGL
     bool m_openGlesAvailable;
+#endif
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
@@ -355,9 +393,13 @@ class WaveformWidgetFactory : public QObject,
     VisualsManager* m_pVisualsManager;  // not owned
 
     // TODO(#13245): Migrate the following methods to smart pointer.
-    WaveformWidgetAbstract* createFilteredWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer);
-    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createFilteredWaveformWidget(
+            WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
+    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer,
+            WaveformRendererSignalBase::Options option);
     WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
     WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
     WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);

@@ -26,9 +26,13 @@ class EncoderOpus: public Encoder {
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);
     ~EncoderOpus() override;
 
-    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate,
+            QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE* samples, const std::size_t bufferSize) override;
-    void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
+    void updateMetaData(const QString& artist,
+            const QString& title,
+            const QString& album,
+            std::chrono::seconds timecode = {}) override;
     void flush() override;
     void setEncoderSettings(const EncoderSettings& settings) override;
 

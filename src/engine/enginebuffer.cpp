@@ -27,7 +27,6 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
 #include "util/sample.h"
@@ -93,6 +92,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(static_cast<int>(SyncMode::Invalid)),
+          m_slipQuitAndAdopt(0),
           m_bPlayAfterLoading(false),
           m_channelCount(mixxx::kEngineChannelOutputCount),
           m_pCrossfadeBuffer(SampleUtil::alloc(
@@ -266,7 +266,8 @@ EngineBuffer::EngineBuffer(const QString& group,
             Qt::DirectConnection);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
-                                               m_pLoopingControl);
+            m_pLoopingControl,
+            m_pCueControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
     m_pKeylockEngine = new ControlProxy(kAppGroup, QStringLiteral("keylock_engine"), this);
@@ -433,7 +434,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(atomicLoadRelaxed(m_iEnableSyncQueued));
+            static_cast<SyncRequestQueued>(m_iEnableSyncQueued.loadRelaxed());
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
@@ -597,7 +598,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
     // Check if we are cloning another channel before doing any seeking.
     // This replaces m_queuedSeek populated form CueControl
-    EngineChannel* pChannel = atomicLoadRelaxed(m_pChannelToCloneFrom);
+    EngineChannel* pChannel = m_pChannelToCloneFrom.loadRelaxed();
     if (pChannel) {
         m_queuedSeek.setValue(kCloneSeek);
         m_iSeekPhaseQueued = 0;
@@ -783,8 +784,8 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // asynchrony.
     bool playPossible = true;
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
-    if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
+    if ((!m_pCurrentTrack && m_iTrackLoading.loadRelaxed() == 0) ||
+            (m_pCurrentTrack && m_iTrackLoading.loadRelaxed() == 0 &&
                     m_playPos >= getTrackEndPosition() &&
                     queuedSeek.seekType == SEEK_NONE) ||
             m_pPassthroughEnabled->toBool()) {
@@ -889,6 +890,11 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
         slotKeylockEngineChanged(static_cast<double>(defaultKeylockEngine()));
         break;
     }
+}
+
+void EngineBuffer::slipQuitAndAdopt() {
+    m_slipQuitAndAdopt.storeRelease(1);
+    m_pSlipButton->set(0);
 }
 
 void EngineBuffer::processTrackLocked(
@@ -1283,8 +1289,12 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
             m_slipPos = m_playPos;
             m_dSlipRate = m_rate_old;
         } else {
-            // TODO(owen) assuming that looping will get canceled properly
-            seekExact(m_slipPos.toNearestFrameBoundary());
+            // If m_slipQuitAndAdopt is 1 we've already quit slip mode
+            // but we don't seek in that case.
+            if (m_slipQuitAndAdopt.fetchAndStoreAcquire(0) == 0) {
+                // TODO(owen) assuming that looping will get canceled properly
+                seekExact(m_slipPos.toNearestFrameBoundary());
+            }
             m_slipPos = mixxx::audio::kStartFramePos;
         }
     }
@@ -1302,15 +1312,20 @@ void EngineBuffer::processSlip(std::size_t bufferSize) {
         DEBUG_ASSERT(bufferFrameCount * m_channelCount == bufferSize);
         const mixxx::audio::FrameDiff_t slipDelta =
                 static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
-        // Simulate looping if a regular loop is active
-        if (m_pLoopingControl->isLoopingEnabled() &&
-                m_pLoopingControl->loopWasEnabledBeforeSlipEnable() &&
+        // Simulate looping if a regular loop is active or repeat is enabled
+        bool looping = m_pLoopingControl->isLoopingEnabled();
+        if ((looping || m_pRepeat->toBool()) &&
+                m_pLoopingControl->loopOrRepeatWasEnabledBeforeSlipEnable() &&
                 !m_pLoopingControl->isLoopRollActive()) {
             const mixxx::audio::FramePos newPos = m_slipPos + slipDelta;
-            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(
+            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoopOrRepeat(
                     newPos,
                     m_dSlipRate < 0);
-            m_slipModeState = SlipModeState::Armed;
+            if (looping) {
+                m_slipModeState = SlipModeState::Armed;
+            } else { // repeat
+                m_slipModeState = SlipModeState::Running;
+            }
         } else {
             m_slipPos += slipDelta;
             m_slipModeState = SlipModeState::Running;
@@ -1530,8 +1545,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
     m_visualPlayPos->set(
             fFractionalPlaypos,
             speed * m_baserate_old,
-            static_cast<int>(bufferSize) /
-                    m_trackEndPositionOld.toEngineSamplePos(),
+            bufferSize / m_trackEndPositionOld.toEngineSamplePos(),
             fFractionalSlipPos,
             effectiveSlipRate,
             m_slipModeState,
@@ -1594,7 +1608,7 @@ void EngineBuffer::loadTrack(TrackPointer pTrack,
 #else
         m_pReader->newTrack(pTrack);
 #endif
-        atomicStoreRelaxed(m_pChannelToCloneFrom, pChannelToCloneFrom);
+        m_pChannelToCloneFrom.storeRelaxed(pChannelToCloneFrom);
     } else {
         // Loading a null track means "eject"
         ejectTrack();
@@ -1617,14 +1631,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {
     // Is updated during postProcess(), after all decks already have been processed
-    if (!m_visualPlayPos->isValid()) {
-        return mixxx::audio::kStartFramePos;
-    }
     return getTrackEndPosition() * m_visualPlayPos->getEnginePlayPos();
-}
-
-double EngineBuffer::getVisualPlayPos() const {
-    return m_visualPlayPos->getEnginePlayPos();
 }
 
 mixxx::audio::FramePos EngineBuffer::getTrackEndPosition() const {

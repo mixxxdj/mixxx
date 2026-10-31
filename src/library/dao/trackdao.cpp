@@ -456,6 +456,7 @@ void TrackDAO::addTracksPrepare() {
             "rating,"
             "key,"
             "key_id,"
+            "tuning_frequency_hz,"
             "cuepoint,"
             "bpm,"
             "replaygain,"
@@ -504,6 +505,7 @@ void TrackDAO::addTracksPrepare() {
             ":rating,"
             ":key,"
             ":key_id,"
+            ":tuning_frequency_hz,"
             ":cuepoint,"
             ":bpm,"
             ":replaygain,"
@@ -609,6 +611,8 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":cuepoint",
             track.getMainCuePosition().toEngineSamplePosMaybeInvalid());
     pTrackLibraryQuery->bindValue(":bpm_lock", track.getBpmLocked() ? 1 : 0);
+    pTrackLibraryQuery->bindValue(":tuning_frequency_hz",
+            track.getKeys().getGlobalTuningFrequencyHz());
     pTrackLibraryQuery->bindValue(":replaygain", trackInfo.getReplayGain().getRatio());
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 
@@ -707,11 +711,7 @@ bool insertTrackLibrary(
     pTrackLibraryInsert->bindValue(":mixxx_deleted", 0);
 
     // We no longer store the wavesummary in the library table.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QMetaType(QMetaType::QByteArray)));
-#else
-    pTrackLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
-#endif
 
     if (!pTrackLibraryInsert->exec()) {
         // We failed to insert the track. Maybe it is already in the library
@@ -988,11 +988,7 @@ void TrackDAO::afterHidingTracks(
     // However, the proposed alternative has just been introduced in Qt
     // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     emit tracksRemoved(QSet<TrackId>(trackIds.begin(), trackIds.end()));
-#else
-    emit tracksRemoved(QSet<TrackId>::fromList(trackIds));
-#endif
 }
 
 // If a track has been manually "hidden" from Mixxx's library by the user via
@@ -1021,11 +1017,7 @@ void TrackDAO::afterUnhidingTracks(
     // However, the proposed alternative has just been introduced in Qt
     // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     emit tracksAdded(QSet<TrackId>(trackIds.begin(), trackIds.end()));
-#else
-    emit tracksAdded(QSet<TrackId>::fromList(trackIds));
-#endif
 }
 
 QList<TrackRef> TrackDAO::getAllTrackRefs(const QDir& rootDir) const {
@@ -1130,20 +1122,10 @@ bool TrackDAO::onPurgingTracks(
     return true;
 }
 
-void TrackDAO::afterPurgingTracks(
-        const QList<TrackId>& trackIds) {
-    // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
-    // replaced with QSet<T>(list.begin(), list.end()).
-    // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixxx is increased,
-    // we need a version check here
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
-#else
-    QSet<TrackId> tracksRemovedSet = QSet<TrackId>::fromList(trackIds);
-#endif
+void TrackDAO::afterPurgingTracks(const QList<TrackId>& trackIds) {
     // Notify BaseTrackCache it should remove tracks and track models
     // that they should update their cache as well.
+    QSet<TrackId> tracksRemovedSet = QSet<TrackId>(trackIds.begin(), trackIds.end());
     emit tracksRemoved(tracksRemovedSet);
 }
 
@@ -1708,6 +1690,7 @@ bool TrackDAO::updateTrack(const Track& track) const {
             "rating=:rating,"
             "key=:key,"
             "key_id=:key_id,"
+            "tuning_frequency_hz=:tuning_frequency_hz,"
             "cuepoint=:cuepoint,"
             "bpm=:bpm,"
             "replaygain=:replaygain,"

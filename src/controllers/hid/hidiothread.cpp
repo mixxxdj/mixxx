@@ -1,8 +1,15 @@
 #include "controllers/hid/hidiothread.h"
 
-#include <hidapi.h>
+#include <QMutexLocker>
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <hidapi_libusb.h>
+#else
+#include <hidapi.h>
+#endif
 #include "moc_hidiothread.cpp"
+#include "util/assert.h"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"
 #include "util/time.h"
@@ -27,11 +34,13 @@ QString loggingCategoryPrefix(const QString& deviceName) {
 }
 } // namespace
 
-HidIoThread::HidIoThread(
-        hid_device* pHidDevice, const mixxx::hid::DeviceInfo& deviceInfo)
+HidIoThread::HidIoThread(hid_device* pHidDevice,
+        const mixxx::hid::DeviceInfo& deviceInfo,
+        std::optional<bool> deviceUsesReportIds)
         : QThread(),
           m_deviceInfo(deviceInfo),
-          // Defining RuntimeLoggingCategories locally in this thread improves runtime performance significiantly
+          // Defining RuntimeLoggingCategories locally in this thread improves
+          // runtime performance significantly
           m_logBase(loggingCategoryPrefix(deviceInfo.formatName())),
           m_logInput(loggingCategoryPrefix(deviceInfo.formatName()) +
                   QStringLiteral(".input")),
@@ -41,6 +50,7 @@ HidIoThread::HidIoThread(
           m_lastPollSize(0),
           m_pollingBufferIndex(0),
           m_hidReadErrorLogged(false),
+          m_deviceUsesReportIds(deviceUsesReportIds),
           m_globalOutputReportFifo(),
           m_runLoopSemaphore(1) {
     // Initializing isn't strictly necessary but is good practice.
@@ -53,6 +63,11 @@ HidIoThread::HidIoThread(
 
 HidIoThread::~HidIoThread() {
     hid_close(m_pHidDevice);
+#ifdef Q_OS_ANDROID
+    if (m_androidConnection.isValid()) {
+        m_androidConnection.callMethod<void>("close");
+    }
+#endif
 }
 
 void HidIoThread::run() {
@@ -83,7 +98,7 @@ void HidIoThread::run() {
 
 void HidIoThread::pollBufferedInputReports() {
     Trace hidRead("HidIoThread pollBufferedInputReports");
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
     // This function reads the available HID Input Reports using hidapi.
     // Important to know is, that this reading is not a hardware operation,
     // instead it reads previously received HID Input Reports from a ring buffer.
@@ -151,11 +166,27 @@ void HidIoThread::processInputReport(int bytesRead) {
     emit receive(QByteArray(reinterpret_cast<const char*>(pCurrentBuffer),
                          bytesRead),
             mixxx::Time::elapsed());
+
+    if (m_deviceUsesReportIds.has_value() && bytesRead > 0) {
+        if (m_deviceUsesReportIds.value()) {
+            // Extract the ReportId from the buffer
+            quint8 reportId = pCurrentBuffer[0];
+            emit reportReceived(reportId,
+                    QByteArray(
+                            reinterpret_cast<const char*>(pCurrentBuffer + 1),
+                            bytesRead - 1));
+        } else {
+            quint8 reportId = 0;
+            emit reportReceived(reportId,
+                    QByteArray(reinterpret_cast<const char*>(pCurrentBuffer),
+                            bytesRead));
+        }
+    }
 }
 
 QByteArray HidIoThread::getInputReport(quint8 reportID) {
     auto startOfHidGetInputReport = mixxx::Time::elapsed();
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
 
     m_pPollData[m_pollingBufferIndex][0] = reportID;
     int bytesRead = hid_get_input_report(
@@ -199,7 +230,7 @@ QByteArray HidIoThread::getInputReport(quint8 reportID) {
 void HidIoThread::updateCachedOutputReportData(quint8 reportID,
         const QByteArray& data,
         bool useNonSkippingFIFO) {
-    auto mapLock = lockMutex(&m_outputReportMapMutex);
+    auto mapLock = QMutexLocker(&m_outputReportMapMutex);
     if (m_outputReports.find(reportID) == m_outputReports.end()) {
         std::unique_ptr<HidIoOutputReport> pNewOutputReport;
         m_outputReports[reportID] = std::make_unique<HidIoOutputReport>(
@@ -235,7 +266,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
         return true;
     }
 
-    // 2.) If non non-skipping reports were in the FIFO, send the skipable reports
+    // 2.) If non non-skipping reports were in the FIFO, send the skippable reports
     // from the m_outputReports cache
 
     // m_outputReports.size() doesn't need mutex protection, because the value of i is not used.
@@ -243,7 +274,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
     // If the map size increases, this loop will execute one iteration more,
     // which only has the effect, that one additional lookup operation for unsent data will be executed.
     for (std::size_t i = 0; i < m_outputReports.size(); i++) {
-        auto mapLock = lockMutex(&m_outputReportMapMutex);
+        auto mapLock = QMutexLocker(&m_outputReportMapMutex);
         if (m_outputReportIterator == m_outputReports.end()) {
             m_outputReportIterator = m_outputReports.begin();
         } else {
@@ -278,7 +309,7 @@ void HidIoThread::sendFeatureReport(
     dataArray.append(reportID);
     dataArray.append(reportData);
 
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
     int result = hid_send_feature_report(m_pHidDevice,
             reinterpret_cast<const unsigned char*>(dataArray.constData()),
             dataArray.size());
@@ -309,7 +340,7 @@ QByteArray HidIoThread::getFeatureReport(
     unsigned char dataRead[kReportIdSize + kBufferSize];
     dataRead[0] = reportID;
 
-    auto hidDeviceLock = lockMutex(&m_hidDeviceAndPollMutex);
+    auto hidDeviceLock = QMutexLocker(&m_hidDeviceAndPollMutex);
     int bytesRead = hid_get_feature_report(m_pHidDevice,
             dataRead,
             kReportIdSize + kBufferSize);

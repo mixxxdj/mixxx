@@ -119,3 +119,13 @@ const ConfigKey mixxx::library::prefs::kTagFetcherApplyCoverConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("TagFetcherApplyCover")};
+
+const ConfigKey mixxx::library::prefs::kDateFormatConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("DateFormat")};
+
+const ConfigKey mixxx::library::prefs::kSidebarHoverExpandDelayConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("sidebar_hover_expand_delay")};

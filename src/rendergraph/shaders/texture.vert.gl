@@ -3,6 +3,7 @@
 struct buf
 {
     highp mat4 matrix;
+    highp float alpha;
 };
 
 uniform buf ubuf;

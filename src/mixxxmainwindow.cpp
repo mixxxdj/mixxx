@@ -7,11 +7,7 @@
 #include <QOpenGLContext>
 #include <QUrl>
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QGLFormat>
-#endif
-
-#ifdef __LINUX__
+#if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #endif
@@ -53,6 +49,7 @@
 #include "track/track.h"
 #include "util/debug.h"
 #include "util/desktophelper.h"
+#include "util/menubarhelper.h"
 #include "util/sandbox.h"
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
@@ -69,25 +66,6 @@
 #endif
 
 namespace {
-#ifdef __LINUX__
-// Detect if the desktop supports a global menu to decide whether we need to rebuild
-// and reconnect the menu bar when switching to/from fullscreen mode.
-// Compared to QMenuBar::isNativeMenuBar() (requires a set menu bar) and
-// Qt::AA_DontUseNativeMenuBar, which may both change, this is way more reliable
-// since it's rather unlikely that the Appmenu.Registrar service is unloaded/stopped
-// while Mixxx is running.
-// This is a reimplementation of QGenericUnixTheme > checkDBusGlobalMenuAvailable()
-inline bool supportsGlobalMenu() {
-#ifndef QT_NO_DBUS
-    QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto* pIface = conn.interface()) {
-        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
-    }
-#endif
-    return false;
-}
-#endif
-
 const ConfigKey kHideMenuBarConfigKey = ConfigKey("[Config]", "hide_menubar");
 const ConfigKey kMenuBarHintConfigKey = ConfigKey("[Config]", "show_menubar_hint");
 } // namespace
@@ -105,7 +83,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_noAuxInputDialog(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
-          m_supportsGlobalMenuBar(supportsGlobalMenu()),
+          m_supportsGlobalMenuBar(mixxx::desktopSupportsGlobalMenuBar()),
 #endif
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
@@ -153,18 +131,12 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 
 #ifdef MIXXX_USE_QOPENGL
 void MixxxMainWindow::initializeQOpenGL() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // Qt 6 will nno longer crash if no GL is available and
-    // QGLFormat::hasOpenGL() has been removed.
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-#else
     // With EGLFS there is always exactly one native window and one EGL window surface
     // OpenGL windows cannot be embedded into our QWidgets main window we already have.
     // https://doc.qt.io/qt-6/embedded-linux.html
     bool isEglfs = QGuiApplication::platformName() == "eglfs";
 
     if (!CmdlineArgs::Instance().getSafeMode() && !isEglfs) {
-#endif
         QOpenGLContext context;
         context.setFormat(WaveformWidgetFactory::getSurfaceFormat(m_pCoreServices->getSettings()));
         if (context.create()) {
@@ -391,7 +363,11 @@ void MixxxMainWindow::initialize() {
     // that says "mixxx will barely work with no outs".
     // In case of persisting errors, the user has already received a message
     // above. So we can just check the output count here.
-    while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().isEmpty()) {
+    while (m_pCoreServices->getSoundManager()
+                    ->getConfig()
+                    .getOutputs()
+                    .isEmpty() &&
+            !m_pCoreServices->getSoundManager()->pipewireSkipConfig()) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
         bool continueClicked = false;
@@ -461,6 +437,12 @@ void MixxxMainWindow::initialize() {
     if (CmdlineArgs::Instance().getStartAutoDJ()) {
         qDebug("Enabling Auto DJ from CLI flag.");
         ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+        // Switch to Auto DJ feature
+        auto* pLibrary = m_pCoreServices->getLibrary().get();
+        // Note: auto-scroll is disabled but that doesn't really matter here
+        // because the sidebar is still in its initial state (top feature visible,
+        // AutoDj is second from the top by default, all features collapsed).
+        pLibrary->showAutoDJ();
     }
 }
 
@@ -495,6 +477,10 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    // Clear widget pointer list and destroy all update connections before we
+    // delete the main widget (ie. all WBaseWidgets) to prevent KeyboardEventFilter
+    // accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
     m_pCentralWidget = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);
@@ -518,7 +504,9 @@ MixxxMainWindow::~MixxxMainWindow() {
     // outside of MixxxMainWindow the parent relationship will directly destroy
     // the WMainMenuBar and this will no longer be a problem.
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting menubar";
-
+    // Clear action pointer list before we delete the menubar
+    // to prevent KeyboardEventFilter accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearMenuBarActions();
     QPointer<WMainMenuBar> pMenuBar = m_pMenuBar.toWeakRef();
     DEBUG_ASSERT(menuBar() == m_pMenuBar.get());
     // We need to reset the parented pointer here that it does not become a
@@ -809,9 +797,9 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t(QStringLiteral("MixxxMainWindow::createMenuBar"));
-    DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
+    DEBUG_ASSERT(m_pCoreServices->getKeyboardEventFilter());
     m_pMenuBar = make_parented<WMainMenuBar>(
-            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
+            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardEventFilter());
     if (m_pCentralWidget) {
         m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
@@ -873,13 +861,6 @@ void MixxxMainWindow::connectMenuBar() {
             Qt::UniqueConnection);
     // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
     m_pMenuBar->onFullScreenStateChange(isFullScreen());
-
-    // Keyboard shortcuts
-    connect(m_pMenuBar,
-            &WMainMenuBar::toggleKeyboardShortcuts,
-            m_pCoreServices.get(),
-            &mixxx::CoreServices::slotOptionsKeyboard,
-            Qt::UniqueConnection);
 
     // Help
     connect(m_pMenuBar,
@@ -976,6 +957,16 @@ void MixxxMainWindow::connectMenuBar() {
 
     if (m_pCoreServices->getLibrary()) {
         connect(m_pMenuBar,
+                &WMainMenuBar::searchInCurrentView,
+                m_pCoreServices->getLibrary().get(),
+                &Library::slotSearchInCurrentView,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::searchInAllTracks,
+                m_pCoreServices->getLibrary().get(),
+                &Library::slotSearchInAllTracks,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
                 &WMainMenuBar::createCrate,
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreateCrate,
@@ -984,6 +975,11 @@ void MixxxMainWindow::connectMenuBar() {
                 &WMainMenuBar::createPlaylist,
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreatePlaylist,
+                Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::showAutoDJ,
+                m_pCoreServices->getLibrary().get(),
+                &Library::showAutoDJ,
                 Qt::UniqueConnection);
     }
 
@@ -1242,6 +1238,19 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
+    QMessageBox* pMsg = new QMessageBox();
+    pMsg->setAttribute(Qt::WA_DeleteOnClose);
+    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    pMsg->setWindowTitle(tr("Library scan finished"));
+
+    if (result.noDirectoriesConfigured) {
+        pMsg->setText(tr("No music directories configured for scanning.") +
+                QStringLiteral("<br>") +
+                tr("Add directories in the library preferences."));
+        pMsg->show();
+        return;
+    }
+
     QString summary =
             tr("Scan took %1").arg(result.durationString) + QStringLiteral("<br><br>");
     if (result.numNewTracks == 0 &&
@@ -1250,34 +1259,34 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
             result.numRediscoveredTracks == 0) {
         summary += tr("No changes detected.") +
                 QStringLiteral("<br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     } else {
         if (result.numNewTracks != 0) {
-            summary += tr("%1 new tracks found").arg(QString::number(result.numNewTracks)) +
+            summary += tr("%n new track(s) found", nullptr, result.numNewTracks) +
                     QStringLiteral("<br>");
         }
         if (result.numMovedTracks != 0) {
-            summary += tr("%1 moved tracks detected").arg(QString::number(result.numMovedTracks)) +
+            summary += tr("%n moved track(s) detected", nullptr, result.numMovedTracks) +
                     QStringLiteral("<br>");
         }
         if (result.numNewMissingTracks != 0) {
-            summary += tr("%1 tracks are missing (%2 total)")
-                               .arg(QString::number(result.numNewMissingTracks),
-                                       QString::number(result.numMissingTracks));
+            summary += tr("%n track(s) missing (%1 total)",
+                    nullptr,
+                    result.numNewMissingTracks)
+                               .arg(result.numMissingTracks);
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
-                    tr("%1 tracks have been rediscovered")
-                            .arg(QString::number(result.numRediscoveredTracks));
+                    tr("%n track(s) rediscovered",
+                            nullptr,
+                            result.numRediscoveredTracks);
         }
         summary += QStringLiteral("<br><br><b>") +
-                tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
+                tr("%n track(s) in total", nullptr, result.tracksTotal) +
                 QStringLiteral("</b>");
     }
-    QMessageBox* pMsg = new QMessageBox();
-    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    pMsg->setWindowTitle(tr("Library scan finished"));
+
     pMsg->setText(summary);
     pMsg->show();
 }
@@ -1301,6 +1310,8 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {
     m_toolTipsCfg = tt;
+    m_pCoreServices->getKeyboardEventFilter()->setShowOnlyKbdShortcuts(
+            tt == mixxx::preferences::Tooltips::OnlyKbdShortcuts);
 #ifdef MIXXX_USE_QOPENGL
     ToolTipQOpenGL::singleton().setActive(
             m_toolTipsCfg == mixxx::preferences::Tooltips::On);
@@ -1322,6 +1333,11 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pMenuBar->onNewSkinAboutToLoad();
 
     if (m_pCentralWidget) {
+        // Clear widget pointer list and destroy all update connections before
+        // we delete the main widget (ie. all WBaseWidgets) to prevent
+        // KeyboardEventFilter accessing dangling pointers, just in case a
+        // shortcuts/tooltip update is triggered while we re/load a skin.
+        m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
         m_pCentralWidget->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pCentralWidget;
@@ -1403,28 +1419,44 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 
 /// Catch ToolTip and WindowStateChange events
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
-    // Always show tooltips if Ctrl is held down
-    if (event->type() == QEvent::ToolTip &&
-            !QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+    if (event->type() == QEvent::ToolTip) {
+        // Always show tooltips if Ctrl is held down
+        if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips for cue type buttons in the Cue menu
+        if (QLatin1String(obj->metaObject()->className()) == "CueMenuPushButton") {
+            return QMainWindow::eventFilter(obj, event);
+        }
+        // Always show tooltips in Preferences
         QWidget* activeWindow = QApplication::activeWindow();
         if (activeWindow &&
-                QLatin1String(activeWindow->metaObject()->className()) !=
+                QLatin1String(activeWindow->metaObject()->className()) ==
                         "DlgPreferences") {
-            // return true for no tool tips
-            switch (m_toolTipsCfg) {
-            case mixxx::preferences::Tooltips::OnlyInLibrary:
-                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
-                    return true;
-                }
-                break;
-            case mixxx::preferences::Tooltips::On:
-                break;
-            case mixxx::preferences::Tooltips::Off:
-                return true;
-            default:
-                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return QMainWindow::eventFilter(obj, event);
+        }
+
+        // For all other we follow the tooltip sett8ing.
+        // Return true for no tool tips
+        switch (m_toolTipsCfg) {
+        case mixxx::preferences::Tooltips::OnlyInLibrary:
+            // WLibrary's stacked widgets are not derived from WBaseWidget
+            if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
                 return true;
             }
+            break;
+        case mixxx::preferences::Tooltips::OnlyKbdShortcuts:
+            if (dynamic_cast<WBaseWidget*>(obj) == nullptr) {
+                return true;
+            }
+            break;
+        case mixxx::preferences::Tooltips::On:
+            break;
+        case mixxx::preferences::Tooltips::Off:
+            return true;
+        default:
+            DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+            return true;
         }
     } else if (event->type() == QEvent::WindowStateChange) {
 #ifndef __APPLE__

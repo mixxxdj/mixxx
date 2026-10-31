@@ -274,9 +274,6 @@ void DlgTrackInfoMulti::init() {
             &DlgTrackInfoMulti::slotStarRatingChanged);
 
     // Insert the cover widget
-    coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
-    coverLayout->setSpacing(0);
-    coverLayout->setContentsMargins(0, 0, 0, 0);
     coverLayout->insertWidget(0, m_pWCoverArtLabel.get());
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -681,7 +678,7 @@ void DlgTrackInfoMulti::maybeMakeDialogScrollable() {
     // If the dialog doesn't fit the screen (with some margin), make it scrollable
     // by moving the main layout for a widget which we use as main widget for a
     // QScrollArea (plus some magic);
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const QScreen* const pScreen = screen();
     QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";

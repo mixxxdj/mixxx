@@ -100,7 +100,18 @@
      <widget class="QComboBox" name="comboBoxLoopDefaultColor"/>
     </item>
 
-    <item row="4" column="0" colspan="2">
+    <item row="4" column="0">
+     <widget class="QLabel" name="labelJumpDefaultColor">
+      <property name="text">
+       <string>Jump default color</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QComboBox" name="comboBoxJumpDefaultColor"/>
+    </item>
+
+    <item row="5" column="0" colspan="2">
      <widget class="QCheckBox" name="checkboxKeyColorsEnabled">
       <property name="toolTip">
        <string>When key colors are enabled, Mixxx will display a color hint
@@ -112,14 +123,14 @@ associated with each key.</string>
      </widget>
     </item>
 
-    <item row="5" column="0">
+    <item row="6" column="0">
      <widget class="QLabel" name="labelKeyColors">
       <property name="text">
        <string>Key palette</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
+    <item row="6" column="1">
      <widget class="QComboBox" name="comboBoxKeyColors">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -130,7 +141,7 @@ associated with each key.</string>
      </widget>
     </item>
 
-    <item row="6" column="0" colspan="2">
+    <item row="7" column="0" colspan="2">
      <spacer>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -153,6 +164,7 @@ associated with each key.</string>
   <tabstop>comboBoxHotcueColors</tabstop>
   <tabstop>pushButtonEditHotcuePalette</tabstop>
   <tabstop>comboBoxHotcueDefaultColor</tabstop>
+  <tabstop>comboBoxJumpDefaultColor</tabstop>
   <tabstop>pushButtonReplaceCueColor</tabstop>
   <tabstop>checkboxKeyColorsEnabled</tabstop>
  </tabstops>

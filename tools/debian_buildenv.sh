@@ -114,6 +114,7 @@ case "$1" in
             libmsgsl-dev \
             libopus-dev \
             libopusfile-dev \
+            libpipewire-0.3-dev \
             libportmidi-dev \
             libprotobuf-dev \
             libqt6opengl6-dev \
@@ -123,6 +124,7 @@ case "$1" in
             libshout-idjc-dev \
             libsndfile1-dev \
             libsoundtouch-dev \
+            libspa-0.2-dev \
             libsqlite3-dev \
             libssl-dev \
             libtag1-dev \
@@ -134,18 +136,24 @@ case "$1" in
             markdown \
             portaudio19-dev \
             protobuf-compiler \
+            python3-paramiko \
             qtkeychain-qt6-dev \
             qt6-declarative-private-dev \
             qt6-base-private-dev \
-            qt6-qpa-plugins \
+            qt6-multimedia-dev \
             qml6-module-qt5compat-graphicaleffects \
+            qml6-module-qtcore \
             qml6-module-qtqml-workerscript \
             qml6-module-qtquick-controls \
+            qml6-module-qtquick-dialogs \
             qml6-module-qtquick-layouts \
             qml6-module-qtquick-shapes \
             qml6-module-qtquick-templates \
             qml6-module-qtquick-window \
             qml6-module-qt-labs-qmlmodels \
+            qml6-module-qtquick-dialogs \
+            qml6-module-qt-labs-folderlistmodel \
+            qml6-module-qtmultimedia \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)

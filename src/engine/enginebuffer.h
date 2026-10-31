@@ -91,6 +91,7 @@ class EngineBuffer : public EngineObject {
         RubberBandR3ShortWindow = 3,
 #endif
     };
+    Q_ENUM(KeylockEngine);
 
     // intended for iteration over the KeylockEngine enum
     constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
@@ -116,6 +117,9 @@ class EngineBuffer : public EngineObject {
     double getSpeed() const;
     mixxx::audio::ChannelCount getChannelCount() const {
         return m_channelCount;
+    }
+    mixxx::audio::FramePos getPlayPos() const {
+        return m_playPos;
     }
     bool getScratching() const;
     bool isReverse() const;
@@ -153,7 +157,6 @@ class EngineBuffer : public EngineObject {
     void ejectTrack();
 
     mixxx::audio::FramePos getExactPlayPos() const;
-    double getVisualPlayPos() const;
     mixxx::audio::FramePos getTrackEndPosition() const;
     void setTrackEndPosition(mixxx::audio::FramePos position);
     double getUserOffset() const;
@@ -247,6 +250,8 @@ class EngineBuffer : public EngineObject {
     void seekExact(mixxx::audio::FramePos);
 
     void verifyPlay();
+
+    void slipQuitAndAdopt();
 
   public slots:
     void slotControlPlayRequest(double);
@@ -479,6 +484,7 @@ class EngineBuffer : public EngineObject {
     ControlValueAtomic<QueuedSeek> m_queuedSeek;
     bool m_previousBufferSeek = false;
 
+    QAtomicInt m_slipQuitAndAdopt;
     /// Indicates that no seek is queued
     static constexpr QueuedSeek kNoQueuedSeek = {mixxx::audio::kInvalidFramePos, SEEK_NONE};
     /// indicates a clone seek on a bosition from another deck

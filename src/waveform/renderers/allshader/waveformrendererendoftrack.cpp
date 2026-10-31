@@ -9,7 +9,6 @@
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
-#include "util/colorcomponents.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
@@ -44,6 +43,12 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        m_pEndOfTrackControl.reset();
+        m_pTimeRemainingControl.reset();
+        return true;
+    }
+
     m_pEndOfTrackControl = std::make_unique<ControlProxy>(
             m_waveformRenderer->getGroup(), "end_of_track");
     m_pTimeRemainingControl = std::make_unique<ControlProxy>(
@@ -70,7 +75,11 @@ void WaveformRendererEndOfTrack::preprocess() {
 }
 
 bool WaveformRendererEndOfTrack::preprocessInner() {
-    if (!m_pEndOfTrackControl->toBool()) {
+    if (!m_pEndOfTrackControl || !m_pEndOfTrackControl->toBool()) {
+        return false;
+    }
+
+    if (m_remainingTimeTriggerSeconds <= 0) {
         return false;
     }
 
@@ -89,7 +98,7 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
 
     QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     float r, g, b, a;
-    getRgbF(m_color, &r, &g, &b, &a);
+    m_color.getRgbF(&r, &g, &b, &a);
 
     const float posx0 = 0.f;
     const float posx1 = static_cast<float>(size.width()) / 2.f;

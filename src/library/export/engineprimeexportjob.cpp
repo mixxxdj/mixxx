@@ -25,7 +25,7 @@ namespace {
 const std::string kMixxxRootCrateName = "Mixxx Crates";
 const std::string kMixxxRootPlaylistName = "Mixxx Playlists";
 
-constexpr int kMaxHotCues = 8;
+constexpr int kMaxHotCuesOrLoops = 8;
 
 constexpr uint8_t kDefaultWaveformOpacity = 127;
 
@@ -234,50 +234,64 @@ void exportMetadata(
                 << "(" << pTrack->getFileInfo().fileName() << ")";
     }
 
-    // Note that any existing hot cues on the track are kept in place, if Mixxx
-    // does not have a hot cue at that location.
     const auto cues = pTrack->getCuePoints();
-    snapshot.hot_cues.resize(kMaxHotCues);
+    snapshot.hot_cues.resize(kMaxHotCuesOrLoops);
+    snapshot.loops.resize(kMaxHotCuesOrLoops);
     for (const CuePointer& pCue : cues) {
-        // We are only interested in hot cues.
-        if (pCue->getType() != CueType::HotCue) {
+        // We are only interested in hot cues and loops.
+        const auto cueType = pCue->getType();
+        if (cueType != CueType::HotCue && cueType != CueType::Loop) {
             continue;
         }
 
-        int hotCueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
-        if (hotCueIndex < 0 || hotCueIndex >= kMaxHotCues) {
-            qInfo() << "Skipping hot cue" << hotCueIndex
+        int cueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
+        if (cueIndex < 0 || cueIndex >= kMaxHotCuesOrLoops) {
+            qInfo() << "Skipping cue" << cueIndex
                     << "as the Engine DJ format only supports at most"
-                    << kMaxHotCues << "hot cues.";
+                    << kMaxHotCuesOrLoops << "hot cues or loops.";
             continue;
         }
 
         if (!pCue->getPosition().isValid()) {
-            qWarning() << "Hot cue" << hotCueIndex << "exists but is invalid for track"
+            qWarning() << "Cue" << cueIndex << "exists but is invalid for track"
                        << pTrack->getId() << "(" << pTrack->getFileInfo().fileName() << ")";
             continue;
         }
 
         QString label = pCue->getLabel();
-        if (label == "") {
-            label = QString("Cue %1").arg(hotCueIndex + 1);
-        }
-
-        djinterop::hot_cue hotCue{};
-        hotCue.label = label.toStdString();
-        hotCue.sample_offset = pCue->getPosition().value();
-
-        auto color = mixxx::RgbColor::toQColor(pCue->getColor());
-        hotCue.color = djinterop::pad_color{
+        const auto color = RgbColor::toQColor(pCue->getColor());
+        djinterop::pad_color padColor{
                 static_cast<uint_least8_t>(color.red()),
                 static_cast<uint_least8_t>(color.green()),
                 static_cast<uint_least8_t>(color.blue()),
                 255};
 
-        snapshot.hot_cues[hotCueIndex] = hotCue;
-    }
+        if (cueType == CueType::HotCue && pCue->getPosition().isValid()) {
+            djinterop::hot_cue hotCue{};
 
-    // TODO (mr-smidge): Export saved loops.
+            if (label == "") {
+                label = QString("Cue %1").arg(cueIndex + 1);
+            }
+            hotCue.label = label.toStdString();
+            hotCue.sample_offset = pCue->getPosition().value();
+            hotCue.color = padColor;
+
+            snapshot.hot_cues[cueIndex] = hotCue;
+        } else if (cueType == CueType::Loop && pCue->getPosition().isValid() &&
+                pCue->getEndPosition().isValid()) {
+            djinterop::loop loop{};
+
+            if (label == "") {
+                label = QString("Loop %1").arg(cueIndex + 1);
+            }
+            loop.label = label.toStdString();
+            loop.start_sample_offset = pCue->getPosition().value();
+            loop.end_sample_offset = pCue->getEndPosition().value();
+            loop.color = padColor;
+
+            snapshot.loops[cueIndex] = loop;
+        }
+    }
 
     // Write waveform.
     if (pWaveform) {
@@ -448,12 +462,8 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
                 trackRefs.insert(trackRef);
             }
         }
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_trackRefs = QList<TrackRef>{trackRefs.begin(), trackRefs.end()};
-#else
-        m_trackRefs = trackRefs.toList();
-#endif
+
         qDebug() << "Identified" << m_trackRefs.size() << " tracks to export";
 
         // Convert a list of track refs to a list of track ids, and use that
@@ -465,11 +475,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
         auto crateIdsOfTracks = m_pTrackCollectionManager->internalCollection()
                                         ->crates()
                                         .collectCrateIdsOfTracks(trackIds);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_crateIds = QList<CrateId>{crateIdsOfTracks.begin(), crateIdsOfTracks.end()};
-#else
-        m_crateIds = crateIdsOfTracks.toList();
-#endif
         qDebug() << "Identified" << m_crateIds.size() << " crates to export";
 
         // Just export all playlists.
@@ -481,11 +487,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
         // Explicit crates/playlists have been specified to export.
         qDebug() << "Loading track refs from" << crateIds.size()
                  << "crate(s) and" << playlistIds.size() << "playlist(s)";
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_crateIds = QList<CrateId>{crateIds.begin(), crateIds.end()};
-#else
-        m_crateIds = crateIds.toList();
-#endif
         qDebug() << "Identified" << m_crateIds.size() << " crates to export";
 
         for (auto&& playlistIdAndName : m_pTrackCollectionManager
@@ -526,11 +528,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds, const QSet<int
             }
         }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_trackRefs = QList<TrackRef>{trackRefs.begin(), trackRefs.end()};
-#else
-        m_trackRefs = trackRefs.toList();
-#endif
         qDebug() << "Identified" << m_trackRefs.size() << " tracks to export";
     }
 }

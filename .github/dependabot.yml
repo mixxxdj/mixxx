@@ -4,9 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "2.6"
+    target-branch: "2.5"
   - package-ecosystem: "pre-commit"
     directory: "/"
     schedule:
       interval: "weekly"
-    target-branch: "2.6"
+    target-branch: "2.5"

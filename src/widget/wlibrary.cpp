@@ -1,6 +1,7 @@
 #include "widget/wlibrary.h"
 
 #include <QKeyEvent>
+#include <QMutexLocker>
 #include <QtDebug>
 
 #include "library/libraryview.h"
@@ -12,7 +13,7 @@
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           WBaseWidget(this),
-          m_mutex(QT_RECURSIVE_MUTEX_INIT),
+          m_mutex(QRecursiveMutex()),
           m_trackTableBackgroundColorOpacity(kDefaultTrackTableBackgroundColorOpacity),
           m_bShowButtonText(true) {
 }
@@ -36,7 +37,7 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
 
 bool WLibrary::registerView(const QString& name, QWidget* pView) {
     //qDebug() << "WLibrary::registerView" << name;
-    const auto lock = lockMutex(&m_mutex);
+    const auto lock = QMutexLocker(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;
     }
@@ -52,11 +53,8 @@ bool WLibrary::registerView(const QString& name, QWidget* pView) {
 }
 
 void WLibrary::switchToView(const QString& name) {
-    const auto lock = lockMutex(&m_mutex);
+    const auto lock = QMutexLocker(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
-
-    LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
-            currentWidget());
 
     QWidget* pWidget = m_viewMap.value(name, nullptr);
     if (pWidget != nullptr) {
@@ -68,8 +66,10 @@ void WLibrary::switchToView(const QString& name) {
             return;
         }
         if (currentWidget() != pWidget) {
-            if (pOldLibrartView) {
-                pOldLibrartView->saveCurrentViewState();
+            LibraryView* pOldLibraryView = dynamic_cast<LibraryView*>(
+                    currentWidget());
+            if (pOldLibraryView) {
+                pOldLibraryView->saveCurrentViewState();
             }
             //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(pWidget);
@@ -88,7 +88,7 @@ void WLibrary::pasteFromSidebar() {
 }
 
 void WLibrary::search(const QString& name) {
-    auto lock = lockMutex(&m_mutex);
+    auto lock = QMutexLocker(&m_mutex);
     QWidget* pCurrent = currentWidget();
     LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
     if (pView == nullptr) {

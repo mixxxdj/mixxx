@@ -7,7 +7,7 @@
 
 WaveformRendererSimpleSignal::WaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererSignalBase(waveformWidgetRenderer) {
+        : WaveformRendererSignalBase(waveformWidgetRenderer, {}) {
 }
 
 WaveformRendererSimpleSignal::~WaveformRendererSimpleSignal() {

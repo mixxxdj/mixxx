@@ -54,14 +54,15 @@ void MappingInfoEnumerator::loadSupportedMappings() {
         QDirIterator it(dirPath);
         while (it.hasNext()) {
             it.next();
-            const QString path = it.filePath();
+            const QFileInfo fileInfo = it.fileInfo();
+            const QString path = fileInfo.filePath();
 
             if (path.endsWith(MIDI_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
-                m_midiMappings.append(MappingInfo(path));
+                m_midiMappings.append(MappingInfo(fileInfo));
             } else if (path.endsWith(HID_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
-                m_hidMappings.append(MappingInfo(path));
+                m_hidMappings.append(MappingInfo(fileInfo));
             } else if (path.endsWith(BULK_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
-                m_bulkMappings.append(MappingInfo(path));
+                m_bulkMappings.append(MappingInfo(fileInfo));
             }
         }
     }

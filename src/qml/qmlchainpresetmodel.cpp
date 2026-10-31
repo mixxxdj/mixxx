@@ -5,6 +5,7 @@
 #include "effects/backends/effectmanifest.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpreset.h"
 #include "moc_qmlchainpresetmodel.cpp"
 
 namespace mixxx {
@@ -13,37 +14,74 @@ namespace {
 const QHash<int, QByteArray> kRoleNames = {
         {Qt::DisplayRole, "display"},
         {Qt::ToolTipRole, "tooltip"},
+        {QmlChainPresetModel::NameRole, "name"},
+        {QmlChainPresetModel::ReadOnlyRole, "readOnly"},
+        {QmlChainPresetModel::PresetDisplayRole, "presetDisplay"},
 };
 }
 
 QmlChainPresetModel::QmlChainPresetModel(
-        EffectChainPresetManagerPointer effectChainPresetManager,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        PresetType presetType,
         QObject* parent)
         : QAbstractListModel(parent),
-          m_pEffectChainPresetManager(effectChainPresetManager) {
+          m_pEffectsManager(std::move(pEffectsManager)),
+          m_pEffectChainPresetManager(m_pEffectsManager->getChainPresetManager()),
+          m_presetType(presetType) {
     slotUpdated();
-    connect(m_pEffectChainPresetManager.get(),
-            &EffectChainPresetManager::quickEffectChainPresetListUpdated,
-            this,
-            &QmlChainPresetModel::slotUpdated);
+    if (m_presetType == PresetType::Quick) {
+        connect(m_pEffectChainPresetManager.get(),
+                &EffectChainPresetManager::quickEffectChainPresetListUpdated,
+                this,
+                &QmlChainPresetModel::slotUpdated);
+    } else {
+        connect(m_pEffectChainPresetManager.get(),
+                &EffectChainPresetManager::effectChainPresetListUpdated,
+                this,
+                &QmlChainPresetModel::slotUpdated);
+    }
 }
 
 void QmlChainPresetModel::slotUpdated() {
     beginResetModel();
-    m_effectChainPresets = m_pEffectChainPresetManager->getQuickEffectPresetsSorted();
+    m_effectChainPresets = m_presetType == PresetType::Quick
+            ? m_pEffectChainPresetManager->getQuickEffectPresetsSorted()
+            : m_pEffectChainPresetManager->getPresetsSorted();
     endResetModel();
 }
 
 QVariant QmlChainPresetModel::data(const QModelIndex& index, int role) const {
-    if (index.row() >= m_effectChainPresets.size()) {
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_effectChainPresets.size()) {
         return QVariant();
     }
 
     const EffectChainPresetPointer pPreset = m_effectChainPresets.at(index.row());
     switch (role) {
     case Qt::DisplayRole:
-    case Qt::ToolTipRole:
+    case NameRole:
+    case PresetDisplayRole:
         return pPreset->name();
+    case ReadOnlyRole:
+        return pPreset->isReadOnly();
+    case Qt::ToolTipRole: {
+        QStringList effectNames;
+        for (const auto& pEffectPreset : pPreset->effectPresets()) {
+            if (pEffectPreset->isEmpty()) {
+                continue;
+            }
+            const EffectManifestPointer pManifest =
+                    m_pEffectsManager->getBackendManager()->getManifest(pEffectPreset);
+            if (pManifest) {
+                effectNames.append(pManifest->name());
+            }
+        }
+        QString tooltip = QStringLiteral("<b>%1</b>").arg(pPreset->name().toHtmlEscaped());
+        if (effectNames.size() > 1) {
+            tooltip.append(QStringLiteral("<br/>"));
+            tooltip.append(effectNames.join(QStringLiteral("<br/>")));
+        }
+        return tooltip;
+    }
     default:
         return QVariant();
     }

@@ -21,7 +21,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
             QWidget* pParent,
             UserSettingsPointer pConfig,
             std::shared_ptr<Library> pLibrary);
-    virtual ~DlgPrefWaveform();
 
   public slots:
     void slotUpdate() override;
@@ -35,14 +34,14 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformEnabled(bool checked);
     void slotSetWaveformAcceleration(bool checked);
 #ifdef MIXXX_USE_QOPENGL
-    void slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option option, bool enabled);
+    void slotSetWaveformOptions(WaveformRendererSignalBase::Option option, bool enabled);
     void slotSetWaveformOptionSplitStereoSignal(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::
+        slotSetWaveformOptions(WaveformRendererSignalBase::Option::
                                        SplitStereoSignal,
                 checked);
     }
     void slotSetWaveformOptionHighDetail(bool checked) {
-        slotSetWaveformOptions(allshader::WaveformRendererSignalBase::Option::HighDetail, checked);
+        slotSetWaveformOptions(WaveformRendererSignalBase::Option::HighDetail, checked);
     }
 #endif
     void slotSetDefaultZoom(int index);
@@ -60,12 +59,13 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPointSize(int value);
     void slotSetUntilMarkTextHeightLimit(int index);
-    void slotStemOpacity(float value);
+    void slotStemOpacity(double value);
     void slotStemReorderOnChange(bool value);
-    void slotStemOutlineOpacity(float value);
+    void slotStemOutlineOpacity(double value);
     void slotStemDisplayMode(int index);
     // overview options
     void slotSetWaveformOverviewType();
+    void slotSetOverviewStereoMode(bool mono);
     void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotSetOverviewScaling();
 
@@ -74,17 +74,16 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
-    void updateWaveformTypeOptions(bool useWaveform,
-            WaveformWidgetBackend backend,
-            allshader::WaveformRendererSignalBase::Options currentOption);
-    void updateWaveformAcceleration(
-            WaveformWidgetType::Type type, WaveformWidgetBackend backend);
+    void updateWaveformTypeOptions(bool useWaveform);
+    void updateWaveformAcceleration(WaveformWidgetType::Type type);
     void updateWaveformGeneralOptionsEnabled();
     void updateWaveformGainEnabled();
     void updateStemOptionsEnabled();
+    void notifyQmlWaveformSettingsChanged();
 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
+    std::unique_ptr<ControlObject> m_pOverviewStereoControl;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

@@ -182,5 +182,14 @@ void QmlControlProxy::slotControlProxyValueChanged(double newValue) {
     emit parameterChanged(m_pControlProxy->getParameter());
 }
 
+void QmlControlProxy::trigger() {
+    setValue(1);
+    setValue(0);
+}
+
+void QmlControlProxy::toggle() {
+    setValue(getValue() > 0 ? 0.0 : 1.0);
+}
+
 } // namespace qml
 } // namespace mixxx

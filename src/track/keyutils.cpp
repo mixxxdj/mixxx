@@ -1,6 +1,7 @@
 #include "track/keyutils.h"
 
 #include <QMap>
+#include <QMutexLocker>
 #include <QPair>
 #include <QRegularExpression>
 #include <QtDebug>
@@ -9,7 +10,6 @@
 #include "util/color/colorpalette.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/color/rgbcolor.h"
-#include "util/compatibility/qmutex.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
@@ -299,7 +299,7 @@ QString KeyUtils::keyDebugName(ChromaticKey key) {
 
 // static
 void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
-    const auto locker = lockMutex(&s_notationMutex);
+    const auto locker = QMutexLocker(&s_notationMutex);
     s_notation = notation;
     s_reverseNotation.clear();
 
@@ -367,7 +367,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
         // The default value for notation is KeyUtils::KeyNotation::Custom, so
         // this executes when the function is called without a notation specified
         // after KeyUtils::setNotation has set up s_notation.
-        const auto locker = lockMutex(&s_notationMutex);
+        const auto locker = QMutexLocker(&s_notationMutex);
         auto it = s_notation.constFind(key);
         if (it != s_notation.constEnd()) {
             return it.value();
@@ -425,7 +425,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
     // Try using the user's custom notation.
     {
-        const auto locker = lockMutex(&s_notationMutex);
+        const auto locker = QMutexLocker(&s_notationMutex);
         auto it = s_reverseNotation.constFind(text);
         if (it != s_reverseNotation.constEnd()) {
             return it.value();

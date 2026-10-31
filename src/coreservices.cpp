@@ -14,6 +14,7 @@
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "controllers/scripting/controllerscriptenginebase.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemixer.h"
@@ -36,19 +37,18 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 #include "skin/skincontrols.h"
+#include "skin/skinloader.h"
 #ifdef MIXXX_USE_QML
 #include <QQuickWindow>
 #include <QSGRendererInterface>
 
-#include "controllers/scripting/controllerscriptenginebase.h"
+#include "qml/qmlapplicationproxy.h"
 #include "qml/qmlconfigproxy.h"
-#include "qml/qmlcontrolproxy.h"
-#include "qml/qmldlgpreferencesproxy.h"
-#include "qml/qmleffectslotproxy.h"
 #include "qml/qmleffectsmanagerproxy.h"
 #include "qml/qmllibraryproxy.h"
 #include "qml/qmlplayermanagerproxy.h"
-#include "qml/qmlplayerproxy.h"
+#include "qml/qmlpreferencesproxy.h"
+#include "qml/qmlsoundmanagerproxy.h"
 #endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
@@ -67,20 +67,11 @@
 #include "util/sandbox.h"
 #endif
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && defined(__X11__)
 #include <X11/XKBlib.h>
 #endif
-
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <X11/Xlibint.h>
-
-#include <QtX11Extras/QX11Info>
-
-#include "engine/channelhandle.h"
-// Xlibint.h predates C++ and defines macros which conflict
-// with references to std::max and std::min
-#undef max
-#undef min
+#if defined(Q_OS_ANDROID)
+#include <QtCore/private/qandroidextras_p.h>
 #endif
 
 namespace {
@@ -101,29 +92,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
     }
 }
 
-// hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
-// https://github.com/mixxxdj/mixxx/issues/9533
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
-
-constexpr int NUM_HANDLERS = 256;
-WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
-
-Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
-    // Call any previous handler first in case it needs to do real work.
-    auto code = static_cast<int>(event->error_code);
-    if (__oldHandlers[code] != nullptr) {
-        __oldHandlers[code](display, event, error);
-    }
-
-    // Always return false so the error does not get passed to the normal
-    // application defined handler.
-    return False;
-}
-
-#endif
-
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && defined(__X11__)
 QLocale localeFromXkbSymbol(const QString& xkbLayout) {
     // This maps XKB layouts to locales of keyboard mappings that are shipped with Mixxx
     static const QMap<QString, QLocale> xkbToLocaleMap = {
@@ -273,7 +242,7 @@ QString getCurrentXkbLayoutName() {
 // to "ibus engine". QGuiApplication::inputMethod() does not work with GNOME and XFCE
 // https://bugreports.qt.io/browse/QTBUG-137302
 inline QLocale inputLocale() {
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && defined(__X11__)
     QString layoutName = getCurrentXkbLayoutName();
     if (!layoutName.isEmpty()) {
         qDebug() << "Keyboard Layout from XKB:" << layoutName;
@@ -367,8 +336,8 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
     // called after the GUI is initialized
     initializeSettings();
     initializeLogging();
-    // Only record stats in developer mode.
-    if (m_cmdlineArgs.getDeveloper()) {
+    // Only record stats in developer mode or when --stats is specified.
+    if (m_cmdlineArgs.getStats()) {
         StatsManager::createInstance();
     }
     mixxx::Translations::initializeTranslations(
@@ -383,10 +352,8 @@ CoreServices::~CoreServices() {
 
     // Tear down remaining stuff that was initialized in the constructor.
     CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
 
-    if (m_cmdlineArgs.getDeveloper()) {
+    if (m_cmdlineArgs.getStats()) {
         StatsManager::destroy();
     }
 
@@ -480,7 +447,7 @@ void CoreServices::initializeLogging() {
             logFlags);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
+void CoreServices::initialize() {
     VERIFY_OR_DEBUG_ASSERT(!m_isInitialized) {
         return;
     }
@@ -493,17 +460,6 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     VersionStore::logBuildDetails();
-
-#if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // XESetWireToError will segfault if running as a Wayland client
-    if (pApp->platformName() == QLatin1String("xcb")) {
-        for (auto i = 0; i < NUM_HANDLERS; ++i) {
-            XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
-        }
-    }
-#else
-    Q_UNUSED(pApp);
-#endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
@@ -654,6 +610,44 @@ void CoreServices::initialize(QApplication* pApp) {
         if (!dir.exists()) {
             dir.mkpath(".");
         }
+#elif defined(Q_OS_ANDROID)
+        // if(QOperatingSystemVersion::current() <
+        // QOperatingSystemVersion(QOperatingSystemVersion::Android, 11)) {
+        //     qDebug() << "it is less then Android 11 - ALL FILES permission
+        //     isn't possible!";
+        // }
+        QString fd;
+        jboolean value = QJniObject::callStaticMethod<jboolean>(
+                "android/os/Environment", "isExternalStorageManager");
+        if (value == false) {
+            qDebug() << "requesting ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+            QJniObject ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION =
+                    QJniObject::getStaticObjectField(
+                            "android/provider/Settings",
+                            "ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION",
+                            "Ljava/lang/String;");
+            QJniObject intent("android/content/Intent",
+                    "(Ljava/lang/String;)V",
+                    ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION.object());
+            QJniObject jniPath = QJniObject::fromString(
+                    QStringLiteral("package:%1").arg(ANDROID_PACKAGE_NAME));
+            QJniObject jniUri =
+                    QJniObject::callStaticObjectMethod("android/net/Uri",
+                            "parse",
+                            "(Ljava/lang/String;)Landroid/net/Uri;",
+                            jniPath.object<jstring>());
+            QJniObject jniResult = intent.callObjectMethod("setData",
+                    "(Landroid/net/Uri;)Landroid/content/Intent;",
+                    jniUri.object<jobject>());
+            QtAndroidPrivate::startActivity(intent, 0);
+        } else {
+            qDebug() << "Got ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION";
+        }
+        fd = "/storage/emulated/0/Music/";
+        QDir dir = fd;
+        if (!dir.exists()) {
+            dir.mkpath(".");
+        }
 #else
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
@@ -689,11 +683,7 @@ void CoreServices::initialize(QApplication* pApp) {
             pConfig->getValueString(
                            ConfigKey("[Library]", "SupportedFileExtensions"))
                     .split(',',
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
                             Qt::SkipEmptyParts);
-#else
-                            QString::SkipEmptyParts);
-#endif
 
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
@@ -701,19 +691,11 @@ void CoreServices::initialize(QApplication* pApp) {
     // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
     QSet<QString> prev_plugins =
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             QSet<QString>(prev_plugins_list.begin(), prev_plugins_list.end());
-#else
-            QSet<QString>::fromList(prev_plugins_list);
-#endif
 
     const QList<QString> supportedFileSuffixes = SoundSourceProxy::getSupportedFileSuffixes();
     auto curr_plugins =
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
             QSet<QString>(supportedFileSuffixes.begin(), supportedFileSuffixes.end());
-#else
-            QSet<QString>::fromList(supportedFileSuffixes);
-#endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
     pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
@@ -754,6 +736,8 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_isInitialized = true;
 
+    ControllerScriptEngineBase::registerPlayerManager(getPlayerManager());
+
 #ifdef MIXXX_USE_QML
     initializeQMLSingletons();
 }
@@ -769,79 +753,39 @@ void CoreServices::initializeQMLSingletons() {
     // singletons to that they can be accessed by components instantiated by
     // QML, which would also be suboptimal.
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(getEffectsManager());
+    mixxx::qml::QmlApplicationProxy::registerUserSettings(getSettings());
+    mixxx::qml::QmlApplicationProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
+    mixxx::qml::QmlApplicationProxy::registerVinylControlManager(
+            getVinylControlManager().get());
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
     mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
     mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(getKeyboardEventFilter());
+    mixxx::qml::QmlSoundManagerProxy::registerManager(getSoundManager());
+    mixxx::qml::QmlControllerManagerProxy::registerManager(
+            getControllerManager(),
+            CmdlineArgs::Instance().getControllerPreviewScreens());
 
     ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
 
-    // Currently, it is required to enforce QQuickWindow RHI backend to use
-    // OpenGL on all platforms to allow offscreen rendering to function as
-    // expected
+    // Qt Quick's native graphics backends are preferred on macOS and Windows.
+    // Offscreen rendering for controller screens is currently implemented only
+    // on Linux and Android, so those platforms retain the established OpenGL
+    // scene-graph backend used by the QML waveform renderers.
+#if !defined(Q_OS_MACOS) && !defined(Q_OS_WIN)
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
 #endif
 }
 
 void CoreServices::initializeKeyboard() {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    QString resourcePath = pConfig->getResourcePath();
-
-    // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
-    }
-
-    // Read keyboard configuration and set kdbConfig object in WWidget
-    // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
-
-    // Empty keyboard configuration
-    m_pKbdConfigEmpty = std::make_shared<ConfigObject<ConfigValueKbd>>(QString());
-
-    if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard mapping" << userKeyboard;
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
-    } else {
-        // Default to the locale for the main input method (e.g. keyboard).
-        QLocale locale = inputLocale();
-
-        // check if a default keyboard exists
-        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
-        defaultKeyboard += locale.name();
-        defaultKeyboard += ".kbd.cfg";
-        qDebug() << "Found and will use default keyboard mapping" << defaultKeyboard;
-
-        if (!QFile::exists(defaultKeyboard)) {
-            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
-            if (!QFile::exists(defaultKeyboard)) {
-                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
-                defaultKeyboard = "";
-            }
-        }
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(defaultKeyboard);
-    }
-
-    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
-    // initialization into KeyboardEventFilter
-    // Workaround for today: KeyboardEventFilter calls delete
-    bool keyboardShortcutsEnabled = pConfig->getValue<bool>(
-            ConfigKey("[Keyboard]", "Enabled"));
-    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(
-            keyboardShortcutsEnabled ? m_pKbdConfig.get() : m_pKbdConfigEmpty.get());
+    const QLocale locale = inputLocale();
+    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(pConfig, locale);
 }
 
-void CoreServices::slotOptionsKeyboard(bool toggle) {
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    if (toggle) {
-        // qDebug() << "Enable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfig.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
-    } else {
-        // qDebug() << "Disable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
-    }
+std::shared_ptr<ConfigObject<ConfigValueKbd>> CoreServices::getKeyboardConfig() const {
+    return m_pKeyboardEventFilter->getKeyboardConfig();
 }
 
 bool CoreServices::initializeDatabase() {
@@ -885,18 +829,21 @@ bool CoreServices::initializeDatabase() {
     return MixxxDb::initDatabaseSchema(dbConnection);
 }
 
-std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
+std::shared_ptr<QDialog> CoreServices::makeDlgPreferences(
+        bool includeWaveformPreferences) const {
     // Note: We return here the base class pointer to make the coreservices.h usable
     // in test classes where header included from dlgpreferences.h are not accessible.
+    auto pSkinLoader = std::make_shared<mixxx::skin::SkinLoader>(getSettings());
     std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
             getScreensaverManager(),
-            nullptr,
+            pSkinLoader,
             getSoundManager(),
             getControllerManager(),
             getVinylControlManager(),
             getEffectsManager(),
             getSettingsManager(),
-            getLibrary());
+            getLibrary(),
+            includeWaveformPreferences);
     return pDlgPreferences;
 }
 
@@ -912,12 +859,19 @@ void CoreServices::finalize() {
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerUserSettings(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerKeyboardEventFilter(nullptr);
+    mixxx::qml::QmlApplicationProxy::registerVinylControlManager(nullptr);
     mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
     mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
     mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+    mixxx::qml::QmlLibraryProxy::registerKeyboardEventFilter(nullptr);
+    mixxx::qml::QmlSoundManagerProxy::registerManager(nullptr);
+    mixxx::qml::QmlControllerManagerProxy::registerManager(nullptr);
 
     ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
 #endif
+    ControllerScriptEngineBase::registerPlayerManager(nullptr);
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

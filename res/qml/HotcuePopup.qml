@@ -9,12 +9,44 @@ Popup {
 
     required property Hotcue hotcue
 
-    dim: false
-    modal: true
-    focus: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
-    contentWidth: colorGrid.implicitWidth
     contentHeight: colorGrid.implicitHeight + clearButton.implicitHeight
+    contentWidth: colorGrid.implicitWidth
+    dim: false
+    focus: true
+    modal: true
+
+    background: BorderImage {
+        id: backgroundImage
+
+        anchors.fill: parent
+        horizontalTileMode: BorderImage.Stretch
+        source: Theme.imgPopupBackground
+        verticalTileMode: BorderImage.Stretch
+
+        border {
+            bottom: 10
+            left: 20
+            right: 20
+            top: 10
+        }
+    }
+    enter: Transition {
+        NumberAnimation {
+            duration: 100
+            from: 0
+            properties: "opacity"
+            to: 1
+        }
+    }
+    exit: Transition {
+        NumberAnimation {
+            duration: 100
+            from: 1
+            properties: "opacity"
+            to: 0
+        }
+    }
 
     Grid {
         id: colorGrid
@@ -23,17 +55,18 @@ Popup {
         spacing: 2
 
         Repeater {
-            model: Mixxx.Config.getHotcueColorPalette()
+            model: Mixxx.Config.hotcueColorPalette
 
             Rectangle {
                 required property color modelData
 
+                color: modelData
                 height: 24
                 width: 24
-                color: modelData
 
                 MouseArea {
                     anchors.fill: parent
+
                     onClicked: {
                         root.hotcue.setColor(parent.color);
                         root.close();
@@ -42,50 +75,16 @@ Popup {
             }
         }
     }
-
     Skin.Button {
         id: clearButton
 
-        anchors.top: colorGrid.bottom
+        activeColor: Theme.deckActiveColor
         anchors.left: parent.left
+        anchors.top: colorGrid.bottom
         anchors.topMargin: 5
         text: "Clear"
-        activeColor: Theme.deckActiveColor
+
         onPressed: root.hotcue.clear = 1
         onReleased: root.hotcue.clear = 0
-    }
-
-    enter: Transition {
-        NumberAnimation {
-            properties: "opacity"
-            from: 0
-            to: 1
-            duration: 100
-        }
-    }
-
-    exit: Transition {
-        NumberAnimation {
-            properties: "opacity"
-            from: 1
-            to: 0
-            duration: 100
-        }
-    }
-
-    background: BorderImage {
-        id: backgroundImage
-
-        anchors.fill: parent
-        horizontalTileMode: BorderImage.Stretch
-        verticalTileMode: BorderImage.Stretch
-        source: Theme.imgPopupBackground
-
-        border {
-            top: 10
-            left: 20
-            right: 20
-            bottom: 10
-        }
     }
 }

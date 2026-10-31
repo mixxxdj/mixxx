@@ -1,7 +1,10 @@
 #include "util/widgethelper.h"
 
+#include <QApplication>
+#include <QGuiApplication>
 #include <QScreen>
 #include <QStyle>
+#include <QWindow>
 
 #include "util/math.h"
 
@@ -9,11 +12,32 @@ namespace mixxx {
 
 namespace widgethelper {
 
+namespace {
+
+QScreen* screenForVisibleWindow(QWindow* pWindow) {
+    if (!pWindow || !pWindow->isVisible()) {
+        return nullptr;
+    }
+
+    switch (pWindow->type()) {
+    case Qt::Popup:
+    case Qt::ToolTip:
+    case Qt::SplashScreen:
+        return nullptr;
+    default:
+        break;
+    }
+
+    return pWindow->screen();
+}
+
+} // namespace
+
 QPoint mapPopupToScreen(
         const QWidget& widget,
         const QPoint& popupUpperLeft,
         const QSize& popupSize) {
-    const auto* const pScreen = getScreen(widget);
+    const auto* const pScreen = widget.screen();
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         // This should never fail
         return popupUpperLeft;
@@ -37,8 +61,7 @@ QPoint mapPopupToScreen(
     return QPoint(adjustedX, adjustedY);
 }
 
-QWindow* getWindow(
-        const QWidget& widget) {
+QWindow* getWindow(const QWidget& widget) {
     if (auto* window = widget.windowHandle()) {
         return window;
     }
@@ -48,11 +71,54 @@ QWindow* getWindow(
     return nullptr;
 }
 
+QScreen* getScreenForWidgetOrApplication(
+        const QWidget& widget) {
+    VERIFY_OR_DEBUG_ASSERT(qGuiApp) {
+        return nullptr;
+    }
+
+    if (QScreen* pScreen = screenForVisibleWindow(qGuiApp->focusWindow())) {
+        return pScreen;
+    }
+
+    if (QWidget* pActiveWindow = QApplication::activeWindow()) {
+        if (QScreen* pScreen = pActiveWindow->screen()) {
+            return pScreen;
+        }
+    }
+
+    if (widget.isVisible()) {
+        if (QScreen* pScreen = widget.screen()) {
+            return pScreen;
+        }
+    }
+
+    const QWindowList topLevelWindows = qGuiApp->topLevelWindows();
+    for (QWindow* pWindow : topLevelWindows) {
+        if (QScreen* pScreen = screenForVisibleWindow(pWindow)) {
+            return pScreen;
+        }
+    }
+
+    if (QScreen* pScreen = widget.screen()) {
+        return pScreen;
+    }
+
+    QScreen* pScreen = qGuiApp->primaryScreen();
+    VERIFY_OR_DEBUG_ASSERT(pScreen) {
+        return nullptr;
+    }
+    qWarning() << "Unable to detect an application window screen. "
+                  "Using primary screen"
+               << pScreen->name();
+    return pScreen;
+}
+
 void growListWidget(QListWidget& listWidget, const QWidget& parent) {
     // Try to display all files and the complete file locations to avoid
     // horizontal scrolling.
     // Get the screen dimensions
-    QScreen* const pScreen = getScreen(parent);
+    const auto* const pScreen = parent.screen();
     QSize screenSpace;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Screen not detected. Assuming screen size of 800x600px.";
@@ -67,7 +133,7 @@ void growListWidget(QListWidget& listWidget, const QWidget& parent) {
     int minW = listWidget.sizeHintForColumn(0) + margin;
     int minH = listWidget.sizeHintForRow(0) * listWidget.count() + margin;
     // The file list should fit into the window, but clamp to 75% of screen size
-    // so (hoepfully) the entire containing dialog is visible even if there are
+    // so (hopefully) the entire containing dialog is visible even if there are
     // toolbars at the screen edges
     int newW = std::min(minW, static_cast<int>(screenSpace.width() * 0.75));
     int newH = std::min(minH, static_cast<int>(screenSpace.height() * 0.75));

@@ -10,7 +10,6 @@
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "track/track.h"
-#include "util/colorcomponents.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -47,6 +46,10 @@ void WaveformRendererSlipMode::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
+    if (m_waveformRenderer->getGroup().isEmpty()) {
+        m_pSlipModeControl.reset();
+        return true;
+    }
     m_pSlipModeControl = std::make_unique<ControlProxy>(
             m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
 
@@ -82,14 +85,15 @@ void WaveformRendererSlipMode::preprocess() {
 }
 
 bool WaveformRendererSlipMode::preprocessInner() {
-    if (!m_pSlipModeControl->toBool() || !m_waveformRenderer->isSlipActive()) {
+    if (!m_pSlipModeControl || !m_pSlipModeControl->toBool() ||
+            !m_waveformRenderer->isSlipActive()) {
         return false;
     }
 
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     const bool isStemTrack = pTrack && pTrack->hasStem() &&
             pTrack->getWaveform() && pTrack->getWaveform()->hasStem();
-    const bool splitStemTracks = isStemTrack &&
+    const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;

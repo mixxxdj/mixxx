@@ -122,39 +122,44 @@ LibraryScanner::LibraryScanner(
     // connect them to our slots to run the command on the scanner thread.
     connect(this, &LibraryScanner::startScan, this, &LibraryScanner::slotStartScan);
 
-    connect(this,
-            &LibraryScanner::progressLoading,
-            m_pProgressDlg.get(),
-            &LibraryScannerDlg::slotUpdate);
-    connect(this,
-            &LibraryScanner::progressHashing,
-            m_pProgressDlg.get(),
-            &LibraryScannerDlg::slotUpdate);
-    connect(this,
-            &LibraryScanner::scanStarted,
-            m_pProgressDlg.get(),
-            &LibraryScannerDlg::slotScanStarted);
-    connect(this,
-            &LibraryScanner::scanFinished,
-            m_pProgressDlg.get(),
-            &LibraryScannerDlg::slotScanFinished);
-    connect(m_pProgressDlg.get(),
-            &LibraryScannerDlg::scanCancelled,
-            this,
-            &LibraryScanner::slotCancel,
-            Qt::DirectConnection);
-    connect(&m_trackDao,
-            &TrackDAO::progressVerifyTracksOutside,
-            m_pProgressDlg.get(),
-            &LibraryScannerDlg::slotUpdate);
-    connect(&m_trackDao,
-            &TrackDAO::progressCoverArt,
-            m_pProgressDlg.get(),
-            &LibraryScannerDlg::slotUpdateCover);
-    connect(&m_trackDao,
-            &TrackDAO::progressLookingForSubstituteTracks,
-            m_pProgressDlg.get(),
-            &LibraryScannerDlg::slotUpdateSubstitute);
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        connect(this,
+                &LibraryScanner::progressLoading,
+                m_pProgressDlg.get(),
+                &LibraryScannerDlg::slotUpdate);
+        connect(this,
+                &LibraryScanner::progressHashing,
+                m_pProgressDlg.get(),
+                &LibraryScannerDlg::slotUpdate);
+        connect(this,
+                &LibraryScanner::scanStarted,
+                m_pProgressDlg.get(),
+                &LibraryScannerDlg::slotScanStarted);
+        connect(this,
+                &LibraryScanner::scanFinished,
+                m_pProgressDlg.get(),
+                &LibraryScannerDlg::slotScanFinished);
+        connect(m_pProgressDlg.get(),
+                &LibraryScannerDlg::scanCancelled,
+                this,
+                &LibraryScanner::slotCancel,
+                Qt::DirectConnection);
+        connect(&m_trackDao,
+                &TrackDAO::progressVerifyTracksOutside,
+                m_pProgressDlg.get(),
+                &LibraryScannerDlg::slotUpdate);
+        connect(&m_trackDao,
+                &TrackDAO::progressCoverArt,
+                m_pProgressDlg.get(),
+                &LibraryScannerDlg::slotUpdateCover);
+        connect(&m_trackDao,
+                &TrackDAO::progressLookingForSubstituteTracks,
+                m_pProgressDlg.get(),
+                &LibraryScannerDlg::slotUpdateSubstitute);
+    }
 }
 
 LibraryScanner::~LibraryScanner() {
@@ -199,15 +204,21 @@ void LibraryScanner::slotStartScan() {
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.loadAllDirectories();
-    // If there are no directories then we have nothing to do. Cleanup and
-    // finish the scan immediately.
-    if (m_libraryRootDirs.isEmpty()) {
+    // If there are no directories then we still have to scan independently added tracks.
+    QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
+
+    if (m_libraryRootDirs.isEmpty() && trackLocations.isEmpty()) {
+        // Nothing to do. noDirectoriesConfigured == true will show the "no dirs" message.
+        LibraryScanResultSummary result;
+        result.autoscan = m_manualScan;
+        result.noDirectoriesConfigured = true;
+
         changeScannerState(IDLE);
+        emit scanSummary(result);
+        emit scanFinished();
         return;
     }
     changeScannerState(SCANNING);
-
-    QSet<QString> trackLocations = m_trackDao.getAllTrackLocations();
     // Store number of existing tracks so we can calculate the number
     // of missing tracks in slotFinishUnhashedScan().
     m_previouslyMissingTracks = m_trackDao.getAllMissingTrackLocations();

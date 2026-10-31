@@ -49,7 +49,7 @@ Variables:
           </Template>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <!--	Additional line to display comments from file tag.
+          <!-- Additional line to display comments from file tag.
           Useful to explain hotcues, loop, Ins & Outs for live sets etc.
           Deprecated as soon as HotCue labels are easily editable -->
           <TrackProperty>

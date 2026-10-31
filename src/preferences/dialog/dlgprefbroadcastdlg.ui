@@ -376,6 +376,9 @@
            </item>
            <item row="0" column="1">
             <widget class="QLineEdit" name="metadata_format">
+             <property name="toolTip">
+               <string>Available fields: $artist, $title, $year, $album, $genre, $bpm</string>
+             </property>
              <property name="text">
               <string notr="true">$artist - $title</string>
              </property>

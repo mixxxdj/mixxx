@@ -42,11 +42,24 @@ class WaveformWidgetRenderer {
     void onPreRender(VSyncTimeProvider* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
+    void setVisualPlayPosition(const QSharedPointer<VisualPlayPosition>& value) {
+        if (value == m_visualPlayPosition) {
+            return;
+        }
+        m_group.clear();
+        m_visualPlayPosition = value;
+        init();
+    }
+
     const QString& getGroup() const {
         return m_group;
     }
 
     virtual void setGroup(const QString& group) {
+        if (m_group == group) {
+            return;
+        }
+        m_visualPlayPosition.reset();
         m_group = group;
         init();
     }

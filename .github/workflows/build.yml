@@ -31,9 +31,15 @@ on:
         required: false
       MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD:
         required: false
+      ANDROID_SIGNING_KEYSTORE_BASE64:
+        required: false
+      ANDROID_SIGNING_PASSWORD:
+        required: false
       NETLIFY_BUILD_HOOK:
         required: false
-      RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+      DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY:
+        required: false
+      PPA_SSH_PRIVATE_KEY:
         required: false
 
 permissions:
@@ -41,6 +47,9 @@ permissions:
 
 jobs:
   build:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches (gh cache delete)
     strategy:
       fail-fast: false
       matrix:
@@ -80,7 +89,7 @@ jobs:
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
-            ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
+            ctest_args: []
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
@@ -113,8 +122,8 @@ jobs:
             artifacts_name: macOS ARM DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosarm
-          - name: Windows 2022 x64
-            os: windows-2022
+          - name: Windows Server 2025 VS2026 x64
+            os: windows-2025-vs2026
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -132,7 +141,7 @@ jobs:
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            ctest_args: []
             cpack_generator: WIX
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
@@ -140,8 +149,8 @@ jobs:
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
             arch: x64
-          - name: Windows 11 ARM64
-            os: windows-11-arm
+          - name: Windows 11 VS2026 ARM64
+            os: windows-11-vs2026-arm
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -168,11 +177,66 @@ jobs:
             artifacts_path: build/*.msi
             artifacts_slug: windows-winarm
             arch: arm64
+          - name: Android 15 arm64
+            os: ubuntu-24.04
+            # DBUILD_TESTING=OFF: error: OpenMP support and version of OpenMP (31, 40 or 45) differs
+            cmake_args: >-
+              -DBULK=ON
+              -DQT6=ON
+              -DQML=ON
+              -DHID=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-android
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-linux-release
+              -DCMAKE_SYSTEM_NAME=Android
+              -DBUILD_TESTING=OFF
+              -DBUILD_BENCH=OFF
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/android_buildenv.sh
+            artifacts_name: Android 15 APK
+            artifacts_path: build/android-build/build/outputs/apk/release/*.apk
+            artifacts_slug: android-15
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            crosscompile: true
+            arch: arm64
+          # Ubuntu 22.04 (glibc 2.35) is the lowest viable glibc baseline: the
+          # AppImage must run on as many distributions as possible. Qt 6.11
+          # requires glibc >= 2.34, and the buildenv itself is built on 22.04.
+          # CMake >= 4.2 is provided by the "[AppImage] Set up cmake" step below.
+          - name: AppImage Linux x86_64
+            os: ubuntu-22.04
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/usr
+              -DCMAKE_INSTALL_LIBDIR=lib
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
+            ctest_args: []
+            cpack_generator: AppImage
+            # Not a cross-compile: this is a native x86_64 build, so the
+            # shared Test step must run.  The PPA steps are excluded for the
+            # AppImage separately below.
+            crosscompile: false
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/appimage_release_buildenv.sh
+            artifacts_name: AppImage Linux x86_64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage
+            arch: x86_64
 
     env:
       # macOS codesigning
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
+      # Android signing
+      ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+      ANDROID_SIGNING_PASSWORD: ${{ secrets.ANDROID_SIGNING_PASSWORD }}
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
@@ -207,7 +271,7 @@ jobs:
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.21.x"
+          cmake-version: "3.22.x"
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v2.2
@@ -265,6 +329,42 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
+      - name: "[android] Setup signing key"
+        if: startsWith(matrix.artifacts_slug, 'android')
+        run: |
+          if [ -z "${ANDROID_SIGNING_KEYSTORE_BASE64}" ]; then
+            # If no signing key is available (e.g running on a fork), generate a temporary key
+            keytool \
+              -genkey \
+              -keystore mixxx.keystore \
+              -alias mixxx \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 365 \
+              -keypass mixxxandroid \
+              -storepass mixxxandroid \
+              -dname "CN=${{ github.actor }}"
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=mixxxandroid" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=mixxxandroid" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
+          else
+            echo "${{ env.ANDROID_SIGNING_KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/mixxx.keystore
+            echo "QT_ANDROID_KEYSTORE_ALIAS=mixxx" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_KEY_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_STORE_PASS=${{ env.ANDROID_SIGNING_PASSWORD }}" >> $GITHUB_ENV
+            echo "QT_ANDROID_KEYSTORE_PATH=${{ github.workspace }}/mixxx.keystore" >> $GITHUB_ENV
+          fi
+
+      - name: "[AppImage] Set up cmake"
+        # The CPack AppImage generator requires CMake >= 4.2, which is not
+        # available from apt on the ubuntu-22.04 runner (kept for the glibc
+        # baseline).  Use the same action as the macOS/Windows builds.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        uses: jwlawson/actions-setup-cmake@v2.2
+        with:
+          cmake-version: "4.2.x"
+
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
@@ -280,23 +380,55 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
-      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
+      - name: "[Ubuntu/macOS] Restore ccache cache"
+        # Caches are only saved by push builds (see "Save ccache cache").
+        # Pull requests can read caches of their base branch, but caches they
+        # save are only visible to themselves and evict the base branch caches
+        # from the 10 GB repository quota.
+        id: ccache_cache
         if: runner.os != 'windows'
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          # Key by source state (not run number) so runs that only change the
+          # workflow — or repeat the same source — reuse the compiled objects
+          # instead of creating a fresh cache entry every time.
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ env.BUILDENV_NAME || 'system' }}-${{ hashFiles('src/**', 'CMakeLists.txt', 'cmake/**') }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.base_ref }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"
-        # GitHub Actions gives us 10 GB of cache.
-        # 4 runs * 2 GB = 8 GB
+        # The limit applies to the compressed size. Uncompressed, the Ubuntu
+        # build with debug info exceeds 2G and evicts its own objects.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
           ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
+
+      # Remove unused pre-installed software as the runner runs out of space otherwise
+      # Currently freeing up about 17.7G, ~20%
+      - name: "[android] Free up disk space"
+        if: startsWith(matrix.artifacts_slug, 'android')
+        run: |
+          sudo apt-get autoremove -y && sudo apt-get clean
+          sudo rm -rf /home/packer                 # Free up 677M
+          sudo rm -rf /opt/az                      # Free up 649M
+          sudo rm -rf /opt/google                  # Free up 378M
+          sudo rm -rf /opt/hostedtoolcache/CodeQL  # Free up 1.6G
+          sudo rm -rf /opt/hostedtoolcache/go      # Free up 808M
+          sudo rm -rf /opt/hostedtoolcache/node    # Free up 532M
+          sudo rm -rf /opt/hostedtoolcache/PyPy    # Free up 520M
+          sudo rm -rf /opt/hostedtoolcache/Python  # Free up 1.5G
+          sudo rm -rf /opt/microsoft               # Free up 781M
+          sudo rm -rf /opt/pipx                    # Free up 499M
+          sudo rm -rf /usr/lib/google-cloud-sdk    # Free up 957M
+          sudo rm -rf /usr/local/julia1.11.7       # Free up 996M
+          sudo rm -rf /usr/local/share/powershell  # Free up 1.3G
+          sudo rm -rf /usr/share/dotnet            # Free up 3.4G
+          sudo rm -rf /usr/share/swift             # Free up 3.2G
+          sudo rm -rf /usr/local/share/vcpkg       # Size unknown, but obvious duplicate
 
       - name: "Create build directory"
         run: mkdir build
@@ -334,19 +466,48 @@ jobs:
         uses: ammaraskar/msvc-problem-matcher@0.3.0
 
       - name: "Build"
-        run: cmake --build . --config RelWithDebInfo
+        # Ninja (macOS/Windows) uses all cores by default, make (Linux) only one
+        run: cmake --build . --config RelWithDebInfo ${{ runner.os == 'Linux' && '--parallel "$(nproc)"' || '' }}
         working-directory: build
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
-          # GitHub Actions automatically zstd compresses caches
-          CCACHE_NOCOMPRESS: true
 
       - name: "[Ubuntu/macOS] Print compiler cache stats"
         if: runner.os != 'windows'
         run: |
           ${{ matrix.compiler_cache }} --show-stats
           ${{ matrix.compiler_cache }} --cleanup
+
+      - name: "[Ubuntu/macOS] Save ccache cache"
+        id: ccache_save
+        if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ matrix.compiler_cache_path }}
+          key: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+
+      - name: "[Ubuntu/macOS] Delete outdated ccache caches"
+        # Every source change creates a new cache entry for this branch. Drop
+        # the older ones so they don't evict the caches of other branches.
+        if: steps.ccache_save.outcome == 'success'
+        run: |
+          # A build of a newer commit may have saved its cache already
+          if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
+            echo "$GITHUB_REF has newer commits, not deleting any caches"
+            exit 0
+          fi
+          gh cache list --ref "$GITHUB_REF" --key "$KEY_PREFIX" --limit 100 --json id,key \
+            --jq ".[] | select(.key != \"$KEY\") | .id" |
+          while read -r id; do
+            gh cache delete "$id"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEY: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+          # Also matches caches made with an outdated build environment
+          KEY_PREFIX: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-
 
       - name: "Test"
         if: matrix.crosscompile != true
@@ -355,7 +516,7 @@ jobs:
         env:
           GTEST_COLOR: 1
           # Windows tests fail randomly if run in parallel
-          CTEST_PARALLEL_LEVEL: 1
+          CTEST_PARALLEL_LEVEL: ${{ runner.os == 'Windows' && 1 || 3 }}
           CTEST_OUTPUT_ON_FAILURE: 1
 
       - name: "[Windows] Sign executables"
@@ -376,12 +537,17 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # The x64 and ARM64 runners share the cache keys, but their workspaces
+          # are on different drives (D: vs C:), so a cache saved by ARM64
+          # restores the module to the wrong drive on x64 and signing fails.
+          # https://github.com/Azure/artifact-signing-action/issues/146
+          cache-dependencies: false
 
       - name: "[Windows] Sign WiX custom action DLL"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
-        uses: azure/trusted-signing-action@v1.1.0
+        uses: azure/trusted-signing-action@v2.0.0
         with:
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
@@ -394,6 +560,8 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # See "Sign executables"
+          cache-dependencies: false
 
       - name: "[Windows] Install WiX Toolset"
         if: runner.os == 'Windows'
@@ -417,6 +585,47 @@ jobs:
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
 
+      - name: "[AppImage] Upload AppImage"
+        if: matrix.cpack_generator == 'AppImage'
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ matrix.artifacts_path }}
+          if-no-files-found: error
+          # Match the other artifacts and upload uncompressed.  With
+          # archive=false the AppImage is uploaded as-is and the artifact
+          # name becomes the file name (the AppImage already is compressed,
+          # so re-zipping it is wasted work).
+          archive: "false"
+
+      - name: "[AppImage] Smoke test"
+        # Run the packaged AppImage once.  This catches loader-level failures
+        # (e.g. the ld.so assertion a broken linker produces, or missing
+        # bundled libraries) that a build-only pipeline cannot see.  The
+        # runner has no display, so --version may exit non-zero after
+        # initializing Qt — reaching Mixxx startup is what matters.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          # The AppImage does not bundle libpipewire (it is excluded), so the
+          # host must provide it; the bare runner image lacks it.
+          sudo apt-get install -y --no-install-recommends libpipewire-0.3-0
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Smoke-testing ${APPIMAGE}"
+          set +e
+          APPIMAGE_EXTRACT_AND_RUN=1 timeout 60 "${APPIMAGE}" --version >/tmp/smoke.log 2>&1
+          rc=$?
+          set -e
+          if grep -qE "Inconsistency detected by ld.so|error while loading shared libraries|cannot open shared object file" /tmp/smoke.log; then
+            echo "FAIL: AppImage failed at loader level (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          if ! grep -qE "Mixxx [0-9]|Using preferences|Selected Qt style|ConfigObject:" /tmp/smoke.log; then
+            echo "FAIL: AppImage did not reach Mixxx startup (rc=${rc})"
+            cat /tmp/smoke.log
+            exit 1
+          fi
+          echo "SMOKE OK"
+
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
         uses: actions/upload-artifact@v7
@@ -424,24 +633,45 @@ jobs:
           name: ${{ matrix.os }}-logs-packages-wix
           path: ${{ github.workspace }}/build/_CPack_Packages/win64/WIX/wix.log
 
-      - name: "[Ubuntu] Import PPA GPG key"
-        if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
-        run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+      - name: "[Ubuntu] Import DEB package maintainer GPG key"
+        if: matrix.name == 'Ubuntu 24.04' && env.GPG_PRIVATE_KEY != null
         env:
-          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+        run: gpg --import <(echo "$GPG_PRIVATE_KEY")
+
+      - name: "[Ubuntu] Set up for Launchpad PPA SSH upload"
+        if: matrix.name == 'Ubuntu 24.04' && env.PPA_SSH_KEY != null
+        env:
+          PPA_SSH_KEY: ${{ secrets.PPA_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "$PPA_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "# ppa.launchpad.net:22 SSH-2.0-Twisted_20.3.0+lp11" >> ~/.ssh/known_hosts
+          echo "|1|vctA7tDErFfMmg90fV0D4We8BB8=|DuVjz6Bom2lTeHQT8CxbXMZh2U0= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0aKz5UTUndYgIGG7dQBV+HaeuEZJ2xPHo2DS2iSKvUL4xNMSAY4UguNW+pX56nAQmZKIZZ8MaEvSj6zMEDiq6HFfn5JcTlM80UwlnyKe8B8p7Nk06PPQLrnmQt5fh0HmEcZx+JU9TZsfCHPnX7MNz4ELfZE6cFsclClrKim3BHUIGq//t93DllB+h4O9LHjEUsQ1Sr63irDLSutkLJD6RXchjROXkNirlcNVHH/jwLWR5RcYilNX7S5bIkK8NlWPjsn/8Ua5O7I9/YoE97PpO6i73DTGLh5H9JN/SITwCKBkgSDWUt61uPK3Y11Gty7o2lWsBjhBUm2Y38CBsoGmBw==" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          sudo tee /etc/dput.cf > /dev/null <<'EOF'
+          [ssh-ppa]
+          fqdn            = ppa.launchpad.net
+          method          = sftp
+          incoming        = ~%(ssh-ppa)s
+          login           = daschuer
+          EOF
+          sudo chmod 644 /etc/dput.cf
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
         if: matrix.name == 'Ubuntu 24.04'
         run: |
           if [[ "${{ inputs.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/nightlies"
           elif [[ "${{ inputs.ref }}" == "refs/heads/2.6" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxxbetas"
           elif [[ "${{ inputs.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxx"
           elif [[ "${{ inputs.ref }}" == "refs/heads/2.5" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxpatches"
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ssh-ppa:mixxx/mixxxpatches"
           else
             # only build the source DEB, do not upload
             CPACK_ARGS="-D DEB_SOURCEPKG=ON"
@@ -475,13 +705,16 @@ jobs:
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
           timeout: 600
+          # See "Sign executables"
+          cache-dependencies: false
 
       - name: "Prepare for deployment"
         # Copy the desired directory structure to the deploy/ directory. This
         # also generates metadata for file artifact and write it to the job
         # output using the artifacts_slug value.
+        # The AppImage publishes via appimage.yml, not via the generic path.
         id: prepare_deploy
-        if: inputs.publish && matrix.artifacts_path != null
+        if: inputs.publish && matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         shell: bash
         run: >
           if [[ "${{ inputs.ref }}" =~ ^refs/tags/.* ]];
@@ -496,6 +729,15 @@ jobs:
           --dest-path "${DEPLOY_PATH}"
           --dest-url 'https://downloads.mixxx.org'
           ${{ matrix.artifacts_path }}
+
+      # TODO create a F-droid repo?
+      # - name: fdroid nightly
+      #   run: |
+      #     sudo add-apt-repository ppa:fdroid/fdroidserver
+      #     sudo apt-get update
+      #     sudo apt-get install apksigner fdroidserver --no-install-recommends
+      #     export DEBUG_KEYSTORE=$
+      #     fdroid nightly --archive-older 10
 
       # Warning: do not move this step before restoring caches or it will break caching due to
       # https://github.com/actions/cache/issues/531
@@ -550,9 +792,10 @@ jobs:
           ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
-      - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
-        # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-        if: runner.os != 'Linux' && inputs.publish && env.SSH_AUTH_SOCK != null
+      - name: "[Android/macOS/Windows] Upload build to downloads.mixxx.org"
+        # Skip deploying Ubuntu builds to downloads.mixxx.org (these are
+        # deployed to the PPA) and the AppImage (published via appimage.yml).
+        if: matrix.cpack_generator != 'AppImage' && startsWith(matrix.artifacts_slug, 'ubuntu') != true && inputs.publish && env.SSH_AUTH_SOCK != null
         shell: bash --login -eo pipefail "{0}"
         run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
@@ -568,7 +811,9 @@ jobs:
           echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
       - name: "Upload GitHub Actions artifacts"
-        if: matrix.artifacts_path != null
+        # The AppImage is uploaded by the dedicated "[AppImage] Upload AppImage"
+        # step with a stable name used by the publish workflow.
+        if: matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
         uses: actions/upload-artifact@v7.0.1
         with:
           archive: "false"
@@ -622,6 +867,10 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           build-bundle: false
           upload-artifact: false
+          # The Flatpak caches (~1.4 GB per arch) are only saved by branch pushes
+          # (main and the release branches) to stay within the 10 GB quota.
+          # Pull requests can still restore the cache of their base branch.
+          save-cache: ${{ github.event_name == 'push' && github.ref_type == 'branch' }}
 
       - name: "Create Flatpak bundle"
         run: |

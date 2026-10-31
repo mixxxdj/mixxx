@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QByteArray>
-
-#include "util/compatibility/qmutex.h"
+#include <QMutex>
 
 struct RuntimeLoggingCategory;
+struct hid_device_;
 typedef struct hid_device_ hid_device;
 
 class HidIoOutputReport {

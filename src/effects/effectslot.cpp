@@ -207,11 +207,11 @@ void EffectSlot::updateEngineState() {
     }
 }
 
-void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
+void EffectSlot::initializeInputChannel(ChannelHandle inputChannel) {
     if (!m_pEngineEffect) {
         return;
     }
-    m_pEngineEffect->initalizeInputChannel(inputChannel);
+    m_pEngineEffect->initializeInputChannel(inputChannel);
 };
 
 EffectManifestPointer EffectSlot::getManifest() const {
@@ -499,11 +499,7 @@ void EffectSlot::swapParameters(EffectParameterType type, int index1, int index2
     VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index2) {
         return;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
     m_loadedParameters[type].swapItemsAt(index1, index2);
-#else
-    m_loadedParameters[type].swap(index1, index2);
-#endif
     loadParameters();
     emit parametersChanged();
 }

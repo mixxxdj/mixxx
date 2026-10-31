@@ -1,222 +1,127 @@
 import "." as Skin
 import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
-import QtQuick.Controls 2.12
+import QtQuick.Controls
+import QtQuick.Window 2.12
 import "Theme"
 
 ApplicationWindow {
     id: root
 
-    property alias show4decks: show4DecksButton.checked
-    property alias showEffects: showEffectsButton.checked
-    property alias showSamplers: showSamplersButton.checked
-    property alias maximizeLibrary: maximizeLibraryButton.checked
+    readonly property bool isMobile: Qt.platform.os === "android" || Qt.platform.os === "ios"
+    readonly property int designWidth: 1792
+    readonly property int designHeight: 1008
 
-    width: 1920
-    height: 1080
     color: Theme.backgroundColor
+    height: isMobile ? Screen.height : designHeight
+    menuBar: content.item ? content.item.menuBar : null
+    minimumHeight: isMobile ? 0 : 300
+    minimumWidth: isMobile ? 0 : 680
     visible: true
+    width: isMobile ? Screen.width : designWidth
 
-    Column {
+    function updateVisibility() {
+        if (!Mixxx.Core.ready) {
+            return;
+        }
+        root.visibility = Mixxx.Config.configStartInFullscreenKey || isMobile
+                ? Window.FullScreen
+                : Window.Windowed;
+    }
+
+    Connections {
+        target: Mixxx.Core
+        function onReadyChanged() {
+            root.updateVisibility();
+        }
+    }
+
+    Component.onCompleted: root.updateVisibility()
+
+    Loader {
+        id: content
+
         anchors.fill: parent
 
-        Rectangle {
-            id: toolbar
+        active: Mixxx.Core.ready
+        asynchronous: true
+        onStatusChanged: {
+            if (status === Loader.Error) {
+                console.error("Failed to load the Mixxx main window")
+                Qt.quit()
+            }
+        }
+        sourceComponent: Component {
+            MainWindow {
+                applicationWindow: root
+            }
+        }
+    }
+    Rectangle {
+        id: splash
+        visible: opacity > 0
+        color: Theme.backgroundColor
+        anchors.fill: parent
 
-            width: parent.width
-            height: 36
-            color: Theme.toolbarBackgroundColor
-            radius: 1
+        property bool ready: false
 
-            Row {
-                padding: 5
-                spacing: 5
+        Component.onCompleted: {
+            ready = true
+        }
 
-                Skin.Button {
-                    id: show4DecksButton
+        states: [
+            State {
+                when: splash.ready && content.status != Loader.Ready
 
-                    text: "4 Decks"
-                    activeColor: Theme.white
-                    checkable: true
+                PropertyChanges {
+                    text.opacity: 1
+                    logo.opacity: 1
+                    logo.y: root.height / 2 - logo.height / 2
                 }
+            },
+            State {
+                when: content.status == Loader.Ready && content.active
 
-                Skin.Button {
-                    id: maximizeLibraryButton
-
-                    text: "Library"
-                    activeColor: Theme.white
-                    checkable: true
-                }
-
-                Skin.Button {
-                    id: showEffectsButton
-
-                    text: "Effects"
-                    activeColor: Theme.white
-                    checkable: true
-                }
-
-                Skin.Button {
-                    id: showSamplersButton
-
-                    text: "Sampler"
-                    activeColor: Theme.white
-                    checkable: true
-                }
-
-                Skin.Button {
-                    id: showPreferencesButton
-
-                    text: "Prefs"
-                    activeColor: Theme.white
-                    onClicked: {
-                        Mixxx.PreferencesDialog.show();
-                    }
-                }
-
-                Skin.Button {
-                    id: showDevToolsButton
-
-                    text: "Develop"
-                    activeColor: Theme.white
-                    checkable: true
-                    checked: devToolsWindow.visible
-                    onClicked: {
-                        if (devToolsWindow.visible)
-                            devToolsWindow.close();
-                        else
-                            devToolsWindow.show();
-                    }
-
-                    DeveloperToolsWindow {
-                        id: devToolsWindow
-
-                        width: 640
-                        height: 480
-                    }
+                PropertyChanges {
+                    splash.opacity: 0
                 }
             }
+        ]
+        Image {
+            id: logo
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "qrc:/images/mixxx-icon-logo-symbolic.svg"
+            // height: 64
+            opacity: 0
+            y: root.height / 2
+
+            Behavior on opacity {
+                NumberAnimation { duration: 1500; easing.type: Easing.InOutQuad }
+            }
+
+            Behavior on y {
+                NumberAnimation { duration: 1500; easing.type: Easing.InOutQuad }
+            }
         }
-
-        Skin.WaveformDisplay {
-            id: deck3waveform
-
-            group: "[Channel3]"
-            width: root.width
-            height: 120
-            visible: root.show4decks && !root.maximizeLibrary
-
-            FadeBehavior on visible {
-                fadeTarget: deck3waveform
+        Text {
+            id: text
+            opacity: 0
+            y: logo.y + logo.height*2
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 20
+            font.pixelSize: 12
+            color: Theme.lightGray3
+            text: "DJ your way"
+            Behavior on opacity {
+                SequentialAnimation {
+                    PauseAnimation { duration: 1000 }
+                    NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
+                }
             }
         }
 
-        Skin.WaveformDisplay {
-            id: deck1waveform
-
-            group: "[Channel1]"
-            width: root.width
-            height: 120
-            visible: !root.maximizeLibrary
-
-            FadeBehavior on visible {
-                fadeTarget: deck1waveform
-            }
-        }
-
-        Skin.WaveformDisplay {
-            id: deck2waveform
-
-            group: "[Channel2]"
-            width: root.width
-            height: 120
-            visible: !root.maximizeLibrary
-
-            FadeBehavior on visible {
-                fadeTarget: deck2waveform
-            }
-        }
-
-        Skin.WaveformDisplay {
-            id: deck4waveform
-
-            group: "[Channel4]"
-            width: root.width
-            height: 120
-            visible: root.show4decks && !root.maximizeLibrary
-
-            FadeBehavior on visible {
-                fadeTarget: deck4waveform
-            }
-        }
-
-        Skin.DeckRow {
-            id: decks12
-
-            leftDeckGroup: "[Channel1]"
-            rightDeckGroup: "[Channel2]"
-            width: parent.width
-            minimized: root.maximizeLibrary
-        }
-
-        Skin.CrossfaderRow {
-            id: crossfader
-
-            crossfaderWidth: decks12.mixer.width
-            width: parent.width
-            visible: !root.maximizeLibrary
-
-            Skin.FadeBehavior on visible {
-                fadeTarget: crossfader
-            }
-        }
-
-        Skin.DeckRow {
-            id: decks34
-
-            leftDeckGroup: "[Channel3]"
-            rightDeckGroup: "[Channel4]"
-            width: parent.width
-            minimized: root.maximizeLibrary
-            visible: root.show4decks
-
-            Skin.FadeBehavior on visible {
-                fadeTarget: decks34
-            }
-        }
-
-        Skin.SamplerRow {
-            id: samplers
-
-            width: parent.width
-            visible: root.showSamplers
-
-            Skin.FadeBehavior on visible {
-                fadeTarget: samplers
-            }
-        }
-
-        Skin.EffectRow {
-            id: effects
-
-            width: parent.width
-            visible: root.showEffects
-
-            Skin.FadeBehavior on visible {
-                fadeTarget: effects
-            }
-        }
-
-        Skin.Library {
-            width: parent.width
-            height: parent.height - y
-        }
-
-        move: Transition {
-            NumberAnimation {
-                properties: "x,y"
-                duration: 150
-            }
+        Behavior on opacity {
+            NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
         }
     }
 }

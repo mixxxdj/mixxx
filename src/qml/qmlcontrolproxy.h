@@ -57,6 +57,8 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
 
     /// Reset the control to the default value.
     Q_INVOKABLE void reset();
+    Q_INVOKABLE void trigger();
+    Q_INVOKABLE void toggle();
 
   signals:
     void groupChanged(const QString& group);

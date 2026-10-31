@@ -13,8 +13,9 @@ namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
         WaveformWidgetRenderer* waveformWidget,
-        bool bRgbStacked)
-        : WaveformRendererSignalBase(waveformWidget),
+        bool bRgbStacked,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
           m_bRgbStacked(bRgbStacked) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
@@ -56,7 +57,7 @@ bool WaveformRendererFiltered::preprocessInner() {
 #ifdef __STEM__
     auto stemInfo = pTrack->getStemInfo();
     // If this track is a stem track, skip the rendering
-    if (!stemInfo.isEmpty() && waveform->hasStem()) {
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
         return false;
     }
 #endif
@@ -77,6 +78,9 @@ bool WaveformRendererFiltered::preprocessInner() {
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
+    if (visualIncrementPerPixel == 0.0) {
+        return false;
+    }
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0);

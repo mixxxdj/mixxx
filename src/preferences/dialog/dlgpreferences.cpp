@@ -20,7 +20,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
 #include "util/desktophelper.h"
-#include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -33,6 +32,8 @@
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
 #include "preferences/dialog/dlgprefwaveform.h"
+#include "util/cmdlineargs.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -50,6 +51,7 @@
 #ifdef Q_OS_MACOS
 #include "util/darkappearance.h"
 #endif
+#include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
@@ -59,7 +61,8 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
-        std::shared_ptr<Library> pLibrary)
+        std::shared_ptr<Library> pLibrary,
+        bool includeWaveformPreferences)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -139,32 +142,39 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
-            pScreensaverManager,
-            pSkinLoader,
-            m_pConfig);
-    connect(pInterfacePage,
-            &DlgPrefInterface::tooltipModeChanged,
-            this,
-            &DlgPreferences::tooltipModeChanged);
-    connect(pInterfacePage,
-            &DlgPrefInterface::reloadUserInterface,
-            this,
-            &DlgPreferences::reloadUserInterface,
-            Qt::DirectConnection);
-    connect(pInterfacePage,
-            &DlgPrefInterface::menuBarAutoHideChanged,
-            this,
-            &DlgPreferences::menuBarAutoHideChanged,
-            Qt::DirectConnection);
-    addPageWidget(PreferencesPage(pInterfacePage,
-                          new QTreeWidgetItem(
-                                  contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Interface"),
-            "ic_preferences_interface.svg");
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+                pScreensaverManager,
+                pSkinLoader,
+                m_pConfig);
+        connect(pInterfacePage,
+                &DlgPrefInterface::tooltipModeChanged,
+                this,
+                &DlgPreferences::tooltipModeChanged);
+        connect(pInterfacePage,
+                &DlgPrefInterface::reloadUserInterface,
+                this,
+                &DlgPreferences::reloadUserInterface,
+                Qt::DirectConnection);
+        connect(pInterfacePage,
+                &DlgPrefInterface::menuBarAutoHideChanged,
+                this,
+                &DlgPreferences::menuBarAutoHideChanged,
+                Qt::DirectConnection);
+        addPageWidget(PreferencesPage(pInterfacePage,
+                              new QTreeWidgetItem(
+                                      contentsTreeWidget, QTreeWidgetItem::Type)),
+                tr("Interface"),
+                "ic_preferences_interface.svg");
+    }
 
-    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
-    if (pSkinLoader) {
+    // The shared native page is used by both legacy and LateNightQML. In QML
+    // mode QmlApplication initializes the factory as the preferences backend
+    // before constructing this dialog.
+    if (includeWaveformPreferences && WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -314,6 +324,10 @@ void DlgPreferences::showSoundHardwarePage(
     }
 }
 
+void DlgPreferences::showSoundHardwareInputPage() {
+    showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
+}
+
 bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide) {
@@ -410,7 +424,8 @@ void DlgPreferences::onShow() {
     int newWidth = m_geometry[2].toInt();
     int newHeight = m_geometry[3].toInt();
 
-    const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const QScreen* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
@@ -652,7 +667,8 @@ void DlgPreferences::resizeEvent(QResizeEvent* e) {
 
 QRect DlgPreferences::getDefaultGeometry() {
     adjustSize();
-    const auto* const pScreen = mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen =
+            mixxx::widgethelper::getScreenForWidgetOrApplication(*this);
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         return QRect();
     }

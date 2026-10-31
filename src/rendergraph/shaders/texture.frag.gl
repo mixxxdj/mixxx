@@ -1,5 +1,13 @@
 //// GENERATED - EDITS WILL BE OVERWRITTEN
 
+struct buf
+{
+    mat4 matrix;
+    float alpha;
+};
+
+uniform buf ubuf;
+
 uniform sampler2D texture1;
 
 varying highp vec2 vTexcoord;
@@ -7,4 +15,8 @@ varying highp vec2 vTexcoord;
 void main()
 {
     gl_FragData[0] = texture2D(texture1, vTexcoord);
+    if (ubuf.alpha > 0.0)
+    {
+        gl_FragData[0] *= ubuf.alpha;
+    }
 }

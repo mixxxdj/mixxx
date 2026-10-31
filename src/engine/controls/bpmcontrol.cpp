@@ -154,6 +154,26 @@ BpmControl::BpmControl(const QString& group,
                     slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
                 }
             });
+    m_pBeatsFourFifths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fourfifths"), false);
+    connect(m_pBeatsFourFifths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FourFifths);
+                }
+            });
+    m_pBeatsFiveFourths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fivefourths"), false);
+    connect(m_pBeatsFiveFourths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FiveFourths);
+                }
+            });
     m_pBeatsFourThirds = std::make_unique<ControlPushButton>(
             ConfigKey(group, "beats_set_fourthirds"), false);
     connect(m_pBeatsFourThirds.get(),
@@ -1174,6 +1194,7 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void BpmControl::trackBpmLockChanged(bool locked) {
+    // This is called by EngineBuffer after receiving Track::bpmLockChanged() signal
     m_pBpmLock->setAndConfirm(locked);
     if (locked) {
         m_pBeatsUndoPossible->forceSet(0);
@@ -1237,7 +1258,8 @@ void BpmControl::slotToggleBpmLock(double v) {
     }
     bool locked = pTrack->isBpmLocked();
     pTrack->setBpmLocked(!locked);
-    // The pushbutton is updated in trackBpmLockChanged() via bpmLockChanged() signal.
+    // Track emits bpmLockChanged() signal, and EngineBuffer updates the pushbutton
+    // by calling trackBpmLockChanged()
 }
 
 mixxx::Bpm BpmControl::updateLocalBpm() {
