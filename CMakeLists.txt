@@ -48,7 +48,10 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
+if(
+  (DEFINED ENV{BUILDENV_URL} OR (APPLE AND NOT IOS) OR WIN32)
+  AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}"
+)
   if(NOT DEFINED BUILDENV_BASEPATH)
     if(DEFINED ENV{BUILDENV_BASEPATH})
       set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
@@ -222,7 +225,16 @@ function(fatal_error_missing_env)
     endif()
   elseif(UNIX AND NOT APPLE)
     # Linux, BSD, Solaris, Minix
-    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+    if(DEFINED MIXXX_VCPKG_ROOT)
+      # On Linux a vcpkg build environment is currently only used for the
+      # AppImage build.  Point the user at the right setup script instead of
+      # the generic distro dev-package hint below.
+      message(
+        FATAL_ERROR
+        "The Mixxx vcpkg build environment is not set up correctly. Download and\n"
+        "set it up via `source ${CMAKE_SOURCE_DIR}/tools/appimage_buildenv.sh setup`"
+      )
+    elseif(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
         FATAL_ERROR
         "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh setup`?"
@@ -352,13 +364,21 @@ if(NOT DEFINED VCPKG_TARGET_TRIPLET)
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
   endif()
 endif()
-set(
-  X_VCPKG_APPLOCAL_DEPS_INSTALL
-  ON
-  CACHE BOOL
-  "Automatically copy dependencies into the install target directory for executables."
-  FORCE
-)
+# vcpkg's applocal dependency copying is a Windows mechanism (it walks the
+# DLL dependency graph of installed executables).  It only does something on
+# Windows/uwp/xbox platforms, but vcpkg's toolchain hijacks the install()
+# command whenever this variable is ON, so keep it OFF elsewhere (in
+# particular on Linux, where the AppImage packaging uses install(...)
+# RUNTIME_DEPENDENCY_SET).
+if(WIN32)
+  set(
+    X_VCPKG_APPLOCAL_DEPS_INSTALL
+    ON
+    CACHE BOOL
+    "Automatically copy dependencies into the install target directory for executables."
+    FORCE
+  )
+endif()
 
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
@@ -398,6 +418,28 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(
+  MIXXX_APPIMAGE
+  "Build for AppImage distribution (install AppImage-specific desktop file)"
+  OFF
+)
+# Auto-detect AppImage builds in both directions, so the two flags do not
+# need to be passed independently:
+#   cmake -DCPACK_GENERATOR=AppImage  -> enables the AppImage install rules
+#   cmake -DMIXXX_APPIMAGE=ON         -> cpack defaults to the AppImage generator
+if(CPACK_GENERATOR MATCHES "AppImage")
+  set(MIXXX_APPIMAGE ON CACHE BOOL "" FORCE)
+endif()
+if(MIXXX_APPIMAGE AND NOT DEFINED CPACK_GENERATOR)
+  set(CPACK_GENERATOR "AppImage" CACHE STRING "Package generator")
+endif()
+# mold 1.0.3 emits a .rela.dyn layout the dynamic loader cannot process,
+# which made the AppImage fail to start (verified fixed in mold 2.42).
+# Use the default linker for AppImage builds; users can still opt in
+# explicitly with -DMOLD_SUPPORT=ON.
+if(MIXXX_APPIMAGE OR CPACK_GENERATOR MATCHES "AppImage")
+  set(MOLD_SUPPORT OFF CACHE BOOL "Use 'mold' for linking")
+endif()
 
 # Because of multiple concurrent definition of symbols caused by the rendergraph
 # compile definition we need to disable QML by default. This avoids the risk of
@@ -2523,6 +2565,11 @@ if(UNIX AND NOT APPLE)
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   )
 
+  # AppImage-specific install rules (desktop file, shared libraries).
+  if(MIXXX_APPIMAGE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/appimage/appimage.cmake")
+  endif()
+
   # Icon files for menu entry
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/"
@@ -2715,7 +2762,20 @@ if(FFMPEG)
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  # Static FFmpeg libraries have circular cross-references (e.g. libavformat
+  # references libavcodec); wrap the resolved library paths in a single
+  # LINK_GROUP:RESCAN so the GNU linker resolves them.  fdk-aac (for a
+  # static libavcodec built with --enable-libfdk-aac) is added by
+  # FindFFMPEG.cmake above; a static libavcodec built with --enable-libopus
+  # is resolved via the Opus targets linked below.
+  if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE "$<LINK_GROUP:RESCAN,${FFMPEG_LIBRARIES}>"
+    )
+  else()
+    target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  endif()
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
@@ -2886,7 +2946,11 @@ if(BUILD_TESTING)
     )
   endif()
 
-  add_executable(mixxx-test ${src-mixxx-test})
+  if(QT6 AND QML)
+    qt_add_executable(mixxx-test ${src-mixxx-test} MANUAL_FINALIZATION)
+  else()
+    add_executable(mixxx-test ${src-mixxx-test})
+  endif()
   target_compile_definitions(
     mixxx-test
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
@@ -3680,6 +3744,15 @@ if(QT_EXTRA_COMPONENTS)
   endforeach()
 endif()
 
+# The QuickShapes module carries the static QML plugin registration used
+# by qt_finalize_target(), while QuickShapesPrivate only provides the
+# C++ API.  Link the module where it exists (the vcpkg buildenvs) so the
+# plugin import does not depend on the Qt flavor; system Qts without the
+# module keep linking QuickShapesPrivate alone.
+if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes)
+endif()
+
 if(QML)
   if(QT_KNOWN_POLICY_QTP0004)
     # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
@@ -3708,6 +3781,12 @@ if(QML)
         PUBLIC Qt${QT_VERSION_MAJOR}::${component}
       )
     endforeach()
+  endif()
+  if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+    target_link_libraries(
+      mixxx-qml-lib
+      PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes
+    )
   endif()
   set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-qml-lib
@@ -4058,14 +4137,48 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
+      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+        get_target_property(
+          _QuickShapes_Type
+          Qt${QT_VERSION_MAJOR}::QuickShapes
+          TYPE
+        )
+        if(
+          _QuickShapes_Type STREQUAL "SHARED_LIBRARY"
+          OR _QuickShapes_Type STREQUAL "MODULE_LIBRARY"
+          OR _QuickShapes_Type STREQUAL "EXECUTABLE"
+        )
+          install(
+            IMPORTED_RUNTIME_ARTIFACTS
+              Qt${QT_VERSION_MAJOR}::QuickShapes
+              DESTINATION
+              "${MIXXX_INSTALL_DATADIR}"
+              COMPONENT
+              applocal
+          )
+        endif()
+      endif()
+      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapesPrivate)
+        get_target_property(
+          _QuickShapesPrivate_Type
           Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+          TYPE
+        )
+        if(
+          _QuickShapesPrivate_Type STREQUAL "SHARED_LIBRARY"
+          OR _QuickShapesPrivate_Type STREQUAL "MODULE_LIBRARY"
+          OR _QuickShapesPrivate_Type STREQUAL "EXECUTABLE"
+        )
+          install(
+            IMPORTED_RUNTIME_ARTIFACTS
+              Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
+              DESTINATION
+              "${MIXXX_INSTALL_DATADIR}"
+              COMPONENT
+              applocal
+          )
+        endif()
+      endif()
 
       if(QT_VERSION VERSION_LESS 6.4)
         # From Qt 6.4 integrated in QuickControls2
@@ -4101,6 +4214,13 @@ else()
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQml/WorkerScript"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQml"
+        COMPONENT applocal
+      )
+
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtCore"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
         COMPONENT applocal
       )
 
@@ -4837,7 +4957,18 @@ if(OPUS)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
   if(BUILD_TESTING)
-    target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    # The static buildenv links libsndfile (whose ogg_opus encoder pulls in
+    # libopus), libopusfile and libopus; wrap them in a rescan group so the
+    # single-pass link resolves the order dependency.
+    if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+      target_link_libraries(
+        mixxx-test
+        PRIVATE
+          "$<LINK_GROUP:RESCAN,SndFile::sndfile;OpusFile::OpusFile;Opus::Opus>"
+      )
+    else()
+      target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    endif()
   endif()
 endif()
 
@@ -5080,6 +5211,10 @@ target_precompile_headers(
 )
 if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+endif()
+
+if(BUILD_TESTING AND QT6 AND QML)
+  qt_finalize_target(mixxx-test)
 endif()
 
 # Configure file with build options
