@@ -22,13 +22,6 @@ MultiLineEditor::MultiLineEditor(QWidget* pParent,
     document()->setDocumentMargin(0);
     setContentsMargins(0, 0, 0, 0);
     setCenterOnScroll(false);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // Paint the entire rectangle, i.e. expand document background in order to
-    // cover all underlying index text. Seems to be required for one-liners on macOS.
-    // Disabled for Qt6 since it does the exact opposite, i.e. the bottom margin
-    // is painted with the OS theme's background color
-    setBackgroundVisible(true);
-#endif
     // Add event filter to catch right-clicks and key presses, see eventFilter()
     installEventFilter(this);
 
@@ -189,6 +182,20 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
 
 MultiLineEditDelegate::MultiLineEditDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView) {
+}
+
+void MultiLineEditDelegate::paint(
+        QPainter* pPainter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    // Workaround for a Qt6 bug occurring on Wayland (maybe also with other OS or
+    // compositors) https://github.com/mixxxdj/mixxx/issues/17037
+    // Paint background color from model if available and not selected to
+    // ensure the alpha channel is respected.
+    //
+    // Clazy: we don't want to call TableItemDelegate::paint() because that
+    // wouldn't call DefaultDelegate::paintItemBackground()
+    DefaultDelegate::paint(pPainter, option, index); // clazy:exclude=skipped-base-method
 }
 
 QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
