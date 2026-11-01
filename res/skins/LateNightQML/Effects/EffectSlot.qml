@@ -82,7 +82,6 @@ Item {
     implicitHeight: expanded ? (LateNightTheme.isPaleMoon ? 50 : (activeKnobParameterCount > 0 ? 50 : activeButtonParameterCount > 0 ? 42 : 35)) : 34
 
     Component.onCompleted: refreshParameters()
-    onWidthChanged: Qt.callLater(recountActiveParameters)
 
     Connections {
         function onDataChanged() {
@@ -212,6 +211,8 @@ Item {
         interactive: contentWidth > width
         visible: root.expanded
         width: Math.max(0, root.parameterAreaWidth - (LateNightTheme.isClassic ? 4 : 0))
+
+        onWidthChanged: root.recountActiveParameters()
 
         Row {
             id: parameterRow
