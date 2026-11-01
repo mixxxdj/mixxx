@@ -303,10 +303,10 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
         return;
     }
 
-    QString mixxxVersion = root.attribute("mixxxVersion", "");
-    if (!mixxxVersion.isEmpty()) {
+    if (QString mixxxVersion = root.attribute("mixxxVersion", ""); !mixxxVersion.isEmpty()) {
         mapping->setMixxxVersion(mixxxVersion);
     }
+
     QString schemaVersion = root.attribute("schemaVersion", "");
     mapping->setSchemaVersion(schemaVersion);
     QDomElement name = info.firstChildElement("name");
@@ -436,8 +436,7 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
 
     // See TODO in LegacyControllerMapping::DeviceDirection - `direction` should
     // only be used as a workaround till the bulk integration gets refactored
-    QString deviceDirection = controller.attribute("direction", "").toLower();
-    if (deviceDirection == "in") {
+    if (QString deviceDirection = controller.attribute("direction", "").toLower(); deviceDirection == "in") {
         mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Incoming);
     } else if (deviceDirection == "out") {
         mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Outgoing);
@@ -460,8 +459,10 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     // Look for additional ones
     while (!scriptFile.isNull()) {
         QString filename = scriptFile.attribute("filename", "");
-        QFileInfo file = findScriptFile(mapping, filename, systemMappingsPath);
-        if (file.suffix() == "qml") {
+
+        if (QFileInfo file =
+                        findScriptFile(mapping, filename, systemMappingsPath);
+                file.suffix() == "qml") {
 #ifdef MIXXX_USE_QML
             QString identifier = scriptFile.attribute("identifier", "");
             mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{
@@ -514,8 +515,8 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
 bool LegacyControllerMappingFileHandler::writeDocument(
         const QDomDocument& root, const QString& fileName) const {
     // Need to do this on Windows
-    QDir directory;
-    if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
+
+    if (QDir directory; !directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
         return false;
     }
 
@@ -633,8 +634,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
                                   QDomDocument* pDoc) {
         const QList<LegacyControllerSettingsLayoutElement*> children = pSettingElement->children();
         for (auto* pSettingChild : std::as_const(children)) {
-            auto* pGroup = dynamic_cast<LegacyControllerSettingsGroup*>(pSettingChild);
-            if (pGroup) {
+            if (auto* pGroup = dynamic_cast<LegacyControllerSettingsGroup*>(pSettingChild)) {
                 QDomElement item = pDoc->createElement("group");
                 item.setAttribute("label", pGroup->label());
                 traverseSettingNode(pGroup, &item, pDoc);
