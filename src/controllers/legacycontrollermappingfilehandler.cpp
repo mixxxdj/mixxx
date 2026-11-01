@@ -500,18 +500,15 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         }
         screen = screen.nextSiblingElement("screen");
     }
-    // Build a list of QML files to load
-    QDomElement qmlLibrary = controller.firstChildElement("qmllibraries")
-                                     .firstChildElement("library");
-
-    // Look for additional ones
-    while (!qmlLibrary.isNull()) {
-        QString libFilename = qmlLibrary.attribute("path", "");
-        QFileInfo path = findLibraryPath(*mapping, libFilename, systemMappingsPath);
-        kLogger.debug() << "Adding QML directory " << libFilename;
-        mapping->addModule(path);
-        qmlLibrary = qmlLibrary.nextSiblingElement("library");
-    }
+    // Build a list of QML library directories to load
+    forEachChildElement(controller.firstChildElement(QStringLiteral("qmllibraries")),
+            QStringLiteral("library"),
+            [&mapping, &systemMappingsPath](const QDomElement& qmlLibrary) {
+                QString libFilename = qmlLibrary.attribute("path", "");
+                QFileInfo path = findLibraryPath(*mapping, libFilename, systemMappingsPath);
+                kLogger.debug() << "Adding QML directory " << libFilename;
+                mapping->addModule(path);
+            });
 #endif
 }
 
