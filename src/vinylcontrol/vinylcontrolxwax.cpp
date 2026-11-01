@@ -455,7 +455,9 @@ bool VinylControlXwax::followTimecodePosition(
 
     m_bWasReversed = reversed;
 
-    // save the absolute amount of drift for when we need to estimate vinyl position
+    // Save the absolute amount of drift for when we need to estimate the vinyl
+    // position. This is only called with a valid timecode position, so
+    // m_dVinylPosition is up to date here.
     m_dDriftAmt = m_dVinylPosition - filePosition;
 
     if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
