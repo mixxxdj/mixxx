@@ -38,6 +38,36 @@ class VinylControlXwax : public VinylControl {
     float getAngle();
 
   private:
+    /// Convert the samples to shorts with the input gain applied and pass
+    /// them to the xwax timecoder.
+    void submitSamples(const CSAMPLE* pSamples, size_t nFrames);
+    /// Force a resync and leave record end mode when a new track was loaded.
+    void handleTrackChange();
+    /// Apply the requested vinyl control mode, refusing absolute mode while
+    /// playing or looping and disabling cueing in absolute mode.
+    void updateMode(bool playing);
+    /// Enter or leave record end mode and blink the status while in it.
+    void updateRecordEndMode(bool playing, double pitch, double filePosition);
+    /// Follow the decoded timecode position. Returns false if playback was
+    /// stopped at the end of the track.
+    bool followTimecodePosition(double pitch, double filePosition, double fractionalPos);
+    /// Resync to the timecode position if a pending resync, the lead-in or a
+    /// position jump requires it. Returns true if one of these cases applied.
+    bool resyncToTimecode(double pitch, double filePosition);
+    /// Follow the pitch while no timecode position could be decoded. Returns
+    /// false if playback was stopped at the end of the track.
+    bool followTimecodePitch(double pitch, double filePosition, double fractionalPos);
+    /// Stop playback and reset the pitch tracking at the end of the track.
+    void stopAtTrackEnd();
+    /// Set the playback rate to the detected pitch and update the displayed
+    /// rate.
+    void updateRateFromPitch(double pitch, double filePosition);
+    /// Record the pitch while playing, reset the ring otherwise.
+    void updatePitchRing(double pitch, bool playing);
+    /// Stop playback once the signal has been missing for too long.
+    void handleMissingSignal(double filePosition);
+    /// Reset the timecode quality shown in the UI.
+    void resetTimecodeQuality();
     void syncPosition();
     void togglePlayButton(bool on);
     bool checkEnabled(bool was, bool is);
