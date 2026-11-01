@@ -262,7 +262,7 @@ NumarkOmniControl.toggleDirectoryMode = function(channel, control, value, status
     }
 };
 
-NumarkOmniControl.toggleScratchMode = function(_channel, _control, _value, _status, _group) {
+NumarkOmniControl.toggleScratchMode = function(_channel, _control, value, _status, _group) {
     // Toggle setting and light
     if (value) {
         NumarkOmniControl.scratchMode = !NumarkOmniControl.scratchMode;
