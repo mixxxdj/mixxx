@@ -48,7 +48,7 @@ QFileInfo findLibraryPath(
         const QString& dirname,
         const QDir& systemMappingsPath) {
     // Always try to load module directory from the mapping's directory first
-    QFileInfo dir = QFileInfo(mapping.dirPath().absoluteFilePath(dirname));
+    auto dir = QFileInfo(mapping.dirPath().absoluteFilePath(dirname));
 
     // If the module directory does not exist, try to find it in the fallback dir
     if (!dir.isDir()) {
@@ -80,7 +80,7 @@ QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
         const QString& filename,
         const QDir& systemMappingsPath) {
     // Always try to load script from the mapping's directory first
-    QFileInfo file = QFileInfo(mapping->dirPath().absoluteFilePath(filename));
+    auto file = QFileInfo(mapping->dirPath().absoluteFilePath(filename));
 
     // If the script does not exist, try to find it in the fallback dir
     if (!file.exists()) {
@@ -344,10 +344,9 @@ void LegacyControllerMappingFileHandler::parseMappingSettings(
         return;
     }
 
-    std::unique_ptr<LegacyControllerSettingsLayoutContainer> settingLayout =
-            std::make_unique<LegacyControllerSettingsLayoutContainer>(
-                    LegacyControllerSettingsLayoutContainer::Disposition::
-                            VERTICAL);
+    auto settingLayout = std::make_unique<LegacyControllerSettingsLayoutContainer>(
+            LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL);
+
     parseMappingSettingsElement(settings, mapping, settingLayout.get());
     mapping->setSettingLayout(std::move(settingLayout));
 }
@@ -390,10 +389,10 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
                             "vertical"
                     ? LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL
                     : LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL;
-            std::unique_ptr<LegacyControllerSettingsLayoutContainer> row =
-                    std::make_unique<LegacyControllerSettingsLayoutContainer>(
-                            LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL,
-                            orientation);
+
+            auto row = std::make_unique<LegacyControllerSettingsLayoutContainer>(
+                    LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL, orientation);
+
             parseMappingSettingsElement(element, pMapping, row.get());
             pLayout->addItem(std::move(row));
         } else if (tagName == "group") {
@@ -747,8 +746,8 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     QDomElement qmllibraries = doc.createElement("qmllibraries");
     for (const auto& module : mapping.getModules()) {
         QDomElement libraryElement = doc.createElement("library");
-        // TODO path should not be absolute
         libraryElement.setAttribute("path", module.dirinfo.absoluteFilePath());
+        // TODO path should not be absolute
         qmllibraries.appendChild(libraryElement);
     }
     controller.appendChild(qmllibraries);
