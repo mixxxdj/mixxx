@@ -5,6 +5,7 @@
 ### Controller Mappings
 
 * Allen & Heath Xone K3: Update midi mappings (backport [#16453](https://github.com/mixxxdj/mixxx/pull/16453)) [#16496](https://github.com/mixxxdj/mixxx/pull/16496)
+* Hercules DJControl Inpulse 500: fix Vinyl button, deck B Shift+Play and beat-align LED [#17082](https://github.com/mixxxdj/mixxx/pull/17082)
 * Numark DJ2GO2 Touch: fix bug with preview deck [#16844](https://github.com/mixxxdj/mixxx/pull/16844)
 * Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
 * Pioneer DDJ-400: unmap headphones mixing knob [#17121](https://github.com/mixxxdj/mixxx/pull/17121)
