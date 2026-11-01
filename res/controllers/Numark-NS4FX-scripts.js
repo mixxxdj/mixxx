@@ -11,7 +11,7 @@ const useAdditionalStemEffects = engine.getSetting("useAdditionalStemEffects");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratching");
 const useEQsAs = engine.getSetting("useEQsAs");
-const useEQs34asStemEffects = engine.getSetting("useEQs34asStemEffects");
+const useEQs34as12EQs = engine.getSetting("useEQs34as12EQs");
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -421,6 +421,11 @@ NS4FX.init = function(id, debug) {
     NS4FX.decks[2] = new NS4FX.Deck(2, 0x01);
     NS4FX.decks[3] = new NS4FX.Deck(3, 0x02);
     NS4FX.decks[4] = new NS4FX.Deck(4, 0x03);
+
+    // Initial update of EQ mappings after all decks have been instantiated
+    for (let i = 1; i <= 4; i++) {
+        NS4FX.decks[i].updateEQs();
+    }
 
     // Initialize hotcue pad LEDs to a "dim" state on startup.
     for (let i = 0; i < 4; ++i) { // For each deck
@@ -835,6 +840,45 @@ NS4FX.Deck = function(number, midi_chan) {
     };
 
     /**
+     * Checks if a secondary deck (Deck 3 for Deck 1, Deck 4 for Deck 2) is currently
+     * controlling the standard High/Mid/Low EQs of this deck.
+     */
+    this.isSecondaryControllingMyEQs = function() {
+        if (!useEQs34as12EQs || useEQsAs === "normal" || !deck.trackHasStems()) {
+            return false;
+        }
+        if (deck.number === 1) {
+            const deck3 = (NS4FX.decks && NS4FX.decks[3]) ? NS4FX.decks[3] : null;
+            return deck3 && (!engine.getValue(deck3.currentDeck, "track_loaded") || engine.getValue(deck3.currentDeck, "passthrough"));
+        }
+        if (deck.number === 2) {
+            const deck4 = (NS4FX.decks && NS4FX.decks[4]) ? NS4FX.decks[4] : null;
+            return deck4 && (!engine.getValue(deck4.currentDeck, "track_loaded") || engine.getValue(deck4.currentDeck, "passthrough"));
+        }
+        return false;
+    };
+
+    /**
+     * Updates EQs on this deck and its companion deck (Deck 1 <-> Deck 3, Deck 2 <-> Deck 4) if present.
+     */
+    this.updateEQsWithCompanion = function() {
+        deck.updateEQs();
+        let companionNumber = 0;
+        if (deck.number === 1) {
+            companionNumber = 3;
+        } else if (deck.number === 2) {
+            companionNumber = 4;
+        } else if (deck.number === 3) {
+            companionNumber = 1;
+        } else if (deck.number === 4) {
+            companionNumber = 2;
+        }
+        if (companionNumber > 0 && NS4FX.decks && NS4FX.decks[companionNumber]) {
+            NS4FX.decks[companionNumber].updateEQs();
+        }
+    };
+
+    /**
      * Configures the behavior of the high, mid, and low EQ knobs.
      * Depending on the 'useEQsAs' setting in the controller script, these knobs can either
      * control the standard EQs or be repurposed to control stems in various modes
@@ -845,59 +889,71 @@ NS4FX.Deck = function(number, midi_chan) {
      * to ensure the EQs are correctly mapped for the current context.
      */
     this.updateEQs = function() {
-        const isStemEffectMode = useEQs34asStemEffects &&
-            (deck.number === 3 || deck.number === 4) &&
+        const targetDeck = (NS4FX.decks && (deck.number === 3 || deck.number === 4)) ? NS4FX.decks[deck.number - 2] : null;
+        const targetHasStems = targetDeck && targetDeck.trackHasStems && targetDeck.trackHasStems();
+        const isDeck34UnloadedOrPassthrough = (deck.number === 3 || deck.number === 4) &&
             (!engine.getValue(deck.currentDeck, "track_loaded") ||
                 engine.getValue(deck.currentDeck, "passthrough"));
+        const isDeck34Controlling12EQs = useEQs34as12EQs && (useEQsAs !== "normal") && isDeck34UnloadedOrPassthrough && targetHasStems;
 
-        if (isStemEffectMode) {
+        if (isDeck34Controlling12EQs) {
             const targetDeckNumber = deck.number - 2;
-            NS4FX.dbg(`Deck ${deck.number} is controlling stem effects for Deck ${targetDeckNumber}`);
+            NS4FX.dbg(`Deck ${deck.number} is controlling High/Mid/Low EQs for Deck ${targetDeckNumber}`);
 
             const eq_group = `[EqualizerRack1_${deck.currentDeck}_Effect1]`;
-            engine.setValue(eq_group, "enabled", false); // Disable standard EQ for this deck
-            NS4FX.dbg(`Disabled EQ effect unit ${eq_group} for stem effect control on Deck ${deck.number}.`);
+            engine.setValue(eq_group, "enabled", false); // Disable standard EQ unit for this deck
 
-            const createStemEffectInput = function(stemNumbers, eq_param) {
-                const stems = Array.isArray(stemNumbers) ? stemNumbers : [stemNumbers];
-                return function(_channel, _control, value, _status) {
-                    const paramValue = value / 127;
-                    engine.setParameter(eq_group, eq_param, paramValue);
-                    stems.forEach(function(stemNumber) {
-                        const targetStemGroup = `[QuickEffectRack1_[Channel${targetDeckNumber}_Stem${stemNumber}]]`;
-                        engine.setParameter(targetStemGroup, "super1", paramValue);
-                    });
-                };
-            };
-            deck.high_eq = new components.Pot({input: createStemEffectInput(4, "parameter3")});       // Vocals
-            deck.mid_eq = new components.Pot({input: createStemEffectInput(3, "parameter2")});        // Melody
-            deck.low_eq = new components.Pot({input: createStemEffectInput([1, 2], "parameter1")});   // Drums & Bass
-            return;
+            const targetEQGroup = `[EqualizerRack1_[Channel${targetDeckNumber}]_Effect1]`;
+            // Ensure target deck's EQ rack is enabled so Deck 3/4 EQ changes affect audio output
+            engine.setValue(targetEQGroup, "enabled", true);
+            deck.high_eq = new components.Pot({group: targetEQGroup, inKey: "parameter3"});
+            deck.mid_eq = new components.Pot({group: targetEQGroup, inKey: "parameter2"});
+            deck.low_eq = new components.Pot({group: targetEQGroup, inKey: "parameter1"});
+            return; // Exit to prevent running standard EQ/stem logic on this deck
+        }
+
+        let currentEQsAs = useEQsAs;
+        NS4FX.dbg(`trackHasStems: ${deck.trackHasStems()}`);
+        // If a stem mode is selected but the track has no stems, fall back to normal EQ mode.
+        if (useEQsAs !== "normal" && !deck.trackHasStems()) {
+            NS4FX.dbg(`Deck ${deck.number}: Track has no stems, falling back to normal EQ mode.`);
+            currentEQsAs = "normal";
         }
 
         const eq_group = `[EqualizerRack1_${deck.currentDeck}_Effect1]`;
-        const hasStems = deck.trackHasStems();
-        // If the track does not have stems, always fall back to normal EQ behavior.
-        const currentEQsAs = hasStems ? useEQsAs : "normal";
-        NS4FX.dbg(`Deck ${deck.number}: Updating EQs. Mode: ${currentEQsAs} (original setting: ${useEQsAs}, has stems: ${hasStems})`);
 
         if (currentEQsAs === "normal") {
-            engine.setValue(eq_group, "enabled", true); // Ensure EQ is enabled
+            // If 'normal' mode, enable the EQ effect unit and map knobs to standard EQs.
+            engine.setValue(eq_group, "enabled", true);
             deck.high_eq = new components.Pot({group: eq_group, inKey: "parameter3"});
             deck.mid_eq = new components.Pot({group: eq_group, inKey: "parameter2"});
             deck.low_eq = new components.Pot({group: eq_group, inKey: "parameter1"});
-        } else { // It's one of the stem modes
-            engine.setValue(eq_group, "enabled", false); // Disable standard EQ
+        } else {
+            // If not 'normal', EQs are used for stem control.
+            NS4FX.dbg(`Deck ${deck.number}: EQs are configured as Stems in '${currentEQsAs}' mode.`);
+            if (deck.isSecondaryControllingMyEQs()) {
+                // If Deck 3 or 4 is controlling our High/Mid/Low EQs, keep our EQ rack enabled so Deck 3/4 EQ changes affect sound!
+                engine.setValue(eq_group, "enabled", true);
+                NS4FX.dbg(`Deck ${deck.number}: Keeping EQ effect unit ${eq_group} enabled because secondary deck is controlling EQs.`);
+            } else {
+                // Disable the standard EQ effect unit to prevent interference when secondary deck is not controlling EQs.
+                engine.setValue(eq_group, "enabled", false);
+                NS4FX.dbg(`Disabled EQ effect unit ${eq_group} for stem control on Deck ${deck.number}.`);
+            }
 
+            // Only update visual EQ knobs if secondary deck is NOT controlling our EQs (avoids clashing with Deck 3/4 EQ control)
+            const updateVisualEQ = !deck.isSecondaryControllingMyEQs();
             let highEQInput, midEQInput, lowEQInput;
 
-            // 'stemSimple' mode: Knobs directly control the volume of their assigned stem(s).
+            // 'stemSimple' mode: Each EQ knob directly controls the volume of one or more stems.
             if (currentEQsAs === "stemSimple") {
                 const createStemInput = function(stemNumbers, eq_param) {
                     const stems = Array.isArray(stemNumbers) ? stemNumbers : [stemNumbers];
                     return function(_channel, _control, value, _status) {
                         const paramValue = value / 127;
-                        engine.setParameter(eq_group, eq_param, paramValue);
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, paramValue);
+                        }
                         stems.forEach(function(stemNumber) {
                             engine.setValue(`[Channel${deck.number}_Stem${stemNumber}]`, "volume", paramValue);
                         });
@@ -936,7 +992,9 @@ NS4FX.Deck = function(number, midi_chan) {
                         const LOGIT_RANGE = 5;
                         deck.logits[logitKey] = (value / 127) * LOGIT_RANGE;
                         updateStemVolumes(deck);
-                        engine.setParameter(eq_group, eq_param, value / 127);
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, value / 127);
+                        }
                     };
                 };
                 highEQInput = createSoftmaxInput("z_v", "parameter3");
@@ -983,7 +1041,9 @@ NS4FX.Deck = function(number, midi_chan) {
                     return function(_channel, _control, value, _status) {
                         deck.attenuation[attenuationKey] = value / 127;
                         updateStemVolumes(deck);
-                        engine.setParameter(eq_group, eq_param, value / 127);
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, value / 127);
+                        }
                     };
                 };
 
@@ -1025,7 +1085,9 @@ NS4FX.Deck = function(number, midi_chan) {
                     return function(_channel, _control, value, _status) {
                         deck.triangle[triangleKey] = value / 127;
                         updateStemVolumes(deck);
-                        engine.setParameter(eq_group, eq_param, value / 127);
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, value / 127);
+                        }
                     };
                 };
 
@@ -1075,6 +1137,7 @@ NS4FX.Deck = function(number, midi_chan) {
             NS4FX.sendScreenDurationMidi(number, duration * 1000);
 
             // when the duration changes, we need to update the play position
+            deck.updateEQsWithCompanion();
 
             deck.position.trigger();
             // When a new track loads, the hotcue_enabled states can flicker, causing the LEDs to blink.
@@ -1090,7 +1153,7 @@ NS4FX.Deck = function(number, midi_chan) {
                     deck.hotcue_buttons.updateLEDs();
                 }
             }, true);
-            deck.updateEQs();
+            deck.updateEQsWithCompanion();
         },
     });
 
@@ -1969,9 +2032,9 @@ NS4FX.Deck = function(number, midi_chan) {
         this.setActive = function(active) {
             this.active = active;
 
-        if (active) {
-            deck.updateEQs();
-        }
+            if (active) {
+                deck.updateEQsWithCompanion();
+            }
 
             if (!active) {
                 // trigger soft takeover on the pitch control
@@ -1979,8 +2042,12 @@ NS4FX.Deck = function(number, midi_chan) {
             }
         };
     this.updateEQs();
-    engine.makeConnection(this.currentDeck, "track_loaded", function() { deck.updateEQs(); });
-    engine.makeConnection(this.currentDeck, "passthrough", function() { deck.updateEQs(); });
+    engine.makeConnection(this.currentDeck, "track_loaded", function() {
+        deck.updateEQsWithCompanion();
+    });
+    engine.makeConnection(this.currentDeck, "passthrough", function() {
+        deck.updateEQsWithCompanion();
+    });
 };
 
 NS4FX.Deck.prototype = new components.Deck();

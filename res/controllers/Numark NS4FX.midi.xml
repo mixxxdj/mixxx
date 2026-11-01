@@ -32,8 +32,8 @@
                 description="When enabled, the 'Slicer' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
             <option label="Use transport pads to control stem effects in Stem Control mode" variable="useAdditionalStemEffects" type="boolean" default="false"
                 description="When enabled, transport pads (CUE, START, BACK, FWD) will function as stem effects 1-4 when the pad mode is set to 'Stems'."/>
-            <option label="Control stem effects with EQ knobs" variable="useEQs34asStemEffects" type="boolean" default="false"
-                description="When enabled, the EQ knobs of decks 3 and 4 control stem effects of decks 1 and 2."/>
+            <option label="Use EQs of decks 3 and 4 to control High/Mid/Low EQs of decks 1 and 2" variable="useEQs34as12EQs" type="boolean" default="false"
+                description="When enabled, if a stem-separated track is loaded on Deck 1 or 2 and no track is loaded on Deck 3 or 4 (or set to passthrough), the EQ knobs of Decks 3 and 4 will control the standard frequency EQs of Decks 1 and 2."/>
             <option label="Select the mode for EQ knobs" variable="useEQsAs" type="enum"
                 description="Select whether the EQ knobs should work normally or assign extended behaviour to them.">
                 <value label="Normal EQs" default="true">normal</value>
