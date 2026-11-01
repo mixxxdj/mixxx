@@ -2032,9 +2032,9 @@ NS4FX.Deck = function(number, midi_chan) {
         this.setActive = function(active) {
             this.active = active;
 
-            if (active) {
-                deck.updateEQsWithCompanion();
-            }
+        if (active) {
+            deck.updateEQsWithCompanion();
+        }
 
             if (!active) {
                 // trigger soft takeover on the pitch control
