@@ -25,25 +25,25 @@ void WaveformRendererPreroll::setup(
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(event);
 
-    const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    const TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
     }
 
-    double firstDisplayedPosition = m_waveformRenderer->getFirstDisplayedPosition();
-    double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition();
+    double firstDisplayedPosition = m_pWaveformRenderer->getFirstDisplayedPosition();
+    double lastDisplayedPosition = m_pWaveformRenderer->getLastDisplayedPosition();
 
     // Check if the pre- or post-roll is on screen. If so, draw little triangles
     // to indicate the respective zones.
     bool preRollVisible = firstDisplayedPosition < 0;
     bool postRollVisible = lastDisplayedPosition > 1;
     if (preRollVisible || postRollVisible) {
-        const double playMarkerPositionFrac = m_waveformRenderer->getPlayMarkerPosition();
-        const double vSamplesPerPixel = m_waveformRenderer->getVisualSamplePerPixel();
-        const double numberOfVisibleVSamples = m_waveformRenderer->getLength() * vSamplesPerPixel;
+        const double playMarkerPositionFrac = m_pWaveformRenderer->getPlayMarkerPosition();
+        const double vSamplesPerPixel = m_pWaveformRenderer->getVisualSamplePerPixel();
+        const double numberOfVisibleVSamples = m_pWaveformRenderer->getLength() * vSamplesPerPixel;
 
-        const int currentVSamplePosition = m_waveformRenderer->getPlayPosVSample();
-        const int totalVSamples = m_waveformRenderer->getTotalVSample();
+        const int currentVSamplePosition = m_pWaveformRenderer->getPlayPosVSample();
+        const int totalVSamples = m_pWaveformRenderer->getTotalVSample();
         // qDebug() << "currentVSamplePosition" << currentVSamplePosition
         //          << "lastDisplayedPosition" << lastDisplayedPosition
         //          << "vSamplesPerPixel" << vSamplesPerPixel
@@ -51,8 +51,8 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         //          << "totalVSamples" << totalVSamples
         //          << "WaveformRendererPreroll::playMarkerPosition=" << playMarkerPositionFrac;
 
-        const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0f;
-        const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0f;
+        const float halfBreadth = m_pWaveformRenderer->getBreadth() / 2.0f;
+        const float halfPolyBreadth = m_pWaveformRenderer->getBreadth() / 5.0f;
 
         PainterScope PainterScope(painter);
 
@@ -67,7 +67,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         const double polyVSampleOffset = polyPixelOffset * vSamplesPerPixel;
 
         // Rotate if drawing vertical waveforms
-        if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
+        if (m_pWaveformRenderer->getOrientation() == Qt::Vertical) {
             painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
         }
 

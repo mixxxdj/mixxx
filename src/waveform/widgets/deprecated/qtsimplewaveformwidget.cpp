@@ -33,7 +33,7 @@ QtSimpleWaveformWidget::~QtSimpleWaveformWidget() {
 }
 
 void QtSimpleWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void QtSimpleWaveformWidget::paintEvent(QPaintEvent* event) {

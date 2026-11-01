@@ -30,7 +30,7 @@ QtHSVWaveformWidget::~QtHSVWaveformWidget() {
 }
 
 void QtHSVWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void QtHSVWaveformWidget::paintEvent(QPaintEvent* event) {

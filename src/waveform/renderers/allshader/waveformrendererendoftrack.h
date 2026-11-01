@@ -27,7 +27,7 @@ class allshader::WaveformRendererEndOfTrack final
             WaveformWidgetRenderer* waveformWidget);
 
     // Pure virtual from WaveformRendererAbstract, not used
-    void draw(QPainter* painter, QPaintEvent* event) override final;
+    void draw(QPainter* painter, QPaintEvent* event) final;
 
     void setup(const QDomNode& node, const SkinContext& skinContext) override;
 

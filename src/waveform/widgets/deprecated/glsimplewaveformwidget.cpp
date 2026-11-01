@@ -31,7 +31,7 @@ GLSimpleWaveformWidget::~GLSimpleWaveformWidget() {
 }
 
 void GLSimpleWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void GLSimpleWaveformWidget::paintEvent(QPaintEvent* event) {

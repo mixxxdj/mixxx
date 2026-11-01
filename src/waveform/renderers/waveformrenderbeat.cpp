@@ -23,7 +23,7 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    TrackPointer pTrackInfo = m_pWaveformRenderer->getTrackInfo();
 
     if (!pTrackInfo) {
         return;
@@ -34,7 +34,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    int alpha = m_waveformRenderer->getBeatGridAlpha();
+    int alpha = m_pWaveformRenderer->getBeatGridAlpha();
     if (alpha == 0) {
         return;
     }
@@ -47,17 +47,17 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     m_beatColor.setAlphaF(alpha/100.0);
 #endif
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_pWaveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
 
     const double firstDisplayedPosition =
-            m_waveformRenderer->getFirstDisplayedPosition();
+            m_pWaveformRenderer->getFirstDisplayedPosition();
     const double lastDisplayedPosition =
-            m_waveformRenderer->getLastDisplayedPosition();
+            m_pWaveformRenderer->getLastDisplayedPosition();
 
     // qDebug() << "trackSamples" << trackSamples
     //          << "firstDisplayedPosition" << firstDisplayedPosition
@@ -82,16 +82,16 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     beatPen.setWidthF(std::max(1.0, scaleFactor()));
     painter->setPen(beatPen);
 
-    const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
-    const float rendererWidth = m_waveformRenderer->getWidth();
-    const float rendererHeight = m_waveformRenderer->getHeight();
+    const Qt::Orientation orientation = m_pWaveformRenderer->getOrientation();
+    const float rendererWidth = m_pWaveformRenderer->getWidth();
+    const float rendererHeight = m_pWaveformRenderer->getHeight();
 
     int beatCount = 0;
 
     for (; it != trackBeats->cend() && *it <= endPosition; ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
+                m_pWaveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 

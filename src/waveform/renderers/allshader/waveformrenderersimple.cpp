@@ -31,7 +31,7 @@ void WaveformRendererSimple::preprocess() {
 }
 
 bool WaveformRendererSimple::preprocessInner() {
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
 
     if (!pTrack) {
         return false;
@@ -59,11 +59,11 @@ bool WaveformRendererSimple::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength());
-    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
-    const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5f / devicePixelRatio;
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const int length = static_cast<int>(m_pWaveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
+    const qreal invDevicePixelRatio = 1.0 / devicePixelRatio;
+    const qreal halfPixelSize = 0.5 / devicePixelRatio;
 
     // Note that waveform refers to the visual waveform, not to audio samples.
     //
@@ -72,9 +72,9 @@ bool WaveformRendererSimple::preprocessInner() {
     const int visualFramesSize = dataSize / 2;
     // Calculate the first and last frame to draw, from the normalized display position
     const double firstVisualFrame =
-            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+            m_pWaveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
     const double lastVisualFrame =
-            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
+            m_pWaveformRenderer->getLastDisplayedPosition() * visualFramesSize;
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
@@ -88,7 +88,7 @@ bool WaveformRendererSimple::preprocessInner() {
     float bandGain[3] = {1.0, 1.0, 1.0};
     getGains(&allGain, &bandGain[0], &bandGain[1], &bandGain[2]);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float breadth = static_cast<float>(m_pWaveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactor = allGain * halfBreadth / m_maxValue;
@@ -128,7 +128,7 @@ bool WaveformRendererSimple::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
+        const qreal rPos = pos * invDevicePixelRatio;
 
         // - Per channel
         uchar u8maxAllChn[2]{};
@@ -147,9 +147,10 @@ bool WaveformRendererSimple::preprocessInner() {
 
         // note: heightFactor is the same for left and right,
         // but negative for left (chn 0) and positive for right (chn 1)
-        vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                           halfBreadth - heightFactor * maxAllChn[0]},
-                {fpos + halfPixelSize,
+        vertexUpdater.addRectangle(
+                {static_cast<float>(rPos - halfPixelSize),
+                        halfBreadth - heightFactor * maxAllChn[0]},
+                {static_cast<float>(rPos + halfPixelSize),
                         halfBreadth + heightFactor * maxAllChn[0]},
                 signalColor);
 
