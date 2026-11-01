@@ -434,16 +434,6 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     QString deviceId = controller.attribute("id", "");
     mapping->setDeviceId(deviceId);
 
-    // See TODO in LegacyControllerMapping::DeviceDirection - `direction` should
-    // only be used as a workaround till the bulk integration gets refactored
-    if (QString deviceDirection = controller.attribute("direction", "").toLower(); deviceDirection == "in") {
-        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Incoming);
-    } else if (deviceDirection == "out") {
-        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Outgoing);
-    } else {
-        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Bidirectionnal);
-    }
-
     // Build a list of script files to load
     QDomElement scriptFile = controller.firstChildElement("scriptfiles")
                                      .firstChildElement("file");
@@ -674,17 +664,6 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
     controller.setAttribute("id", rootDeviceName(mapping.deviceId()));
-    switch (static_cast<LegacyControllerMapping::DeviceDirection>(
-            mapping.getDeviceDirection().toInt())) {
-    case LegacyControllerMapping::DeviceDirection::Incoming:
-        controller.setAttribute("direction", "in");
-        break;
-    case LegacyControllerMapping::DeviceDirection::Outgoing:
-        controller.setAttribute("direction", "out");
-        break;
-    default:
-        break;
-    }
     rootNode.appendChild(controller);
 
     QDomElement scriptFiles = doc.createElement("scriptfiles");

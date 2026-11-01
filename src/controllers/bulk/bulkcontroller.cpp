@@ -499,12 +499,6 @@ int BulkController::open(const QString& resourcePath) {
 
     if (m_pReader != nullptr) {
         qCWarning(m_logBase) << "BulkReader already present for" << getName();
-    } else if (m_pMapping &&
-            !(m_pMapping->getDeviceDirection() &
-                    LegacyControllerMapping::DeviceDirection::Incoming)) {
-        qDebug() << "The mapping for the bulk device" << getName()
-                 << "doesn't require reading the data. Ignoring BulkReader "
-                    "setup.";
     } else if (!m_inEndpoints.isEmpty()) {
         m_pReader = std::make_unique<BulkReader>(
                 m_pHandle, m_pContext, m_inEndpoints);
@@ -530,9 +524,7 @@ int BulkController::close() {
     qCInfo(m_logBase) << "Shutting down USB Bulk device" << getName();
 
     // Stop the reading thread
-    if (m_pReader == nullptr && !m_inEndpoints.isEmpty() &&
-            m_pMapping->getDeviceDirection() &
-                    LegacyControllerMapping::DeviceDirection::Incoming) {
+    if (m_pReader == nullptr && !m_inEndpoints.isEmpty()) {
         qCWarning(m_logBase) << "BulkReader not present for" << getName()
                              << "yet the device is open!";
     } else if (m_pReader) {
@@ -585,14 +577,6 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
 }
 
 bool BulkController::sendBytes(const QByteArray& data) {
-    VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
-            m_pMapping->getDeviceDirection() &
-                    LegacyControllerMapping::DeviceDirection::Outgoing) {
-        qDebug() << "The mapping for the bulk device" << getName()
-                 << "doesn't require sending data. Ignoring sending request.";
-        return false;
-    }
-
     if (!m_outEndpoint.has_value()) {
         qCWarning(m_logOutput) << "The mapping for the bulk device" << getName()
                                << "doesn't declare an out endpoint. Ignoring sending request.";

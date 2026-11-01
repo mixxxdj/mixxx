@@ -136,7 +136,6 @@ class LegacyControllerMappingFileHandlerTest
         EXPECT_EQ(pOriginalMapping->m_screens, pSerializedMapping->m_screens);
 #endif
         EXPECT_EQ(pOriginalMapping->m_scripts, pSerializedMapping->m_scripts);
-        EXPECT_EQ(pOriginalMapping->m_deviceDirection, pSerializedMapping->m_deviceDirection);
     };
 
   private:
