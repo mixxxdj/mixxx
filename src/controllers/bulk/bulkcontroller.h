@@ -11,6 +11,7 @@
 #endif
 
 #include "controllers/controller.h"
+#include "controllers/controllermappinginfo.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 
 struct libusb_device_handle;
@@ -109,15 +110,15 @@ class BulkController : public Controller {
     }
 
     std::optional<uint8_t> getUsbInterfaceNumber() const override {
-        return m_interfaceNumber;
+        if (m_interfaceNumbers.isEmpty()) {
+            return std::nullopt;
+        }
+        return m_interfaceNumbers.first();
     }
 
-    uint8_t getInEndpointAddr() const {
-        return m_inEndpointAddr;
-    }
-
-    uint8_t getOutEndpointAddr() const {
-        return m_outEndpointAddr;
+    /// The interfaces and endpoints declared by the matched mapping product
+    const QList<BulkInterfaceInfo>& getInterfaces() const {
+        return m_interfaces;
     }
 
     bool isMappable() const override {
@@ -139,6 +140,7 @@ class BulkController : public Controller {
     bool sendBytes(const QByteArray& data) override;
 
     bool matchProductInfo(const ProductInfo& product);
+    void releaseInterfaces();
 
     libusb_context* m_pContext;
     libusb_device_handle* m_pHandle;
@@ -151,10 +153,11 @@ class BulkController : public Controller {
 
     std::uint16_t m_vendorId;
     std::uint16_t m_productId;
-    std::uint8_t m_inEndpointAddr;
-    int m_inLength;
-    std::uint8_t m_outEndpointAddr;
-    std::optional<std::uint8_t> m_interfaceNumber;
+    QList<BulkInterfaceInfo> m_interfaces;
+    QList<std::uint8_t> m_interfaceNumbers;
+    QList<std::uint8_t> m_claimedInterfaceNumbers;
+    QList<BulkEndpoint> m_inEndpoints;
+    std::optional<BulkEndpoint> m_outEndpoint;
 
     QString m_manufacturer;
     QString m_product;

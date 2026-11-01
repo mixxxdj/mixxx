@@ -210,9 +210,7 @@ BulkController::BulkController(libusb_context* pContext,
                   get_string(pHandle, pDesc->iSerialNumber))),
           m_pContext(pContext),
           m_pHandle(pHandle),
-          m_inEndpointAddr(0),
-          m_outEndpointAddr(0),
-          m_pReader(nullptr) {
+          m_outEndpoint(std::nullopt) {
     m_vendorId = pDesc->idVendor;
     m_productId = pDesc->idProduct;
 
@@ -231,9 +229,7 @@ BulkController::BulkController(const QJniObject& usbDevice)
           m_pContext(nullptr),
           m_pHandle(nullptr),
           m_androidUsbDevice(usbDevice),
-          m_inEndpointAddr(0),
-          m_outEndpointAddr(0),
-          m_pReader(nullptr) {
+          m_outEndpoint(std::nullopt) {
     m_vendorId = static_cast<unsigned short>(usbDevice.callMethod<jint>("getVendorId"));
     m_productId = static_cast<unsigned short>(usbDevice.callMethod<jint>("getProductId"));
 
@@ -319,11 +315,6 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
         return false;
     }
 
-    value = product.interface_number.toInt(&ok, 16);
-    if (!ok || m_interfaceNumber != value) {
-        return false;
-    }
-
     // Match found
     return true;
 }
@@ -367,10 +358,50 @@ int BulkController::open(const QString& resourcePath) {
         return -1;
     }
 
-    m_inEndpointAddr = parseEndpointAddress(pMatchedProduct->in_epaddr);
-    m_inLength = parseEndpointLength(pMatchedProduct->in_length);
-    m_outEndpointAddr = parseEndpointAddress(pMatchedProduct->out_epaddr);
-    m_interfaceNumber = parseInterfaceNumber(pMatchedProduct->interface_number);
+    m_interfaces = pMatchedProduct->bulkInterfaces;
+    m_interfaceNumbers.clear();
+    m_inEndpoints.clear();
+    m_outEndpoint.reset();
+    for (const auto& interfaceInfo : std::as_const(m_interfaces)) {
+        const auto interfaceNumber = parseInterfaceNumber(interfaceInfo.number);
+        if (!interfaceNumber.has_value()) {
+            qCWarning(m_logBase) << "USB Bulk device" << getName()
+                                 << "has invalid interface number"
+                                 << interfaceInfo.number << "in its mapping";
+            continue;
+        }
+
+        m_interfaceNumbers.append(*interfaceNumber);
+
+        for (const auto& endpointInfo : interfaceInfo.endpoints) {
+            const BulkEndpoint endpoint{parseEndpointAddress(endpointInfo.address),
+                    parseEndpointLength(endpointInfo.length)};
+            const bool isInEndpoint = endpointInfo.direction == QStringLiteral("in");
+            const bool isOutEndpoint = endpointInfo.direction == QStringLiteral("out");
+            // The direction must also match bit 7 of the endpoint address
+            const bool hasInAddress = (endpoint.address & LIBUSB_ENDPOINT_IN) != 0;
+
+            if (endpoint.address == 0 ||
+                    !(isInEndpoint || isOutEndpoint) ||
+                    isInEndpoint != hasInAddress) {
+                qCWarning(m_logBase) << "USB Bulk device" << getName()
+                                     << "has invalid" << endpointInfo.direction
+                                     << "endpoint" << endpointInfo.address
+                                     << "in its mapping";
+                continue;
+            }
+
+            if (isInEndpoint) {
+                m_inEndpoints.append(endpoint);
+            } else if (m_outEndpoint.has_value()) {
+                qCWarning(m_logBase) << "USB Bulk device" << getName()
+                                     << "declares more than one out endpoint, ignoring"
+                                     << endpointInfo.address;
+            } else {
+                m_outEndpoint = endpoint;
+            }
+        }
+    }
 
 #ifdef __ANDROID__
     QJniObject context = QNativeInterface::QAndroidApplication::context();
@@ -419,8 +450,8 @@ int BulkController::open(const QString& resourcePath) {
     // Open device by file descriptor
     qCInfo(m_logBase) << "Opening BULK device" << getName()
                       << "by file descriptor"
-                      << fileDescriptor << "and interface"
-                      << m_interfaceNumber;
+                      << fileDescriptor << "and interfaces"
+                      << m_interfaceNumbers;
 
     libusb_set_option(nullptr, LIBUSB_OPTION_NO_DEVICE_DISCOVERY);
     libusb_init(&m_pContext);
@@ -450,15 +481,17 @@ int BulkController::open(const QString& resourcePath) {
     }
 #endif
 
-    if (m_interfaceNumber.has_value()) {
-        int error = libusb_claim_interface(m_pHandle, *m_interfaceNumber);
+    for (const std::uint8_t interfaceNumber : std::as_const(m_interfaceNumbers)) {
+        int error = libusb_claim_interface(m_pHandle, interfaceNumber);
         if (error < 0) {
-            qCWarning(m_logBase) << "Cannot claim interface for" << getName()
-                                 << ":" << libusb_error_name(error);
+            qCWarning(m_logBase) << "Cannot claim interface" << interfaceNumber
+                                 << "for" << getName() << ":" << libusb_error_name(error);
+            releaseInterfaces();
             libusb_close(m_pHandle);
             return -1;
         } else {
-            qCDebug(m_logBase) << "Claimed interface for" << getName();
+            qCDebug(m_logBase) << "Claimed interface" << interfaceNumber << "for" << getName();
+            m_claimedInterfaceNumbers.append(interfaceNumber);
         }
     }
 
@@ -472,10 +505,9 @@ int BulkController::open(const QString& resourcePath) {
         qDebug() << "The mapping for the bulk device" << getName()
                  << "doesn't require reading the data. Ignoring BulkReader "
                     "setup.";
-    } else {
-        m_pReader = std::make_unique<BulkReader>(m_pHandle,
-                m_pContext,
-                QList<BulkEndpoint>{{m_inEndpointAddr, m_inLength}});
+    } else if (!m_inEndpoints.isEmpty()) {
+        m_pReader = std::make_unique<BulkReader>(
+                m_pHandle, m_pContext, m_inEndpoints);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
         connect(m_pReader.get(), &BulkReader::incomingData, this, &BulkController::receive);
@@ -498,7 +530,7 @@ int BulkController::close() {
     qCInfo(m_logBase) << "Shutting down USB Bulk device" << getName();
 
     // Stop the reading thread
-    if (m_pReader == nullptr &&
+    if (m_pReader == nullptr && !m_inEndpoints.isEmpty() &&
             m_pMapping->getDeviceDirection() &
                     LegacyControllerMapping::DeviceDirection::Incoming) {
         qCWarning(m_logBase) << "BulkReader not present for" << getName()
@@ -516,13 +548,7 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
-    if (m_interfaceNumber.has_value()) {
-        int error = libusb_release_interface(m_pHandle, *m_interfaceNumber);
-        if (error < 0) {
-            qCWarning(m_logBase) << "Cannot release interface for" << getName()
-                                 << ":" << libusb_error_name(error);
-        }
-    }
+    releaseInterfaces();
     qCInfo(m_logBase) << "  Closing device";
     libusb_close(m_pHandle);
 
@@ -534,6 +560,18 @@ int BulkController::close() {
     m_pHandle = nullptr;
     setOpen(false);
     return 0;
+}
+
+void BulkController::releaseInterfaces() {
+    // Release in reverse order of claiming
+    while (!m_claimedInterfaceNumbers.isEmpty()) {
+        const std::uint8_t interfaceNumber = m_claimedInterfaceNumbers.takeLast();
+        int error = libusb_release_interface(m_pHandle, interfaceNumber);
+        if (error < 0) {
+            qCWarning(m_logBase) << "Cannot release interface" << interfaceNumber
+                                 << "for" << getName() << ":" << libusb_error_name(error);
+        }
+    }
 }
 
 void BulkController::send(const QList<int>& data, unsigned int length) {
@@ -555,12 +593,18 @@ bool BulkController::sendBytes(const QByteArray& data) {
         return false;
     }
 
+    if (!m_outEndpoint.has_value()) {
+        qCWarning(m_logOutput) << "The mapping for the bulk device" << getName()
+                               << "doesn't declare an out endpoint. Ignoring sending request.";
+        return false;
+    }
+
     int ret;
     int transferred;
 
     // XXX: don't get drunk again.
     ret = libusb_bulk_transfer(m_pHandle,
-            m_outEndpointAddr,
+            m_outEndpoint->address,
             (unsigned char*)data.constData(),
             data.size(),
             &transferred,
