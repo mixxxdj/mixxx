@@ -153,20 +153,12 @@ QString ControlWidgetPropertyConnection::toDebugString() const {
 void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     const double parameter = getControlParameterForValue(v);
     QVariant vParameter;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     if (m_property.metaType().id() == QMetaType::Bool) {
-#else
-    if (m_property.type() == QVariant::Bool) {
-#endif
         vParameter = (parameter > 0);
     } else {
         vParameter = parameter;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     bool success = vParameter.convert(m_property.metaType());
-#else
-    bool success = vParameter.convert(m_property.type());
-#endif
     VERIFY_OR_DEBUG_ASSERT(success) {
         return;
     }

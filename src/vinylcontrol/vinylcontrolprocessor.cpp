@@ -1,5 +1,7 @@
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
+#include <QMutexLocker>
+
 #include "control/controlpushbutton.h"
 #include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
@@ -18,7 +20,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPoint
           m_pConfig(pConfig),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_processorsLock(QT_RECURSIVE_MUTEX_INIT),
+          m_processorsLock(QRecursiveMutex()),
           m_processors(kMaximumVinylControlInputs, nullptr),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
           m_bReportSignalQuality(false),
@@ -46,7 +48,7 @@ VinylControlProcessor::~VinylControlProcessor() {
     SampleUtil::free(m_pWorkBuffer);
 
     {
-        const auto locker = lockMutex(&m_processorsLock);
+        const auto locker = QMutexLocker(&m_processorsLock);
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
             VinylControl* pProcessor = m_processors.at(i);
             m_processors[i] = NULL;
@@ -98,7 +100,7 @@ void VinylControlProcessor::run() {
         }
 
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-            auto locker = lockMutex(&m_processorsLock);
+            auto locker = QMutexLocker(&m_processorsLock);
             VinylControl* pProcessor = m_processors[i];
             locker.unlock();
             FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[i];
@@ -149,7 +151,7 @@ void VinylControlProcessor::run() {
 
 void VinylControlProcessor::reloadConfig() {
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        auto locker = lockMutex(&m_processorsLock);
+        auto locker = QMutexLocker(&m_processorsLock);
         VinylControl* pCurrent = m_processors[i];
 
         if (pCurrent == nullptr) {
@@ -181,7 +183,7 @@ void VinylControlProcessor::onInputConfigured(const AudioInput& input) {
     VinylControl *pNew = new VinylControlXwax(
         m_pConfig, kVCGroup.arg(index + 1));
 
-    auto locker = lockMutex(&m_processorsLock);
+    auto locker = QMutexLocker(&m_processorsLock);
     VinylControl* pCurrent = m_processors.at(index);
     m_processors.replace(index, pNew);
     locker.unlock();
@@ -203,7 +205,7 @@ void VinylControlProcessor::onInputUnconfigured(const AudioInput& input) {
         return;
     }
 
-    auto locker = lockMutex(&m_processorsLock);
+    auto locker = QMutexLocker(&m_processorsLock);
     VinylControl* pVC = m_processors.at(index);
     m_processors.replace(index, nullptr);
     locker.unlock();
@@ -270,7 +272,7 @@ void VinylControlProcessor::toggleDeck(double value) {
     // -1 means we haven't found a proxy that's enabled
     int enabled = -1;
 
-    QT_RECURSIVE_MUTEX_LOCKER locker(&m_processorsLock);
+    auto locker = QMutexLocker(&m_processorsLock);
 
     for (int i = 0; i < m_processors.size(); ++i) {
         VinylControl* pProcessor = m_processors.at(i);

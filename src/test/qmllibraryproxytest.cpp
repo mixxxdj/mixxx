@@ -59,7 +59,7 @@ class QmlLibraryProxyTest : public MixxxTest {
         m_rejectFileDialogs = std::make_unique<RejectFileDialogs>();
         application()->installEventFilter(m_rejectFileDialogs.get());
         m_coreServices = std::make_shared<mixxx::CoreServices>(args, application());
-        m_coreServices->initialize(application());
+        m_coreServices->initialize();
         application()->removeEventFilter(m_rejectFileDialogs.get());
 
         m_proxy = std::make_unique<mixxx::qml::QmlLibraryProxy>();

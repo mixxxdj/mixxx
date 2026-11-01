@@ -51,11 +51,7 @@ void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
             parameterUpdated();
         }
         if (!pMenu->actions().isEmpty()) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             pMenu->exec(e->globalPosition().toPoint());
-#else
-            pMenu->exec(e->globalPos());
-#endif
             return;
         }
     }
