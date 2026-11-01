@@ -54,9 +54,6 @@ bool operator==(const ProductInfo& a, const ProductInfo& b) {
             a.interface_number == b.interface_number &&
             a.usage_page == b.usage_page &&
             a.usage == b.usage &&
-            a.in_epaddr == b.in_epaddr &&
-            a.in_length == b.in_length &&
-            a.out_epaddr == b.out_epaddr &&
             a.bulkInterfaces == b.bulkInterfaces;
 }
 
@@ -66,10 +63,7 @@ size_t qHash(const ProductInfo& product) {
             qHash(product.product_id) +
             qHash(product.interface_number) +
             qHash(product.usage_page) +
-            qHash(product.usage) +
-            qHash(product.in_epaddr) +
-            qHash(product.in_length) +
-            qHash(product.out_epaddr);
+            qHash(product.usage);
     for (const auto& bulkInterface : product.bulkInterfaces) {
         hash += qHash(bulkInterface);
     }
@@ -227,8 +221,6 @@ ProductInfo MappingInfo::parseBulkProduct(QXmlStreamReader& xml) {
     //           <endpoint direction="out" address="0x01" length="32" />
     //       </interface>
     //   </product>
-    // The flat in_epaddr, in_length, out_epaddr and interface_number
-    // attributes are still accepted.
     // All number strings must be hex prefixed with 0x, except lengths which are decimal.
     const QXmlStreamAttributes xmlElementAttributes = xml.attributes();
 
@@ -244,12 +236,17 @@ ProductInfo MappingInfo::parseBulkProduct(QXmlStreamReader& xml) {
     if (xmlElementAttributes.hasAttribute(QStringLiteral("usage"))) {
         qCCritical(kLogger) << "Product info element for bulk contains unallowed Usage attribute";
     }
-    productInfo.in_epaddr = xmlElementAttributes.value(QStringLiteral("in_epaddr")).toString();
-    productInfo.in_length = xmlElementAttributes.value(QStringLiteral("in_length")).toString();
-    productInfo.out_epaddr = xmlElementAttributes.value(QStringLiteral("out_epaddr")).toString();
-    productInfo.interface_number =
-            xmlElementAttributes.value(QStringLiteral("interface_number"))
-                    .toString();
+    // Interfaces and endpoints are described by child elements
+    for (const auto& attribute : {QStringLiteral("in_epaddr"),
+                 QStringLiteral("out_epaddr"),
+                 QStringLiteral("interface_number")}) {
+        if (xmlElementAttributes.hasAttribute(attribute)) {
+            qCWarning(kLogger) << "Product info element for bulk contains unsupported"
+                               << attribute
+                               << "attribute, use <interface> and <endpoint> "
+                                  "child elements instead";
+        }
+    }
     productInfo.friendlyName = xmlElementAttributes.value("friendly_name").toString();
     productInfo.visualUrl = QUrl(xmlElementAttributes.value("image").toString());
 

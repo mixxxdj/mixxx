@@ -230,9 +230,6 @@ ProductInfo parseProductInfo(const QDomElement& product) {
         productInfo.usage_page = product.attribute(QStringLiteral("usage_page"));
         productInfo.usage = product.attribute(QStringLiteral("usage"));
     } else if (productInfo.protocol == QStringLiteral("bulk")) {
-        productInfo.in_epaddr = product.attribute(QStringLiteral("in_epaddr"));
-        productInfo.in_length = product.attribute(QStringLiteral("in_length"));
-        productInfo.out_epaddr = product.attribute(QStringLiteral("out_epaddr"));
         forEachChildElement(product,
                 QStringLiteral("interface"),
                 [&productInfo](const QDomElement& interfaceElement) {
@@ -593,7 +590,9 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         element.setAttribute("protocol", productInfo.protocol);
         element.setAttribute("vendor_id", productInfo.vendor_id);
         element.setAttribute("product_id", productInfo.product_id);
-        element.setAttribute("interface_number", productInfo.interface_number);
+        if (productInfo.protocol != "bulk") {
+            element.setAttribute("interface_number", productInfo.interface_number);
+        }
         if (!productInfo.friendlyName.isEmpty()) {
             element.setAttribute("friendly_name", productInfo.friendlyName);
         }
@@ -602,9 +601,6 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         }
 
         if (productInfo.protocol == "bulk") {
-            element.setAttribute("in_epaddr", productInfo.in_epaddr);
-            element.setAttribute("in_length", productInfo.in_length);
-            element.setAttribute("out_epaddr", productInfo.out_epaddr);
             for (const auto& interfaceInfo : productInfo.bulkInterfaces) {
                 QDomElement interfaceElement = doc.createElement("interface");
                 interfaceElement.setAttribute("number", interfaceInfo.number);
