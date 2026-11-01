@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QAtomicInt>
+#include <QList>
 #include <QThread>
+#include <mutex>
 #include <optional>
 
 #ifdef Q_OS_ANDROID
@@ -15,14 +17,22 @@ struct libusb_device_handle;
 struct libusb_context;
 struct libusb_transfer;
 
+/// A USB bulk endpoint with the size of a single transfer to/from it
+struct BulkEndpoint {
+    std::uint8_t address;
+    int length;
+};
+
 /// USB Bulk controller backend
+///
+/// Reads from any number of input endpoints. One transfer per endpoint is kept
+/// in flight and all of them are handled by the same thread.
 class BulkReader : public QThread {
     Q_OBJECT
   public:
     BulkReader(libusb_device_handle* pHandle,
             libusb_context* pContext,
-            std::uint8_t in_epaddr,
-            int length);
+            const QList<BulkEndpoint>& inEndpoints);
     ~BulkReader() override;
 
     static void transferFinishedCb(libusb_transfer* pTransfer);
@@ -35,27 +45,19 @@ class BulkReader : public QThread {
     void run() override;
 
   private:
-    struct bulk_transfer_cb_data {
-        BulkReader* pReader;
-        int completed;
-        std::mutex mutex;
-        std::condition_variable cv;
-    };
-
-    libusb_transfer* transfer_create(libusb_device_handle* pHandle,
-            std::uint8_t epaddr,
-            int length,
-            unsigned int timeout);
-    void transfer_destroy(libusb_transfer** ppTransfer);
+    libusb_transfer* transfer_create(const BulkEndpoint& endpoint, unsigned int timeout);
     void handleTransfer(libusb_transfer* pTransfer);
 
     QAtomicInt m_stop;
-    libusb_transfer* m_pInTransfer;
+    // Number of transfers currently submitted to libusb. Callbacks might be
+    // invoked by any thread handling events on the shared libusb context.
+    QAtomicInt m_activeTransfers;
+    // Guards m_inTransfers, which stop() accesses from other threads
+    std::mutex m_transfersMutex;
+    QList<libusb_transfer*> m_inTransfers;
     libusb_context* m_pContext;
     libusb_device_handle* m_pHandle;
-    bulk_transfer_cb_data m_cb_data;
-    std::uint8_t m_in_epaddr;
-    int m_in_length;
+    const QList<BulkEndpoint> m_inEndpoints;
 };
 
 class BulkController : public Controller {
