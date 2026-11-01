@@ -18,22 +18,60 @@ Dependencies:
 import argparse
 import os
 import re
+import sys
 import git
 
 
 def extract_pull_requests(repo_path, start_commit, end_commit):
-    repo = git.Repo(repo_path)
+    try:
+        repo = git.Repo(repo_path, search_parent_directories=True)
+    except (git.exc.InvalidGitRepositoryError, git.exc.NoSuchPathError):
+        print(
+            f"Error: '{repo_path}' is not a valid Git repository.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     pr_pattern = re.compile(r"Merge pull request #(\d+)")
-    sync_branch_pattern = re.compile(r"mixxxdj\/sync-branch-[\d.]+-to-\S+")
+    sync_branch_pattern = re.compile(r"sync-branch-\S+")
 
     # Read existing CHANGELOG.md contents to skip duplicate PR entries
-    changelog_path = os.path.join(repo.working_tree_dir, "CHANGELOG.md")
     existing_changelog = ""
-    if os.path.exists(changelog_path):
+    if repo.bare or not repo.working_tree_dir:
+        print(
+            "Notice: Repository is bare (no working tree).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    changelog_path = os.path.join(repo.working_tree_dir, "CHANGELOG.md")
+    if not os.path.exists(changelog_path):
+        print(
+            f"Error: '{changelog_path}' not found.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    try:
         with open(changelog_path, "r", encoding="utf-8") as f:
             existing_changelog = f.read()
+    except OSError as e:
+        print(
+            f"Warning: Could not read {changelog_path}: {e}",
+            file=sys.stderr,
+        )
 
-    for commit in repo.iter_commits(rev=f"{start_commit}..{end_commit}"):
+    try:
+        commits = list(repo.iter_commits(rev=f"{start_commit}..{end_commit}"))
+    except git.exc.GitCommandError as e:
+        err_msg = e.stderr.strip() if e.stderr else str(e)
+        print(
+            f"Error: Failed to iterate commits ({err_msg})",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    for commit in commits:
         summary = commit.summary
 
         # Skip sync branch merges
