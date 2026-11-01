@@ -185,6 +185,42 @@ bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapp
 }
 #endif
 
+/// Invoke `callback` for each direct child element of `parent` named `tagName`.
+template<typename Callback>
+void forEachChildElement(const QDomElement& parent, const QString& tagName, Callback callback) {
+    for (QDomElement child = parent.firstChildElement(tagName);
+            !child.isNull();
+            child = child.nextSiblingElement(tagName)) {
+        callback(child);
+    }
+}
+
+/// Parse a <product> element of the <devices> section.
+ProductInfo parseProductInfo(const QDomElement& product) {
+    ProductInfo productInfo;
+
+    productInfo.protocol = product.attribute(QStringLiteral("protocol"));
+    productInfo.vendor_id = product.attribute(QStringLiteral("vendor_id"));
+    productInfo.product_id = product.attribute(QStringLiteral("product_id"));
+    productInfo.interface_number = product.attribute(QStringLiteral("interface_number"));
+    productInfo.friendlyName = product.attribute(QStringLiteral("friendly_name"));
+
+    if (const QString image = product.attribute(QStringLiteral("image")); !image.isEmpty()) {
+        productInfo.visualUrl = QUrl(image);
+    }
+
+    if (productInfo.protocol == QStringLiteral("hid")) {
+        productInfo.usage_page = product.attribute(QStringLiteral("usage_page"));
+        productInfo.usage = product.attribute(QStringLiteral("usage"));
+    } else if (productInfo.protocol == QStringLiteral("bulk")) {
+        productInfo.in_epaddr = product.attribute(QStringLiteral("in_epaddr"));
+        productInfo.in_length = product.attribute(QStringLiteral("in_length"));
+        productInfo.out_epaddr = product.attribute(QStringLiteral("out_epaddr"));
+    }
+
+    return productInfo;
+}
+
 } // namespace
 
 // static
@@ -271,40 +307,11 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
     // (vendor/product id, endpoints, interface number, …) is available at
     // runtime, e.g. for BulkController::open() which looks up endpoints from
     // the mapping instead of a hardcoded table.
-    QDomElement devices = info.firstChildElement("devices");
-    if (!devices.isNull()) {
-        QDomElement product = devices.firstChildElement("product");
-        while (!product.isNull()) {
-            ProductInfo productInfo;
-            productInfo.protocol = product.attribute(QStringLiteral("protocol"), QString());
-            productInfo.vendor_id = product.attribute(QStringLiteral("vendor_id"), QString());
-            productInfo.product_id = product.attribute(QStringLiteral("product_id"), QString());
-            productInfo.interface_number =
-                    product.attribute(QStringLiteral("interface_number"), QString());
-            productInfo.friendlyName =
-                    product.attribute(QStringLiteral("friendly_name"), QString());
-            QString image = product.attribute(QStringLiteral("image"), QString());
-            if (!image.isEmpty()) {
-                productInfo.visualUrl = QUrl(image);
-            }
+    const QDomElement devices = info.firstChildElement(QStringLiteral("devices"));
 
-            if (productInfo.protocol == QStringLiteral("bulk")) {
-                productInfo.in_epaddr =
-                        product.attribute(QStringLiteral("in_epaddr"), QString());
-                productInfo.in_length =
-                        product.attribute(QStringLiteral("in_length"), QString());
-                productInfo.out_epaddr =
-                        product.attribute(QStringLiteral("out_epaddr"), QString());
-            } else if (productInfo.protocol == QStringLiteral("hid")) {
-                productInfo.usage_page =
-                        product.attribute(QStringLiteral("usage_page"), QString());
-                productInfo.usage = product.attribute(QStringLiteral("usage"), QString());
-            }
-
-            mapping->addProductMatch(productInfo);
-            product = product.nextSiblingElement(QStringLiteral("product"));
-        }
-    }
+    forEachChildElement(devices, QStringLiteral("product"), [&mapping](const QDomElement& product) {
+        mapping->addProductMatch(parseProductInfo(product));
+    });
 }
 
 void LegacyControllerMappingFileHandler::parseMappingSettings(
