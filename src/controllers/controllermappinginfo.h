@@ -1,10 +1,33 @@
 #pragma once
 
+#include <QList>
 #include <QUrl>
 #include <QVersionNumber>
 
 class QXmlStreamAttributes;
+class QXmlStreamReader;
 class QFileInfo;
+
+/// A USB bulk endpoint declared by a <endpoint> element of a bulk mapping
+struct BulkEndpointInfo {
+    QString direction; // "in" or "out"
+    QString address;
+    QString length;
+};
+
+bool operator==(const BulkEndpointInfo& a, const BulkEndpointInfo& b);
+
+size_t qHash(const BulkEndpointInfo& endpoint);
+
+/// A USB interface declared by an <interface> element of a bulk mapping
+struct BulkInterfaceInfo {
+    QString number;
+    QList<BulkEndpointInfo> endpoints;
+};
+
+bool operator==(const BulkInterfaceInfo& a, const BulkInterfaceInfo& b);
+
+size_t qHash(const BulkInterfaceInfo& bulkInterface);
 
 struct ProductInfo {
     QString friendlyName;
@@ -23,6 +46,7 @@ struct ProductInfo {
     QString in_epaddr;
     QString in_length;
     QString out_epaddr;
+    QList<BulkInterfaceInfo> bulkInterfaces;
 };
 
 bool operator==(const ProductInfo& a, const ProductInfo& b);
@@ -87,7 +111,7 @@ class MappingInfo {
     }
 
   private:
-    static ProductInfo parseBulkProduct(const QXmlStreamAttributes& xmlElementAttributes);
+    static ProductInfo parseBulkProduct(QXmlStreamReader& xml);
     static ProductInfo parseHIDProduct(const QXmlStreamAttributes& xmlElementAttributes);
 
     bool m_valid = false;

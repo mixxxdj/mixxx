@@ -195,6 +195,23 @@ void forEachChildElement(const QDomElement& parent, const QString& tagName, Call
     }
 }
 
+/// Parse a bulk <interface> element including its <endpoint> children.
+BulkInterfaceInfo parseBulkInterface(const QDomElement& interfaceElement) {
+    BulkInterfaceInfo interfaceInfo;
+    interfaceInfo.number = interfaceElement.attribute(QStringLiteral("number"));
+
+    forEachChildElement(interfaceElement,
+            QStringLiteral("endpoint"),
+            [&interfaceInfo](const QDomElement& endpoint) {
+                interfaceInfo.endpoints.append(BulkEndpointInfo{
+                        endpoint.attribute(QStringLiteral("direction")),
+                        endpoint.attribute(QStringLiteral("address")),
+                        endpoint.attribute(QStringLiteral("length"))});
+            });
+
+    return interfaceInfo;
+}
+
 /// Parse a <product> element of the <devices> section.
 ProductInfo parseProductInfo(const QDomElement& product) {
     ProductInfo productInfo;
@@ -216,6 +233,11 @@ ProductInfo parseProductInfo(const QDomElement& product) {
         productInfo.in_epaddr = product.attribute(QStringLiteral("in_epaddr"));
         productInfo.in_length = product.attribute(QStringLiteral("in_length"));
         productInfo.out_epaddr = product.attribute(QStringLiteral("out_epaddr"));
+        forEachChildElement(product,
+                QStringLiteral("interface"),
+                [&productInfo](const QDomElement& interfaceElement) {
+                    productInfo.bulkInterfaces.append(parseBulkInterface(interfaceElement));
+                });
     }
 
     return productInfo;
@@ -583,6 +605,18 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
             element.setAttribute("in_epaddr", productInfo.in_epaddr);
             element.setAttribute("in_length", productInfo.in_length);
             element.setAttribute("out_epaddr", productInfo.out_epaddr);
+            for (const auto& interfaceInfo : productInfo.bulkInterfaces) {
+                QDomElement interfaceElement = doc.createElement("interface");
+                interfaceElement.setAttribute("number", interfaceInfo.number);
+                for (const auto& endpointInfo : interfaceInfo.endpoints) {
+                    QDomElement endpoint = doc.createElement("endpoint");
+                    endpoint.setAttribute("direction", endpointInfo.direction);
+                    endpoint.setAttribute("address", endpointInfo.address);
+                    endpoint.setAttribute("length", endpointInfo.length);
+                    interfaceElement.appendChild(endpoint);
+                }
+                element.appendChild(interfaceElement);
+            }
         }
         if (productInfo.protocol == "hid") {
             element.setAttribute("usage_page", productInfo.usage_page);
