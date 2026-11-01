@@ -29,6 +29,7 @@ bool operator==(const ProductInfo& a, const ProductInfo& b) {
             a.usage_page == b.usage_page &&
             a.usage == b.usage &&
             a.in_epaddr == b.in_epaddr &&
+            a.in_length == b.in_length &&
             a.out_epaddr == b.out_epaddr;
 }
 
@@ -40,6 +41,7 @@ size_t qHash(const ProductInfo& product) {
             qHash(product.usage_page) +
             qHash(product.usage) +
             qHash(product.in_epaddr) +
+            qHash(product.in_length) +
             qHash(product.out_epaddr);
 }
 
@@ -182,9 +184,9 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
 }
 
 ProductInfo MappingInfo::parseBulkProduct(const QXmlStreamAttributes& xmlElementAttributes) {
-    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105"
-    // in_epaddr="0x82" out_epaddr="0x03" interface_number="0x04" />
-    // All number strings must be hex prefixed with 0x
+    // <product protocol="bulk" vendor_id="0x06f8" product_id="0xb105"
+    // in_epaddr="0x82" in_length="255" out_epaddr="0x03" interface_number="0x04" />
+    // All number strings must be hex prefixed with 0x, except lengths which are decimal.
 
     ProductInfo productInfo;
     productInfo.protocol = xmlElementAttributes.value(QStringLiteral("protocol")).toString();
@@ -199,6 +201,7 @@ ProductInfo MappingInfo::parseBulkProduct(const QXmlStreamAttributes& xmlElement
         qCCritical(kLogger) << "Product info element for bulk contains unallowed Usage attribute";
     }
     productInfo.in_epaddr = xmlElementAttributes.value(QStringLiteral("in_epaddr")).toString();
+    productInfo.in_length = xmlElementAttributes.value(QStringLiteral("in_length")).toString();
     productInfo.out_epaddr = xmlElementAttributes.value(QStringLiteral("out_epaddr")).toString();
     productInfo.interface_number =
             xmlElementAttributes.value(QStringLiteral("interface_number"))

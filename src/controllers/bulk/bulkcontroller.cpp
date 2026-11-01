@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
 #include "moc_bulkcontroller.cpp"
 #include "util/cmdlineargs.h"
@@ -13,6 +12,41 @@
 #if defined(Q_OS_ANDROID)
 #include "controllers/android.h"
 #endif
+
+namespace {
+/// Parse a USB endpoint address attribute (e.g. "0x82"). Returns 0 on failure.
+std::uint8_t parseEndpointAddress(const QString& value) {
+    bool ok = false;
+    const uint v = value.toUInt(&ok, 16);
+
+    return ok ? static_cast<std::uint8_t>(v) : 0;
+}
+
+/// Parse a bulk input endpoint length attribute (e.g. "255"). Defaults to 255
+/// when the attribute is missing or invalid.
+int parseEndpointLength(const QString& value) {
+    if (value.isEmpty()) {
+        return 255;
+    }
+
+    bool ok = false;
+    const int v = value.toInt(&ok, 10);
+
+    return ok ? v : 255;
+}
+
+/// Parse an optional USB interface number attribute (e.g. "0x04").
+std::optional<std::uint8_t> parseInterfaceNumber(const QString& value) {
+    if (value.isEmpty()) {
+        return std::nullopt;
+    }
+
+    bool ok = false;
+    const uint v = value.toUInt(&ok, 16);
+
+    return ok ? std::make_optional(static_cast<std::uint8_t>(v)) : std::nullopt;
+}
+} // namespace
 
 BulkReader::BulkReader(libusb_device_handle* handle,
         libusb_context* context,
@@ -295,20 +329,43 @@ int BulkController::open(const QString& resourcePath) {
         return -1;
     }
 
-    /* Look up endpoint addresses in supported database */
+    /* Look up endpoint addresses in the controller mapping */
 
-    const bulk_support_lookup* pDevice = std::find_if(
-            std::cbegin(bulk_supported), std::cend(bulk_supported), [this](const auto& dev) {
-                return dev.key.vendor_id == m_vendorId && dev.key.product_id == m_productId;
-            });
-    if (pDevice == std::cend(bulk_supported)) {
-        qCWarning(m_logBase) << "USB Bulk device" << getName() << "unsupported";
+    const ProductInfo* pMatchedProduct = nullptr;
+    if (m_pMapping) {
+        for (const auto& product : m_pMapping->productMatch()) {
+            bool ok = false;
+            const std::uint16_t vendorId =
+                    static_cast<std::uint16_t>(product.vendor_id.toUInt(&ok, 16));
+
+            if (!ok || vendorId != m_vendorId) {
+                continue;
+            }
+
+            ok = false;
+            const std::uint16_t productId =
+                    static_cast<std::uint16_t>(product.product_id.toUInt(&ok, 16));
+
+            if (!ok || productId != m_productId) {
+                continue;
+            }
+
+            pMatchedProduct = &product;
+
+            break;
+        }
+    }
+
+    if (!pMatchedProduct) {
+        qCWarning(m_logBase) << "USB Bulk device" << getName()
+                             << "has no matching product info in mapping";
         return -1;
     }
-    m_inEndpointAddr = pDevice->endpoints.in_epaddr;
-    m_inLength = static_cast<int>(pDevice->endpoints.in_length);
-    m_outEndpointAddr = pDevice->endpoints.out_epaddr;
-    m_interfaceNumber = pDevice->endpoints.interface_number;
+
+    m_inEndpointAddr = parseEndpointAddress(pMatchedProduct->in_epaddr);
+    m_inLength = parseEndpointLength(pMatchedProduct->in_length);
+    m_outEndpointAddr = parseEndpointAddress(pMatchedProduct->out_epaddr);
+    m_interfaceNumber = parseInterfaceNumber(pMatchedProduct->interface_number);
 
 #ifdef __ANDROID__
     QJniObject context = QNativeInterface::QAndroidApplication::context();

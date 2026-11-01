@@ -21,6 +21,7 @@ struct ProductInfo {
 
     // Bulk-specific
     QString in_epaddr;
+    QString in_length;
     QString out_epaddr;
 };
 

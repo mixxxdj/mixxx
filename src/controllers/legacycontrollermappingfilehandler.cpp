@@ -266,6 +266,45 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
     mapping->setManualPage(manualPage.isNull() ? "" : manualPage.text());
     QDomElement wiki = info.firstChildElement("wiki");
     mapping->setWikiLink(wiki.isNull() ? "" : wiki.text());
+
+    // Parse the <devices><product> elements so that product matching
+    // (vendor/product id, endpoints, interface number, …) is available at
+    // runtime, e.g. for BulkController::open() which looks up endpoints from
+    // the mapping instead of a hardcoded table.
+    QDomElement devices = info.firstChildElement("devices");
+    if (!devices.isNull()) {
+        QDomElement product = devices.firstChildElement("product");
+        while (!product.isNull()) {
+            ProductInfo productInfo;
+            productInfo.protocol = product.attribute(QStringLiteral("protocol"), QString());
+            productInfo.vendor_id = product.attribute(QStringLiteral("vendor_id"), QString());
+            productInfo.product_id = product.attribute(QStringLiteral("product_id"), QString());
+            productInfo.interface_number =
+                    product.attribute(QStringLiteral("interface_number"), QString());
+            productInfo.friendlyName =
+                    product.attribute(QStringLiteral("friendly_name"), QString());
+            QString image = product.attribute(QStringLiteral("image"), QString());
+            if (!image.isEmpty()) {
+                productInfo.visualUrl = QUrl(image);
+            }
+
+            if (productInfo.protocol == QStringLiteral("bulk")) {
+                productInfo.in_epaddr =
+                        product.attribute(QStringLiteral("in_epaddr"), QString());
+                productInfo.in_length =
+                        product.attribute(QStringLiteral("in_length"), QString());
+                productInfo.out_epaddr =
+                        product.attribute(QStringLiteral("out_epaddr"), QString());
+            } else if (productInfo.protocol == QStringLiteral("hid")) {
+                productInfo.usage_page =
+                        product.attribute(QStringLiteral("usage_page"), QString());
+                productInfo.usage = product.attribute(QStringLiteral("usage"), QString());
+            }
+
+            mapping->addProductMatch(productInfo);
+            product = product.nextSiblingElement(QStringLiteral("product"));
+        }
+    }
 }
 
 void LegacyControllerMappingFileHandler::parseMappingSettings(
@@ -535,6 +574,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
 
         if (productInfo.protocol == "bulk") {
             element.setAttribute("in_epaddr", productInfo.in_epaddr);
+            element.setAttribute("in_length", productInfo.in_length);
             element.setAttribute("out_epaddr", productInfo.out_epaddr);
         }
         if (productInfo.protocol == "hid") {
