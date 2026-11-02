@@ -11,7 +11,7 @@
 <context>
     <name>AllTrackLibraryFeature</name>
     <message>
-        <location filename="../../src/qml/qmllibrarysource.h" line="34"/>
+        <location filename="../../src/qml/qmllibrarysource.h" line="32"/>
         <source>All...</source>
         <translation>அனைத்து...</translation>
     </message>
@@ -231,7 +231,7 @@
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="137"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="578"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="613"/>
         <source>Export Playlist</source>
         <translation>இசைப்பட்டியல் ஏற்றுமதி செய்</translation>
     </message>
@@ -285,13 +285,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="387"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="391"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="402"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="550"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="585"/>
         <source>Playlist Creation Failed</source>
         <translation>பிளேலிச்ட் உருவாக்கம் தோல்வியடைந்தது</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="403"/>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="551"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="586"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>பிளேலிச்ட்டை உருவாக்கும் போது அறியப்படாத பிழை ஏற்பட்டது:</translation>
     </message>
@@ -306,12 +306,12 @@
         <translation>பிளேலிச்ட்டை &lt;b&gt;%1&lt;/b&gt; நீக்க வேண்டுமா?</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="582"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="617"/>
         <source>M3U Playlist (*.m3u)</source>
         <translation>M3U பிளேலிச்ட் (*.m3u)</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="580"/>
+        <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="615"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation>M3U பிளேலிச்ட் (*.m3u);;M3U8 பிளேலிச்ட் (*.m3u8);;PLS பிளேலிச்ட் (*.pls);;உரை காபிம (*.csv);; படிக்கக்கூடிய உரை (*.txt)</translation>
     </message>
@@ -332,7 +332,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="681"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="685"/>
         <source>Couldn&apos;t load track.</source>
         <translation>டிராக்கை ஏற்ற முடியவில்லை.</translation>
     </message>
@@ -481,6 +481,7 @@
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="588"/>
+        <location filename="../../src/qml/qmllegacylibraryitem.cpp" line="686"/>
         <source>Fetching image ...</source>
         <extracomment>Tooltip text on the cover art column shown when the cover is read from disk</extracomment>
         <translation>படத்தை எடுக்கிறது...</translation>
@@ -568,74 +569,74 @@
 <context>
     <name>BrowseFeature</name>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="72"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="76"/>
         <source>Add to Quick Links</source>
         <translation>விரைவு இணைப்புகளில் சேர்க்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="78"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="82"/>
         <source>Remove from Quick Links</source>
         <translation>விரைவு இணைப்புகளிலிருந்து அகற்று</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="84"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="88"/>
         <source>Add to Library</source>
         <translation>நூலகத்தில் சேர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="90"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="94"/>
         <source>Refresh directory tree</source>
         <translation>அடைவு மரத்தைப் புதுப்பிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="107"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="111"/>
         <source>Quick Links</source>
         <translation>விரைவு இணைப்புகள்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="111"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="136"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="115"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="140"/>
         <source>Devices</source>
         <translation>சாதனங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="139"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="143"/>
         <source>Removable Devices</source>
         <translation>நீக்கக்கூடிய சாதனங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="173"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="513"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="177"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="517"/>
         <source>Computer</source>
         <translation>கணிப்பொறி, கணிணி</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="210"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="214"/>
         <source>Music Directory Added</source>
         <translation>இசை அடைவு சேர்க்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="211"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="215"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation>ஒன்று அல்லது அதற்கு மேற்பட்ட இசை கோப்பகங்களைச் சேர்த்துள்ளீர்கள். உங்கள் லைப்ரரியை மீண்டும் வருடு செய்யும் வரை இந்த கோப்பகங்களில் உள்ள டிராக்குகள் கிடைக்காது. இப்போது மீண்டும் வருடு செய்ய விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="215"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="219"/>
         <source>Scan</source>
         <translation>வருடு செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="514"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="518"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
         <translation>&quot;கணினி&quot; உங்கள் ஆர்ட் டிச்க் மற்றும் வெளிப்புற சாதனங்களில் உள்ள கோப்புறைகளிலிருந்து டிராக்குகளை வழிநடத்தவும், பார்க்கவும் மற்றும் ஏற்றவும் உங்களை அனுமதிக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="517"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="521"/>
         <source>It shows the data from the file tags, not track data from your Mixxx library like other track views.</source>
         <translation>இது கோப்பு குறிச்சொற்களிலிருந்து தரவைக் காட்டுகிறது, மற்ற டிராக் காட்சிகளைப் போல உங்கள் Mixxx நூலகத்திலிருந்து தரவைக் கண்காணிக்காது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="521"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="525"/>
         <source>If you load a track file from here, it will be added to your library.</source>
         <translation>இங்கிருந்து டிராக் கோப்பை ஏற்றினால், அது உங்கள் நூலகத்தில் சேர்க்கப்படும்.</translation>
     </message>
@@ -643,117 +644,117 @@
 <context>
     <name>BrowseTableModel</name>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="56"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="57"/>
         <source>Preview</source>
         <translation>முன்னோட்டம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="57"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="58"/>
         <source>Filename</source>
         <translation>கோப்புப்பெயர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="58"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="59"/>
         <source>Artist</source>
         <translation>கலைஞர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="59"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
         <source>Title</source>
         <translation>தலைப்பு</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="60"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="61"/>
         <source>Album</source>
         <translation>ஆல்பம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="61"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="62"/>
         <source>Track #</source>
         <translation>தடம் #</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="62"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="63"/>
         <source>Year</source>
         <translation>ஆண்டு</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="63"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="64"/>
         <source>Genre</source>
         <translation>வகை</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="64"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="65"/>
         <source>Composer</source>
         <translation>இசையமைப்பாளர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="65"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="66"/>
         <source>Comment</source>
         <translation>கருத்து</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="66"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>
         <source>Duration</source>
         <translation>கால அளவு</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="67"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="68"/>
         <source>BPM</source>
         <translation>பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="68"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="69"/>
         <source>Key</source>
         <translation>முக்கிய</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="69"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="70"/>
         <source>Type</source>
         <translation>வகை</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="70"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="71"/>
         <source>Bitrate</source>
         <translation>பிட்ரேட்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="76"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="77"/>
         <source>ReplayGain</source>
         <translation>மீண்டும் விளையாடு</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="71"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="72"/>
         <source>Location</source>
         <translation>இடம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="72"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="73"/>
         <source>Album Artist</source>
         <translation>ஆல்பம் கலைஞர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="73"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="74"/>
         <source>Grouping</source>
         <translation>குழுவாக்கம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="74"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="75"/>
         <source>File Modified</source>
         <translation>கோப்பு மாற்றப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="75"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="76"/>
         <source>File Created</source>
         <translation>கோப்பு உருவாக்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="227"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="228"/>
         <source>Mixxx Library</source>
         <translation>Mixxx நூலகம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="228"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="229"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation>Mixxx அல்லது வேறொரு பயன்பாட்டினால் பின்வரும் கோப்பை ஏற்ற முடியவில்லை.</translation>
     </message>
@@ -4223,12 +4224,12 @@ trace    - Above + Profiling messages</source>
         <translation>கடந்தகால பங்களிப்பாளர்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="486"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="505"/>
         <source>Official Website</source>
         <translation>அதிகாரப்பூர்வ இணையதளம்</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="496"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="515"/>
         <source>Donate</source>
         <translation>நன்கொடை</translation>
     </message>
@@ -4284,7 +4285,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="14"/>
         <location filename="../../src/library/analysis/dlganalysis.ui" line="145"/>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="189"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="198"/>
         <source>Analyze</source>
         <translation>பகுப்பாய்வு செய்யவும்</translation>
     </message>
@@ -4344,12 +4345,12 @@ trace    - Above + Profiling messages</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட டிராக்குகளில் பீட்கிரிட், கீ மற்றும் ரீப்ளேகெய்ன் கண்டறிதலை இயக்குகிறது. வட்டு இடத்தை சேமிக்க தேர்ந்தெடுக்கப்பட்ட தடங்களுக்கு அலைவடிவங்களை உருவாக்காது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="184"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="193"/>
         <source>Stop Analysis</source>
         <translation>பகுப்பாய்வை நிறுத்து</translation>
     </message>
     <message>
-        <location filename="../../src/library/analysis/dlganalysis.cpp" line="208"/>
+        <location filename="../../src/library/analysis/dlganalysis.cpp" line="217"/>
         <source>Analyzing %1/%2</source>
         <translation>% 1/%2 ஐ பகுப்பாய்வு செய்கிறது</translation>
     </message>
@@ -5144,68 +5145,68 @@ Note: This can for example be invisible linebreaks when using copy/paste.</sourc
 குறிப்பு: எடுத்துக்காட்டாக, நகல்/பேச்ட் பயன்படுத்தும் போது இது கண்ணுக்குத் தெரியாத லைன்பிரேக்களாக இருக்கலாம்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="341"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="617"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="652"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="340"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="616"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="651"/>
         <source>Action failed</source>
         <translation>செயல் தோல்வியடைந்தது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="342"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="341"/>
         <source>You can&apos;t create more than %1 source connections.</source>
         <translation>நீங்கள் %1க்கு மேல் மூல இணைப்புகளை உருவாக்க முடியாது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="355"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="354"/>
         <source>Source connection %1</source>
         <translation>மூல இணைப்பு% 1</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="437"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="436"/>
         <source>Settings for %1</source>
         <extracomment>Settings for broadcast profile, %1 is the profile name placeholder</extracomment>
         <translation>% 1க்கான அமைப்புகள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="618"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="617"/>
         <source>At least one source connection is required.</source>
         <translation>குறைந்தபட்சம் ஒரு மூல இணைப்பு தேவை.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="663"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="662"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
         <translation>செயலில் உள்ள ஒவ்வொரு மூல இணைப்பையும் நிச்சயமாக துண்டிக்க விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="624"/>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="662"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="623"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="661"/>
         <source>Confirmation required</source>
         <translation>உறுதிப்படுத்தல் தேவை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="261"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="260"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server that have the same mountpoint can not be enabled simultaneously.</source>
         <translation>&apos;%2&apos; ஐப் போலவே &apos;%1&apos; ஐச்காச்ட் மவுண்ட்பாயிண்ட்டையும் கொண்டுள்ளது. 
 ஒரே மவுண்ட்பாயிண்ட் கொண்ட ஒரே சர்வரில் இரண்டு மூல இணைப்புகளை ஒரே நேரத்தில் இயக்க முடியாது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="625"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="624"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
         <translation>&apos;% 1&apos; ஐ நிச்சயமாக நீக்க வேண்டுமா?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="640"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="639"/>
         <source>Renaming &apos;%1&apos;</source>
         <translation>&apos;% 1&apos; மறுபெயரிடுகிறது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="641"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="640"/>
         <source>New name for &apos;%1&apos;:</source>
         <translation>&apos;% 1&apos;க்கான புதிய பெயர்:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="653"/>
+        <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="652"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
         <translation>&apos;%1&apos; ஐ &apos;%2&apos; ஆக மறுபெயரிட முடியாது: பெயர் ஏற்கனவே பயன்பாட்டில் உள்ளது</translation>
     </message>
@@ -5993,22 +5994,27 @@ Apply settings and continue?</source>
         <translation>பட்டியல் பட்டியை தானாக மறைத்து, ஒற்றை மாற்று விசையை அழுத்துவதன் மூலம் அதை மாற்றவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="283"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="280"/>
+        <source>Only Keyboard Shortcuts</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="293"/>
         <source>Screen saver</source>
         <translation>திரை சேமிப்பான்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="293"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="303"/>
         <source>Multi-Sampling</source>
         <translation>பல மாதிரி</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="303"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="313"/>
         <source>Force 3D acceleration</source>
         <translation>3D முடுக்கத்தை கட்டாயப்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="306"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="316"/>
         <source>If checked, Mixxx will always assume 3D acceleration is available. This may lead to pour performance if only CP-backed rendering is available..</source>
         <translation>சரிபார்க்கப்பட்டால், Mixxx எப்போதும் 3D முடுக்கம் கிடைக்கும் என்று கருதும். CP-ஆதரவு வழங்குதல் மட்டுமே இருந்தால், இது செயல்திறனை அதிகரிக்க வழிவகுக்கும்.</translation>
     </message>
@@ -6626,47 +6632,47 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
 <context>
     <name>DlgPrefInterface</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="141"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="131"/>
         <source>The minimum size of the selected skin is bigger than your screen resolution.</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட தோலின் குறைந்தபட்ச அளவு உங்கள் திரை தெளிவுத்திறனை விட பெரியது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="170"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="160"/>
         <source>Allow screensaver to run</source>
         <translation>ச்கிரீன்சேவரை இயக்க அனுமதிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="172"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="162"/>
         <source>Prevent screensaver from running</source>
         <translation>ச்கிரீன்சேவர் இயங்குவதைத் தடுக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="174"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="164"/>
         <source>Prevent screensaver while playing</source>
         <translation>விளையாடும்போது ச்கிரீன்சேவரைத் தடுக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="184"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="174"/>
         <source>Disabled</source>
         <translation>முடக்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="176"/>
         <source>2x MSAA</source>
         <translation>ஃச் PM</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="188"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="178"/>
         <source>4x MSAA</source>
         <translation>4x MSAA</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="190"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="180"/>
         <source>8x MSAA</source>
         <translation>8x MSAA</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="192"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="182"/>
         <source>16x MSAA</source>
         <translation>16x MSAA</translation>
     </message>
@@ -6676,14 +6682,20 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
         <translation>இந்த தோல் வண்ணத் திட்டங்களை ஆதரிக்காது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="446"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="450"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="457"/>
         <source>Information</source>
         <translation>தகவல்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="447"/>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="451"/>
         <source>Mixxx must be restarted before the new locale, scaling or multi-sampling settings will take effect.</source>
         <translation>புதிய மொழி, அளவிடுதல் அல்லது பல மாதிரி அமைப்புகள் நடைமுறைக்கு வரும் முன் Mixxx மீண்டும் தொடங்கப்பட வேண்டும்.</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="458"/>
+        <source>Mixxx must be restarted with the --developer command line option to use the experimental LateNight QML skin.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -6954,77 +6966,77 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>உருப்படி ஒரு கோப்பகம் அல்ல அல்லது அடைவு இல்லை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="473"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="482"/>
         <source>Choose a music directory</source>
         <translation>இசை கோப்பகத்தைத் தேர்ந்தெடுக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="489"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="499"/>
         <source>Confirm Directory Removal</source>
         <translation>கோப்பகத்தை அகற்றுவதை உறுதிப்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="491"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="501"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation>Mixxx இனி புதிய டிராக்குகளுக்காக இந்தக் கோப்பகத்தைப் பார்க்காது. இந்தக் கோப்பகம் மற்றும் துணை அடைவுகளில் உள்ள ட்ராக்குகளை நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?&lt;ul&gt;&lt;li&gt;இந்த கோப்பகம் மற்றும் துணை அடைவுகளில் இருந்து அனைத்து ட்ராக்குகளையும் மறைக்கவும்.&lt;/li&gt;&lt;li&gt;Mixxx இலிருந்து இந்த டிராக்குகளுக்கான அனைத்து மெட்டாடேட்டாவையும் நிரந்தரமாக நீக்கவும்.&lt;/li&gt;&lt;li&gt;டிராக்குகளை உங்கள் நூலகத்தில் மாற்றாமல் விடவும்.&lt;/li&gt;&lt;/ul&gt;எதிர்காலத்தில் அவற்றை மீட்-டேட்டாவை மறைப்பது அவற்றின் மீட்-டாட்டாவைச் சேமிக்கும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="502"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="512"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation>மேனிலை தரவு என்பது அனைத்து டிராக் விவரங்கள் (கலைஞர், தலைப்பு, பிளேகவுண்ட், முதலியன) அத்துடன் பீட்கிரிட்கள், ஆட்குகள் மற்றும் லூப்கள். இந்த தேர்வு Mixxx நூலகத்தை மட்டுமே பாதிக்கும். வட்டில் உள்ள கோப்புகள் எதுவும் மாற்றப்படாது அல்லது நீக்கப்படாது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="510"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="520"/>
         <source>Hide Tracks</source>
         <translation>தடங்களை மறை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="512"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="522"/>
         <source>Delete Track Metadata</source>
         <translation>ட்ராக் மெட்டாடேட்டாவை நீக்கு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="514"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="524"/>
         <source>Leave Tracks Unchanged</source>
         <translation>தடங்களை மாற்றாமல் விடுங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="556"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="567"/>
         <source>Relink music directory to new location</source>
         <translation>புதிய இடத்திற்கு இசை கோப்பகத்தை மீண்டும் இணைக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="695"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="712"/>
         <source>Black</source>
         <translation>கருப்பு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="697"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="714"/>
         <source>ExtraBold</source>
-        <translation>ExtraBold</translation>
+        <translation>முழு தடித்த</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="699"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="716"/>
         <source>Bold</source>
         <translation>தடிமான</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="702"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="719"/>
         <source>SemiBold</source>
         <translation>அரை தடித்த</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="704"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="721"/>
         <source>Medium</source>
         <translation>சராசரி</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="708"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="725"/>
         <source>Light</source>
         <translation>ஒளி</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="732"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="749"/>
         <source>Select Library Font</source>
         <translation>நூலக எழுத்துருவைத் தேர்ந்தெடுக்கவும்</translation>
     </message>
@@ -7093,27 +7105,27 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>BPM காட்சி துல்லியம்:</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="424"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="468"/>
         <source>Session History</source>
         <translation>அமர்வு வரலாறு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="431"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="475"/>
         <source>Track duplicate distance</source>
         <translation>நகல் தூரத்தைக் கண்காணிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="444"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="488"/>
         <source>When playing a track again log it to the session history only if more than N other tracks have been played in the meantime</source>
         <translation>ஒரு டிராக்கை மீண்டும் இயக்கும்போது, ​​இதற்கிடையில் N க்கும் அதிகமான டிராக்குகள் இயக்கப்பட்டிருந்தால் மட்டுமே அதை அமர்வு வரலாற்றில் பதிவு செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="461"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="505"/>
         <source>History playlist with less than N tracks will be deleted&lt;br/&gt;&lt;br/&gt;Note: the cleanup will be performed during startup and shutdown of Mixxx.</source>
         <translation>N க்குக் குறைவான தடங்களைக் கொண்ட வரலாறு பிளேலிச்ட் நீக்கப்படும்&lt;br/&gt;&lt;br/&gt;குறிப்பு: Mixxx இன் ச்டார்ட்அப் மற்றும் சட் பேரூர் போது தூய்மை செய்யப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="464"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="508"/>
         <source>Delete history playlist with less than N tracks</source>
         <translation>N ட்ராக்குகளை விட குறைவான வரலாற்று பிளேலிச்ட்டை நீக்கவும்</translation>
     </message>
@@ -7168,57 +7180,72 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>This வீச்சு will be used க்கு the &apos;fuzzy&apos; BPM தேடல் (~bpm:) வழிமம் the தேடல் box, அச் well அச் க்கு BPM தேடல் in மின்தடம் context பட்டியல் &gt; தேடல் related Tracks</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="585"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="424"/>
+        <source>Sidebar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="431"/>
+        <source>Hover expand delay:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="447"/>
+        <source>The delay until sidebar items are expanded or collapsed hovered during drag&apos;n&apos;drop. -1 disables auto-expand.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="629"/>
         <source>Preferred Cover Art Fetcher Resolution</source>
         <translation>விருப்பமான கவர் ஆர்ட் பெறுதல் தீர்மானம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="591"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="635"/>
         <source>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</source>
         <translation>Musicbrainz இலிருந்து மெட்டாடேட்டாவை இறக்குமதி செய்வதன் மூலம் coverartarchive.com இலிருந்து அட்டைப்படத்தைப் பெறவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="601"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="645"/>
         <source>Note: &quot;&gt;1200 px&quot; can fetch up to very large cover arts.</source>
         <translation>குறிப்பு: &quot;&gt;1200 px&quot; மிகப் பெரிய கவர் ஆர்ட்ச் வரை பெறலாம்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="611"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="655"/>
         <source>&gt;1200 px (if available)</source>
         <translation>&gt;1200 px (கிடைத்தால்)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="621"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="665"/>
         <source>1200 px (if available)</source>
         <translation>1200 px (கிடைத்தால்)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="631"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="675"/>
         <source>500 px</source>
         <translation>500px</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="641"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="685"/>
         <source>250 px</source>
         <translation>250 px</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="655"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="699"/>
         <source>Settings Directory</source>
         <translation>அமைப்புகள் அடைவு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="661"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="705"/>
         <source>The Mixxx settings directory contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</source>
         <translation>Mixxx அமைப்புகளின் கோப்பகத்தில் நூலக தரவுத்தளம், பல்வேறு கட்டமைப்பு கோப்புகள், பதிவு கோப்புகள், ட்ராக் பகுப்பாய்வு தரவு மற்றும் தனிப்பயன் கட்டுப்படுத்தி மேப்பிங்குகள் உள்ளன.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="684"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="728"/>
         <source>Edit those files only if you know what you are doing and only while Mixxx is not running.</source>
         <translation>நீங்கள் என்ன செய்கிறீர்கள் என்பது உங்களுக்குத் தெரிந்தால் மட்டுமே அந்தக் கோப்புகளைத் திருத்தவும் மற்றும் Mixxx இயங்காதபோது மட்டுமே.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="700"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="744"/>
         <source>Open Mixxx Settings Folder</source>
         <translation>Mixxx அமைப்புகள் கோப்புறையைத் திறக்கவும்</translation>
     </message>
@@ -7274,6 +7301,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="369"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="444"/>
         <source> ms</source>
         <translation>ms</translation>
     </message>
@@ -7283,17 +7311,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>கிடைக்கக்கூடிய அடுத்த தளத்திற்கு டிராக்கை ஏற்றவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="492"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="536"/>
         <source>External Libraries</source>
         <translation>வெளிப்புற நூலகங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="571"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="615"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
         <translation>இந்த அமைப்புகள் செயல்பட நீங்கள் Mixxx ஐ மறுதொடக்கம் செய்ய வேண்டும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="498"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="542"/>
         <source>Show Rhythmbox Library</source>
         <translation>ரிதம்பாக்ச் நூலகத்தைக் காட்டு</translation>
     </message>
@@ -7318,32 +7346,32 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <translation>புறக்கணிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="508"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="552"/>
         <source>Show Banshee Library</source>
         <translation>பன்சீ நூலகத்தைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="518"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="562"/>
         <source>Show iTunes Library</source>
         <translation>ஐடியூன்ச் நூலகத்தைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="528"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="572"/>
         <source>Show Traktor Library</source>
         <translation>டிராக்டர் நூலகத்தைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="538"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="582"/>
         <source>Show Rekordbox Library</source>
         <translation>Rekordbox நூலகத்தைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="548"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="592"/>
         <source>Show Serato Library</source>
         <translation>செராட்டோ நூலகத்தைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="558"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="602"/>
         <source>All external libraries shown are write protected.</source>
         <translation>காட்டப்படும் அனைத்து வெளிப்புற நூலகங்களும் எழுதப் பாதுகாக்கப்படுகின்றன.</translation>
     </message>
@@ -7688,43 +7716,93 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 <context>
     <name>DlgPrefRecord</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="26"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="27"/>
         <source>Stereo</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="27"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="28"/>
         <source>Mono</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="256"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="96"/>
+        <source>650 MB</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="97"/>
+        <source>700 MB (CD)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="98"/>
+        <source>1 GB</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="99"/>
+        <source>2 GB</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="100"/>
+        <source>4 GB</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="101"/>
+        <source>60 Minutes (CD)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="102"/>
+        <source>74 Minutes (CD)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="103"/>
+        <source>80 Minutes (CD)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="104"/>
+        <source>120 Minutes</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="105"/>
+        <source>No Splitting</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="260"/>
         <source>Choose recordings directory</source>
         <translation>பதிவுகள் கோப்பகத்தைத் தேர்ந்தெடுக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="446"/>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="453"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="476"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="483"/>
         <source>Recordings directory invalid</source>
         <translation>பதிவுகளின் அடைவு தவறானது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="447"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="477"/>
         <source>Recordings directory must be set to an existing directory.</source>
         <translation>ரெக்கார்டிங் கோப்பகத்தை ஏற்கனவே உள்ள கோப்பகத்தில் அமைக்க வேண்டும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="454"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="484"/>
         <source>Recordings directory must be set to a directory.</source>
         <translation>ரெக்கார்டிங் கோப்பகம் ஒரு கோப்பகமாக அமைக்கப்பட வேண்டும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="459"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="489"/>
         <source>Recordings directory not writable</source>
         <translation>பதிவுகள் கோப்பகம் எழுத முடியாதது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="460"/>
+        <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="490"/>
         <source>You do not have write access to %1. Choose a recordings directory you have write access to.</source>
         <translation>%1க்கு எழுதும் அணுகல் உங்களிடம் இல்லை. உங்களுக்கு எழுதும் அணுகல் உள்ள ரெக்கார்டிங் கோப்பகத்தைத் தேர்வு செய்யவும்.</translation>
     </message>
@@ -7965,177 +8043,188 @@ The loudness target is approximate and assumes track pregain and main output lev
 <context>
     <name>DlgPrefSound</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="117"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1232"/>
         <source>%1 Hz</source>
         <translation>% 1 எர்ட்ச்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="148"/>
         <source>Default (long delay)</source>
         <translation>இயல்புநிலை (நீண்ட தாமதம்)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="132"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="149"/>
         <source>Experimental (no delay)</source>
         <translation>ஆய்வு (தாமதம் இல்லை)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="133"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="150"/>
         <source>Disabled (short delay)</source>
         <translation>முடக்கப்பட்டது (குறுகிய தாமதம்)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="141"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="158"/>
         <source>Soundcard Clock</source>
         <translation>ஒலி அட்டை கடிகாரம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="142"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="159"/>
         <source>Network Clock</source>
         <translation>பிணையம் கடிகாரம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="187"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="204"/>
         <source>Direct monitor (recording and broadcasting only)</source>
         <translation>நேரடி கண்காணிப்பு (பதிவு மற்றும் ஒளிபரப்பு மட்டும்)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="270"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="218"/>
+        <source>Use PipeWire API</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="235"/>
+        <source>Mixxx must be restarted for the PipeWire API selection to take effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="319"/>
         <source>Disabled</source>
         <translation>முடக்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="271"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="320"/>
         <source>Enabled</source>
         <translation>இயக்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="281"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="330"/>
         <source>Stereo</source>
         <translation>ச்டீரியோ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="282"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="331"/>
         <source>Mono</source>
         <translation>மோனோ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="298"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="347"/>
         <source>To enable Realtime scheduling (currently disabled), see the %1.</source>
         <translation>நிகழ்நேர திட்டமிடலை இயக்க (தற்போது முடக்கப்பட்டுள்ளது), % 1 ஐப் பார்க்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="324"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="373"/>
         <source>The %1 lists sound cards and controllers you may want to consider for using Mixxx.</source>
         <translation>Mixxx ஐப் பயன்படுத்துவதற்கு நீங்கள் கருத்தில் கொள்ள விரும்பும் ஒலி அட்டைகள் மற்றும் கட்டுப்படுத்திகளை %1 பட்டியலிடுகிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="328"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="377"/>
         <source>Mixxx DJ Hardware Guide</source>
         <translation>Mixxx DJ வன்பொருள் வழிகாட்டி</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="334"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="383"/>
         <source>Find details in the Mixxx user manual</source>
         <translation>Mixxx பயனர் கையேட்டில் விவரங்களைக் கண்டறியவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="384"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="234"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="438"/>
         <source>Information</source>
         <translation>தகவல்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="385"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="439"/>
         <source>Mixxx must be restarted before the multi-threaded RubberBand setting change will take effect.</source>
         <translation>பல-திரிக்கப்பட்ட ரப்பர்பேண்ட் அமைப்பு மாற்றம் நடைமுறைக்கு வருவதற்கு முன் Mixxx மீண்டும் தொடங்கப்பட வேண்டும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="730"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="807"/>
         <source>auto (&lt;= 1024 frames/period)</source>
         <translation>தானியங்கு (&lt;= 1024 பிரேம்கள்/காலம்)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="733"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="810"/>
         <source>2048 frames/period</source>
         <translation>2048 பிரேம்கள்/காலம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="736"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="813"/>
         <source>4096 frames/period</source>
         <translation>4096 பிரேம்கள்/காலம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="821"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="954"/>
         <source>Are you sure?</source>
         <translation>நீங்கள் உறுதியாக இருக்கிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="824"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="957"/>
         <source>Distribute stereo channels into mono channels for parallel processing will result in a loss of mono compatibility and a diffuse stereo image. It is not recommended during broadcasting or recording.</source>
         <translation>இணையான செயலாக்கத்திற்காக ச்டீரியோ சேனல்களை மோனோ சேனல்களில் விநியோகிப்பது மோனோ இணக்கத்தன்மை மற்றும் பரவலான ச்டீரியோ படத்தை இழக்கும். ஒளிபரப்பு அல்லது பதிவு செய்யும் போது இது பரிந்துரைக்கப்படவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="829"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="962"/>
         <source>Are you sure you wish to proceed?</source>
         <translation>நீங்கள் நிச்சயமாக தொடர விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="830"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="963"/>
         <source>No</source>
         <translation>இல்லை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="832"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="965"/>
         <source>Yes, I know what I am doing</source>
         <translation>ஆம், நான் என்ன செய்கிறேன் என்று எனக்குத் தெரியும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1045"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1182"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
         <translation>மைக்ரோஃபோன் உள்ளீடுகள் நீங்கள் கேட்பதை ஒப்பிடும்போது பதிவு மற்றும் ஒளிபரப்பு சிக்னலில் நேரம் இல்லை.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1048"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1185"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>ரவுண்ட் ட்ரிப் தாமதத்தை அளந்து, மைக்ரோஃபோன் நேரத்தைச் சீரமைக்க மைக்ரோஃபோன் லேட்டன்சி இழப்பீட்டிற்கு மேலே உள்ளிடவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1041"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1178"/>
         <source>Refer to the Mixxx User Manual for details.</source>
         <translation>விவரங்களுக்கு Mixxx பயனர் கையேட்டைப் பார்க்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1060"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1197"/>
         <source>Configured latency has changed.</source>
         <translation>கட்டமைக்கப்பட்ட நேரந்தவறுகை மாறிவிட்டது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1061"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="1198"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
         <translation>மைக்ரோஃபோன் நேரத்தைச் சீரமைக்க, ரவுண்ட் ட்ரிப் தாமதத்தை அளந்து, மைக்ரோஃபோன் லேட்டன்சி இழப்பீட்டிற்கு மேலே உள்ளிடவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="295"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="344"/>
         <source>Realtime scheduling is enabled.</source>
         <translation>நிகழ்நேர திட்டமிடல் இயக்கப்பட்டது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="183"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="200"/>
         <source>Main output only</source>
         <translation>முக்கிய வெளியீடு மட்டுமே</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="185"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="202"/>
         <source>Main and booth outputs</source>
         <translation>முக்கிய மற்றும் சாவடி வெளியீடுகள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="756"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="833"/>
         <source>%1 ms</source>
         <translation>% 1 ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="394"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="448"/>
         <source>Configuration error</source>
         <translation>கட்டமைப்பு பிழை</translation>
     </message>
@@ -8153,152 +8242,147 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>ஒலி பநிஇ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="38"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="42"/>
         <source>Sample Rate</source>
         <translation>மாதிரி விகிதம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="51"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="55"/>
         <source>Audio Buffer</source>
         <translation>ஆடியோ பஃபர்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="74"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="78"/>
         <source>Engine Clock</source>
         <translation>எஞ்சின் கடிகாரம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="81"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="85"/>
         <source>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</source>
         <translation>நேரலை பார்வையாளர்கள் அமைப்புகளுக்கும் குறைந்த தாமதத்திற்கும் சவுண்ட்கார்டு கடிகாரத்தைப் பயன்படுத்தவும்.&lt;br&gt;நேரலை பார்வையாளர்கள் இல்லாமல் ஒளிபரப்ப பிணையம் கடிகாரத்தைப் பயன்படுத்தவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="98"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="102"/>
         <source>Main Mix</source>
         <translation>முக்கிய கலவை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="111"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="115"/>
         <source>Main Output Mode</source>
         <translation>முக்கிய வெளியீட்டு முறை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="125"/>
         <source>Microphone Monitor Mode</source>
         <translation>மைக்ரோஃபோன் மானிட்டர் பயன்முறை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="135"/>
         <source>Microphone Latency Compensation</source>
         <translation>மைக்ரோஃபோன் தாமத இழப்பீடு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="141"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="164"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="187"/>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="210"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="145"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="168"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="191"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="214"/>
         <source> ms</source>
         <extracomment>milliseconds</extracomment>
         <translation>ms</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="351"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="355"/>
         <source>Deck and Bus outputs are for external mixers. They are post-fader and include effects and crossfader (for Auto DJ). For external mixing, make sure all Mixxx faders and EQ knobs are set to their default position (right- or double-click). </source>
         <translation>டெக் மற்றும் பச் வெளியீடுகள் வெளிப்புற கலவைகளுக்கானது. அவை போச்ட் ஃபேடர் மற்றும் விளைவுகள் மற்றும் கிராச்ஃபேடர் (ஆட்டோ டிசேக்கு) ஆகியவை அடங்கும். வெளிப்புற கலவைக்கு, அனைத்து Mixxx ஃபேடர்கள் மற்றும் EQ கைப்பிடிகள் அவற்றின் இயல்பு நிலைக்கு அமைக்கப்பட்டுள்ளதா என்பதை உறுதிப்படுத்தவும் (வலது அல்லது இருமுறை சொடுக்கு செய்யவும்).</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="421"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="425"/>
         <source>20 ms</source>
         <translation>20 எம்.எச்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="428"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="432"/>
         <source>Buffer Underflow Count</source>
         <translation>பஃபர் அண்டர்ஃப்ளோ எண்ணிக்கை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="438"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="442"/>
         <source>0</source>
         <translation>0</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="88"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="449"/>
+        <source>Reset</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="92"/>
         <source>Keylock/Pitch-Bending Engine</source>
         <translation>கீலாக்/பிட்ச்-வளைக்கும் இயந்திரம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="64"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="68"/>
         <source>Multi-Soundcard Synchronization</source>
         <translation>பல ஒலி அட்டை ஒத்திசைவு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="296"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="300"/>
         <source>Output</source>
         <translation>வெளியீடு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="323"/>
         <source>Input</source>
         <translation>உள்ளீடு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="411"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="415"/>
         <source>System Reported Latency</source>
         <translation>கணினி அறிக்கை நேரந்தவறுகை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="364"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="368"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
         <translation>அண்டர்ஃப்ளோ கவுண்டர் அதிகமாகினாலோ அல்லது பிளேபேக்கின் போது பாப்ச் கேட்டாலோ உங்கள் ஆடியோ பஃபரை பெரிதாக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="157"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="161"/>
         <source>Main Output Delay</source>
         <translation>முக்கிய வெளியீடு நேரந்தவறுகை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="180"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="184"/>
         <source>Headphone Output Delay</source>
         <translation>எட்ஃபோன் வெளியீடு நேரந்தவறுகை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="203"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="207"/>
         <source>Booth Output Delay</source>
         <translation>பூத் வெளியீடு நேரந்தவறுகை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="244"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="248"/>
         <source>Dual-threaded Stereo</source>
         <translation>இரட்டை-திரிக்கப்பட்ட ச்டீரியோ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="345"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="349"/>
         <source>Hints and Diagnostics</source>
         <translation>குறிப்புகள் மற்றும் நோய் கண்டறிதல்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="374"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="378"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
         <translation>Mixxx இன் வினைத்திறனை மேம்படுத்த, உங்கள் ஆடியோ பஃப்பரைக் குறைக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="264"/>
+        <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="268"/>
         <source>Query Devices</source>
         <translation>வினவல் சாதனங்கள்</translation>
     </message>
 </context>
 <context>
     <name>DlgPrefSoundItem</name>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="106"/>
-        <source>Channel %1</source>
-        <translation>சேனல்% 1</translation>
-    </message>
-    <message>
-        <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="108"/>
-        <source>Channels %1 - %2</source>
-        <translation>சேனல்கள்% 1 -% 2</translation>
-    </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.ui" line="14"/>
         <source>Sound Item Preferences</source>
@@ -8453,17 +8537,27 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>முழு அலைவடிவ பார்வையாளர்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="303"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="102"/>
+        <source>Overlapping</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="103"/>
+        <source>Stacked</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="310"/>
         <source>OpenGL not available</source>
         <translation>OpenGL கிடைக்கவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="735"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="747"/>
         <source>dropped frames</source>
         <translation>கைவிடப்பட்ட பிரேம்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="803"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="819"/>
         <source>Cached waveforms occupy %1 on disk.</source>
         <translation type="unfinished"/>
     </message>
@@ -8481,17 +8575,17 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>பிரேம் வீதம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="831"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="851"/>
         <source>OpenGL Status</source>
         <translation>OpenGL நிலை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="843"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="863"/>
         <source>Displays which OpenGL version is supported by the current platform.</source>
         <translation>தற்போதைய இயங்குதளத்தால் எந்த OpenGL பதிப்பு ஆதரிக்கப்படுகிறது என்பதைக் காட்டுகிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="862"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="882"/>
         <source>Average frame rate</source>
         <translation>சராசரி பிரேம் வீதம்</translation>
     </message>
@@ -8507,7 +8601,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>இயல்புநிலை சூம் நிலை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="872"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="892"/>
         <source>Displays the actual frame rate.</source>
         <translation>உண்மையான பிரேம் வீதத்தைக் காட்டுகிறது.</translation>
     </message>
@@ -8542,7 +8636,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>குறைந்த</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="731"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="751"/>
         <source>Show minute markers on waveform overview</source>
         <translation>அலைவடிவ மேலோட்டத்தில் நிமிட குறிப்பான்களைக் காட்டு</translation>
     </message>
@@ -8587,7 +8681,7 @@ The loudness target is approximate and assumes track pregain and main output lev
         <translation>உலகளாவிய காட்சி ஆதாயம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="714"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="734"/>
         <source>The waveform overview shows the waveform envelope of the entire track.
 Select from different types of displays for the waveform overview, which differ primarily in the level of detail shown in the waveform.</source>
         <translation>அலைவடிவ மேலோட்டம் முழு பாதையின் அலைவடிவ உறையையும் காட்டுகிறது. 
@@ -8656,22 +8750,22 @@ Select from different types of displays for the waveform, which differ primarily
         <translation>pt</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="774"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="794"/>
         <source>Caching</source>
         <translation>கேச்சிங்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="794"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="814"/>
         <source>Mixxx caches the waveforms of your tracks on disk the first time you load a track. This reduces CPU usage when you are playing live but requires extra disk space.</source>
         <translation>மிக்ச்எக்ச்எக்ச் உங்கள் டிராக்குகளின் அலைவடிவங்களை முதல்முறையாக நீங்கள் டிராக்கை ஏற்றும்போது வட்டில் சேமிக்கிறது. நீங்கள் நேரலையில் விளையாடும்போது இது சிபியு பயன்பாட்டைக் குறைக்கிறது ஆனால் கூடுதல் வட்டு இடம் தேவைப்படுகிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="780"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="800"/>
         <source>Enable waveform caching</source>
         <translation>அலைவடிவ தேக்ககத்தை இயக்கு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="787"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="807"/>
         <source>Generate waveforms when analyzing library</source>
         <translation>நூலகத்தை பகுப்பாய்வு செய்யும் போது அலைவடிவங்களை உருவாக்கவும்</translation>
     </message>
@@ -8687,7 +8781,7 @@ Select from different types of displays for the waveform, which differ primarily
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="45"/>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="707"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="727"/>
         <source>Type</source>
         <translation>வகை</translation>
     </message>
@@ -8732,48 +8826,58 @@ Select from different types of displays for the waveform, which differ primarily
         <translation>சேனல் ஒளிபுகாநிலை (அவுட்லைன்)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="637"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="636"/>
+        <source>Display mode</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="650"/>
         <source>Main stem opacity</source>
         <translation>முக்கிய தண்டு ஒளிபுகாநிலை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="656"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="669"/>
         <source>Outline stem opacity</source>
         <translation>அவுட்லைன் தண்டு ஒளிபுகா</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="675"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="688"/>
+        <source>Select the display layout for stem waveforms</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="695"/>
         <source>Move channel to foreground when volume is adjusted</source>
         <translation>வால்யூம் சரிசெய்யப்படும்போது சேனலை முன்புறத்திற்கு நகர்த்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="697"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="717"/>
         <source>Overview Waveforms</source>
         <translation>கண்ணோட்டம் அலைவடிவங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="723"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="743"/>
         <source>Stereo mode</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="742"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="762"/>
         <source>Gain</source>
         <translation>பெருக்கம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="749"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="769"/>
         <source>Normalize to peak</source>
         <translation>உச்சநிலைக்கு இயல்பாக்குங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="759"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="779"/>
         <source>Use Waveform &quot;Global&quot; gain and ReplayGain (if enabled)</source>
         <extracomment>'Global' refers to the 'Global' visual gain in the scrolling waveform settings</extracomment>
         <translation>அலைவடிவம், அலைப்படம் &quot;Global&quot; ஆதாயம் மற்றும் ReplayGain (இயக்கப்பட்டிருந்தால்) பயன்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="820"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="840"/>
         <source>Clear Cached Waveforms</source>
         <translation>தேக்ககப்படுத்தப்பட்ட அலைவடிவங்களை அழிக்கவும்</translation>
     </message>
@@ -8781,122 +8885,122 @@ Select from different types of displays for the waveform, which differ primarily
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="106"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="112"/>
         <source>Sound Hardware</source>
         <translation>ஒலி வன்பொருள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="125"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="131"/>
         <source>Controllers</source>
         <translation>கட்டுப்படுத்திகள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="116"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="122"/>
         <source>Library</source>
         <translation>நூலகம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="159"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="169"/>
         <source>Interface</source>
         <translation>இடைமுகம்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="167"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="178"/>
         <source>Waveforms</source>
         <translation>அலைவடிவங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="186"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="197"/>
         <source>Mixer</source>
         <translation>கலப்பி</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="198"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="209"/>
         <source>Auto DJ</source>
         <translation>ஆட்டோ டி.சே</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="180"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="191"/>
         <source>Decks</source>
         <translation>அடுக்குகள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="174"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="185"/>
         <source>Colors</source>
         <translation>நிறங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="69"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
         <source>&amp;Help</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>உதவி (&amp;h)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="71"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
         <source>&amp;Restore Defaults</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;இயல்புநிலைகளை மீட்டமை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="73"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="79"/>
         <source>&amp;Apply</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;விண்ணப்பிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="81"/>
         <source>&amp;Cancel</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>ரத்துசெய் (&amp;c)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="83"/>
         <source>&amp;Ok</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>சரி (&amp;o)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="192"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="203"/>
         <source>Effects</source>
         <translation>விளைவுகள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="212"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="223"/>
         <source>Recording</source>
         <translation>பதிவு செய்தல்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="218"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="229"/>
         <source>Beat Detection</source>
         <translation>பீட் கண்டறிதல்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="224"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="235"/>
         <source>Key Detection</source>
         <translation>முக்கிய கண்டறிதல்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="229"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="240"/>
         <source>Normalization</source>
         <translation>இயல்பாக்குதல்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="253"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="264"/>
         <source>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Some preferences pages have errors. To apply the changes please first fix the issues.&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;சில விருப்பத்தேர்வுகள் பக்கங்களில் பிழைகள் உள்ளன. மாற்றங்களைப் பயன்படுத்த, முதலில் சிக்கல்களைச் சரிசெய்யவும்.&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="134"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="140"/>
         <source>Vinyl Control</source>
         <translation>வினைல் கட்டுப்பாடு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="205"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="216"/>
         <source>Live Broadcasting</source>
         <translation>நேரடி ஒளிபரப்பு</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="236"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="247"/>
         <source>Modplug Decoder</source>
         <translation>மோட்ப்ளக் டிகோடர்</translation>
     </message>
@@ -8929,22 +9033,22 @@ Select from different types of displays for the waveform, which differ primarily
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="56"/>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="140"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="146"/>
         <source>Start Recording</source>
         <translation>பதிவைத் தொடங்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="95"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="96"/>
         <source>Recording to file:</source>
         <translation>கோப்பில் பதிவு செய்தல்:</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="134"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="140"/>
         <source>Stop Recording</source>
         <translation>பதிவு செய்வதை நிறுத்து</translation>
     </message>
     <message>
-        <location filename="../../src/library/recording/dlgrecording.cpp" line="165"/>
+        <location filename="../../src/library/recording/dlgrecording.cpp" line="171"/>
         <source>%1 written in %2</source>
         <translation type="unfinished"/>
     </message>
@@ -9255,230 +9359,230 @@ This can not be undone!</source>
         <translation>சுருக்கம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="590"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="589"/>
         <source>Filetype:</source>
         <translation>கோப்பு வகை:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="614"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="613"/>
         <source>BPM:</source>
         <translation>பிபிஎம்:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="755"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="757"/>
         <source>Location:</source>
         <translation>இடம்:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="638"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="637"/>
         <source>Bitrate:</source>
         <translation>பிட்ரேட்:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="480"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="479"/>
         <source>Comments</source>
         <translation>கருத்துகள்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="811"/>
         <source>BPM</source>
         <translation>பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="927"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
         <source>Sets the BPM to 75% of the current value.</source>
         <translation>BPMஐ தற்போதைய மதிப்பில் 75% ஆக அமைக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="930"/>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="748"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="916"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="744"/>
         <source>3/4 BPM</source>
         <translation>3/4 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="887"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="873"/>
         <source>Sets the BPM to 50% of the current value.</source>
         <translation>BPMஐ தற்போதைய மதிப்பில் 50% ஆக அமைக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="849"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="835"/>
         <source>Displays the BPM of the selected track.</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட பாதையின் BPM ஐக் காட்டுகிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="308"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="307"/>
         <source>Track #</source>
         <translation>தடம் #</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="187"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="186"/>
         <source>Album Artist</source>
         <translation>ஆல்பம் கலைஞர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="233"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="232"/>
         <source>Composer</source>
         <translation>இசையமைப்பாளர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="69"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="68"/>
         <source>Title</source>
         <translation>தலைப்பு</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="335"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="334"/>
         <source>Grouping</source>
         <translation>குழுவாக்கம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="362"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="361"/>
         <source>Key</source>
         <translation>முக்கிய</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="260"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="259"/>
         <source>Year</source>
         <translation>ஆண்டு</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="121"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="120"/>
         <source>Artist</source>
         <translation>கலைஞர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="154"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="153"/>
         <source>Album</source>
         <translation>ஆல்பம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="281"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="280"/>
         <source>Genre</source>
         <translation>வகை</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="662"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="661"/>
         <source>ReplayGain:</source>
         <translation>ரீப்ளே ஆதாயம்:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="897"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="883"/>
         <source>Sets the BPM to 200% of the current value.</source>
         <translation>BPMஐ தற்போதைய மதிப்பில் 200% ஆக அமைக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="900"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="886"/>
         <source>Double BPM</source>
         <translation>இரட்டை பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="890"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="876"/>
         <source>Halve BPM</source>
         <translation>பாதி பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="994"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>BPM மற்றும் Beatgrid ஐ அழிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1039"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1025"/>
         <source>Move to the previous item.</source>
         <extracomment>&quot;Previous&quot; button</extracomment>
         <translation>முந்தைய உருப்படிக்குச் செல்லவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1042"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1028"/>
         <source>&amp;Previous</source>
         <translation>&amp;முந்தைய</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1055"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1041"/>
         <source>Move to the next item.</source>
         <extracomment>&quot;Next&quot; button</extracomment>
         <translation>அடுத்த உருப்படிக்குச் செல்லவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1058"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1044"/>
         <source>&amp;Next</source>
         <translation>&amp;அடுத்து</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="566"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="565"/>
         <source>Duration:</source>
         <translation>காலம்:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="535"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="534"/>
         <source>Import Metadata from MusicBrainz</source>
         <translation>MusicBrainz இலிருந்து மெட்டாடேட்டாவை இறக்குமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="542"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="541"/>
         <source>Re-Import Metadata from file</source>
         <translation>கோப்பிலிருந்து மெட்டாடேட்டாவை மீண்டும் இறக்குமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="498"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="497"/>
         <source>Color</source>
         <translation>நிறம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="707"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="709"/>
         <source>Date added:</source>
         <translation>சேர்க்கப்பட்ட தேதி:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="781"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="783"/>
         <source>Open in File Browser</source>
         <translation>கோப்பு உலாவியில் திறக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="686"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="685"/>
         <source>Samplerate:</source>
         <translation>மாதிரி:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="402"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="401"/>
         <source>Tuning</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="419"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="418"/>
         <source>A4 tuning frequency in Hz. Standard tuning is 440 Hz.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="422"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="421"/>
         <source> Hz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="452"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="451"/>
         <source>Offset:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="471"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="470"/>
         <source>Offset from A440 standard tuning in cents.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="731"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="733"/>
         <source>Filesize:</source>
         <translation>கோப்பு அளவு:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="831"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="817"/>
         <source>Lock or unlock the BPM and beatgrid for this track.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="842"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="828"/>
         <source>Track BPM: </source>
         <translation>BPM ஐக் கண்காணிக்கவும்:</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="865"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="851"/>
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
 Use this setting if your tracks have a constant tempo (e.g. most electronic music).
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
@@ -9487,140 +9591,140 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 பெரும்பாலும் உயர்தர பீட்கிரிட்களில் விளைகிறது, ஆனால் டெம்போ சிப்ட்களைக் கொண்ட டிராக்குகளில் சிறப்பாக செயல்படாது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="870"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="856"/>
         <source>Assume constant tempo</source>
         <translation>நிலையான டெம்போவைக் கருதுங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="877"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="863"/>
         <source>Scale BPM:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="907"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="893"/>
         <source>Sets the BPM to 66% of the current value.</source>
         <translation>BPMஐ தற்போதைய மதிப்பில் 66% ஆக அமைக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="910"/>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="747"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="896"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="743"/>
         <source>2/3 BPM</source>
         <translation>2/3 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="917"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="903"/>
         <source>Sets the BPM to 150% of the current value.</source>
         <translation>BPMஐ தற்போதைய மதிப்பில் 150% ஆக அமைக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="920"/>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="752"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="906"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="748"/>
         <source>3/2 BPM</source>
         <translation>3/2 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="937"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="923"/>
         <source>Sets the BPM to 133% of the current value.</source>
         <translation>BPMஐ தற்போதைய மதிப்பில் 133% ஆக அமைக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="940"/>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="751"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="926"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="747"/>
         <source>4/3 BPM</source>
         <translation>4/3 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="947"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="933"/>
         <source>Sets the BPM to 80% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="950"/>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="749"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="936"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="745"/>
         <source>4/5 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="957"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="943"/>
         <source>Sets the BPM to 125% of the current value.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="960"/>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="750"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="946"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="746"/>
         <source>5/4 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="973"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="959"/>
         <source>Tap with the beat to set the BPM to the speed you are tapping.</source>
         <translation>நீங்கள் தட்டுகின்ற வேகத்திற்கு BPM ஐ அமைக்க பீட் மூலம் தட்டவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="976"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="962"/>
         <source>Tap to Beat</source>
         <translation>அடிக்க தட்டவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1001"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="987"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
         <translation>குறிப்பு: BPM கண்டறிதலை இயக்க, நூலகப் பகுப்பாய்வுக் காட்சியைப் பயன்படுத்தவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1122"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1108"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
         <translation>மாற்றங்களைச் சேமித்து சாளரத்தை மூடு.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1125"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1111"/>
         <source>&amp;OK</source>
         <translation>சரி (&amp;o)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1084"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1070"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>மாற்றங்களை நிராகரித்து சாளரத்தை மூடு.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1103"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1089"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>மாற்றங்களைச் சேமித்து சாளரத்தைத் திறந்து வைக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1106"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1092"/>
         <source>&amp;Apply</source>
         <translation>&amp;விண்ணப்பிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.ui" line="1087"/>
+        <location filename="../../src/library/dlgtrackinfo.ui" line="1073"/>
         <source>&amp;Cancel</source>
         <translation>ரத்துசெய் (&amp;c)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="490"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="486"/>
         <source>Unlock BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="490"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="486"/>
         <source>Lock BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="639"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="635"/>
         <source>(no color)</source>
         <translation>(நிறம் இல்லை)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="746"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="742"/>
         <source>1/2 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="753"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="749"/>
         <source>2x BPM</source>
         <translation type="unfinished"/>
     </message>
@@ -9733,51 +9837,51 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation>கோப்பு உலாவியில் திறக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="655"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="641"/>
         <source>Discard changes and reload saved values.</source>
         <extracomment>&quot;Reset&quot; button</extracomment>
         <translation>மாற்றங்களை நிராகரித்து, சேமித்த மதிப்புகளை மீண்டும் ஏற்றவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="658"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="644"/>
         <source>&amp;Reset</source>
         <translation>&amp;மீட்டமை</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="684"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="670"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
         <translation>மாற்றங்களை நிராகரித்து சாளரத்தை மூடு.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="687"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="673"/>
         <source>&amp;Cancel</source>
         <translation>ரத்துசெய் (&amp;c)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="703"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="689"/>
         <source>Save changes and keep the window open.</source>
         <extracomment>&quot;Apply&quot; button</extracomment>
         <translation>மாற்றங்களைச் சேமித்து சாளரத்தைத் திறந்து வைக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="706"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="692"/>
         <source>&amp;Apply</source>
         <translation>&amp;விண்ணப்பிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="722"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="708"/>
         <source>Save changes and close the window.</source>
         <extracomment>&quot;OK&quot; button</extracomment>
         <translation>மாற்றங்களைச் சேமித்து சாளரத்தை மூடு.</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.ui" line="725"/>
+        <location filename="../../src/library/dlgtrackinfomulti.ui" line="711"/>
         <source>&amp;OK</source>
         <translation>சரி (&amp;o)</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1038"/>
+        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1063"/>
         <source>(no color)</source>
         <translation>(நிறம் இல்லை)</translation>
     </message>
@@ -9943,12 +10047,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EffectManifestTableModel</name>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="46"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="49"/>
         <source>Type</source>
         <translation>வகை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="48"/>
+        <location filename="../../src/preferences/effectmanifesttablemodel.cpp" line="51"/>
         <source>Name</source>
         <translation>பெயர்</translation>
     </message>
@@ -9979,55 +10083,60 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>EngineBuffer</name>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="178"/>
-        <source>Soundtouch (faster)</source>
-        <translation>சவுண்ட்டச் (வேகமாக)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="180"/>
+        <source>Soundtouch (fastest, low quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="181"/>
-        <source>Rubberband (better)</source>
-        <translation>ரப்பர்பேண்ட் (சிறந்தது)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="183"/>
+        <source>Rubberband (fast, medium quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="184"/>
-        <source>Rubberband R3 (near-hi-fi quality)</source>
-        <translation>ரப்பர்பேண்ட் R3 (ஐ-ஃபை தரத்திற்கு அருகில்)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="186"/>
+        <source>Rubberband R3 MW (slow, highest quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="190"/>
-        <source>Unknown, using Rubberband (better)</source>
-        <translation>தெரியவில்லை, ரப்பர்பேண்டைப் பயன்படுத்துதல் (சிறந்தது)</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="191"/>
+        <source>Rubberband R3 SW (fast, high quality)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="192"/>
-        <source>Unknown, using Soundtouch</source>
-        <translation>தெரியவில்லை, சவுண்ட்டச் பயன்படுத்துகிறது</translation>
+        <location filename="../../src/engine/enginebuffer.h" line="197"/>
+        <source>Unknown, using Rubberband (fast, medium quality)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/enginebuffer.h" line="199"/>
+        <source>Unknown, using Soundtouch (fastest, low quality)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>ErrorDialogHandler</name>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="104"/>
+        <location filename="../../src/errordialoghandler.cpp" line="105"/>
         <source>Fatal error</source>
         <translation>கொடிய பிழை</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="105"/>
+        <location filename="../../src/errordialoghandler.cpp" line="106"/>
         <source>Critical error</source>
         <translation>முக்கியமான பிழை</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="106"/>
+        <location filename="../../src/errordialoghandler.cpp" line="107"/>
         <source>Warning</source>
         <translation>எச்சரிக்கை</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="107"/>
+        <location filename="../../src/errordialoghandler.cpp" line="108"/>
         <source>Information</source>
         <translation>தகவல்</translation>
     </message>
     <message>
-        <location filename="../../src/errordialoghandler.cpp" line="108"/>
+        <location filename="../../src/errordialoghandler.cpp" line="109"/>
         <source>Question</source>
         <translation>கேள்வி</translation>
     </message>
@@ -10184,6 +10293,14 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     </message>
 </context>
 <context>
+    <name>KeyboardEventFilter</name>
+    <message>
+        <location filename="../../src/controllers/keyboard/keyboardeventfilter.cpp" line="377"/>
+        <source>Shortcut</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>LegacyControllerColorSetting</name>
     <message>
         <location filename="../../src/controllers/legacycontrollersettings.cpp" line="428"/>
@@ -10218,15 +10335,15 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1412"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1502"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1422"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1512"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>பாதுகாப்பான பயன்முறை இயக்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1422"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1510"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1432"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1520"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -10238,95 +10355,110 @@ Shown when VuMeter can not be displayed. Please keep
 உதவி.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2593"/>
-        <source>activate</source>
-        <translation>செயல்படுத்து</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2598"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2635"/>
         <source>toggle</source>
         <translation>மாற்று</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2609"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2602"/>
         <source>right</source>
         <translation>வலது</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2614"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2596"/>
         <source>left</source>
         <translation>இடது</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2619"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2605"/>
         <source>right small</source>
         <translation>சரியான சிறிய</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2624"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2623"/>
+        <source>set default</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2626"/>
+        <source>set -1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2629"/>
+        <source>set 0</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2632"/>
+        <source>set 1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2638"/>
+        <source>minus toggle</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2599"/>
         <source>left small</source>
         <translation>சிறிய விட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2629"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2615"/>
         <source>up</source>
         <translation>மேலே</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2634"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2609"/>
         <source>down</source>
         <translation>கீழே</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2639"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2618"/>
         <source>up small</source>
         <translation>சிறியது</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2644"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2612"/>
         <source>down small</source>
         <translation>கீழே சிறியது</translation>
-    </message>
-    <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2661"/>
-        <source>Shortcut</source>
-        <translation>குறுக்குவழி</translation>
     </message>
 </context>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="625"/>
+        <location filename="../../src/library/library.cpp" line="636"/>
         <source>This or a parent directory is already in your library.</source>
         <translation>இது அல்லது பெற்றோர் கோப்பகம் ஏற்கனவே உங்கள் நூலகத்தில் உள்ளது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="628"/>
+        <location filename="../../src/library/library.cpp" line="639"/>
         <source>This or a listed directory does not exist or is inaccessible.
 Aborting the operation to avoid library inconsistencies</source>
         <translation>இது அல்லது பட்டியலிடப்பட்ட கோப்பகம் இல்லை அல்லது அணுக முடியாதது. 
 நூலக முரண்பாடுகளைத் தவிர்க்க செயல்பாட்டை நிறுத்துதல்</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="633"/>
-        <location filename="../../src/library/library.cpp" line="706"/>
+        <location filename="../../src/library/library.cpp" line="644"/>
+        <location filename="../../src/library/library.cpp" line="717"/>
         <source>This directory can not be read.</source>
         <translation>இந்தக் கோப்பகத்தைப் படிக்க முடியாது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="637"/>
+        <location filename="../../src/library/library.cpp" line="648"/>
         <source>An unknown error occurred.
 Aborting the operation to avoid library inconsistencies</source>
         <translation>அறியப்படாத பிழை ஏற்பட்டது. 
 நூலக முரண்பாடுகளைத் தவிர்க்க செயல்பாட்டை நிறுத்துதல்</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="646"/>
+        <location filename="../../src/library/library.cpp" line="657"/>
         <source>Can&apos;t add Directory to Library</source>
         <translation>நூலகத்தில் கோப்பகத்தைச் சேர்க்க முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="647"/>
+        <location filename="../../src/library/library.cpp" line="658"/>
         <source>Could not add &lt;b&gt;%1&lt;/b&gt; to your library.
 
 %2</source>
@@ -10335,27 +10467,27 @@ Aborting the operation to avoid library inconsistencies</source>
 % 2</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="664"/>
+        <location filename="../../src/library/library.cpp" line="675"/>
         <source>Can&apos;t remove Directory from Library</source>
         <translation>நூலகத்திலிருந்து கோப்பகத்தை அகற்ற முடியாது</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="665"/>
+        <location filename="../../src/library/library.cpp" line="676"/>
         <source>An unknown error occurred.</source>
         <translation>அறியப்படாத பிழை ஏற்பட்டது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="702"/>
+        <location filename="../../src/library/library.cpp" line="713"/>
         <source>This directory does not exist or is inaccessible.</source>
         <translation>இந்த அடைவு இல்லை அல்லது அணுக முடியாதது.</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="714"/>
+        <location filename="../../src/library/library.cpp" line="725"/>
         <source>Relink Directory</source>
         <translation>கோப்பகத்தை மீண்டும் இணைக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="715"/>
+        <location filename="../../src/library/library.cpp" line="726"/>
         <source>Could not relink &lt;b&gt;%1&lt;/b&gt; to &lt;b&gt;%2&lt;/b&gt;.
 
 %3</source>
@@ -10419,6 +10551,11 @@ Do you really want to overwrite it?</source>
         <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="133"/>
         <source>Scanning cover art (safe to cancel)</source>
         <translation>ச்கேனிங் கவர் ஆர்ட் (ரத்து செய்ய பாதுகாப்பானது)</translation>
+    </message>
+    <message>
+        <location filename="../../src/library/scanner/libraryscannerdlg.cpp" line="145"/>
+        <source>Looking for substitute for</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -10528,7 +10665,7 @@ Do you really want to overwrite it?</source>
         <translation>இன்சின் DJ க்கு ஏற்றுமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="162"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="176"/>
         <source>Tracks</source>
         <translation>தடங்கள்</translation>
     </message>
@@ -10536,263 +10673,263 @@ Do you really want to overwrite it?</source>
 <context>
     <name>MixxxMainWindow</name>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="674"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="695"/>
         <source>Sound Device Busy</source>
         <translation>ஒலி சாதனம் பிசி</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="683"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="704"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after closing the other application or reconnecting a sound device</source>
         <translation>மற்ற பயன்பாட்டை மூடிய பிறகு அல்லது ஒலி சாதனத்தை மீண்டும் இணைத்த பிறகு &lt;b&gt;மீண்டும் முயற்சிக்கவும்&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="687"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="714"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="738"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="708"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="735"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="759"/>
         <source>&lt;b&gt;Reconfigure&lt;/b&gt; Mixxx&apos;s sound device settings.</source>
         <translation>Mixxx இன் ஒலி சாதன அமைப்புகளை &lt;b&gt;மறுகட்டமைக்கவும்&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="690"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="717"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="711"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="738"/>
         <source>Get &lt;b&gt;Help&lt;/b&gt; from the Mixxx Wiki.</source>
         <translation>Mixxx விக்கியில் இருந்து &lt;b&gt;உதவி&lt;/b&gt; பெறவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="693"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="720"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="714"/>
         <location filename="../../src/mixxxmainwindow.cpp" line="741"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="762"/>
         <source>&lt;b&gt;Exit&lt;/b&gt; Mixxx.</source>
         <translation>&lt;b&gt;வெளியேறு&lt;/b&gt; Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="634"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="655"/>
         <source>Retry</source>
         <translation>மீண்டும் முயற்சிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="228"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="243"/>
         <source>skin</source>
         <translation>தோல்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="587"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="608"/>
         <source>Allow Mixxx to hide the menu bar?</source>
         <translation>Allow Mixxx பெறுநர் மறை the பட்டியல் bar?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="589"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="610"/>
         <source>Hide</source>
         <extracomment>Always show the menu bar?</extracomment>
         <translation>மறை</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="590"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="611"/>
         <source>Always show</source>
         <translation>எப்போதும் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="593"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="614"/>
         <source>The Mixxx menu bar is hidden and can be toggled with a single press of the &lt;b&gt;Alt&lt;/b&gt; key.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%1&lt;/b&gt; to agree.&lt;br&gt;&lt;br&gt;Click &lt;b&gt;%2&lt;/b&gt; to disable that, for example if you don&apos;t use Mixxx with a keyboard.&lt;br&gt;&lt;br&gt;You can change this setting any time in Preferences -&gt; Interface.&lt;br&gt;</source>
         <extracomment>Keep formatting tags &lt;b&gt; (bold text) and &lt;br&gt; (linebreak). %1 is the placeholder for the 'Always show' button label</extracomment>
         <translation>Mixxx பட்டியல் பட்டி மறைக்கப்பட்டுள்ளது மற்றும் &lt;b&gt;Alt&lt;/b&gt; விசையை ஒருமுறை அழுத்துவதன் மூலம் மாற்றலாம்.&lt;br&gt;&lt;br&gt;ஒப்புக்கொள்ள &lt;b&gt;%1&lt;/b&gt; ஐ சொடுக்கு செய்யவும்.&lt;br&gt;&lt;br&gt;அதை முடக்க &lt;b&gt;%2&lt;/b&gt; ஐ சொடுக்கு செய்யவும், எடுத்துக்காட்டாக, நீங்கள் Mixxx விசைப்பலகையைப் பயன்படுத்தவில்லை என்றால்.&lt;br&gt;&lt;br&gt;இன்டர்ஃபேச் அமைப்பை நீங்கள் எப்போது வேண்டுமானாலும் மாற்றலாம்&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="608"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="629"/>
         <source>Ask me again</source>
         <translation>மீண்டும் என்னிடம் கேள்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="636"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="749"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="657"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="770"/>
         <source>Reconfigure</source>
         <translation>மறுகட்டமைக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="638"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="659"/>
         <source>Help</source>
         <translation>உதவி</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="640"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="751"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="661"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="772"/>
         <source>Exit</source>
         <translation>வெளியேறு</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="677"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="703"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="698"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="724"/>
         <source>Mixxx was unable to open all the configured sound devices.</source>
         <translation>Mixxx ஆல் உள்ளமைக்கப்பட்ட அனைத்து ஒலி சாதனங்களையும் திறக்க முடியவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="701"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="722"/>
         <source>Sound Device Error</source>
         <translation>ஒலி சாதனப் பிழை</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="711"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="732"/>
         <source>&lt;b&gt;Retry&lt;/b&gt; after fixing an issue</source>
         <translation>சிக்கலைச் சரிசெய்த பிறகு &lt;b&gt;மீண்டும் முயற்சிக்கவும்&lt;/b&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="729"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="750"/>
         <source>No Output Devices</source>
         <translation>வெளியீடு சாதனங்கள் இல்லை</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="731"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="752"/>
         <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
         <translation>Mixxx எந்த வெளியீட்டு ஒலி சாதனங்களும் இல்லாமல் கட்டமைக்கப்பட்டது. உள்ளமைக்கப்பட்ட வெளியீட்டு சாதனம் இல்லாமல் ஆடியோ செயலாக்கம் முடக்கப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="735"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="756"/>
         <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
         <translation>எந்த வெளியீடுகளும் இல்லாமல் &lt;b&gt;தொடரவும்&lt;/b&gt;.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="747"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="768"/>
         <source>Continue</source>
         <translation>தொடரவும்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1034"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1048"/>
         <source>Load track to Deck %1</source>
         <translation>டெக்% 1க்கு தடத்தை ஏற்றவும்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1035"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1049"/>
         <source>Deck %1 is currently playing a track.</source>
         <translation>Deck% 1 தற்போது ஒரு தடத்தை இயக்குகிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1037"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1051"/>
         <source>Are you sure you want to load a new track?</source>
         <translation>நிச்சயமாக புதிய டிராக்கை ஏற்ற விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1135"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1149"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>இந்த வினைல் கட்டுப்பாட்டிற்கு உள்ளீட்டு சாதனம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை. 
 முதலில் ஒலி வன்பொருள் விருப்பத்தேர்வுகளில் உள்ளீட்டு சாதனத்தைத் தேர்ந்தெடுக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1162"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1176"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation>இந்த பாச்த்ரூ கட்டுப்பாட்டிற்கு உள்ளீட்டு சாதனம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை. 
 முதலில் ஒலி வன்பொருள் விருப்பத்தேர்வுகளில் உள்ளீட்டு சாதனத்தைத் தேர்ந்தெடுக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1189"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1203"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation>இந்த மைக்ரோஃபோனுக்கு உள்ளீட்டு சாதனம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை. 
 உள்ளீட்டு சாதனத்தைத் தேர்ந்தெடுக்க விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1216"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1230"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation>இந்த துணைக்கு உள்ளீட்டு சாதனம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை. 
 உள்ளீட்டு சாதனத்தைத் தேர்ந்தெடுக்க விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1256"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1271"/>
         <source>No music directories configured for scanning.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1258"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1273"/>
         <source>Add directories in the library preferences.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1264"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1279"/>
         <source>Scan took %1</source>
         <translation>வருடு எடுக்கப்பட்டது% 1</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1269"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1284"/>
         <source>No changes detected.</source>
         <translation>மாற்றங்கள் எதுவும் கண்டறியப்படவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1253"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1268"/>
         <source>Library scan finished</source>
         <translation>லைப்ரரி வருடு முடிந்தது</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/mixxxmainwindow.cpp" line="1271"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1294"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1286"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1310"/>
         <source>%n track(s) in total</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/mixxxmainwindow.cpp" line="1275"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1290"/>
         <source>%n new track(s) found</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/mixxxmainwindow.cpp" line="1279"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1294"/>
         <source>%n moved track(s) detected</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/mixxxmainwindow.cpp" line="1283"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1298"/>
         <source>%n track(s) missing (%1 total)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/mixxxmainwindow.cpp" line="1289"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1305"/>
         <source>%n track(s) rediscovered</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1361"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1384"/>
         <source>Error in skin file</source>
         <translation>தோல் கோப்பில் பிழை</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1362"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1385"/>
         <source>The selected skin cannot be loaded.</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட தோலை ஏற்ற முடியாது.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1546"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1575"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL நேரடி வழங்குதல்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1547"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1576"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation>உங்கள் கணினியில் நேரடி வழங்குதல் இயக்கப்படவில்லை.&lt;br&gt;&lt;br&gt;அதாவது அலைவடிவக் காட்சிகள் மிகவும்&lt;br&gt;&lt;b&gt;மெதுவாக இருக்கும் மற்றும் உங்கள் சிபியு க்கு அதிக வரி விதிக்கலாம்&lt;/b&gt;. நேரடி ரெண்டரிங்கை இயக்குவதற்கு உங்கள்&lt;br&gt;உள்ளமைப்பைப் புதுப்பிக்கவும் அல்லது &apos;இடைமுகம்&apos; பிரிவில் அலைவடிவக் காட்சியாக&lt;br&gt;&quot;காலி&quot; என்பதைத் தேர்ந்தெடுத்து Mixxx விருப்பங்களில் அலைவடிவக் காட்சிகளை முடக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1582"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1590"/>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1599"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1611"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1619"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1628"/>
         <source>Confirm Exit</source>
         <translation>வெளியேறுவதை உறுதிப்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1583"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1612"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>ஒரு டெக் தற்போது விளையாடுகிறது. Mixxx லிருந்து வெளியேறவா?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1591"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1620"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>ஒரு மாதிரி தற்போது விளையாடுகிறது. Mixxx லிருந்து வெளியேறவா?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1600"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1629"/>
         <source>The preferences window is still open.</source>
         <translation>விருப்பத்தேர்வுகள் சாளரம் இன்னும் திறந்தே உள்ளது.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxxmainwindow.cpp" line="1601"/>
+        <location filename="../../src/mixxxmainwindow.cpp" line="1630"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>ஏதேனும் மாற்றங்களை நிராகரித்து Mixxx ஐ விட்டு வெளியேறவா?</translation>
     </message>
@@ -10803,6 +10940,19 @@ Do you want to select an input device?</source>
         <location filename="../../src/test/mock_networkaccessmanager.cpp" line="112"/>
         <source>Operation canceled</source>
         <translation>செயல்பாடு ரத்து செய்யப்பட்டது</translation>
+    </message>
+</context>
+<context>
+    <name>PipewireEnumerator</name>
+    <message>
+        <location filename="../../src/soundio/pipewireenumerator.cpp" line="840"/>
+        <source>Information</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/pipewireenumerator.cpp" line="841"/>
+        <source>PipeWire server disconnected, query devices to reconnect.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -10883,6 +11033,49 @@ Do you want to select an input device?</source>
         <location filename="../../src/library/trackset/playlistfeature.cpp" line="459"/>
         <source>Create New Playlist</source>
         <translation>புதிய பிளேலிச்ட்டை உருவாக்கவும்</translation>
+    </message>
+</context>
+<context>
+    <name>PortAudioEnumerator</name>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="81"/>
+        <source>Earpiece</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="83"/>
+        <source>Speaker</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="85"/>
+        <source>Wired headphones</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="87"/>
+        <source>Wired headset</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="89"/>
+        <source>HDMI</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="91"/>
+        <source>HDMI audio return channel</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="93"/>
+        <source>Microphone</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/soundio/portaudioenumerator.cpp" line="95"/>
+        <source>Mixed</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -10979,59 +11172,59 @@ Do you want to select an input device?</source>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="654"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="660"/>
         <source>Upgrading Mixxx</source>
         <translation>Mixxxஐ மேம்படுத்துகிறது</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="655"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="661"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>Mixxx இப்போது கவர் ஆர்ட் காட்டுவதை ஆதரிக்கிறது. 
 இப்போது உங்கள் லைப்ரரியில் கவர் கோப்புகளை வருடு செய்ய விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="658"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="664"/>
         <source>Scan</source>
         <translation>வருடு செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="659"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="665"/>
         <source>Later</source>
         <translation>பின்னர்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="668"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="674"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>v1.9.x/1.10.x இலிருந்து Mixxx ஐ மேம்படுத்துகிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="670"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="676"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>Mixxx ஒரு புதிய மற்றும் மேம்படுத்தப்பட்ட பீட் டிடெக்டரைக் கொண்டுள்ளது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="671"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="677"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation>நீங்கள் டிராக்குகளை ஏற்றும் போது, ​​Mixxx அவற்றை மீண்டும் பகுப்பாய்வு செய்து புதிய, மிகவும் துல்லியமான பீட்கிரிட்களை உருவாக்க முடியும். இது தானியங்கி பீட்சின்க் மற்றும் லூப்பிங்கை மிகவும் நம்பகமானதாக மாற்றும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="675"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="681"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>இது சேமிக்கப்பட்ட குறிப்புகள், ஆட்குகள், பிளேலிச்ட்கள் அல்லது கிரேட்சைப் பாதிக்காது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="677"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="683"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation>Mixxx உங்கள் டிராக்குகளை மீண்டும் பகுப்பாய்வு செய்ய விரும்பவில்லை என்றால், &quot;தற்போதைய பீட்கிரிட்களை வைத்திருங்கள்&quot; என்பதைத் தேர்ந்தெடுக்கவும். விருப்பத்தேர்வுகளின் &quot;பீட் கண்டறிதல்&quot; பிரிவில் இருந்து எந்த நேரத்திலும் இந்த அமைப்பை நீங்கள் மாற்றலாம்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="681"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="687"/>
         <source>Keep Current Beatgrids</source>
         <translation>தற்போதைய பீட்கிரிட்களை வைத்திருங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="682"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="688"/>
         <source>Generate New Beatgrids</source>
         <translation>புதிய பீட்கிரிட்களை உருவாக்கவும்</translation>
     </message>
@@ -11234,12 +11427,12 @@ Do you want to scan your library for cover files now?</source>
         <translation>குறியாக்கி</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="122"/>
+        <location filename="../../src/util/sandbox.cpp" line="124"/>
         <source>Mixxx Needs Access to: %1</source>
         <translation>Mixxx க்கு அணுகல் தேவை: % 1</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="125"/>
+        <location filename="../../src/util/sandbox.cpp" line="127"/>
         <source>Your permission is required to access the following location:
 
 %1
@@ -11252,17 +11445,17 @@ After clicking OK, you will see a file picker. Please select &apos;%2&apos; to p
 சரி என்பதைக் சொடுக்கு செய்த பிறகு, நீங்கள் ஒரு கோப்புத் தேர்வைக் காண்பீர்கள். தொடர, &apos;%2&apos; என்பதைத் தேர்ந்தெடுக்கவும் அல்லது Mixxx அணுகலை வழங்கவும், இந்தச் செயலை நிறுத்தவும் விரும்பவில்லை என்றால் நீக்கறல் என்பதைக் சொடுக்கு செய்யவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="163"/>
+        <location filename="../../src/util/sandbox.cpp" line="169"/>
         <source>You selected the wrong file. To grant Mixxx access, please select the file &apos;%1&apos;. If you do not want to continue, press Cancel.</source>
         <translation>தவறான கோப்பைத் தேர்ந்தெடுத்துள்ளீர்கள். Mixxx அணுகலை வழங்க, &apos;% 1&apos; கோப்பைத் தேர்ந்தெடுக்கவும். நீங்கள் தொடர விரும்பவில்லை என்றால், நீக்கறல் என்பதை அழுத்தவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="465"/>
+        <location filename="../../src/util/sandbox.cpp" line="470"/>
         <source>Upgrading old Mixxx settings</source>
         <translation>பழைய Mixxx அமைப்புகளை மேம்படுத்துகிறது</translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="468"/>
+        <location filename="../../src/util/sandbox.cpp" line="473"/>
         <source>Due to macOS sandboxing, Mixxx needs your permission to access your music library and settings from Mixxx versions before 2.3.0. After clicking OK, you will see a file selection dialog. 
 
 To allow Mixxx to use your old library and settings, click the Open button in the file selection dialog. Mixxx will then move your old settings into the sandbox. This only needs to be done once.
@@ -11273,6 +11466,11 @@ If you do not want to grant Mixxx access, click Cancel on the file picker. Mixxx
 உங்கள் பழைய நூலகம் மற்றும் அமைப்புகளைப் பயன்படுத்த Mixxx ஐ அனுமதிக்க, கோப்பு தேர்வு உரையாடலில் உள்ள திற பொத்தானைக் சொடுக்கு செய்யவும். Mixxx உங்கள் பழைய அமைப்புகளை சாண்ட்பாக்சில் நகர்த்தும். இதை ஒரு முறை மட்டுமே செய்ய வேண்டும். 
 
 நீங்கள் Mixxx அணுகலை வழங்க விரும்பவில்லை என்றால், கோப்பு தேர்வியில் நீக்கறல் என்பதைக் சொடுக்கு செய்யவும். Mixxx ஒரு புதிய இசை நூலகத்தை உருவாக்கி இயல்புநிலை அமைப்புகளைப் பயன்படுத்தும்.</translation>
+    </message>
+    <message>
+        <location filename="../../src/util/sandbox.cpp" line="583"/>
+        <source>Mixxx needs access to the settings folder</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/bitcrushereffect.cpp" line="26"/>
@@ -11688,6 +11886,10 @@ Disable to set a manual rate with the BPM knob.</source>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/autogaincontroleffect.cpp" line="64"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="23"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="24"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="32"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="33"/>
         <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="232"/>
         <location filename="../../src/effects/backends/builtin/keycomparisoneffect.cpp" line="233"/>
         <location filename="../../src/effects/backends/builtin/metronomeeffect.cpp" line="117"/>
@@ -12016,46 +12218,6 @@ Higher values result in less attenuation of high frequencies.</source>
         <location filename="../../src/widget/wbattery.cpp" line="81"/>
         <source>%1:%2</source>
         <translation>% 1:% 2</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="34"/>
-        <source>Ctrl+t</source>
-        <translation>Ctrl+t</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="35"/>
-        <source>Ctrl+y</source>
-        <translation>Ctrl+y</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="36"/>
-        <source>Ctrl+u</source>
-        <translation>Ctrl+u</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="37"/>
-        <source>Ctrl+i</source>
-        <translation>Ctrl+i</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="45"/>
-        <source>Ctrl+o</source>
-        <translation>Ctrl+o</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="46"/>
-        <source>Ctrl+Shift+O</source>
-        <translation>Ctrl+Shift+O</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="53"/>
-        <source>Ctrl+,</source>
-        <translation>Ctrl+,</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="55"/>
-        <source>Ctrl+P</source>
-        <translation>Ctrl+P</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/bessel8lvmixeqeffect.cpp" line="17"/>
@@ -12500,13 +12662,13 @@ Fully right: end of the effect period</source>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="80"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="470"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="485"/>
         <source> encoder failure</source>
         <translation>குறியாக்கி தோல்வி</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="82"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="472"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="487"/>
         <source>Failed to apply the selected settings.</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட அமைப்புகளைப் பயன்படுத்துவதில் தோல்வி.</translation>
     </message>
@@ -12646,7 +12808,7 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
         <translation>ஆடியோ சிக்னலுக்குப் பயன்படுத்தப்படும் பெருக்கத்தின் அளவு. உயர் மட்டங்களில் ஆடியோ மிகவும் சிதைந்துவிடும்.</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="372"/>
+        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="380"/>
         <source>Passthrough</source>
         <translation>பாச்த்ரூ</translation>
     </message>
@@ -12906,72 +13068,72 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
         <translation>காணவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="46"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="56"/>
         <source>Distribute stereo channels into mono channels processed in parallel.</source>
         <translation>ச்டீரியோ சேனல்களை இணையாக செயலாக்கப்பட்ட மோனோ சேனல்களில் விநியோகிக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="50"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="60"/>
         <source>Warning!</source>
         <translation>எச்சரிக்கை!</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="51"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="61"/>
         <source>Processing stereo signal as mono channel may result in pitch and tone imperfection, and this is mono-incompatible, due to third party limitations.</source>
         <translation>மோனோ சேனலாக ச்டீரியோ சிக்னலைச் செயலாக்குவது பிட்ச் மற்றும் டோன் குறைபாட்டை ஏற்படுத்தலாம், மேலும் இது மூன்றாம் தரப்பு வரம்புகள் காரணமாக மோனோ-இணக்கமற்றது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="58"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="68"/>
         <source>Dual threading mode is incompatible with mono main mix.</source>
         <translation>மோனோ மெயின் கலவையுடன் இரட்டை த்ரெடிங் பயன்முறை பொருந்தாது.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="63"/>
+        <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="73"/>
         <source>Dual threading mode is only available with RubberBand.</source>
         <translation>இரட்டை த்ரெடிங் பயன்முறை ரப்பர்பேண்டில் மட்டுமே கிடைக்கும்.</translation>
     </message>
     <message>
-        <location filename="../../src/track/steminfoimporter.cpp" line="192"/>
+        <location filename="../../src/track/steminfoimporter.cpp" line="199"/>
         <source>Stem #%1</source>
         <translation>தண்டு #% 1</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1359"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1378"/>
         <source>Empty</source>
         <translation>காலி</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1361"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1380"/>
         <source>Simple</source>
         <translation>எளிமையானது</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1363"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1382"/>
         <source>Filtered</source>
         <translation>வடிகட்டப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1365"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1384"/>
         <source>HSV</source>
         <translation>எச்.எச்.வி</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1367"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1386"/>
         <source>VSyncTest</source>
         <translation>VSyncTest</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1369"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1388"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1371"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1390"/>
         <source>Stacked</source>
         <translation>அடுக்கப்பட்ட</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1373"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1392"/>
         <source>Unknown</source>
         <translation>தெரியவில்லை</translation>
     </message>
@@ -12983,6 +13145,57 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
     <message>
         <location filename="../../src/encoder/encoder.cpp" line="174"/>
         <source>(Unknown Title)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="27"/>
+        <source>Amplifies audio by gain amount</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="34"/>
+        <source>The gain of the samples</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="43"/>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="44"/>
+        <source>Clip</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/gaineffect.cpp" line="45"/>
+        <source>Clip samples to within -1 to 1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="35"/>
+        <source>Invalid marker: </source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="39"/>
+        <source>unexpected number of arguments in endIcon: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="43"/>
+        <source>path %1 for pixmap cannot be found</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="47"/>
+        <source>path %1 for end pixmap cannot be found</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="51"/>
+        <source>path %1 for icon cannot be found</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="54"/>
+        <source>path %1 for end icon cannot be found</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -12997,32 +13210,32 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>RecordingManager</name>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="264"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="268"/>
         <source>Low Disk Space Warning</source>
         <translation>குறைந்த வட்டு இடம் முன்னறிவிப்பு</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="265"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="269"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
         <translation>ரெக்கார்டிங் கோப்புறையில் 1 சிபிக்கும் குறைவான பயன்படுத்தக்கூடிய இடம் உள்ளது</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="286"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="290"/>
         <source>Recording</source>
         <translation>பதிவு செய்தல்</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="287"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="291"/>
         <source>Could not create audio file for recording!</source>
         <translation>பதிவு செய்ய ஆடியோ கோப்பை உருவாக்க முடியவில்லை!</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="288"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="292"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>போதுமான இலவச வட்டு இடம் இருப்பதையும், ரெக்கார்டிங்ச் கோப்புறைக்கு எழுத இசைவு இருப்பதையும் உறுதிப்படுத்தவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="289"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="293"/>
         <source>You can change the location of the Recordings folder in Preferences -&gt; Recording.</source>
         <translation>விருப்பத்தேர்வுகள் -&gt; ரெக்கார்டிங் என்பதில் பதிவுகள் கோப்புறையின் இருப்பிடத்தை மாற்றலாம்.</translation>
     </message>
@@ -13242,193 +13455,193 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>ShoutConnection</name>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="77"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="82"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="84"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="89"/>
         <source>Mixxx encountered a problem</source>
         <translation>Mixxx ஒரு சிக்கலை எதிர்கொண்டது</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="78"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="85"/>
         <source>Could not allocate shout_t</source>
         <translation>shout_t ஐ ஒதுக்க முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="83"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="90"/>
         <source>Could not allocate shout_metadata_t</source>
         <translation>shout_metadata_t ஐ ஒதுக்க முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="88"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="95"/>
         <source>Error setting non-blocking mode:</source>
         <translation>தடுக்காத பயன்முறையை அமைப்பதில் பிழை:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="97"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="104"/>
         <source>Error setting tls mode:</source>
         <translation>tls பயன்முறையை அமைப்பதில் பிழை:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
         <source>Error setting hostname!</source>
         <translation>ஓச்ட்பெயரை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="299"/>
         <source>Error setting port!</source>
         <translation>போர்ட்டை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="298"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="305"/>
         <source>Error setting password!</source>
         <translation>கடவுச்சொல்லை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="304"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="311"/>
         <source>Error setting mount!</source>
         <translation>மவுண்ட் அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="310"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="317"/>
         <source>Error setting username!</source>
         <translation>பயனர்பெயரை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="315"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="322"/>
         <source>Error setting stream name!</source>
         <translation>ச்ட்ரீம் பெயரை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="320"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="329"/>
         <source>Error setting stream description!</source>
         <translation>ச்ட்ரீம் விளக்கத்தை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="325"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="334"/>
         <source>Error setting stream genre!</source>
         <translation>ச்ட்ரீம் வகையை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="330"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="339"/>
         <source>Error setting stream url!</source>
         <translation>ச்ட்ரீம் முகவரி அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="336"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="345"/>
         <source>Error setting stream IRC!</source>
         <translation>ச்ட்ரீம் IRC ஐ அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="352"/>
         <source>Error setting stream AIM!</source>
         <translation>ச்ட்ரீம் AIM ஐ அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="350"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="359"/>
         <source>Error setting stream ICQ!</source>
         <translation>ச்ட்ரீம் ICQ ஐ அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="365"/>
         <source>Error setting stream public!</source>
         <translation>ச்ட்ரீம் பொதுவை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="376"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="385"/>
         <source>Unknown stream encoding format!</source>
         <translation>அறியப்படாத ச்ட்ரீம் என்கோடிங் வடிவம்!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="377"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="386"/>
         <source>Use a libshout version with %1 enabled</source>
         <translation>%1 இயக்கப்பட்ட லிப்சவுட் பதிப்பைப் பயன்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="383"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="398"/>
         <source>Error setting stream encoding format!</source>
         <translation>ச்ட்ரீம் குறியாக்க வடிவமைப்பை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="398"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="413"/>
         <source>Broadcasting at 96 kHz with Ogg Vorbis is not currently supported. Please try a different sample rate or switch to a different encoding.</source>
         <translation>Ogg Vorbis உடன் 96 kHz இல் ஒளிபரப்பு தற்போது ஆதரிக்கப்படவில்லை. வேறு மாதிரி விகிதத்தை முயற்சிக்கவும் அல்லது வேறு குறியாக்கத்திற்கு மாறவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="401"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="416"/>
         <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
         <translation>மேலும் தகவலுக்கு https://github.com/mixxxdj/mixxx/issues/5701 ஐப் பார்க்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="410"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="425"/>
         <source>Unsupported sample rate</source>
         <translation>ஆதரிக்கப்படாத மாதிரி விகிதம்</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="419"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="434"/>
         <source>Error setting bitrate</source>
         <translation>பிட்ரேட்டை அமைப்பதில் பிழை</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="434"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="449"/>
         <source>Error: unknown server protocol!</source>
         <translation>பிழை: அறியப்படாத சர்வர் நெறிமுறை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="439"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="454"/>
         <source>Error: Shoutcast only supports MP3 and AAC encoders</source>
         <translation>பிழை: Shoutcast MP3 மற்றும் AAC குறியாக்கிகளை மட்டுமே ஆதரிக்கிறது</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="445"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="460"/>
         <source>Error setting protocol!</source>
         <translation>நெறிமுறை அமைப்பதில் பிழை!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="677"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="692"/>
         <source>Network cache overflow</source>
         <translation>பிணையம் கேச் நிரம்பி வழிகிறது</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="878"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="904"/>
         <source>Connection error</source>
         <translation>இணைப்பு பிழை</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="879"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>நேரடி ஒளிபரப்பு இணைப்புகளில் ஒன்று இந்தப் பிழையை எழுப்பியுள்ளது:&lt;br&gt;&lt;b&gt;&apos;%1&apos; இணைப்பில் பிழை:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="893"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="919"/>
         <source>Connection message</source>
         <translation>இணைப்பு செய்தி</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="894"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="920"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;நேரடி ஒளிபரப்பு இணைப்பு &apos;%1&apos; இலிருந்து செய்தி:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="944"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>ச்ட்ரீமிங் சேவையகத்திற்கான இணைப்பு இழந்தது மற்றும் மீண்டும் இணைக்க % 1 முயற்சிகள் தோல்வியடைந்தன.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="947"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="973"/>
         <source>Lost connection to streaming server.</source>
         <translation>ச்ட்ரீமிங் சேவையகத்திற்கான இணைப்பு துண்டிக்கப்பட்டது.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="952"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="978"/>
         <source>Please check your connection to the Internet.</source>
         <translation>உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="987"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1013"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>ச்ட்ரீமிங் சர்வருடன் இணைக்க முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="989"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1015"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>இணையத்துடனான உங்கள் இணைப்பைச் சரிபார்த்து, உங்கள் பயனர்பெயர் மற்றும் கடவுச்சொல் சரியானதா என்பதைச் சரிபார்க்கவும்.</translation>
     </message>
@@ -13444,23 +13657,23 @@ may introduce a &apos;pumping&apos; effect and/or distortion.</source>
 <context>
     <name>SoundManager</name>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="703"/>
-        <location filename="../../src/soundio/soundmanager.cpp" line="708"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="492"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="497"/>
         <source>a device</source>
         <translation>ஒரு சாதனம்</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="709"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="498"/>
         <source>An unknown error occurred</source>
         <translation>அறியப்படாத பிழை ஏற்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="717"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="506"/>
         <source>Two outputs cannot share channels on &quot;%1&quot;</source>
         <translation>இரண்டு வெளியீடுகள் &quot;% 1&quot; இல் சேனல்களைப் பகிர முடியாது</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="720"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="509"/>
         <source>Error opening &quot;%1&quot;</source>
         <translation>&quot;% 1&quot; திறப்பதில் பிழை</translation>
     </message>
@@ -16163,12 +16376,12 @@ EQ மற்றும் வடிகட்டி விளைவுகளுட
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="309"/>
+        <location filename="../../src/library/trackcollection.cpp" line="318"/>
         <source>Hiding tracks</source>
         <translation>தடங்களை மறைக்கிறது</translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="310"/>
+        <location filename="../../src/library/trackcollection.cpp" line="319"/>
         <source>The selected tracks are in the following playlists:%1Hiding them will remove them from these playlists. Continue?</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட ட்ராக்குகள் பின்வரும் பிளேலிச்ட்களில் உள்ளன:% 1அவற்றை மறைப்பது இந்த பிளேலிச்ட்களில் இருந்து நீக்கப்படும். தொடரவா?</translation>
     </message>
@@ -16219,7 +16432,7 @@ EQ மற்றும் வடிகட்டி விளைவுகளுட
 <context>
     <name>TrackExportWizard</name>
     <message>
-        <location filename="../../src/library/export/trackexportwizard.cpp" line="27"/>
+        <location filename="../../src/library/export/trackexportwizard.cpp" line="28"/>
         <source>Export Track Files To</source>
         <translation>ட்ராக் கோப்புகளை ஏற்றுமதி செய்யவும்</translation>
     </message>
@@ -16251,23 +16464,28 @@ EQ மற்றும் வடிகட்டி விளைவுகளுட
 <context>
     <name>TraktorFeature</name>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="110"/>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="677"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="111"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="728"/>
         <source>Traktor</source>
         <translation>டிராக்டர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="180"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="204"/>
+        <source>Select your Traktor collection</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="230"/>
         <source>(loading) Traktor</source>
         <translation>(ஏற்றுதல்) டிராக்டர்</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="671"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="722"/>
         <source>Error Loading Traktor Library</source>
         <translation>டிராக்டர் நூலகத்தை ஏற்றுவதில் பிழை</translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="672"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="723"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
         <translation>உங்கள் டிராக்டர் நூலகத்தை ஏற்றுவதில் பிழை. உங்களின் சில டிராக்டர் டிராக்குகள் அல்லது பிளேலிச்ட்கள் ஏற்றப்படாமல் இருக்கலாம்.</translation>
     </message>
@@ -16508,517 +16726,472 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WEffectSelector</name>
     <message>
-        <location filename="../../src/widget/weffectselector.cpp" line="62"/>
+        <location filename="../../src/widget/weffectselector.cpp" line="72"/>
         <source>No effect loaded.</source>
         <translation>எந்த விளைவும் ஏற்றப்படவில்லை.</translation>
     </message>
 </context>
 <context>
+    <name>WHotcueButton</name>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="141"/>
+        <source>activate</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="142"/>
+        <source>clear</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="145"/>
+        <source>set</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="147"/>
+        <source>set cue</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="149"/>
+        <source>set loop</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="151"/>
+        <source>go to</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="153"/>
+        <source>go to and play</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="155"/>
+        <source>go to and stop</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="157"/>
+        <source>go to and loop</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="159"/>
+        <source>cue loop</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="161"/>
+        <source>activat cue</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="163"/>
+        <source>activate loop</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/widget/whotcuebutton.cpp" line="165"/>
+        <source>activate preview</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>WMainMenuBar</name>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="88"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="103"/>
         <source>&amp;File</source>
         <translation>கோப்பு (&amp;f)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="93"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="108"/>
         <source>Load Track to Deck &amp;%1</source>
         <translation>ட்ராக்கை டெக்கில் ஏற்றவும் &amp;% 1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="94"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="109"/>
         <source>Loads a track in deck %1</source>
         <translation>டெக்% 1 இல் ஒரு தடத்தை ஏற்றுகிறது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="95"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="110"/>
         <source>Open</source>
         <translation>திற</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="123"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="134"/>
         <source>&amp;Exit</source>
         <translation>&amp;வெளியேறு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="124"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="135"/>
         <source>Quits Mixxx</source>
         <translation>Mixxx ஐ விட்டு வெளியேறுகிறது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="128"/>
-        <source>Ctrl+q</source>
-        <translation>Ctrl+q</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="139"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="150"/>
         <source>&amp;Library</source>
         <translation>&amp;நூலகம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="144"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="155"/>
         <source>&amp;Rescan Library</source>
         <translation>&amp;நூலகத்தை மீண்டும் வருடு செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="145"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="156"/>
         <source>Rescans library folders for changes to tracks.</source>
         <translation>டிராக்குகளில் மாற்றங்களுக்கு லைப்ரரி கோப்புறைகளை மீண்டும் வருடு செய்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="149"/>
-        <source>Ctrl+Shift+L</source>
-        <translation>Ctrl+Shift+L</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="184"/>
         <source>Search in Current View...</source>
         <translation>தற்போதைய காட்சியில் தேடவும்...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="173"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="185"/>
         <source>Search for tracks in the current library view</source>
         <translation>தற்போதைய நூலகக் காட்சியில் தடங்களைத் தேடுங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="177"/>
-        <source>Ctrl+f</source>
-        <translation>Ctrl+f</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="184"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="196"/>
         <source>Search in Tracks Library...</source>
         <translation>ட்ராக்ச் லைப்ரரியில் தேடவும்...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="186"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="198"/>
         <source>Search in the internal track collection under &quot;Tracks&quot; in the library</source>
         <translation>நூலகத்தில் &quot;தடங்கள்&quot; என்பதன் கீழ் உள்ள உள் தட சேகரிப்பில் தேடவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
-        <source>Ctrl+Shift+F</source>
-        <translation>Ctrl+Shift+F</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="200"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="212"/>
         <source>Create &amp;New Playlist</source>
         <translation>புதிய பிளேலிச்ட்டை உருவாக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="201"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
         <source>Create a new playlist</source>
         <translation>புதிய பிளேலிச்ட்டை உருவாக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="206"/>
-        <source>Ctrl+n</source>
-        <translation>Ctrl+n</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="224"/>
         <source>Create New &amp;Crate</source>
         <translation>புதிய &amp;Crate உருவாக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="214"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="225"/>
         <source>Create a new crate</source>
         <translation>புதிய பெட்டியை உருவாக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="219"/>
-        <source>Ctrl+Shift+N</source>
-        <translation>Ctrl+Shift+N</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="234"/>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="236"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="244"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="246"/>
         <source>&amp;View</source>
         <translation>காண்க (&amp;v)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="242"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="252"/>
         <source>Auto-hide menu bar</source>
         <translation>பட்டியல் பட்டியை தானாக மறை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="243"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="253"/>
         <source>Auto-hide the main menu bar when it&apos;s not used.</source>
         <translation>முதன்மையான பட்டியல் பட்டியைப் பயன்படுத்தாதபோது தானாக மறை.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="267"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="276"/>
         <source>May not be supported on all skins.</source>
         <translation>அனைத்து தோல்களிலும் ஆதரிக்கப்படாமல் இருக்கலாம்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="268"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="277"/>
         <source>Show Skin Settings Menu</source>
         <translation>தோல் அமைப்புகள் மெனுவைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="269"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="278"/>
         <source>Show the Skin Settings Menu of the currently selected Skin</source>
         <translation>தற்போது தேர்ந்தெடுக்கப்பட்ட தோலின் தோல் அமைப்புகள் மெனுவைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="276"/>
-        <source>Ctrl+1</source>
-        <comment>Menubar|View|Show Skin Settings</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="284"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="293"/>
         <source>Show Microphone Section</source>
         <translation>மைக்ரோஃபோன் பிரிவைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="285"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="294"/>
         <source>Show the microphone section of the Mixxx interface.</source>
         <translation>Mixxx இடைமுகத்தின் மைக்ரோஃபோன் பகுதியைக் காட்டு.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="292"/>
-        <source>Ctrl+2</source>
-        <comment>Menubar|View|Show Microphone Section</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="300"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="309"/>
         <source>Show Vinyl Control Section</source>
         <translation>வினைல் கட்டுப்பாட்டு பிரிவைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="301"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="310"/>
         <source>Show the vinyl control section of the Mixxx interface.</source>
         <translation>Mixxx இடைமுகத்தின் வினைல் கட்டுப்பாட்டுப் பகுதியைக் காட்டு.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="308"/>
-        <source>Ctrl+3</source>
-        <comment>Menubar|View|Show Vinyl Control Section</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="316"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="325"/>
         <source>Show Preview Deck</source>
         <translation>முன்னோட்ட டெக்கைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="317"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="326"/>
         <source>Show the preview deck in the Mixxx interface.</source>
         <translation>Mixxx இடைமுகத்தில் முன்னோட்ட டெக்கைக் காட்டு.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="324"/>
-        <source>Ctrl+4</source>
-        <comment>Menubar|View|Show Preview Deck</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="332"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="341"/>
         <source>Show Cover Art</source>
         <translation>அட்டைப்படத்தைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="333"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="342"/>
         <source>Show cover art in the Mixxx interface.</source>
         <translation>Mixxx இடைமுகத்தில் கவர் கலையைக் காட்டு.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="340"/>
-        <source>Ctrl+6</source>
-        <comment>Menubar|View|Show Cover Art</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="363"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="372"/>
         <source>Maximize Library</source>
         <translation>நூலகத்தை பெரிதாக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="364"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="373"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation>கிடைக்கக்கூடிய அனைத்து திரை இடத்தையும் எடுத்துக்கொள்ள, டிராக் லைப்ரரியை அதிகரிக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="371"/>
-        <source>Space</source>
-        <comment>Menubar|View|Maximize Library</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="380"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="389"/>
         <source>Show Auto DJ</source>
         <translation>ஆட்டோ டி.சே</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="381"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="390"/>
         <source>Switch to the Auto DJ view.</source>
         <translation>ஆட்டோ டிசே காட்சிக்கு மாறவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="385"/>
-        <source>Ctrl+9</source>
-        <comment>Menubar|View|Show Auto DJ</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="394"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="404"/>
         <source>&amp;Full Screen</source>
         <translation>முழுத்திரை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="395"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="405"/>
         <source>Display Mixxx using the full screen</source>
         <translation>முழுத் திரையைப் பயன்படுத்தி Mixxxஐக் காட்டவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="431"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="440"/>
         <source>&amp;Options</source>
         <translation>&amp;விருப்பங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="437"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="446"/>
         <source>&amp;Vinyl Control</source>
         <translation>&amp;வினைல் கட்டுப்பாடு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="438"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="447"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
         <translation>Mixxx ஐக் கட்டுப்படுத்த வெளிப்புற டர்ன்டேபிள்களில் நேரக் குறியீடு வினைலைப் பயன்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="442"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="451"/>
         <source>Enable Vinyl Control &amp;%1</source>
         <translation>வினைல் கட்டுப்பாட்டை இயக்கு &amp;% 1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="473"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="478"/>
         <source>&amp;Record Mix</source>
         <translation>&amp;பதிவு கலவை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="474"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="479"/>
         <source>Record your mix to a file</source>
         <translation>உங்கள் கலவையை ஒரு கோப்பில் பதிவு செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="479"/>
-        <source>Ctrl+R</source>
-        <translation>Ctrl+R</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="492"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="496"/>
         <source>Enable Live &amp;Broadcasting</source>
         <translation>நேரலை &amp;ஒளிபரப்பை இயக்கு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="493"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="497"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
         <translation>உங்கள் கலவைகளை சவுட்காச்ட் அல்லது ஐச்காச்ட் சர்வரில் ச்ட்ரீம் செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="499"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="503"/>
         <source>Ctrl+L</source>
         <translation>Ctrl+L</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="515"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="518"/>
         <source>Enable &amp;Keyboard Shortcuts</source>
         <translation>&amp;விசைப்பலகை குறுக்குவழிகளை இயக்கு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="516"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="519"/>
         <source>Toggles keyboard shortcuts on or off</source>
         <translation>விசைப்பலகை குறுக்குவழிகளை ஆன் அல்லது ஆஃப் செய்யும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="523"/>
-        <source>Ctrl+`</source>
-        <translation>Ctrl+`</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="535"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="544"/>
         <source>&amp;Preferences</source>
         <translation>&amp;விருப்பத்தேர்வுகள்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="536"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="545"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
         <translation>Change Mixxx அமைப்புகள் (e.g. playback, MIDI, controls)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="553"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="561"/>
         <source>&amp;Developer</source>
         <translation>&amp;டெவலப்பர்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="558"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="566"/>
         <source>&amp;Reload Skin</source>
         <translation>&amp;தோலை மீண்டும் ஏற்றவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="559"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="567"/>
         <source>Reload the skin</source>
         <translation>தோலை மீண்டும் ஏற்றவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="564"/>
-        <source>Ctrl+Shift+R</source>
-        <translation>Ctrl+Shift+R</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="571"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="579"/>
         <source>Developer &amp;Tools</source>
         <translation>உருவாக்குபவர் கருவிகள்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="572"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="580"/>
         <source>Opens the developer tools dialog</source>
         <translation>உருவாக்குபவர் கருவிகள் உரையாடலைத் திறக்கிறது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="577"/>
-        <source>Ctrl+Shift+T</source>
-        <translation>Ctrl+Shift+T</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="590"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="598"/>
         <source>Stats: &amp;Experiment Bucket</source>
         <translation>புள்ளிவிவரங்கள்: &amp;பரிசோதனை பக்கெட்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="591"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="599"/>
         <source>Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.</source>
         <translation>ஆய்வு பயன்முறையை இயக்குகிறது. ஆய்வு கண்காணிப்பு வாளியில் புள்ளிவிவரங்களைச் சேகரிக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="597"/>
-        <source>Ctrl+Shift+E</source>
-        <translation>Ctrl+Shift+E</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="610"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="618"/>
         <source>Stats: &amp;Base Bucket</source>
         <translation>புள்ளிவிவரங்கள்: &amp;பேச் பக்கெட்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="611"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="619"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation>அடிப்படை பயன்முறையை இயக்குகிறது. காரம் கண்காணிப்பு வாளியில் புள்ளிவிவரங்களைச் சேகரிக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="617"/>
-        <source>Ctrl+Shift+B</source>
-        <translation>Ctrl+Shift+B</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="631"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="639"/>
         <source>Deb&amp;ugger Enabled</source>
         <translation>Deb&amp;ugger இயக்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="632"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="640"/>
         <source>Enables the debugger during skin parsing</source>
         <translation>தோல் பாகுபடுத்தலின் போது பிழைத்திருத்தியை இயக்குகிறது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="639"/>
-        <source>Ctrl+Shift+D</source>
-        <translation>Ctrl+Shift+D</translation>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="657"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="666"/>
         <source>&amp;Help</source>
         <translation>உதவி (&amp;h)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="348"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="357"/>
         <source>Show Keywheel</source>
         <extracomment>menu title</extracomment>
         <translation>கீவீலைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="160"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
         <source>E&amp;xport Library to Engine DJ</source>
         <extracomment>&quot;Engine DJ&quot; must not be translated</extracomment>
         <translation>இன்சின் DJ க்கு நூலகத்தை ஏற்றுமதி&amp;ஏற்றுமதி</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="161"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="173"/>
         <source>Export the library to the Engine DJ format</source>
         <translation>என்சின் டிசே வடிவமைப்பிற்கு நூலகத்தை ஏற்றுமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="350"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="359"/>
         <source>Show keywheel</source>
         <extracomment>tooltip text</extracomment>
         <translation>திறவுகோல் சக்கரத்தைக் காட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="356"/>
-        <source>F12</source>
-        <comment>Menubar|View|Show Keywheel</comment>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="671"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="680"/>
         <source>&amp;Community Support</source>
         <translation>&amp;சமூக உதவி</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="672"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="681"/>
         <source>Get help with Mixxx</source>
         <translation>Mixxx உடன் உதவி பெறவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="687"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="696"/>
         <source>&amp;User Manual</source>
         <translation>&amp;பயனர் கையேடு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="688"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="697"/>
         <source>Read the Mixxx user manual.</source>
         <translation>Mixxx பயனர் கையேட்டைப் படிக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="704"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="713"/>
         <source>&amp;Keyboard Shortcuts</source>
         <translation>விசைப்பலகை குறுக்குவழிகள்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="705"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="714"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
         <translation>விசைப்பலகை குறுக்குவழிகள் மூலம் உங்கள் பணிப்பாய்வுகளை விரைவுபடுத்துங்கள்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="719"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="728"/>
         <source>&amp;Settings directory</source>
         <translation>&amp;அமைப்புகள் அடைவு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="720"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="729"/>
         <source>Open the Mixxx user settings directory.</source>
         <translation>Mixxx பயனர் அமைப்புகள் கோப்பகத்தைத் திறக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="731"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="740"/>
         <source>&amp;Translate This Application</source>
         <translation>&amp;இந்த பயன்பாட்டை மொழிபெயர்க்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="732"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="741"/>
         <source>Help translate this application into your language.</source>
         <translation>இந்தப் பயன்பாட்டை உங்கள் மொழியில் மொழிபெயர்க்க உதவவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="743"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="752"/>
         <source>&amp;About</source>
         <translation>&amp;பற்றி</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="744"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="753"/>
         <source>About the application</source>
         <translation>விண்ணப்பத்தைப் பற்றி</translation>
     </message>
@@ -17026,25 +17199,25 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="236"/>
+        <location filename="../../src/widget/woverview.cpp" line="237"/>
         <source>Passthrough</source>
         <translation>பாச்த்ரூ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="946"/>
+        <location filename="../../src/widget/woverview.cpp" line="959"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>விளையாடத் ஆயத்தம், பகுப்பாய்வு...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="949"/>
-        <location filename="../../src/widget/woverview.cpp" line="959"/>
+        <location filename="../../src/widget/woverview.cpp" line="962"/>
+        <location filename="../../src/widget/woverview.cpp" line="972"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>ட்ராக்கை ஏற்றுகிறது...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="953"/>
+        <location filename="../../src/widget/woverview.cpp" line="966"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>இறுதி செய்கிறது...</translation>
@@ -17177,8 +17350,8 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="177"/>
-        <source>between %1 and %2</source>
-        <translation>% 1 மற்றும்% 2 இடையே</translation>
+        <source>%1 - %2</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="207"/>
@@ -17234,665 +17407,665 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WTrackMenu</name>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="174"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="176"/>
         <source>Load to</source>
         <translation>ஏற்றவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="176"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="178"/>
         <source>Deck</source>
         <translation>தளம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="178"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="180"/>
         <source>Sampler</source>
         <translation>மாதிரி</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="183"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="185"/>
         <source>Add to Playlist</source>
         <translation>பிளேலிச்ட்டில் சேர்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="189"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="191"/>
         <source>Crates</source>
         <translation>கிரேட்ச்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="196"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="198"/>
         <source>Metadata</source>
         <translation>மேனிலை தரவு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="199"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="201"/>
         <source>Update external collections</source>
         <translation>வெளிப்புற சேகரிப்புகளைப் புதுப்பிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="202"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="204"/>
         <source>Cover Art</source>
         <translation>கவர் கலை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="215"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="217"/>
         <source>Adjust BPM</source>
         <translation>BPM ஐ சரிசெய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="220"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="222"/>
         <source>Select Color</source>
         <translation>வண்ணத்தைத் தேர்ந்தெடுக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="234"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="557"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="236"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="578"/>
         <source>Analyze</source>
         <translation>பகுப்பாய்வு செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="282"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2577"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="303"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2586"/>
         <source>Delete Track Files</source>
         <translation>ட்ராக் கோப்புகளை நீக்கு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="294"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="315"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>ஆட்டோ DJ வரிசையில் சேர் (கீழே)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="297"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="318"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>ஆட்டோ DJ வரிசையில் சேர் (மேல்)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="300"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="321"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>ஆட்டோ டிசே வரிசையில் சேர் (மாற்று)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1082"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1101"/>
         <source>Preview Deck</source>
         <translation>முன்னோட்ட தளம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="307"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="328"/>
         <source>Remove</source>
         <translation>நீக்குக</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="311"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="332"/>
         <source>Remove from Playlist</source>
         <translation>பிளேலிச்ட்டில் இருந்து அகற்று</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="315"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="336"/>
         <source>Remove from Crate</source>
         <translation>க்ரேட்டிலிருந்து அகற்று</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="321"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="342"/>
         <source>Hide from Library</source>
         <translation>நூலகத்திலிருந்து மறை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="330"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="351"/>
         <source>Unhide from Library</source>
         <translation>நூலகத்தில் இருந்து மறை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="333"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="354"/>
         <source>Purge from Library</source>
         <translation>நூலகத்திலிருந்து அகற்றவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="339"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="360"/>
         <source>Move Track File(s) to Trash</source>
         <translation>டிராக் கோப்பு(களை) குப்பைக்கு நகர்த்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="342"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="363"/>
         <source>Delete Files from Disk</source>
         <translation>வட்டில் இருந்து கோப்புகளை நீக்கு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="360"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="381"/>
         <source>Properties</source>
         <translation>பண்புகள்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="375"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="396"/>
         <source>Open in File Browser</source>
         <translation>கோப்பு உலாவியில் திறக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="380"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="401"/>
         <source>Select in Library</source>
         <translation>நூலகத்தில் தேர்ந்தெடுக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="386"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="407"/>
         <source>Import From File Tags</source>
         <translation>கோப்பு குறிச்சொற்களிலிருந்து இறக்குமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="393"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="414"/>
         <source>Import From MusicBrainz</source>
         <translation>MusicBrainz இலிருந்து இறக்குமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="400"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="421"/>
         <source>Export To File Tags</source>
         <translation>கோப்பு குறிச்சொற்களுக்கு ஏற்றுமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="428"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="449"/>
         <source>BPM and Beatgrid</source>
         <translation>பிபிஎம் மற்றும் பீட்கிரிட்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="431"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="452"/>
         <source>Play Count</source>
         <translation>விளையாட எண்ணிக்கை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="434"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="455"/>
         <source>Rating</source>
         <translation>செயல்வரம்பு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="437"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="458"/>
         <source>Cue Point</source>
         <translation>கியூ பாயிண்ட்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="224"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="440"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="226"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="461"/>
         <source>Hotcues</source>
         <translation>ஆட்குச்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="443"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="464"/>
         <source>Intro</source>
         <translation>அறிமுகம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="446"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="467"/>
         <source>Outro</source>
         <translation>மற்றவை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="452"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
         <source>Key</source>
         <translation>முக்கிய</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="455"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="476"/>
         <source>ReplayGain</source>
         <translation>மீண்டும் விளையாடு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="458"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="479"/>
         <source>Waveform</source>
         <translation>அலைவடிவம், அலைப்படம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="461"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="482"/>
         <source>Comment</source>
         <translation>கருத்து</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="464"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="485"/>
         <source>All</source>
         <translation>அனைத்தும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="468"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="489"/>
         <source>Sort hotcues by position (remove offsets)</source>
         <translation>நிலையின்படி ஆட்குகளை வரிசைப்படுத்து (ஆஃப்செட்களை அகற்று)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="476"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="497"/>
         <source>Sort hotcues by position</source>
         <translation>நிலையின்படி ஆட்குகளை வரிசைப்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="486"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="507"/>
         <source>Lock BPM</source>
         <translation>பிபிஎம் பூட்டு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="487"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="508"/>
         <source>Unlock BPM</source>
         <translation>BPM ஐ திறக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="506"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="527"/>
         <source>Double BPM</source>
         <translation>இரட்டை பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="492"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="513"/>
         <source>Halve BPM</source>
         <translation>பாதி பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="272"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="274"/>
         <source>Find on Web</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="494"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="515"/>
         <source>2/3 BPM</source>
         <translation>2/3 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="496"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="517"/>
         <source>3/4 BPM</source>
         <translation>3/4 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="498"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="519"/>
         <source>4/5 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="500"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="521"/>
         <source>5/4 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="502"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="523"/>
         <source>4/3 BPM</source>
         <translation>4/3 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="504"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="525"/>
         <source>3/2 BPM</source>
         <translation>3/2 பிபிஎம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="548"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="569"/>
         <source>Shift Beatgrid Half Beat</source>
         <translation>சிப்ட் பீட்கிரிட் ஆஃப் பீட்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="560"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="581"/>
         <source>Reanalyze</source>
         <translation>மறு ஆய்வு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="563"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="584"/>
         <source>Reanalyze (constant BPM)</source>
         <translation>மறு ஆய்வு (நிலையான பிபிஎம்)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="569"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="590"/>
         <source>Reanalyze (variable BPM)</source>
         <translation>மறு ஆய்வு (மாறி BPM)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="581"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="602"/>
         <source>Update ReplayGain from Deck Gain</source>
         <translation>Deck பெருக்கம் இலிருந்து ReplayGain ஐப் புதுப்பிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1037"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1057"/>
         <source>Deck %1</source>
         <translation>தளம்% 1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1420"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1429"/>
         <source>Open Many Files in File Browser</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1421"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1430"/>
         <source>You are about to open %n files in the file browser. This may slow down or hang your system. Are you sure you want to continue?</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1506"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1515"/>
         <source>Importing metadata of %n track(s) from file tags</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1538"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1547"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1589"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1613"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1598"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1622"/>
         <source>Create New Playlist</source>
         <translation>புதிய பிளேலிச்ட்டை உருவாக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1614"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1623"/>
         <source>Enter name for new playlist:</source>
         <translation>புதிய பிளேலிச்ட்டுக்கான பெயரை உள்ளிடவும்:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1616"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1625"/>
         <source>New Playlist</source>
         <translation>புதிய இசைப்பட்டியல்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1624"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1628"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1633"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1637"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1646"/>
         <source>Playlist Creation Failed</source>
         <translation>பிளேலிச்ட் உருவாக்கம் தோல்வியடைந்தது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1625"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1634"/>
         <source>A playlist by that name already exists.</source>
         <translation>அந்த பெயரில் ஒரு பிளேலிச்ட் ஏற்கனவே உள்ளது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1629"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1638"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>பிளேலிச்ட்டில் வெற்றுப் பெயர் இருக்கக்கூடாது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1638"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1647"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>பிளேலிச்ட்டை உருவாக்கும் போது அறியப்படாத பிழை ஏற்பட்டது:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1715"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1724"/>
         <source>Add to New Crate</source>
         <translation>புதிய கிரேட்டில் சேர்க்கவும்</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1858"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1867"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1887"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1896"/>
         <source>Undo BPM/beats change of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1931"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1940"/>
         <source>Locking BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1932"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1941"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1965"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1974"/>
         <source>Setting rating of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1996"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2005"/>
         <source>Setting color of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2055"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2064"/>
         <source>Resetting play count of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2077"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2086"/>
         <source>Resetting beats of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2104"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2113"/>
         <source>Clearing rating of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2127"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2136"/>
         <source>Clearing comment of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2232"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2241"/>
         <source>Removing main cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2242"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2251"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2252"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2261"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2262"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2271"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2272"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2281"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2284"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2293"/>
         <source>Sorting hotcues of %n track(s) by position (remove offsets)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2291"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2300"/>
         <source>Sorting hotcues of %n track(s) by position</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2315"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2324"/>
         <source>Resetting keys of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2337"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2346"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2372"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2381"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2428"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2437"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2526"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2535"/>
         <source>Move these files to the trash bin?</source>
         <translation>இந்தக் கோப்புகளை குப்பைத் தொட்டிக்கு நகர்த்தவா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2522"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2531"/>
         <source>Permanently delete these files from disk?</source>
         <translation>வட்டில் இருந்து இந்தக் கோப்புகளை நிரந்தரமாக நீக்கவா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2524"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2533"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2542"/>
         <source>This can not be undone!</source>
         <translation>இதை செயல்தவிர்க்க முடியாது!</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2558"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2567"/>
         <source>Cancel</source>
         <translation>ரத்துசெய்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2562"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2571"/>
         <source>Delete Files</source>
         <translation>கோப்புகளை நீக்கு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2564"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2573"/>
         <source>Okay</source>
         <translation>சரி</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2579"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2588"/>
         <source>Move Track File(s) to Trash?</source>
         <translation>டிராக் கோப்பு(களை) குப்பைக்கு நகர்த்தவா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2637"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2646"/>
         <source>Track Files Deleted</source>
         <translation>ட்ராக் கோப்புகள் நீக்கப்பட்டன</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2639"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2648"/>
         <source>Track Files Moved To Trash</source>
         <translation>டிராக் கோப்புகள் குப்பைக்கு நகர்த்தப்பட்டன</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2646"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2655"/>
         <source>%1 track files were moved to trash and purged from the Mixxx database.</source>
         <translation>%1 டிராக் கோப்புகள் குப்பைக்கு நகர்த்தப்பட்டு Mixxx தரவுத்தளத்தில் இருந்து நீக்கப்பட்டது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2643"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2652"/>
         <source>%1 track files were deleted from disk and purged from the Mixxx database.</source>
         <translation>%1 டிராக் கோப்புகள் வட்டில் இருந்து நீக்கப்பட்டு Mixxx தரவுத்தளத்தில் இருந்து நீக்கப்பட்டன.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2655"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2664"/>
         <source>Track File Deleted</source>
         <translation>டிராக் கோப்பு நீக்கப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2656"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2665"/>
         <source>Track file was deleted from disk and purged from the Mixxx database.</source>
         <translation>ட்ராக் கோப்பு வட்டில் இருந்து நீக்கப்பட்டது மற்றும் Mixxx தரவுத்தளத்திலிருந்து நீக்கப்பட்டது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2698"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2707"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
         <translation>பின்வரும் %1 கோப்பை(களை) வட்டில் இருந்து நீக்க முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2706"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2715"/>
         <source>This track file could not be deleted from disk</source>
         <translation>இந்த டிராக் கோப்பை வட்டில் இருந்து நீக்க முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2730"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2739"/>
         <source>Remaining Track File(s)</source>
         <translation>மீதமுள்ள டிராக் கோப்பு(கள்)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2721"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2730"/>
         <source>Close</source>
         <translation>மூடு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="229"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="231"/>
         <source>Clear</source>
         <extracomment>Reset metadata in right click track context menu in library</extracomment>
         <translation>தெளிவு</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="449"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="470"/>
         <source>Loops</source>
         <translation>வளையங்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="534"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="555"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>BPM மற்றும் Beatgrid ஐ அழிக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="540"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="561"/>
         <source>Undo last BPM/beats change</source>
         <translation>கடைசி பிபிஎம்/பீட்ச் மாற்றத்தை செயல்தவிர்க்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2535"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2544"/>
         <source>Move this track file to the trash bin?</source>
         <translation>இந்த டிராக் கோப்பை குப்பைத் தொட்டிக்கு நகர்த்தவா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2531"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2540"/>
         <source>Permanently delete this track file from disk?</source>
         <translation>இந்த டிராக் கோப்பை வட்டில் இருந்து நிரந்தரமாக நீக்கவா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2540"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2549"/>
         <source>All decks where these tracks are loaded will be stopped and the tracks will be ejected.</source>
         <translation>இந்த தடங்கள் ஏற்றப்பட்ட அனைத்து தளங்களும் நிறுத்தப்பட்டு, தடங்கள் வெளியேற்றப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2544"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2553"/>
         <source>All decks where this track is loaded will be stopped and the track will be ejected.</source>
         <translation>இந்த டிராக் ஏற்றப்பட்ட அனைத்து தளங்களும் நிறுத்தப்பட்டு, பாதை வெளியேற்றப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2611"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2620"/>
         <source>Removing %n track file(s) from disk...</source>
         <translation>வட்டில் இருந்து %n டிராக் கோப்பு(களை) நீக்குகிறது...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2651"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2660"/>
         <source>Note: if you are in the Computer or Recording view you need to click the current view again to see changes.</source>
         <translation>குறிப்பு: நீங்கள் கணினி அல்லது ரெக்கார்டிங் பார்வையில் இருந்தால், மாற்றங்களைக் காண தற்போதைய காட்சியை மீண்டும் சொடுக்கு செய்ய வேண்டும்.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2660"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2669"/>
         <source>Track File Moved To Trash</source>
         <translation>டிராக் கோப்பு குப்பைக்கு நகர்த்தப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2661"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2670"/>
         <source>Track file was moved to trash and purged from the Mixxx database.</source>
         <translation>ட்ராக் கோப்பு குப்பைக்கு நகர்த்தப்பட்டு Mixxx தரவுத்தளத்திலிருந்து அகற்றப்பட்டது.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2666"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2675"/>
         <source>Don&apos;t show again during this session</source>
         <translation>இந்த அமர்வின் போது மீண்டும் காட்ட வேண்டாம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2700"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2709"/>
         <source>The following %1 file(s) could not be moved to trash</source>
         <translation>பின்வரும் %1 கோப்பை(களை) குப்பைக்கு நகர்த்த முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2708"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2717"/>
         <source>This track file could not be moved to trash</source>
         <translation>இந்த டிராக் கோப்பை குப்பைக்கு நகர்த்த முடியவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2855"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2864"/>
         <source>Replace current Auto DJ queue?</source>
         <translation>தற்போதைய தானி DJ வரிசையை மாற்றவா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2857"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2866"/>
         <source>Do you want to replace the entire Auto DJ queue with the selected tracks?</source>
         <translation>முழு ஆட்டோ டிசே வரிசையையும் தேர்ந்தெடுத்த டிராக்குகளுடன் மாற்ற விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2860"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2869"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>இந்த அமர்வின் போது மீண்டும் கேட்க வேண்டாம்</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2901"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2910"/>
         <source>Setting cover art of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2925"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2934"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
@@ -17946,37 +18119,37 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1396"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1434"/>
         <source>Confirm track hide</source>
         <translation>தட மறைவை உறுதிப்படுத்தவும்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1397"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1435"/>
         <source>Are you sure you want to hide the selected tracks?</source>
         <translation>தேர்ந்தெடுத்த டிராக்குகளை நிச்சயமாக மறைக்க விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1403"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1441"/>
         <source>Are you sure you want to remove the selected tracks from AutoDJ queue?</source>
         <translation>AutoDJ வரிசையில் இருந்து தேர்ந்தெடுத்த டிராக்குகளை நிச்சயமாக அகற்ற விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1407"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1445"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட டிராக்குகளை இந்தப் பெட்டியிலிருந்து நிச்சயமாக அகற்ற விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1411"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1449"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
         <translation>இந்த பிளேலிச்ட்டில் இருந்து தேர்ந்தெடுத்த டிராக்குகளை நிச்சயமாக அகற்ற விரும்புகிறீர்களா?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1420"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1458"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>இந்த அமர்வின் போது மீண்டும் கேட்க வேண்டாம்</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1399"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1437"/>
         <source>Confirm track removal</source>
         <translation>தடத்தை அகற்றுவதை உறுதிப்படுத்தவும்</translation>
     </message>
@@ -17984,57 +18157,109 @@ If this is already a jump cue, swap the jump position and the cue/target positio
 <context>
     <name>WTrackTableViewHeader</name>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="149"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="160"/>
         <source>Show or hide columns.</source>
         <translation>நெடுவரிசைகளைக் காட்டு அல்லது மறை.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="254"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="265"/>
         <source>Shuffle Tracks</source>
         <translation>தடங்களை கலக்கவும்</translation>
     </message>
 </context>
 <context>
+    <name>WaveformWidgetFactory</name>
+    <message>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="213"/>
+        <source>None</source>
+        <extracomment>This refers to a missing openGL version</extracomment>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>mixxx::CoreServices</name>
     <message>
-        <location filename="../../src/coreservices.cpp" line="490"/>
+        <location filename="../../src/coreservices.cpp" line="454"/>
+        <source>Cannot access settings folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="455"/>
+        <source>Mixxx cannot access the settings folder:
+
+%1
+
+You can either:
+
+• Remove the --settings-path argument to use the default location
+• Re-run Mixxx and select a valid folder when prompted
+
+Click OK to exit.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="514"/>
         <source>fonts</source>
         <translation>எழுத்துருக்கள்</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="494"/>
+        <location filename="../../src/coreservices.cpp" line="518"/>
         <source>database</source>
         <translation>தரவுத்தளம்</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="509"/>
+        <location filename="../../src/coreservices.cpp" line="533"/>
         <source>effects</source>
         <translation>விளைவுகள்</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="522"/>
+        <location filename="../../src/coreservices.cpp" line="546"/>
         <source>audio interface</source>
         <translation>ஆடியோ இடைமுகம்</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="542"/>
+        <location filename="../../src/coreservices.cpp" line="566"/>
         <source>decks</source>
         <translation>அடுக்குகள்</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="588"/>
+        <location filename="../../src/coreservices.cpp" line="612"/>
         <source>library</source>
         <translation>நூலகம்</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="680"/>
+        <location filename="../../src/coreservices.cpp" line="704"/>
         <source>Choose music library directory</source>
         <translation>இசை நூலக கோப்பகத்தைத் தேர்ந்தெடுக்கவும்</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="690"/>
+        <location filename="../../src/coreservices.cpp" line="715"/>
         <source>controllers</source>
         <translation>கட்டுப்படுத்திகள்</translation>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="849"/>
+        <source>The settings directory does not exist:
+%1
+
+Please verify the --settings-path argument.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="854"/>
+        <source>The settings directory is not writable:
+%1
+
+This may be caused by macOS sandbox restrictions if you are using a custom --settings-path outside the app container.
+
+Try running Mixxx without --settings-path, or grant Mixxx access to the folder when prompted.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/coreservices.cpp" line="863"/>
+        <source>Unable to establish a database connection.
+Mixxx requires Qt with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="871"/>
@@ -18043,14 +18268,8 @@ If this is already a jump cue, swap the jump position and the cue/target positio
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="872"/>
-        <source>Unable to establish a database connection.
-Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
-
-Click OK to exit.</source>
-        <translation>தரவுத்தள இணைப்பை நிறுவ முடியவில்லை. 
-Mixxxக்கு SQLite ஆதரவுடன் கியுடி தேவை. கியுடி கவிமொ இயக்கி ஆவணங்களை எவ்வாறு உருவாக்குவது என்பது பற்றிய தகவலுக்கு தயவுசெய்து படிக்கவும். 
-
-வெளியேற சரி என்பதைக் சொடுக்கு செய்யவும்.</translation>
+        <source>Click OK to exit.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -18107,27 +18326,27 @@ Mixxxக்கு SQLite ஆதரவுடன் கியுடி தேவ�
         <translation>எஞ்சின் DJ க்கு நூலகத்தை ஏற்றுமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="225"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="226"/>
         <source>Export Library To</source>
         <translation>நூலகத்திற்கு ஏற்றுமதி செய்யவும்</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="242"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="245"/>
         <source>No Export Directory Chosen</source>
         <translation>ஏற்றுமதி கோப்பகம் எதுவும் தேர்ந்தெடுக்கப்படவில்லை</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="243"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="246"/>
         <source>No export directory was chosen. Please choose a directory in order to export the music library.</source>
         <translation>எந்த ஏற்றுமதி கோப்பகமும் தேர்ந்தெடுக்கப்படவில்லை. இசை நூலகத்தை ஏற்றுமதி செய்ய ஒரு கோப்பகத்தைத் தேர்ந்தெடுக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="318"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="321"/>
         <source>A database already exists in the chosen directory. Exported tracks will be added into this database.</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட கோப்பகத்தில் ஏற்கனவே ஒரு தரவுத்தளம் உள்ளது. ஏற்றுமதி செய்யப்பட்ட தடங்கள் இந்தத் தரவுத்தளத்தில் சேர்க்கப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="328"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="331"/>
         <source>A database already exists in the chosen directory, but there was a problem loading it. Export is not guaranteed to succeed in this situation.</source>
         <translation>தேர்ந்தெடுக்கப்பட்ட கோப்பகத்தில் ஏற்கனவே ஒரு தரவுத்தளம் உள்ளது, ஆனால் அதை ஏற்றுவதில் சிக்கல் உள்ளது. இந்த சூழ்நிலையில் ஏற்றுமதி வெற்றிபெற பொறுப்பு இல்லை.</translation>
     </message>
@@ -18148,7 +18367,7 @@ Mixxxக்கு SQLite ஆதரவுடன் கியுடி தேவ�
 <context>
     <name>mixxx::EnginePrimeExportJob</name>
     <message>
-        <location filename="../../src/library/export/engineprimeexportjob.cpp" line="672"/>
+        <location filename="../../src/library/export/engineprimeexportjob.cpp" line="686"/>
         <source>Failed to export track %1 - %2:
 %3</source>
         <extracomment>%1 is the artist %2 is the title and %3 is the original error message</extracomment>
@@ -18203,19 +18422,36 @@ Mixxxக்கு SQLite ஆதரவுடன் கியுடி தேவ�
 <context>
     <name>mixxx::qml::QmlApplication</name>
     <message>
-        <location filename="../../src/qml/qmlapplication.cpp" line="71"/>
+        <location filename="../../src/qml/qmlapplication.cpp" line="102"/>
         <source>Existing user profile detected</source>
         <translation>ஏற்கனவே உள்ள பயனர் சுயவிவரம் கண்டறியப்பட்டது</translation>
     </message>
     <message>
-        <location filename="../../src/qml/qmlapplication.cpp" line="73"/>
+        <location filename="../../src/qml/qmlapplication.cpp" line="104"/>
         <source>Trying to run Mixxx 3.0 with an existing %0 user profile! &lt;br&gt;&lt;br&gt;There is &lt;b&gt;serious risks&lt;/b&gt; of data loss and corruption.&lt;br&gt;We recommend using a test profile folder with the &apos;--settings-path&apos; argument. &lt;br&gt;&lt;br&gt;If you want to continue at your own risk, run Mixxx with the argument &apos;--allow-dangerous-data-corruption-risk&apos;.</source>
         <translation>ஏற்கனவே உள்ள %0 பயனர் சுயவிவரத்துடன் Mixxx 3.0 ஐ இயக்க முயற்சிக்கிறது! &lt;br&gt;&lt;br&gt;தரவு இழப்பு மற்றும் ஊழலில் &lt;b&gt;கடுமையான அபாயங்கள்&lt;/b&gt; உள்ளது.&lt;br&gt;&apos;--settings-path&apos; வாதத்துடன் சோதனை சுயவிவரக் கோப்புறையைப் பயன்படுத்த பரிந்துரைக்கிறோம். &lt;br&gt;&lt;br&gt;உங்கள் சொந்த ஆபத்தில் தொடர விரும்பினால், Mixxxஐ &apos;--allowdangerous-data-corruption-risk&apos; என்ற வாதத்துடன் இயக்கவும்.</translation>
     </message>
     <message>
-        <location filename="../../src/qml/qmlapplication.cpp" line="82"/>
+        <location filename="../../src/qml/qmlapplication.cpp" line="113"/>
         <source>Ok</source>
         <translation>சரி</translation>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlapplication.cpp" line="162"/>
+        <source>There is no input device selected for this passthrough control.
+Please select an input device in the sound hardware preferences first.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlapplication.cpp" line="172"/>
+        <source>There is no input device selected for this vinyl control.
+Please select an input device in the sound hardware preferences first.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/qml/qmlapplication.cpp" line="186"/>
+        <source>&amp;Preferences</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -18234,29 +18470,6 @@ Mixxxக்கு SQLite ஆதரவுடன் கியுடி தேவ�
         <location filename="../../src/qml/qmlvisibleeffectsmodel.cpp" line="44"/>
         <source>No effect loaded.</source>
         <translation>எந்த விளைவும் ஏற்றப்படவில்லை.</translation>
-    </message>
-</context>
-<context>
-    <name>mixxx::qml::QmlWaveformRendererMark</name>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="342"/>
-        <source>Cannot find the marker pixmap</source>
-        <translation>மார்க்கர் பிக்ச்மேப்பைக் கண்டுபிடிக்க முடியவில்லை</translation>
-    </message>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="346"/>
-        <source>Cannot find the marker endPixmap</source>
-        <translation>மார்க்கர் endPixmap ஐக் கண்டுபிடிக்க முடியவில்லை</translation>
-    </message>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="351"/>
-        <source>Cannot find the marker icon</source>
-        <translation>மார்க்கர் ஐகானைக் கண்டுபிடிக்க முடியவில்லை</translation>
-    </message>
-    <message>
-        <location filename="../../src/qml/qmlwaveformrenderer.cpp" line="355"/>
-        <source>Cannot find the marker endIcon</source>
-        <translation>மார்க்கர் எண்ட்ஐகானைக் கண்டுபிடிக்க முடியவில்லை</translation>
     </message>
 </context>
 </TS>

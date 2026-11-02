@@ -177,9 +177,9 @@ ColumnLayout {
 
         Layout.fillHeight: true
         Layout.fillWidth: true
-        barColor: Theme.bpmSliderBarColor
-        barMargin: 0
-        barStart: 0.5
+        bar.color: Theme.bpmSliderBarColor
+        bar.margin: 0
+        bar.start: 0.5
         bg: Theme.imgBpmSliderBackground
         group: root.group
         key: "rate"

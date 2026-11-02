@@ -2,9 +2,8 @@ pragma Singleton
 import QtQuick 2.12
 
 QtObject {
-    property color accent: "#2D4EA1"
     property color accentColor: "#3a60be"
-    property color backgroundColor: "#1e1e1e"
+    property color backgroundColor: "#1e1e20"
     property color blue: "#01dcfc"
     property color bpmSliderBarColor: blue
     property color buttonActiveColor: white
@@ -14,10 +13,10 @@ QtObject {
     property color crossfaderBarColor: blue
     property color crossfaderOrientationColor: lightGray
     property color darkGray: "#0f0f0f"
-    property color darkGray2: "#242424"
+    property color darkGray2: "#2e2e2e"
     property color darkGray3: "#3F3F3F"
     property color darkGray4: "#202020"
-    property color deckActiveColor: green
+    property color deckActiveColor: white
     property color deckBackgroundColor: darkGray
     property color deckBeatjumpBackgroundColor: midGray3
     property color deckBeatjumpLabelColor: darkGray3
@@ -26,7 +25,7 @@ QtObject {
     property color deckLineColor: darkGray2
     property color deckLoopBackgroundColor: midGray3
     property color deckLoopLabelColor: darkGray3
-    property color deckTextColor: white
+    property color deckTextColor: lightGray2
     property color effectColor: yellow
     property color effectUnitColor: red
     property color embeddedBackgroundColor: "#a0000000"
@@ -69,7 +68,7 @@ QtObject {
     property color red: "#ea2a4e"
     property color samplerColor: blue
     property color sunkenBackgroundColor: "#0C0C0C"
-    property color textColor: white
+    property color textColor: lightGray2
     property int textFontPixelSize: 14
     property color toolbarActiveColor: white
     property color toolbarBackgroundColor: darkGray2

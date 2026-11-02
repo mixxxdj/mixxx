@@ -34,27 +34,27 @@ IF NOT DEFINED INSTALL_ROOT (
 
 IF /I "%PLATFORM%"=="arm64" (
     IF DEFINED BUILDENV_RELEASE (
-        SET BUILDENV_BRANCH=2.6-rel
+        SET BUILDENV_BRANCH=2.7-rel
         SET VCPKG_TARGET_TRIPLET=arm64-windows-release
-        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-rel-541a925
-        SET BUILDENV_SHA256=ae9ac857fd8119b18da0116fe3c4239d938f3efba6b3baad46c8f3f62042942c
+        SET BUILDENV_NAME=mixxx-deps-2.7-arm64-windows-rel-ee6dc7fe
+        SET BUILDENV_SHA256=38218f4874d3852a0689009385fe0106ff089511e37d7c062bc698449c8b9110
     ) ELSE (
-        SET BUILDENV_BRANCH=2.6
+        SET BUILDENV_BRANCH=2.7
         SET VCPKG_TARGET_TRIPLET=arm64-windows
-        SET BUILDENV_NAME=mixxx-deps-2.6-arm64-windows-6a4e01e
-        SET BUILDENV_SHA256=7ab9bf4fc18ac72a6bf4cf2b440eb0972591f9c1e0b031ecd3177633c235c3b6
+        SET BUILDENV_NAME=mixxx-deps-2.7-arm64-windows-1c20f84a
+        SET BUILDENV_SHA256=3e856b1b2597c03528b1a00871ae6b0d54d188e125d7d87b5671b2a104ee0667
     )
 ) ELSE IF /I "%PLATFORM%"=="x64" (
     IF DEFINED BUILDENV_RELEASE (
-        SET BUILDENV_BRANCH=2.6-rel
+        SET BUILDENV_BRANCH=2.7-rel
         SET VCPKG_TARGET_TRIPLET=x64-windows-release
-        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-rel-541a925
-        SET BUILDENV_SHA256=2bf68831539271050ad19a74d0ed881c9d15f1c8ac0b3cb3b84cf58e7ab6dbd3
+        SET BUILDENV_NAME=mixxx-deps-2.7-x64-windows-rel-ee6dc7fe
+        SET BUILDENV_SHA256=f98a2dcfb697caeed4bc012bc28de2b784728a1d795fbc62f44cc0f0a3b50b39
     ) ELSE (
-        SET BUILDENV_BRANCH=2.6
+        SET BUILDENV_BRANCH=2.7
         SET VCPKG_TARGET_TRIPLET=x64-windows
-        SET BUILDENV_NAME=mixxx-deps-2.6-x64-windows-6a4e01e
-        SET BUILDENV_SHA256=034ba4f49660947819864f3ff3ee1a5cc494187876a62366346783cdf28ddf36
+        SET BUILDENV_NAME=mixxx-deps-2.7-x64-windows-1c20f84a
+        SET BUILDENV_SHA256=77b75ab17f06e07b1c140e90f86aafb8658d66d8d581d488ab9b9545996fdc6e
     )
 ) ELSE (
     ECHO ^ERROR: Unsupported PLATFORM: %PLATFORM%
@@ -161,7 +161,8 @@ EXIT /B 0
 REM Generate CMakeSettings.json which is read by MS Visual Studio to determine the supported CMake build environments
     SET CMakeSettings=%MIXXX_ROOT%\CMakeSettings.json
     IF EXIST "%CMakeSettings%" (
-        FOR /f "delims=" %%a in ('wmic OS Get localdatetime ^| find "."') do set DateTime=%%a
+        REM Use PowerShell to generate timestamp (wmic removed on Win11 25H2)
+        for /f %%i in ('powershell -NoProfile -Command "Get-Date -Format yyyyMMddHHmmss"') do set DateTime=%%i
         SET CMakeSettingsBackup=CMakeSettings_!DateTime:~0,4!-!DateTime:~4,2!-!DateTime:~6,2!_!DateTime:~8,2!-!DateTime:~10,2!-!DateTime:~12,2!.json
         ECHO CMakeSettings.json already exists, creating backup at "!CMakeSettingsBackup!"...
         REN "%CMakeSettings%" "!CMakeSettingsBackup!"

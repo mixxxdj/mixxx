@@ -92,6 +92,7 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
 
 TrackAnalysisScheduler::~TrackAnalysisScheduler() {
     kLogger.debug() << "Destroying";
+    // Here the workers in m_workers are deleted after waiting for the associated thread is finished
 }
 
 void TrackAnalysisScheduler::emitProgressOrFinished() {
@@ -228,7 +229,7 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         DEBUG_ASSERT(!trackId.isValid());
         DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         worker.onThreadExit();
-        DEBUG_ASSERT(!worker);
+        DEBUG_ASSERT(!worker.hasThread());
         break;
     default:
         DEBUG_ASSERT(!"Unhandled signal from worker thread");

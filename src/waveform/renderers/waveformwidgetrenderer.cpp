@@ -115,6 +115,10 @@ bool WaveformWidgetRenderer::init() {
                 m_group, QStringLiteral("track_samples"));
 
         m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
+    } else {
+        m_pRateRatioCO.reset();
+        m_pGainControlObject.reset();
+        m_pTrackSamplesControlObject.reset();
     }
 
     VERIFY_OR_DEBUG_ASSERT(m_visualPlayPosition) {
@@ -138,6 +142,10 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
             m_pos[type] = -1.0;
             m_truePosSample[type] = -1.0;
         }
+        return;
+    }
+
+    if (!m_pTrack && !m_pTrackSamplesControlObject) {
         return;
     }
 
@@ -362,11 +370,7 @@ void WaveformWidgetRenderer::drawPassthroughLabel(QPainter* painter) {
     font.setFamily("Open Sans"); // default label font
     // Make the label always fit
     font.setPixelSize(math_min(25, int(m_height * 0.8)));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    font.setWeight(75); // bold
-#else
     font.setWeight(QFont::Bold); // bold
-#endif
     font.setItalic(false);
 
     QString label = QObject::tr("Passthrough");

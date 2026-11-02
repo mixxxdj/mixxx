@@ -87,6 +87,7 @@ All of these are automatically built and deployed by [GitHub Actions](https://gi
     | macOS | `source tools/macos_buildenv.sh setup` | ~1.5 GB download, ~3 GB disk space |
     | Debian/Ubuntu | `tools/debian_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
     | Fedora | `tools/rpm_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
+    | Arch | `tools/archlinux_buildenv.sh setup` | ~200 MB download, ~1 GB disk space |
     | Flatpak | `tools/flatpak_buildenv.sh setup` | ~2.6 GB download, ~5 GB disk space |
     | Android | `tools/android_buildenv.sh setup` (see the [wiki article](<https://github.com/mixxxdj/mixxx/wiki/> Building-for-Android)) | ~3.4 GB download, 13GB disk space |
     | Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) | |

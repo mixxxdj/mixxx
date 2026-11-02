@@ -10,7 +10,19 @@
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
-const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
+const QString SoundManagerConfig::kAPINone = QStringLiteral("None");
+const QString SoundManagerConfig::kAPIJack = QStringLiteral("JACK Audio Connection Kit");
+const QString SoundManagerConfig::kAPIAlsa = QStringLiteral("ALSA");
+const QString SoundManagerConfig::kAPIOss = QStringLiteral("OSS");
+const QString SoundManagerConfig::kAPIAsio = QStringLiteral("ASIO");
+const QString SoundManagerConfig::kAPIDirectSound = QStringLiteral("Windows DirectSound");
+// NOTE: This is what our patched version of PortAudio uses for the Core Audio
+// backend on iOS. If/when upstream supports iOS officially
+// (https://github.com/PortAudio/portaudio/pull/881), we may have to update this
+const QString SoundManagerConfig::kAPIIosAudio = QStringLiteral("iOS Audio");
+const QString SoundManagerConfig::kAPICoreAudio = QStringLiteral("Core Audio");
+const QString SoundManagerConfig::kAPIPipewire = QStringLiteral("PipeWire");
+
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
 
@@ -28,7 +40,7 @@ const QString xmlAttributeDeckCount = "deck_count";
 const QString xmlElementSoundDevice = "SoundDevice";
 const QString xmlAttributeDeviceName = "name";
 const QString xmlAttributeAlsaHwDevice = "alsaHwDevice";
-const QString xmlAttributePortAudioIndex = "portAudioIndex";
+const QString xmlAttributeDeviceIndex = "deviceIndex";
 
 const QString xmlElementOutput = "output";
 const QString xmlElementInput = "input";
@@ -37,15 +49,15 @@ const QRegularExpression kLegacyFormatRegex("((\\d*), )(.*) \\((plug)?(hw:(\\d)+
 } // namespace
 
 SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
-    : m_api(kDefaultAPI),
-      m_sampleRate(kFallbackSampleRate),
-      m_deckCount(kDefaultDeckCount),
-      m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
-      m_syncBuffers(2),
-      m_forceNetworkClock(false),
-      m_iNumMicInputs(0),
-      m_bExternalRecordBroadcastConnected(false),
-      m_pSoundManager(pSoundManager) {
+        : m_api(kAPINone),
+          m_sampleRate(kFallbackSampleRate),
+          m_deckCount(kDefaultDeckCount),
+          m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
+          m_syncBuffers(2),
+          m_forceNetworkClock(false),
+          m_iNumMicInputs(0),
+          m_bExternalRecordBroadcastConnected(false),
+          m_pSoundManager(pSoundManager) {
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
@@ -56,18 +68,25 @@ SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
  */
 bool SoundManagerConfig::readFromDisk() {
     QFile file(m_configFile.absoluteFilePath());
-    QDomDocument doc;
     QDomElement rootElement;
     if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
-    if (!doc.setContent(&file)) {
+    if (!m_doc.setContent(&file)) {
         file.close();
         return false;
     }
     file.close();
-    rootElement = doc.documentElement();
+    rootElement = m_doc.documentElement();
+
     setAPI(rootElement.attribute(xmlAttributeApi));
+
+    if (m_pSoundManager->isPipewireSelected() and m_api != SoundManagerConfig::kAPIPipewire) {
+        // PipeWire check box just changed, current config is useless
+        m_doc.clear();
+        return false;
+    }
+
     setSampleRate(mixxx::audio::SampleRate(
             rootElement.attribute(xmlAttributeSampleRate, "0").toUInt()));
     // audioBufferSizeIndex is refereed as "latency" in the config file
@@ -78,13 +97,25 @@ bool SoundManagerConfig::readFromDisk() {
     setDeckCount(rootElement.attribute(xmlAttributeDeckCount,
                                     QString::number(kDefaultDeckCount))
                          .toUInt());
+
+    return true;
+}
+
+bool SoundManagerConfig::validateDevices() {
     clearOutputs();
     clearInputs();
-    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
+    if (m_doc.isNull()) {
+        return false;
+    }
 
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
+
+    QDomElement rootElement = m_doc.documentElement();
+    QDomNodeList devElements(rootElement.elementsByTagName(xmlElementSoundDevice));
+
     const QList<SoundDevicePointer> soundDevices =
             m_pSoundManager->getDeviceList(m_api, true, true);
 
@@ -104,10 +135,10 @@ bool SoundManagerConfig::readFromDisk() {
         if (match.hasMatch()) {
             deviceIdFromFile.name = match.captured(3);
             deviceIdFromFile.alsaHwDevice = match.captured(5);
-            deviceIdFromFile.portAudioIndex = match.captured(2).toInt();
+            deviceIdFromFile.deviceIndex = match.captured(2).toInt();
         } else {
             deviceIdFromFile.alsaHwDevice = devElement.attribute(xmlAttributeAlsaHwDevice);
-            deviceIdFromFile.portAudioIndex = devElement.attribute(xmlAttributePortAudioIndex).toInt();
+            deviceIdFromFile.deviceIndex = devElement.attribute(xmlAttributeDeviceIndex).toInt();
         }
 
         int devicesMatchingByName = 0;
@@ -125,15 +156,15 @@ bool SoundManagerConfig::readFromDisk() {
             continue;
         } else if (devicesMatchingByName == 1) {
             // There is only one device with this name, so it is unambiguous
-            // which it is. Neither the alsaHwDevice nor portAudioIndex are
+            // which it is. Neither the alsaHwDevice nor deviceIndex are
             // very reliable as persistent identifiers across restarts of Mixxx.
-            // Set deviceIdFromFile's alsaHwDevice and portAudioIndex to match
+            // Set deviceIdFromFile's alsaHwDevice and deviceIndex to match
             // the hardwareDeviceId so operator== works for SoundDeviceId.
             for (const auto& soundDevice : soundDevices) {
                 SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                 if (hardwareDeviceId.name == deviceIdFromFile.name) {
                     deviceIdFromFile.alsaHwDevice = hardwareDeviceId.alsaHwDevice;
-                    deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                    deviceIdFromFile.deviceIndex = hardwareDeviceId.deviceIndex;
                 }
             }
         } else {
@@ -152,7 +183,7 @@ bool SoundManagerConfig::readFromDisk() {
                     SoundDeviceId hardwareDeviceId = soundDevice->getDeviceId();
                     if (hardwareDeviceId.name == deviceIdFromFile.name
                             && hardwareDeviceId.alsaHwDevice == deviceIdFromFile.alsaHwDevice) {
-                        deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                        deviceIdFromFile.deviceIndex = hardwareDeviceId.deviceIndex;
                         break;
                     }
                 }
@@ -165,7 +196,7 @@ bool SoundManagerConfig::readFromDisk() {
                                     outElements.count() &&
                             soundDevice->getNumInputChannels() >=
                                     inElements.count()) {
-                        deviceIdFromFile.portAudioIndex = hardwareDeviceId.portAudioIndex;
+                        deviceIdFromFile.deviceIndex = hardwareDeviceId.deviceIndex;
                         break;
                     }
                 }
@@ -236,8 +267,8 @@ bool SoundManagerConfig::writeToDisk() const {
     for (const auto& deviceId : deviceIds) {
         QDomElement devElement(doc.createElement(xmlElementSoundDevice));
         devElement.setAttribute(xmlAttributeDeviceName, deviceId.name);
-        devElement.setAttribute(xmlAttributePortAudioIndex, deviceId.portAudioIndex);
-        if (m_api == MIXXX_PORTAUDIO_ALSA_STRING) {
+        devElement.setAttribute(xmlAttributeDeviceIndex, deviceId.deviceIndex);
+        if (m_api == SoundManagerConfig::kAPIAlsa) {
             devElement.setAttribute(xmlAttributeAlsaHwDevice, deviceId.alsaHwDevice);
         }
 
@@ -288,7 +319,7 @@ bool SoundManagerConfig::checkAPI() {
     VERIFY_OR_DEBUG_ASSERT(m_pSoundManager != nullptr) {
         return false;
     }
-    if (!m_pSoundManager->getHostAPIList().contains(m_api) && m_api != kDefaultAPI) {
+    if (!m_pSoundManager->getHostAPIList().contains(m_api) && m_api != kAPINone) {
         return false;
     }
     return true;
@@ -385,7 +416,16 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 // This reflects the configured value only. In case of JACK the
 // setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
-    if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (m_api == SoundManagerConfig::kAPIPipewire) {
+        unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
+        VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
+            const int index1024frames = 5;
+            audioBufferSizeIndex = index1024frames;
+        }
+
+        // audioBufferSize combobox contains from 64 to 4096 frames
+        return 1 << (audioBufferSizeIndex + 5);
+    } else if (m_api == SoundManagerConfig::kAPIJack) {
         // in case of jack we configure the frames/period
         if (m_audioBufferSizeIndex ==
                 static_cast<unsigned int>(
@@ -447,6 +487,14 @@ QMultiHash<SoundDeviceId, AudioInput> SoundManagerConfig::getInputs() const {
     return m_inputs;
 }
 
+QMultiHash<SoundDeviceId, AudioOutput>& SoundManagerConfig::getOutputsRef() {
+    return m_outputs;
+}
+
+QMultiHash<SoundDeviceId, AudioInput>& SoundManagerConfig::getInputsRef() {
+    return m_inputs;
+}
+
 void SoundManagerConfig::clearOutputs() {
     m_outputs.clear();
 }
@@ -477,11 +525,14 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         QList<QString> apiList = soundManager->getHostAPIList();
         if (!apiList.isEmpty()) {
 #ifdef __LINUX__
-            //Check for JACK and use that if it's available, otherwise use ALSA
-            if (apiList.contains(MIXXX_PORTAUDIO_JACK_STRING)) {
-                m_api = MIXXX_PORTAUDIO_JACK_STRING;
+            // Check if PipeWire checkbox selected
+            if (m_pSoundManager->isPipewireSelected()) {
+                m_api = SoundManagerConfig::kAPIPipewire;
+                // Check for JACK and use that if it's available, otherwise use ALSA
+            } else if (apiList.contains(SoundManagerConfig::kAPIJack)) {
+                m_api = SoundManagerConfig::kAPIJack;
             } else {
-                m_api = MIXXX_PORTAUDIO_ALSA_STRING;
+                m_api = SoundManagerConfig::kAPIAlsa;
             }
 #endif
 #ifdef __WINDOWS__
@@ -489,18 +540,18 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
             //Do something more advanced one day if you like - Adam
             // hoping this counts as more advanced, tests if ASIO is an option
             // and then that we have at least one ASIO output device -- bkgood
-            if (apiList.contains(MIXXX_PORTAUDIO_ASIO_STRING)
-                   && !soundManager->getDeviceList(
-                       MIXXX_PORTAUDIO_ASIO_STRING, true, false).isEmpty()) {
-                m_api = MIXXX_PORTAUDIO_ASIO_STRING;
+            auto deviceList = soundManager->getDeviceList(
+                    SoundManagerConfig::kAPIAsio, true, false);
+            if (apiList.contains(SoundManagerConfig::kAPIAsio) && !deviceList.isEmpty()) {
+                m_api = SoundManagerConfig::kAPIAsio;
             } else {
-                m_api = MIXXX_PORTAUDIO_DIRECTSOUND_STRING;
+                m_api = SoundManagerConfig::kAPIDirectSound;
             }
 #endif
 #ifdef Q_OS_IOS
-            m_api = MIXXX_PORTAUDIO_IOSAUDIO_STRING;
+            m_api = SoundManagerConfig::kAPIIosAudio;
 #elif defined(Q_OS_MACOS)
-            m_api = MIXXX_PORTAUDIO_COREAUDIO_STRING;
+            m_api = SoundManagerConfig::kAPICoreAudio;
 #endif
         }
     }

@@ -72,7 +72,8 @@ class LibraryScanner : public QThread {
     // ScannerTask signal handlers.
     void slotDirectoryHashedAndScanned(const QString& directoryPath,
                                    bool newDirectory, mixxx::cache_key_t hash);
-    void slotDirectoryUnchanged(const QString& directoryPath);
+    void slotDirectoryUnchanged(const QString& directoryPath,
+            const QStringList& presentTrackLocations);
     void slotTrackExists(const QString& trackPath);
     void slotAddNewTrack(const QString& trackPath);
 
@@ -129,5 +130,6 @@ class LibraryScanner : public QThread {
     QList<mixxx::FileInfo> m_libraryRootDirs;
     std::unique_ptr<LibraryScannerDlg> m_pProgressDlg;
 
+    bool m_canceled;
     bool m_manualScan;
 };

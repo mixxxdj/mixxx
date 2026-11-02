@@ -2,6 +2,7 @@
 
 #include <QCheckBox>
 #include <QContextMenuEvent>
+#include <QLabel>
 #include <QPainter>
 #include <QStyleOptionHeader>
 #include <QTextOption>
@@ -82,7 +83,10 @@ QString HeaderViewState::saveState() const {
     int size = m_view_state.ByteSize();
 #endif
     QByteArray array(size, '\0');
-    m_view_state.SerializeToArray(array.data(), size);
+    VERIFY_OR_DEBUG_ASSERT(m_view_state.SerializeToArray(array.data(), size)) {
+        qWarning() << "Failed to serialize header view state";
+        return {};
+    }
     return QString(array.toBase64());
 }
 
@@ -126,6 +130,12 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
         const mixxx::library::HeaderViewState::HeaderState& header =
                 m_view_state.header_state(vi);
         const int li = header.logical_index();
+
+        if (li < 0 || li >= pHeaders->count()) {
+            qWarning() << "Header view: skipping restore for invalid column index" << li;
+            continue;
+        }
+
         pHeaders->setSectionHidden(li, header.hidden());
         // If the stored size is 0 or less than the minimum column width,
         // we use the latter. This might happen if  WTTVH_MINIMUM_SECTION_SIZE
@@ -134,7 +144,11 @@ void HeaderViewState::restoreState(WTrackTableViewHeader* pHeaders) {
         // by QHeaderView internally and is applied once the column is shown.
         int size = math_max(header.size(), WTTVH_MINIMUM_SECTION_SIZE);
         pHeaders->resizeSection(li, size);
-        pHeaders->moveSection(pHeaders->visualIndex(li), vi);
+
+        int from = pHeaders->visualIndex(li);
+        if (from != -1) {
+            pHeaders->moveSection(from, vi);
+        }
     }
     if (m_view_state.sort_indicator_shown()) {
         pHeaders->setSortIndicator(
@@ -288,7 +302,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
 
     const QString headerStateString = pTrackModel->getModelSetting("header_state_pb");
-    if (headerStateString.isNull()) {
+    if (headerStateString.isEmpty()) {
         loadDefaultHeaderState();
     } else {
         // Load the previous header state (stored as serialized protobuf).
@@ -441,6 +455,13 @@ void WTrackTableViewHeader::leaveEvent(QEvent* pEvent) {
     }
 
     QHeaderView::leaveEvent(pEvent);
+}
+
+void WTrackTableViewHeader::mousePressEvent(QMouseEvent* pEvent) {
+    QHeaderView::mousePressEvent(pEvent);
+    if (QLabel* pIndicator = viewport()->findChild<QLabel*>()) {
+        pIndicator->hide();
+    }
 }
 
 void WTrackTableViewHeader::mouseMoveEvent(QMouseEvent* pEvent) {

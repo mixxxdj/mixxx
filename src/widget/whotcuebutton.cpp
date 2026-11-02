@@ -74,10 +74,8 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
         m_dndRectMargins = QMargins(dndMargin, dndMargin, dndMargin, dndMargin);
     }
 
-    m_pCueMenuPopup = make_parented<WCueMenuPopup>(context.getConfig(), this);
-    ColorPaletteSettings colorPaletteSettings(context.getConfig());
-    auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
-    m_pCueMenuPopup->setColorPalette(colorPalette);
+    // Store config pointer in case we need to create a cue menu later on
+    m_pConfig = context.getConfig();
 
     setFocusPolicy(Qt::NoFocus);
 
@@ -132,6 +130,38 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     if (!con.isNull()) {
         SKIN_WARNING(node, context, QStringLiteral("Additional Connections are not allowed"));
     }
+
+    // Create the list of ConfigKeys and translatable command strings
+    // for the keyboard shortcut tooltip and store it in WBaseWidget.
+    // KeyboardEventFilter::updateWidgetShortcuts() will fetch it to
+    // update the tooltip when the keyboard mapping is (re)loaded.
+    QList<std::pair<ConfigKey, QString>> shortcutKeys;
+    shortcutKeys.emplace_back(getLeftClickConfigKey(), tr("activate"));
+    shortcutKeys.emplace_back(getClearConfigKey(), tr("clear"));
+    // Add dedicated cue/loop cue controls
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("set")), tr("set"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("setcue")), tr("set cue"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("setloop")), tr("set loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("goto")), tr("go to"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("gotoandplay")), tr("go to and play"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("gotoandstop")), tr("go to and stop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("gotoandloop")), tr("go to and loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("cueloop")), tr("cue loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("activatecue")), tr("activat cue"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("activateloop")), tr("activate loop"));
+    shortcutKeys.emplace_back(
+            createConfigKey(QStringLiteral("activate_preview")), tr("activate preview"));
+    setShortcutControlsAndCommands(shortcutKeys);
 }
 
 bool WHotcueButton::isActive() const {
@@ -171,9 +201,10 @@ void WHotcueButton::mousePressEvent(QMouseEvent* pEvent) {
                 pTrack->removeCue(pHotCue);
                 return;
             }
-            m_pCueMenuPopup->setTrackCueGroup(pTrack, pHotCue, m_group);
+            auto* pCueMenuPopup = getCueMenuPopup();
+            pCueMenuPopup->setTrackCueGroup(pTrack, pHotCue, m_group);
             // use the bottom left corner as starting point for popup
-            m_pCueMenuPopup->popup(mapToGlobal(QPoint(0, height())));
+            pCueMenuPopup->popup(mapToGlobal(QPoint(0, height())));
         }
         return;
     }
@@ -261,6 +292,13 @@ void WHotcueButton::dropEvent(QDropEvent* pEvent) {
     } else {
         pEvent->ignore();
     }
+}
+
+WCueMenuPopup* WHotcueButton::getCueMenuPopup() {
+    if (m_pCueMenuPopup.get() == nullptr) {
+        m_pCueMenuPopup = make_parented<WCueMenuPopup>(m_pConfig, this);
+    }
+    return m_pCueMenuPopup.get();
 }
 
 ConfigKey WHotcueButton::createConfigKey(const QString& name) {

@@ -43,7 +43,7 @@ class BeatDetectionSettings {
     DEFINE_PREFERENCE_HELPERS(StemStrategy,
             StemStrategy,
             BPM_CONFIG_KEY,
-            BPM_REANALYZE_WHEN_SETTINGS_CHANGE,
+            BPM_STEM_STRATEGY,
             StemStrategy::Disabled);
 
     DEFINE_PREFERENCE_HELPERS(ReanalyzeImported,

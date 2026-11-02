@@ -1,7 +1,7 @@
 import Mixxx 1.0 as Mixxx
-import QtQml 2.12
-import QtQuick 2.12
-import QtQuick.Shapes 1.12
+import QtQml
+import QtQuick
+import QtQuick.Shapes
 
 Item {
     id: root
@@ -34,11 +34,18 @@ Item {
     property alias arcWidth: arcPath.strokeWidth
     property alias background: background.data
     property alias foreground: foreground.data
+    property bool hideCursorWhileDragging: true
+    property real knobCenterOffsetX: 0
+    property real knobCenterOffsetY: 0
     property real max: 1
     property real min: 0
     property real value: min
     readonly property real valueCenter: (max - min) / 2
-    property real wheelStepSize: (root.max - root.min) / 100
+    // QWheelEvent::angleDelta() reports one standard mouse-wheel step as 120.
+    readonly property int wheelDeltaStep: 120
+    property real wheelStepSize: (root.max - root.min) / root.wheelSteps
+    // Match the legacy MIDI-style knob resolution across the control range.
+    readonly property int wheelSteps: 127
 
     signal turned(real value)
 
@@ -55,7 +62,12 @@ Item {
         id: foreground
 
         anchors.fill: parent
-        rotation: root.angleFrom(root.value - root.valueCenter)
+
+        transform: Rotation {
+            angle: root.angleFrom(root.value - root.valueCenter)
+            origin.x: root.width / 2 + root.knobCenterOffsetX
+            origin.y: root.height / 2 + root.knobCenterOffsetY
+        }
     }
     Shape {
         // Enable smooth curves. For QtQuick Shapes, this currently only works
@@ -78,7 +90,7 @@ Item {
 
             PathAngleArc {
                 centerX: root.width / 2 + root.arcOffsetX
-                centerY: root.width / 2 + root.arcOffsetY
+                centerY: root.height / 2 + root.arcOffsetY
                 radiusX: root.arcRadius
                 radiusY: root.arcRadius
                 startAngle: root.angleFrom(root.arcStartValue - root.valueCenter) - 90
@@ -92,6 +104,7 @@ Item {
         property vector2d lastTranslation: Qt.vector2d(0, 0)
         property real value
 
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         target: null
 
         onActiveChanged: {
@@ -110,8 +123,7 @@ Item {
             if ((y_dominant && diff_y > 0) || (!y_dominant && diff_x < 0))
                 dist = -dist;
 
-            // For legacy (MIDI) reasons this is tuned to 127.
-            let value = root.value + dist / 127;
+            let value = root.value + dist / root.wheelSteps;
             // Clamp to [0.0, 1.0].
             value = Mixxx.MathUtils.clamp(value, 0, 1);
             root.turned(value);
@@ -124,26 +136,33 @@ Item {
         value: dragHandler.value
         when: dragHandler.active
     }
+    PointHandler {
+        id: pointerHandler
 
-    // TODO: Replace this with a WheelHandler once we switch to Qt >= 5.14.
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        enabled: root.hideCursorWhileDragging && root.Window.active
+    }
     MouseArea {
-        id: wheelHandler
-
-        property real value
-
         acceptedButtons: Qt.NoButton
         anchors.fill: parent
-
-        onWheel: {
-            const value = (wheel.angleDelta.y < 0) ? Math.min(root.max, root.value + root.wheelStepSize) : Math.max(root.min, root.value - root.wheelStepSize);
-            root.turned(value);
-            dragHandler.value = value;
-        }
+        anchors.margins: -Math.max(Screen.desktopAvailableWidth, Screen.desktopAvailableHeight)
+        cursorShape: Qt.BlankCursor
+        enabled: root.enabled && root.visible && pointerHandler.enabled && pointerHandler.active
+        hoverEnabled: true
+        parent: root.Window.window ? root.Window.window.contentItem : null
+        visible: enabled
+        z: 2147483647
     }
-    Binding {
-        property: "value"
-        target: root
-        value: wheelHandler.value
-        when: wheelHandler.drag.active
+    WheelHandler {
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        target: null
+
+        onWheel: event => {
+            const wheelAdjustment = event.angleDelta.y / root.wheelDeltaStep * root.wheelStepSize;
+            const value = Mixxx.MathUtils.clamp(root.value + wheelAdjustment, root.min, root.max);
+            root.turned(value);
+            event.accepted = true;
+        }
     }
 }

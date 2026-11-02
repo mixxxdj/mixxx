@@ -10,19 +10,24 @@
 #include <QtQuick/QSGRectangleNode>
 #include <QtQuick/QSGTexture>
 #include <QtQuick/QSGTextureProvider>
+#include <algorithm>
 #include <cmath>
 
+#include "library/library.h"
 #include "mixer/basetrackplayer.h"
 #include "moc_qmlwaveformdisplay.cpp"
+#include "qml/qmlconfigproxy.h"
 #include "qml/qmlplayerproxy.h"
+#include "qmllibraryproxy.h"
 #include "rendergraph/context.h"
 #include "rendergraph/node.h"
 #include "util/assert.h"
+#include "waveform/visualplayposition.h"
 
 using namespace allshader;
 
 namespace {
-constexpr int kDefaultSyncInternalMs = 100;
+constexpr int kDefaultFrameRate = 60;
 } // namespace
 
 namespace mixxx {
@@ -31,9 +36,32 @@ namespace qml {
 QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
         : QQuickItem(parent),
           WaveformWidgetRenderer(),
-          m_syncInterval(kDefaultSyncInternalMs),
-          m_pPlayer(nullptr) {
+          m_syncInterval(1'000'000 / kDefaultFrameRate),
+          m_frameRate(kDefaultFrameRate),
+          m_pPlayer(nullptr),
+          m_pTrack(nullptr),
+          m_visualPlayPosition(QSharedPointer<VisualPlayPosition>::create()) {
+    m_visualPlayPosition->set(0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            SlipModeState::Disabled,
+            false,
+            false,
+            false,
+            0.0,
+            0.0,
+            0.0,
+            0.0);
     setFlag(QQuickItem::ItemHasContents, true);
+
+    m_frameRateTimer.setSingleShot(true);
+    m_frameRateTimer.setTimerType(Qt::PreciseTimer);
+    connect(&m_frameRateTimer, &QTimer::timeout, this, [this]() {
+        m_frameRequestTimer.restart();
+        update();
+    });
 
     connect(this,
             &QmlWaveformDisplay::windowChanged,
@@ -43,38 +71,278 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
     slotWindowChanged(window());
 }
 
+void QmlWaveformDisplay::setFrameRate(int frameRate) {
+    const int clampedFrameRate = std::clamp(frameRate, 1, 240);
+    if (m_frameRate == clampedFrameRate) {
+        return;
+    }
+    m_frameRate = clampedFrameRate;
+    m_syncInterval = std::chrono::microseconds(
+            std::max(1, 1'000'000 / m_frameRate));
+    if (window()) {
+        m_frameRateTimer.stop();
+        requestUpdateAtFrameRate();
+    }
+    emit frameRateChanged();
+}
+
 QmlWaveformDisplay::~QmlWaveformDisplay() {
     // The stack contains references to Renderer that are owned and cleared by a BaseNode
     m_rendererStack.clear();
 }
 
 void QmlWaveformDisplay::componentComplete() {
-    qDebug() << "QmlWaveformDisplay ready for group" << getGroup() << "with"
-             << m_waveformRenderers.count() << "renderer(s)";
+    if (!getGroup().isEmpty()) {
+        qDebug() << "QmlWaveformDisplay ready for group" << getGroup() << "with"
+                 << m_waveformRenderers.count() << "renderer(s)";
+    } else if (m_pTrack && m_pTrack->internal()) {
+        qDebug() << "QmlWaveformDisplay ready for track" << m_pTrack->internal().get() << "with"
+                 << m_waveformRenderers.count() << "renderer(s)";
+    } else {
+        qWarning() << "QmlWaveformDisplay initialised with neither a track nor a group!";
+    }
+
+    if (auto* pConfig = qobject_cast<QmlConfigProxy*>(QmlConfigProxyBase::s_pInstance)) {
+        const auto refreshRenderers = [this]() {
+            this->refreshRenderers();
+        };
+        constexpr auto connectionType = Qt::QueuedConnection;
+        connect(pConfig,
+                &QmlConfigProxy::waveformDefaultZoomChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformPlayMarkerPositionChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformEnabledChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformFrameRateChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformUntilMarkShowBeatsChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformUntilMarkShowTimeChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformUntilMarkAlignChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformUntilMarkTextPointSizeChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformUntilMarkTextHeightLimitChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformVisualGainAllChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformVisualGainLowChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformVisualGainMediumChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformVisualGainHighChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformEndOfTrackWarningTimeChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformTypeChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformOptionsChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformBeatGridAlphaChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformStemOpacityChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformStemOutlineOpacityChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformStemReorderOnChangeChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+        connect(pConfig,
+                &QmlConfigProxy::waveformStemSplitTracksChanged,
+                this,
+                refreshRenderers,
+                connectionType);
+    }
     QQuickItem::componentComplete();
 }
 
-void QmlWaveformDisplay::slotWindowChanged(QQuickWindow* window) {
-    m_rendererStack.clear();
+double QmlWaveformDisplay::getPosition() const {
+    return m_visualPlayPosition->getEnginePlayPos();
+}
 
+void QmlWaveformDisplay::setPosition(double value) {
+    if (!m_pTrack || !m_pTrack->internal()) {
+        return;
+    }
+    m_visualPlayPosition->set(std::clamp(value, 0.0, 1.0),
+            1.0,
+            0,
+            0.0,
+            0.0,
+            SlipModeState::Disabled,
+            false,
+            false,
+            false,
+            0,
+            0,
+            m_pTrack->internal()->getDuration(),
+            0);
+    update();
+}
+
+void QmlWaveformDisplay::setStaticTrack(QmlTrackProxy* track) {
+    m_pTrack = track;
+    if (!m_pTrack) {
+        if (!m_pPlayer) {
+            setCurrentTrack(nullptr);
+        }
+        return;
+    }
+    if (!track->internal()) {
+        return;
+    }
+    if (!track->internal()->getWaveform()) {
+        emit QmlLibraryProxy::get() -> analyzeTracks({track->internal()->getId()});
+    }
+    setVisualPlayPosition(m_visualPlayPosition);
+    m_visualPlayPosition->set(0.0,
+            1.0,
+            1024. /
+                    static_cast<double>(m_pTrack->internal()->getBitrate()) *
+                    m_pTrack->internal()->getDuration(),
+            0.0,
+            0.0,
+            SlipModeState::Disabled,
+            false,
+            false,
+            false,
+            0,
+            0,
+            m_pTrack->internal()->getDuration(),
+            1024. / static_cast<double>(mixxx::kEngineChannelOutputCount) /
+                    static_cast<double>(m_pTrack->internal()->getSampleRate()) * 1000000.0);
+    setCurrentTrack(track->internal());
+    emit trackChanged(track);
+    emit groupChanged("");
+    update();
+}
+
+void QmlWaveformDisplay::slotWindowChanged(QQuickWindow* window) {
     m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     if (window) {
-        connect(window, &QQuickWindow::afterFrameEnd, this, &QmlWaveformDisplay::slotFrameSwapped);
+        connect(window,
+                &QQuickWindow::afterFrameEnd,
+                this,
+                &QmlWaveformDisplay::slotFrameSwapped,
+                Qt::UniqueConnection);
     }
     m_timer.restart();
+    m_frameRateTimer.stop();
+    m_frameRequestTimer.restart();
+}
+
+void QmlWaveformDisplay::setOptions(mixxx::qml::WaveformRendererSignalBaseOptions options) {
+    m_options = options;
+    emit optionsChanged(options);
+
+    m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    update();
+}
+
+void QmlWaveformDisplay::refreshRenderers() {
+    // Renderer objects and their render-graph nodes live on the scene-graph
+    // thread. Only mark the item dirty here; updatePaintNode() clears and
+    // rebuilds the stack on that thread.
+    m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+    update();
 }
 
 std::chrono::microseconds QmlWaveformDisplay::fromTimerToNextSync(const PerformanceTimer& timer) {
     // TODO @m0dB probably better to use a singleton instead of deriving QmlWaveformDisplay from
     // ISyncTimeProvider and have each keep track of this.
+    if (m_pTrack) {
+        return m_syncInterval;
+    }
     return m_syncInterval + std::chrono::microseconds(m_timer.difference(timer).toIntegerMicros());
 }
 
 void QmlWaveformDisplay::slotFrameSwapped() {
     m_timer.restart();
+    requestUpdateAtFrameRate();
+}
 
-    // continuous redraw
-    update();
+void QmlWaveformDisplay::requestUpdateAtFrameRate() {
+    if (!window()) {
+        return;
+    }
+
+    if (!m_frameRequestTimer.isValid()) {
+        m_frameRequestTimer.start();
+    }
+
+    const qint64 elapsedMicros = m_frameRequestTimer.nsecsElapsed() / 1000;
+    const qint64 intervalMicros = m_syncInterval.count();
+    if (elapsedMicros >= intervalMicros) {
+        m_frameRateTimer.stop();
+        m_frameRequestTimer.restart();
+        update();
+        return;
+    }
+
+    const qint64 remainingMicros = intervalMicros - elapsedMicros;
+    const int remainingMillis = static_cast<int>(
+            std::max<qint64>(1, (remainingMicros + 999) / 1000));
+    m_frameRateTimer.start(remainingMillis);
 }
 
 void QmlWaveformDisplay::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) {
@@ -118,17 +386,19 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
 
         m_rendererStack.clear();
         for (auto* pQmlRenderer : std::as_const(m_waveformRenderers)) {
-            if (!pQmlRenderer->isSupported()) {
-                qDebug() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
+            if (!pQmlRenderer->isEnabled()) {
+                continue;
             }
-            auto renderer = pQmlRenderer->create(this);
-#ifdef __STEM__
-            VERIFY_OR_DEBUG_ASSERT(renderer.renderer) {
-#else
-            // It is expected for the stem renderer to return a null value in
+            if (!pQmlRenderer->isSupported()) {
+                qWarning() << "Ignoring the unsupported" << pQmlRenderer << "renderer";
+                continue;
+            }
+            auto renderer = pQmlRenderer->create(this, m_options);
+            // FIXME Some renderer will return nullptr till
+            // WaveformRendererTextured is supported (#14990)
+            // It is also expected for the stem renderer to return a null value in
             // case STEM are not enabled.
             if (!renderer.renderer) {
-#endif
                 continue;
             }
             addRenderer(renderer.renderer);
@@ -138,6 +408,12 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
         pBgNode->appendChildNode(pTopNode);
         pClipNode->appendChildNode(pBgNode);
         init();
+        // The track can be assigned before the scene-graph renderer stack is
+        // created. Replay it after renderer initialization so marks and STEM
+        // renderers receive their onSetTrack() setup on the render thread.
+        if (getTrackInfo()) {
+            setTrack(getTrackInfo());
+        }
     }
 
     if (m_dirtyFlag.testFlag(DirtyFlag::Background)) {
@@ -149,6 +425,8 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
         m_dirtyFlag.setFlag(DirtyFlag::Geometry, false);
         pBgNode->setRect(boundingRect());
         pClipNode->setClipRect(boundingRect());
+        pBgNode->markDirty(QSGNode::DirtyGeometry);
+        pClipNode->markDirty(QSGNode::DirtyGeometry);
         resizeRenderer(boundingRect().width(),
                 boundingRect().height(),
                 window()->devicePixelRatio());
@@ -180,6 +458,7 @@ void QmlWaveformDisplay::setPlayer(QmlPlayerProxy* pPlayer) {
     m_pPlayer = pPlayer;
 
     if (m_pPlayer != nullptr) {
+        setGroup(m_pPlayer->internalTrackPlayer()->getGroup());
         setCurrentTrack(m_pPlayer->internalTrackPlayer()->getLoadedTrack());
         connect(m_pPlayer->internalTrackPlayer(),
                 &BaseTrackPlayer::newTrackLoaded,
@@ -269,6 +548,13 @@ void QmlWaveformDisplay::renderers_append(
     }
     pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     pWaveform->m_waveformRenderers.append(value);
+    QObject::connect(value,
+            &QmlWaveformRendererFactory::enabledChanged,
+            pWaveform,
+            [pWaveform]() {
+                pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
+                pWaveform->update();
+            });
 }
 
 // Static
@@ -288,6 +574,9 @@ QmlWaveformRendererFactory* QmlWaveformDisplay::renderers_at(
         return nullptr;
     }
     QmlWaveformDisplay* pWaveform = static_cast<QmlWaveformDisplay*>(pList->object);
+    VERIFY_OR_DEBUG_ASSERT(pWaveform) {
+        return nullptr;
+    }
     pWaveform->m_dirtyFlag.setFlag(DirtyFlag::Window, true);
     return pWaveform->m_waveformRenderers.at(index);
 }

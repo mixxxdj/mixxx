@@ -43,9 +43,10 @@ void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        RecordingManager* pRecordingManager)
+        RecordingManager* pRecordingManager,
+        const char* nameSpace)
         : TrackModel(pTrackCollectionManager->internalCollection()->database(),
-                  "mixxx.db.model.browse"),
+                  nameSpace),
           QStandardItemModel(parent),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pRecordingManager(pRecordingManager),
@@ -366,7 +367,7 @@ void BrowseTableModel::slotClear(BrowseTableModel* caller_object) {
     }
 }
 
-void BrowseTableModel::slotInsert(const QList<QList<QStandardItem*>>& rows,
+void BrowseTableModel::slotInsert(const BrowseTableItems& rows,
         BrowseTableModel* caller_object) {
     // There exists more than one BrowseTableModel in Mixxx and we only want to
     // receive items this object has 'ordered' from the BrowseThread (singleton)

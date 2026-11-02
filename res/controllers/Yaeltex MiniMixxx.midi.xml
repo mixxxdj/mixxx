@@ -7,6 +7,21 @@
     <!-- <wiki></wiki>
     <forums></forums> -->
   </info>
+  <settings>
+    <group label="Controller Behavior">
+        <row orientation="vertical">
+            <option
+                variable="shiftPitch"
+                type="boolean"
+                default="false"
+                label="Only adjust pitch when shift button is held">
+                <description>
+                    When set to true, only allows adjustments to pitch when shift is held. Useful for preventing accidental adjustments.
+                </description>
+            </option>
+        </row>
+    </group>
+  </settings>
   <controller id="MiniMixxx">
     <scriptfiles>
       <file filename="Yaeltex-MiniMixxx-scripts.js" functionprefix="MiniMixxx" />

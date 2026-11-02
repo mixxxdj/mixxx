@@ -511,7 +511,42 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
             Qt::AscendingOrder);
     pPlaylistTableModel->select();
 
-    QList<QString> locations = Parser::parse(playlistFile);
+    const QList<QString> allLocations = Parser::parseAllLocations(playlistFile);
+    const QString basePath = QFileInfo(playlistFile).canonicalPath();
+
+    QList<QString> locations;
+    for (const auto& rawLocation : allLocations) {
+        if (rawLocation.trimmed().isEmpty()) {
+            continue;
+        }
+        mixxx::FileInfo trackFile =
+                Parser::playlistEntryToFileInfo(rawLocation, basePath);
+
+#if defined(__APPLE__)
+        if (Sandbox::enabled() && !trackFile.isReadable() &&
+                !Sandbox::canAccess(&trackFile)) {
+            // The file may be inaccessible due to macOS App Sandbox rather
+            // than genuinely missing. Request access to the containing
+            // directory to obtain a security-scoped bookmark, then retry.
+            mixxx::FileInfo dirInfo(trackFile.locationPath());
+            if (Sandbox::askForAccess(&dirInfo)) {
+                trackFile.refresh();
+            } else {
+                // User cancelled — stop prompting to avoid repeated dialogs.
+                qWarning() << "Sandbox access denied or cancelled for"
+                           << trackFile.locationPath();
+                break;
+            }
+        }
+#endif
+
+        if (trackFile.checkFileExists()) {
+            locations.append(trackFile.location());
+        } else {
+            qInfo() << "File" << trackFile.location() << "from playlist"
+                    << playlistFile << "does not exist.";
+        }
+    }
     // Iterate over the List that holds locations of playlist entries
     pPlaylistTableModel->addTracks(QModelIndex(), locations);
 }
@@ -854,37 +889,44 @@ void BasePlaylistFeature::slotTrackSelected(TrackId trackId) {
     m_selectedTrackId = trackId;
     m_playlistDao.getPlaylistsTrackIsIn(m_selectedTrackId, &m_playlistIdsOfSelectedTrack);
 
+    bool shouldRootBeBold = false;
+
     for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
         QModelIndex index = m_pSidebarModel->index(row, 0);
         TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
         DEBUG_ASSERT(pTreeItem != nullptr);
-        markTreeItem(pTreeItem);
+
+        // If any child item is marked bold, the root item must be, too
+        if (markTreeItem(pTreeItem)) {
+            shouldRootBeBold = true;
+        }
     }
+
+    m_pSidebarModel->getRootItem()->setBold(shouldRootBeBold);
 
     m_pSidebarModel->triggerRepaint();
 }
 
-void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
+bool BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
     bool ok;
+    bool isBold = false;
     int playlistId = pTreeItem->getData().toInt(&ok);
     if (ok) {
-        bool shouldBold = m_playlistIdsOfSelectedTrack.contains(playlistId);
-        pTreeItem->setBold(shouldBold);
-        if (shouldBold && pTreeItem->hasParent()) {
-            TreeItem* item = pTreeItem;
-            // extra parents, because -Werror=parentheses
-            while ((item = item->parent())) {
-                item->setBold(true);
+        isBold = m_playlistIdsOfSelectedTrack.contains(playlistId);
+    }
+
+    if (pTreeItem->hasChildren()) {
+        QList<TreeItem*> children = pTreeItem->children();
+        for (int i = 0; i < children.size(); i++) {
+            if (markTreeItem(children.at(i))) {
+                isBold = true;
             }
         }
     }
-    if (pTreeItem->hasChildren()) {
-        QList<TreeItem*> children = pTreeItem->children();
 
-        for (int i = 0; i < children.size(); i++) {
-            markTreeItem(children.at(i));
-        }
-    }
+    pTreeItem->setBold(isBold);
+
+    return isBold;
 }
 
 QString BasePlaylistFeature::createPlaylistLabel(const QString& name,

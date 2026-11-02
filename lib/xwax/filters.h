@@ -2,27 +2,62 @@
 
 #define FILTERS_H
 
-struct ema_filter {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "ringbuffer.h"
+
+struct ewma_filter {
     double alpha;
     int y_old;
 };
 
-void ema_init(struct ema_filter *, const double alpha);
-int ema(struct ema_filter *, const int x);
+void ewma_init(struct ewma_filter *f, const double alpha);
+void ewma_init_adaptive(struct ewma_filter *f, double k, double f_carrier,
+    double fs);
+int ewma(struct ewma_filter *f, const int x);
 
 struct differentiator {
     int x_old;
 };
 
-void derivative_init(struct differentiator *filter);
-int derivative(struct differentiator *, const int x);
+void derivative_init(struct differentiator *f);
+int derivative(struct differentiator *f, const int x);
 
 struct root_mean_square {
-    float alpha;
-    unsigned long long squared_old;
+    double alpha;
+    double squared_old;
 };
 
-void rms_init(struct root_mean_square *filter, const float alpha);
-int rms(struct root_mean_square *filter, const int x);
+void rms_init(struct root_mean_square *f, const float alpha);
+int rms(struct root_mean_square *f, const int x);
+
+struct savitzky_golay {
+    size_t window_size;           /* Window size */
+    size_t M;                     /* Half width */
+    size_t polyorder;             /* Polynomial order */
+    double *coeff;                /* Filter coefficients */
+    struct ringbuffer *delayline; /* Sample ringbuffer */
+};
+
+struct savitzky_golay *savgol_create(size_t window_size, size_t polyorder);
+void savgol_destroy(struct savitzky_golay *f);
+int savgol(struct savitzky_golay *f, int x);
+
+struct rumble_filter {
+    double fc;    /* Cutoff frequency */
+    double fs;    /* Sample rate */
+    double alpha; /* Filter coefficient */
+    double x_old; /* x[n-1] */
+    double y_old; /* y[n-1] */
+};
+
+void rhpf_init(struct rumble_filter *f, unsigned int fs, double fc);
+int rhpf_process(struct rumble_filter *f, int x);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* end of include guard FILTERS_H */

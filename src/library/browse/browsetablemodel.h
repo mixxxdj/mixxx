@@ -50,7 +50,10 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     Q_OBJECT
 
   public:
-    BrowseTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, RecordingManager* pRec);
+    BrowseTableModel(QObject* parent,
+            TrackCollectionManager* pTrackCollectionManager,
+            RecordingManager* pRec,
+            const char* nameSpace);
     virtual ~BrowseTableModel();
 
     // initiate table population, store path
@@ -108,7 +111,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
 
   public slots:
     void slotClear(BrowseTableModel*);
-    void slotInsert(const QList<QList<QStandardItem*>>&, BrowseTableModel*);
+    void slotInsert(const BrowseTableItems&, BrowseTableModel*);
     void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private:

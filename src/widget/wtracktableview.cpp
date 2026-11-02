@@ -61,8 +61,9 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
-    m_pCOTGuiTick = new ControlProxy(
-            QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
+    m_pCOTGuiTick = new ControlProxy(QStringLiteral("[App]"),
+            QStringLiteral("gui_tick_50ms_period_s"),
+            this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
@@ -128,7 +129,6 @@ void WTrackTableView::selectionChanged(
         const QItemSelection& selected, const QItemSelection& deselected) {
     m_selectionChangedSinceLastGuiTick = true;
     enableCachedOnly();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     // Workaround for Qt6 bug https://bugreports.qt.io/browse/QTBUG-108595:
     // If 'selectedClick' is enabled Ctrl+click opens the editor instead of
     // toggling the clicked item.
@@ -140,7 +140,6 @@ void WTrackTableView::selectionChanged(
             setSelectedClick(true);
         }
     }
-#endif
     QTableView::selectionChanged(selected, deselected);
 }
 
@@ -459,6 +458,21 @@ TrackModel::SortColumnId WTrackTableView::getColumnIdFromCurrentIndex() {
     return pTrackModel->sortColumnIdFromColumnIndex(currentIndex().column());
 }
 
+void WTrackTableView::toggleBpmLock(bool locked) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+
+    const QModelIndexList indices = getSelectedRows();
+    for (const auto& index : indices) {
+        TrackPointer pTrack = pTrackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->setBpmLocked(locked);
+        }
+    }
+}
+
 void WTrackTableView::assignPreviousTrackColor() {
     TrackModel* pTrackModel = getTrackModel();
     if (!pTrackModel) {
@@ -496,6 +510,27 @@ void WTrackTableView::assignNextTrackColor() {
         ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
         mixxx::RgbColor::optional_t color = pTrack->getColor();
         pTrack->setColor(colorPalette.nextColor(color));
+    }
+}
+
+void WTrackTableView::trackRatingChangeRequestRelative(int change) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    const QModelIndexList indices = getSelectedRows();
+    if (indices.isEmpty()) {
+        return;
+    }
+
+    const QModelIndex index = indices.at(0);
+    TrackPointer pTrack = pTrackModel->getTrack(index);
+    if (pTrack) {
+        int newRating = pTrack->getRating() + change;
+        if (mixxx::TrackRecord::isValidRating(newRating) &&
+                newRating != pTrack->getRating()) {
+            pTrack->setRating(newRating);
+        }
     }
 }
 
@@ -613,6 +648,7 @@ void WTrackTableView::showTrackMenu(const QPoint pos, const QModelIndex& index) 
         return;
     }
     m_pTrackMenu->loadTrackModelIndices(indices);
+    m_pTrackMenu->updateMenus();
     m_pTrackMenu->setTrackPropertyName(columnNameOfIndex(index));
 
     saveCurrentIndex();
@@ -810,15 +846,11 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // (the "drop" position in a drag-and-drop)
     // The user usually drops on the seam between two rows.
     // We take the row below the seam for reference.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint position = event->position().toPoint();
-#else
-    QPoint position = event->pos();
-#endif
+    const QPoint position = event->position().toPoint();
     int dropRow = rowAt(position.y()); // is -1 below last row
     int height = rowHeight(dropRow);   // is 0 below last row
-    QPoint pointOfRowBelowSeam(position.x(), position.y() + height / 2);
-    QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
+    const QPoint pointOfRowBelowSeam(position.x(), position.y() + height / 2);
+    const QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();
 
@@ -1678,7 +1710,7 @@ void WTrackTableView::moveSelection(int delta) {
 
     while (delta != 0) {
         QItemSelectionModel* currentSelection = selectionModel();
-        if (currentSelection->selectedRows().length() > 0) {
+        if (!currentSelection->selectedRows().isEmpty()) {
             if (delta > 0) {
                 // i is positive, so we want to move the highlight down
                 int row = currentSelection->selectedRows().last().row();

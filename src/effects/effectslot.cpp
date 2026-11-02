@@ -114,6 +114,17 @@ EffectSlot::EffectSlot(const QString& group,
             this,
             &EffectSlot::slotClear);
 
+    m_pControlShowPresetList =
+            std::make_unique<ControlPushButton>(ConfigKey(m_group, "show_preset_list"));
+    m_pControlShowPresetList->connectValueChangeRequest(
+            this,
+            [this](double value) {
+                emit presetListShowRequest(value > 0);
+            });
+    // All WEffectSelector of this slot receive this. If one of them is visible,
+    // it'll return a 'confirm' signal which we handle in slotPresetListVisibleChanged
+    // and set the control accordingly.
+
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
         addEffectParameterSlot(EffectParameterType::Knob);
         addEffectParameterSlot(EffectParameterType::Button);
@@ -196,11 +207,11 @@ void EffectSlot::updateEngineState() {
     }
 }
 
-void EffectSlot::initalizeInputChannel(ChannelHandle inputChannel) {
+void EffectSlot::initializeInputChannel(ChannelHandle inputChannel) {
     if (!m_pEngineEffect) {
         return;
     }
-    m_pEngineEffect->initalizeInputChannel(inputChannel);
+    m_pEngineEffect->initializeInputChannel(inputChannel);
 };
 
 EffectManifestPointer EffectSlot::getManifest() const {
@@ -488,11 +499,7 @@ void EffectSlot::swapParameters(EffectParameterType type, int index1, int index2
     VERIFY_OR_DEBUG_ASSERT(m_loadedParameters[type].size() > index2) {
         return;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 13, 0)
     m_loadedParameters[type].swapItemsAt(index1, index2);
-#else
-    m_loadedParameters[type].swap(index1, index2);
-#endif
     loadParameters();
     emit parametersChanged();
 }
@@ -584,4 +591,8 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
             pParameterSlot->onEffectMetaParameterChanged(v, force);
         }
     }
+}
+
+void EffectSlot::slotPresetListVisibleChanged(bool visible) {
+    m_pControlShowPresetList->setAndConfirm(visible ? 1.0 : 0.0);
 }

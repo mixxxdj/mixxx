@@ -4,16 +4,16 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "library/library_prefs.h"
 #include "library/sidebarmodel.h"
 #include "moc_wlibrarysidebar.cpp"
 #include "util/defs.h"
 #include "util/dnd.h"
 
-constexpr int expand_time = 250;
-
 WLibrarySidebar::WLibrarySidebar(QWidget* parent)
         : QTreeView(parent),
           WBaseWidget(this),
+          m_hoverExpandDelay(mixxx::library::prefs::kSidebarHoverExpandDelayDefault),
           m_lastDragMoveAccepted(false) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
     //Set some properties
@@ -79,21 +79,20 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent* pEvent) {
     // qDebug() << "WLibrarySidebar::dragMoveEvent" << pEvent->mimeData()->formats();
     toggleDragHoverPropertyAndUpdateStyle(true);
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint pos = pEvent->position().toPoint();
-#else
-    QPoint pos = pEvent->pos();
-#endif
+    const QPoint pos = pEvent->position().toPoint();
     const QModelIndex index = indexAt(pos);
     if (m_hoverIndex == index) {
         m_lastDragMoveAccepted ? pEvent->acceptProposedAction() : pEvent->ignore();
         return;
     }
 
-    // Start a timer to auto-expand sections the user hovers on
-    m_expandTimer.stop();
     m_hoverIndex = index;
-    m_expandTimer.start(expand_time, this);
+
+    if (m_hoverExpandDelay >= 0) {
+        // Timeout of < 0 disables auto-expand
+        m_expandTimer.stop();
+        m_expandTimer.start(m_hoverExpandDelay, this);
+    }
 
     // This has to be here instead of after, otherwise all drags will be
     // rejected -- rryan 3/2011
@@ -168,12 +167,7 @@ void WLibrarySidebar::dropEvent(QDropEvent* pEvent) {
         pEvent->ignore();
         return;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    QPoint pos = pEvent->position().toPoint();
-#else
-    QPoint pos = pEvent->pos();
-#endif
-
+    const QPoint pos = pEvent->position().toPoint();
     const QModelIndex destIndex = indexAt(pos);
     // pEvent->source() will return NULL if something is dropped from
     // a different application
@@ -491,4 +485,8 @@ void WLibrarySidebar::slotSetFont(const QFont& font) {
     // Resize the feature icons to be a bit taller than the label's capital
     int iconSize = static_cast<int>(QFontMetrics(font).height() * 0.8);
     setIconSize(QSize(iconSize, iconSize));
+}
+
+void WLibrarySidebar::slotSetExpandOnHoverDelay(int delay) {
+    m_hoverExpandDelay = delay;
 }

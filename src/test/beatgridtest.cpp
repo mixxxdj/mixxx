@@ -245,4 +245,24 @@ TEST(BeatGridTest, FromMetadata) {
     EXPECT_EQ(nullptr, pBeats);
 }
 
+// A BPM-locked track must not have its beatgrid changed, even when it has no
+// beatgrid yet: trySetBeats() must reject the new beats and leave the lock
+// untouched.
+// Related to https://github.com/mixxxdj/mixxx/issues/15196
+TEST(BeatGridTest, BpmLockRejectsBeatsForTrackWithoutBeats) {
+    TrackPointer pTrack = newTrack(kSampleRate);
+    pTrack->setBpmLocked(true);
+    ASSERT_FALSE(pTrack->getBeats());
+
+    const auto pBeats = Beats::fromConstTempo(
+            kSampleRate,
+            mixxx::audio::kStartFramePos,
+            mixxx::Bpm(120.0));
+    ASSERT_TRUE(pBeats);
+
+    EXPECT_FALSE(pTrack->trySetBeats(pBeats));
+    EXPECT_FALSE(pTrack->getBeats());
+    EXPECT_TRUE(pTrack->isBpmLocked());
+}
+
 }  // namespace
