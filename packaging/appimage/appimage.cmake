@@ -9,13 +9,11 @@ set(
   "${CMAKE_CURRENT_BINARY_DIR}/mixxx-appimage.desktop"
 )
 file(
-  READ
-  "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
+  READ "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
   MIXXX_APPIMAGE_DESKTOP_CONTENT
 )
 string(
-  REGEX REPLACE
-  "\nExec=[^\n]*"
+  REGEX REPLACE "\nExec=[^\n]*"
   "\nExec=mixxx"
   MIXXX_APPIMAGE_DESKTOP_CONTENT
   "${MIXXX_APPIMAGE_DESKTOP_CONTENT}"
@@ -64,8 +62,7 @@ install(
   BUNDLE DESTINATION .
 )
 install(
-  RUNTIME_DEPENDENCY_SET
-  mixxx_runtime_deps
+  RUNTIME_DEPENDENCY_SET mixxx_runtime_deps
   # The resolution options (DIRECTORIES, PRE_EXCLUDE_REGEXES, ...) must
   # precede the artifact group (LIBRARY DESTINATION), or install() rejects
   # them as unknown arguments.
@@ -128,7 +125,5 @@ install(
     "^libgpg-error\\.so.*"
     "^libusb-1\\.0\\.so.*"
     "^libgmp\\.so.*"
-  LIBRARY
-  DESTINATION
-  "${CMAKE_INSTALL_LIBDIR}"
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 )
