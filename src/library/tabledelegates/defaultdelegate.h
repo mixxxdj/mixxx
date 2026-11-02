@@ -17,4 +17,10 @@ class DefaultDelegate : public QStyledItemDelegate {
     void setHighlightedTextColor(
             QStyleOptionViewItem& option,
             const QModelIndex& index) const;
+
+  protected:
+    static void paintItemBackground(
+            QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index);
 };

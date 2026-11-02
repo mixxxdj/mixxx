@@ -80,6 +80,14 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
         m_config.loadDefaults(this, SoundManagerConfig::ALL);
     }
     checkConfig();
+
+    // Initialize the engine sample rate from the validated, persisted sound
+    // configuration before VinylControlXwax instances are constructed. Audio
+    // devices update this control with their actual sample rate when opened,
+    // but vinyl control inputs are configured before that happens.
+    ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")),
+            m_config.getSampleRate());
+
     // Don't write config to disk, yet -- it may be reset to defaults in case
     // previously configured devices were not found.
     // Write new config after MixxxMainWindow::noOutputDlg where the user has
