@@ -97,6 +97,7 @@ PioneerDDJ1000.deckNote = {
     headphoneCue: 0x54,
     beatSync: 0x58, syncLeader: 0x5C, // sync leader is SHIFT + BEAT SYNC
     keySync: 0x65,
+    crossfaderA: 0x16, crossfaderThru: 0x1D, crossfaderB: 0x18,
 };
 
 PioneerDDJ1000.deckCc = {
@@ -115,12 +116,15 @@ PioneerDDJ1000.beatFxNote = {
     auto: 0x66, tap: 0x6B, // SHIFT + BEAT < / >
     on: 0x47,
     release: 0x43, // RELEASE FX is SHIFT + BEAT FX ON/OFF
+    select: 0x20, // FX SELECT positions are 0x20-0x2D
+    channel: 0x10, // CH SELECT CH1-CH4, MASTER, MIC, SAMPLER are 0x10-0x16
 };
 
 PioneerDDJ1000.mixerNote = {
     colorFx: 0x00, // DUB ECHO, PITCH, NOISE, FILTER are 0x00-0x03
     colorFxShift: 0x08, // the same with SHIFT
     samplerCue: 0x69,
+    browseLoad: 0x46, // rotary press: load deck 1; decks 2-4 follow
 };
 
 // Jog dial display. Position bar, BPM, speed and cue marker are 14-bit
@@ -280,8 +284,11 @@ PioneerDDJ1000.newDeckState = function() {
         gridMode: null,
         gridRemainder: 0,
         // The deck's play and slip state from before a PAD FX brake or
-        // backspin, put back when the pad is released.
+        // backspin, put back when the last of those pads is released.
         trickRestore: null,
+        // The brake / backspin pads held, oldest first (true for backspin).
+        // The newest one is the trick running.
+        heldTricks: [],
         lastLoad: 0,
         loadTimer: 0,
     };
@@ -1071,7 +1078,13 @@ PioneerDDJ1000.faderStartCue = function(_channel, _control, value, _status, grou
 };
 
 PioneerDDJ1000.crossfaderAssign = function(_channel, control, value, _status, group) {
-    const side = {0x16: 0, 0x1D: 1, 0x18: 2}[control];
+    const note = PioneerDDJ1000.deckNote;
+    // Mixxx's orientation: 0 left, 1 center, 2 right.
+    const side = {
+        [note.crossfaderA]: 0,
+        [note.crossfaderThru]: 1,
+        [note.crossfaderB]: 2,
+    }[control];
     if (value && side !== undefined) {
         engine.setValue(group, "orientation", side);
     }
@@ -1426,7 +1439,7 @@ PioneerDDJ1000.browsePress = function(_channel, control, value) {
     if (!value) {
         return;
     }
-    const deck = control - 0x45;
+    const deck = control - PioneerDDJ1000.mixerNote.browseLoad + 1;
     const group = PioneerDDJ1000.group(deck);
     const state = PioneerDDJ1000.deck[deck];
     const now = Date.now();
@@ -1596,7 +1609,7 @@ PioneerDDJ1000.rollDecks = function() {
 // Preset 0 is always Mixxx's empty "---" preset, so LOW CUT ECHO loads the
 // first preset of the list.
 PioneerDDJ1000.beatFxSelect = function(_channel, control, value) {
-    const position = control - 0x20;
+    const position = control - PioneerDDJ1000.beatFxNote.select;
     if (!value || position === PioneerDDJ1000.beatFx.position) {
         return;
     }
@@ -1616,7 +1629,7 @@ PioneerDDJ1000.beatFxSelect = function(_channel, control, value) {
 
 // CH SELECT: CH1-CH4, MASTER, MIC, SAMPLER.
 PioneerDDJ1000.beatFxChannel = function(_channel, control, value) {
-    const target = [1, 2, 3, 4, "master", "mic", "sampler"][control - 0x10];
+    const target = [1, 2, 3, 4, "master", "mic", "sampler"][control - PioneerDDJ1000.beatFxNote.channel];
     if (!value || target === undefined) {
         return;
     }
@@ -1902,9 +1915,16 @@ PioneerDDJ1000.padRoll = function(deck, beats, value) {
 // Vinyl brake or backspin while held. Slip keeps the track running
 // underneath, so a deck that was playing carries on where it would have been;
 // a deck that was paused stays paused, where it was.
+//
+// Mixxx runs one brake or backspin per deck, so with several of these pads
+// held the newest one plays. Releasing an older pad changes nothing;
+// releasing the newest hands the deck to the pad held before it, and the
+// deck is only put back once no such pad is held.
 PioneerDDJ1000.padTrick = function(deck, spinback, value) {
     const group = PioneerDDJ1000.group(deck);
     const state = PioneerDDJ1000.deck[deck];
+    const run = (backspin, on) => (backspin ? engine.spinback(deck, on) : engine.brake(deck, on));
+    const held = state.heldTricks;
     if (value) {
         // With two trick pads held, keep the state from before the first.
         if (!state.trickRestore) {
@@ -1914,13 +1934,24 @@ PioneerDDJ1000.padTrick = function(deck, spinback, value) {
             };
         }
         engine.setValue(group, "slip_enabled", 1);
+        held.push(spinback);
+        run(spinback, true);
+        return;
     }
-    if (spinback) {
-        engine.spinback(deck, value > 0);
-    } else {
-        engine.brake(deck, value > 0);
+    const index = held.lastIndexOf(spinback);
+    if (index !== -1) {
+        held.splice(index, 1);
     }
-    if (!value && state.trickRestore) {
+    if (held.length) {
+        if (index === held.length) {
+            // The running trick was let go: carry on with the previous pad.
+            run(spinback, false);
+            run(held[held.length - 1], true);
+        }
+        return;
+    }
+    run(spinback, false);
+    if (state.trickRestore) {
         // Play first: switching slip off then jumps to the slip position.
         if (state.trickRestore.play) {
             engine.setValue(group, "play", 1);
