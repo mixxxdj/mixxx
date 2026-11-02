@@ -94,6 +94,23 @@ void updateQueryPlannerStatisticsForDatabase(const QSqlDatabase& database) {
     }
 }
 
+// Committing the add-tracks transaction after every track is essential to
+// avoid a deadlock between the scanner thread and the GUI thread:
+// TrackDAO::addTracksAddFile() holds the GlobalTrackCache mutex for its
+// entire duration, including its database writes. If the scanner kept its
+// write transaction open across multiple tracks, the following deadlock
+// could occur:
+// 1. The GUI thread (drag & drop) acquires the GlobalTrackCache mutex and
+//    then blocks, waiting for the write lock held by the scanner.
+// 2. The scanner, still inside its open transaction, processes the next
+//    track and blocks, waiting for the GlobalTrackCache mutex held by the
+//    GUI thread.
+// 3. Neither thread can proceed until the busy timeout expires, freezing
+//    the GUI and failing the query with SQLITE_BUSY.
+// By committing after every track, the scanner never waits for the cache
+// mutex while holding the write lock, so the lock ordering
+// (GlobalTrackCache -> database write lock) is consistent in all threads.
+
 } // anonymous namespace
 
 LibraryScanner::LibraryScanner(
@@ -649,6 +666,14 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
     } else {
         m_libraryHashDao.updateDirectoryHash(directoryPath, hash, 0);
     }
+
+    // Commit the add-tracks transaction at directory boundaries. This
+    // bounds the lifetime of the open transaction when no tracks are
+    // added for a while (e.g. a phase with only unchanged directories),
+    // so that the write lock is never held unnecessarily. During active
+    // track imports, slotAddNewTrack already commits after every track.
+    m_trackDao.addTracksCommitAndRestart();
+
     emit progressHashing(directoryPath);
 }
 
@@ -701,6 +726,11 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     if (!pTrack) {
         // This happens only when there is an issue with the database which
         // has been logged already. No need for yet another warning here.
+        // Still commit and restart the transaction so that the write lock
+        // is released before the next addTracksAddFile() call acquires the
+        // GlobalTrackCache mutex (see the comment on
+        // commit-after-every-track above).
+        m_trackDao.addTracksCommitAndRestart();
         return;
     }
 
@@ -716,6 +746,14 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     // a new track in the database.
     emit trackAdded(pTrack);
     emit progressLoading(trackLocation);
+
+    // Commit the add-tracks transaction after every track so that other
+    // threads (e.g. the GUI thread dropping tracks into the library) can
+    // acquire the write lock. This is critical for deadlock avoidance:
+    // the next addTracksAddFile() call will acquire the GlobalTrackCache
+    // mutex, and the scanner must not hold the write lock while waiting
+    // for that mutex (see the comment on commit-after-every-track above).
+    m_trackDao.addTracksCommitAndRestart();
 }
 
 bool LibraryScanner::changeScannerState(ScannerState newState) {
