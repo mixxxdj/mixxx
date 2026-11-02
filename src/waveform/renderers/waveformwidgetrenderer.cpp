@@ -200,7 +200,7 @@ void WaveformWidgetRenderer::onPreRender() {
             const double trackDevicePixelCount = m_trackPixelCount * m_devicePixelRatio;
             m_pos[type] = round(m_truePos[type] * trackDevicePixelCount) / trackDevicePixelCount;
             m_posVSample[type] = static_cast<int>(m_pos[type] * m_totalVSamples);
-            m_truePosSample[type] = m_truePos[type] * static_cast<double>(m_trackSamples);
+            m_truePosSample[type] = m_truePos[type] * m_trackSamples;
             m_firstDisplayedPosition[type] = m_pos[type] - displayedLengthLeft;
             m_lastDisplayedPosition[type] = m_pos[type] + displayedLengthRight;
         }
