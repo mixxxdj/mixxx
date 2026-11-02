@@ -1923,7 +1923,13 @@ PioneerDDJ1000.padRoll = function(deck, beats, value) {
 PioneerDDJ1000.padTrick = function(deck, spinback, value) {
     const group = PioneerDDJ1000.group(deck);
     const state = PioneerDDJ1000.deck[deck];
-    const run = (backspin, on) => (backspin ? engine.spinback(deck, on) : engine.brake(deck, on));
+    const run = function(backspin, on) {
+        if (backspin) {
+            engine.spinback(deck, on);
+        } else {
+            engine.brake(deck, on);
+        }
+    };
     const held = state.heldTricks;
     if (value) {
         // With two trick pads held, keep the state from before the first.
