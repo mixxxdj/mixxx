@@ -92,13 +92,13 @@ class WaveformWidgetHolder {
     WaveformWidgetHolder& operator=(WaveformWidgetHolder&&) = default;
   private:
     WaveformWidgetHolder(
-            WaveformWidgetAbstract* waveformWidget,
-            WWaveformViewer* waveformViewer,
+            WaveformWidgetAbstract* pWaveformWidget,
+            WWaveformViewer* pWaveformViewer,
             const QDomNode& skinNode,
             const SkinContext& parentContext);
 
-    WaveformWidgetAbstract* m_waveformWidget;
-    WWaveformViewer* m_waveformViewer;
+    WaveformWidgetAbstract* m_pWaveformWidget;
+    WWaveformViewer* m_pWaveformViewer;
     QDomNode m_skinNodeCache;
     SkinContext m_skinContextCache;
 
@@ -362,7 +362,7 @@ class WaveformWidgetFactory : public QObject,
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
 
-    VSyncThread* m_vsyncThread;
+    VSyncThread* m_pVsyncThread;
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
 

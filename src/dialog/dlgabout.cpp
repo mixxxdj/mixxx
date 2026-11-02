@@ -178,7 +178,19 @@ DlgAbout::DlgAbout()
             << "Ry Currier"
             << "Sanjana S."
             << "Spgamer0407"
-            << "marcelomar21";
+            << "marcelomar21"
+            << "Felix Schnabel"
+            << "Kyohei Okuno"
+            << "MelGrubb"
+            << "nomiapps"
+            << "sergioalexo"
+            << "Ram&oacute;n Arnau"
+            << "Kameron Markham"
+            << "Nicolas Predella"
+            << "JCCoynel"
+            << "Konstantin Smirnov"
+            << "Louis Grandvaux"
+            << "Shubham Shukla";
 
     QStringList specialThanks;
     specialThanks

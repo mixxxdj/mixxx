@@ -30,7 +30,7 @@ QtRGBWaveformWidget::~QtRGBWaveformWidget() {
 }
 
 void QtRGBWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void QtRGBWaveformWidget::paintEvent(QPaintEvent* event) {

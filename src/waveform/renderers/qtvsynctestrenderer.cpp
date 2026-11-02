@@ -33,7 +33,7 @@ void QtVSyncTestRenderer::draw(QPainter* pPainter, QPaintEvent* /*event*/) {
 
     timer.start();
 
-    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    ConstWaveformPointer pWaveform = m_pWaveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }
@@ -59,6 +59,5 @@ void QtVSyncTestRenderer::draw(QPainter* pPainter, QPaintEvent* /*event*/) {
 
     pPainter->setBrush(brush);
 
-    pPainter->drawRect(0, 0, m_waveformRenderer->getWidth(),
-            m_waveformRenderer->getHeight());
+    pPainter->drawRect(0, 0, m_pWaveformRenderer->getWidth(), m_pWaveformRenderer->getHeight());
 }

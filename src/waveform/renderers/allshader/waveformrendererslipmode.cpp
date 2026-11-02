@@ -48,7 +48,7 @@ bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
     m_pSlipModeControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
+            m_pWaveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
 
     return true;
 }
@@ -82,11 +82,11 @@ void WaveformRendererSlipMode::preprocess() {
 }
 
 bool WaveformRendererSlipMode::preprocessInner() {
-    if (!m_pSlipModeControl->toBool() || !m_waveformRenderer->isSlipActive()) {
+    if (!m_pSlipModeControl->toBool() || !m_pWaveformRenderer->isSlipActive()) {
         return false;
     }
 
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
     const bool isStemTrack = pTrack && pTrack->hasStem() &&
             pTrack->getWaveform() && pTrack->getWaveform()->hasStem();
     const bool splitStemTracks = isStemTrack &&
@@ -102,8 +102,8 @@ bool WaveformRendererSlipMode::preprocessInner() {
     const float alpha = std::clamp(0.25f + 0.5f * blinkIntensity, 0.0f, 1.0f);
 
     const float posx1 = 0.f;
-    const float posx2 = m_waveformRenderer->getLength();
-    const float breadth = m_waveformRenderer->getBreadth();
+    const float posx2 = m_pWaveformRenderer->getLength();
+    const float breadth = m_pWaveformRenderer->getBreadth();
 
     const int numBoxes = splitStemTracks ? mixxx::kMaxSupportedStems : 1;
     const float boxBreadth = splitStemTracks

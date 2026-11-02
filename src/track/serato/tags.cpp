@@ -71,6 +71,7 @@ bool isCueInfoValid(const mixxx::CueInfo& cueInfo) {
 
 namespace mixxx {
 
+// static
 double SeratoTags::guessTimingOffsetMillis(
         const QString& filePath,
         const QString& fileType,

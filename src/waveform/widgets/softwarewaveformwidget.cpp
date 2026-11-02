@@ -31,7 +31,7 @@ SoftwareWaveformWidget::~SoftwareWaveformWidget() {
 }
 
 void SoftwareWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void SoftwareWaveformWidget::paintEvent(QPaintEvent* event) {

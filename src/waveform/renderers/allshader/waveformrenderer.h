@@ -18,5 +18,5 @@ class allshader::WaveformRenderer : public ::WaveformRendererAbstract {
     // will only use openGL functions (combining QPainter and
     // QOpenGLWindow has bad performance), we leave this empty.
     // Should never be called.
-    void draw(QPainter* painter, QPaintEvent* event) override final;
+    void draw(QPainter* painter, QPaintEvent* event) final;
 };

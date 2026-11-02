@@ -363,12 +363,12 @@ QPixmap WSpinnyBase::scaleToSize(const QPixmap& pixmap) const {
     return scaled;
 }
 
-void WSpinnyBase::resizeEvent(QResizeEvent* event) {
+void WSpinnyBase::resizeEvent(QResizeEvent* pEvent) {
     m_loadedCoverScaled = scaleToSize(m_loadedCover);
     m_fgImageScaled = scaleToSize(m_pFgImage);
     m_ghostImageScaled = scaleToSize(m_pGhostImage);
 
-    WGLWidget::resizeEvent(event);
+    WGLWidget::resizeEvent(pEvent);
 }
 
 /* Convert between a normalized playback position (0.0 - 1.0) and an angle

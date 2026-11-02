@@ -12,7 +12,7 @@ WaveformRenderBackground::WaveformRenderBackground(
 
 void WaveformRenderBackground::setup(const QDomNode& node,
         const SkinContext& skinContext) {
-    m_backgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
+    m_backgroundColor = m_pWaveformRenderer->getWaveformSignalColors()->getBgColor();
 
     QString backgroundPixmapPath = skinContext.selectString(node, "BgPixmap");
     if (!backgroundPixmapPath.isEmpty()) {

@@ -977,15 +977,25 @@ void Tooltips::addStandardTooltips() {
             << tr("Clock")
             << tr("Displays the current time.");
 
-    add("audio_latency_usage")
-            << tr("Audio Latency Usage Meter")
-            << tr("Displays the fraction of latency used for audio processing.")
-            << tr("A high value indicates that audible glitches are likely.")
-            << tr("Do not enable keylock, effects or additional decks in this situation.");
+    QString latencyUsage;
+    latencyUsage + tr("Audio Latency Usage Meter") +
+            tr("Displays the fraction of latency used for audio processing.") +
+            tr("A high value indicates that audible glitches are likely.") +
+            tr("Do not enable keylock, effects or additional decks in this "
+               "situation.");
+    add("audio_latency_usage") << latencyUsage;
 
-    add("audio_latency_overload")
-            << tr("Audio Latency Overload Indicator")
-            << tr("Indicates that the audio buffer is too small to do all audio processing.");
+    QString latencyOverload;
+    latencyOverload + tr("Audio Latency Overload Indicator") +
+            tr("Indicates that the audio buffer is too small to do all audio "
+               "processing.");
+    add("audio_latency_overload") << latencyOverload;
+    // Combined tooltip for usage + overload combo widgets
+    add("audio_latency_and_overload_indicator")
+            << latencyUsage
+            << QStringLiteral("\n\n")
+            << tr("Flashing frame:")
+            << latencyOverload;
 
     add("coverart")
             << tr("Cover Art")

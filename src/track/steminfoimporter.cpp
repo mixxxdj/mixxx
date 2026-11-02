@@ -109,21 +109,28 @@ bool StemInfoImporter::hasStemAtom(const QString& filePath) {
 }
 
 // static
-bool StemInfoImporter::maybeStemFile(
-        const QString& fileName, QMimeType mimeType) {
+bool StemInfoImporter::maybeStemFile(const QString& filePath) {
+    QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
+            filePath, QMimeDatabase::MatchContent);
     if (!mimeType.isValid() || mimeType.isDefault()) {
-        // If no MIME type was previously detected for the file content, we read it now.
-        mimeType = QMimeDatabase().mimeTypeForFile(
-                fileName, QMimeDatabase::MatchContent);
+        kLogger.debug() << "Unable to detect MIME type from content in file" << filePath;
+        return StemInfoImporter::hasStemFileExtension(filePath);
     }
-    if (!mimeType.isValid() || mimeType.isDefault()) {
-        kLogger.debug() << "Unable to detect MIME type from content in file" << fileName;
-        for (const QString& ext : kStemPreferredFileExtensions) {
-            if (fileName.endsWith(ext)) {
-                return true;
-            }
+    return StemInfoImporter::isStemMimeType(mimeType);
+}
+
+// static
+bool StemInfoImporter::hasStemFileExtension(const QString& filePath) {
+    for (const QString& ext : kStemPreferredFileExtensions) {
+        if (filePath.endsWith(ext, Qt::CaseInsensitive)) {
+            return true;
         }
     }
+    return false;
+}
+
+// static
+bool StemInfoImporter::isStemMimeType(const QMimeType& mimeType) {
     return kStemMimes.contains(mimeType.name());
 }
 
