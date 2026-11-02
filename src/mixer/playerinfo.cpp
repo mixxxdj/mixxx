@@ -1,12 +1,13 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
+#include <QMutexLocker>
+
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_playerinfo.cpp"
 #include "track/track.h"
-#include "util/compatibility/qmutex.h"
 
 namespace {
 
@@ -56,14 +57,14 @@ void PlayerInfo::destroy() {
 }
 
 TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
-    const auto locker = lockMutex(&m_mutex);
+    const auto locker = QMutexLocker(&m_mutex);
     return m_loadedTrackMap.value(group);
 }
 
 void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) {
     TrackPointer pOld;
     { // Scope
-        const auto locker = lockMutex(&m_mutex);
+        const auto locker = QMutexLocker(&m_mutex);
         pOld = m_loadedTrackMap.value(group);
         m_loadedTrackMap.insert(group, pTrack);
     }
@@ -81,7 +82,7 @@ void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& pTrack) 
 }
 
 bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
-    const auto locker = lockMutex(&m_mutex);
+    const auto locker = QMutexLocker(&m_mutex);
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
@@ -93,7 +94,7 @@ bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
 }
 
 QStringList PlayerInfo::getPlayerGroupsWithTracksLoaded(const TrackPointerList& tracks) const {
-    const auto locker = lockMutex(&m_mutex);
+    const auto locker = QMutexLocker(&m_mutex);
     QStringList groups;
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
@@ -107,13 +108,13 @@ QStringList PlayerInfo::getPlayerGroupsWithTracksLoaded(const TrackPointerList& 
 }
 
 QMap<QString, TrackPointer> PlayerInfo::getLoadedTracks() {
-    const auto locker = lockMutex(&m_mutex);
+    const auto locker = QMutexLocker(&m_mutex);
     QMap<QString, TrackPointer> ret = m_loadedTrackMap;
     return ret;
 }
 
 bool PlayerInfo::isFileLoaded(const QString& track_location) const {
-    const auto locker = lockMutex(&m_mutex);
+    const auto locker = QMutexLocker(&m_mutex);
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
@@ -133,7 +134,7 @@ void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
 }
 
 void PlayerInfo::updateCurrentPlayingDeck() {
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
 
     double maxVolume = 0;
     int maxDeck = -1;
