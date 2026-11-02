@@ -121,6 +121,18 @@ bool OpenGLWindow::event(QEvent* pEv) {
             return false; // clazy:exclude=base-class-event
         }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+        if (t == QEvent::DevicePixelRatioChange) {
+            // QOpenGLWindow only calls resizeGL when the size changes. With
+            // fractional scaling (e.g. Wayland), the window may start with
+            // the integer scale of the screen and receive the actual scale
+            // later, without a size change. Without this, the waveform keeps
+            // rendering at the initial scale until the window is resized.
+            resizeGL(width(), height());
+            update();
+        }
+#endif
+
         if (t == QEvent::Resize || t == QEvent::Move || t == QEvent::Expose) {
             // - Resize and Move
             //    Any change to the geometry comes from m_pWidget and its child m_pContainerWidget.
