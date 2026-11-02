@@ -62,25 +62,6 @@ Q_IMPORT_PLUGIN(QGifPlugin)
 
 namespace {
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-/// This class allows to change the button of a mouse event on the fly.
-/// This is required because we want to change the behaviour of Qts mouse
-/// buttony synthesizer without duplicate all the code.
-class QMouseEventEditable : public QMouseEvent {
-  public:
-    void setButton(Qt::MouseButton button) {
-        b = button;
-    }
-#if QT_VERSION <= QT_VERSION_CHECK(5, 12, 4) && defined(__APPLE__)
-    // We also use this class to modify erroneous mouseState. See
-    // MixxxApplication::notify(...) for details.
-    void setButtons(Qt::MouseButtons mouseState) {
-        this->mouseState = mouseState;
-    }
-#endif
-};
-#endif
-
 // kEventNotifyExecTimeWarningThreshold defines the threshold duration for event
 // processing warnings. If the processing time of an event exceeds this duration
 // in developer mode, a warning will be logged. This is used to identify
@@ -133,9 +114,6 @@ void MixxxApplication::registerMetaTypes() {
 
     // Sound devices
     qRegisterMetaType<SoundDeviceId>();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QMetaType::registerComparators<SoundDeviceId>();
-#endif
 
     // Library Scanner
     qRegisterMetaType<RelocatedTrack>();
@@ -158,56 +136,6 @@ void MixxxApplication::setNotifyWarningThreshold(int threshold) {
 }
 
 bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // All touch events are translated into two simultaneous events: one for
-    // the target QWidgetWindow and one for the target QWidget.
-    // A second touch becomes a mouse move without additional press and release
-    // events.
-    switch (pEvent->type()) {
-    case QEvent::MouseButtonPress: {
-        QMouseEventEditable* pMouseEvent =
-                static_cast<QMouseEventEditable*>(pEvent); // clazy:exclude=wrong-qevent-cast
-        if (pMouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
-                pMouseEvent->button() == Qt::LeftButton &&
-                touchIsRightButton()) {
-            // Assert the assumption that QT synthesizes only one click at a time
-            // = two events (see above)
-            VERIFY_OR_DEBUG_ASSERT(m_rightPressedButtons < 2) {
-                break;
-            }
-            pMouseEvent->setButton(Qt::RightButton);
-            m_rightPressedButtons++;
-        }
-#if QT_VERSION <= QT_VERSION_CHECK(5, 12, 4) && defined(__APPLE__)
-        if (pMouseEvent->button() == Qt::RightButton && pMouseEvent->buttons() == Qt::LeftButton) {
-            // Workaround for a bug in Qt 5.12 qnsview_mouse.mm, where the wrong value is
-            // assigned to the event's mouseState for simulated rightbutton press events
-            // (using ctrl+leftbotton), which results in a missing release event for that
-            // press event.
-            //
-            // Fixed in Qt 5.12.5. See
-            // https://github.com/qt/qtbase/commit/9a47768b46f5e5eed407b70dfa9183fa1d21e242
-            pMouseEvent->setButtons(Qt::RightButton);
-        }
-#endif
-        break;
-    }
-    case QEvent::MouseButtonRelease: {
-        QMouseEventEditable* pMouseEvent =
-                static_cast<QMouseEventEditable*>(pEvent); // clazy:exclude=wrong-qevent-cast
-        if (pMouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
-                pMouseEvent->button() == Qt::LeftButton &&
-                m_rightPressedButtons > 0) {
-            pMouseEvent->setButton(Qt::RightButton);
-            m_rightPressedButtons--;
-        }
-        break;
-    }
-    default:
-        break;
-    }
-#endif
-
     PerformanceTimer time;
 
     if (m_isDeveloper) {
@@ -243,13 +171,3 @@ bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
 
     return ret;
 }
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-bool MixxxApplication::touchIsRightButton() {
-    if (!m_pTouchShift) {
-        m_pTouchShift = new ControlProxy(
-                "[Controls]", "touch_shift", this);
-    }
-    return m_pTouchShift->toBool();
-}
-#endif
