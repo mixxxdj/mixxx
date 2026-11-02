@@ -263,7 +263,10 @@ QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api)
     return {
             mixxx::audio::SampleRate(44100),
             mixxx::audio::SampleRate(48000),
+            mixxx::audio::SampleRate(88200),
             mixxx::audio::SampleRate(96000),
+            mixxx::audio::SampleRate(176400),
+            mixxx::audio::SampleRate(192000),
     };
 }
 
