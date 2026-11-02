@@ -1,0 +1,383 @@
+<!-- CrowdPulse skin: deck controls (transport, hotcues, loops, pitch). Variables: chan, side = left|right -->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckControls<Variable name="chan"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>Transport</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <PushButton>
+  <ObjectName>PlayButton</ObjectName>
+  <TooltipId>play</TooltipId>
+  <Size>76f,44f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>PLAY</Text></State>
+  <State><Number>1</Number><Text>PLAY</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],play</ConfigKey></Connection><Connection><ConfigKey>[Channel<Variable name="chan"/>],play_indicator</ConfigKey><ConnectValueFromWidget>false</ConnectValueFromWidget></Connection>
+</PushButton>
+          <PushButton>
+  <ObjectName>CueButton</ObjectName>
+  <TooltipId>cue_default</TooltipId>
+  <Size>76f,34f</Size>
+  <NumberStates>2</NumberStates>
+  <LeftClickIsPushButton>true</LeftClickIsPushButton>
+  <State><Number>0</Number><Text>CUE</Text></State>
+  <State><Number>1</Number><Text>CUE</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],cue_default</ConfigKey><ButtonState>LeftButton</ButtonState></Connection><Connection><ConfigKey>[Channel<Variable name="chan"/>],cue_indicator</ConfigKey><ConnectValueFromWidget>false</ConnectValueFromWidget></Connection>
+</PushButton>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <PushButton>
+  <ObjectName>SyncButton</ObjectName>
+  <TooltipId>sync_enabled</TooltipId>
+  <Size>37f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>SYNC</Text></State>
+  <State><Number>1</Number><Text>SYNC</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],sync_enabled</ConfigKey></Connection>
+</PushButton>
+              <PushButton>
+  <ObjectName>KeylockButton</ObjectName>
+  <TooltipId>keylock</TooltipId>
+  <Size>37f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>KEY</Text></State>
+  <State><Number>1</Number><Text>KEY</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],keylock</ConfigKey></Connection>
+</PushButton>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>Pads</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Label><ObjectName>SectionCaption</ObjectName><Text>HOT CUES</Text></Label>
+          <WidgetGroup>
+            <ObjectName>HotcueGrid</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>1</Hotcue>
+</HotcueButton>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>2</Hotcue>
+</HotcueButton>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>3</Hotcue>
+</HotcueButton>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>4</Hotcue>
+</HotcueButton>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>5</Hotcue>
+</HotcueButton>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>6</Hotcue>
+</HotcueButton>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>7</Hotcue>
+</HotcueButton>
+<HotcueButton>
+  <ObjectName>Hotcue</ObjectName>
+  <Size>40f,30f</Size>
+  <Group>[Channel<Variable name="chan"/>]</Group>
+  <Hotcue>8</Hotcue>
+</HotcueButton>
+            </Children>
+          </WidgetGroup>
+          <Label><ObjectName>SectionCaption</ObjectName><Text>LOOP</Text></Label>
+          <WidgetGroup>
+            <ObjectName>LoopRow</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+<PushButton>
+  <ObjectName>LoopSize</ObjectName>
+  <TooltipId>beatloop_1_toggle</TooltipId>
+  <Size>40f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>1</Text></State>
+  <State><Number>1</Number><Text>1</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],beatloop_1_toggle</ConfigKey></Connection>
+</PushButton>
+<PushButton>
+  <ObjectName>LoopSize</ObjectName>
+  <TooltipId>beatloop_2_toggle</TooltipId>
+  <Size>40f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>2</Text></State>
+  <State><Number>1</Number><Text>2</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],beatloop_2_toggle</ConfigKey></Connection>
+</PushButton>
+<PushButton>
+  <ObjectName>LoopSize</ObjectName>
+  <TooltipId>beatloop_4_toggle</TooltipId>
+  <Size>40f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>4</Text></State>
+  <State><Number>1</Number><Text>4</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],beatloop_4_toggle</ConfigKey></Connection>
+</PushButton>
+<PushButton>
+  <ObjectName>LoopSize</ObjectName>
+  <TooltipId>beatloop_8_toggle</TooltipId>
+  <Size>40f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>8</Text></State>
+  <State><Number>1</Number><Text>8</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],beatloop_8_toggle</ConfigKey></Connection>
+</PushButton>
+<PushButton>
+  <ObjectName>LoopSize</ObjectName>
+  <TooltipId>beatloop_16_toggle</TooltipId>
+  <Size>40f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>16</Text></State>
+  <State><Number>1</Number><Text>16</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],beatloop_16_toggle</ConfigKey></Connection>
+</PushButton>
+              <PushButton>
+  <ObjectName>LoopHalve</ObjectName>
+  <TooltipId>loop_halve</TooltipId>
+  <Size>32f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>½</Text></State>
+  <State><Number>1</Number><Text>½</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],loop_halve</ConfigKey></Connection>
+</PushButton>
+              <PushButton>
+  <ObjectName>LoopDouble</ObjectName>
+  <TooltipId>loop_double</TooltipId>
+  <Size>32f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>×2</Text></State>
+  <State><Number>1</Number><Text>×2</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],loop_double</ConfigKey></Connection>
+</PushButton>
+              <PushButton>
+  <ObjectName>Reloop</ObjectName>
+  <TooltipId>reloop_toggle</TooltipId>
+  <Size>62f,28f</Size>
+  <NumberStates>2</NumberStates>
+  
+  <State><Number>0</Number><Text>RELOOP</Text></State>
+  <State><Number>1</Number><Text>RELOOP</Text></State>
+  <Connection><ConfigKey>[Channel<Variable name="chan"/>],reloop_toggle</ConfigKey></Connection>
+</PushButton>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+            <ObjectName>StemsBlock</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Label><ObjectName>SectionCaption</ObjectName><Text>STEMS · tap to mute</Text></Label>
+              <WidgetGroup>
+                <ObjectName>StemRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+<WidgetGroup>
+  <ObjectName>StemColumn</ObjectName>
+  <Layout>vertical</Layout>
+  <SizePolicy>min,min</SizePolicy>
+  <Children>
+    <PushButton>
+      <ObjectName>StemPad1</ObjectName>
+      <TooltipId>stem_mute</TooltipId>
+      <Size>62f,30f</Size>
+      <NumberStates>2</NumberStates>
+      <State><Number>0</Number><Text>DRUMS</Text></State>
+      <State><Number>1</Number><Text>DRUMS</Text></State>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem1],mute</ConfigKey></Connection>
+    </PushButton>
+    <KnobComposed>
+      <ObjectName>StemLevel</ObjectName>
+      <TooltipId>stem_volume</TooltipId>
+      <Size>34f,34f</Size>
+      <Knob>skin:graphics/knob_pointer.svg</Knob>
+      <MinAngle>-135</MinAngle>
+      <MaxAngle>135</MaxAngle>
+      <ArcRadius>14</ArcRadius>
+      <ArcThickness>3</ArcThickness>
+      <ArcColor>#F5B83D</ArcColor>
+      <ArcBgColor>#1E2338</ArcBgColor>
+      <ArcBgThickness>3</ArcBgThickness>
+      <ArcRoundCaps>true</ArcRoundCaps>
+      <ArcUnipolar>true</ArcUnipolar>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem1],volume</ConfigKey></Connection>
+    </KnobComposed>
+  </Children>
+</WidgetGroup>
+<WidgetGroup>
+  <ObjectName>StemColumn</ObjectName>
+  <Layout>vertical</Layout>
+  <SizePolicy>min,min</SizePolicy>
+  <Children>
+    <PushButton>
+      <ObjectName>StemPad2</ObjectName>
+      <TooltipId>stem_mute</TooltipId>
+      <Size>62f,30f</Size>
+      <NumberStates>2</NumberStates>
+      <State><Number>0</Number><Text>BASS</Text></State>
+      <State><Number>1</Number><Text>BASS</Text></State>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem2],mute</ConfigKey></Connection>
+    </PushButton>
+    <KnobComposed>
+      <ObjectName>StemLevel</ObjectName>
+      <TooltipId>stem_volume</TooltipId>
+      <Size>34f,34f</Size>
+      <Knob>skin:graphics/knob_pointer.svg</Knob>
+      <MinAngle>-135</MinAngle>
+      <MaxAngle>135</MaxAngle>
+      <ArcRadius>14</ArcRadius>
+      <ArcThickness>3</ArcThickness>
+      <ArcColor>#2DE2E6</ArcColor>
+      <ArcBgColor>#1E2338</ArcBgColor>
+      <ArcBgThickness>3</ArcBgThickness>
+      <ArcRoundCaps>true</ArcRoundCaps>
+      <ArcUnipolar>true</ArcUnipolar>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem2],volume</ConfigKey></Connection>
+    </KnobComposed>
+  </Children>
+</WidgetGroup>
+<WidgetGroup>
+  <ObjectName>StemColumn</ObjectName>
+  <Layout>vertical</Layout>
+  <SizePolicy>min,min</SizePolicy>
+  <Children>
+    <PushButton>
+      <ObjectName>StemPad3</ObjectName>
+      <TooltipId>stem_mute</TooltipId>
+      <Size>62f,30f</Size>
+      <NumberStates>2</NumberStates>
+      <State><Number>0</Number><Text>MELODY</Text></State>
+      <State><Number>1</Number><Text>MELODY</Text></State>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem3],mute</ConfigKey></Connection>
+    </PushButton>
+    <KnobComposed>
+      <ObjectName>StemLevel</ObjectName>
+      <TooltipId>stem_volume</TooltipId>
+      <Size>34f,34f</Size>
+      <Knob>skin:graphics/knob_pointer.svg</Knob>
+      <MinAngle>-135</MinAngle>
+      <MaxAngle>135</MaxAngle>
+      <ArcRadius>14</ArcRadius>
+      <ArcThickness>3</ArcThickness>
+      <ArcColor>#8B5CF6</ArcColor>
+      <ArcBgColor>#1E2338</ArcBgColor>
+      <ArcBgThickness>3</ArcBgThickness>
+      <ArcRoundCaps>true</ArcRoundCaps>
+      <ArcUnipolar>true</ArcUnipolar>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem3],volume</ConfigKey></Connection>
+    </KnobComposed>
+  </Children>
+</WidgetGroup>
+<WidgetGroup>
+  <ObjectName>StemColumn</ObjectName>
+  <Layout>vertical</Layout>
+  <SizePolicy>min,min</SizePolicy>
+  <Children>
+    <PushButton>
+      <ObjectName>StemPad4</ObjectName>
+      <TooltipId>stem_mute</TooltipId>
+      <Size>62f,30f</Size>
+      <NumberStates>2</NumberStates>
+      <State><Number>0</Number><Text>VOCALS</Text></State>
+      <State><Number>1</Number><Text>VOCALS</Text></State>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem4],mute</ConfigKey></Connection>
+    </PushButton>
+    <KnobComposed>
+      <ObjectName>StemLevel</ObjectName>
+      <TooltipId>stem_volume</TooltipId>
+      <Size>34f,34f</Size>
+      <Knob>skin:graphics/knob_pointer.svg</Knob>
+      <MinAngle>-135</MinAngle>
+      <MaxAngle>135</MaxAngle>
+      <ArcRadius>14</ArcRadius>
+      <ArcThickness>3</ArcThickness>
+      <ArcColor>#FF2D75</ArcColor>
+      <ArcBgColor>#1E2338</ArcBgColor>
+      <ArcBgThickness>3</ArcBgThickness>
+      <ArcRoundCaps>true</ArcRoundCaps>
+      <ArcUnipolar>true</ArcUnipolar>
+      <Connection><ConfigKey>[Channel<Variable name="chan"/>_Stem4],volume</ConfigKey></Connection>
+    </KnobComposed>
+  </Children>
+</WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+            <!-- only shown when the loaded song has stems -->
+            <Connection>
+              <ConfigKey>[Channel<Variable name="chan"/>],stem_count</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>PitchColumn</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <SliderComposed>
+            <ObjectName>Pitch</ObjectName>
+            <TooltipId>rate</TooltipId>
+            <Size>26f,110f</Size>
+            <Slider scalemode="STRETCH_ASPECT">skin:graphics/pitch_track.svg</Slider>
+            <Handle scalemode="STRETCH_ASPECT">skin:graphics/pitch_handle.svg</Handle>
+            <Horizontal>false</Horizontal>
+            <Connection><ConfigKey>[Channel<Variable name="chan"/>],rate</ConfigKey></Connection>
+          </SliderComposed>
+          <NumberRate>
+            <ObjectName>RateDisplay</ObjectName>
+            <Group>[Channel<Variable name="chan"/>]</Group>
+            <Connection><ConfigKey>[Channel<Variable name="chan"/>],rate</ConfigKey></Connection>
+          </NumberRate>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

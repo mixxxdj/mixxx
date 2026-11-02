@@ -1,0 +1,194 @@
+<!DOCTYPE skin>
+<!-- CrowdPulse skin · © JLM Hypermedia · made for CrowdPulse Decks (based on Mixxx, GPL-2.0-or-later) -->
+<skin>
+  <manifest>
+    <title>CrowdPulse</title>
+    <author>DJ CP · JLM Hypermedia</author>
+    <version>1.0.0</version>
+    <description>The CrowdPulse booth: two decks, mixer, library and your next five picks.</description>
+    <language>en</language>
+    <license>GPL-2.0-or-later</license>
+  </manifest>
+  <MinimumSize>1280,760</MinimumSize>
+  <Style src="skin:style.qss"/>
+  <ObjectName>Booth</ObjectName>
+  <Layout>vertical</Layout>
+  <SizePolicy>me,me</SizePolicy>
+  <Children>
+
+    <!-- top bar -->
+    <WidgetGroup>
+      <ObjectName>TopBar</ObjectName>
+      <Layout>horizontal</Layout>
+      <SizePolicy>me,f</SizePolicy>
+      <MinimumSize>-1,40</MinimumSize>
+      <MaximumSize>-1,40</MaximumSize>
+      <Children>
+        <Label><ObjectName>LogoMark</ObjectName><Size>26f,26f</Size><Text></Text></Label>
+        <Label><ObjectName>Wordmark</ObjectName><Text>CROWD</Text></Label>
+        <Label><ObjectName>WordmarkAccent</ObjectName><Text>PULSE</Text></Label>
+        <WidgetGroup><SizePolicy>me,min</SizePolicy><Layout>horizontal</Layout></WidgetGroup>
+        <Label><ObjectName>TopCaption</ObjectName><Text>CPU</Text></Label>
+        <StatusLight>
+          <ObjectName>CpuLight</ObjectName>
+          <Size>10f,10f</Size>
+          <Connection><ConfigKey>[Master],audio_latency_overload</ConfigKey></Connection>
+        </StatusLight>
+        <Time>
+          <ObjectName>Clock</ObjectName>
+          <ShowSeconds>false</ShowSeconds>
+          <ClockFormat>12h</ClockFormat>
+        </Time>
+      </Children>
+    </WidgetGroup>
+
+    <!-- deck headers -->
+    <WidgetGroup>
+      <ObjectName>DeckHeaders</ObjectName>
+      <Layout>horizontal</Layout>
+      <SizePolicy>me,min</SizePolicy>
+      <Children>
+        <Template src="skin:deck_header.xml"><SetVariable name="chan">1</SetVariable><SetVariable name="accent">#2DE2E6</SetVariable></Template>
+        <Template src="skin:deck_header.xml"><SetVariable name="chan">2</SetVariable><SetVariable name="accent">#FF2D75</SetVariable></Template>
+      </Children>
+    </WidgetGroup>
+
+    <!-- scrolling waveforms -->
+    <WidgetGroup>
+      <ObjectName>Waveforms</ObjectName>
+      <Layout>vertical</Layout>
+      <SizePolicy>me,me</SizePolicy>
+      <MinimumSize>-1,150</MinimumSize>
+      <Children>
+        <Visual>
+  <ObjectName>Waveform1</ObjectName>
+  <TooltipId>waveform_display</TooltipId>
+  <Channel>1</Channel>
+  <SizePolicy>me,me</SizePolicy>
+  <BgColor>#080A14</BgColor>
+  <SignalColor>#2DE2E6</SignalColor>
+  <SignalHighColor>#EEF0FF</SignalHighColor>
+  <SignalMidColor>#2DE2E6</SignalMidColor>
+  <SignalLowColor>#8B5CF6</SignalLowColor>
+  <BeatColor>#3A4166</BeatColor>
+  <AxesColor>#1E2338</AxesColor>
+  <PlayPosColor>#EEF0FF</PlayPosColor>
+  <PlayedOverlayColor>#5005060A</PlayedOverlayColor>
+  <DefaultMark>
+    <Align>bottom|left</Align>
+    <Color>#8B5CF6</Color>
+    <TextColor>#EEF0FF</TextColor>
+    <Text> %1 </Text>
+  </DefaultMark>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+    <Align>top|left</Align>
+    <Color>#EEF0FF</Color>
+    <TextColor>#05060A</TextColor>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+    <Color>#8B5CF6</Color>
+    <Opacity>0.35</Opacity>
+    <DisabledColor>#8A90B2</DisabledColor>
+    <DisabledOpacity>0.15</DisabledOpacity>
+  </MarkRange>
+</Visual>
+        <Visual>
+  <ObjectName>Waveform2</ObjectName>
+  <TooltipId>waveform_display</TooltipId>
+  <Channel>2</Channel>
+  <SizePolicy>me,me</SizePolicy>
+  <BgColor>#080A14</BgColor>
+  <SignalColor>#FF2D75</SignalColor>
+  <SignalHighColor>#EEF0FF</SignalHighColor>
+  <SignalMidColor>#FF2D75</SignalMidColor>
+  <SignalLowColor>#8B5CF6</SignalLowColor>
+  <BeatColor>#3A4166</BeatColor>
+  <AxesColor>#1E2338</AxesColor>
+  <PlayPosColor>#EEF0FF</PlayPosColor>
+  <PlayedOverlayColor>#5005060A</PlayedOverlayColor>
+  <DefaultMark>
+    <Align>bottom|left</Align>
+    <Color>#8B5CF6</Color>
+    <TextColor>#EEF0FF</TextColor>
+    <Text> %1 </Text>
+  </DefaultMark>
+  <Mark>
+    <Control>cue_point</Control>
+    <Text>CUE</Text>
+    <Align>top|left</Align>
+    <Color>#EEF0FF</Color>
+    <TextColor>#05060A</TextColor>
+  </Mark>
+  <MarkRange>
+    <StartControl>loop_start_position</StartControl>
+    <EndControl>loop_end_position</EndControl>
+    <EnabledControl>loop_enabled</EnabledControl>
+    <Color>#8B5CF6</Color>
+    <Opacity>0.35</Opacity>
+    <DisabledColor>#8A90B2</DisabledColor>
+    <DisabledOpacity>0.15</DisabledOpacity>
+  </MarkRange>
+</Visual>
+      </Children>
+    </WidgetGroup>
+
+    <!-- controls + mixer -->
+    <WidgetGroup>
+      <ObjectName>ControlsRow</ObjectName>
+      <Layout>horizontal</Layout>
+      <SizePolicy>me,min</SizePolicy>
+      <Children>
+        <Template src="skin:deck_controls.xml"><SetVariable name="chan">1</SetVariable></Template>
+        <Template src="skin:mixer.xml"/>
+        <Template src="skin:deck_controls.xml"><SetVariable name="chan">2</SetVariable></Template>
+      </Children>
+    </WidgetGroup>
+
+    <!-- library + CrowdPulse picks -->
+    <Splitter>
+      <ObjectName>LibrarySplit</ObjectName>
+      <Orientation>horizontal</Orientation>
+      <SizePolicy>me,me</SizePolicy>
+      <SplitSizes>220,800,340</SplitSizes>
+      <SplitSizesConfigKey>[CrowdPulse],library_split</SplitSizesConfigKey>
+      <Children>
+        <LibrarySidebar>
+          <ObjectName>Sidebar</ObjectName>
+        </LibrarySidebar>
+        <WidgetGroup>
+          <ObjectName>LibraryColumn</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+            <SearchBox>
+              <ObjectName>Search</ObjectName>
+              <TooltipId>search</TooltipId>
+              <SizePolicy>me,f</SizePolicy>
+            </SearchBox>
+            <Library>
+              <ObjectName>Library</ObjectName>
+              <SizePolicy>me,me</SizePolicy>
+              <ShowButtonText>true</ShowButtonText>
+            </Library>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+          <ObjectName>NextFive</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+            <Label><ObjectName>NextFiveTitle</ObjectName><Text>NEXT 5</Text></Label>
+            <Label><ObjectName>NextFiveHint</ObjectName><Text>Your next five songs, picked from your crates by key, BPM and energy. ◀1 / 2▶ loads one instantly.</Text></Label>
+            <!-- CrowdPulseNext widget goes here (C++) -->
+            <WidgetGroup><SizePolicy>me,me</SizePolicy><Layout>vertical</Layout></WidgetGroup>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </Splitter>
+  </Children>
+</skin>

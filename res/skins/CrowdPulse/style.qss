@@ -1,0 +1,152 @@
+/* CrowdPulse skin · © JLM Hypermedia
+   Palette: base #05060A · surface #0B0E1A · raised #121628 · rule #1E2338
+            text #EEF0FF · muted #8A90B2 · Deck 1 teal #2DE2E6 · Deck 2 pink #FF2D75 · picks violet #8B5CF6
+   Type:    Big Shoulders Display (titles, numbers) · Instrument Sans (everything else) */
+
+WWidget, QLabel, QWidget {
+  font-family: "Instrument Sans";
+  font-size: 12px;
+  color: #EEF0FF;
+}
+#Booth { background-color: #05060A; }
+QGroupBox { border: 0px; margin: 0px; padding: 0px; }
+
+/* ── top bar ── */
+#TopBar { background-color: #05060A; border-bottom: 1px solid #1E2338; qproperty-layoutSpacing: 6; }
+#TopBar > * { margin: 0px; }
+#LogoMark { image: url(skin:graphics/logo.svg); margin: 0px 2px 0px 12px; }
+#Wordmark, #WordmarkAccent { font-family: "Big Shoulders Display"; font-weight: 900; font-size: 22px; letter-spacing: 1px; }
+#WordmarkAccent { color: #2DE2E6; }
+#TopCaption { color: #8A90B2; font-size: 10px; font-weight: 600; letter-spacing: 1px; }
+#CpuLight[value="0"] { background-color: #1E2338; border-radius: 5px; }
+#CpuLight[value="1"] { background-color: #FF2D75; border-radius: 5px; }
+#Clock { font-family: "Big Shoulders Display"; font-weight: 800; font-size: 18px; color: #EEF0FF; margin: 0px 14px 0px 10px; }
+
+/* ── deck headers ── */
+#DeckHeaders { qproperty-layoutSpacing: 1; background-color: #1E2338; }
+#DeckHeader1, #DeckHeader2 { background-color: #0B0E1A; qproperty-layoutContentsMargins: rect(12, 8, 12, 8); qproperty-layoutSpacing: 6; }
+#DeckHeader1 { border-top: 3px solid #2DE2E6; }
+#DeckHeader2 { border-top: 3px solid #FF2D75; }
+#DeckTitleRow { qproperty-layoutSpacing: 10; }
+#DeckNumber1, #DeckNumber2 { font-family: "Big Shoulders Display"; font-weight: 900; font-size: 22px; color: #05060A; border-radius: 4px; }
+#DeckNumber1 { background-color: #2DE2E6; }
+#DeckNumber2 { background-color: #FF2D75; }
+#DeckTitle { font-family: "Big Shoulders Display"; font-weight: 800; font-size: 26px; color: #EEF0FF; }
+#DeckArtist { font-size: 13px; color: #8A90B2; }
+#DeckStats { qproperty-layoutSpacing: 18; }
+#StatCaption { color: #8A90B2; font-size: 9px; font-weight: 600; letter-spacing: 1px; }
+#DeckKey, #DeckBpm, #DeckTime { font-family: "Big Shoulders Display"; font-weight: 800; font-size: 24px; color: #EEF0FF; }
+
+/* ── waveforms ── */
+#Waveforms { background-color: #080A14; border-top: 1px solid #1E2338; border-bottom: 1px solid #1E2338; qproperty-layoutSpacing: 1; }
+
+/* ── deck controls ── */
+#ControlsRow { background-color: #05060A; qproperty-layoutContentsMargins: rect(10, 8, 10, 8); qproperty-layoutSpacing: 16; }
+#DeckControls1, #DeckControls2 { qproperty-layoutSpacing: 12; }
+#Transport, #Pads, #PitchColumn { qproperty-layoutSpacing: 5; }
+#HotcueGrid, #LoopRow { qproperty-layoutSpacing: 4; }
+#SectionCaption, #KnobCaption { color: #8A90B2; font-size: 9px; font-weight: 600; letter-spacing: 1px; }
+
+WPushButton {
+  background-color: #121628;
+  border: 1px solid #1E2338;
+  border-radius: 6px;
+  color: #EEF0FF;
+  font-weight: 600;
+  font-size: 11px;
+}
+WPushButton:hover { border-color: #3A4166; }
+WPushButton[displayValue="1"] { background-color: #EEF0FF; color: #05060A; border-color: #EEF0FF; }
+
+#PlayButton { font-family: "Big Shoulders Display"; font-weight: 900; font-size: 18px; letter-spacing: 1px; }
+#DeckControls1 #PlayButton[displayValue="1"] { background-color: #2DE2E6; border-color: #2DE2E6; color: #05060A; }
+#DeckControls2 #PlayButton[displayValue="1"] { background-color: #FF2D75; border-color: #FF2D75; color: #05060A; }
+#DeckControls1 #PlayButton[displayValue="0"] { border-color: #2DE2E6; }
+#DeckControls2 #PlayButton[displayValue="0"] { border-color: #FF2D75; }
+#CueButton { font-family: "Big Shoulders Display"; font-weight: 800; font-size: 15px; }
+#SyncButton[displayValue="1"], #KeylockButton[displayValue="1"] { background-color: #8B5CF6; border-color: #8B5CF6; color: #EEF0FF; }
+#LoopSize[displayValue="1"], #Reloop[displayValue="1"] { background-color: #8B5CF6; border-color: #8B5CF6; color: #EEF0FF; }
+
+WHotcueButton { border-radius: 5px; font-weight: 700; font-size: 11px; color: #05060A; border: 1px solid #1E2338; }
+WHotcueButton[displayValue="0"] { background-color: #0B0E1A; color: #3A4166; }
+
+#RateDisplay { font-size: 10px; color: #8A90B2; qproperty-alignment: AlignCenter; }
+
+/* ── mixer ── */
+#Mixer { background-color: #0B0E1A; border: 1px solid #1E2338; border-radius: 10px; qproperty-layoutContentsMargins: rect(10, 8, 10, 8); qproperty-layoutSpacing: 6; }
+#ChannelStrip1, #ChannelStrip2, #MainColumn { qproperty-layoutSpacing: 2; qproperty-layoutAlignment: AlignHCenter; }
+#PflButton1[displayValue="1"] { background-color: #2DE2E6; border-color: #2DE2E6; color: #05060A; }
+#PflButton2[displayValue="1"] { background-color: #FF2D75; border-color: #FF2D75; color: #05060A; }
+
+/* ── library ── */
+#LibrarySplit::handle { background-color: #1E2338; width: 1px; }
+#Sidebar, WLibrarySidebar {
+  background-color: #0B0E1A;
+  border: 0px;
+  show-decoration-selected: 0;
+  outline: none;
+}
+WLibrarySidebar::item { padding: 4px 6px; color: #C9CCE6; }
+WLibrarySidebar::item:selected { background-color: #1E2338; color: #EEF0FF; }
+WLibrarySidebar::branch { background-color: #0B0E1A; }
+
+#LibraryColumn { background-color: #05060A; qproperty-layoutSpacing: 0; }
+WSearchLineEdit {
+  background-color: #0B0E1A;
+  border: 0px;
+  border-bottom: 1px solid #1E2338;
+  color: #EEF0FF;
+  padding: 8px 10px;
+  font-size: 13px;
+  selection-background-color: #8B5CF6;
+}
+WSearchLineEdit:focus { border-bottom: 1px solid #2DE2E6; }
+
+WLibrary, WTrackTableView, QTableView {
+  background-color: #05060A;
+  alternate-background-color: #090B14;
+  border: 0px;
+  gridline-color: #05060A;
+  color: #EEF0FF;
+  selection-background-color: #1E2338;
+  selection-color: #EEF0FF;
+  outline: none;
+}
+QHeaderView { background-color: #0B0E1A; }
+QHeaderView::section {
+  background-color: #0B0E1A;
+  color: #8A90B2;
+  border: 0px;
+  border-right: 1px solid #05060A;
+  padding: 5px 6px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+QScrollBar:vertical { background: #05060A; width: 10px; margin: 0px; }
+QScrollBar::handle:vertical { background: #1E2338; min-height: 30px; border-radius: 5px; margin: 2px; }
+QScrollBar:horizontal { background: #05060A; height: 10px; margin: 0px; }
+QScrollBar::handle:horizontal { background: #1E2338; min-width: 30px; border-radius: 5px; margin: 2px; }
+QScrollBar::add-line, QScrollBar::sub-line { width: 0px; height: 0px; }
+QScrollBar::add-page, QScrollBar::sub-page { background: none; }
+
+/* ── CrowdPulse Next 5 ── */
+#NextFive { background-color: #0B0E1A; border-left: 1px solid #1E2338; qproperty-layoutContentsMargins: rect(14, 12, 14, 12); qproperty-layoutSpacing: 6; }
+#NextFiveTitle { font-family: "Big Shoulders Display"; font-weight: 900; font-size: 26px; color: #EEF0FF; border-bottom: 2px solid #8B5CF6; padding-bottom: 4px; }
+#NextFiveHint { color: #8A90B2; font-size: 12px; qproperty-wordWrap: true; }
+
+QToolTip { background-color: #121628; color: #EEF0FF; border: 1px solid #1E2338; padding: 4px 6px; }
+QMenu { background-color: #121628; color: #EEF0FF; border: 1px solid #1E2338; }
+QMenu::item:selected { background-color: #1E2338; }
+
+/* ── stems (shown when the song has stems) ── */
+#StemsBlock { qproperty-layoutSpacing: 4; }
+#StemRow { qproperty-layoutSpacing: 6; }
+#StemColumn { qproperty-layoutSpacing: 3; qproperty-layoutAlignment: AlignHCenter; }
+#StemPad1, #StemPad2, #StemPad3, #StemPad4 { font-weight: 700; font-size: 10px; letter-spacing: 1px; color: #05060A; border: 0px; }
+#StemPad1[displayValue="0"] { background-color: #F5B83D; }
+#StemPad2[displayValue="0"] { background-color: #2DE2E6; }
+#StemPad3[displayValue="0"] { background-color: #8B5CF6; color: #EEF0FF; }
+#StemPad4[displayValue="0"] { background-color: #FF2D75; }
+#StemPad1[displayValue="1"], #StemPad2[displayValue="1"], #StemPad3[displayValue="1"], #StemPad4[displayValue="1"] {
+  background-color: #121628; color: #3A4166; border: 1px solid #1E2338; text-decoration: line-through; }

@@ -1,0 +1,355 @@
+<!-- CrowdPulse skin: mixer (two channel strips, main level, headphones, crossfader) -->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Mixer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup>
+  <ObjectName>ChannelStrip1</ObjectName>
+  <Layout>vertical</Layout>
+  <SizePolicy>min,min</SizePolicy>
+  <Children>
+    <WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>Gain</ObjectName>
+  <TooltipId>pregain</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#2DE2E6</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[Channel1],pregain</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>GAIN</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>EqHi</ObjectName>
+  <TooltipId>filterHigh</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#2DE2E6</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>HI</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>EqMid</ObjectName>
+  <TooltipId>filterMid</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#2DE2E6</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>MID</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>EqLow</ObjectName>
+  <TooltipId>filterLow</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#2DE2E6</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>LOW</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>Filter</ObjectName>
+  <TooltipId>QuickEffectRack_super1</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#8B5CF6</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[QuickEffectRack1_[Channel1]],super1</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>FILTER</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+    <WidgetGroup>
+      <Layout>horizontal</Layout>
+      <SizePolicy>min,min</SizePolicy>
+      <Children>
+        <VuMeter>
+          <ObjectName>ChannelVu</ObjectName>
+          <TooltipId>channel_VuMeter</TooltipId>
+          <Size>6f,110f</Size>
+          <PathVu scalemode="STRETCH">skin:graphics/vu_on.svg</PathVu>
+          <PathBack scalemode="STRETCH">skin:graphics/vu_back.svg</PathBack>
+          <Horizontal>false</Horizontal>
+          <PeakHoldSize>3</PeakHoldSize>
+          <PeakHoldTime>500</PeakHoldTime>
+          <PeakFallTime>50</PeakFallTime>
+          <PeakFallStep>2</PeakFallStep>
+          <Connection><ConfigKey>[Channel1],VuMeter</ConfigKey></Connection>
+        </VuMeter>
+        <SliderComposed>
+          <ObjectName>ChannelFader</ObjectName>
+          <TooltipId>channel_volume</TooltipId>
+          <Size>34f,110f</Size>
+          <Slider scalemode="STRETCH_ASPECT">skin:graphics/fader_track.svg</Slider>
+          <Handle scalemode="STRETCH_ASPECT">skin:graphics/fader_handle_1.svg</Handle>
+          <Horizontal>false</Horizontal>
+          <Connection><ConfigKey>[Channel1],volume</ConfigKey></Connection>
+        </SliderComposed>
+      </Children>
+    </WidgetGroup>
+    <PushButton>
+      <ObjectName>PflButton1</ObjectName>
+      <TooltipId>pfl</TooltipId>
+      <Size>44f,26f</Size>
+      <NumberStates>2</NumberStates>
+      <State><Number>0</Number><Text>CUE</Text></State>
+      <State><Number>1</Number><Text>CUE</Text></State>
+      <Connection><ConfigKey>[Channel1],pfl</ConfigKey></Connection>
+    </PushButton>
+  </Children>
+</WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>MainColumn</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <KnobComposed>
+  <ObjectName>MainGain</ObjectName>
+  <TooltipId>master_gain</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#EEF0FF</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>true</ArcUnipolar>
+  <Connection><ConfigKey>[Master],gain</ConfigKey></Connection>
+</KnobComposed>
+              <Label><ObjectName>KnobCaption</ObjectName><Text>MAIN</Text><Alignment>center</Alignment></Label>
+              <KnobComposed>
+  <ObjectName>HeadMix</ObjectName>
+  <TooltipId>headMix</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#8A90B2</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[Master],headMix</ConfigKey></Connection>
+</KnobComposed>
+              <Label><ObjectName>KnobCaption</ObjectName><Text>CUE/MIX</Text><Alignment>center</Alignment></Label>
+              <KnobComposed>
+  <ObjectName>HeadGain</ObjectName>
+  <TooltipId>headGain</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#8A90B2</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>true</ArcUnipolar>
+  <Connection><ConfigKey>[Master],headGain</ConfigKey></Connection>
+</KnobComposed>
+              <Label><ObjectName>KnobCaption</ObjectName><Text>PHONES</Text><Alignment>center</Alignment></Label>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <VuMeter>
+                    <ObjectName>MainVu</ObjectName>
+                    <Size>6f,90f</Size>
+                    <PathVu scalemode="STRETCH">skin:graphics/vu_on.svg</PathVu>
+                    <PathBack scalemode="STRETCH">skin:graphics/vu_back.svg</PathBack>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>3</PeakHoldSize><PeakHoldTime>500</PeakHoldTime><PeakFallTime>50</PeakFallTime><PeakFallStep>2</PeakFallStep>
+                    <Connection><ConfigKey>[Master],VuMeterL</ConfigKey></Connection>
+                  </VuMeter>
+                  <VuMeter>
+                    <ObjectName>MainVu</ObjectName>
+                    <Size>6f,90f</Size>
+                    <PathVu scalemode="STRETCH">skin:graphics/vu_on.svg</PathVu>
+                    <PathBack scalemode="STRETCH">skin:graphics/vu_back.svg</PathBack>
+                    <Horizontal>false</Horizontal>
+                    <PeakHoldSize>3</PeakHoldSize><PeakHoldTime>500</PeakHoldTime><PeakFallTime>50</PeakFallTime><PeakFallStep>2</PeakFallStep>
+                    <Connection><ConfigKey>[Master],VuMeterR</ConfigKey></Connection>
+                  </VuMeter>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+  <ObjectName>ChannelStrip2</ObjectName>
+  <Layout>vertical</Layout>
+  <SizePolicy>min,min</SizePolicy>
+  <Children>
+    <WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>Gain</ObjectName>
+  <TooltipId>pregain</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#FF2D75</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[Channel2],pregain</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>GAIN</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>EqHi</ObjectName>
+  <TooltipId>filterHigh</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#FF2D75</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>HI</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>EqMid</ObjectName>
+  <TooltipId>filterMid</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#FF2D75</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>MID</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>EqLow</ObjectName>
+  <TooltipId>filterLow</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#FF2D75</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>LOW</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+<WidgetGroup><Layout>vertical</Layout><SizePolicy>min,min</SizePolicy><Children><KnobComposed>
+  <ObjectName>Filter</ObjectName>
+  <TooltipId>QuickEffectRack_super1</TooltipId>
+  <Size>40f,40f</Size>
+  <Knob>skin:graphics/knob_pointer.svg</Knob>
+  <MinAngle>-135</MinAngle>
+  <MaxAngle>135</MaxAngle>
+  <ArcRadius>17</ArcRadius>
+  <ArcThickness>3</ArcThickness>
+  <ArcColor>#8B5CF6</ArcColor>
+  <ArcBgColor>#1E2338</ArcBgColor>
+  <ArcBgThickness>3</ArcBgThickness>
+  <ArcRoundCaps>true</ArcRoundCaps>
+  <ArcUnipolar>false</ArcUnipolar>
+  <Connection><ConfigKey>[QuickEffectRack1_[Channel2]],super1</ConfigKey></Connection>
+</KnobComposed><Label><ObjectName>KnobCaption</ObjectName><Text>FILTER</Text><Alignment>center</Alignment></Label></Children></WidgetGroup>
+    <WidgetGroup>
+      <Layout>horizontal</Layout>
+      <SizePolicy>min,min</SizePolicy>
+      <Children>
+        <VuMeter>
+          <ObjectName>ChannelVu</ObjectName>
+          <TooltipId>channel_VuMeter</TooltipId>
+          <Size>6f,110f</Size>
+          <PathVu scalemode="STRETCH">skin:graphics/vu_on.svg</PathVu>
+          <PathBack scalemode="STRETCH">skin:graphics/vu_back.svg</PathBack>
+          <Horizontal>false</Horizontal>
+          <PeakHoldSize>3</PeakHoldSize>
+          <PeakHoldTime>500</PeakHoldTime>
+          <PeakFallTime>50</PeakFallTime>
+          <PeakFallStep>2</PeakFallStep>
+          <Connection><ConfigKey>[Channel2],VuMeter</ConfigKey></Connection>
+        </VuMeter>
+        <SliderComposed>
+          <ObjectName>ChannelFader</ObjectName>
+          <TooltipId>channel_volume</TooltipId>
+          <Size>34f,110f</Size>
+          <Slider scalemode="STRETCH_ASPECT">skin:graphics/fader_track.svg</Slider>
+          <Handle scalemode="STRETCH_ASPECT">skin:graphics/fader_handle_2.svg</Handle>
+          <Horizontal>false</Horizontal>
+          <Connection><ConfigKey>[Channel2],volume</ConfigKey></Connection>
+        </SliderComposed>
+      </Children>
+    </WidgetGroup>
+    <PushButton>
+      <ObjectName>PflButton2</ObjectName>
+      <TooltipId>pfl</TooltipId>
+      <Size>44f,26f</Size>
+      <NumberStates>2</NumberStates>
+      <State><Number>0</Number><Text>CUE</Text></State>
+      <State><Number>1</Number><Text>CUE</Text></State>
+      <Connection><ConfigKey>[Channel2],pfl</ConfigKey></Connection>
+    </PushButton>
+  </Children>
+</WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <SliderComposed>
+        <ObjectName>Crossfader</ObjectName>
+        <TooltipId>crossfader</TooltipId>
+        <Size>220f,30f</Size>
+        <Slider scalemode="STRETCH_ASPECT">skin:graphics/xfader_track.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">skin:graphics/xfader_handle.svg</Handle>
+        <Horizontal>true</Horizontal>
+        <Connection><ConfigKey>[Master],crossfader</ConfigKey></Connection>
+      </SliderComposed>
+    </Children>
+  </WidgetGroup>
+</Template>

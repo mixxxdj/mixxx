@@ -1,0 +1,126 @@
+<!-- CrowdPulse skin: deck header (number, title, artist, key, BPM, time, overview).
+     Variables: chan = 1|2 · accent = deck colour -->
+<Template>
+  <WidgetGroup>
+    <ObjectName>DeckHeader<Variable name="chan"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckTitleRow</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Label>
+            <ObjectName>DeckNumber<Variable name="chan"/></ObjectName>
+            <Size>30f,30f</Size>
+            <Text><Variable name="chan"/></Text>
+            <Alignment>center</Alignment>
+          </Label>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+              <TrackProperty>
+                <ObjectName>DeckTitle</ObjectName>
+                <TooltipId>track_title</TooltipId>
+                <SizePolicy>me,min</SizePolicy>
+                <Group>[Channel<Variable name="chan"/>]</Group>
+                <Property>title</Property>
+                <Elide>right</Elide>
+              </TrackProperty>
+              <TrackProperty>
+                <ObjectName>DeckArtist</ObjectName>
+                <TooltipId>track_artist</TooltipId>
+                <SizePolicy>me,min</SizePolicy>
+                <Group>[Channel<Variable name="chan"/>]</Group>
+                <Property>artist</Property>
+                <Elide>right</Elide>
+              </TrackProperty>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>DeckStats</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label><ObjectName>StatCaption</ObjectName><Text>KEY</Text></Label>
+                  <Key>
+                    <ObjectName>DeckKey</ObjectName>
+                    <TooltipId>visual_key</TooltipId>
+                    <Group>[Channel<Variable name="chan"/>]</Group>
+                    <DisplayCents>false</DisplayCents>
+                    <Connection><ConfigKey>[Channel<Variable name="chan"/>],visual_key</ConfigKey></Connection>
+                  </Key>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label><ObjectName>StatCaption</ObjectName><Text>BPM</Text></Label>
+                  <Number>
+                    <ObjectName>DeckBpm</ObjectName>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <NumberOfDigits>1</NumberOfDigits>
+                    <Connection><ConfigKey>[Channel<Variable name="chan"/>],visual_bpm</ConfigKey></Connection>
+                  </Number>
+                </Children>
+              </WidgetGroup>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label><ObjectName>StatCaption</ObjectName><Text>LEFT</Text></Label>
+                  <NumberPos>
+                    <ObjectName>DeckTime</ObjectName>
+                    <TooltipId>track_time</TooltipId>
+                    <Group>[Channel<Variable name="chan"/>]</Group>
+                    <Connection><ConfigKey>[Channel<Variable name="chan"/>],playposition</ConfigKey></Connection>
+                  </NumberPos>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <Overview>
+        <ObjectName>DeckOverview</ObjectName>
+        <TooltipId>waveform_overview</TooltipId>
+        <Channel><Variable name="chan"/></Channel>
+        <Size>100me,46f</Size>
+        <BgColor>#0B0E1A</BgColor>
+        <SignalColor><Variable name="accent"/></SignalColor>
+        <PlayPosColor>#EEF0FF</PlayPosColor>
+        <EndOfTrackColor>#FF2D75</EndOfTrackColor>
+        <PlayedOverlayColor>#B005060A</PlayedOverlayColor>
+        <DefaultMark>
+          <Align>bottom|left</Align>
+          <Color>#8B5CF6</Color>
+          <TextColor>#EEF0FF</TextColor>
+          <Text> %1 </Text>
+        </DefaultMark>
+        <Mark>
+          <Control>cue_point</Control>
+          <Text>CUE</Text>
+          <Align>top|left</Align>
+          <Color>#EEF0FF</Color>
+          <TextColor>#05060A</TextColor>
+        </Mark>
+        <MarkRange>
+          <StartControl>loop_start_position</StartControl>
+          <EndControl>loop_end_position</EndControl>
+          <EnabledControl>loop_enabled</EnabledControl>
+          <Color>#8B5CF6</Color>
+          <Opacity>0.45</Opacity>
+          <DisabledColor>#8A90B2</DisabledColor>
+          <DisabledOpacity>0.25</DisabledOpacity>
+        </MarkRange>
+      </Overview>
+    </Children>
+  </WidgetGroup>
+</Template>
