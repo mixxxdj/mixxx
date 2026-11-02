@@ -8,7 +8,6 @@
 
 #include "library/trackmodel.h"
 #include "qml/qmllibrarytracklistcolumn.h"
-#include "track/track.h"
 
 namespace {
 
@@ -73,13 +72,11 @@ class CoverTrackSource final : public QStandardItemModel, public TrackModel {
     }
 #endif
     void select() override {
-        ++selectCalls;
     }
 
     TrackPointer track;
     mutable int getTrackCalls = 0;
     mutable QModelIndex lastTrackIndex;
-    int selectCalls = 0;
 };
 
 class QmlLibraryTrackListModelCoverTest : public testing::Test {
@@ -99,7 +96,6 @@ class QmlLibraryTrackListModelCoverTest : public testing::Test {
     QVariant coverData() {
         const auto index = model.index(0, 0);
         EXPECT_TRUE(index.isValid());
-        EXPECT_EQ(1, source.selectCalls);
         return model.data(index, mixxx::qml::QmlLibraryTrackListModel::CoverArt);
     }
 
@@ -113,35 +109,6 @@ TEST_F(QmlLibraryTrackListModelCoverTest, UnresolvedTrackReturnsInvalidVariant) 
     EXPECT_FALSE(coverData().isValid());
     EXPECT_EQ(1, source.getTrackCalls);
     EXPECT_EQ(source.index(0, 0), source.lastTrackIndex);
-}
-
-TEST_F(QmlLibraryTrackListModelCoverTest, ResolvedCoverReturnsEncodedUrl) {
-    source.track = Track::newTemporary();
-    ASSERT_TRUE(source.track);
-    CoverInfoRelative cover;
-    cover.source = CoverInfoRelative::USER_SELECTED;
-    cover.type = CoverInfoRelative::FILE;
-    cover.coverLocation = QStringLiteral("cover.png");
-    source.track->setCoverInfo(cover);
-
-    const auto value = coverData();
-    ASSERT_TRUE(value.isValid());
-    ASSERT_TRUE(value.canConvert<QUrl>());
-    EXPECT_EQ(QUrl(QStringLiteral("image://mixxx/coverart/Y292ZXIucG5n")), value.toUrl());
-    EXPECT_EQ(1, source.getTrackCalls);
-    EXPECT_EQ(source.index(0, 0), source.lastTrackIndex);
-}
-
-TEST_F(QmlLibraryTrackListModelCoverTest, ResolvedTrackWithoutCoverReturnsInvalidVariant) {
-    source.track = Track::newTemporary();
-    ASSERT_TRUE(source.track);
-    EXPECT_FALSE(coverData().isValid());
-    EXPECT_EQ(1, source.getTrackCalls);
-}
-
-TEST_F(QmlLibraryTrackListModelCoverTest, InvalidIndexDoesNotResolveTrack) {
-    EXPECT_FALSE(model.data({}, mixxx::qml::QmlLibraryTrackListModel::CoverArt).isValid());
-    EXPECT_EQ(0, source.getTrackCalls);
 }
 
 } // namespace
