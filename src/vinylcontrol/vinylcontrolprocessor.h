@@ -1,12 +1,13 @@
 #pragma once
 
+#include <QMutex>
+#include <QRecursiveMutex>
 #include <QThread>
 #include <QVector>
 #include <QWaitCondition>
 
 #include "preferences/usersettings.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/compatibility/qmutex.h"
 #include "util/fifo.h"
 #include "vinylcontrol/vinylsignalquality.h"
 
@@ -75,7 +76,7 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     CSAMPLE* m_pWorkBuffer;
     QWaitCondition m_samplesAvailableSignal;
     QMutex m_waitForSampleMutex;
-    QT_RECURSIVE_MUTEX m_processorsLock;
+    QRecursiveMutex m_processorsLock;
     QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;

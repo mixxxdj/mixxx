@@ -14,7 +14,6 @@
 #include "rendergraph/vertexupdaters/texturedvertexupdater.h"
 #include "track/track.h"
 #include "util/assert.h"
-#include "util/colorcomponents.h"
 #include "util/roundtopixel.h"
 #include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -300,8 +299,7 @@ void allshader::WaveformRenderMark::updateRangeNode(GeometryNode* pNode,
     const float posx2 = static_cast<float>(rect.x() + rect.width());
 
     float r, g, b, a;
-
-    getRgbF(color, &r, &g, &b, &a);
+    color.getRgbF(&r, &g, &b, &a);
 
     const int numVerticesPerRectangle = 6;
     pNode->geometry().allocate(numVerticesPerRectangle * 2 * numBoxes);
