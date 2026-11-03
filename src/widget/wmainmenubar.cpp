@@ -2,9 +2,14 @@
 
 #ifndef __APPLE__
 #include <QApplication>
-#include <QWindow>
 #endif
+#include <QCursor>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QToolButton>
 #include <QUrl>
+#include <QWindow>
 
 #include "config.h"
 #include "control/controlproxy.h"
@@ -1006,4 +1011,92 @@ void VisibilityControlConnection::slotActionToggled(bool toggle) {
     if (m_pControl) {
         m_pControl->set(toggle ? 1.0 : 0.0);
     }
+}
+
+void WMainMenuBar::addWindowControls() {
+    // segoe fluent icons (win 11) and mdl2 assets (win 10) share code points
+    QFont glyphs(QStringList{QStringLiteral("Segoe Fluent Icons"),
+            QStringLiteral("Segoe MDL2 Assets")});
+    glyphs.setPixelSize(10);
+    auto* pButtons = new QWidget(this);
+    auto* pLayout = new QHBoxLayout(pButtons);
+    pLayout->setContentsMargins(0, 0, 0, 0);
+    pLayout->setSpacing(0);
+    const auto addButton = [&](const QString& name, char16_t glyph, auto onClick) {
+        auto* pButton = new QToolButton(pButtons);
+        pButton->setObjectName(name);
+        pButton->setText(QChar(glyph));
+        pButton->setFont(glyphs);
+        pButton->setFocusPolicy(Qt::NoFocus);
+        pButton->setFixedSize(46, 32); // windows 11 caption button
+        connect(pButton, &QToolButton::clicked, this, onClick);
+        pLayout->addWidget(pButton);
+        return pButton;
+    };
+    addButton(QStringLiteral("WindowMinimize"), 0xE921, [this] {
+        window()->showMinimized();
+    });
+    m_pMaximizeButton = addButton(QStringLiteral("WindowMaximize"), 0xE922, [this] {
+        window()->isMaximized() ? window()->showNormal() : window()->showMaximized();
+    });
+    addButton(QStringLiteral("WindowClose"), 0xE8BB, [this] {
+        window()->close();
+    });
+    pButtons->setStyleSheet(QStringLiteral(
+            "QToolButton { border: none; background: transparent; color: #fff; }"
+            "QToolButton:hover { background: #262626; }"
+            "QToolButton#WindowClose:hover { background: #c42b1c; }"));
+    setCornerWidget(pButtons, Qt::TopRightCorner);
+
+    auto* pLogo = new QLabel(this);
+    pLogo->setPixmap(window()->windowIcon().pixmap(QSize(16, 16), devicePixelRatioF()));
+    pLogo->setContentsMargins(8, 0, 6, 0);
+    pLogo->setAttribute(Qt::WA_TransparentForMouseEvents); // drags like the bar
+    setCornerWidget(pLogo, Qt::TopLeftCorner);
+    updateWindowControls();
+}
+
+void WMainMenuBar::setSkinStyleSheet(const QString& style) {
+    // items are top-aligned, pad them to the 32 px buttons
+    setStyleSheet(m_pMaximizeButton
+                    ? style + QStringLiteral("#MainMenu::item { padding: 6px 10px; }")
+                    : style);
+}
+
+void WMainMenuBar::updateWindowControls() {
+    if (!m_pMaximizeButton) {
+        return;
+    }
+    m_pMaximizeButton->setText(QChar(window()->isMaximized() ? 0xE923 : 0xE922));
+    // buttons move away from the cursor, no leave event follows: stale hover
+    const QPoint cursor = QCursor::pos();
+    for (auto* pButton : m_pMaximizeButton->parentWidget()->findChildren<QToolButton*>()) {
+        const bool under = pButton->isVisible() &&
+                pButton->rect().contains(pButton->mapFromGlobal(cursor));
+        if (pButton->testAttribute(Qt::WA_UnderMouse) != under) {
+            pButton->setAttribute(Qt::WA_UnderMouse, under);
+            pButton->update();
+        }
+    }
+}
+
+bool WMainMenuBar::isDragArea(QPoint pos) const {
+    return m_pMaximizeButton && !actionAt(pos);
+}
+
+void WMainMenuBar::mousePressEvent(QMouseEvent* pEvent) {
+    if (pEvent->button() == Qt::LeftButton && isDragArea(pEvent->position().toPoint()) &&
+            window()->windowHandle()) {
+        window()->windowHandle()->startSystemMove();
+        return;
+    }
+    QMenuBar::mousePressEvent(pEvent);
+}
+
+void WMainMenuBar::mouseDoubleClickEvent(QMouseEvent* pEvent) {
+    if (pEvent->button() == Qt::LeftButton && isDragArea(pEvent->position().toPoint())) {
+        m_pMaximizeButton->click();
+        return;
+    }
+    QMenuBar::mouseDoubleClickEvent(pEvent);
 }
