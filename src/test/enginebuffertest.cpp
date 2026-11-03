@@ -591,3 +591,113 @@ TEST_F(EngineBufferTest, RatePermTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up_small"), 0);
     EXPECT_EQ(1.06, m_pChannel1->getEngineBuffer()->m_speed_old);
 }
+
+// In relative vinyl mode the deck position is the integral of
+// vinylcontrol_rate. Drive the rate per callback like VinylControlXwax does
+// and check that the engine moves exactly by sum(rate * buffer duration).
+class EngineBufferVinylRateTest : public SignalPathTest {
+  protected:
+    void SetUp() override {
+        SignalPathTest::SetUp();
+#ifndef __VINYLCONTROL__
+        GTEST_SKIP() << "Requires vinyl control support.";
+#endif
+        // input_configured is read only, it is set when a vinyl input is
+        // configured in the sound hardware preferences
+        ControlObject::getControl(ConfigKey(m_sGroup1, "input_configured"))->forceSet(1.0);
+        ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_enabled"), 1.0);
+        ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_mode"), 1.0); // relative
+        ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.5);
+        ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+        m_baseRate = ControlObject::get(ConfigKey(m_sGroup1, "track_samplerate")) /
+                ControlObject::get(ConfigKey(kAppGroup, "samplerate"));
+        run(std::vector<double>(50, 1.0));
+    }
+
+    double position() const {
+        return m_pChannel1->getEngineBuffer()->getExactPlayPos().value();
+    }
+
+    // Processes one callback per rate and returns the expected movement in
+    // frames
+    double run(const std::vector<double>& rates) {
+        const double framesPerBuffer = kProcessBufferSize / 2.0;
+        double expected = 0.0;
+        for (double rate : rates) {
+            ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_rate"), rate);
+            ProcessBuffer();
+            expected += rate * framesPerBuffer * m_baseRate;
+        }
+        return expected;
+    }
+
+    // Returns the drift in frames after the move, which must start and end
+    // at rate 1.0 so that the ramping inside the buffers cancels out
+    double measure(const std::vector<double>& move) {
+        const double start = position();
+        double expected = run(move);
+        expected += run(std::vector<double>(50, 1.0));
+        const double drift = (position() - start) - expected;
+        std::cout << "ENGINE DRIFT " << drift << " frames ("
+                  << drift / ControlObject::get(ConfigKey(m_sGroup1, "track_samplerate")) *
+                        1000.0
+                  << " ms)" << std::endl;
+        return drift;
+    }
+
+    static void ramp(std::vector<double>* pRates, double from, double to, int buffers) {
+        for (int i = 1; i <= buffers; ++i) {
+            pRates->push_back(from + (to - from) * i / buffers);
+        }
+    }
+
+    double m_baseRate = 1.0;
+};
+
+TEST_F(EngineBufferVinylRateTest, ConstantRate) {
+    EXPECT_NEAR(0.0, measure(std::vector<double>(100, 1.0)), 1.0);
+}
+
+// The following moves pass a vinyl rate of exactly zero, like the timecoder
+// reports it when the record stops. The engine treats that like a pause and
+// skips the ramps into and out of the stop, which moves the deck by half a
+// buffer times the difference between the rates before and after the stop.
+// The bounds allow for this known remaining drift and nothing more.
+
+TEST_F(EngineBufferVinylRateTest, ScratchStrokes) {
+    std::vector<double> rates;
+    ramp(&rates, 1.0, 0.0, 4);
+    for (int stroke = 0; stroke < 20; ++stroke) {
+        for (int i = 1; i <= 16; ++i) {
+            rates.push_back(3.0 * std::sin(2 * M_PI * i / 16));
+        }
+    }
+    ramp(&rates, 0.0, 1.0, 4);
+    // 40 stops, 5.2 ms
+    EXPECT_NEAR(0.0, measure(rates), 235.0);
+}
+
+TEST_F(EngineBufferVinylRateTest, BackspinWithStop) {
+    std::vector<double> rates;
+    ramp(&rates, 1.0, -4.0, 5);
+    rates.insert(rates.end(), 100, -4.0);
+    ramp(&rates, -4.0, 0.0, 3);
+    rates.insert(rates.end(), 20, 0.0);
+    ramp(&rates, 0.0, 2.0, 8);
+    rates.insert(rates.end(), 200, 2.0);
+    ramp(&rates, 2.0, 1.0, 4);
+    // one stop out of a fast backspin, 2.4 ms
+    EXPECT_NEAR(0.0, measure(rates), 110.0);
+}
+
+TEST_F(EngineBufferVinylRateTest, StopAndRestart) {
+    std::vector<double> rates;
+    for (int i = 0; i < 10; ++i) {
+        ramp(&rates, 1.0, 0.0, 2);
+        rates.insert(rates.end(), 10, 0.0);
+        ramp(&rates, 0.0, 1.0, 2);
+        rates.insert(rates.end(), 10, 1.0);
+    }
+    // The rates before and after each stop are the same
+    EXPECT_NEAR(0.0, measure(rates), 5.0);
+}
