@@ -11,8 +11,7 @@
 
 namespace {
 
-// The source model supplies controlled track resolution. Index mapping,
-// cover metadata and cover URL behavior use the real Qt/Mixxx objects.
+// Supply controlled track resolution while exercising real index mapping.
 class CoverTrackSource final : public QStandardItemModel, public TrackModel {
   public:
     CoverTrackSource()
