@@ -1463,7 +1463,9 @@ bool MixxxMainWindow::nativeEvent(
 #endif
 
 bool MixxxMainWindow::handleWindowEdge(QObject* pObj, QEvent* pEvent) {
-    if (pEvent->type() == QEvent::Leave && pObj == windowHandle() && m_pMenuBar) {
+    if (((pEvent->type() == QEvent::Leave && pObj == windowHandle()) ||
+                (pEvent->type() == QEvent::WindowDeactivate && pObj == this)) &&
+            m_pMenuBar) {
         m_pMenuBar->updateWindowControls(); // e.g. left over a native waveform window
         if (m_edgeCursor) {
             QApplication::restoreOverrideCursor();
@@ -1474,6 +1476,9 @@ bool MixxxMainWindow::handleWindowEdge(QObject* pObj, QEvent* pEvent) {
     const bool press = pEvent->type() == QEvent::MouseButtonPress;
     if ((!press && pEvent->type() != QEvent::MouseMove) || pObj != windowHandle()) {
         return false;
+    }
+    if (!press && m_pMenuBar) {
+        m_pMenuBar->updateWindowControls();
     }
     // window-level events see every move, widgets only with mouse tracking
     const auto* pMouse = static_cast<QMouseEvent*>(pEvent);

@@ -1,12 +1,12 @@
 #include "widget/wmainmenubar.h"
 
-#ifndef __APPLE__
 #include <QApplication>
-#endif
 #include <QCursor>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QStyle>
+#include <QTimer>
 #include <QToolButton>
 #include <QUrl>
 #include <QWindow>
@@ -1030,23 +1030,26 @@ void WMainMenuBar::addWindowControls() {
         pButton->setFocusPolicy(Qt::NoFocus);
         pButton->setFixedSize(46, 32); // windows 11 caption button
         connect(pButton, &QToolButton::clicked, this, onClick);
+        // state changes and animations settle after the click
+        connect(pButton, &QToolButton::clicked, this, [this] {
+            QTimer::singleShot(300, this, &WMainMenuBar::updateWindowControls);
+        });
         pLayout->addWidget(pButton);
         return pButton;
     };
     addButton(QStringLiteral("WindowMinimize"), 0xE921, [this] {
         window()->showMinimized();
     });
+    m_hoverCheck.setInterval(100);
+    connect(&m_hoverCheck, &QTimer::timeout, this, &WMainMenuBar::updateWindowControls);
     m_pMaximizeButton = addButton(QStringLiteral("WindowMaximize"), 0xE922, [this] {
         window()->isMaximized() ? window()->showNormal() : window()->showMaximized();
     });
     addButton(QStringLiteral("WindowClose"), 0xE8BB, [this] {
         window()->close();
     });
-    pButtons->setStyleSheet(QStringLiteral(
-            "QToolButton { border: none; background: transparent; color: #fff; }"
-            "QToolButton:hover { background: #262626; }"
-            "QToolButton#WindowClose:hover { background: #c42b1c; }"));
     setCornerWidget(pButtons, Qt::TopRightCorner);
+    styleWindowControls();
 
     auto* pLogo = new QLabel(this);
     pLogo->setPixmap(window()->windowIcon().pixmap(QSize(16, 16), devicePixelRatioF()));
@@ -1061,6 +1064,25 @@ void WMainMenuBar::setSkinStyleSheet(const QString& style) {
     setStyleSheet(m_pMaximizeButton
                     ? style + QStringLiteral("#MainMenu::item { padding: 6px 10px; }")
                     : style);
+    styleWindowControls();
+}
+
+void WMainMenuBar::styleWindowControls() {
+    if (!m_pMaximizeButton) {
+        return;
+    }
+    // glyphs in the skin's menu text color, light and dark bars alike
+    ensurePolished();
+    const QColor text = palette().color(foregroundRole());
+    m_pMaximizeButton->parentWidget()->setStyleSheet(
+            QStringLiteral("QToolButton { border: none; background: transparent; color: %1; }"
+                           "QToolButton[hovered=true] { background: rgba(%2, %3, %4, 40); }"
+                           "QToolButton#WindowClose[hovered=true] { "
+                           "background: #c42b1c; color: #fff; }")
+                    .arg(text.name())
+                    .arg(text.red())
+                    .arg(text.green())
+                    .arg(text.blue()));
 }
 
 void WMainMenuBar::updateWindowControls() {
@@ -1068,14 +1090,27 @@ void WMainMenuBar::updateWindowControls() {
         return;
     }
     m_pMaximizeButton->setText(QChar(window()->isMaximized() ? 0xE923 : 0xE922));
-    // buttons move away from the cursor, no leave event follows: stale hover
+    // hover from the cursor, qt enter/leave go stale when the buttons move,
+    // the window minimizes or a system move/resize grabs the mouse
+    QWidget* pButtons = m_pMaximizeButton->parentWidget();
     const QPoint cursor = QCursor::pos();
-    for (auto* pButton : m_pMaximizeButton->parentWidget()->findChildren<QToolButton*>()) {
-        const bool under = pButton->isVisible() &&
-                pButton->rect().contains(pButton->mapFromGlobal(cursor));
-        if (pButton->testAttribute(Qt::WA_UnderMouse) != under) {
-            pButton->setAttribute(Qt::WA_UnderMouse, under);
-            pButton->update();
+    const QWidget* pUnder =
+            pButtons->rect().contains(pButtons->mapFromGlobal(cursor))
+            ? QApplication::widgetAt(cursor) // also false under other windows
+            : nullptr;
+    // background windows may get no leave event: recheck while hovered
+    if (pUnder && pUnder->parentWidget() == pButtons) {
+        m_hoverCheck.start();
+    } else {
+        m_hoverCheck.stop();
+    }
+    for (auto* pButton : pButtons->findChildren<QToolButton*>()) {
+        const bool hovered = pButton == pUnder;
+        if (pButton->property("hovered").toBool() != hovered) {
+            pButton->setProperty("hovered", hovered);
+            pButton->style()->unpolish(pButton);
+            pButton->style()->polish(pButton);
+            pButton->update(); // polish alone keeps the old paint, e.g. on leave
         }
     }
 }

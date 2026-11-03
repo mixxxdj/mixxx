@@ -4,6 +4,7 @@
 #include <QMenuBar>
 #include <QObject>
 #include <QScopedPointer>
+#include <QTimer>
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
@@ -111,6 +112,8 @@ class WMainMenuBar : public QMenuBar {
     void updateWindowControls();
     /// skin style, plus taller items next to window controls
     void setSkinStyleSheet(const QString& style);
+    /// window buttons in the skin's menu text color
+    void styleWindowControls();
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;
@@ -134,4 +137,5 @@ class WMainMenuBar : public QMenuBar {
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
     QToolButton* m_pMaximizeButton = nullptr;
+    QTimer m_hoverCheck;
 };
