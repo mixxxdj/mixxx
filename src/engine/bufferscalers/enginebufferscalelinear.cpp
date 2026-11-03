@@ -132,27 +132,51 @@ double EngineBufferScaleLinear::scaleBuffer(
             SampleUtil::clear(m_floorSampleOld.data(), chCount);
         }
 
-        // if the buffer has extra samples, do a read so RAMAN ends up back where
-        // it should be
-        SINT iCurSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dCurrentFrame)));
-        SINT extra_samples = m_bufferIntSize - iCurSample - getOutputSignal().getChannelCount();
-        if (extra_samples > 0) {
-            if (extra_samples % getOutputSignal().getChannelCount() != 0) {
-                // extra samples should include the whole frame
-                extra_samples -= extra_samples % getOutputSignal().getChannelCount();
-                extra_samples += getOutputSignal().getChannelCount();
-            }
-            //qDebug() << "extra samples" << extra_samples;
+        // The internal buffer holds frames that have been read ahead but
+        // not played. Count them as consumed, so the play position derived
+        // from the RAMAN read log stays on the read path, and read the whole
+        // frames again in the new direction, so RAMAN ends up back where
+        // playback is. Without this the play position lags the audio by a
+        // few frames more with every direction change.
+        const double unplayedFrames = math_max(
+                static_cast<double>(
+                        getOutputSignal().samples2frames(m_bufferIntSize)) -
+                        m_dNextFrame,
+                0.0);
+        frames_read += unplayedFrames;
 
-            SINT next_samples_read = m_pReadAheadManager->getNextSamples(
-                    rate_add_new, m_bufferInt, extra_samples, getOutputSignal().getChannelCount());
-            frames_read += getOutputSignal().samples2frames(next_samples_read);
+        const auto extraFrames = static_cast<SINT>(std::floor(unplayedFrames));
+        SINT extraFramesRemaining = extraFrames;
+        // Like in do_copy(), RAMAN may return less than requested, or nothing
+        // once when it wraps around at a loop trigger, so ask again.
+        int readFailedCount = 0;
+        while (extraFramesRemaining > 0) {
+            const SINT samplesRead = m_pReadAheadManager->getNextSamples(rate_add_new,
+                    m_bufferInt,
+                    getOutputSignal().frames2samples(extraFramesRemaining),
+                    getOutputSignal().getChannelCount());
+            if (samplesRead == 0) {
+                if (++readFailedCount > 1) {
+                    break;
+                }
+                continue;
+            }
+            extraFramesRemaining -= getOutputSignal().samples2frames(samplesRead);
         }
+
+        // Playback continues from the mirrored fractional position below,
+        // which is the same distance back in the new direction. Only count
+        // the frames that have actually been read again, so the play position
+        // stays on the read path even if RAMAN could not go back all the way.
+        frames_read += unplayedFrames - extraFramesRemaining;
         // force a buffer read:
         m_bufferIntSize = 0;
         // make sure the indexes stay correct for interpolation
         m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
-        m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
+        // The distance to the next whole frame becomes the offset into the
+        // buffer that is read in the new direction. This is zero if the
+        // reversal happens exactly on a frame, not a whole frame.
+        m_dNextFrame = ceil(m_dNextFrame) - m_dNextFrame;
 
         // second part: rate goes from zero to new rate
         m_dOldRate = 0.0;

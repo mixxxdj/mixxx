@@ -1,8 +1,10 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QVector>
+#include <QtDebug>
+#include <cmath>
+#include <vector>
 
 #include "engine/bufferscalers/enginebufferscalelinear.h"
 #include "engine/readaheadmanager.h"
@@ -45,6 +47,33 @@ class ReadAheadManagerMock : public ReadAheadManager {
         return requested_samples;
     }
 
+    // Reads from a track in which every sample has the value of its frame
+    // index, forward or in reverse like the real RAMAN, so that the output
+    // of the scaler tells which position of the track is audible.
+    SINT getNextSamplesRamp(double dRate,
+            CSAMPLE* buffer,
+            SINT requested_samples,
+            mixxx::audio::ChannelCount channelCount) {
+        const bool reverse = dRate < 0;
+        if (reverse && m_iEmptyReverseReads > 0) {
+            // Like a read that ends at a loop trigger
+            --m_iEmptyReverseReads;
+            return 0;
+        }
+        for (SINT i = 0; i < requested_samples; i += channelCount) {
+            if (reverse) {
+                --m_iRampFrame;
+            }
+            for (int ch = 0; ch < channelCount; ++ch) {
+                buffer[i + ch] = static_cast<CSAMPLE>(m_iRampFrame);
+            }
+            if (!reverse) {
+                ++m_iRampFrame;
+            }
+        }
+        return requested_samples;
+    }
+
     void setReadBuffer(CSAMPLE* pBuffer, SINT iBufferSize) {
         m_pBuffer = pBuffer;
         m_iBufferSize = iBufferSize;
@@ -65,6 +94,8 @@ class ReadAheadManagerMock : public ReadAheadManager {
     SINT m_iBufferSize;
     SINT m_iReadPosition;
     SINT m_iSamplesRead;
+    SINT m_iRampFrame{10000};
+    int m_iEmptyReverseReads{0};
 };
 
 class EngineBufferScaleLinearTest : public MixxxTest {
@@ -132,6 +163,44 @@ class EngineBufferScaleLinearTest : public MixxxTest {
                 EXPECT_LE(pBuffer[i], currentLimit);
                 currentLimit = pBuffer[i];
             }
+        }
+    }
+
+    // Plays one buffer at the rate, a second one that ramps to the negated
+    // rate and a third one in reverse, and returns the last two.
+    std::vector<CSAMPLE> ScaleReversal(double rate) {
+        EXPECT_CALL(*m_pReadAheadMock, getNextSamples(_, _, _, _))
+                .WillRepeatedly(Invoke(m_pReadAheadMock,
+                        &ReadAheadManagerMock::getNextSamplesRamp));
+        constexpr SINT kBufferSize = 1024;
+        std::vector<CSAMPLE> output(2 * kBufferSize);
+        SetRateNoLerp(rate);
+        m_pScaler->scaleBuffer(output.data(), kBufferSize);
+        SetRate(-rate);
+        m_pScaler->scaleBuffer(output.data(), kBufferSize);
+        SetRate(-rate);
+        m_pScaler->scaleBuffer(output.data() + kBufferSize, kBufferSize);
+        return output;
+    }
+
+    // The ramp to the negated rate crosses zero in the middle of the buffer.
+    // The reverse read starts one frame below the read position, so this is
+    // the only step the audio may take there. A scaler that lost or skipped
+    // frames at the reversal jumps further.
+    void AssertReversalIsContinuous(const std::vector<CSAMPLE>& output) {
+        const auto middle = static_cast<SINT>(output.size()) / 4;
+        EXPECT_NEAR(output[middle - 2], output[middle], 1.0);
+        for (SINT i = 2; i < static_cast<SINT>(output.size()); i += 2) {
+            if (i == middle) {
+                continue;
+            }
+            const CSAMPLE step = output[i] - output[i - 2];
+            if (i < middle) {
+                EXPECT_GE(step, 0) << "at sample " << i;
+            } else {
+                EXPECT_LE(step, 0) << "at sample " << i;
+            }
+            EXPECT_LE(std::abs(step), 4.0) << "at sample " << i;
         }
     }
 
@@ -303,6 +372,29 @@ TEST_F(EngineBufferScaleLinearTest, TestRepeatedScaleCalls) {
     }
 
     SampleUtil::free(pOutput);
+}
+
+TEST_F(EngineBufferScaleLinearTest, ReversalOnFractionalFrame) {
+    // 1.5 -> -1.5 reaches zero rate between two frames
+    AssertReversalIsContinuous(ScaleReversal(1.5));
+}
+
+TEST_F(EngineBufferScaleLinearTest, ReversalOnWholeFrame) {
+    // 2.0 -> -2.0 reaches zero rate exactly on a frame
+    AssertReversalIsContinuous(ScaleReversal(2.0));
+}
+
+TEST_F(EngineBufferScaleLinearTest, ReversalWithEmptyRead) {
+    // RAMAN returns nothing once when a read ends at a loop trigger. The
+    // scaler must ask again instead of resuming at the wrong frame.
+    const std::vector<CSAMPLE> expected = ScaleReversal(1.5);
+
+    delete m_pScaler;
+    delete m_pReadAheadMock;
+    SetUp();
+    m_pReadAheadMock->m_iEmptyReverseReads = 1;
+    EXPECT_EQ(expected, ScaleReversal(1.5));
+    EXPECT_EQ(0, m_pReadAheadMock->m_iEmptyReverseReads);
 }
 
 }  // namespace
