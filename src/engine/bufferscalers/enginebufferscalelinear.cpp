@@ -132,22 +132,30 @@ double EngineBufferScaleLinear::scaleBuffer(
             SampleUtil::clear(m_floorSampleOld.data(), chCount);
         }
 
-        // if the buffer has extra samples, do a read so RAMAN ends up back where
-        // it should be
-        SINT iCurSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dCurrentFrame)));
-        SINT extra_samples = m_bufferIntSize - iCurSample - getOutputSignal().getChannelCount();
-        if (extra_samples > 0) {
-            if (extra_samples % getOutputSignal().getChannelCount() != 0) {
-                // extra samples should include the whole frame
-                extra_samples -= extra_samples % getOutputSignal().getChannelCount();
-                extra_samples += getOutputSignal().getChannelCount();
-            }
-            //qDebug() << "extra samples" << extra_samples;
+        // The internal buffer holds frames that have been read ahead but
+        // not played. Count them as consumed, so the play position derived
+        // from the RAMAN read log stays on the read path, and read the whole
+        // frames again in the new direction, so RAMAN ends up back where
+        // playback is. Without this the play position lags the audio by a
+        // few frames more with every direction change.
+        const double unplayedFrames = math_max(
+                static_cast<double>(
+                        getOutputSignal().samples2frames(m_bufferIntSize)) -
+                        m_dNextFrame,
+                0.0);
+        frames_read += unplayedFrames;
 
-            SINT next_samples_read = m_pReadAheadManager->getNextSamples(
-                    rate_add_new, m_bufferInt, extra_samples, getOutputSignal().getChannelCount());
-            frames_read += getOutputSignal().samples2frames(next_samples_read);
+        const auto extraFrames = static_cast<SINT>(std::floor(unplayedFrames));
+        if (extraFrames > 0) {
+            m_pReadAheadManager->getNextSamples(rate_add_new,
+                    m_bufferInt,
+                    getOutputSignal().frames2samples(extraFrames),
+                    getOutputSignal().getChannelCount());
         }
+
+        // Playback continues from the mirrored fractional position below,
+        // which is the same distance back in the new direction
+        frames_read += unplayedFrames;
         // force a buffer read:
         m_bufferIntSize = 0;
         // make sure the indexes stay correct for interpolation

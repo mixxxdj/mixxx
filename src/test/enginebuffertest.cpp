@@ -668,6 +668,29 @@ TEST_F(EngineBufferVinylRateTest, AsymmetricDirectionChanges) {
     EXPECT_NEAR(0.0, measure(rates), 20.0);
 }
 
+TEST_F(EngineBufferVinylRateTest, PositionFollowsManyDirectionChanges) {
+    // Back and forth movement that changes direction in the middle of a
+    // buffer, so that the scaler holds unplayed frames at each reversal.
+    // The play position must follow the audio during the whole scratch,
+    // because a stop or seek re-anchors the reader at the play position.
+    const double start = position();
+    double expected = 0.0;
+    double previous = 1.0;
+    double maxError = 0.0;
+    for (int stroke = 0; stroke < 30; ++stroke) {
+        for (int i = 1; i <= 16; ++i) {
+            const double rate = 3.0 * std::sin(2 * M_PI * (i - 0.5) / 16);
+            ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_rate"), rate);
+            ProcessBuffer();
+            // The linear scaler ramps from the previous to the new rate
+            expected += (previous + rate) / 2 * kProcessBufferSize / 2 * m_baseRate;
+            previous = rate;
+            maxError = std::max(maxError, std::fabs((position() - start) - expected));
+        }
+    }
+    EXPECT_LT(maxError, 3.0);
+}
+
 TEST_F(EngineBufferVinylRateTest, ScratchStrokes) {
     std::vector<double> rates;
     ramp(&rates, 1.0, 0.0, 4);
