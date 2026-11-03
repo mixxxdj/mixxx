@@ -1,6 +1,7 @@
 #include "engine/bufferscalers/enginebufferscalelinear.h"
 
 #include <QtDebug>
+#include <cmath>
 
 #include "engine/readaheadmanager.h"
 #include "moc_enginebufferscalelinear.cpp"
@@ -89,13 +90,37 @@ double EngineBufferScaleLinear::scaleBuffer(
 
     if (rate_add_new * rate_add_old < 0) {
         // Direction has changed!
-        // calculate half buffer going one way, and half buffer going
-        // the other way.
 
-        // first half: rate goes from old rate to zero
+        // Split the buffer where the linear ramp from the old to the new
+        // rate crosses zero. Splitting anywhere else changes the distance
+        // travelled in this buffer compared to the ramp that is applied in
+        // all other buffers, which makes vinyl control drift with every
+        // direction change.
+        const SINT bufferFrames = getOutputSignal().samples2frames(iOutputBufferSize);
+
+        // The ramp goes linearly from rate_add_old to rate_add_new over the
+        // buffer, so it reaches zero at this fraction of the buffer.
+        // The rates have opposite signs, so the result is within (0, 1).
+        const double rateSpan = rate_add_old - rate_add_new;
+        const double zeroCrossingFraction = rate_add_old / rateSpan;
+
+        // Convert the fraction to the nearest whole frame.
+        const double zeroCrossingFrameExact =
+                static_cast<double>(bufferFrames) * zeroCrossingFraction;
+        const auto zeroCrossingFrameRounded =
+                static_cast<SINT>(std::round(zeroCrossingFrameExact));
+
+        // Keep at least one frame in each part, so both directions are
+        // actually processed.
+        const SINT zeroCrossingFrame = math_clamp<SINT>(
+                zeroCrossingFrameRounded, 1, bufferFrames - 1);
+
+        const SINT zeroCrossingSample = getOutputSignal().frames2samples(zeroCrossingFrame);
+
+        // first part: rate goes from old rate to zero
         m_dOldRate = rate_add_old;
         m_dRate = 0.0;
-        frames_read += do_scale(pOutputBuffer, getOutputSignal().samples2frames(iOutputBufferSize));
+        frames_read += do_scale(pOutputBuffer, zeroCrossingSample);
 
         // reset m_floorSampleOld in a way as we were coming from
         // the other direction
@@ -129,13 +154,11 @@ double EngineBufferScaleLinear::scaleBuffer(
         m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
 
-        // second half: rate goes from zero to new rate
+        // second part: rate goes from zero to new rate
         m_dOldRate = 0.0;
         m_dRate = rate_add_new;
-        // pass the address of the frame at the halfway point
-        SINT frameOffset =  getOutputSignal().samples2frames(iOutputBufferSize) / 2;
-        SINT sampleOffset = getOutputSignal().frames2samples(frameOffset);
-        frames_read += do_scale(pOutputBuffer + sampleOffset, iOutputBufferSize - sampleOffset);
+        frames_read += do_scale(pOutputBuffer + zeroCrossingSample,
+                iOutputBufferSize - zeroCrossingSample);
     } else {
         frames_read += do_scale(pOutputBuffer, iOutputBufferSize);
     }

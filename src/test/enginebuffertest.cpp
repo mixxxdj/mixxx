@@ -655,6 +655,19 @@ TEST_F(EngineBufferVinylRateTest, ConstantRate) {
     EXPECT_NEAR(0.0, measure(std::vector<double>(100, 1.0)), 1.0);
 }
 
+TEST_F(EngineBufferVinylRateTest, AsymmetricDirectionChanges) {
+    // Fast forward and slow backward strokes that reverse direction within
+    // a buffer, like a scratch with a moving record
+    std::vector<double> rates;
+    ramp(&rates, 1.0, 2.0, 2);
+    for (int stroke = 0; stroke < 10; ++stroke) {
+        rates.insert(rates.end(), 2, -0.5);
+        rates.insert(rates.end(), 2, 2.0);
+    }
+    ramp(&rates, 2.0, 1.0, 2);
+    EXPECT_NEAR(0.0, measure(rates), 20.0);
+}
+
 TEST_F(EngineBufferVinylRateTest, ScratchStrokes) {
     std::vector<double> rates;
     ramp(&rates, 1.0, 0.0, 4);
