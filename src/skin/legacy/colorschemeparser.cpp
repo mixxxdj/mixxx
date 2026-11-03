@@ -11,11 +11,66 @@
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/legacy/skincontext.h"
 
+#include <QApplication>
+#include <QPalette>
+#include <QStyle>
+#include <QStyleHints>
+
+namespace {
+
+/// black dialogs via fusion, windowsvista ignores the palette
+void setBlackDialogs(bool black) {
+    static QString s_platformStyle; // non-empty while black
+    if (black == !s_platformStyle.isEmpty()) {
+        return;
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    // dark title bars
+    QGuiApplication::styleHints()->setColorScheme(
+            black ? Qt::ColorScheme::Dark : Qt::ColorScheme::Unknown);
+#endif
+    if (!black) {
+        QApplication::setStyle(s_platformStyle);
+        s_platformStyle.clear();
+        QApplication::setPalette(QApplication::style()->standardPalette());
+        return;
+    }
+    s_platformStyle = QApplication::style()->name();
+    QApplication::setStyle(QStringLiteral("Fusion"));
+    QPalette palette(QColor(0x141414)); // button, other shades derive
+    palette.setColor(QPalette::Window, Qt::black);
+    palette.setColor(QPalette::Base, Qt::black);
+    palette.setColor(QPalette::AlternateBase, QColor(0x0d0d0d));
+    palette.setColor(QPalette::ToolTipBase, Qt::black);
+    for (const auto role : {QPalette::WindowText,
+                 QPalette::Text,
+                 QPalette::ButtonText,
+                 QPalette::ToolTipText,
+                 QPalette::HighlightedText,
+                 QPalette::BrightText}) {
+        palette.setColor(role, Qt::white);
+        palette.setColor(QPalette::Disabled, role, QColor(0x6e6e6e));
+    }
+    palette.setColor(QPalette::PlaceholderText, QColor(0x8a8a8a));
+    palette.setColor(QPalette::Highlight, QColor(0x2c454f)); // latenight selection
+    palette.setColor(QPalette::Link, QColor(0x4da3ff));
+    QApplication::setPalette(palette);
+}
+
+} // namespace
+
+void ColorSchemeParser::applyDialogPalette(const QDomNode& schemeNode) {
+    setBlackDialogs(!schemeNode.isNull() &&
+            XmlParse::selectNodeQString(schemeNode, "DialogPalette") ==
+                    QStringLiteral("black"));
+}
+
 void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
         UserSettingsPointer pConfig,
         QString* pStyle,
         SkinContext* pContext) {
     QDomNode schemeNode = findConfiguredColorSchemeNode(docElem, pConfig);
+    applyDialogPalette(schemeNode);
 
     if (!schemeNode.isNull()) {
         std::shared_ptr<ImgSource> pImgSrc =

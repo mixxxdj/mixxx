@@ -13,6 +13,8 @@ class ColorSchemeParser {
             UserSettingsPointer pConfig,
             QString* pStyle,
             SkinContext* pContext);
+    /// <DialogPalette>black</DialogPalette>, also at launch image so prefs get it
+    static void applyDialogPalette(const QDomNode& schemeNode);
     static QDomNode findConfiguredColorSchemeNode(
             const QDomElement& docElem,
             UserSettingsPointer pConfig);

@@ -2662,6 +2662,7 @@ QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& skinDoc) {
             ColorSchemeParser::findConfiguredColorSchemeNode(
                     skinDoc.toElement(),
                     m_pConfig);
+    ColorSchemeParser::applyDialogPalette(colorSchemeNode);
     if (!colorSchemeNode.isNull()) {
         // Check if the selected scheme has a <LaunchImageStyle> node with a string
         schemeLaunchImageStyle = m_pContext->selectString(colorSchemeNode, "LaunchImageStyle");
