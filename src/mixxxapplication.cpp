@@ -1,5 +1,6 @@
 #include "mixxxapplication.h"
 
+#include <QFont>
 #include <QThreadPool>
 #include <QTouchEvent>
 #include <QtDebug>
@@ -82,6 +83,12 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_eventNotifyExecTimeWarningThreshold(
                   mixxx::Duration::fromMillis(kDefaultEventNotifyExecTimeWarningThreshold)) {
     registerMetaTypes();
+
+    // full hinting, grayscale aa: sharp at 150 % without cleartype fringes
+    QFont font = QApplication::font();
+    font.setHintingPreference(QFont::PreferFullHinting);
+    font.setStyleStrategy(QFont::NoSubpixelAntialias);
+    QApplication::setFont(font);
 
     // Increase the size of the global thread pool to at least
     // 4 threads, even if less cores are available. These threads
