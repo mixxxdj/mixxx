@@ -168,6 +168,20 @@ class WaveformWidgetFactory : public QObject,
     bool widgetTypeSupportsUntilMark() const;
     bool widgetTypeSupportsStems() const;
 
+    // Defaults of the "beats/time until next marker" waveform options.
+    // Align and height limit are stored as combobox indices, see
+    // toUntilMarkAlign() and toUntilMarkTextHeightLimit().
+    static constexpr bool kUntilMarkShowBeatsDefault = false;
+    static constexpr bool kUntilMarkShowTimeDefault = false;
+    static constexpr int kUntilMarkAlignDefaultIndex = 1; // Center
+    static constexpr int kUntilMarkTextPointSizeDefault = 24;
+    static constexpr int kUntilMarkTextHeightLimitDefaultIndex = 0; // 1/3 of viewer
+
+    // Defaults of the stem waveform options.
+    static constexpr bool kStemReorderOnChangeDefault = true;
+    static constexpr double kStemOpacityDefault = 0.75;
+    static constexpr double kStemOutlineOpacityDefault = 0.15;
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);

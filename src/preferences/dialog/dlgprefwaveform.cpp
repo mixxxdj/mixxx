@@ -411,6 +411,28 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
 
+    // Beats/time until next marker. The widgets are connected to the
+    // slotSetUntilMark*() slots, so this applies the defaults instantly.
+    untilMarkShowBeatsCheckBox->setChecked(
+            WaveformWidgetFactory::kUntilMarkShowBeatsDefault);
+    untilMarkShowTimeCheckBox->setChecked(
+            WaveformWidgetFactory::kUntilMarkShowTimeDefault);
+    untilMarkAlignComboBox->setCurrentIndex(
+            WaveformWidgetFactory::kUntilMarkAlignDefaultIndex);
+    untilMarkTextPointSizeSpinBox->setValue(
+            WaveformWidgetFactory::kUntilMarkTextPointSizeDefault);
+    untilMarkTextHeightLimitComboBox->setCurrentIndex(
+            WaveformWidgetFactory::kUntilMarkTextHeightLimitDefaultIndex);
+
+    // Stem options
+    stemOpacitySpinBox->setValue(WaveformWidgetFactory::kStemOpacityDefault);
+    stemOutlineOpacitySpinBox->setValue(
+            WaveformWidgetFactory::kStemOutlineOpacityDefault);
+    // The checkbox is connected to clicked(), which is not emitted when it is
+    // changed programmatically. Apply the default explicitly.
+    stemReorderLayerOnChangedCheckBox->setChecked(
+            WaveformWidgetFactory::kStemReorderOnChangeDefault);
+    slotStemReorderOnChange(WaveformWidgetFactory::kStemReorderOnChangeDefault);
     stemDisplayModeComboBox->setCurrentIndex(0);
 }
 
