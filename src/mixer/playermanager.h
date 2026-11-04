@@ -195,6 +195,8 @@ class PlayerManager : public PlayerManagerInterface {
         return QStringLiteral("[Auxiliary") + QString::number(i + 1) + QChar(']');
     }
 
+    static PlayerManager* instance();
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
 #ifdef __STEM__
@@ -309,4 +311,6 @@ class PlayerManager : public PlayerManagerInterface {
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
+
+    static PlayerManager* s_pInstance;
 };
