@@ -70,8 +70,10 @@ HerculesMk2.leds = {
 HerculesMk2.init = function (id) { // called when the device is opened & set up
     HerculesMk2.initializeControls();
 
-    engine.connectControl("[Channel1]","playposition","HerculesMk2.wheelDecay");
-    engine.connectControl("[Channel2]","playposition","HerculesMk2.wheelDecay");
+    HerculesMk2.connections = [
+        engine.makeConnection("[Channel1]", "playposition", HerculesMk2.wheelDecay),
+        engine.makeConnection("[Channel2]", "playposition", HerculesMk2.wheelDecay)
+    ];
 
     print ("HerculesMk2 id: \""+id+"\" initialized.");
 };
@@ -101,6 +103,16 @@ HerculesMk2.getGroup = function (control){
     // buttons.
 
     return "[Channel" + HerculesMk2.controls.inputs[control].channel + "]";
+};
+
+HerculesMk2.eqGroup = function (group) {
+    // e.g. "[Channel1]" -> "[EqualizerRack1_[Channel1]_Effect1]"
+    return "[EqualizerRack1_" + group + "_Effect1]";
+};
+
+HerculesMk2.fxUnitGroup = function (group) {
+    // e.g. "[Channel1]" -> "[EffectRack1_EffectUnit1]"
+    return "[EffectRack1_EffectUnit" + group.replace(/\[Channel(\d)\]/, "$1") + "]";
 };
 
 HerculesMk2.getControl = function (io, channel, name) {
@@ -201,6 +213,32 @@ HerculesMk2.loadSelectedTrack = function (group, control, value, status) {
     }
 };
 
+// Library browsing with auto-repeat while the button is held
+// (bound to Deck 1 Prev/Next Track: 0x0B = up, 0x0C = down)
+HerculesMk2.browseTimer = 0;
+HerculesMk2.browseDelay = 400;   // ms before auto-repeat starts
+HerculesMk2.browseRepeat = 120;  // ms between repeated steps
+
+HerculesMk2.stopBrowseTimer = function () {
+    if (HerculesMk2.browseTimer) {
+    engine.stopTimer(HerculesMk2.browseTimer);
+    HerculesMk2.browseTimer = 0;
+    }
+};
+
+HerculesMk2.browse = function (group, control, value, status) {
+    var direction = (control == 0x0B) ? -1 : 1;
+    HerculesMk2.stopBrowseTimer();
+    if (!value) return; // released
+
+    engine.setValue("[Library]", "MoveVertical", direction);
+    HerculesMk2.browseTimer = engine.beginTimer(HerculesMk2.browseDelay, function () {
+    HerculesMk2.browseTimer = engine.beginTimer(HerculesMk2.browseRepeat, function () {
+        engine.setValue("[Library]", "MoveVertical", direction);
+    });
+    }, true);
+};
+
 HerculesMk2.buttons123 = function (group, control, value, status) {
     group = HerculesMk2.getGroup(control);
 
@@ -217,15 +255,16 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
 
     case "kill": // Kill mode
     if (value) { // Button pressed.
+        eqGroup = HerculesMk2.eqGroup(group);
         switch (HerculesMk2.controls.inputs[control].name) {
         case "fx 1":
-        engine.setValue(group, "filterLowKill", !engine.getValue(group, "filterLowKill"));
+        script.toggleControl(eqGroup, "button_parameter1");
         break;
         case "fx 2":
-        engine.setValue(group, "filterMidKill", !engine.getValue(group, "filterMidKill"));
+        script.toggleControl(eqGroup, "button_parameter2");
         break;
         case "fx 3":
-        engine.setValue(group, "filterHighKill", !engine.getValue(group, "filterHighKill"));
+        script.toggleControl(eqGroup, "button_parameter3");
         break;
         }
     }
@@ -244,12 +283,19 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
         return;
         }
 
-        switch (HerculesMk2.controls.inputs[control].name) {
-        case "fx 1":
-        case "fx 2":
-        case "fx 3":
-        engine.setValue(group, "flanger", !engine.getValue(group, "flanger"));
-        break;
+        // The old per-deck flanger was replaced by effect units.
+        // Deck 1 uses effect unit 1, deck 2 uses effect unit 2;
+        // buttons 1/2/3 toggle effect 1/2/3 of that unit.
+        var fxNumber = {"fx 1": 1, "fx 2": 2, "fx 3": 3}[HerculesMk2.controls.inputs[control].name];
+        if (fxNumber) {
+        var unit = HerculesMk2.fxUnitGroup(group);
+        var effect = unit.replace("]", "_Effect" + fxNumber + "]");
+        // make sure the deck is routed through its effect unit
+        engine.setValue(unit, "group_" + group + "_enable", 1);
+        script.toggleControl(effect, "enabled");
+        if (engine.getValue(effect, "loaded") == 0) {
+            print("HerculesMk2: no effect loaded in " + effect);
+        }
         }
     }
     break; // End fx mode
@@ -303,21 +349,16 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
     break;
 
     case "loop":
-        if (value) { // Button pressed.
-            switch (HerculesMk2.controls.inputs[control].name) {
-            case "fx 1": // "fx 1,2,3" should be globally renamed as said before?...
-                // trigger loop in
-                engine.setValue(group,"loop_in", !engine.getValue(group,"start")); // Am I correct?
-                break;
-            case "fx 2":
-                // trigger loop out
-                engine.setValue(group,"loop_out", !engine.getValue(group,"end")); // Am I correct?
-                break;
-            case "fx 3":
-                // trigger loop exit
-                engine.setValue(group,"reloop_exit", !engine.getValue(group,"loop")); // Am I correct?
-                break;
-           }
+        switch (HerculesMk2.controls.inputs[control].name) {
+        case "fx 1": // loop in (push button: follow press/release)
+            engine.setValue(group, "loop_in", value ? 1 : 0);
+            break;
+        case "fx 2": // loop out
+            engine.setValue(group, "loop_out", value ? 1 : 0);
+            break;
+        case "fx 3": // reloop / exit loop (replaces deprecated reloop_exit)
+            if (value) engine.setValue(group, "reloop_toggle", 1);
+            break;
         }
     break;
 
@@ -378,53 +419,26 @@ HerculesMk2.pitch = function (group, control, value, status) {
     // the rate (as is normal operation for the pitch pot)
 
     if (currentMode == "fx") {
+    // The old [Flanger] controls no longer exist. While button 1-3 is held,
+    // the pitch pot adjusts the meta knob of effect 1-3 in the deck's
+    // effect unit (deck 1 -> unit 1, deck 2 -> unit 2), i.e. the same
+    // effect the button switches on/off.
     potStep = 25; // How many clicks round the pot from min to max values
+    unitGroup = HerculesMk2.fxUnitGroup(group);
 
-    if (HerculesMk2.getControl("inputs", group, "fx 1").isDown) {
-        min = 0; max = 1;
-        increment = (max-min)/potStep;
-        increment = (value <= 0x3F) ? increment : increment * -1;
+    for (i = 1; i <= 3; i++) {
+        button = HerculesMk2.getControl("inputs", group, "fx " + i);
+        if (!button.isDown) continue;
 
-        currentValue = engine.getValue("[Flanger]", "lfoDepth");
-        newValue = currentValue + increment;
-        newValue = newValue > max ? max : newValue < min ? min : newValue;
-        if (HerculesMk2.debug) print ("HerculesMk2.pitch: value= " + newValue);
+        fxGroup = unitGroup.replace("]", "_Effect" + i + "]");
+        increment = (value <= 0x3F) ? 1 / potStep : -1 / potStep;
+        currentValue = engine.getParameter(fxGroup, "meta");
+        newValue = Math.max(0, Math.min(1, currentValue + increment));
+        if (HerculesMk2.debug) print ("HerculesMk2.pitch: " + fxGroup + " meta= " + newValue);
         if (newValue != currentValue)
-        engine.setValue("[Flanger]", "lfoDepth", newValue);
+        engine.setParameter(fxGroup, "meta", newValue);
 
-        HerculesMk2.getControl("inputs", group, "fx 1").used = true;
-        done = true;
-    }
-
-    if (HerculesMk2.getControl("inputs", group, "fx 2").isDown) {
-        min = 50; max = 10000;
-        increment = (max-min)/potStep;
-        increment = (value <= 0x3F) ? increment : increment * -1;
-
-        currentValue = engine.getValue("[Flanger]", "lfoDelay");
-        newValue = currentValue + increment;
-        newValue = newValue > max ? max : newValue < min ? min : newValue;
-        if (HerculesMk2.debug) print ("HerculesMk2.pitch: value= " + newValue);
-        if (newValue != currentValue)
-        engine.setValue("[Flanger]", "lfoDelay", newValue);
-
-        HerculesMk2.getControl("inputs", group, "fx 2").used = true;
-        done = true;
-    }
-
-    if (HerculesMk2.getControl("inputs", group, "fx 3").isDown) {
-        min = 50000; max = 2000000
-        increment = (max-min)/potStep;
-        increment = (value <= 0x3F) ? increment : increment * -1;
-
-        currentValue = engine.getValue("[Flanger]", "lfoPeriod");
-        newValue = currentValue + increment;
-        newValue = newValue > max ? max : newValue < min ? min : newValue;
-        if (HerculesMk2.debug) print ("HerculesMk2.pitch: value= " + newValue);
-        if (newValue != currentValue)
-        engine.setValue("[Flanger]", "lfoPeriod", newValue);
-
-        HerculesMk2.getControl("inputs", group, "fx 3").used = true;
+        button.used = true;
         done = true;
     }
     }
@@ -451,7 +465,9 @@ HerculesMk2.jog_wheel = function (group, control, value, status) {
 
     if (HerculesMk2.scratchMode) { // do some scratching
     if (HerculesMk2.debug) print("Do scratching value:" + value + " jogValue: " + jogValue );
-    engine.setValue(group,"scratch", (engine.getValue(group,"scratch") + (jogValue/64)).toFixed(2));
+    // "scratch" was removed; "scratch2" (with scratch2_enable) replaces it
+    engine.setValue(group, "scratch2_enable", 1);
+    engine.setValue(group, "scratch2", engine.getValue(group, "scratch2") + (jogValue/64));
     } else { // do pitch adjustment
     newValue = jogValue;
     if (HerculesMk2.debug) print("do pitching adjust " + jogValue + " new Value: " + newValue);
@@ -467,26 +483,20 @@ HerculesMk2.wheelDecay = function (value) {
 
     if (HerculesMk2.debug) print(" new playposition: " + value + " decayLast: "+ HerculesMk2.decayLast);
     if (HerculesMk2.scratchMode) { // do some scratching
-        if (HerculesMk2.debug) print("Scratch deck1: " + engine.getValue("[Channel1]","scratch") + " deck2: "+ engine.getValue("[Channel2]","scratch"));
+        if (HerculesMk2.debug) print("Scratch deck1: " + engine.getValue("[Channel1]","scratch2") + " deck2: "+ engine.getValue("[Channel2]","scratch2"));
 
-        jog1DecayRate = HerculesMk2.decayRate * (engine.getValue("[Channel1]","play") ? 1 : 5);
-        jog1 = engine.getValue("[Channel1]","scratch");
-        if (jog1 != 0) {
-        if (Math.abs(jog1) > jog1DecayRate) {
-            engine.setValue("[Channel1]","scratch", (jog1 / jog1DecayRate).toFixed(2));
-        } else {
-            engine.setValue("[Channel1]","scratch", 0);
+        ["[Channel1]", "[Channel2]"].forEach(function (deck) {
+        var decayRate = HerculesMk2.decayRate * (engine.getValue(deck, "play") ? 1 : 5);
+        var jog = engine.getValue(deck, "scratch2");
+        if (jog != 0) {
+            if (Math.abs(jog) > decayRate) {
+            engine.setValue(deck, "scratch2", jog / decayRate);
+            } else {
+            engine.setValue(deck, "scratch2", 0);
+            engine.setValue(deck, "scratch2_enable", 0);
+            }
         }
-        }
-        jog2DecayRate = HerculesMk2.decayRate * (engine.getValue("[Channel2]","play") ? 1 : 5);
-        jog2 = engine.getValue("[Channel2]","scratch");
-        if (jog2 != 0) {
-        if (Math.abs(jog2) > jog2DecayRate) {
-            engine.setValue("[Channel2]","scratch", (jog2 / jog2DecayRate).toFixed(2));
-        } else {
-            engine.setValue("[Channel2]","scratch", 0);
-        }
-        }
+        });
     }
     }
 };

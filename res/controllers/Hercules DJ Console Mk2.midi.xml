@@ -2,7 +2,7 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0">
   <info>
     <name>Hercules DJ Console Mk2</name>
-    <author>Garth Dahlstrom</author>
+    <author>Garth Dahlstrom, Michael Cornel</author>
     <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
     <manual>hercules_dj_console_mk2</manual>
   </info>
@@ -38,20 +38,20 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>PrevTrack</key>
+        <key>HerculesMk2.browse</key>
         <status>0xB0</status>
         <midino>0x0B</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>NextTrack</key>
+        <key>HerculesMk2.browse</key>
         <status>0xB0</status>
         <midino>0x0C</midino>
         <options>
-          <Button/>
+          <Script-Binding/>
         </options>
       </control>
       <control>
@@ -89,22 +89,22 @@
         </options>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterLow</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x2E</midino>
         <options/>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterMid</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x2F</midino>
         <options/>
       </control>
       <control>
-        <group>[Channel1]</group>
-        <key>filterHigh</key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x30</midino>
         <options/>
@@ -182,8 +182,8 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>PrevTrack</key>
+        <group>[Channel1]</group>
+        <key>LoadSelectedTrack</key>
         <status>0xB0</status>
         <midino>0x05</midino>
         <options>
@@ -192,7 +192,7 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>NextTrack</key>
+        <key>LoadSelectedTrack</key>
         <status>0xB0</status>
         <midino>0x06</midino>
         <options>
@@ -212,7 +212,7 @@
         <group>[Channel2]</group>
         <key>volume</key>
         <status>0xB0</status>
-        <midino>0x033</midino>
+        <midino>0x33</midino>
         <options/>
       </control>
       <control>
@@ -243,22 +243,22 @@
         </options>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterLow</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x2B</midino>
         <options/>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterMid</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x2C</midino>
         <options/>
       </control>
       <control>
-        <group>[Channel2]</group>
-        <key>filterHigh</key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x2D</midino>
         <options/>
