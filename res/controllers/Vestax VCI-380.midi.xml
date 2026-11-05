@@ -18,6 +18,27 @@
         in place of the crossfader curve slider of Preferences > Mixer. Without this option, the knob only acts on the external inputs, in the controller.
       </description>
     </option>
+    <option
+        variable="headMixInController"
+        type="boolean"
+        default="true"
+        label="Headphone mix by the controller (recommended)">
+      <description>
+        Recommended when the headphones are plugged into the controller and the Headphones output of Mixxx is the controller (channels 3 - 4).
+        The CUE/MASTER knob of the controller mixes the cue and the master in the headphones, and the headphone mix of Mixxx is set to cue only when the mapping starts.
+        Disable if the headphones are plugged into another sound card: the controller CUE/MASTER knob then sets the headphone mix of Mixxx.
+      </description>
+    </option>
+    <option variable="pcMixerSwitch" type="enum" label="PC / MIXER switches also control Mixxx inputs">
+      <value label="No (the switches only act on the controller)" default="true">none</value>
+      <value label="Auxiliary inputs">auxiliary</value>
+      <value label="Vinyl control">vinyl</value>
+      <description>
+        With Auxiliary inputs: the PC position plays the RCA input of the channel through Mixxx (Auxiliary 1 for the left channel, Auxiliary 2 for the right one), the MIXER position mutes it in Mixxx, so the source isn't heard twice.
+        With Vinyl control: the PC position enables vinyl control on the deck of the channel, the MIXER position disables it.
+        The inputs must be set up in Preferences > Sound Hardware > Input.
+      </description>
+    </option>
   </settings>
   <controller id="VestaxVCI380">
     <scriptfiles>
@@ -50,6 +71,56 @@
         <description>CF CURVE knob: Mixxx crossfader curve, smooth (left) to sharp (right)</description>
         <status>0xB7</status>
         <midino>0x56</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>VestaxVCI380.onHeadMix</key>
+        <description>CUE/MASTER knob: headphone mix of Mixxx, if the headMixInController option is disabled</description>
+        <status>0xB7</status>
+        <midino>0x58</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPCMixer</key>
+        <description>Left PC / MIXER switch: MIXER (Mixxx inputs, with the pcMixerSwitch option)</description>
+        <status>0x97</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>VestaxVCI380.onPCMixer</key>
+        <description>Left PC / MIXER switch: PC (Mixxx inputs, with the pcMixerSwitch option)</description>
+        <status>0x87</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPCMixer</key>
+        <description>Right PC / MIXER switch: MIXER (Mixxx inputs, with the pcMixerSwitch option)</description>
+        <status>0x98</status>
+        <midino>0x0B</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>VestaxVCI380.onPCMixer</key>
+        <description>Right PC / MIXER switch: PC (Mixxx inputs, with the pcMixerSwitch option)</description>
+        <status>0x88</status>
+        <midino>0x0B</midino>
         <options>
           <script-binding/>
         </options>
@@ -217,7 +288,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onFXSelect</key>
-        <description>Left FX SELECT encoder: quick effect chain preset</description>
+        <description>Left FX SELECT encoder: quick effect chain preset (held stems in stems mode)</description>
         <status>0xB7</status>
         <midino>0x06</midino>
         <options>
@@ -237,7 +308,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onFXSelect</key>
-        <description>Right FX SELECT encoder: quick effect chain preset</description>
+        <description>Right FX SELECT encoder: quick effect chain preset (held stems in stems mode)</description>
         <status>0xB8</status>
         <midino>0x06</midino>
         <options>
@@ -787,7 +858,7 @@
       <control>
         <group>[Library]</group>
         <key>VestaxVCI380.onSelectTrackKnob</key>
-        <description>SCROLL encoder: library move up/down (fast: page up/down)</description>
+        <description>SCROLL encoder: library move up/down (SHIFT: page up/down)</description>
         <status>0xB7</status>
         <midino>0x55</midino>
         <options>
@@ -897,7 +968,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB7</status>
         <midino>0x3B</midino>
         <options>
@@ -917,7 +988,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB8</status>
         <midino>0x3B</midino>
         <options>
@@ -927,7 +998,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Left touch strip (sampler mode): needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Left touch strip (sampler mode): needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB7</status>
         <midino>0x3C</midino>
         <options>
@@ -937,7 +1008,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Right touch strip (sampler mode): needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Right touch strip (sampler mode): needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB8</status>
         <midino>0x3C</midino>
         <options>
@@ -977,7 +1048,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB7</status>
         <midino>0x3A</midino>
         <options>
@@ -987,7 +1058,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB8</status>
         <midino>0x3A</midino>
         <options>
@@ -1037,7 +1108,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB7</status>
         <midino>0x39</midino>
         <options>
@@ -1047,7 +1118,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB8</status>
         <midino>0x39</midino>
         <options>
@@ -1087,7 +1158,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Left touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB7</status>
         <midino>0x38</midino>
         <options>
@@ -1107,7 +1178,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onStrip</key>
-        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), stem volume in stems mode</description>
+        <description>Right touch strip: needle drop (preview deck, SHIFT: deck), volume of the held stems in stems mode</description>
         <status>0xB8</status>
         <midino>0x38</midino>
         <options>
@@ -1117,7 +1188,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onFXOnOff</key>
-        <description>Left FX ON/OFF switch: quick effect on/off (hardware toggle, state sent)</description>
+        <description>Left FX ON/OFF switch: quick effect on/off (hardware toggle, state sent, held stems in stems mode)</description>
         <status>0x97</status>
         <midino>0x1C</midino>
         <options>
@@ -1127,7 +1198,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onFXSelectPush</key>
-        <description>Left FX SELECT push: load the first quick effect chain preset</description>
+        <description>Left FX SELECT push: load the first quick effect chain preset (held stems in stems mode)</description>
         <status>0x97</status>
         <midino>0x06</midino>
         <options>
@@ -1137,7 +1208,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onFXOnOff</key>
-        <description>Right FX ON/OFF switch: quick effect on/off (hardware toggle, state sent)</description>
+        <description>Right FX ON/OFF switch: quick effect on/off (hardware toggle, state sent, held stems in stems mode)</description>
         <status>0x98</status>
         <midino>0x1C</midino>
         <options>
@@ -1147,7 +1218,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onFXSelectPush</key>
-        <description>Right FX SELECT push: load the first quick effect chain preset</description>
+        <description>Right FX SELECT push: load the first quick effect chain preset (held stems in stems mode)</description>
         <status>0x98</status>
         <midino>0x06</midino>
         <options>
@@ -1197,7 +1268,7 @@
       <control>
         <group>[Channel1]</group>
         <key>VestaxVCI380.onFXDepth</key>
-        <description>Left DEPTH knob: quick effect super knob (selected stem in stems mode)</description>
+        <description>Left DEPTH knob: quick effect super knob (held stems in stems mode)</description>
         <status>0xB7</status>
         <midino>0x0A</midino>
         <options>
@@ -1207,7 +1278,7 @@
       <control>
         <group>[Channel2]</group>
         <key>VestaxVCI380.onFXDepth</key>
-        <description>Right DEPTH knob: quick effect super knob (selected stem in stems mode)</description>
+        <description>Right DEPTH knob: quick effect super knob (held stems in stems mode)</description>
         <status>0xB8</status>
         <midino>0x0A</midino>
         <options>
