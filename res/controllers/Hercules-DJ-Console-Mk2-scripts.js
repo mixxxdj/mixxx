@@ -283,7 +283,6 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
         return;
         }
 
-        // The old per-deck flanger was replaced by effect units.
         // Deck 1 uses effect unit 1, deck 2 uses effect unit 2;
         // buttons 1/2/3 toggle effect 1/2/3 of that unit.
         var fxNumber = {"fx 1": 1, "fx 2": 2, "fx 3": 3}[HerculesMk2.controls.inputs[control].name];
@@ -356,7 +355,7 @@ HerculesMk2.buttons123 = function (group, control, value, status) {
         case "fx 2": // loop out
             engine.setValue(group, "loop_out", value ? 1 : 0);
             break;
-        case "fx 3": // reloop / exit loop (replaces deprecated reloop_exit)
+        case "fx 3": // reloop / exit loop
             if (value) engine.setValue(group, "reloop_toggle", 1);
             break;
         }
@@ -419,10 +418,9 @@ HerculesMk2.pitch = function (group, control, value, status) {
     // the rate (as is normal operation for the pitch pot)
 
     if (currentMode == "fx") {
-    // The old [Flanger] controls no longer exist. While button 1-3 is held,
-    // the pitch pot adjusts the meta knob of effect 1-3 in the deck's
-    // effect unit (deck 1 -> unit 1, deck 2 -> unit 2), i.e. the same
-    // effect the button switches on/off.
+    // While button 1-3 is held, the pitch pot adjusts the meta knob of
+    // effect 1-3 in the deck's effect unit (deck 1 -> unit 1,
+    // deck 2 -> unit 2), i.e. the same effect the button switches on/off.
     potStep = 25; // How many clicks round the pot from min to max values
     unitGroup = HerculesMk2.fxUnitGroup(group);
 
@@ -465,7 +463,6 @@ HerculesMk2.jog_wheel = function (group, control, value, status) {
 
     if (HerculesMk2.scratchMode) { // do some scratching
     if (HerculesMk2.debug) print("Do scratching value:" + value + " jogValue: " + jogValue );
-    // "scratch" was removed; "scratch2" (with scratch2_enable) replaces it
     engine.setValue(group, "scratch2_enable", 1);
     engine.setValue(group, "scratch2", engine.getValue(group, "scratch2") + (jogValue/64));
     } else { // do pitch adjustment
