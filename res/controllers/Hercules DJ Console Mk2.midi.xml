@@ -30,7 +30,7 @@
       <control>
         <group>[Channel1]</group>
         <key>HerculesMk2.cue</key>
-    <status>0xB0</status>
+        <status>0xB0</status>
         <midino>0x09</midino>
         <options>
           <Script-Binding/>
