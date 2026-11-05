@@ -15,6 +15,17 @@ class DbConnection final {
     static QString collateLexicographically(
             const QString& orderByQuery);
 
+    // Wraps the given column into the `mixxx_hue()` SQL function call, which
+    // maps a stored color code to a hue based sort key. Use this to order
+    // color columns by hue instead of by their raw code, e.g.
+    //     ORDER BY mixxx_hue(color) ASC
+    // The returned expression is only valid if the function is available,
+    // i.e. for SQLite3 connections (see initDatabase()).
+    //
+    // The resulting order is consistent with
+    // mixxx::RgbColor::sortKey(), which is used for sorting rows in C++.
+    static QString hueSortKey(const QString& column);
+
     static int likeCompareLatinLow(
         QString* pattern,
         QString* string,

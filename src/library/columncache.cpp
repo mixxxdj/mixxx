@@ -14,6 +14,11 @@ const QString kSortInt = QStringLiteral("cast(%1 as integer)");
 const QString kSortNoCase = QStringLiteral("lower(%1)");
 const QString kSortNoCaseLex = mixxx::DbConnection::collateLexicographically(
         QStringLiteral("lower(%1)"));
+// Order colors by hue rather than by their raw color code. Has to stay in
+// sync with BaseTrackCache::compareColumnValues(), which uses the same
+// RgbColor::sortKey() ordering.
+const QString kSortColorHue = mixxx::DbConnection::hueSortKey(
+        QStringLiteral("%1"));
 
 struct ColumnProperties {
     const QString* pName;
@@ -244,6 +249,9 @@ void ColumnCache::setColumns(QStringList columns) {
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BITRATE, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_SAMPLERATE, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, kSortInt);
+    // Sort the track color by hue, so that similar colors end up next to
+    // each other instead of being grouped by their internal color code.
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COLOR, kSortColorHue);
 
     insertColumnSortByEnum(COLUMN_TRACKLOCATIONSTABLE_LOCATION, kSortNoCase);
 
