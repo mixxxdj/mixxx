@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.7.0">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="1.7.0">
   <info>
     <name>Hercules DJ Console Mk2</name>
     <author>Garth Dahlstrom, Michael Cornel</author>
@@ -495,4 +495,4 @@
       -->
     </outputs>
   </controller>
-</MixxxMIDIPreset>
+</MixxxControllerPreset>
