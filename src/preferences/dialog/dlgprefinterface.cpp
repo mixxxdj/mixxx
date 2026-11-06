@@ -10,6 +10,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
+#include "mixxxapplication.h"
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/constants.h"
 #include "preferences/usersettings.h"
@@ -40,10 +41,12 @@ const QString kTooltipsKey = QStringLiteral("Tooltips");
 const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 const QString kForceHardwareAccelerationKey = QStringLiteral("force_hardware_acceleration");
 const QString kHideMenuBarKey = QStringLiteral("hide_menubar");
+const QString kDarkDialogsKey = QStringLiteral("DarkDialogs");
 
 // TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
 const bool kStartInFullscreenDefault = false;
 const bool kHideMenuBarDefault = true;
+const bool kDarkDialogsDefault = true;
 
 } // namespace
 
@@ -380,6 +383,9 @@ void DlgPrefInterface::slotUpdate() {
     checkBoxHideMenuBar->setChecked(m_pConfig->getValue(
             ConfigKey(kConfigGroup, kHideMenuBarKey), kHideMenuBarDefault));
 
+    checkBoxDarkDialogs->setChecked(m_pConfig->getValue(
+            ConfigKey(kConfigGroup, kDarkDialogsKey), kDarkDialogsDefault));
+
     loadTooltipPreferenceFromConfig();
 
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
@@ -405,6 +411,8 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Always show the menu bar
     checkBoxHideMenuBar->setChecked(kHideMenuBarDefault);
+
+    checkBoxDarkDialogs->setChecked(kDarkDialogsDefault);
     // Also show the menu bar hint again on next start?
     // Use bool member to set [Config],show_menubar_hint to 1 in slotApply()
 
@@ -539,6 +547,10 @@ void DlgPrefInterface::slotApply() {
     m_pConfig->set(ConfigKey(kConfigGroup, kHideMenuBarKey),
             ConfigValue(checkBoxHideMenuBar->isChecked()));
     emit menuBarAutoHideChanged();
+
+    m_pConfig->set(ConfigKey(kConfigGroup, kDarkDialogsKey),
+            ConfigValue(checkBoxDarkDialogs->isChecked()));
+    MixxxApplication::setDarkDialogs(checkBoxDarkDialogs->isChecked());
 
     m_pConfig->setValue(ConfigKey(kControlsGroup, kTooltipsKey),
             m_tooltipMode);
