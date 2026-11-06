@@ -239,6 +239,27 @@ The Mixxx UI is currently being rewritten in QML. This new code is in a high sta
   targeted at their fork and leave a comment on the upstream PR linking to
   yours.
 
+### Use of AI Tools
+
+We have chosen to prioritize human collaboration and review rather than adopt a blanket,
+zero-tolerance ban on AI tools. We would prefer that code be 100% human-authored whenever possible.
+If we do not sense we are communicating with a human being, or if the contribution does not meet our
+standards for inclusion, we may choose to close the pull request.
+
+- A pull request must be a discussion between a human contributor and human reviewer. AI may assist
+this process but cannot totally replace any part of it.
+- Both the code author and human reviewer must understand and approve of every line of code being
+proposed.
+- AI can be used to help review code, but cannot be the only reviewer.
+- AI may be used to assist in the generation of explanatory text for contributors whose primary
+  language is not English, or who struggle to put their thoughts into words. We do not allow AI
+  agents to communicate alone in pull requests on behalf of the human contributor.
+- All parties must disclose what AI tools they have used as part of their contribution, and how
+  those tools were used.
+
+Contributors who fail to abide by these guidelines, especially when it causes harm by wasting the
+time of other Mixxx contributors, may be banned from the project.
+
 ## Code Review
 
 - **Review others' PRs.** Even if you're unfamiliar with the area, you can
