@@ -546,6 +546,10 @@ void Tooltips::addStandardTooltips() {
     add("rate_toggle")
             << tr("Toggle visibility of Rate Control");
 
+    // Show BPM Display
+    add("show_bpm")
+            << tr("Toggle visibility of BPM Display");
+
     // Show Key Controls
     add("show_key_controls")
             << tr("Toggle visibility of Key Controls");

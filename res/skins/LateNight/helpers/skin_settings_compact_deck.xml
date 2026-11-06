@@ -52,6 +52,24 @@ Description:
         </Children>
       </WidgetGroup>
 
+      <!-- BPM Display -->
+      <WidgetGroup>
+        <ObjectName>SkinSettingsSubMenu</ObjectName>
+        <Layout>stacked</Layout>
+        <Size>180min,18f</Size>
+        <Children>
+          <!-- translucent cover when rate controls are hidden -->
+          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
+            <SetVariable name="Setting">[Skin],show_rate_controls_compact</SetVariable>
+          </Template>
+          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+            <SetVariable name="TooltipId">show_bpm</SetVariable>
+            <SetVariable name="Text">BPM Display</SetVariable>
+            <SetVariable name="Setting">[Skin],show_bpm</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
       <!-- Key Control -->
       <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_key_controls</SetVariable>
