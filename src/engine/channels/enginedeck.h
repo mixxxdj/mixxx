@@ -72,6 +72,15 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     void cloneStemState(const EngineDeck* deckToClone);
     void addStemHandle(const ChannelHandleAndGroup& stemHandleGroup);
     static QString getGroupForStem(QStringView deckGroup, int stemIdx);
+
+    // Sub-channel interface used by ChannelMixer to apply the per-stem
+    // Postfader effect chains after the deck's fader gains (post-fader, see
+    // issue #16718).
+    int subChannelCount() const override {
+        return m_activeStemCount;
+    }
+    ChannelHandle subChannelHandle(int index) const override;
+    void copySubChannel(CSAMPLE* pDest, int index, std::size_t numSamples) const override;
 #endif
 
   signals:
@@ -104,6 +113,11 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     std::vector<std::unique_ptr<ControlPotmeter>> m_stemGain;
     std::vector<std::unique_ptr<ControlPushButton>> m_stemMute;
     bool m_stemClonedState;
+    // Number of stems prepared by processStem() for ChannelMixer in the current
+    // engine callback. Reset to 0 at the beginning of process(), so that
+    // ChannelMixer does not pick up stale sub-channel data (e.g. while
+    // passthrough is active or when playing a regular stereo track).
+    int m_activeStemCount;
 #endif
 
     // Begin vinyl passthrough fields

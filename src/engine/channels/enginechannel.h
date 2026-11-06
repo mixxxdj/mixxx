@@ -75,6 +75,27 @@ class EngineChannel : public EngineObject {
         return nullptr;
     }
 
+    // Sub-channels of this channel, e.g. the four stereo stems of a stem track
+    // on a deck. ChannelMixer applies the Postfader effect chains of each
+    // sub-channel after the fader gains have been applied (post-fader), so
+    // that effect tails stay audible when the channel is faded out or the deck
+    // is paused (see issue #16718).
+    // Returns 0 for channels without sub-channels, which is the case for all
+    // channels except stem decks.
+    virtual int subChannelCount() const {
+        return 0;
+    }
+    // Identifies the sub-channel with the given index for the effects system.
+    // Only called if subChannelCount() returns a value greater than index.
+    virtual ChannelHandle subChannelHandle(int) const {
+        return m_group.handle();
+    }
+    // Copies numSamples of the sub-channel's current signal (i.e. after pregain
+    // and the sub-channel's own volume/mute have been applied) into pDest.
+    // Only called if subChannelCount() returns a value greater than index.
+    virtual void copySubChannel(CSAMPLE*, int, std::size_t) const {
+    }
+
   protected:
     const ChannelHandleAndGroup m_group;
     EffectsManager* m_pEffectsManager;
