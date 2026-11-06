@@ -637,7 +637,7 @@ VestaxVCI380.onPadTap = function(channel, control, value, _status) {
             break;
 
         case 2: // in mode 2 = Beat grid tools
-            VestaxVCI380.setPadColor(deck, padNumber, VestaxVCI380.colorBeatInactive);
+            VestaxVCI380.setPadColor(deck, padNumber, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
             break;
 
         case 3:
@@ -784,10 +784,12 @@ VestaxVCI380.makeConnectionsForMode = function(deck, mode) {
             VestaxVCI380.modeConnections[deck-1].push(engine.makeConnection(`[Channel${deck}]`, `hotcue_${hotcue}_color`, VestaxVCI380.onHotcueUpdated));
             VestaxVCI380.modeConnections[deck-1].push(engine.makeConnection(`[Channel${deck}]`, `hotcue_${hotcue}_type`, VestaxVCI380.onHotcueUpdated));
         }
+        VestaxVCI380.modeConnections[deck-1].push(engine.makeConnection(`[Channel${deck}]`, "track_color", VestaxVCI380.onTrackColor));
         break;
 
     case 2 : // beat grid
         VestaxVCI380.modeConnections[deck-1].push(engine.makeConnection(`[Channel${deck}]`, "beat_active", VestaxVCI380.onBeatActive));
+        VestaxVCI380.modeConnections[deck-1].push(engine.makeConnection(`[Channel${deck}]`, "track_color", VestaxVCI380.onTrackColor));
         break;
 
     case 3 : // loop
@@ -819,6 +821,8 @@ VestaxVCI380.makeConnectionsForMode = function(deck, mode) {
             connector=engine.makeConnection(`[Sampler${sampler}]`, "track_loaded", VestaxVCI380.onSampler);
             connector.trigger();
             VestaxVCI380.modeConnections[deck-1].push(connector);
+            connector=engine.makeConnection(`[Sampler${sampler}]`, "track_color", VestaxVCI380.onSampler);
+            VestaxVCI380.modeConnections[deck-1].push(connector);
         }
     }
 };
@@ -839,7 +843,7 @@ VestaxVCI380.refreshPadsStem = function(deck) {
     const numStems=engine.getValue(`[Channel${deck}]`, "stem_count");
     for (let stem = 1; stem <= numStems; stem++) {
         const stemColor=VestaxVCI380.ColorMapper.getValueForNearestColor(engine.getValue(`[Channel${deck}_Stem${stem}]`, "color"));
-        const stemColorDim=stemColor-8;
+        const stemColorDim=VestaxVCI380.dimColor(stemColor);
         midi.sendShortMsg(0x96+deck, 0x3B+stem, VestaxVCI380.heldStems[deck-1].indexOf(stem) !== -1 ? VestaxVCI380.padColor.WHITE : stemColor);
         midi.sendShortMsg(0x96+deck, 0x3B+stem+4, engine.getValue(`[Channel${deck}_Stem${stem}]`, "mute")===0 ? stemColor : stemColorDim);
     }
@@ -875,22 +879,26 @@ VestaxVCI380.onHotcueUpdated = function(_value, group, _control) {
     }
 };
 
-VestaxVCI380.onSampler = function(value, group, control) {
+// sampler pads: empty = dim white; loaded = color of the sampler track (green if it has none);
+// playing = yellow, or white if the track is already yellow
+VestaxVCI380.onSampler = function(_value, group, _control) {
     if (group.startsWith("[Sampler")) {
         const button=VestaxVCI380.samplerToButton[group.match(/\d+/)[0]];
-        let color=0;
-        if (control==="track_loaded") {
-            color=(value===1 ? VestaxVCI380.colorSamplerLoaded : VestaxVCI380.colorSamplerEmpty);
-        } else if (control==="play" && engine.getValue(group, "track_loaded")===1) {
-            color=(value===1 ? VestaxVCI380.colorSamplerPlaying : VestaxVCI380.colorSamplerLoaded);
+        let color=VestaxVCI380.colorSamplerEmpty;
+        if (engine.getValue(group, "track_loaded")===1) {
+            const trackColor=engine.getValue(group, "track_color");
+            const loadedColor=(trackColor < 0) ? VestaxVCI380.colorSamplerLoaded : VestaxVCI380.ColorMapper.getValueForNearestColor(trackColor);
+            if (engine.getValue(group, "play")===1) {
+                color=(loadedColor===VestaxVCI380.colorSamplerPlaying) ? VestaxVCI380.padColor.WHITE : VestaxVCI380.colorSamplerPlaying;
+            } else {
+                color=loadedColor;
+            }
         }
-        if (VestaxVCI380.padMode[0]===5) {
-            midi.sendShortMsg(0x96+1, 0x3B+button, color);
+        for (let deck = 1; deck <= 2; deck++) {
+            if (VestaxVCI380.padMode[deck-1]===5) {
+                midi.sendShortMsg(0x96+deck, 0x3B+button, color);
+            }
         }
-        if (VestaxVCI380.padMode[1]===5) {
-            midi.sendShortMsg(0x96+2, 0x3B+button, color);
-        }
-
     }
 };
 
@@ -905,7 +913,7 @@ VestaxVCI380.onBeatActive = function(value, group, _control) {
             if (VestaxVCI380.beatPos[deck-1]>8) {
                 VestaxVCI380.beatPos[deck-1]=1;
             }
-            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.colorBeatInactive);
+            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
             midi.sendShortMsg(0x96+deck, 0x3B+VestaxVCI380.beatPos[deck-1], VestaxVCI380.colorBeatActive);
             break;
         case 2: // Approaching bar - reverse
@@ -914,7 +922,7 @@ VestaxVCI380.onBeatActive = function(value, group, _control) {
             if (VestaxVCI380.beatPos[deck-1]<1) {
                 VestaxVCI380.beatPos[deck-1]=8;
             }
-            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.colorBeatInactive);
+            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
             midi.sendShortMsg(0x96+deck, 0x3B+VestaxVCI380.beatPos[deck-1], VestaxVCI380.colorBeatActive);
             break;
         case 0: // Getting away from bar
@@ -949,6 +957,22 @@ VestaxVCI380.onTrackLoaded = function(_value, group, _control) {
             VestaxVCI380.setPadColorLoopMode(deck);
             break;
         }
+    }
+};
+
+// color of the track changed (in the library, or another track loaded): repaint the pads
+VestaxVCI380.onTrackColor = function(_value, group, _control) {
+    const deck=VestaxVCI380.getDeckFromGroup(group);
+    if (engine.getValue(group, "track_loaded")===0) {
+        return; // no track: keep the splash screen
+    }
+    switch (VestaxVCI380.padMode[deck-1]) {
+    case 1:
+        VestaxVCI380.setPadColorHotcuesDeck(deck);
+        break;
+    case 2:
+        VestaxVCI380.setPadColorBeatGridMode(deck);
+        break;
     }
 };
 
@@ -1120,11 +1144,27 @@ VestaxVCI380.setPadColorAll = function(color) {
     }
 };
 
+// dimmed version of a pad color: the dim colors are the bright ones without bit 0x08
+// (a color already dimmed, or OFF, is left unchanged)
+VestaxVCI380.dimColor = function(color) {
+    return color & ~0x08;
+};
+
+// background color of the pads of a deck: the color of the loaded track, dimmed,
+// or the given color if the track has none (track_color = -1)
+VestaxVCI380.trackPadColorDim = function(deck, fallback) {
+    const trackColor = engine.getValue(`[Channel${deck}]`, "track_color");
+    if (trackColor < 0) {
+        return fallback;
+    }
+    return VestaxVCI380.dimColor(VestaxVCI380.ColorMapper.getValueForNearestColor(trackColor));
+};
+
 // Light up the pads of a deck with colors of the hotcues
 VestaxVCI380.setPadColorHotcuesDeck = function(deck) {
     for (let hotcueNumber=1; hotcueNumber<=8; hotcueNumber++) {
         if (engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_status`) !== 1) {
-            midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.colorHotcueUnset);
+            midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorHotcueUnset));
         } else {
             const hotcueColor=engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_color`);
             midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.ColorMapper.getValueForNearestColor(hotcueColor));
@@ -1137,7 +1177,7 @@ VestaxVCI380.setPadColorHotcuesDeck = function(deck) {
 VestaxVCI380.setPadColorHotcuesOne = function(deck, hotcueNumber) {
     const hotcueStatus=engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_status`);
     if (hotcueStatus === 0) { // unset
-        midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.colorHotcueUnset);
+        midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorHotcueUnset));
     } else if (hotcueStatus === 1) { // set
         const hotcueColor=engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_color`);
         midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.ColorMapper.getValueForNearestColor(hotcueColor));
@@ -1178,7 +1218,7 @@ VestaxVCI380.setPadColorLoopMode = function(deck) {
 
 // Light up the pads of a deck for Beat Grid mode
 VestaxVCI380.setPadColorBeatGridMode = function(deck) {
-    VestaxVCI380.setPadColorDeck(deck, VestaxVCI380.colorBeatInactive);
+    VestaxVCI380.setPadColorDeck(deck, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
 };
 
 // Light up the pads of a deck for Sampler mode
