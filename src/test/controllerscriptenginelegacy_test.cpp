@@ -222,6 +222,9 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
     std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
 };
 
+// Timers only fire via the event loop. Check the state right after evaluating the
+// script and don't call processEvents() before, because a stalled CI runner
+// could fire the timer early.
 class ControllerScriptEngineLegacyTimerTest : public ControllerScriptEngineLegacyTest {
   protected:
     std::unique_ptr<ControlPotmeter> m_pCo;
@@ -1403,7 +1406,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimer) {
                                     x++; 
                                     engine.setValue('[Test]', 'co', x);
                                  }, false);)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
 
     jsEngine()->thread()->msleep(70);
@@ -1427,7 +1429,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimer) {
             R"(engine.beginTimer(20, function() {
                    engine.setValue('[Test]', 'co', 1.0);
                }, true);)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
 
     jsEngine()->thread()->msleep(35);
@@ -1446,7 +1447,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerBindFunc
                 engine.setValue('[Test]', 'coTimerId', timerId + 10);
             }.bind(this), true);            
             engine.setValue('[Test]', 'coTimerId', timerId);)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
     double timerId = m_pCoTimerId->get();
     EXPECT_TRUE(timerId > 0);
@@ -1472,7 +1472,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFun
                 engine.setValue('[Test]', 'coTimerId', timerId + 10);
             }, true);            
             engine.setValue('[Test]', 'coTimerId', timerId);)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
     double timerId = m_pCoTimerId->get();
     EXPECT_TRUE(timerId > 0);
@@ -1508,7 +1507,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerBindFunc
             }
             var MyMapping = new MyClass();
             MyMapping.runTimer();)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
     double timerId = m_pCoTimerId->get();
     EXPECT_TRUE(timerId > 0);
@@ -1546,7 +1544,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_singleShotTimerArrowFun
             }
             var MyMapping = new MyClass();
             MyMapping.runTimer();)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
     double timerId = m_pCoTimerId->get();
     EXPECT_TRUE(timerId > 0);
@@ -1585,7 +1582,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerArrowFunct
             }
             var MyMapping = new MyClass();
             MyMapping.runTimer();)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(7.0, m_pCo->get());
     double timerId = m_pCoTimerId->get();
     EXPECT_TRUE(timerId > 0);
@@ -1623,7 +1619,6 @@ TEST_F(ControllerScriptEngineLegacyTimerTest, beginTimer_repeatedTimerThisFuncti
             }
             var MyMapping = new MyClass();
             MyMapping.runTimer();)"));
-    processEvents();
     EXPECT_DOUBLE_EQ(7.0, m_pCo->get());
     double timerId = m_pCoTimerId->get();
     EXPECT_TRUE(timerId > 0);

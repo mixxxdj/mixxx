@@ -374,7 +374,7 @@ DJCi500.Deck = function(deckNumbers, midiChannel) {
                     const newStatus = !deckData.vinylButtonState[deck - 1];
                     deckData.jogWheel.vinylMode = newStatus;
                     deckData.jogWheelShift.vinylMode = newStatus;
-                    deckData.vinylButtonState[deck] = newStatus;
+                    deckData.vinylButtonState[deck - 1] = newStatus;
                     const newMessage = newStatus ? 0x7F : 0x00;
                     midi.sendShortMsg(this.midi[0], 0x03, newMessage);
                 }
@@ -1291,7 +1291,7 @@ DJCi500.tempoLEDs = function() {
                 // Deck2
                 midi.sendShortMsg(0x92, 0x1D, 0x0);
                 midi.sendShortMsg(0x92, 0x1C, 0x7F);
-                midi.sendShortMsg(0x91, 0x2D, 0x0);
+                midi.sendShortMsg(0x92, 0x2D, 0x0);
             } else {
                 // Deck1
                 midi.sendShortMsg(0x91, 0x1D, 0x0);

@@ -12,6 +12,12 @@
 #endif
 #include "effects/presets/effectpreset.h"
 
+#ifdef __AU_EFFECTS__
+namespace {
+bool s_loadAudioUnits = true;
+} // namespace
+#endif
+
 EffectsBackendManager::EffectsBackendManager() {
     m_pNumEffectsAvailable = std::make_unique<ControlObject>(
             ConfigKey("[Master]", "num_effectsavailable"));
@@ -19,10 +25,19 @@ EffectsBackendManager::EffectsBackendManager() {
 
     addBackend(EffectsBackendPointer(new BuiltInBackend()));
 #ifdef __AU_EFFECTS__
-    addBackend(createAudioUnitBackend());
+    if (s_loadAudioUnits) {
+        addBackend(createAudioUnitBackend());
+    }
 #endif
 #ifdef __LILV__
     addBackend(EffectsBackendPointer(new LV2Backend()));
+#endif
+}
+
+// static
+void EffectsBackendManager::disableAudioUnitsDuringTests() {
+#ifdef __AU_EFFECTS__
+    s_loadAudioUnits = false;
 #endif
 }
 
