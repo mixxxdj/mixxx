@@ -132,11 +132,12 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
           m_overviewNormalized(kOverviewNormalizedDefault),
-          m_untilMarkShowBeats(false),
-          m_untilMarkShowTime(false),
-          m_untilMarkAlign(Qt::AlignVCenter),
-          m_untilMarkTextPointSize(24),
-          m_untilMarkTextHeightLimit(toUntilMarkTextHeightLimit(0)),
+          m_untilMarkShowBeats(kUntilMarkShowBeatsDefault),
+          m_untilMarkShowTime(kUntilMarkShowTimeDefault),
+          m_untilMarkAlign(toUntilMarkAlign(kUntilMarkAlignDefaultIndex)),
+          m_untilMarkTextPointSize(kUntilMarkTextPointSizeDefault),
+          m_untilMarkTextHeightLimit(toUntilMarkTextHeightLimit(
+                  kUntilMarkTextHeightLimitDefaultIndex)),
           m_stemSplitTracks(false),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
@@ -469,13 +470,13 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
             toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit))));
     setStemReorderOnChange(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_reorder_on_change")),
-            true));
+            kStemReorderOnChangeDefault));
     setStemOpacity(static_cast<float>(
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_opacity")),
-                    0.75)));
+                    kStemOpacityDefault)));
     setStemOutlineOpacity(static_cast<float>(
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("stem_outline_opacity")),
-                    0.15)));
+                    kStemOutlineOpacityDefault)));
     setStemSplitTracks(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
             false));
