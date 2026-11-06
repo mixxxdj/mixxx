@@ -4241,6 +4241,16 @@ else()
         applocal
     )
 
+    # svg icons (stylesheet image:) at device size, else rasterized and scaled
+    install(
+      IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QSvgIconPlugin
+        DESTINATION
+        "${MIXXX_INSTALL_DATADIR}/iconengines"
+        COMPONENT
+        applocal
+    )
+
     install(
       IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
