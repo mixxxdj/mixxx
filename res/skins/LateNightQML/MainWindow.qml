@@ -281,7 +281,7 @@ Item {
                 id: waveforms
 
                 readonly property bool shouldShow: root.showWaveforms && !root.layoutMaximizedLibrary
-                property real lastVisiblePreferredHeight: Math.max(120, minimumContentHeight)
+                readonly property real lastVisiblePreferredHeight: Math.max(waveformHeightControl.value, minimumContentHeight)
                 readonly property real paneMinimumHeight: waveformsMinimumHeightAnimation.value
                 readonly property real panePreferredHeight: waveformsPreferredHeightAnimation.value
 
@@ -295,10 +295,17 @@ Item {
                 opacity: shouldShow && !root.bigLibraryTransition ? 1 : 0
                 clip: true
 
+                Mixxx.ControlProxy {
+                    id: waveformHeightControl
+
+                    group: "[Skin]"
+                    key: "latenight_waveform_height"
+                }
+
                 Component.onCompleted: SplitView.preferredHeight = panePreferredHeight
                 onHeightChanged: {
                     if (shouldShow && splitterResizing)
-                        lastVisiblePreferredHeight = height;
+                        waveformHeightControl.value = height;
                 }
                 onPanePreferredHeightChanged: {
                     if (!splitterResizing)
