@@ -5,6 +5,68 @@
 // For Mixxx version 1.11.x
 //
 
+// --- Compatibility shim for Mixxx 2.5's common-hid-packet-parser.js -------
+// This script's output linking (controller.linkOutput()/EksOtus.outputCallback,
+// unchanged since Mixxx 2.2 - verified against the 2.2.0 release source)
+// depends on HIDController.getOutputField(m_group, m_name) being able to find
+// an output field by its *mapped* Mixxx group/name (e.g. "deck","play"), not
+// just its raw HID group/name ("hid","play").
+//
+// In Mixxx 2.2 this worked because getOutputField() did a live linear scan
+// over every registered output field on every call, checking both
+// field.mapped_group/mapped_name AND field.group/name - so it kept working
+// no matter when a field got linked.
+//
+// In Mixxx 2.5 this was rewritten as an O(1) OutputFieldLookup Map for
+// performance. registerOutputPacket() populates that Map from both the raw
+// and mapped identities, but only once, at packet registration time - before
+// any linkOutput() call has run, so mapped_group/mapped_name don't exist yet.
+// The Map is never updated afterwards, so every lookup by mapped identity
+// (linkOutput()'s own initial LED sync, and every call to outputCallback()
+// on a subsequent control change) misses and logs
+// "HIDController.setOutput - Unknown field: deck.X". This is a genuine
+// engine regression, not a bug in this driver - restore the old fallback
+// behavior here (and cache the result back into the Map, so this only
+// costs a scan once per field).
+if (typeof HIDController !== "undefined" &&
+        HIDController.prototype.getOutputField &&
+        !HIDController.prototype._eksOtusGetOutputFieldPatched) {
+    var _eksOtusOriginalGetOutputField = HIDController.prototype.getOutputField;
+    HIDController.prototype.getOutputField = function(m_group, m_name) {
+        var field = _eksOtusOriginalGetOutputField.call(this, m_group, m_name);
+        if (field !== undefined) {
+            return field;
+        }
+        // Fall back to a Mixxx-2.2-style linear scan by mapped identity.
+        for (var packet_name in this.OutputPackets) {
+            var packet = this.OutputPackets[packet_name];
+            for (var group_name in packet.groups) {
+                var group = packet.groups[group_name];
+                for (var field_name in group) {
+                    var candidate = group[field_name];
+                    if (candidate.type === "bitvector") {
+                        for (var bit_id in candidate.value.bits) {
+                            var bit = candidate.value.bits[bit_id];
+                            if (bit.mapped_group === m_group && bit.mapped_name === m_name) {
+                                this.OutputFieldLookup.set([m_group, m_name].toString(), bit);
+                                return bit;
+                            }
+                        }
+                        continue;
+                    }
+                    if (candidate.mapped_group === m_group && candidate.mapped_name === m_name) {
+                        this.OutputFieldLookup.set([m_group, m_name].toString(), candidate);
+                        return candidate;
+                    }
+                }
+            }
+        }
+        return undefined;
+    };
+    HIDController.prototype._eksOtusGetOutputFieldPatched = true;
+}
+// ---------------------------------------------------------------------------
+
 // EKS Otus HID interface specification
 function EKSOtusController() {
     this.controller = new HIDController();
@@ -27,7 +89,7 @@ function EKSOtusController() {
         var name = undefined;
         var offset = 0;
 
-        packet = new HIDPacket("control", 0, undefined, [0x35]);
+        packet = new HIDPacket("control", 0, undefined, [0x00, 0x35]);
         packet.addControl("hid","wheel_position",2,"H");
         packet.addControl("hid","wheel_speed",4,"h");
         packet.addControl("hid","timestamp",6,"I");
@@ -86,15 +148,16 @@ function EKSOtusController() {
         packet.addControl("hid","packet_number",51,"B");
         packet.addControl("hid","deck_status",52,"B");
         this.controller.registerInputPacket(packet);
-
-        packet = new HIDPacket("firmware_version", 0xa, undefined, [0x4]);
+        
+        packet = new HIDPacket("firmware_version", 0xa, undefined, [0x0a, 0x04]);
         packet.addControl("hid","major",2,"B");
         packet.addControl("hid","minor",3,"B");
         this.controller.registerInputPacket(packet);
 
-        packet = new HIDPacket("trackpad_mode", 0x5, undefined, [0x3]);
+        packet = new HIDPacket("trackpad_mode", 0x5, undefined, [0x05, 0x03]);
         packet.addControl("hid","status",2,"B");
         this.controller.registerInputPacket(packet);
+
 
     }
 
@@ -104,7 +167,7 @@ function EKSOtusController() {
         var offset = 0;
 
         packet = new HIDPacket("button_leds", 0x16, undefined, [0x18]);
-        offset = 1;
+        offset = 2; // matches original 2.2.0 raw offset; addOutput()'s internal -1 shim then lands this at data[1], right after the 1-byte header
         packet.addOutput("hid","jog_nw",offset++,"B");
         packet.addOutput("hid","jog_ne",offset++,"B");
         packet.addOutput("hid","jog_se",offset++,"B");
@@ -127,10 +190,11 @@ function EKSOtusController() {
         packet.addOutput("hid","cue",offset++,"B");
         packet.addOutput("hid","brake",offset++,"B");
         packet.addOutput("hid","fastforward",offset++,"B");
+        packet.length = 31; // match stock 2.2.0's fixed 32-byte total report size (31 + 1 reportID)
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("slider_leds", 0x17, undefined, [0x16]);
-        offset = 1;
+        offset = 2;
         packet.addOutput("pitch","slider_1",offset++,"B");
         packet.addOutput("pitch","slider_2",offset++,"B");
         packet.addOutput("pitch","slider_3",offset++,"B");
@@ -151,29 +215,35 @@ function EKSOtusController() {
         packet.addOutput("pitch","slider_scale_1",offset++,"B");
         packet.addOutput("pitch","slider_scale_2",offset++,"B");
         packet.addOutput("pitch","slider_scale_3",offset++,"B");
+        packet.length = 31;
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("led_wheel_left", 0x14, undefined, [0x20]);
-        offset = 1;
+        offset = 2;
         for (var led_index=1;led_index<=this.wheelLEDCount/2;led_index++)
             packet.addOutput("hid","wheel_" + led_index,offset++,"B");
+        packet.length = 31;
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("led_wheel_right", 0x15, undefined, [0x20]);
-        offset = 1;
+        offset = 2;
         for (var led_index=this.wheelLEDCount/2+1;led_index<=this.wheelLEDCount;led_index++)
             packet.addOutput("hid","wheel_" + led_index,offset++,"B");
+        packet.length = 31;
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("request_firmware_version", 0xa, undefined, [0x2]);
+        packet.length = 31;
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("set_trackpad_mode", 0x5, undefined, [0x3]);
-        packet.addControl("hid","mode",2,"B");
+        packet.addOutput("hid","mode",2,"B");
+        packet.length = 31;
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("set_ledcontrol_mode", 0x1d, undefined, [0x3]);
-        packet.addControl("hid","mode",2,"B");
+        packet.addOutput("hid","mode",2,"B");
+        packet.length = 31;
         this.controller.registerOutputPacket(packet);
     }
 
@@ -283,7 +353,7 @@ function EKSOtusController() {
     }
 
     // Volume slider scaling for 0..1..5 scaling
-    this,volumeScaler = function(group,name,value) {
+    this.volumeScaler = function(group,name,value) {
         return script.absoluteNonLin(value, 0, 1, 5, 0, 65536);
     }
 
@@ -315,18 +385,18 @@ EksOtus.init = function (id) {
     EksOtus.LEDUpdateInterval = 250;
     // Valid values: 1 for mouse mode, 0 for xy-pad mode
     EksOtus.trackpadMode = 0;
-
-    EksOtus.deckSwitchClicked = false;
-
+    EksOtus.deckSwitchHeld = false;
+    EksOtus.deckSwitchHoldPending = false;
+    EksOtus.deckSwitchDebounceIgnoring = false;
     // Wheel absolute position value
     EksOtus.wheelPosition = undefined;
-
     // Wheel spin animation details
     EksOtus.activeTrackDuration = undefined;
     // Group registered to update spinning platter details
     EksOtus.activeSpinningPlatterGroup = undefined;
     // Virtual record spin time, 1.8 for 33 1/3 RPM, 1.33 for 45 RPM
     EksOtus.revTime = 1.8;
+    EksOtus.pitchModifierActive = false;
     // Wheel LED index, range 1-60
     EksOtus.activeSpinningPlatterLED = undefined;
 
@@ -337,16 +407,34 @@ EksOtus.init = function (id) {
     controller.setPacketCallback("firmware_version",EksOtus.FirmwareVersionWrapper);
     controller.setPacketCallback("trackpad_mode",EksOtus.TrackpadModeWrapper);
 
+    // NOTE: the engine keys every changed field as "<group>.<name>" (see
+    // HIDPacket.parse/parseBitVector in common-hid-packet-parser.js), so an
+    // entry here must include the "hid." group prefix to actually match and
+    // be skipped. "deck_status", "slider_pos_1", "slider_pos_2", and
+    // "slider_value" were missing that prefix and were therefore never
+    // actually ignored. In practice the three slider fields have their own
+    // setCallback() handler so they short-circuit before this matters, but
+    // "deck_status" has none, so its value changes fell through to the
+    // generic engine.setValue("hid", "deck_status", ...) fallback - and
+    // since "hid" isn't a real Mixxx control group, that logs
+    // "ControlDoublePrivate::getControl returning NULL for ("hid","deck_status")".
     controller.ignoredControlChanges = [
-        "mask","timestamp","packet_number","deck_status", "wheel_speed",
+        "mask","hid.timestamp","hid.packet_number","hid.deck_status", "hid.wheel_speed",
         // These return the Otus slider position scaled by the 'slider scale'
-        "slider_pos_1","slider_pos_2", "slider_value"
+        "hid.slider_pos_1","hid.slider_pos_2", "hid.slider_value"
     ];
 
     // Scratch parameters
     controller.scratchintervalsPerRev = 1024;
     controller.scratchAlpha = 1.0/8;
-    controller.rampedScratchEnable = true;
+    // NOTE: 'rampedScratchEnable' is not a real HIDController property (the
+    // engine reads scratchRampOnEnable/scratchRampOnDisable), so this line
+    // never had any effect since the script was written - scratch start/stop
+    // has always defaulted to an instant jump instead of ramping. Setting
+    // the real properties makes engaging/releasing the wheel ramp smoothly,
+    // which is part of what should make scratching feel less abrupt/jerky.
+    controller.scratchRampOnEnable = true;
+    controller.scratchRampOnDisable = true;
 
     EksOtus.setTrackpadMode(this.trackpadMode);
     // Note: Otus is not considered initialized before we get
@@ -355,7 +443,8 @@ EksOtus.init = function (id) {
     // Link controls and register callbacks
     EksOtus.registerCallbacks();
 
-    engine.softTakeover("[Master]","headVolume",true);
+    // CHANGED: headVolume -> headGain for Mixxx 2.5+
+    engine.softTakeover("[Master]","headGain",true);
     engine.softTakeover("[Master]","headMix",true);
     for (var deck in controller.deckOutputColors) {
         engine.softTakeover("[Channel"+deck+"]","pregain",true);
@@ -371,7 +460,11 @@ EksOtus.init = function (id) {
 
 }
 
-EksOtus.outputCallback = function(value,group,key) {
+// Callback bound to each of the 11 deck-tied outputs below via linkOutput().
+// Unchanged from the Mixxx 2.2 original - setOutput("deck", key, ...) only
+// resolves correctly now because of the getOutputField compatibility shim
+// at the top of this file (Mixxx 2.5's engine broke mapped-identity lookups).
+EksOtus.outputCallback = function(value, group, key) {
     var controller = EksOtus.controller;
     if (group=="deck") {
         if (controller.activeDeck==undefined)
@@ -387,19 +480,53 @@ EksOtus.outputCallback = function(value,group,key) {
         EksOtus.controller.setOutput("deck",key,controller.LEDColors.off,true);
 }
 
+// Mixxx's HIDPacket.send() (common-hid-packet-parser.js) always calls
+// controller.sendOutputReport(reportId, data, useNonSkippingFIFO=false).
+// With that default, Mixxx's native HID I/O thread silently SKIPS writing
+// a report to the device if its bytes are identical to the last data it
+// queued for that report ID - a deliberate throughput optimization, not a
+// bug (see src/controllers/hid/hidcontroller.h). On this device that skip
+// logic appears to also suppress the very first real write, so the
+// hardware never receives the report and the LEDs never light. Passing
+// useNonSkippingFIFO=true forces every write through unconditionally.
+// This re-implements HIDPacket.send()'s packing step locally so we can
+// call controller.sendOutputReport() ourselves with that flag set,
+// without needing to modify the shared library file.
+EksOtus.forceSendPacket = function(packet) {
+    // NOTE: do NOT shadow the name "controller" here. Mixxx injects a
+    // global "controller" object (the native HidControllerJSProxy with
+    // sendOutputReport/send/etc). EksOtus.controller is a DIFFERENT
+    // object - our own JS HIDController wrapper instance (getOutputPacket,
+    // setOutput, ...) - and has no sendOutputReport method at all.
+    var data = new Uint8Array(packet.length);
+    if (packet.header !== undefined) {
+        for (var header_byte = 0; header_byte < packet.header.length; header_byte++) {
+            data[header_byte] = packet.header[header_byte];
+        }
+    }
+    for (var group_name in packet.groups) {
+        var group = packet.groups[group_name];
+        for (var field_name in group) {
+            packet.pack(data, group[field_name]);
+        }
+    }
+    controller.sendOutputReport(packet.reportId, data.buffer, true);
+}
+
 EksOtus.updateLEDs = function(from_timer) {
     var controller = EksOtus.controller;
-    controller.getOutputPacket("button_leds").send();
-    controller.getOutputPacket("slider_leds").send();
-    controller.getOutputPacket("led_wheel_left").send();
-    controller.getOutputPacket("led_wheel_right").send();
+    EksOtus.forceSendPacket(controller.getOutputPacket("button_leds"));
+    EksOtus.forceSendPacket(controller.getOutputPacket("slider_leds"));
+    EksOtus.forceSendPacket(controller.getOutputPacket("led_wheel_left"));
+    EksOtus.forceSendPacket(controller.getOutputPacket("led_wheel_right"));
 }
 
 // Device cleanup function
 EksOtus.shutdown = function() {
-    engine.softTakeover("[Master]","headVolume",false);
+    // CHANGED: headVolume -> headGain for Mixxx 2.5+
+    engine.softTakeover("[Master]","headGain",false);
     engine.softTakeover("[Master]","headMix",false);
-    for (var deck in controller.deckOutputColors) {
+    for (var deck in EksOtus.controller.deckOutputColors) {
         engine.softTakeover("[Channel"+deck+"]","pregain",false);
         engine.softTakeover("[Channel"+deck+"]","volume",false);
     }
@@ -430,8 +557,10 @@ EksOtus.loadedTrackDuration = function(value) {
 EksOtus.registerCallbacks = function() {
     var controller = EksOtus.controller;
 
+    controller.modifiers.add("shift");
+    controller.modifiers.add("shift");
     controller.linkModifier("hid","eject_right","shift");
-    controller.linkModifier("hid","touch_slider","pitch");
+    controller.setCallback("control","hid","touch_slider",function(field) { EksOtus.pitchModifierActive = (field.value == 1); });
 
     controller.linkControl("hid","play","deck","play");
     controller.linkControl("hid","cue","deck","cue_default");
@@ -508,7 +637,13 @@ EksOtus.wheelScaler = function(group,name,value) {
         return 0;
     }
     var delta = EksOtus.wheelPosition - value;
-    if (delta>32768)
+    // wheel_position wraps around as a 16-bit counter (0-65535). The old
+    // check only caught the wrap in one direction (delta>32768), so
+    // scratching backward across the wrap point produced delta values
+    // like -65525 that fell straight into the "large movement" branch
+    // below and were returned as a huge, wrong tick (~+4096) instead of
+    // being discarded like the forward-wrap case already was.
+    if (delta>32768 || delta<-32768)
         return 0;
     EksOtus.wheelPosition = value;
     if (delta>-8 && delta<8)
@@ -522,7 +657,8 @@ EksOtus.jogScaler = function(group,name,value) {
         return 0;
     }
     var delta = EksOtus.wheelPosition - value;
-    if (delta>32768)
+    // Same wrap-around fix as wheelScaler above - catch both directions.
+    if (delta>32768 || delta<-32768)
         return 0;
     EksOtus.wheelPosition = value;
     return -delta/64;
@@ -547,8 +683,10 @@ EksOtus.resetWheelLEDs = function (color) {
     var controller = EksOtus.controller;
     if (color==undefined || !(color in controller.LEDColors))
         color = "off";
+    // setOutput() needs the numeric LED value, not the color name string
+    var color_value = controller.LEDColors[color];
     for (i=1;i<=EksOtus.wheelLEDCount;i++)
-        controller.setOutput("jog","wheel_"+i,color,false);
+        controller.setOutput("hid","wheel_"+i,color_value,false);
     EksOtus.updateLEDs(true);
 }
 
@@ -609,7 +747,7 @@ EksOtus.pitchSlider = function (field) {
     var controller = EksOtus.controller;
     if (controller.activeDeck==undefined)
         return;
-    if (controller.modifiers.get("pitch")) {
+    if (EksOtus.pitchModifierActive) {
         var active_group = controller.resolveDeckGroup(controller.activeDeck);
         if (field.name=="slider_position") {
             if (field.value==0)
@@ -642,7 +780,8 @@ EksOtus.headphones = function (field) {
     var controller = EksOtus.controller;
     if (controller.modifiers.get("shift")) {
         value = script.absoluteNonLin(field.value, 0, 1, 5, 0, 65536);
-        engine.setValue("[Master]","headVolume",value);
+        // CHANGED: headVolume -> headGain for Mixxx 2.5+
+        engine.setValue("[Master]","headGain",value);
     } else {
         value = EksOtus.plusMinus1Scaler(field.group,field.name,field.value);
         engine.setValue("[Master]","headMix",value);
@@ -659,43 +798,126 @@ EksOtus.xypad = function(field) {
     );
 }
 
+// How long (ms) 'deck_switch' must be held before it is treated as a
+// long press that temporarily switches deck controls until released.
+EksOtus.deckSwitchHoldTime = 400;
+
+// How long (ms) to ignore a new 'deck_switch' press right after a tap was
+// already handled. A real hardware log capture showed a single physical
+// tap being reported as TWO complete press/release cycles back-to-back
+// (switch contact bounce) - each one is individually a valid, fast tap, so
+// the debounce guard above alone can't tell them apart. The first cycle
+// switches decks, the second (spurious) cycle immediately switches back,
+// so nothing visibly changes (or - as observed - the LED flashes the new
+// color for an instant and then flips right back). 150ms was not always
+// enough: on some taps the bounce runs a bit longer than that, so the
+// trailing bounce cycle arrives just after the window closed and gets
+// treated as a brand-new tap, switching the deck straight back. Widened
+// to 300ms, which still leaves 100ms of clearance under deckSwitchHoldTime
+// (400ms) so it can't interfere with a genuine hold.
+EksOtus.deckSwitchDebounceTime = 300;
+EksOtus.deckSwitchDebounceUntil = 0;
+
 // Function called when the special 'Deck Switch' button is pressed
 // TODO - add code for 'hold deck_switch and press hot_cue[1-4]
 // to select deck 1-4
+//
+// Behaviour:
+// - quick press/release (tap) -> persistent deck switch
+// - press and hold for deckSwitchHoldTime -> temporary deck switch,
+//   reverted automatically when the button is released
 EksOtus.deckSwitch = function(field) {
     var controller = EksOtus.controller;
     if (EksOtus.initialized==false)
         return;
-    if (field.value == controller.buttonStates.released) {
-        if (EksOtus.deckSwitchClicked==false) {
-            EksOtus.deckSwitchClicked=true;
-            controller.timers["deck_switch"] = engine.beginTimer(
-                250, EksOtus.deckSwitchClickedClear
-            );
-        } else {
-            EksOtus.deckSwitchDoubleClick();
+
+    if (field.value == controller.buttonStates.pressed) {
+        if (Date.now() < EksOtus.deckSwitchDebounceUntil) {
+            // Spurious repeated press (contact bounce) right after a tap
+            // was already handled - ignore this whole press/release cycle.
+            // Slide the window forward on every bounce we see so a longer
+            // or multi-cycle bounce burst is fully swallowed instead of
+            // only the first extra cycle.
+            EksOtus.deckSwitchDebounceIgnoring = true;
+            EksOtus.deckSwitchDebounceUntil = Date.now() + EksOtus.deckSwitchDebounceTime;
+            HIDDebug("EksOtus.deckSwitch - ignoring bounced press");
+            return;
         }
+        EksOtus.deckSwitchDebounceIgnoring = false;
+        // Start the long-press timer. If it fires while the button is
+        // still held, EksOtus.deckSwitchHoldTrigger() will temporarily
+        // switch decks. deckSwitchHoldPending is an explicit guard flag,
+        // checked inside the timer callback itself - engine.stopTimer()
+        // alone was not reliably cancelling this timer, so a released tap
+        // was cleared from controller.timers but the timer fired anyway
+        // ~deckSwitchHoldTime later and reverted the deck, silently
+        // cancelling the tap's switch. The flag makes a late/duplicate
+        // firing a guaranteed no-op regardless of whether stopTimer worked.
+        EksOtus.deckSwitchHoldPending = true;
+        controller.timers["deck_switch_hold"] = engine.beginTimer(
+            EksOtus.deckSwitchHoldTime, EksOtus.deckSwitchHoldTrigger, true
+        );
+        return;
+    }
+
+    // field.value == controller.buttonStates.released
+    if (EksOtus.deckSwitchDebounceIgnoring) {
+        // Release half of a bounced press we already ignored above.
+        EksOtus.deckSwitchDebounceIgnoring = false;
+        return;
+    }
+
+    if (EksOtus.deckSwitchHoldPending) {
+        // Released before the hold threshold - this was a quick tap,
+        // switch decks persistently. Clear the pending flag FIRST so that
+        // even if the hold timer still fires later (stopTimer unreliable),
+        // EksOtus.deckSwitchHoldTrigger() will see it is no longer pending
+        // and do nothing.
+        EksOtus.deckSwitchHoldPending = false;
+        if (controller.timers["deck_switch_hold"] != undefined) {
+            engine.stopTimer(controller.timers["deck_switch_hold"]);
+            delete controller.timers["deck_switch_hold"];
+        }
+        EksOtus.deckSwitchPersistent();
+        EksOtus.deckSwitchDebounceUntil = Date.now() + EksOtus.deckSwitchDebounceTime;
+        return;
+    }
+
+    if (EksOtus.deckSwitchHeld) {
+        // The long press already triggered a temporary deck switch -
+        // releasing the button reverts back to the original deck.
+        EksOtus.deckSwitchHeld = false;
+        controller.switchDeck();
+        controller.setOutput("hid","deck_switch", controller.LEDColors[controller.deckOutputColors[controller.activeDeck]]);
+        EksOtus.updateLEDs();
+        EksOtus.deckSwitchDebounceUntil = Date.now() + EksOtus.deckSwitchDebounceTime;
+        HIDDebug("Active EKS Otus deck reverted to " + controller.activeDeck);
     }
 }
 
-// Timer to clear the double click status for deck switch
-EksOtus.deckSwitchClickedClear = function() {
-    EksOtus.deckSwitchClicked = false;
+// Timer callback fired when 'deck_switch' has been held down continuously
+// for EksOtus.deckSwitchHoldTime - temporarily switches deck controls
+// until the button is released.
+EksOtus.deckSwitchHoldTrigger = function() {
     var controller = EksOtus.controller;
-    if (controller.timers["deck_switch"]!=undefined) {
-        engine.stopTimer(controller.timers["deck_switch"]);
-        delete controller.timers["deck_switch"];
+    delete controller.timers["deck_switch_hold"];
+    if (!EksOtus.deckSwitchHoldPending) {
+        // The button was already released (a quick tap) and handled -
+        // this firing is stale/late, ignore it.
+        return;
     }
+    EksOtus.deckSwitchHoldPending = false;
+    EksOtus.deckSwitchHeld = true;
+    controller.switchDeck();
+    controller.setOutput("hid","deck_switch", controller.LEDColors[controller.deckOutputColors[controller.activeDeck]]);
+    EksOtus.updateLEDs();
+    HIDDebug("Active EKS Otus deck temporarily switched to " + controller.activeDeck);
 }
 
-// Function to handle case when 'deck_switch' button was double clicked
-EksOtus.deckSwitchDoubleClick = function() {
+// Function to handle a quick tap of 'deck_switch' - switches decks
+// persistently (stays switched until tapped or held again).
+EksOtus.deckSwitchPersistent = function() {
     var controller = EksOtus.controller;
-    EksOtus.deckSwitchClicked = false;
-    if (controller.timers["deck_switch"]!=undefined) {
-        engine.stopTimer(controller.timers["deck_switch"]);
-        delete controller.timers["deck_switch"];
-    }
     controller.switchDeck();
     controller.setOutput("hid","deck_switch", controller.LEDColors[controller.deckOutputColors[controller.activeDeck]]);
     EksOtus.updateLEDs();
@@ -729,12 +951,12 @@ EksOtus.activateSpinningPlatterLEDs = function() {
 EksOtus.enableSpinningPlatterLEDs = function() {
     if (EksOtus.activeSpinningPlatterGroup==undefined)
         return;
-    engine.connectControl(
+    engine.makeConnection(
         EksOtus.activeSpinningPlatterGroup,
         "playposition",
         "EksOtus.circleLEDs"
     );
-    engine.connectControl(
+    engine.makeConnection(
         EksOtus.activeSpinningPlatterGroup,
         "duration",
         "EksOtus.loadedTrackDuration"
@@ -746,13 +968,13 @@ EksOtus.enableSpinningPlatterLEDs = function() {
 EksOtus.disableSpinningPlatterLEDs = function() {
     if (EksOtus.activeSpinningPlatterGroup==undefined)
         return;
-    engine.connectControl(
+    engine.makeConnection(
         EksOtus.activeSpinningPlatterGroup,
         "playposition",
         "EksOtus.circleLEDs",
         true
     );
-    engine.connectControl(
+    engine.makeConnection(
         EksOtus.activeSpinningPlatterGroup,
         "duration",
         "EksOtus.loadedTrackDuration",
@@ -782,7 +1004,8 @@ EksOtus.circleLEDs = function(position) {
         return;
     EksOtus.activeSpinningPlatterLED = led_index;
     EksOtus.resetWheelLEDs("off",false);
-    var led_color = controller.deckOutputColors[controller.activeDeck];
-    controller.setOutput("jog","wheel_"+(led_index),led_color);
+    // setOutput() needs the numeric LED value, not the color name string
+    var led_color = controller.LEDColors[controller.deckOutputColors[controller.activeDeck]];
+    controller.setOutput("hid","wheel_"+(led_index),led_color);
     EksOtus.updateLEDs();
 }
