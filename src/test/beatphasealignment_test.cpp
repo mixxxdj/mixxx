@@ -3,10 +3,16 @@
 
 #include <algorithm>
 #include <cmath>
+#include <string>
+#include <tuple>
 #include <vector>
 
+#include "analyzer/analyzerbeats.h"
+#include "analyzer/analyzertrack.h"
 #include "analyzer/plugins/beatgridevidence.h"
+#include "test/mixxxtest.h"
 #include "track/beats.h"
+#include "track/track.h"
 
 namespace {
 
@@ -14,22 +20,13 @@ constexpr double kBpm = 135.93;
 constexpr double kOrigin = 0.1;
 constexpr int kDuration = 64;
 
-void feedPercussivePulses(
-        mixxx::BeatGridEvidence* evidence, int sampleRate, int chunkFrames, bool softBass) {
+template<typename Process>
+void processRepeatingPulse(int sampleRate,
+        int chunkFrames,
+        const std::vector<CSAMPLE>& pulse,
+        Process&& process,
+        double bassBackground = 0) {
     const double period = 60 / kBpm;
-    std::vector<CSAMPLE> pulse(static_cast<size_t>(sampleRate * 0.2));
-    for (size_t frame = 0; frame < pulse.size(); ++frame) {
-        const double time = frame / static_cast<double>(sampleRate);
-        const double transient = std::exp(-100 * time) *
-                (0.75 * std::cos(2 * M_PI * 1400 * time) + 0.25 * std::cos(2 * M_PI * 2500 * time));
-        // The high-frequency attack starts at the beat. The soft kick body
-        // swells later and peaks at 60 ms; its crest is not another beat.
-        const double envelope = softBass ? std::exp(-0.5 * std::pow((time - 0.06) / 0.018, 2))
-                                         : std::exp(-40 * time);
-        pulse[frame] = static_cast<CSAMPLE>(
-                0.5 * (transient + 0.55 * std::cos(2 * M_PI * 65 * time) * envelope));
-    }
-
     std::vector<CSAMPLE> stereo(chunkFrames * 2);
     int beatIndex = 0;
     int beatFrame = -static_cast<int>(pulse.size());
@@ -46,11 +43,47 @@ void feedPercussivePulses(
             const int elapsed = position - beatFrame;
             const CSAMPLE value =
                     elapsed >= 0 && elapsed < static_cast<int>(pulse.size()) ? pulse[elapsed] : 0;
-            stereo[frame * 2] = stereo[frame * 2 + 1] = value;
+            const CSAMPLE background = bassBackground
+                    ? static_cast<CSAMPLE>(bassBackground *
+                              std::sin(2 * M_PI * 55 * position / sampleRate))
+                    : 0;
+            stereo[frame * 2] = stereo[frame * 2 + 1] = value + background;
         }
-        ASSERT_TRUE(evidence->processSamples(stereo.data(), count * 2));
+        ASSERT_TRUE(process(stereo.data(), count * 2));
     }
+}
+
+void feedRepeatingPulse(mixxx::BeatGridEvidence* evidence,
+        int sampleRate,
+        int chunkFrames,
+        const std::vector<CSAMPLE>& pulse,
+        double bassBackground = 0) {
+    processRepeatingPulse(sampleRate,
+            chunkFrames,
+            pulse,
+            [&](const CSAMPLE* stereo, int count) {
+                return evidence->processSamples(stereo, count);
+            },
+            bassBackground);
     evidence->prepare();
+}
+
+void feedPercussivePulses(
+        mixxx::BeatGridEvidence* evidence, int sampleRate, int chunkFrames, bool softBass) {
+    std::vector<CSAMPLE> pulse(static_cast<size_t>(sampleRate * 0.2));
+    for (size_t frame = 0; frame < pulse.size(); ++frame) {
+        const double time = frame / static_cast<double>(sampleRate);
+        const double transient = std::exp(-100 * time) *
+                (0.75 * std::cos(2 * M_PI * 1400 * time) + 0.25 * std::cos(2 * M_PI * 2500 * time));
+        // The high-frequency attack starts at the beat. The soft kick body
+        // swells later and peaks at 60 ms; its crest is not another beat.
+        const double envelope = softBass ? std::exp(-0.5 * std::pow((time - 0.06) / 0.018, 2))
+                                         : std::exp(-40 * time);
+        pulse[frame] = static_cast<CSAMPLE>(
+                0.5 * (transient + 0.55 * std::cos(2 * M_PI * 65 * time) * envelope));
+    }
+
+    feedRepeatingPulse(evidence, sampleRate, chunkFrames, pulse);
 }
 
 mixxx::BeatsPointer makeGrid(int sampleRate, double origin) {
@@ -59,7 +92,191 @@ mixxx::BeatsPointer makeGrid(int sampleRate, double origin) {
             mixxx::Bpm(kBpm));
 }
 
+struct SharpKick {
+    const char* name;
+    bool zeroCrossingAttack;
+    double bodyFrequency;
+    bool zeroCrossingBody;
+    bool swellingBody;
+    double attackAmplitude = 1;
+    double bodyAmplitude = 0.6;
+    bool smoothBodyStart = false;
+};
+
+constexpr SharpKick kSharpKicks[] = {
+        {"cosine attack, 65 Hz body", false, 65, false, false},
+        {"zero-crossing attack and 55 Hz body", true, 55, true, false},
+        {"cosine attack, zero-crossing 95 Hz body", false, 95, true, false},
+        {"zero-crossing attack, swelling 45 Hz body", true, 45, false, true},
+        {"weak cosine attack, loud delayed body", false, 45, false, true, 0.1, 1, true},
+        {"weak zero-crossing attack, loud delayed body", true, 45, false, true, 0.1, 1, true},
+};
+
+std::vector<CSAMPLE> makeSharpKickPulse(int sampleRate, const SharpKick& kick) {
+    std::vector<CSAMPLE> pulse(static_cast<size_t>(sampleRate * 0.2));
+    for (size_t frame = 0; frame < pulse.size(); ++frame) {
+        const double time = frame / static_cast<double>(sampleRate);
+        const auto carrier = [time](double frequency, bool zeroCrossing) {
+            const double phase = 2 * M_PI * frequency * time;
+            return zeroCrossing ? std::sin(phase) : std::cos(phase);
+        };
+        const double attack = std::exp(-350 * time) *
+                (0.75 * carrier(1800, kick.zeroCrossingAttack) +
+                        0.25 * carrier(4200, kick.zeroCrossingAttack));
+        const double bodyEnvelope = kick.swellingBody
+                ? std::exp(-0.5 * std::pow((time - 0.025) / 0.012, 2))
+                : std::exp(-20 * time);
+        const double bodyStart = kick.smoothBodyStart ? 1 - std::exp(-350 * time) : 1;
+        pulse[frame] = static_cast<CSAMPLE>(
+                0.5 * (kick.attackAmplitude * attack +
+                              kick.bodyAmplitude * carrier(kick.bodyFrequency, kick.zeroCrossingBody) *
+                                      bodyEnvelope * bodyStart));
+    }
+    return pulse;
+}
+
+void expectSharpKickAlignment(double gridOffset) {
+    for (const int sampleRate : {44100, 48000}) {
+        for (const int chunkFrames : {500, 4096}) {
+            for (const auto& kick : kSharpKicks) {
+                SCOPED_TRACE(::testing::Message()
+                        << kick.name << ", sample rate " << sampleRate
+                        << ", chunk " << chunkFrames << ", grid offset " << gridOffset);
+                const auto pulse = makeSharpKickPulse(sampleRate, kick);
+                mixxx::BeatGridEvidence evidence;
+                evidence.initialize(mixxx::audio::SampleRate(sampleRate));
+                feedRepeatingPulse(&evidence, sampleRate, chunkFrames, pulse);
+                ASSERT_TRUE(evidence.hasEvidence());
+                const auto result = evidence.evaluate(
+                        makeGrid(sampleRate, kOrigin + gridOffset), false);
+                ASSERT_TRUE(result.grid);
+                EXPECT_TRUE(result.grid->hasConstantTempo());
+                EXPECT_FALSE(result.phaseChanges);
+                for (const int beat : {32, 96}) {
+                    const auto attack = mixxx::audio::FramePos(
+                            std::lround((kOrigin + beat * 60 / kBpm) * sampleRate));
+                    EXPECT_NEAR(attack.value(),
+                            result.grid->findClosestBeat(attack).value(),
+                            0.003 * sampleRate)
+                            << "The grid must follow the sharp attack, not its low-frequency tail";
+                }
+            }
+        }
+    }
+}
+
+using AnalyzerPhaseParam = std::tuple<int, int, mixxx::BeatGridMode>;
+class BeatPhaseAnalyzerTest : public MixxxTest,
+                              public testing::WithParamInterface<AnalyzerPhaseParam> {};
+
+TEST_P(BeatPhaseAnalyzerTest, SharpAttackIsNotDelayedByBassTail) {
+    const auto [sampleRate, chunkFrames, mode] = GetParam();
+    const auto rate = mixxx::audio::SampleRate(sampleRate);
+    BeatDetectionSettings settings(config());
+    settings.setBeatPluginId(AnalyzerBeats::defaultPlugin().id());
+    settings.setTempoMode(mode);
+    settings.setFastAnalysis(false);
+    auto track = Track::newTemporary();
+    track->setAudioProperties(mixxx::audio::ChannelCount::stereo(),
+            rate,
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(kDuration));
+    AnalyzerBeats analyzer(config());
+    ASSERT_TRUE(analyzer.initialize(AnalyzerTrack(track),
+            rate,
+            mixxx::audio::ChannelCount::stereo(),
+            kDuration * sampleRate));
+    const auto pulse = makeSharpKickPulse(sampleRate, kSharpKicks[3]);
+    processRepeatingPulse(sampleRate, chunkFrames, pulse, [&](const CSAMPLE* stereo, int count) {
+        return analyzer.processSamples(stereo, count);
+    });
+    analyzer.storeResults(track);
+    analyzer.cleanup();
+    const auto grid = track->getBeats();
+    ASSERT_TRUE(grid);
+    EXPECT_TRUE(grid->hasConstantTempo());
+    EXPECT_NEAR(kBpm, track->getBpm(), 0.15);
+    double signedErrorSum = 0;
+    double maximumLateness = 0;
+    int count = 0;
+    for (int beat = 0;; ++beat) {
+        const double time = kOrigin + beat * 60 / kBpm;
+        if (time > kDuration - 8) {
+            break;
+        }
+        if (time < 8) {
+            continue;
+        }
+        const auto attack = mixxx::audio::FramePos(std::lround(time * sampleRate));
+        const double error = (grid->findClosestBeat(attack) - attack) / sampleRate;
+        EXPECT_NEAR(0, error, 0.003) << "beat " << beat << ", signed timing error";
+        signedErrorSum += error;
+        maximumLateness = std::max(maximumLateness, error);
+        ++count;
+    }
+    ASSERT_GT(count, 80);
+    RecordProperty("mean_signed_error_ms", std::to_string(1000 * signedErrorSum / count));
+    RecordProperty("maximum_lateness_ms", std::to_string(1000 * maximumLateness));
+}
+
+INSTANTIATE_TEST_SUITE_P(SampleRatesChunksAndModes,
+        BeatPhaseAnalyzerTest,
+        testing::Combine(testing::Values(44100, 48000),
+                testing::Values(500, 4096),
+                testing::Values(mixxx::BeatGridMode::Auto, mixxx::BeatGridMode::Constant)));
+
 } // namespace
+
+TEST(BeatPhaseAlignmentTest, AlignedSharpKickAttacksDoNotAcquireALateOffset) {
+    expectSharpKickAlignment(0);
+}
+
+TEST(BeatPhaseAlignmentTest, EarlyGridsMoveToSharpKickAttacks) {
+    expectSharpKickAlignment(-0.025);
+}
+
+TEST(BeatPhaseAlignmentTest, LateGridsMoveBackToSharpKickAttacks) {
+    expectSharpKickAlignment(0.025);
+}
+
+TEST(BeatPhaseAlignmentTest, EarlierHiHatsDoNotStealAnAlignedKickAttack) {
+    for (const int sampleRate : {44100, 48000}) {
+        for (const int chunkFrames : {500, 4096}) {
+            SCOPED_TRACE(::testing::Message()
+                    << "sample rate " << sampleRate << ", chunk " << chunkFrames);
+            auto pulse = makeSharpKickPulse(sampleRate, kSharpKicks[3]);
+            const double period = 60 / kBpm;
+            pulse.resize(static_cast<size_t>(std::ceil(period * sampleRate)) + 1);
+            const int hatFrame = static_cast<int>(std::lround((period - 0.015) * sampleRate));
+            for (int frame = 0; frame < sampleRate / 100 &&
+                    hatFrame + frame < static_cast<int>(pulse.size());
+                    ++frame) {
+                const double time = frame / static_cast<double>(sampleRate);
+                pulse[hatFrame + frame] += static_cast<CSAMPLE>(
+                        std::exp(-700 * time) *
+                        (std::cos(2 * M_PI * 8000 * time) +
+                                0.5 * std::cos(2 * M_PI * 11000 * time)));
+            }
+            for (const double bassBackground : {0.0, 0.08}) {
+                SCOPED_TRACE(::testing::Message() << "sustained bass amplitude " << bassBackground);
+                mixxx::BeatGridEvidence evidence;
+                evidence.initialize(mixxx::audio::SampleRate(sampleRate));
+                feedRepeatingPulse(&evidence, sampleRate, chunkFrames, pulse, bassBackground);
+                const auto result = evidence.evaluate(makeGrid(sampleRate, kOrigin), false);
+                ASSERT_TRUE(result.grid);
+                EXPECT_TRUE(result.grid->hasConstantTempo());
+                EXPECT_FALSE(result.phaseChanges);
+                for (const int beat : {32, 96}) {
+                    const auto attack = mixxx::audio::FramePos(
+                            std::lround((kOrigin + beat * period) * sampleRate));
+                    EXPECT_NEAR(attack.value(),
+                            result.grid->findClosestBeat(attack).value(),
+                            0.003 * sampleRate);
+                }
+            }
+        }
+    }
+}
 
 TEST(BeatPhaseAlignmentTest, SoftBassCrestCannotOverrideTheEarlierPercussiveAttack) {
     for (const int sampleRate : {8000, 44100, 48000}) {

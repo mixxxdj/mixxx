@@ -6,6 +6,7 @@
 #include <deque>
 #include <functional>
 #include <numeric>
+#include <optional>
 
 namespace mixxx {
 namespace {
@@ -44,6 +45,44 @@ double quantile(std::vector<double> values, double fraction) {
     return values[index];
 }
 
+std::optional<double> findAttack(const std::vector<double>& transient,
+        const std::vector<double>& band,
+        double bodyTime,
+        double rate,
+        double floor) {
+    const auto first = static_cast<size_t>(std::max(0.0, (bodyTime - 0.04) * rate));
+    const auto last = std::min(transient.size(),
+            static_cast<size_t>((bodyTime + 0.025) * rate) + 1);
+    if (last <= first + 2) {
+        return std::nullopt;
+    }
+    const double background = quantile(
+            std::vector<double>(transient.begin() + first, transient.begin() + last), 0.1);
+    const double maximum = *std::max_element(transient.begin() + first, transient.begin() + last);
+    if (maximum <= 1.5 * background + floor) {
+        return std::nullopt;
+    }
+    const double threshold = background + 0.2 * (maximum - background);
+    for (size_t i = first + 2; i < last; ++i) {
+        if (transient[i] < threshold || transient[i - 1] >= threshold ||
+                transient[i - 2] >= threshold) {
+            continue;
+        }
+        // A broadband spike needs a simultaneous rise in this bass band.
+        // An earlier hat must not supply the timestamps for every band.
+        const auto preceding = i > static_cast<size_t>(0.01 * rate)
+                ? i - static_cast<size_t>(0.01 * rate)
+                : 0;
+        const auto following = std::min(last, i + static_cast<size_t>(0.005 * rate) + 1);
+        const double before = *std::max_element(band.begin() + preceding, band.begin() + i);
+        const double after = *std::max_element(band.begin() + i, band.begin() + following);
+        if (after > 1.1 * before + floor) {
+            return (i + 0.5) / rate;
+        }
+    }
+    return std::nullopt;
+}
+
 } // namespace
 
 void BeatGridEvidence::initialize(audio::SampleRate sampleRate) {
@@ -58,6 +97,9 @@ void BeatGridEvidence::initialize(audio::SampleRate sampleRate) {
     m_wave.clear();
     m_fullBandEnergy.clear();
     for (auto& events : m_events) {
+        events.clear();
+    }
+    for (auto& events : m_attackEvents) {
         events.clear();
     }
 }
@@ -98,6 +140,13 @@ void BeatGridEvidence::prepare() {
         return;
     }
     const double floor = 0.015 * std::sqrt(m_energy / m_frames);
+    // Variance within each original audio block retains short attacks while
+    // suppressing the much louder, slowly varying bass body. No smoothed
+    // envelope or future crest determines the attack timestamp.
+    std::vector<double> transient(m_wave.size());
+    for (size_t i = 0; i < transient.size(); ++i) {
+        transient[i] = std::sqrt(std::max(0.0, m_fullBandEnergy[i] - m_wave[i] * m_wave[i]));
+    }
     // Zero-phase filters avoid introducing a frequency-dependent beat delay.
     // The 150 Hz channel corroborates fine shifts; low/broad attacks rank grids.
     // Full-band RMS retains snares and hats lost by averaging the waveform.
@@ -110,6 +159,10 @@ void BeatGridEvidence::prepare() {
             for (auto& value : envelope) {
                 value *= value;
             }
+        }
+        auto band = envelope;
+        for (auto& value : band) {
+            value = std::sqrt(std::max(0.0, value));
         }
         lowpass(&envelope, 30, rate);
         for (auto& value : envelope) {
@@ -168,6 +221,12 @@ void BeatGridEvidence::prepare() {
             auto& events = m_events[channel];
             if (events.empty() || time > events.back().time) {
                 events.push_back({time, weight});
+            }
+            if (const auto attack = findAttack(transient, band, time, rate, floor)) {
+                auto& attacks = m_attackEvents[channel];
+                if (attacks.empty() || *attack > attacks.back().time) {
+                    attacks.push_back({*attack, weight});
+                }
             }
         }
     }
@@ -241,7 +300,7 @@ bool BeatGridEvidence::preferConstant(
 }
 
 BeatGridEvidence::Scores BeatGridEvidence::measure(
-        const std::vector<double>& beats, double shift, double start, double end) const {
+        const std::vector<double>& beats, double shift, double start, double end, bool attacks) const {
     Scores result{};
     const auto first = std::lower_bound(beats.begin(), beats.end(), start - shift);
     const auto last = std::lower_bound(first, beats.end(), end - shift);
@@ -249,7 +308,7 @@ BeatGridEvidence::Scores BeatGridEvidence::measure(
         return result;
     }
     for (size_t channel = 0; channel < m_events.size(); ++channel) {
-        const auto& events = m_events[channel];
+        const auto& events = attacks ? m_attackEvents[channel] : m_events[channel];
         const auto efirst = std::lower_bound(
                 events.begin(), events.end(), start, [](const Event& event, double time) {
                     return event.time < time;
@@ -312,6 +371,41 @@ BeatGridEvidence::Scores BeatGridEvidence::measure(
 
 double BeatGridEvidence::utility(const Scores& scores) {
     return (scores[0][0].f1 + scores[0][1].f1 + scores[2][0].f1 + scores[2][1].f1) * 0.25;
+}
+
+double BeatGridEvidence::refineAttackShift(const std::vector<double>& beats,
+        double proposed,
+        double unchanged,
+        double start,
+        double end,
+        double radius) const {
+    const double middle = (start + end) * 0.5;
+    const double original = utility(measure(beats, unchanged, start, end, true));
+    const auto firstOriginal = measure(beats, unchanged, start, middle, true);
+    const auto secondOriginal = measure(beats, unchanged, middle, end, true);
+    double best = std::max(0.2, original + 0.005);
+    double shift = unchanged;
+    const auto steps = static_cast<int>(std::lround(radius / 0.001));
+    for (int step = -steps; step <= steps; ++step) {
+        const double candidate = proposed + step * 0.001;
+        const double score = utility(measure(beats, candidate, start, end, true));
+        if (score <= best) {
+            continue;
+        }
+        const auto first = measure(beats, candidate, start, middle, true);
+        const auto second = measure(beats, candidate, middle, end, true);
+        bool supported = true;
+        for (const size_t band : {size_t(0), size_t(2)}) {
+            supported &= first[band][0].f1 > std::max(0.2, firstOriginal[band][0].f1 + 0.002) &&
+                    second[band][0].f1 > std::max(0.2, secondOriginal[band][0].f1 + 0.002);
+        }
+        if (!supported) {
+            continue;
+        }
+        best = score;
+        shift = candidate;
+    }
+    return shift;
 }
 
 BeatGridEvidence::Result BeatGridEvidence::evaluate(const BeatsPointer& grid, bool regional) const {
@@ -511,14 +605,28 @@ BeatGridEvidence::Result BeatGridEvidence::evaluate(const BeatsPointer& grid, bo
                 states.end();
     }
     shifts[0] = safeZeroShift;
+    // Body events still decide tempo, metrical level and regional edits.
+    // Only an independently supported leading edge may move their fine phase.
+    std::array<double, 2> outputShifts{0, period * 0.5};
+    if (std::find(states.begin(), states.end(), 0) != states.end()) {
+        outputShifts[0] = refineAttackShift(beats,
+                retainOriginalPhase ? 0 : shifts[0],
+                0,
+                guard,
+                duration - guard,
+                retainOriginalPhase ? 0.01 : 0.04);
+    }
+    if (std::find(states.begin(), states.end(), 1) != states.end()) {
+        outputShifts[1] = refineAttackShift(beats, shifts[1], period * 0.5, guard, duration - guard);
+    }
     if (!result.phaseChanges && states.front() == 0) {
-        if (shifts[0] != 0) {
-            result.grid = grid->tryTranslate(shifts[0] * m_sampleRate).value_or(grid);
+        if (outputShifts[0] != 0) {
+            result.grid = grid->tryTranslate(outputShifts[0] * m_sampleRate).value_or(grid);
         }
         return result;
     }
     if (!result.phaseChanges && grid->hasConstantTempo()) {
-        result.grid = grid->tryTranslate(shifts[states.front()] * m_sampleRate).value_or(grid);
+        result.grid = grid->tryTranslate(outputShifts[states.front()] * m_sampleRate).value_or(grid);
         return result;
     }
     std::vector<double> segmentStarts{0};
@@ -605,7 +713,7 @@ BeatGridEvidence::Result BeatGridEvidence::evaluate(const BeatsPointer& grid, bo
                 segmentStarts.begin();
         const int state = segmentStates[index ? index - 1 : 0];
         const double localPeriod = grid->iteratorFrom(position).beatLengthFrames();
-        const double fine = shifts[state] - state * period * 0.5;
+        const double fine = outputShifts[state] - state * period * 0.5;
         return audio::FramePos(position.value() + fine * m_sampleRate + state * localPeriod * 0.5)
                 .toNearestFrameBoundary();
     };

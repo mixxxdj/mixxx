@@ -45,7 +45,17 @@ class BeatGridEvidence {
         double recall = 0;
     };
     using Scores = std::array<std::array<Score, 2>, 4>;
-    Scores measure(const std::vector<double>& beats, double shift, double start, double end) const;
+    Scores measure(const std::vector<double>& beats,
+            double shift,
+            double start,
+            double end,
+            bool attacks = false) const;
+    double refineAttackShift(const std::vector<double>& beats,
+            double proposed,
+            double unchanged,
+            double start,
+            double end,
+            double radius = 0.04) const;
     static double utility(const Scores& scores);
 
     audio::SampleRate m_sampleRate;
@@ -59,6 +69,7 @@ class BeatGridEvidence {
     std::vector<double> m_wave;
     std::vector<double> m_fullBandEnergy;
     std::array<std::vector<Event>, 4> m_events;
+    std::array<std::vector<Event>, 4> m_attackEvents;
 };
 
 } // namespace mixxx
