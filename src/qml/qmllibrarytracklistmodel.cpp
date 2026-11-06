@@ -115,6 +115,9 @@ QVariant QmlLibraryTrackListModel::data(const QModelIndex& proxyIndex, int role)
         } else if (pTrackModel != nullptr) {
             auto pTrack = pTrackModel->getTrack(
                     QIdentityProxyModel::mapToSource(proxyIndex));
+            if (!pTrack) {
+                return {};
+            }
             location = pTrack->getCoverInfo().coverLocation;
         }
         if (location.isEmpty()) {
