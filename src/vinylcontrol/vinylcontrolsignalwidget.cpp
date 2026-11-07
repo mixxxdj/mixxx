@@ -78,7 +78,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
 
 void VinylControlSignalWidget::resetWidget()
 {
-    std::fill(std::begin(m_imageData), std::end(m_imageData), 0);
+    std::ranges::fill(m_imageData, 0);
 }
 
 void VinylControlSignalWidget::paintEvent(QPaintEvent* event) {
