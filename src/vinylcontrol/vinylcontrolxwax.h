@@ -95,11 +95,11 @@ class VinylControlXwax : public VinylControl {
     /// Return true if enough time passed since the last UI update.
     bool uiUpdateTime(double time);
     /// Update the timecode quality from the position and pitch quality.
-    void establishQuality(double& pitch);
+    void establishQuality(const double& pitch);
     /// Rate how plausible the change of the timecode position is, in percent.
     int getPositionQuality();
     /// Rate how stable the pitch is compared to the previous one, in percent.
-    int getPitchQuality(double& pitch);
+    int getPitchQuality(const double& pitch);
 
     // Cache the position of the end of record
     unsigned int m_uiSafeZone;

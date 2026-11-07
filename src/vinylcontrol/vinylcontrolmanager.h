@@ -27,8 +27,8 @@ class VinylControlManager : public QObject {
     // Some initialization must wait until the decks have been created
     void init();
 
-    bool vinylInputConnected(int deck);
-    int vinylInputFromGroup(const QString& group);
+    bool vinylInputConnected(int deck) const;
+    int vinylInputFromGroup(const QString& group) const;
 
     void addSignalQualityListener(VinylSignalQualityListener* pListener);
     void removeSignalQualityListener(VinylSignalQualityListener* pListener);

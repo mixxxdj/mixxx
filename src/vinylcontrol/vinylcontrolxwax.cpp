@@ -775,7 +775,7 @@ int VinylControlXwax::getPositionQuality() {
     return positionQualityPercent;
 }
 
-int VinylControlXwax::getPitchQuality(double& pitch) {
+int VinylControlXwax::getPitchQuality(const double& pitch) {
     int pitchQualityPercent;
 
     if (m_iQualityRingFilled == 0) {
@@ -807,7 +807,7 @@ int VinylControlXwax::getPitchQuality(double& pitch) {
     return pitchQualityPercent;
 }
 
-void VinylControlXwax::establishQuality(double& pitch) {
+void VinylControlXwax::establishQuality(const double& pitch) {
     m_iQualityRing[m_iQualityRingIndex] = getPositionQuality() + getPitchQuality(pitch);
     m_fTimecodeQuality = std::max<float>(0.0,
             std::min<float>(1.0,
