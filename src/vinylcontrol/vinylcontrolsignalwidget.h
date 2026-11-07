@@ -13,7 +13,7 @@ class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListen
   public:
     VinylControlSignalWidget();
     VinylControlSignalWidget(int size);
-    ~VinylControlSignalWidget() override;
+    ~VinylControlSignalWidget() override = default;
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
 

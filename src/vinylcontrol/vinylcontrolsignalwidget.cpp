@@ -28,9 +28,6 @@ void VinylControlSignalWidget::setVinylInput(int input) {
     m_iVinylInput = input;
 }
 
-VinylControlSignalWidget::~VinylControlSignalWidget() {
-}
-
 void VinylControlSignalWidget::setVinylActive(bool active)
 {
     if (m_bVinylActive != active && !active) {
