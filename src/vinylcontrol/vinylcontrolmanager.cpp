@@ -17,11 +17,11 @@ const QRegularExpression kChannelRegex(QStringLiteral("\\[Channel([1-9]\\d*)\\]"
 } // namespace
 
 VinylControlManager::VinylControlManager(QObject* pParent,
-                                         UserSettingsPointer pConfig,
-                                         SoundManager* pSoundManager)
+        UserSettingsPointer pConfig,
+        SoundManager* pSoundManager)
         : QObject(pParent),
           m_pConfig(pConfig),
-          m_pProcessor(new VinylControlProcessor(this, pConfig)),
+          m_pProcessor(make_parented<VinylControlProcessor>(this, pConfig)),
           m_pNumDecks(nullptr),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
@@ -41,8 +41,6 @@ VinylControlManager::VinylControlManager(QObject* pParent,
 }
 
 VinylControlManager::~VinylControlManager() {
-    delete m_pProcessor;
-
     // save a bunch of stuff to config
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {

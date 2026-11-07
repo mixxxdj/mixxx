@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 class SoundManager;
@@ -47,7 +48,7 @@ class VinylControlManager : public QObject {
   private:
     UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
-    VinylControlProcessor* m_pProcessor;
+    parented_ptr<VinylControlProcessor> m_pProcessor;
     QList<ControlProxy*> m_pVcEnabled;
     ControlProxy* m_pNumDecks;
     int m_iNumConfiguredDecks;
