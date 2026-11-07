@@ -324,7 +324,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="635"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="567"/>
         <source>Couldn&apos;t load track.</source>
         <translation>Impossibile caricare la traccia.</translation>
     </message>
@@ -758,12 +758,12 @@
         <translation>Il file &apos;%1&apos; non può essere caricato.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="246"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="248"/>
         <source>The file &apos;%1&apos; could not be loaded because it contains %2 channels, and only 1 to %3 are supported.</source>
         <translation>Il file &apos;%1&apos; non può essere caricato perchè contiene %2 canali e solo da 1 a %3 sono supportati.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="267"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="268"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
         <translation>Il file &apos;%1&apos; è vuoto e non può essere caricato.</translation>
     </message>
@@ -915,7 +915,7 @@ traccia - Come sopra + Messaggi di profilazione</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
-        <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
+        <location filename="../../src/preferences/colorpaletteeditor.cpp" line="257"/>
         <source>Remove Palette</source>
         <translation>Rimuovi Tavolozza</translation>
     </message>
@@ -930,12 +930,12 @@ traccia - Come sopra + Messaggi di profilazione</translation>
         <translation>Assegna al Numero Hotcue</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
+        <location filename="../../src/preferences/colorpaletteeditor.cpp" line="159"/>
         <source>Edited</source>
         <translation>Modificato</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
+        <location filename="../../src/preferences/colorpaletteeditor.cpp" line="258"/>
         <source>Do you really want to remove the palette permanently?</source>
         <translation>Vuoi veramente rimuovere permanentemente la tavolozza?</translation>
     </message>
@@ -3982,12 +3982,12 @@ traccia - Come sopra + Messaggi di profilazione</translation>
         <translation>Collaboratori passati</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="489"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="503"/>
         <source>Official Website</source>
         <translation>Sito Ufficiale</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="499"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="513"/>
         <source>Donate</source>
         <translation>Dona</translation>
     </message>
@@ -5279,67 +5279,67 @@ Apply settings and continue?</source>
 Applicare la configurazione e continuare?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="458"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="461"/>
         <source>None</source>
         <translation>Nessuno/a</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="463"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="466"/>
         <source>%1 by %2</source>
         <translation>%1 da %2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="809"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="812"/>
         <source>Mapping has been edited</source>
         <translation>La mappatura è stata modificata</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="894"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="897"/>
         <source>Always overwrite during this session</source>
         <translation>Sovrascrivi sempre durante questa sessione</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="906"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="909"/>
         <source>Save As</source>
         <translation>Salva come</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="908"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="911"/>
         <source>Overwrite</source>
         <translation>Sovrascrivi</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="962"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="965"/>
         <source>Save user mapping</source>
         <translation>Salva mappatura utente</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="963"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="966"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
         <translation>Digita il nome per salvare la mappatura nella cartella utente.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="964"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="967"/>
         <source>Saving mapping failed</source>
         <translation>Salvataggio mappatura fallito</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="966"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="969"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
         <translation>Una mappatura non può avere un nome nullo e non deve contenere caratteri speciali.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="968"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="971"/>
         <source>A mapping file with that name already exists.</source>
         <translation>Un file mappatura con lo stesso nome esiste già.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="810"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="813"/>
         <source>Do you want to save the changes?</source>
         <translation>Vuoi salvare le modifiche?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="511"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="514"/>
         <source>Troubleshooting</source>
         <translation>Risoluzione dei problemi</translation>
     </message>
@@ -5349,32 +5349,32 @@ Applicare la configurazione e continuare?</translation>
         <translation>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;ISe si utilizza questa mappatura, il controller potrebbe non funzionare correttamente. Selezionare un&apos;altra mappatura o disabilitare il controller.&lt;/b&gt;&lt;/font&gt;&lt;br&gt;&lt;br&gt;Questa mappatura è stata progettata per un nuovo motore di controllo Mixxx e non può essere utilizzata nell&apos;installazione corrente di Mixxx.&lt;br&gt;L&apos;installazione di Mixxx ha Controller Engine versione %1. Questa mappatura richiede una versione del motore di controllo &gt;= %2.&lt;br&gt;&lt;br&gt;Per maggiori informazioni visita la pagina wiki su &lt;a href=&apos;https://mixxx.org/wiki/doku.php/controller_engine_versions&apos;&gt;Controller Engine Versions&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="890"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="893"/>
         <source>Mapping already exists.</source>
         <translation>La mappatura esiste già.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="891"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="894"/>
         <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
         <translation>&lt;b&gt;%1&lt;/b&gt; esiste già nella cartella mappatura dell&apos;utente.&lt;br&gt;Sovrascrivo o salvo con un nuovo nome?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1300"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1303"/>
         <source>Clear Input Mappings</source>
         <translation>Elimina le Mappature di Ingresso</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1301"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1304"/>
         <source>Are you sure you want to clear all input mappings?</source>
         <translation>Sei sicuro di voler eliminare tutte le mappature di ingresso?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1339"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1342"/>
         <source>Clear Output Mappings</source>
         <translation>Elimina le Mappature di Uscita</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1340"/>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="1343"/>
         <source>Are you sure you want to clear all output mappings?</source>
         <translation>Sei sicuro di voler eliminare tutte le mappature di uscita?</translation>
     </message>
@@ -8030,68 +8030,68 @@ Il target di intensità sonora è approssimativo e presuppone che il pregain del
 <context>
     <name>DlgPrefWaveform</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="39"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="35"/>
         <source>Filtered</source>
         <translation>Filtrato</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="40"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="36"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="41"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="37"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="88"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="84"/>
         <source>Top</source>
         <translation>Alto</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="89"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="85"/>
         <source>Center</source>
         <translation>Centro</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="90"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="86"/>
         <source>Bottom</source>
         <translation>Basso</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="93"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="89"/>
         <source>1/3 of waveform viewer</source>
         <extracomment>options for &quot;Text height limit&quot;</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="94"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="90"/>
         <source>Entire waveform viewer</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="96"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="92"/>
         <source>Overlapping</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="97"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="93"/>
         <source>Stacked</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="300"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="271"/>
         <source>OpenGL not available</source>
         <translation>OpenGL non disponibile</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="724"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="671"/>
         <source>dropped frames</source>
         <translation>frames persi</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="799"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="744"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation>Le waveform nella cache occupano %1 Mib sul disco</translation>
     </message>
@@ -9166,7 +9166,7 @@ Spesso si avrà un buon risultato con tracce a ritmo costante, non funzionerà b
         <translation>&amp;Cancella</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="596"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="599"/>
         <source>(no color)</source>
         <translation>(nessun colore)</translation>
     </message>
@@ -9323,7 +9323,7 @@ Spesso si avrà un buon risultato con tracce a ritmo costante, non funzionerà b
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1063"/>
+        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="1202"/>
         <source>(no color)</source>
         <translation>(nessun colore)</translation>
     </message>
@@ -10014,7 +10014,7 @@ Vuoi veramente sovrascriverlo?</translation>
 <context>
     <name>MidiOptionsDelegate</name>
     <message>
-        <location filename="../../src/controllers/delegates/midioptionsdelegate.cpp" line="65"/>
+        <location filename="../../src/controllers/delegates/midioptionsdelegate.cpp" line="66"/>
         <source>Unset all</source>
         <translation>Disattivare tutto</translation>
     </message>
@@ -10926,8 +10926,8 @@ Se non si desidera concedere l&apos;accesso a Mixxx, fare click su Annulla nel s
         <location filename="../../src/effects/backends/builtin/echoeffect.cpp" line="90"/>
         <location filename="../../src/effects/backends/builtin/glitcheffect.cpp" line="41"/>
         <location filename="../../src/effects/backends/builtin/glitcheffect.cpp" line="42"/>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="87"/>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="88"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="89"/>
         <source>Quantize</source>
         <translation>Quantizza</translation>
     </message>
@@ -10945,7 +10945,7 @@ Se non si desidera concedere l&apos;accesso a Mixxx, fare click su Annulla nel s
         <location filename="../../src/effects/backends/builtin/glitcheffect.cpp" line="52"/>
         <location filename="../../src/effects/backends/builtin/phasereffect.cpp" line="85"/>
         <location filename="../../src/effects/backends/builtin/phasereffect.cpp" line="86"/>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="98"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="99"/>
         <source>Triplets</source>
         <translation>Tripletta</translation>
     </message>
@@ -11014,8 +11014,8 @@ Predefinito = flat top</translation>
     <message>
         <location filename="../../src/effects/backends/builtin/phasereffect.cpp" line="74"/>
         <location filename="../../src/effects/backends/builtin/phasereffect.cpp" line="75"/>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="26"/>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="27"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="28"/>
         <source>Depth</source>
         <translation>Profondità</translation>
     </message>
@@ -11101,8 +11101,8 @@ Con larghezza a zero, consente di scorrere manualmente l&apos;intero intervallo 
         <location filename="../../src/effects/backends/builtin/autopaneffect.cpp" line="58"/>
         <location filename="../../src/effects/backends/builtin/flangereffect.cpp" line="48"/>
         <location filename="../../src/effects/backends/builtin/flangereffect.cpp" line="49"/>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="50"/>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="51"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="52"/>
         <source>Width</source>
         <translation>Larghezza</translation>
     </message>
@@ -11395,7 +11395,7 @@ Valori alti effettuano meno attenuazione delle alte frequenze.</translation>
         <translation>Gain per Filtro Bassi (neutro a 1.0)</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/sounddevicenetwork.cpp" line="49"/>
+        <location filename="../../src/soundio/sounddevicenetwork.cpp" line="66"/>
         <source>Network stream</source>
         <translation>Trasmissione in rete</translation>
     </message>
@@ -11753,29 +11753,18 @@ un alto Q agisce su una banda di frequenze più stretta.</translation>
         <translation>Frequenza Centrale per il Filtro 2, da 100 Hz a 14 kHz</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="17"/>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="18"/>
-        <source>Tremolo</source>
-        <translation>Tremolo</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="21"/>
-        <source>Cycles the volume up and down</source>
-        <translation>Cicla il volume sù e giù</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="28"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="29"/>
         <source>How much the effect changes the volume</source>
         <translation>Quanto l&apos;effetto modifica il volume</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="37"/>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="38"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="39"/>
         <source>Rate</source>
         <translation>Velocità</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="39"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="40"/>
         <source>Rate of the volume changes
 4 beats - 1/8 beat if tempo is detected
 1/4 Hz - 8 Hz if no tempo is detected</source>
@@ -11784,40 +11773,49 @@ un alto Q agisce su una banda di frequenze più stretta.</translation>
 1/4 Hz - 8 Hz se nessun tempo è rilevato</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="52"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="53"/>
         <source>Width of the volume peak
 10% - 90% of the effect period</source>
         <translation>Larghezza del picco volume
 10% - 90% del periodo </translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="63"/>
-        <source>Shape of the volume modulation wave
-Fully left: Square wave
-Fully right: Sine wave</source>
-        <translation>Forma dell&apos;onda modulazione del volume
-Completamente a sinistra: Onda quadra
-Completamente a destra:  Onda sinusoidale</translation>
-    </message>
-    <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="100"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="101"/>
         <source>When the Quantize parameter is enabled, divide the effect period by 3.</source>
         <translation>Quando il parametro Quantifica è abilitato, divide il periodo dell&apos;effetto per 3.</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="61"/>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="62"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="63"/>
         <source>Waveform</source>
         <translation>Forma d&apos;onda</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="74"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="17"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="18"/>
+        <source>Tremolo/Trans</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="22"/>
+        <source>Cycles the volume up and down. Use sine wave for tremolo and square wave for trans effect.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="64"/>
+        <source>Shape of the volume modulation wave
+Fully left: Square wave (Trans)
+Fully right: Sine wave (Tremolo)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="75"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="76"/>
         <source>Phase</source>
         <translation>Fase</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="76"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="77"/>
         <source>Shifts the position of the volume peak within the period
 Fully left: beginning of the effect period
 Fully right: end of the effect period</source>
@@ -11826,12 +11824,12 @@ Completamente a sinistra: inizio del periodo
 Completamente a destra: fine del periodo</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="89"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="90"/>
         <source>Round the Rate parameter to the nearest whole division of a beat.</source>
         <translation>Arrotonda il parametro Rate alla prima divisione intera alla battuta più vicina.</translation>
     </message>
     <message>
-        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="99"/>
+        <location filename="../../src/effects/backends/builtin/tremoloeffect.cpp" line="100"/>
         <source>Triplet</source>
         <translation>Tripletta</translation>
     </message>
@@ -11913,13 +11911,13 @@ Completamente a destra: fine del periodo</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="60"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="489"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="496"/>
         <source> encoder failure</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/enginerecord.cpp" line="62"/>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="491"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="498"/>
         <source>Failed to apply the selected settings.</source>
         <translation>Applicazione delle impostazioni selezionate non riuscita.</translation>
     </message>
@@ -12059,7 +12057,7 @@ Suggerimento: compensa le voci &quot;chipmunk&quot; o &quot;ringhio&quot;</trans
         <translation>La quantità di amplificazione applicata al segnale audio. Ad alti livelli, il suono sarà più distorto.</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="365"/>
+        <location filename="../../src/waveform/renderers/waveformwidgetrenderer.cpp" line="373"/>
         <source>Passthrough</source>
         <translation>Passthrough</translation>
     </message>
@@ -12090,7 +12088,7 @@ Suggerimento: compensa le voci &quot;chipmunk&quot; o &quot;ringhio&quot;</trans
         <translation>(vuoto)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="64"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="66"/>
         <source>Sampler %1</source>
         <translation>Campionatore %1</translation>
     </message>
@@ -12224,7 +12222,7 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
         <translation>La manopola Livello regola il livello del segnale di uscita dopo l&apos;applicazione della compressione</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="29"/>
+        <location filename="../../src/library/dlgtrackinfomulti.cpp" line="33"/>
         <source>various</source>
         <translation>varie</translation>
     </message>
@@ -12264,47 +12262,47 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
         <translation>La modalità dual threading è disponibile solo con RubberBand.</translation>
     </message>
     <message>
-        <location filename="../../src/track/steminfoimporter.cpp" line="199"/>
+        <location filename="../../src/track/steminfoimporter.cpp" line="206"/>
         <source>Stem #%1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1368"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1474"/>
         <source>Empty</source>
         <translation>Vuoto</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1370"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1476"/>
         <source>Simple</source>
         <translation>Semplice</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1372"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1478"/>
         <source>Filtered</source>
         <translation>Filtrato</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1374"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1480"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1376"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1482"/>
         <source>VSyncTest</source>
         <translation>VSyncTest</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1378"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1484"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1380"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1486"/>
         <source>Stacked</source>
         <translation>Impilato</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1382"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1488"/>
         <source>Unknown</source>
         <translation>Sconosciuto</translation>
     </message>
@@ -12320,32 +12318,32 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
 <context>
     <name>RecordingManager</name>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="264"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="299"/>
         <source>Low Disk Space Warning</source>
         <translation>Avviso Poco Spazio su Disco</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="265"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="300"/>
         <source>There is less than 1 GiB of usable space in the recording folder</source>
         <translation>C&apos;è meno di un 1GiB di spazio libero nella cartella di registrazione</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="286"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="321"/>
         <source>Recording</source>
         <translation>Registrazione</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="287"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="322"/>
         <source>Could not create audio file for recording!</source>
         <translation>Non è stato possibile creare un audio file per la registrazione!</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="288"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="323"/>
         <source>Ensure there is enough free disk space and you have write permission for the Recordings folder.</source>
         <translation>Assicurarsi di avere abbastanza spazio disponibile sul disco e di avere i permessi di scrittura per la cartella di registrazione.</translation>
     </message>
     <message>
-        <location filename="../../src/recording/recordingmanager.cpp" line="289"/>
+        <location filename="../../src/recording/recordingmanager.cpp" line="324"/>
         <source>You can change the location of the Recordings folder in Preferences -&gt; Recording.</source>
         <translation>Puoi modificare la posizione della cartella Registrazione in Preferenze -&gt; Registrazione.</translation>
     </message>
@@ -12362,54 +12360,54 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
 <context>
     <name>RekordboxFeature</name>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1355"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1441"/>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1615"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1367"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1453"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1627"/>
         <source>Rekordbox</source>
         <translation>Rekordbox</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1459"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1471"/>
         <source>Playlists</source>
         <translation>Playlist</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1458"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1470"/>
         <source>Folders</source>
         <translation>Cartelle</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1442"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1454"/>
         <source>Reads databases exported for Pioneer CDJ / XDJ players using the Rekordbox Export mode.&lt;br/&gt;Rekordbox can only export to USB or SD devices with a FAT or HFS file system.&lt;br/&gt;Mixxx can read a database from any device that contains the database folders (&lt;tt&gt;PIONEER&lt;/tt&gt; and &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Not supported are Rekordbox databases that have been moved to an external device via&lt;br/&gt;&lt;i&gt;Preferences &gt; Advanced &gt; Database management&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;The following data is read:</source>
         <translation>Legge databases esportati dai players Pioneer CDJ / XDJ usando il modo Rekordbox Export.&lt;br/&gt;Rekordbox può esportare solo su USB o dispositivi SD con un file system FAT o HFS.&lt;br/&gt;Mixxx può leggere un database da qualsiasi dispositivo che contiene le cartelle database (&lt;tt&gt;PIONEER&lt;/tt&gt; e &lt;tt&gt;Contents&lt;/tt&gt;).&lt;br/&gt;Non sono supportati databases  Rekordbox che sono stati spostati su un dispositivo esterno usando&lt;br/&gt;&lt;i&gt;Preferenze &gt; Avanzate &gt; Gestione Database&lt;/i&gt;.&lt;br/&gt;&lt;br/&gt;Vengono letti i seguenti dati:</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1461"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1473"/>
         <source>Hot cues</source>
         <translation>Hot cues</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1463"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1475"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
         <translation>Loop (solo il primo loop è attualmente utilizzabile in Mixxx)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1466"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1478"/>
         <source>Check for attached Rekordbox USB / SD devices (refresh)</source>
         <translation>Verifica la presenza di dispositivi Rekordbox USB / SD collegati (aggiorna)</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1460"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1472"/>
         <source>Beatgrids</source>
         <translation>Beatgrids</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1462"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1474"/>
         <source>Memory cues</source>
         <translation>Memoria cues</translation>
     </message>
     <message>
-        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1492"/>
+        <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1504"/>
         <source>(loading) Rekordbox</source>
         <translation>(caricamento) Rekordbox</translation>
     </message>
@@ -12666,92 +12664,92 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
         <translation>Usa una versione libshout con %1 abilitato</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="402"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="409"/>
         <source>Error setting stream encoding format!</source>
         <translation>Errore impostando formato codifica stream!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="417"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="424"/>
         <source>Broadcasting at 96 kHz with Ogg Vorbis is not currently supported. Please try a different sample rate or switch to a different encoding.</source>
         <translation>La trasmissione a 96 kHz con Ogg Vorbis non è attualmente supportata. Prova una frequenza di campionamento diversa o passa a una codifica diversa.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="420"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="427"/>
         <source>See https://github.com/mixxxdj/mixxx/issues/5701 for more information.</source>
         <translation>Vedi https://github.com/mixxxdj/mixxx/issues/5701 per ulteriori informazioni.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="429"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="436"/>
         <source>Unsupported sample rate</source>
         <translation>Frequenza di campionamento non supportata</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="438"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="445"/>
         <source>Error setting bitrate</source>
         <translation>Errore nella regolazione del bitrate</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="453"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="460"/>
         <source>Error: unknown server protocol!</source>
         <translation>Errore: protocollo del server sconosciuto!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="458"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="465"/>
         <source>Error: Shoutcast only supports MP3 and AAC encoders</source>
         <translation>Errore: Shoutcast supporta solo codifiche MP3 e AAC </translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="464"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="471"/>
         <source>Error setting protocol!</source>
         <translation>Errore nell&apos;impostazione del protocollo!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="696"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="703"/>
         <source>Network cache overflow</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="927"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="934"/>
         <source>Connection error</source>
         <translation>Errore Connessione</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="928"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="935"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>Una delle connessioni per la Trasmissione Live riportano questo errore:&lt;br&gt;&lt;b&gt;Errore con connessione &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="942"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="949"/>
         <source>Connection message</source>
         <translation>Messaggio connessione</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="943"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="950"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation>&lt;b&gt;Messaggio dalla connessione Trasmissione Live &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="993"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1000"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation>Persa connessione al server streaming e %1 tentativi di riconnessione sono falliti.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="996"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1003"/>
         <source>Lost connection to streaming server.</source>
         <translation>Persa connessione al server streaming</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1001"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1008"/>
         <source>Please check your connection to the Internet.</source>
         <translation>Controlla la tua connessione ad Internet.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1036"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1043"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Impossibile connettersi al server streaming</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1038"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="1045"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Controlla la tua connessione a Internet e verifica che username e password siano corrette</translation>
     </message>
@@ -12767,23 +12765,23 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
 <context>
     <name>SoundManager</name>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="529"/>
-        <location filename="../../src/soundio/soundmanager.cpp" line="534"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="547"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="552"/>
         <source>a device</source>
         <translation>un dispositivo</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="535"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="553"/>
         <source>An unknown error occurred</source>
         <translation>Errore sconosciuto</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="543"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="561"/>
         <source>Two outputs cannot share channels on &quot;%1&quot;</source>
         <translation>Due uscite non possono condividere canali su %1</translation>
     </message>
     <message>
-        <location filename="../../src/soundio/soundmanager.cpp" line="546"/>
+        <location filename="../../src/soundio/soundmanager.cpp" line="564"/>
         <source>Error opening &quot;%1&quot;</source>
         <translation>Errore aprendo &quot;%1&quot;</translation>
     </message>
@@ -13150,7 +13148,7 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="257"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="261"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="991"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1001"/>
         <source>Cover Art</source>
         <translation>Immagine Copertina</translation>
     </message>
@@ -13556,22 +13554,22 @@ possono introdurre un effetto di &quot;pompaggio&quot; e/o distorsione.</transla
         <translation>Mostra il tag commento della traccia caricata.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="994"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1004"/>
         <source>Opens separate artwork viewer.</source>
         <translation>Apre visualizzatore copertine seperatamente.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1075"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1085"/>
         <source>Effect Chain Preset Settings</source>
         <translation>Impostazioni Preselezione Catena Effetti</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1076"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1086"/>
         <source>Show the effect chain settings menu for this unit.</source>
         <translation>Mostra il menu delle impostazioni della catena di effetti per questa unità.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1244"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1254"/>
         <source>Select and configure a hardware device for this input</source>
         <translation>Seleziona e configura il dispositivo hardware per questa entrata</translation>
     </message>
@@ -14134,316 +14132,319 @@ tracks with constant tempo.</source>
         <translation>Suggerimento: Modifica il formato del tempo in Preferenze -&gt; Decks.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1006"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="997"/>
+        <source>Flashing frame:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1016"/>
         <source>Show/hide intro &amp; outro markers and associated buttons.</source>
         <translation>Mostra/nasconde marcatori intro &amp; outro e bottoni associati.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1008"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1018"/>
         <source>Ensure all waveforms to have the same height across all channels. By default, when displaying the stem controls, waveform for channel that have no stem may render with a shorter height in order to honor the waveform container size you have requested..</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1015"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1025"/>
         <source>Intro Start Marker</source>
         <translation>Marcatore Inizio Intro</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1016"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1023"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1030"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1037"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1026"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1033"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1040"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1047"/>
         <source>If marker is set, jumps to the marker.</source>
         <translation>Se il marcatore è impostato, passa al marcatore.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1017"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1024"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1031"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1038"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1027"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1034"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1041"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1048"/>
         <source>If marker is not set, sets the marker to the current play position.</source>
         <translation>Se il marcatore non è impostato, imposta il marcatore sulla posizione di riproduzione corrente.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1019"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1026"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1033"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1040"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1029"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1036"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1043"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1050"/>
         <source>If marker is set, clears the marker.</source>
         <translation>Se il marcatore è impostato, cancella il marcatore.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1022"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1032"/>
         <source>Intro End Marker</source>
         <translation>Marcatore Fine Intro</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1029"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1039"/>
         <source>Outro Start Marker</source>
         <translation>Marcatore Inizio Outro</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1036"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1046"/>
         <source>Outro End Marker</source>
         <translation>Marcatore Fine Outro</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1055"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1065"/>
         <source>Mix</source>
         <translation>Mix</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1056"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1066"/>
         <source>Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit</source>
         <translation>Regola il mixaggio del segnale dry (in entrata) con il wet (in uscita) dell&apos;unità effetto</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1057"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1067"/>
         <source>D/W mode: Crossfade between dry and wet</source>
         <translation>Modalità D/W: dissolvenza incrociata tra dry e wet</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1058"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1068"/>
         <source>D+W mode: Add wet to dry</source>
         <translation>Modo D+W: Aggiunge wet a dry</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1062"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1072"/>
         <source>Mix Mode</source>
         <translation>Modo Mix</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1063"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1073"/>
         <source>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</source>
         <translation>Regola come il segnale dry (in entrata) viene mixato con il wet (in uscita) dell&apos;unità effetto</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1064"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1074"/>
         <source>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
 Use this to change the sound of the track with EQ and filter effects.</source>
         <translation>Modo Dry/Wet (linee incrociate): manopola mix dissolvenze incrociate tra dry e wet
 Usa questo per cambiare il suono della traccia con l&apos;EQ e gli effetti filtro.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1066"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1076"/>
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
         <translation>Modo Dry+Wet (linea dry piatta): La manopola mix aggiunge wet a dry. 
 Usalo per modificare solo il segnale modificato (wet) con effetti di EQ e filtro.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1102"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1112"/>
         <source>Route the main mix through this effect unit.</source>
         <translation>Instrada il mix principale attraverso questa unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1107"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1117"/>
         <source>Route the left crossfader bus through this effect unit.</source>
         <translation>Instrada il crossfader bus attraverso questa unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1112"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1122"/>
         <source>Route the right crossfader bus through this effect unit.</source>
         <translation>Instrada il crossfader destro attraverso questa unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1178"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1188"/>
         <source>Right side active: parameter moves with right half of Meta Knob turn</source>
         <translation>Lato destro attivo: il parametro si muove con la metà destra della rotazione del Meta Knob</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1204"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1214"/>
         <source>Stem Label</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1205"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1215"/>
         <source>Name of the stem stored in the stem file</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1206"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1216"/>
         <source>Text is displayed in the stem color stored in the stem file</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1207"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1217"/>
         <source>this stem color is also used for the waveform of this stem</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1210"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1220"/>
         <source>Stem Mute</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1211"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1221"/>
         <source>Toggle the stem mute/unmuted</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1214"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1224"/>
         <source>Stem Volume Knob</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1215"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1225"/>
         <source>Adjusts the volume of the stem</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1231"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1241"/>
         <source>Skin Settings Menu</source>
         <translation>Menu Impostazioni Skin</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1232"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1242"/>
         <source>Show/hide skin settings menu</source>
         <translation>Mostra/nasconde menu impostazioni skin</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1236"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1246"/>
         <source>Save Sampler Bank</source>
         <translation>Salva Raccolta Campioni</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1237"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1247"/>
         <source>Save the collection of samples loaded in the samplers.</source>
         <translation>Salva la collezione di campioni caricata nei campionatori.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1240"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1250"/>
         <source>Load Sampler Bank</source>
         <translation>Carica Banco Campioni</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1241"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1251"/>
         <source>Load a previously saved collection of samples into the samplers.</source>
         <translation>Carica nei campionatori una collezione di campioni salvata in precedenza.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1048"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1058"/>
         <source>Show Effect Parameters</source>
         <translation>Mostra Parametri Effetto</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1141"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1151"/>
         <source>Enable Effect</source>
         <translation>Abilita Effetto</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1173"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1183"/>
         <source>Meta Knob Link</source>
         <translation>Meta Manopola Link</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1174"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1184"/>
         <source>Set how this parameter is linked to the effect&apos;s Meta Knob.</source>
         <translation>Mostra come questo parametro è collegato all&apos;effetto di Meta Knob.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1182"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1192"/>
         <source>Meta Knob Link Inversion</source>
         <translation>Meta Manopola Inversione Link</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1183"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1193"/>
         <source>Inverts the direction this parameter moves when turning the effect&apos;s Meta Knob.</source>
         <translation>Inverte la direzione in cui questo parametro si muove quando si gira la Meta Knob dell&apos;effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1070"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1080"/>
         <source>Super Knob</source>
         <translation>Super Manopola</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1079"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1089"/>
         <source>Next Chain</source>
         <translation>Prossima Catena</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1083"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1093"/>
         <source>Previous Chain</source>
         <translation>Catena Precedente</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1087"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1097"/>
         <source>Next/Previous Chain</source>
         <translation>Passa alla Prossima/Precedente catena</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1137"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1147"/>
         <source>Clear</source>
         <translation>Cancella</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1138"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1148"/>
         <source>Clear the current effect.</source>
         <translation>Cancella l&apos;effetto corrente.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1198"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1208"/>
         <source>Toggle</source>
         <translation>Abilita</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1199"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1209"/>
         <source>Toggle the current effect.</source>
         <translation>Abilità l&apos;effetto corrente.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1145"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1155"/>
         <source>Next</source>
         <translation>Successivo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1044"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1054"/>
         <source>Clear Unit</source>
         <translation>Cancella Unità</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1045"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1055"/>
         <source>Clear effect unit.</source>
         <translation>Unità di pulizia effetti.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1049"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1059"/>
         <source>Show/hide parameters for effects in this unit.</source>
         <translation>Mostra/nasconde i parametri per gli effetti in questa unità.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1052"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1062"/>
         <source>Toggle Unit</source>
         <translation>Attiva Unità</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1053"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1063"/>
         <source>Enable or disable this whole effect unit.</source>
         <translation>Abilita o disabilita questa intera unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1071"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1081"/>
         <source>Controls the Meta Knob of all effects in this unit together.</source>
         <translation>Controlla il Meta Knob di tutti gli effetti di questa unità assieme.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1080"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1090"/>
         <source>Load next effect chain preset into this effect unit.</source>
         <translation>Carica la catena effetto preimpostata successiva in questa unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1084"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1094"/>
         <source>Load previous effect chain preset into this effect unit.</source>
         <translation>Carica la catena effetto preimpostata precedente in questa unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1088"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1098"/>
         <source>Load next or previous effect chain preset into this effect unit.</source>
         <translation>Carica la catena effetto preimpostata precedente o successiva in questa unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1091"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1096"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1101"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1106"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1111"/>
@@ -14451,168 +14452,170 @@ Usalo per modificare solo il segnale modificato (wet) con effetti di EQ e filtro
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1121"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1126"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="1131"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1136"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1141"/>
         <source>Assign Effect Unit</source>
         <translation>Assegna Unità Effetto</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1092"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1102"/>
         <source>Assign this effect unit to the channel output.</source>
         <translation>Assegna questa unità effetto all&apos;uscita canale.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1097"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1107"/>
         <source>Route the headphone channel through this effect unit.</source>
         <translation>Indirizza il canale cuffia attraverso questa unità effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1117"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1127"/>
         <source>Route this deck through the indicated effect unit.</source>
         <translation>Instrada questo deck attraverso l&apos;unità effetto indicata.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1122"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1132"/>
         <source>Route this sampler through the indicated effect unit.</source>
         <translation>Instrada questo campionatore attraverso l&apos;unità effetto indicata.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1127"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1137"/>
         <source>Route this microphone through the indicated effect unit.</source>
         <translation>Instrada questo microfono attraverso l&apos;unità effetto indicata.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1132"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1142"/>
         <source>Route this auxiliary input through the indicated effect unit.</source>
         <translation>Instrada questo ausiliario attraverso l&apos;unità effetto indicata.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1142"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1152"/>
         <source>The effect unit must also be assigned to a deck or other sound source to hear the effect.</source>
         <translation>L&apos;unità effetto deve essere assegnata anche ad un deck o altra sorgente suono per sentire l&apos;effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1146"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1156"/>
         <source>Switch to the next effect.</source>
         <translation>Passa all&apos;effetto successivo.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1149"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1159"/>
         <source>Previous</source>
         <translation>Precedente</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1150"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1160"/>
         <source>Switch to the previous effect.</source>
         <translation>Passa all&apos;effetto precedente.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1153"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1163"/>
         <source>Next or Previous</source>
         <translation>Precedente o Successivo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1154"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1164"/>
         <source>Switch to either the next or previous effect.</source>
         <translation>Passa all&apos;effetto precedente o successivo.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1157"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1167"/>
         <source>Meta Knob</source>
         <translation>Manopola Meta</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1158"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1168"/>
         <source>Controls linked parameters of this effect</source>
         <translation>Controlla parametri collegati a questo effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1162"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1172"/>
         <source>Effect Focus Button</source>
         <translation>Pulsante Focus Effetto</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1163"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1173"/>
         <source>Focuses this effect.</source>
         <translation>Focalizza questo effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1164"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1174"/>
         <source>Unfocuses this effect.</source>
         <translation>Toglie la focalizzazione da questo effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1165"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1175"/>
         <source>Refer to the web page on the Mixxx wiki for your controller for more information.</source>
         <translation>Per maggiori informazioni per il tuo controller fai riferimento alla pagine web del  wiki Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1168"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1178"/>
         <source>Effect Parameter</source>
         <translation>Parametro Effetto</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1169"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1179"/>
         <source>Adjusts a parameter of the effect.</source>
         <translation>Regola un parametro dell&apos;effetto.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1175"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1185"/>
         <source>Inactive: parameter not linked</source>
         <translation>Inattivo; parametro non legato</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1176"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1186"/>
         <source>Active: parameter moves with Meta Knob</source>
         <translation>Attivo: il parametro si muove con il Meta Knob</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1177"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1187"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
         <translation>Lato sinistro attivo: il parametro si muove con la metà sinistra della rotazione del Meta Knob</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1179"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1189"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
         <translation>Lato sinistro e destro attivo: il parametro si muove nell&apos;intervallo con metà del giro di Meta Knob e indietro con l&apos;altra metà</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1186"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1226"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1196"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1236"/>
         <source>Equalizer Parameter Kill</source>
         <translation>Elimina Parametro Equalizzatore</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1187"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1227"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1197"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1237"/>
         <source>Holds the gain of the EQ to zero while active.</source>
         <translation>Trattiene il gain del EQ a zero quando attivo.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1192"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1202"/>
         <source>Quick Effect Super Knob</source>
         <translation>Effetto rapido Super Manopola</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1193"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1203"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
         <translation>Effetto Rapido Super Manopola (parametri di controllo effetti collegati).</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1195"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1205"/>
         <source>Hint: Change the default Quick Effect mode in Preferences -&gt; Equalizers.</source>
         <translation>Suggerimento: Modifica il modo Effetto Rapido predefinito in Preferenze -&gt; Equalizzatori.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1220"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1230"/>
         <source>Equalizer Parameter</source>
         <translation>Parametro Equalizzatore</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1221"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1231"/>
         <source>Adjusts the gain of the EQ filter.</source>
         <translation>Regola il gain del filtro EQ.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1223"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1233"/>
         <source>Hint: Change the default EQ mode in Preferences -&gt; Equalizers.</source>
         <translation>Suggerimento: Modifica il Modo EQ predefinito in Preferenze -&gt; Equalizzatori</translation>
     </message>
@@ -14731,27 +14734,27 @@ Usalo per modificare solo il segnale modificato (wet) con effetti di EQ e filtro
         <translation>Abilita Inoltro diretto Passtrough</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="988"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="990"/>
         <source>Indicates that the audio buffer is too small to do all audio processing.</source>
         <translation>Indica che il buffer audio è troppo piccolo per elaborare l&apos;audio.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="992"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1002"/>
         <source>Displays cover artwork of the loaded track.</source>
         <translation>Mostra la copertina della traccia caricata.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="996"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1006"/>
         <source>Displays options for editing cover artwork.</source>
         <translation>Visualiza le opzioni per modificare la copertina.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1001"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1011"/>
         <source>Star Rating</source>
         <translation>Valutazione Stelle</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1002"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1012"/>
         <source>Assign ratings to individual tracks by clicking the stars.</source>
         <translation>Assegna valutazione alle tracce individualmente cliccando sulle stelle.</translation>
     </message>
@@ -15140,7 +15143,7 @@ Usalo per modificare solo il segnale modificato (wet) con effetti di EQ e filtro
         <translation>Non abilitare keylock, effetti o deck aggiuntivi in questa situazione.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="987"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="989"/>
         <source>Audio Latency Overload Indicator</source>
         <translation>Indicatore Sovraccarico Latenza Audio</translation>
     </message>
@@ -16139,25 +16142,25 @@ Questa azione non può essere annullata!</translation>
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="229"/>
+        <location filename="../../src/widget/woverview.cpp" line="221"/>
         <source>Passthrough</source>
         <translation>Passthrough</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="925"/>
+        <location filename="../../src/widget/woverview.cpp" line="940"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Pronto a partire, analizzo..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="928"/>
-        <location filename="../../src/widget/woverview.cpp" line="938"/>
+        <location filename="../../src/widget/woverview.cpp" line="943"/>
+        <location filename="../../src/widget/woverview.cpp" line="953"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Caricamento traccia...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="932"/>
+        <location filename="../../src/widget/woverview.cpp" line="947"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalizzazione...</translation>
@@ -16365,650 +16368,650 @@ Questa azione non può essere annullata!</translation>
 <context>
     <name>WTrackMenu</name>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="175"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="177"/>
         <source>Load to</source>
         <translation>Carica su</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="177"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="179"/>
         <source>Deck</source>
         <translation>Deck</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="179"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="181"/>
         <source>Sampler</source>
         <translation>Campionatore</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="184"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="186"/>
         <source>Add to Playlist</source>
         <translation>Aggiungi alla playlist</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="190"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="192"/>
         <source>Crates</source>
         <translation>Contenitori</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="197"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="199"/>
         <source>Metadata</source>
         <translation>Metadati</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="200"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="202"/>
         <source>Update external collections</source>
         <translation>Aggiorna collezioni estrerne</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="203"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="205"/>
         <source>Cover Art</source>
         <translation>Immagine Copertina</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="216"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="218"/>
         <source>Adjust BPM</source>
         <translation>Regolazione BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="221"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="223"/>
         <source>Select Color</source>
         <translation>Seleziona Colore</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="235"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="565"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="237"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="567"/>
         <source>Analyze</source>
         <translation>Analizza</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="300"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2557"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="302"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2562"/>
         <source>Delete Track Files</source>
         <translation>Cancella File Traccia</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="312"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="314"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Aggiungi a fine coda in «Auto DJ»</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="315"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="317"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Aggiungi alla coda in modalità &quot;Auto DJ&quot; (in cima)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="318"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="320"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Aggiunge a Auto DJ (sostituisce)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1084"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1086"/>
         <source>Preview Deck</source>
         <translation>Deck Anteprima</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="325"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="327"/>
         <source>Remove</source>
         <translation>Rimuovi</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="329"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="331"/>
         <source>Remove from Playlist</source>
         <translation>Rimuovi dalla Playlist</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="333"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="335"/>
         <source>Remove from Crate</source>
         <translation>Togli da Contenitore</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="339"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="341"/>
         <source>Hide from Library</source>
         <translation>Nascondi dalla Libreria</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="348"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="350"/>
         <source>Unhide from Library</source>
         <translation>Mostra nella Libreria</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="351"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="353"/>
         <source>Purge from Library</source>
         <translation>Elimina dalla Libreria</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="357"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="359"/>
         <source>Move Track File(s) to Trash</source>
         <translation>Sposta file della traccia/e nel Cestino</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="360"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="362"/>
         <source>Delete Files from Disk</source>
         <translation>Cancella File dal Disco</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="378"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="380"/>
         <source>Properties</source>
         <translation>Proprietà</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="393"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="395"/>
         <source>Open in File Browser</source>
         <translation>Apri nel File Manager</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="398"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="400"/>
         <source>Select in Library</source>
         <translation>Seleziona in Libreria</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="404"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="406"/>
         <source>Import From File Tags</source>
         <translation>Importa Da File Tags</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="411"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="413"/>
         <source>Import From MusicBrainz</source>
         <translation>Importa Da MusicBrainz</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="418"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="420"/>
         <source>Export To File Tags</source>
         <translation>Esporta su File Tags</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="446"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="448"/>
         <source>BPM and Beatgrid</source>
         <translation>BPM e Beatgrid</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="449"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="451"/>
         <source>Play Count</source>
         <translation>Conteggio Play</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="452"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="454"/>
         <source>Rating</source>
         <translation>Voto</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="455"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="457"/>
         <source>Cue Point</source>
         <translation>Punto Cue</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="225"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="458"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="227"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="460"/>
         <source>Hotcues</source>
         <translation>Hotcue</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="461"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="463"/>
         <source>Intro</source>
         <translation>Intro</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="464"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="466"/>
         <source>Outro</source>
         <translation>Outro</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="470"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="472"/>
         <source>Key</source>
         <translation>Parola chiave</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="473"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="475"/>
         <source>ReplayGain</source>
         <translation>Riapplica Gain</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="476"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="478"/>
         <source>Waveform</source>
         <translation>Forma d&apos;onda</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="479"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="481"/>
         <source>Comment</source>
         <translation>Commento</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="482"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="484"/>
         <source>All</source>
         <translation>Tutto</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="486"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="488"/>
         <source>Sort hotcues by position (remove offsets)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="494"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="496"/>
         <source>Sort hotcues by position</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="504"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="506"/>
         <source>Lock BPM</source>
         <translation>Blocca i BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="505"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="507"/>
         <source>Unlock BPM</source>
         <translation>Sblocca i BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="510"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="512"/>
         <source>Double BPM</source>
         <translation>raddoppia BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="512"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="514"/>
         <source>Halve BPM</source>
         <translation>Dimezza BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="514"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="516"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="516"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="518"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="518"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="520"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="520"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="522"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="556"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="558"/>
         <source>Shift Beatgrid Half Beat</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="568"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="570"/>
         <source>Reanalyze</source>
         <translation>Rianalizza</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="571"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="573"/>
         <source>Reanalyze (constant BPM)</source>
         <translation>Ri-Analizza (BPM costanti)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="577"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="579"/>
         <source>Reanalyze (variable BPM)</source>
         <translation>Ri-Analizza (BPM variabili)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="589"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="591"/>
         <source>Update ReplayGain from Deck Gain</source>
         <translation>Aggiorna il ReplayGain dal Guadagno del Deck</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1040"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1042"/>
         <source>Deck %1</source>
         <translation>Deck %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1400"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1402"/>
         <source>Open Many Files in File Browser</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1401"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1403"/>
         <source>You are about to open %n files in the file browser. This may slow down or hang your system. Are you sure you want to continue?</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1486"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1488"/>
         <source>Importing metadata of %n track(s) from file tags</source>
         <translation><numerusform>Import dei metadati di %n traccia dai tags dei file</numerusform><numerusform>Import dei metadati di %n tracce dai tags dei file</numerusform><numerusform>Import dei metadati di %n traccia(e) dai tags dei file</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1518"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1520"/>
         <source>Marking metadata of %n track(s) to be exported into file tags</source>
         <translation><numerusform>Marca i metadati di %n traccia al fine di essere esportati nei tags dei file</numerusform><numerusform>Marca i metadati di %n tracce al fine di essere esportati nei tags dei file</numerusform><numerusform>Marca i metadati di %n tracce al fine di essere esportati nei tags dei file</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1569"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1593"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1571"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1595"/>
         <source>Create New Playlist</source>
         <translation>Crea Nuova Playlist</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1594"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1596"/>
         <source>Enter name for new playlist:</source>
         <translation>Inserisci il nome per la playlist:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1596"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1598"/>
         <source>New Playlist</source>
         <translation>Nuova Playlist</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1604"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1608"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1617"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1606"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1610"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1619"/>
         <source>Playlist Creation Failed</source>
         <translation>Creazione della playlist non riuscita</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1605"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1607"/>
         <source>A playlist by that name already exists.</source>
         <translation>Esiste già una playlist con questo nome.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1609"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1611"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Il nome della playlist non può essere vuoto.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1618"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1620"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Errore sconosciuto durante la creazione della playlist: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1695"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1703"/>
         <source>Add to New Crate</source>
         <translation>Aggiungi a Nuovo Contenitore</translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1838"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1843"/>
         <source>Scaling BPM of %n track(s)</source>
         <translation><numerusform>Scalatura BPM di %n traccia</numerusform><numerusform>Scalatura BPM di %n tracce</numerusform><numerusform>Scalatura BPM di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1867"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1872"/>
         <source>Undo BPM/beats change of %n track(s)</source>
         <translation><numerusform>Annulla la modifica ai BPM/beats di %n traccia</numerusform><numerusform>Annulla la modifica ai BPM/beats di %n tracce</numerusform><numerusform>Annulla la modifica ai BPM/beats di %n traccia(e)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1911"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1916"/>
         <source>Locking BPM of %n track(s)</source>
         <translation><numerusform>Blocco BPM di %n traccia</numerusform><numerusform>Blocco BPM di %n tracce</numerusform><numerusform>Blocco BPM di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1912"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1917"/>
         <source>Unlocking BPM of %n track(s)</source>
         <translation><numerusform>Sblocco BPM di %n traccia</numerusform><numerusform>Sblocco BPM di %n traccie</numerusform><numerusform>Sblocco BPM di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1945"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1950"/>
         <source>Setting rating of %n track(s)</source>
         <translation><numerusform>Imposta la valutazione di %n traccia</numerusform><numerusform>Imposta la valutazione di %n tracce</numerusform><numerusform>Imposta la valutazione di %n traccia(e)</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="1976"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="1981"/>
         <source>Setting color of %n track(s)</source>
         <translation><numerusform>Impostazione del colore di %n traccia</numerusform><numerusform>Impostazione del colore di %n tracce</numerusform><numerusform>Impostazione del colore di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2035"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2040"/>
         <source>Resetting play count of %n track(s)</source>
         <translation><numerusform>Reimpostazione del conteggio di riproduzione di %n traccia</numerusform><numerusform>Reimpostazione del conteggio di riproduzione di %n tracce</numerusform><numerusform>Reimpostazione del conteggio di riproduzione di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2057"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2062"/>
         <source>Resetting beats of %n track(s)</source>
         <translation><numerusform>Reimpostazione delle battute di %n traccia</numerusform><numerusform>Reimpostazione delle battute di %n tracce</numerusform><numerusform>Reimpostazione delle battute di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2084"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2089"/>
         <source>Clearing rating of %n track(s)</source>
         <translation><numerusform>Cancellazione della valutazione di %n traccia</numerusform><numerusform>Cancellazione della valutazione di %n tracce</numerusform><numerusform>Cancellazione della valutazione di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2107"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2112"/>
         <source>Clearing comment of %n track(s)</source>
         <translation><numerusform>Cancellazione dei commenti di %n traccia</numerusform><numerusform>Cancellazione dei commenti di %n tracce</numerusform><numerusform>Cancellazione del commento di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2212"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2217"/>
         <source>Removing main cue from %n track(s)</source>
         <translation><numerusform>Rimozione del main cue da %n traccia</numerusform><numerusform>Rimozione del main cue da %n tracce</numerusform><numerusform>Rimozione del main cue da %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2222"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2227"/>
         <source>Removing outro cue from %n track(s)</source>
         <translation><numerusform>Rimozione dell&apos;outro cue da %n traccia</numerusform><numerusform>Rimozione dell&apos;outro cue da %n tracce</numerusform><numerusform>Rimozione dell&apos;outro cue da %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2232"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2237"/>
         <source>Removing intro cue from %n track(s)</source>
         <translation><numerusform>Rimozione dell&apos;intro cue da %n traccia</numerusform><numerusform>Rimozione dell&apos;intro cue da %n tracce</numerusform><numerusform>Rimozione dell&apos;intro cue da %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2242"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2247"/>
         <source>Removing loop cues from %n track(s)</source>
         <translation><numerusform>Rimozione loop cues da %n traccia</numerusform><numerusform>Rimozione loop cues da %n tracce</numerusform><numerusform>Rimozione loop cues da %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2252"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2257"/>
         <source>Removing hot cues from %n track(s)</source>
         <translation><numerusform>Rimozione hot cues da %n traccia</numerusform><numerusform>Rimozione hot cues da %n tracce</numerusform><numerusform>Rimozione hot cues da %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2264"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2269"/>
         <source>Sorting hotcues of %n track(s) by position (remove offsets)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2271"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2276"/>
         <source>Sorting hotcues of %n track(s) by position</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2295"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2300"/>
         <source>Resetting keys of %n track(s)</source>
         <translation><numerusform>Reimpostazione della chiave musicale di %n traccia</numerusform><numerusform>Reimpostazione della chiave musicale di %n tracce</numerusform><numerusform>Reimpostazione della chiave musicale di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2317"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2322"/>
         <source>Resetting replay gain of %n track(s)</source>
         <translation><numerusform>Reimpostazione del guadagno di riproduzione di %n traccia</numerusform><numerusform>Reimpostazione del guadagno di riproduzione di %n tracce</numerusform><numerusform>Reimpostazione del guadagno di riproduzione di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2352"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2357"/>
         <source>Resetting waveform of %n track(s)</source>
         <translation><numerusform>Reimpostazione della forma d&apos;onda di %n traccia</numerusform><numerusform>Reimpostazione della forma d&apos;onda di %n tracce</numerusform><numerusform>Reimpostazione della forma d&apos;onda di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2408"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2413"/>
         <source>Resetting all performance metadata of %n track(s)</source>
         <translation><numerusform>Reimpostazione dei metadati delle performance di %n traccia</numerusform><numerusform>Reimpostazione dei metadati delle performance di %n tracce</numerusform><numerusform>Reimpostazione dei metadati delle performance di %n tracce</numerusform></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2506"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2511"/>
         <source>Move these files to the trash bin?</source>
         <translation>Spostare questi file nel cestino?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2502"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2507"/>
         <source>Permanently delete these files from disk?</source>
         <translation>Cancellare definitivamente questi file dal disco?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2504"/>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2513"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2509"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2518"/>
         <source>This can not be undone!</source>
         <translation>Questo non può essere annullato!</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2538"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2543"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2542"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2547"/>
         <source>Delete Files</source>
         <translation>Cancella Files</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2544"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2549"/>
         <source>Okay</source>
         <translation>Okay</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2559"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2564"/>
         <source>Move Track File(s) to Trash?</source>
         <translation>Sposto il/i File Traccia/e nel Cestino?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2617"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2622"/>
         <source>Track Files Deleted</source>
         <translation>File Tracce Cancellate</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2619"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2624"/>
         <source>Track Files Moved To Trash</source>
         <translation>File Traccia Spostati nel Cestino</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2626"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2631"/>
         <source>%1 track files were moved to trash and purged from the Mixxx database.</source>
         <translation>%1 file delle tracce sono stati spostati nel cestino ed eliminati dal database di Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2623"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2628"/>
         <source>%1 track files were deleted from disk and purged from the Mixxx database.</source>
         <translation>i file delle tracce %1 sono stati cancellati dal disco ed eliminati dal database di Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2635"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2640"/>
         <source>Track File Deleted</source>
         <translation>File Traccia Cancellati</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2636"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2641"/>
         <source>Track file was deleted from disk and purged from the Mixxx database.</source>
         <translation>Il file della traccia è stato eliminato dal disco e cancellato dal database Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2678"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2683"/>
         <source>The following %1 file(s) could not be deleted from disk</source>
         <translation>I seguenti file %1 file(s) non possono essere eliminati dal disco</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2686"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2691"/>
         <source>This track file could not be deleted from disk</source>
         <translation>Non è stato possibile eliminare questo file di traccia dal disco</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2710"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2715"/>
         <source>Remaining Track File(s)</source>
         <translation>File di Tracce Rimanente(i)</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2701"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2706"/>
         <source>Close</source>
         <translation>Chiudi</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="230"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="232"/>
         <source>Clear</source>
         <extracomment>Reset metadata in right click track context menu in library</extracomment>
         <translation>Pulisci</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="467"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="469"/>
         <source>Loops</source>
         <translation>Loop</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="542"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="544"/>
         <source>Clear BPM and Beatgrid</source>
         <translation>Pulisci BPM e Beatgrid</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="548"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="550"/>
         <source>Undo last BPM/beats change</source>
         <translation>Annulla l&apos;ultima modifica dei BPM/Beat</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2515"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2520"/>
         <source>Move this track file to the trash bin?</source>
         <translation>Spostare questo file traccia nel cestino?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2511"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2516"/>
         <source>Permanently delete this track file from disk?</source>
         <translation>Cancellare definitivamente questi file dal disco?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2520"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2525"/>
         <source>All decks where these tracks are loaded will be stopped and the tracks will be ejected.</source>
         <translation>Tutti i deck in cui sono caricate queste tracce verranno fermati e le tracce verranno espulse.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2524"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2529"/>
         <source>All decks where this track is loaded will be stopped and the track will be ejected.</source>
         <translation>Tutti i deck in cui è caricata questa traccia verrà fermato e la traccia verrà espulsa.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2591"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2596"/>
         <source>Removing %n track file(s) from disk...</source>
         <translation>Rimuovendo %n file dal disco...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2631"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2636"/>
         <source>Note: if you are in the Computer or Recording view you need to click the current view again to see changes.</source>
         <translation>Nota: se sei nella vista Computer o Registrazione devi cliccare di nuovo sulla vista corrente per vedere i cambiamenti.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2640"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2645"/>
         <source>Track File Moved To Trash</source>
         <translation>File Traccia Spostato nel Cestino</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2641"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2646"/>
         <source>Track file was moved to trash and purged from the Mixxx database.</source>
         <translation>Il file della traccia è stato spostato nel cestino ed eliminato dal database di Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2646"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2651"/>
         <source>Don&apos;t show again during this session</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2680"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2685"/>
         <source>The following %1 file(s) could not be moved to trash</source>
         <translation>I seguenti file %1 non possono essere spostati nel cestino</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2688"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2693"/>
         <source>This track file could not be moved to trash</source>
         <translation>Questo file di traccia non può essere spostato nel cestino</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2835"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2840"/>
         <source>Replace current Auto DJ queue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2837"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2842"/>
         <source>Do you want to replace the entire Auto DJ queue with the selected tracks?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2840"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2845"/>
         <source>Don&apos;t ask again during this session</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2881"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2886"/>
         <source>Setting cover art of %n track(s)</source>
         <translation><numerusform>Impostazione della copertina di %n traccia</numerusform><numerusform>Impostazione della copertina di %n tracce</numerusform><numerusform>Impostazione della copertina di %n tracce</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../../src/widget/wtrackmenu.cpp" line="2905"/>
+        <location filename="../../src/widget/wtrackmenu.cpp" line="2910"/>
         <source>Reloading cover art of %n track(s)</source>
         <translation><numerusform>Ricaricamento copertina di %n traccia</numerusform><numerusform>Ricaricamento copertina di %n tracce</numerusform><numerusform>Ricaricamento copertina di %n tracce</numerusform></translation>
     </message>
@@ -17062,37 +17065,37 @@ Questa azione non può essere annullata!</translation>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1431"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1432"/>
         <source>Confirm track hide</source>
         <translation>Conferma nascondimento traccia</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1433"/>
         <source>Are you sure you want to hide the selected tracks?</source>
         <translation>Sei sicuro di voler nascondere le tracce selezionate?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1438"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1439"/>
         <source>Are you sure you want to remove the selected tracks from AutoDJ queue?</source>
         <translation>Sei sicuro di voler rimuovere le tracce selezionate dalla coda di AutoDJ?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1442"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1443"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
         <translation>Sei sicuro di voler rimuovere le tracce selezionate da questo contenitore?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1446"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1447"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
         <translation>Sei sicuro di voler rimuovere i brani selezionati da questa playlist?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1455"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1456"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>Non chiedere ancora durante questa sessione</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1434"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1435"/>
         <source>Confirm track removal</source>
         <translation>Conferma rimozione traccia</translation>
     </message>
@@ -17100,12 +17103,12 @@ Questa azione non può essere annullata!</translation>
 <context>
     <name>WTrackTableViewHeader</name>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="149"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="152"/>
         <source>Show or hide columns.</source>
         <translation>Mostra o nasconde colonne.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableviewheader.cpp" line="254"/>
+        <location filename="../../src/widget/wtracktableviewheader.cpp" line="258"/>
         <source>Shuffle Tracks</source>
         <translation type="unfinished"/>
     </message>
@@ -17113,7 +17116,7 @@ Questa azione non può essere annullata!</translation>
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="209"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="213"/>
         <source>None</source>
         <extracomment>This refers to a missing openGL version</extracomment>
         <translation type="unfinished"/>

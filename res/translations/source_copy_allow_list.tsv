@@ -140,7 +140,7 @@ lang	source
 *	Mix
 *	Autopan
 *	Bessel4 ISO
-ca,de,el,en_CA,en_GB,es*,fr_CA,fr_CI,hu,it,nl,pt*,sl,sv	Res
+*	Res
 *	%1:%2
 *	Bessel8 ISO
 *	LR8 ISO
@@ -192,18 +192,18 @@ hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	F
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ta	F#
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	G
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Ab
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	Am
-hu,et,fi,nl,pl,pt_BR,ro,zh*,pt	Bbm
-hu,et,fi,nl,pl,pt_BR,ro,zh*,pt	Bm
-hu,et,fi,nl,pl,pt_BR,ro,sl,vi,zh,zh_CN,zh_HK	Cm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt,ta	C#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ta	Dm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta	Ebm
-hu,de,et,fi,nl,pl,pt_BR,ro,sl,vi,zh*,pt	Em
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ta	Fm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta	F#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta	Gm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK	G#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,ja	Am
+hu,et,fi,nl,pl,pt_BR,ro,zh*,pt,ja	Bbm
+hu,et,fi,nl,pl,pt_BR,ro,zh*,pt,ja	Bm
+hu,et,fi,nl,pl,pt_BR,ro,sl,vi,zh,zh_CN,zh_HK,ja	Cm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt,ta,ja	C#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ta,ja	Dm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta,ja	Ebm
+hu,de,et,fi,nl,pl,pt_BR,ro,sl,vi,zh*,pt,ja	Em
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ta,ja	Fm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta,ja	F#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ta,ja	Gm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,ja	G#m
 *	10Hz
 *	10ms
 *	5ms
@@ -363,7 +363,7 @@ es*,fr,it,nl,pt*,sq_AL	&Ok
 es*,pt_BR	Switch
 es*,pt*	Manual
 et,hr,it,tr,vi	BPM Tap
-fr,it,nl,zh*,ko	 pt
+fr,it,nl,zh*,ko,ja	 pt
 it	Password
 nl,sv,vi	Equalizers
 nl,it	Controllers
@@ -442,9 +442,9 @@ it	Tempo Tap
 zh*	Soft Clipping
 zh*	Hard Clipping
 es*	No
-nl,sq_AL,es*,pl,sv,cs,ko	VID:
+nl,sq_AL,es*,pl,sv,cs,ko,ja	VID:
 nl	Product ID
-nl,sq_AL,es*,pl,sv,cs,ko,ta	PID:
+nl,sq_AL,es*,pl,sv,cs,ko,ta,ja	PID:
 nl	Lossy
 nl	Lossless
 nl	Top
@@ -459,3 +459,7 @@ it	Okay
 vi	Samplerate
 fr,sl,cs	Stem
 ta	Biquad Full Kill Equalizer
+cs,ja	%1 - %2
+ja	HID Usage-Page:
+ja	HID Usage:
+pt,pt_BR,pt_PT	Playlists
