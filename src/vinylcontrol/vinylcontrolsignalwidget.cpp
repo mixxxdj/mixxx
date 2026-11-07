@@ -47,7 +47,9 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
     m_fSignalQuality = report.timecode_quality;
 
     auto qual_color = QColor();
-    int r,g,b;
+    int r;
+    int g;
+    int b;
 
     //color is related to signal quality
     //hsv:  s=1, v=1
