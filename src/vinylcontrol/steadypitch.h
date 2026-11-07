@@ -6,9 +6,10 @@ class SteadyPitch {
         void reset(double pitch, double time);
         double check(double pitch, double time);
         double steadyValue(void) const;
-        bool directionChanged(double pitch);
-        bool resyncDetected(double new_time);
-    private:
+        bool directionChanged(double pitch) const;
+        bool resyncDetected(double new_time) const;
+
+      private:
         const bool m_bAssumeSteady;
         double m_dSteadyPitch;
         double m_dOldSteadyPitch;

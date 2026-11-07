@@ -25,8 +25,7 @@ void SteadyPitch::reset(double pitch, double time)
     m_dLastSteadyDur = 0.0;
 }
 
-bool SteadyPitch::directionChanged(double pitch)
-{
+bool SteadyPitch::directionChanged(double pitch) const {
     if (pitch >= 0) {
         return m_iPlayDirection != 1;
     } else {
@@ -34,8 +33,7 @@ bool SteadyPitch::directionChanged(double pitch)
     }
 }
 
-bool SteadyPitch::resyncDetected(double new_time)
-{
+bool SteadyPitch::resyncDetected(double new_time) const {
     //did track location jump opposite to the play direction?
     if (m_iPlayDirection >= 0)
     {
