@@ -7,6 +7,7 @@
 #include "library/library.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
+#include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -200,7 +201,15 @@ void DlgPrefWaveform::slotUpdate() {
     if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
         openGlStatusData->setText(factory->getOpenGLVersion());
     } else {
-        openGlStatusData->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
+        const QString openGlVersion = factory->getOpenGLVersion();
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            openGlStatusData->setText(tr("OpenGL disabled in safe mode"));
+        } else if (openGlVersion.isEmpty()) {
+            openGlStatusData->setText(tr("OpenGL not available"));
+        } else {
+            openGlStatusData->setText(
+                    tr("OpenGL version not supported: %1").arg(openGlVersion));
+        }
     }
 
     // The combobox holds a list of [handle name, handle index]
