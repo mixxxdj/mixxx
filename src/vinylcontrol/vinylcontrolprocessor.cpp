@@ -51,7 +51,7 @@ VinylControlProcessor::~VinylControlProcessor() {
         const auto locker = QMutexLocker(&m_processorsLock);
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
             VinylControl* pProcessor = m_processors.at(i);
-            m_processors[i] = NULL;
+            m_processors[i] = nullptr;
             delete pProcessor;
 
             delete m_samplePipes[i];
