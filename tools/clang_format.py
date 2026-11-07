@@ -11,7 +11,6 @@ import typing
 
 import githelper
 
-
 # We recommend a maximum line length of 80, but do allow up to 100 characters
 # if deemed necessary by the developer. Lines that exceed that limit will
 # be wrapped after 80 characters automatically.
@@ -120,16 +119,21 @@ def main(argv: typing.Optional[typing.List[str]] = None) -> int:
     for changed_file in files_with_added_lines:
         run_clang_format_on_lines(rootdir, changed_file)
 
-    # Second pass: Wrap long added/changed lines in C++ using clang-format
-    logger.info("Second pass: Breaking long added/changed lines...")
+    # Second pass: Wrap long added/changed lines in C++ using clang-format.
+    # githelper treats an empty include list as "include everything", so if the
+    # change set contains no C++/header files (e.g. a lone .c file), fall back
+    # to the files this hook was invoked on instead of reformatting every
+    # changed file -- including YAML and shell scripts that clang-format must
+    # not touch.
+    include_files = [
+        file for file in args.files if re.search(r"\.(?:cpp|h)$", file)
+    ]
     files_with_long_added_lines = githelper.get_changed_lines_grouped(
         from_ref=args.from_ref,
         to_ref=args.to_ref,
         filter_lines=lambda line: line.added
         and len(line.text) > LINE_LENGTH_THRESHOLD,
-        include_files=[
-            file for file in args.files if re.search(r"\.(?:cpp|h)$", file)
-        ],
+        include_files=include_files or args.files,
     )
     config = get_clang_format_config_with_columnlimit(rootdir, BREAK_BEFORE)
     with tempfile.TemporaryDirectory(prefix="clang-format") as tempdir:

@@ -133,13 +133,18 @@ endmacro()
 
 message(STATUS "Searching for FFMPEG components")
 # Check for all possible component.
-find_component(libavcodec    libavcodec    avcodec  libavcodec/avcodec.h)
-find_component(libavformat   libavformat   avformat libavformat/avformat.h)
-find_component(libavdevice   libavdevice   avdevice libavdevice/avdevice.h)
-find_component(libavutil     libavutil     avutil   libavutil/avutil.h)
-find_component(libavfilter   libavfilter   avfilter libavfilter/avfilter.h)
-find_component(libswscale    libswscale    swscale  libswscale/swscale.h)
-find_component(libswresample libswresample swresample libswresample/swresample.h)
+find_component(libavcodec libavcodec avcodec libavcodec/avcodec.h)
+find_component(libavformat libavformat avformat libavformat/avformat.h)
+find_component(libavdevice libavdevice avdevice libavdevice/avdevice.h)
+find_component(libavutil libavutil avutil libavutil/avutil.h)
+find_component(libavfilter libavfilter avfilter libavfilter/avfilter.h)
+find_component(libswscale libswscale swscale libswscale/swscale.h)
+find_component(
+  libswresample
+  libswresample
+  swresample
+  libswresample/swresample.h
+)
 
 set(FFMPEG_LIBRARIES "")
 set(FFMPEG_DEFINITIONS "")
@@ -156,6 +161,16 @@ foreach(component ${FFMPEG_FIND_COMPONENTS})
     list(APPEND FFMPEG_INCLUDE_DIRS ${FFMPEG_${component}_INCLUDE_DIRS})
   endif()
 endforeach()
+
+# When libavcodec is static it may have been built with --enable-libfdk-aac.
+# Add the fdk-aac library so the final linker resolves the aacEnc*/aacDec*
+# symbols (mirrors the 2.7 FindFFmpeg module handling).
+if(FFMPEG_libavcodec_LIBRARIES MATCHES "\.a")
+  find_package(fdk-aac QUIET)
+  if(TARGET FDK-AAC::fdk-aac)
+    list(APPEND FFMPEG_LIBRARIES FDK-AAC::fdk-aac)
+  endif()
+endif()
 
 # Build the include path with duplicates removed.
 if(FFMPEG_INCLUDE_DIRS)
@@ -191,8 +206,7 @@ mark_as_advanced(FFMPEG_INCLUDE_DIRS FFMPEG_LIBRARIES FFMPEG_DEFINITIONS)
 set(FFMPEG_REQUIRED_VARS FFMPEG_LIBRARIES FFMPEG_INCLUDE_DIRS)
 foreach(component ${FFMPEG_FIND_COMPONENTS})
   list(
-    APPEND
-    FFMPEG_REQUIRED_VARS
+    APPEND FFMPEG_REQUIRED_VARS
     FFMPEG_${component}_LIBRARIES
     FFMPEG_${component}_INCLUDE_DIRS
   )
