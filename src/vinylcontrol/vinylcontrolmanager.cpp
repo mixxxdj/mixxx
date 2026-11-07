@@ -31,7 +31,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
                 AudioInput(AudioPathType::VinylControl,
                         0,
                         mixxx::audio::ChannelCount::stereo(),
-                        i),
+                        static_cast<unsigned char>(i)),
                 m_pProcessor);
     }
     connect(m_pProcessor,
