@@ -184,25 +184,25 @@ hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	A
 hu,pt,pt_PT,et,fi,nl,pl,pt_BR,ro,zh*	Bb
 hu,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	B
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	C
-hu,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Db
+hu,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ta	Db
 hu,pt,pt_PT,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	D
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh*	Eb
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	E
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*,pt	F
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN	F#
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ta	F#
 hu,cs,de,et,fi,fr,nl,pl,pt_BR,ro,ru,sl,vi,zh*	G
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt	Ab
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,ja	Am
 hu,et,fi,nl,pl,pt_BR,ro,zh*,pt,ja	Bbm
 hu,et,fi,nl,pl,pt_BR,ro,zh*,pt,ja	Bm
 hu,et,fi,nl,pl,pt_BR,ro,sl,vi,zh,zh_CN,zh_HK,ja	Cm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt,ja	C#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ja	Dm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja	Ebm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,pt,ja,ta	C#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh*,pt,ja,ta	Dm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja,ta	Ebm
 hu,de,et,fi,nl,pl,pt_BR,ro,sl,vi,zh*,pt,ja	Em
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ja	Fm
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja	F#m
-hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja	Gm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh_CN,ja,ta	Fm
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja,ta	F#m
+hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,pt,ja,ta	Gm
 hu,et,fi,nl,pl,pt_BR,ro,sl,zh,zh_CN,zh_HK,ja	G#m
 *	10Hz
 *	10ms
@@ -230,7 +230,7 @@ nl	Help
 nl	Later
 nl	Auxiliary
 nl,vi	Quantize
-nl	Biquad Equalizer
+nl,ta	Biquad Equalizer
 nl,ro,sv	Live Mix
 nl,sv	Center 2
 nl	Waveform
@@ -395,7 +395,7 @@ de,fr,it,nl,pl	Echo
 de,it,nl,sv	Feedback
 de,nl,sl,sv	Filter
 de	Regeneration
-de,it,nl,pl,pt,pt_PT,ru,zh*,ko	BW
+de,it,nl,pl,pt,pt_PT,ru,zh*,ko,ta	BW
 de,it,lb,nn,pl,sn,sq_AL,vi	Bitrate
 nl	Track #
 de	Name
@@ -449,3 +449,4 @@ de	Attack
 vi	Samplerate
 it,tr	Mount
 ko	Return
+ta	Biquad Full Kill Equalizer
