@@ -4614,6 +4614,25 @@ endif()
 find_package(SoundTouch 2.1.2 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND DEFINED MIXXX_VCPKG_ROOT)
+  # The Linux buildenv links SoundTouch built on the glibc-2.28 floor with
+  # -ffast-math, whose __exp_finite/__exp2_finite symbols glibc >= 2.31 hides.
+  # Provide them in the executables that pull SoundTouch in, as object files so
+  # they are always in the link regardless of static archive order (mixxx-lib.a
+  # is scanned before libSoundTouch.a, so an archive member would be missed).
+  # Skip the precompiled header, a C++ header that would break the C source's
+  # build rule.  Gate on the buildenv so this can be removed once the buildenv
+  # is retired.
+  set_source_files_properties(
+    src/util/compatibility/glibc_compat.c
+    PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+  )
+  target_sources(mixxx PRIVATE src/util/compatibility/glibc_compat.c)
+  if(TARGET mixxx-test)
+    target_sources(mixxx-test PRIVATE src/util/compatibility/glibc_compat.c)
+  endif()
+endif()
+
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
