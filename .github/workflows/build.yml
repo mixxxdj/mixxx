@@ -257,10 +257,16 @@ jobs:
         # omits .git).  python39 runs the AppImage floor-deps check (Rocky
         # 8's default python3 is 3.6, too old for
         # subprocess.run(capture_output=...)).
+        #
+        # The container defaults to the "C" locale, which trips Qt's
+        # "Detected locale ... not UTF-8" warning on every configure, so set
+        # a UTF-8 locale for all subsequent steps.
         if: matrix.container == 'rockylinux:8'
         run: |
           dnf install -y git python39
           alternatives --set python3 /usr/bin/python3.9
+          echo "LANG=C.UTF-8" >> "${GITHUB_ENV}"
+          echo "LC_ALL=C.UTF-8" >> "${GITHUB_ENV}"
 
       - name: "Check out repository"
         uses: actions/checkout@v7
