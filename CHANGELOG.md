@@ -630,6 +630,7 @@
 
 * Allen & Heath Xone K3: Update midi mappings (backport [#16453](https://github.com/mixxxdj/mixxx/pull/16453)) [#16496](https://github.com/mixxxdj/mixxx/pull/16496)
 * Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
+* Vestax VCI-400: fix VU meters, midi.sendShortMsg() [#16180](https://github.com/mixxxdj/mixxx/pull/16180)
 
 ### Library
 
@@ -644,9 +645,13 @@
 * Fixing last played time being wiped on history deletion
   [#16178](https://github.com/mixxxdj/mixxx/pull/16178)
   [#14427](https://github.com/mixxxdj/mixxx/issues/14427)
+  [#16911](https://github.com/mixxxdj/mixxx/pull/16911)
 * Fix false-positive missing tracks
   [#16685](https://github.com/mixxxdj/mixxx/pull/16685)
   [#13533](https://github.com/mixxxdj/mixxx/issues/13533)
+* Rekordbox: detect databases in hidden .PIONEER directory
+  [#16895](https://github.com/mixxxdj/mixxx/pull/16895)
+  [#16894](https://github.com/mixxxdj/mixxx/issues/16894)
 
 ### Target support
 
@@ -709,6 +714,14 @@
   [#16816](https://github.com/mixxxdj/mixxx/pull/16816)
   [#16783](https://github.com/mixxxdj/mixxx/issues/16783)
   [#16592](https://github.com/mixxxdj/mixxx/pull/16592)
+* Avoid spurious play control update
+  [#16912](https://github.com/mixxxdj/mixxx/pull/16912)
+  [#16910](https://github.com/mixxxdj/mixxx/issues/16910)
+* Respect `repeat` in slip mode when enabled before slip, like looping
+  [#16982](https://github.com/mixxxdj/mixxx/pull/16982)
+* Mixdown headphone and booth outputs in mono mode
+  [#17013](https://github.com/mixxxdj/mixxx/pull/17013)
+  [#16942](https://github.com/mixxxdj/mixxx/issues/16942)
 
 ## [2.5.6](https://github.com/mixxxdj/mixxx/milestone/53) (2026-03-25)
 

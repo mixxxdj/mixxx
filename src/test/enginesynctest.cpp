@@ -1498,9 +1498,7 @@ TEST_F(EngineSyncTest, ExplicitLeaderPostProcessed) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
-    EXPECT_NEAR(0.0023219956,
-            m_pChannel1->getEngineBuffer()->getVisualPlayPos(),
-            kMaxFloatingPointErrorLowPrecision);
+    EXPECT_DOUBLE_EQ(512, m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
 }
 
 TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
@@ -2710,8 +2708,7 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(0.025154950869236584, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_DOUBLE_EQ(0.0023219954648526077,
-            m_pChannel1->getEngineBuffer()->getVisualPlayPos());
+    EXPECT_DOUBLE_EQ(512, m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
 
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
     ProcessBuffer();
@@ -2719,8 +2716,7 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     // We expect to be two buffers ahead in a beat near 0.2
     EXPECT_DOUBLE_EQ(0.050309901738473162,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_DOUBLE_EQ(0.18925937554508981,
-            m_pChannel1->getEngineBuffer()->getVisualPlayPos());
+    EXPECT_DOUBLE_EQ(41731.692307692305, m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
 
     // The same again with a stopped track loaded in Channel 2
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.0);
@@ -2736,8 +2732,7 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
 
     EXPECT_DOUBLE_EQ(0.025154950869236584,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_DOUBLE_EQ(0.0023219954648526077,
-            m_pChannel1->getEngineBuffer()->getVisualPlayPos());
+    EXPECT_DOUBLE_EQ(512, m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
 
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
     ProcessBuffer();
@@ -2745,8 +2740,7 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     // We expect to be two buffers ahead in a beat near 0.2
     EXPECT_DOUBLE_EQ(0.050309901738473162,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
-    EXPECT_DOUBLE_EQ(0.18925937554508981,
-            m_pChannel1->getEngineBuffer()->getVisualPlayPos());
+    EXPECT_DOUBLE_EQ(41731.692307692305, m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
 }
 
 TEST_F(EngineSyncTest, ScratchEndOtherStoppedTrackStayInPhase) {
@@ -3117,9 +3111,8 @@ TEST_F(EngineSyncTest, BeatContextRounding) {
     // this must not abort due to the assertion in Beats::iteratorFrom()
     ProcessBuffer();
 
-    EXPECT_NEAR(-0.021112622826908536,
-            m_pChannel1->getEngineBuffer()->getVisualPlayPos(),
-            kMaxFloatingPointErrorHighPrecision);
+    EXPECT_DOUBLE_EQ(-4655.3333333333339,
+            m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
 }
 
 TEST_F(EngineSyncTest, KeepCorrectFactorUponResync) {

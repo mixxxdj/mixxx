@@ -271,9 +271,6 @@ class EngineMixer : public QObject, public AudioSource {
     // non-owning. lifetime bound to EffectsManager
     EngineEffectsManager* m_pEngineEffectsManager;
 
-    // List of channels added to the engine.
-    QVarLengthArray<std::unique_ptr<ChannelInfo>, kPreallocatedChannels> m_channels;
-
     // The previous gain of each channel for each mixing output (main,
     // headphone, talkover).
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMainGainCache;
@@ -298,6 +295,9 @@ class EngineMixer : public QObject, public AudioSource {
 
     parented_ptr<EngineWorkerScheduler> m_pWorkerScheduler;
     std::unique_ptr<EngineSync> m_pEngineSync;
+
+    // List of channels added to the engine. (depends on m_pEngineSync)
+    QVarLengthArray<std::unique_ptr<ChannelInfo>, kPreallocatedChannels> m_channels;
 
     std::unique_ptr<ControlObject> m_pMainGain;
     std::unique_ptr<ControlObject> m_pBoothGain;

@@ -78,6 +78,9 @@ bool WaveformRendererFiltered::preprocessInner() {
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
+    if (visualIncrementPerPixel == 0.0) {
+        return false;
+    }
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0);

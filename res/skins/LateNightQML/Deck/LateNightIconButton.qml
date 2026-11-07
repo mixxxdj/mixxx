@@ -17,10 +17,13 @@ Item {
     property string pressedBackgroundSuffix: ""
     property string pressedIconSuffix: ""
     property color activeColor: "transparent"
+    property color pressedColor: "transparent"
     property color inactiveColor: LateNightTheme.deckButtonInactiveColor
     property bool inactiveFillEnabled: true
     property bool pressedActivatesFill: false
     property int fillMargin: 2
+    property real fillRadius: 1
+    property bool solidFillEnabled: false
     property bool useBorderImageBackground: false
     property int backgroundBorderTop: 0
     property int backgroundBorderBottom: 0
@@ -63,11 +66,20 @@ Item {
         return iconSource;
     }
     readonly property bool fillActive: root.activeState || (root.pressedState && root.pressedActivatesFill)
-    readonly property color fillColor: root.fillActive && root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent"
-            ? root.activeColor
-            : root.inactiveFillEnabled
-                ? root.inactiveColor
-                : "transparent"
+    readonly property color fillColor: {
+        if (root.pressedState && root.pressedActivatesFill) {
+            if (root.pressedColor.toString() !== "#00000000" && root.pressedColor.toString() !== "transparent") {
+                return root.pressedColor;
+            }
+            if (root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent") {
+                return root.activeColor;
+            }
+        }
+        if (root.activeState && root.activeColor.toString() !== "#00000000" && root.activeColor.toString() !== "transparent") {
+            return root.activeColor;
+        }
+        return root.inactiveFillEnabled ? root.inactiveColor : "transparent";
+    }
     readonly property real iconAvailableWidth: Math.max(0, width - iconLeftPadding - iconRightPadding)
     readonly property real iconAvailableHeight: Math.max(0, height - iconTopPadding - iconBottomPadding)
 
@@ -77,8 +89,8 @@ Item {
     Rectangle {
         anchors.fill: parent
         anchors.margins: root.fillMargin
-        radius: 1
-        visible: root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
+        radius: root.fillRadius
+        visible: !root.solidFillEnabled && root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
 
         gradient: Gradient {
             GradientStop {
@@ -96,6 +108,14 @@ Item {
                 color: Qt.darker(root.fillColor, 1.25)
             }
         }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        anchors.margins: root.fillMargin
+        color: root.fillColor
+        radius: root.fillRadius
+        visible: root.solidFillEnabled && root.fillColor.toString() !== "#00000000" && root.fillColor.toString() !== "transparent"
     }
 
     Image {

@@ -306,6 +306,9 @@ mixxx::Bpm BeatUtils::makeConstBpm(
     //qDebug() << "minRoundBpm" << minRoundBpm;
     //qDebug() << "maxRoundBpm" << maxRoundBpm;
     const mixxx::Bpm roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
+    if (!roundBpm.isValid()) {
+        return {};
+    }
 
     if (pFirstBeat) {
         // Move the first beat as close to the start of the track as we can. This is
@@ -336,8 +339,13 @@ std::optional<mixxx::Bpm> BeatUtils::trySnap(mixxx::Bpm minBpm,
 // static
 mixxx::Bpm BeatUtils::roundBpmWithinRange(
         mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm) {
+    // If any BPM is invalid, return the centerBpm as-is to avoid
+    // unexpected results in the following calculations
+    if (!minBpm.isValid() || !centerBpm.isValid() || !maxBpm.isValid()) {
+        return centerBpm;
+    }
+
     // First try to snap to a full integer BPM
-    // FIXME: calling bpm.value() without checking bpm.isValid()
     std::optional<mixxx::Bpm> snapBpm = trySnap(minBpm, centerBpm, maxBpm, 1.0);
     if (snapBpm) {
         return *snapBpm;
@@ -405,7 +413,10 @@ mixxx::audio::FramePos BeatUtils::adjustPhase(
         mixxx::Bpm bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<mixxx::audio::FramePos>& beats) {
-    // FIXME: calling bpm.value() without checking bpm.isValid()
+    if (!bpm.isValid()) {
+        return firstBeat;
+    }
+
     const double beatLength = 60 * sampleRate / bpm.value();
     const mixxx::audio::FramePos startOffset =
             mixxx::audio::FramePos(fmod(firstBeat.value(), beatLength));

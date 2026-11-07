@@ -35,10 +35,19 @@ Item {
         anchors.fill: parent
         spacing: 0
 
+        Item {
+            Layout.minimumWidth: 3
+            Layout.preferredWidth: 3
+            Layout.maximumWidth: 3
+            Layout.fillHeight: true
+        }
+
         // Vinyl enable/disable toggle with status display.
         // The click requests vinylcontrol_enabled; the fill displays vinylcontrol_status.
         Item {
+            Layout.minimumWidth: 40
             Layout.preferredWidth: 40
+            Layout.maximumWidth: 40
             Layout.preferredHeight: 20
 
             LateNightIconButton {
@@ -50,7 +59,7 @@ Item {
                 activeColor: LateNightTheme.vinylStatusColor(vinylStatusProxy.value)
                 label: "VINYL"
                 labelPixelSize: 11
-                labelColor: activeState ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.textColorMuted
+                labelColor: activeState ? LateNightTheme.deckActiveButtonTextColor : LateNightTheme.vinylControlInactiveLabelColor
                 contentOpacity: activeState ? 0.95 : 0.72
                 useBorderImageBackground: true
                 backgroundBorderTop: 2
@@ -72,12 +81,14 @@ Item {
 
         // Vinyl mode: cycles ABS(0) → REL(1) → CONST(2) → ABS(0)
         LateNightCycleButton {
+            Layout.minimumWidth: 46
             Layout.preferredWidth: 46
+            Layout.maximumWidth: 46
             Layout.preferredHeight: 20
             backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-            inactiveLabelColor: LateNightTheme.textColorMuted
-            activeLabelColor: LateNightTheme.textColorMuted
+            inactiveLabelColor: LateNightTheme.vinylControlInactiveLabelColor
+            activeLabelColor: LateNightTheme.vinylControlInactiveLabelColor
             activeOpacity: 0.72
             inactiveOpacity: 0.72
             labelPixelSize: 11
@@ -94,14 +105,16 @@ Item {
 
         // Vinyl cueing: cycles CUE(0) → CUE(1) → HOT(2) → CUE(0)
         LateNightCycleButton {
+            Layout.minimumWidth: 32
             Layout.preferredWidth: 32
+            Layout.maximumWidth: 32
             Layout.preferredHeight: 20
             backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
             activeBackgroundSuffix: "active"
             activeWhenNonzero: true
             activeColor: LateNightTheme.vinylCueingActiveColor
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
-            inactiveLabelColor: LateNightTheme.textColorMuted
+            inactiveLabelColor: LateNightTheme.vinylControlInactiveLabelColor
             activeLabelColor: LateNightTheme.deckActiveButtonTextColor
             activeOpacity: 0.95
             inactiveOpacity: 0.72
@@ -119,9 +132,12 @@ Item {
 
         // Passthrough toggle
         Item {
+            Layout.minimumWidth: 35
             Layout.preferredWidth: 35
+            Layout.maximumWidth: 35
             Layout.preferredHeight: 20
 
+            property bool targetEnabled: false
             property bool rejectedPress: false
 
             Timer {
@@ -155,28 +171,41 @@ Item {
 
                 onPressed: {
                     const targetValue = passthroughControl.value > 0 ? 0 : 1;
+                    parent.targetEnabled = targetValue > 0;
                     passthroughControl.parameter = targetValue;
-                    parent.rejectedPress = targetValue > 0 && passthroughControl.value <= 0;
+                    parent.rejectedPress = parent.targetEnabled && passthroughControl.value <= 0;
                     passthroughPowerWindowTimer.restart();
                 }
 
                 onReleased: {
-                    if (parent.rejectedPress) {
-                        parent.rejectedPress = false;
-                        passthroughPowerWindowTimer.stop();
+                    const shortPress = passthroughPowerWindowTimer.running;
+                    const targetEnabled = parent.targetEnabled;
+                    const rejectedPress = parent.rejectedPress;
+                    parent.targetEnabled = false;
+                    parent.rejectedPress = false;
+                    passthroughPowerWindowTimer.stop();
+
+                    if (rejectedPress) {
                         return;
                     }
-                    if (!passthroughPowerWindowTimer.running) {
-                        passthroughControl.parameter = passthroughControl.value > 0 ? 0 : 1;
+                    if (!shortPress && targetEnabled && passthroughControl.value > 0) {
+                        passthroughControl.parameter = 0;
                     }
-                    passthroughPowerWindowTimer.stop();
                 }
 
                 onCanceled: {
+                    parent.targetEnabled = false;
                     parent.rejectedPress = false;
                     passthroughPowerWindowTimer.stop();
                 }
             }
+        }
+
+        Item {
+            Layout.minimumWidth: 2
+            Layout.preferredWidth: 2
+            Layout.maximumWidth: 2
+            Layout.fillHeight: true
         }
     }
 }

@@ -38,6 +38,10 @@ class MultiLineEditDelegate : public TableItemDelegate {
     explicit MultiLineEditDelegate(QTableView* pTrackTable);
     ~MultiLineEditDelegate() override = default;
 
+    void paint(QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
+
     // called when the user starts editing an item
     QWidget* createEditor(QWidget* parent,
             const QStyleOptionViewItem& option,

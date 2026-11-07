@@ -20,7 +20,10 @@ LateNightIconButton {
 
     activeState: root.activeWhenNonzero && root.currentState > 0
     label: cycleBehavior.label
-    labelPixelSize: 9
+    // Legacy LateNight applies the common 11px WPushButton font to vinyl
+    // mode/cue buttons; the old 9px override made these labels visibly
+    // smaller than VINYL and PASS.
+    labelPixelSize: 11
     labelColor: root.currentState > 0 ? root.activeLabelColor : root.inactiveLabelColor
     contentOpacity: root.currentState > 0 ? root.activeOpacity : root.inactiveOpacity
 

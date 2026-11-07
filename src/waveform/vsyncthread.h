@@ -77,7 +77,6 @@ class VSyncThread : public QThread, public VSyncTimeProvider {
     std::atomic<int> m_pllInitCnt;
     std::atomic<bool> m_pllPendingUpdate;
     double m_pllInitSum;
-    double m_pllInitAvg;
     double m_pllPhaseOut;
     double m_pllDeltaOut;
     double m_pllLogging;

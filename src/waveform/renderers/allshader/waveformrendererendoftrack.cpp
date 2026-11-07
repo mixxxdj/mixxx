@@ -9,7 +9,6 @@
 #include "rendergraph/geometry.h"
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
-#include "util/colorcomponents.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 
@@ -79,6 +78,10 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
         return false;
     }
 
+    if (m_remainingTimeTriggerSeconds <= 0) {
+        return false;
+    }
+
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
     const double blinkIntensity =
@@ -94,7 +97,7 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
 
     QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     float r, g, b, a;
-    getRgbF(m_color, &r, &g, &b, &a);
+    m_color.getRgbF(&r, &g, &b, &a);
 
     const float posx0 = 0.f;
     const float posx1 = static_cast<float>(size.width()) / 2.f;

@@ -123,7 +123,7 @@ bool WaveformRenderBeat::preprocessInner() {
 
     const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
-    const bool splitStemTracks = isStemTrack &&
+    const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
@@ -142,7 +142,7 @@ bool WaveformRenderBeat::preprocessInner() {
 
     if (!m_color.alpha() && !m_downbeatColor.alpha()) {
         // Don't render the beatgrid lines is there are fully transparent
-        return true;
+        return false;
     }
 
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();

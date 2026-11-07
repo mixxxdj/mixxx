@@ -20,7 +20,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
 #include "util/desktophelper.h"
-#include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -52,6 +51,7 @@
 #ifdef Q_OS_MACOS
 #include "util/darkappearance.h"
 #endif
+#include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
@@ -61,7 +61,8 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
-        std::shared_ptr<Library> pLibrary)
+        std::shared_ptr<Library> pLibrary,
+        bool includeWaveformPreferences)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -170,8 +171,10 @@ DlgPreferences::DlgPreferences(
                 "ic_preferences_interface.svg");
     }
 
-    // Check if the Waveform factory exists (it is not created in QML mode)
-    if (WaveformWidgetFactory::isCreated()) {
+    // The shared native page is used by both legacy and LateNightQML. In QML
+    // mode QmlApplication initializes the factory as the preferences backend
+    // before constructing this dialog.
+    if (includeWaveformPreferences && WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
                               new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -319,6 +322,10 @@ void DlgPreferences::showSoundHardwarePage(
     if (tab.has_value()) {
         m_pSoundDlg->selectIOTab(*tab);
     }
+}
+
+void DlgPreferences::showSoundHardwareInputPage() {
+    showSoundHardwarePage(mixxx::preferences::SoundHardwareTab::Input);
 }
 
 bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
