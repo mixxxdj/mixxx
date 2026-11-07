@@ -24,7 +24,7 @@ class VinylControlXwaxTest : public MixxxTest {
     VinylControlXwaxTest() {
         addControl(QStringLiteral("[App]"), QStringLiteral("samplerate"))->set(44100);
         addControl(QStringLiteral("[App]"), QStringLiteral("output_latency_ms"))->set(20);
-        addControl(QStringLiteral(VINYL_PREF_KEY), QStringLiteral("gain"));
+        addControl(kVinylPrefKey, QStringLiteral("gain"));
 
         for (const auto* key : {"track_samples",
                      "track_samplerate",
@@ -51,7 +51,7 @@ class VinylControlXwaxTest : public MixxxTest {
         control("track_samplerate")->set(44100);
         control("track_samples")->set(kTrackDuration * 44100 * 2);
         control("rate_ratio")->set(1.0);
-        control("vinylcontrol_mode")->set(MIXXX_VCMODE_RELATIVE);
+        control("vinylcontrol_mode")->set(kVcModeRelative);
 
         m_pVinylControl = std::make_unique<VinylControlXwax>(config(), kGroup);
     }
@@ -125,7 +125,7 @@ TEST_F(VinylControlXwaxTest, disabledDoesNotTouchPlayback) {
     EXPECT_FALSE(m_pVinylControl->isEnabled());
     EXPECT_DOUBLE_EQ(1.0, control("play")->get());
     EXPECT_DOUBLE_EQ(0.5, control("vinylcontrol_rate")->get());
-    EXPECT_DOUBLE_EQ(VINYL_STATUS_DISABLED, control("vinylcontrol_status")->get());
+    EXPECT_DOUBLE_EQ(kVinylStatusDisabled, control("vinylcontrol_status")->get());
 }
 
 TEST_F(VinylControlXwaxTest, wantEnabledEnablesVinylControl) {
@@ -142,7 +142,7 @@ TEST_F(VinylControlXwaxTest, enablingSetsStatusOk) {
     enable();
 
     EXPECT_TRUE(m_pVinylControl->isEnabled());
-    EXPECT_DOUBLE_EQ(VINYL_STATUS_OK, control("vinylcontrol_status")->get());
+    EXPECT_DOUBLE_EQ(kVinylStatusOk, control("vinylcontrol_status")->get());
 }
 
 TEST_F(VinylControlXwaxTest, disablingKeepsRateRatioAndSetsStatusDisabled) {
@@ -154,7 +154,7 @@ TEST_F(VinylControlXwaxTest, disablingKeepsRateRatioAndSetsStatusDisabled) {
 
     EXPECT_FALSE(m_pVinylControl->isEnabled());
     EXPECT_DOUBLE_EQ(1.2, control("vinylcontrol_rate")->get());
-    EXPECT_DOUBLE_EQ(VINYL_STATUS_DISABLED, control("vinylcontrol_status")->get());
+    EXPECT_DOUBLE_EQ(kVinylStatusDisabled, control("vinylcontrol_status")->get());
 }
 
 TEST_F(VinylControlXwaxTest, silenceStopsPlaybackWhenPositionDoesNotMove) {
@@ -169,7 +169,7 @@ TEST_F(VinylControlXwaxTest, silenceStopsPlaybackWhenPositionDoesNotMove) {
     EXPECT_DOUBLE_EQ(0.0, control("play")->get());
     EXPECT_DOUBLE_EQ(0.0, control("vinylcontrol_rate")->get());
     EXPECT_DOUBLE_EQ(1.0, control("rate_ratio")->get());
-    EXPECT_DOUBLE_EQ(VINYL_STATUS_OK, control("vinylcontrol_status")->get());
+    EXPECT_DOUBLE_EQ(kVinylStatusOk, control("vinylcontrol_status")->get());
     EXPECT_FLOAT_EQ(0.0f, timecodeQuality());
 }
 
@@ -203,62 +203,62 @@ TEST_F(VinylControlXwaxTest, silenceStopsPlaybackAfterGracePeriod) {
 TEST_F(VinylControlXwaxTest, switchingToAbsoluteWhilePlayingFallsBackToRelative) {
     enable();
     control("play")->set(1.0);
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_ABSOLUTE);
+    control("vinylcontrol_mode")->set(kVcModeAbsolute);
 
     analyzeSilence();
 
-    EXPECT_DOUBLE_EQ(MIXXX_VCMODE_RELATIVE, control("vinylcontrol_mode")->get());
+    EXPECT_DOUBLE_EQ(kVcModeRelative, control("vinylcontrol_mode")->get());
 }
 
 TEST_F(VinylControlXwaxTest, switchingToAbsoluteWhileStoppedIsAccepted) {
     enable();
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_ABSOLUTE);
+    control("vinylcontrol_mode")->set(kVcModeAbsolute);
 
     analyzeSilence();
 
-    EXPECT_DOUBLE_EQ(MIXXX_VCMODE_ABSOLUTE, control("vinylcontrol_mode")->get());
+    EXPECT_DOUBLE_EQ(kVcModeAbsolute, control("vinylcontrol_mode")->get());
 }
 
 TEST_F(VinylControlXwaxTest, loopForcesRelativeMode) {
     enable();
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_ABSOLUTE);
+    control("vinylcontrol_mode")->set(kVcModeAbsolute);
     analyzeSilence();
 
     control("loop_enabled")->set(1.0);
     analyzeSilence();
 
-    EXPECT_DOUBLE_EQ(MIXXX_VCMODE_RELATIVE, control("vinylcontrol_mode")->get());
+    EXPECT_DOUBLE_EQ(kVcModeRelative, control("vinylcontrol_mode")->get());
 }
 
 TEST_F(VinylControlXwaxTest, absoluteModeDisablesCueing) {
     enable();
-    control("vinylcontrol_cueing")->set(MIXXX_RELATIVE_CUE_HOTCUE);
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_ABSOLUTE);
+    control("vinylcontrol_cueing")->set(kRelativeCueHotCue);
+    control("vinylcontrol_mode")->set(kVcModeAbsolute);
 
     analyzeSilence();
 
-    EXPECT_DOUBLE_EQ(MIXXX_RELATIVE_CUE_OFF, control("vinylcontrol_cueing")->get());
+    EXPECT_DOUBLE_EQ(kRelativeCueOff, control("vinylcontrol_cueing")->get());
 }
 
 TEST_F(VinylControlXwaxTest, switchingToRelativeClearsErrorStatus) {
     enable();
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_ABSOLUTE);
+    control("vinylcontrol_mode")->set(kVcModeAbsolute);
     analyzeSilence();
-    control("vinylcontrol_status")->set(VINYL_STATUS_ERROR);
+    control("vinylcontrol_status")->set(kVinylStatusError);
 
     // Keep the position moving so that the silence doesn't reset the status
     setPlayPosition(0.1 / kTrackDuration);
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_RELATIVE);
+    control("vinylcontrol_mode")->set(kVcModeRelative);
     analyzeSilence();
 
-    EXPECT_DOUBLE_EQ(VINYL_STATUS_OK, control("vinylcontrol_status")->get());
+    EXPECT_DOUBLE_EQ(kVinylStatusOk, control("vinylcontrol_status")->get());
 }
 
 TEST_F(VinylControlXwaxTest, constantModeWhilePlayingUsesRateRatio) {
     enable();
     control("play")->set(1.0);
     control("rate_ratio")->set(1.1);
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_CONSTANT);
+    control("vinylcontrol_mode")->set(kVcModeConstant);
 
     analyzeSilence();
 
@@ -269,7 +269,7 @@ TEST_F(VinylControlXwaxTest, constantModeWhilePlayingUsesRateRatio) {
 TEST_F(VinylControlXwaxTest, constantModeWhileStoppedStopsRate) {
     enable();
     control("vinylcontrol_rate")->set(1.0);
-    control("vinylcontrol_mode")->set(MIXXX_VCMODE_CONSTANT);
+    control("vinylcontrol_mode")->set(kVcModeConstant);
 
     analyzeSilence();
 

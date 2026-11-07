@@ -14,9 +14,9 @@ extern "C" {
 }
 #endif
 
-#define XWAX_DEVICE_FRAME 32
-#define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
-#define QUALITY_RING_SIZE 32
+constexpr int kXwaxDeviceFrame = 32;
+constexpr int kXwaxSmoothing = (128 / kXwaxDeviceFrame); /* result value is in frames */
+constexpr int kQualityRingSize = 32;
 
 class ControlProxy;
 class SteadyPitch;
@@ -115,7 +115,7 @@ class VinylControlXwax : public VinylControl {
     // Signal quality ring buffer.
     // TODO(XXX): Replace with CircularBuffer instead of handling the ring logic
     // in VinylControlXwax.
-    int m_iQualityRing[QUALITY_RING_SIZE];
+    int m_iQualityRing[kQualityRingSize];
     int m_iQualityRingIndex;
     int m_iQualityRingFilled;
 

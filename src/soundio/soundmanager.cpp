@@ -71,7 +71,7 @@ SoundManager::SoundManager(
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
 
     m_pControlObjectVinylControlGainCO = new ControlObject(
-            ConfigKey(VINYL_PREF_KEY, "gain"));
+            ConfigKey(kVinylPrefKey, "gain"));
 
 #ifdef __PIPEWIRE__
     if (isPipewireSelected()) {

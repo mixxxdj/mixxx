@@ -12,17 +12,17 @@
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
 
-#define SIGNAL_QUALITY_FIFO_SIZE 256
-#define SAMPLE_PIPE_FIFO_SIZE 65536
+constexpr int kSignalQualityFifoSize = 256;
+constexpr int kSamplePipeFifoSize = 65536;
 
 VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPointer pConfig)
         : QThread(pParent),
           m_pConfig(pConfig),
-          m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
+          m_pToggle(new ControlPushButton(ConfigKey(kVinylPrefKey, "Toggle"))),
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_processorsLock(QRecursiveMutex()),
           m_processors(kMaximumVinylControlInputs, nullptr),
-          m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
+          m_signalQualityFifo(kSignalQualityFifoSize),
           m_bReportSignalQuality(false),
           m_bQuit(false),
           m_bReloadConfig(false) {
@@ -33,7 +33,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPoint
             Qt::DirectConnection);
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        m_samplePipes[i] = new FIFO<CSAMPLE>(SAMPLE_PIPE_FIFO_SIZE);
+        m_samplePipes[i] = new FIFO<CSAMPLE>(kSamplePipeFifoSize);
     }
 
     start(QThread::HighPriority);
@@ -94,7 +94,7 @@ void VinylControlProcessor::run() {
 
         bool timeToWriteSignalQualityReport = m_bReportSignalQuality &&
                 reportTimer.elapsed().toIntegerMillis() >=
-                        MIXXX_VINYL_SCOPE_UPDATE_PERIOD_MS;
+                        kVinylScopeUpdatePeriodMs;
         if (timeToWriteSignalQualityReport) {
             reportTimer.restart();
         }

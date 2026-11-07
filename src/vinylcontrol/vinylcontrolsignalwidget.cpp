@@ -8,7 +8,7 @@
 VinylControlSignalWidget::VinylControlSignalWidget()
         : QWidget(),
           m_iVinylInput(-1),
-          m_iSize(MIXXX_VINYL_SCOPE_SIZE),
+          m_iSize(kVinylScopeSize),
           m_qImage(),
           m_iAngle(0),
           m_fSignalQuality(0.0f),

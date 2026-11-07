@@ -1,82 +1,87 @@
 #pragma once
 
-#define VINYL_PREF_KEY "[VinylControl]"
+#include <QString>
+
+const QString kVinylPrefKey = QStringLiteral("[VinylControl]");
 
 const QString kVCGroup = QString("[Channel%1]");
-constexpr int VINYL_STATUS_DISABLED = 0;
-constexpr int VINYL_STATUS_OK = 1;
-constexpr int VINYL_STATUS_WARNING = 2;
-constexpr int VINYL_STATUS_ERROR = 3;
+constexpr int kVinylStatusDisabled = 0;
+constexpr int kVinylStatusOk = 1;
+constexpr int kVinylStatusWarning = 2;
+constexpr int kVinylStatusError = 3;
 
-#define MIXXX_VINYL_ALGORIDDIMA "Algoriddim djay PRO AI 12\", Side A"
-#define MIXXX_VINYL_ALGORIDDIMB "Algoriddim djay PRO AI 12\", Side B (no stem support)"
-#define MIXXX_VINYL_MIXVIBES7INCH "MixVibes 7\""
-#define MIXXX_VINYL_MIXVIBESDVS "MixVibes DVS V2 Vinyl"
-#define MIXXX_VINYL_PIONEERA "Pioneer RekordBox DVS Control Vinyl, Side A"
-#define MIXXX_VINYL_PIONEERB "Pioneer RekordBox DVS Control Vinyl, Side B"
-#define MIXXX_VINYL_SERATOCD "Serato CD"
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEA "Serato CV02 Vinyl, Side A"
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEB "Serato CV02 Vinyl, Side B"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA "Traktor Scratch MK1 Vinyl, Side A"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB "Traktor Scratch MK1 Vinyl, Side B"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2CD "Traktor Scratch MK2 CD (beta)"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA "Traktor Scratch MK2 Vinyl, Side A (beta)"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB "Traktor Scratch MK2 Vinyl, Side B (beta)"
+const QString kVinylAlgoriddimA = QStringLiteral("Algoriddim djay PRO AI 12\", Side A");
+const QString kVinylAlgoriddimB =
+        QStringLiteral("Algoriddim djay PRO AI 12\", Side B (no stem support)");
+const QString kVinylMixVibes7Inch = QStringLiteral("MixVibes 7\"");
+const QString kVinylMixVibesDvs = QStringLiteral("MixVibes DVS V2 Vinyl");
+const QString kVinylPioneerA = QStringLiteral("Pioneer RekordBox DVS Control Vinyl, Side A");
+const QString kVinylPioneerB = QStringLiteral("Pioneer RekordBox DVS Control Vinyl, Side B");
+const QString kVinylSeratoCd = QStringLiteral("Serato CD");
+const QString kVinylSeratoCv02SideA = QStringLiteral("Serato CV02 Vinyl, Side A");
+const QString kVinylSeratoCv02SideB = QStringLiteral("Serato CV02 Vinyl, Side B");
+const QString kVinylTraktorScratchMk1SideA = QStringLiteral("Traktor Scratch MK1 Vinyl, Side A");
+const QString kVinylTraktorScratchMk1SideB = QStringLiteral("Traktor Scratch MK1 Vinyl, Side B");
+const QString kVinylTraktorScratchMk2Cd = QStringLiteral("Traktor Scratch MK2 CD (beta)");
+const QString kVinylTraktorScratchMk2SideA =
+        QStringLiteral("Traktor Scratch MK2 Vinyl, Side A (beta)");
+const QString kVinylTraktorScratchMk2SideB =
+        QStringLiteral("Traktor Scratch MK2 Vinyl, Side B (beta)");
 
-#define MIXXX_VINYL_ALGORIDDIMA_XWAX_NAME "algoriddim_a"
-#define MIXXX_VINYL_ALGORIDDIMB_XWAX_NAME "algoriddim_b"
-#define MIXXX_VINYL_MIXVIBES7INCH_XWAX_NAME "mixvibes_7inch"
-#define MIXXX_VINYL_MIXVIBESDVS_XWAX_NAME "mixvibes_v2"
-#define MIXXX_VINYL_PIONEERA_XWAX_NAME "pioneer_a"
-#define MIXXX_VINYL_PIONEERB_XWAX_NAME "pioneer_b"
-#define MIXXX_VINYL_SERATOCD_XWAX_NAME "serato_cd"
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEA_XWAX_NAME "serato_2a"
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEB_XWAX_NAME "serato_2b"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA_XWAX_NAME "traktor_a"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB_XWAX_NAME "traktor_b"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2CD_XWAX_NAME "traktor_mk2_cd"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_XWAX_NAME "traktor_mk2_a"
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_XWAX_NAME "traktor_mk2_b"
+constexpr const char* kVinylAlgoriddimAXwaxName = "algoriddim_a";
+constexpr const char* kVinylAlgoriddimBXwaxName = "algoriddim_b";
+constexpr const char* kVinylMixVibes7InchXwaxName = "mixvibes_7inch";
+constexpr const char* kVinylMixVibesDvsXwaxName = "mixvibes_v2";
+constexpr const char* kVinylPioneerAXwaxName = "pioneer_a";
+constexpr const char* kVinylPioneerBXwaxName = "pioneer_b";
+constexpr const char* kVinylSeratoCdXwaxName = "serato_cd";
+constexpr const char* kVinylSeratoCv02SideAXwaxName = "serato_2a";
+constexpr const char* kVinylSeratoCv02SideBXwaxName = "serato_2b";
+constexpr const char* kVinylTraktorScratchMk1SideAXwaxName = "traktor_a";
+constexpr const char* kVinylTraktorScratchMk1SideBXwaxName = "traktor_b";
+constexpr const char* kVinylTraktorScratchMk2CdXwaxName = "traktor_mk2_cd";
+constexpr const char* kVinylTraktorScratchMk2SideAXwaxName = "traktor_mk2_a";
+constexpr const char* kVinylTraktorScratchMk2SideBXwaxName = "traktor_mk2_b";
 
-#define MIXXX_VINYL_DEFAULT_XWAX_NAME MIXXX_VINYL_SERATOCV02VINYLSIDEA_XWAX_NAME
+constexpr const char* kVinylDefaultXwaxName = kVinylSeratoCv02SideAXwaxName;
 
 // Default recommended lead-in times for various vinyl types.
-#define MIXXX_VINYL_ALGORIDDIMA_LEADIN 0
-#define MIXXX_VINYL_ALGORIDDIMB_LEADIN 0
-#define MIXXX_VINYL_MIXVIBES7INCH_LEADIN 0
-#define MIXXX_VINYL_MIXVIBESDVS_LEADIN 0
-#define MIXXX_VINYL_PIONEERA_LEADIN 10
-#define MIXXX_VINYL_PIONEERB_LEADIN 10
-#define MIXXX_VINYL_SERATOCD_LEADIN 0
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN 28
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEB_LEADIN 28
-#define MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA_LEADIN 10
-#define MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB_LEADIN 10
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2CD_LEADIN 10
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_LEADIN 10
-#define MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_LEADIN 10
+constexpr int kVinylAlgoriddimALeadIn = 0;
+constexpr int kVinylAlgoriddimBLeadIn = 0;
+constexpr int kVinylMixVibes7InchLeadIn = 0;
+constexpr int kVinylMixVibesDvsLeadIn = 0;
+constexpr int kVinylPioneerALeadIn = 10;
+constexpr int kVinylPioneerBLeadIn = 10;
+constexpr int kVinylSeratoCdLeadIn = 0;
+constexpr int kVinylSeratoCv02SideALeadIn = 28;
+constexpr int kVinylSeratoCv02SideBLeadIn = 28;
+constexpr int kVinylTraktorScratchMk1SideALeadIn = 10;
+constexpr int kVinylTraktorScratchMk1SideBLeadIn = 10;
+constexpr int kVinylTraktorScratchMk2CdLeadIn = 10;
+constexpr int kVinylTraktorScratchMk2SideALeadIn = 10;
+constexpr int kVinylTraktorScratchMk2SideBLeadIn = 10;
 
-#define MIXXX_VINYL_SPEED_33 "33.3 RPM"
-#define MIXXX_VINYL_SPEED_45 "45 RPM"
+const QString kVinylSpeed33 = QStringLiteral("33.3 RPM");
+const QString kVinylSpeed45 = QStringLiteral("45 RPM");
 
-#define MIXXX_VINYL_PITCH_FILTER_LEGACY "Alpha-Beta filter (fast)"
-#define MIXXX_VINYL_PITCH_FILTER_KALMAN "Kalman filter (accurate)"
+const QString kVinylPitchFilterLegacy = QStringLiteral("Alpha-Beta filter (fast)");
+const QString kVinylPitchFilterKalman = QStringLiteral("Kalman filter (accurate)");
 
-#define MIXXX_VINYL_SPEED_33_NUM (100.0 / 3.0)
-#define MIXXX_VINYL_SPEED_45_NUM 45.0
+constexpr double kVinylSpeed33Num = (100.0 / 3.0);
+constexpr double kVinylSpeed45Num = 45.0;
 
-#define MIXXX_VCMODE_ABSOLUTE 0
-#define MIXXX_VCMODE_RELATIVE 1
-#define MIXXX_VCMODE_CONSTANT  2
+constexpr int kVcModeAbsolute = 0;
+constexpr int kVcModeRelative = 1;
+constexpr int kVcModeConstant = 2;
 
-#define MIXXX_RELATIVE_CUE_OFF 0
-#define MIXXX_RELATIVE_CUE_ONECUE 1
-#define MIXXX_RELATIVE_CUE_HOTCUE 2
+constexpr int kRelativeCueOff = 0;
+constexpr int kRelativeCueOneCue = 1;
+constexpr int kRelativeCueHotCue = 2;
 
-#define MIXXX_VC_DEFAULT_LEADINTIME 0
+constexpr int kVcDefaultLeadInTime = 0;
 
 // Period for updating the vinyl quality scopes, ~15 Hz
-#define MIXXX_VINYL_SCOPE_UPDATE_PERIOD_MS 66
-#define MIXXX_VINYL_SCOPE_SIZE 100
+constexpr int kVinylScopeUpdatePeriodMs = 66;
+constexpr int kVinylScopeSize = 100;
 
 constexpr int kMaximumVinylControlInputs = 4;

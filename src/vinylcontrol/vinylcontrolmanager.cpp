@@ -48,10 +48,10 @@ VinylControlManager::~VinylControlManager() {
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("cueing_ch%1").arg(i + 1)),
+        m_pConfig->set(ConfigKey(kVinylPrefKey, QStringLiteral("cueing_ch%1").arg(i + 1)),
                 ConfigValue(static_cast<int>(ControlObject::get(
                         ConfigKey(group, "vinylcontrol_cueing")))));
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("mode_ch%1").arg(i + 1)),
+        m_pConfig->set(ConfigKey(kVinylPrefKey, QStringLiteral("mode_ch%1").arg(i + 1)),
                 ConfigValue(static_cast<int>(ControlObject::get(
                         ConfigKey(group, "vinylcontrol_mode")))));
     }
@@ -97,13 +97,13 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
                 m_pConfig->getValue(
-                        ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
+                        ConfigKey(kVinylPrefKey, QString("cueing_ch%1").arg(i + 1)),
                         0.0));
         // Default mode should be relative.
         ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
                 m_pConfig->getValue(
-                        ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
-                        MIXXX_VCMODE_RELATIVE));
+                        ConfigKey(kVinylPrefKey, QString("mode_ch%1").arg(i + 1)),
+                        kVcModeRelative));
     }
     m_iNumConfiguredDecks = num_decks;
 }

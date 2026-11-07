@@ -18,11 +18,11 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
           m_dVinylPosition(0.0),
           m_fTimecodeQuality(0.0f) {
     // Get Control objects
-    m_pVinylControlInputGain = new ControlProxy(VINYL_PREF_KEY, "gain", this);
+    m_pVinylControlInputGain = new ControlProxy(kVinylPrefKey, "gain", this);
 
     bool gainOk = false;
-    double gain = m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "gain"))
-            .toDouble(&gainOk);
+    double gain = m_pConfig->getValueString(ConfigKey(kVinylPrefKey, "gain"))
+                          .toDouble(&gainOk);
     m_pVinylControlInputGain->set(gainOk ? gain : 1.0);
     trackSamples = new ControlProxy(group, "track_samples", this);
     trackSampleRate = new ControlProxy(group, "track_samplerate", this);
@@ -67,7 +67,7 @@ void VinylControl::toggleVinylControl(bool enable) {
 VinylControl::~VinylControl() {
     bool wasEnabled = m_bIsEnabled;
     enabled->set(false);
-    vinylStatus->set(VINYL_STATUS_DISABLED);
+    vinylStatus->set(kVinylStatusDisabled);
     if (wasEnabled) {
         // if vinyl control is just restarting, indicate that it should
         // be enabled
