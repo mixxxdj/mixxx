@@ -26,7 +26,8 @@ void LibraryTableModel::setTableModel() {
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
-            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
+            << "'' AS " + LIBRARYTABLE_LOADED_DECK;
 
     QSqlQuery query(m_database);
     query.prepare(
@@ -44,6 +45,7 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << LIBRARYTABLE_PREVIEW;
     tableColumns << LIBRARYTABLE_COVERART;
+    tableColumns << LIBRARYTABLE_LOADED_DECK;
     setTable(tableName,
             LIBRARYTABLE_ID,
             std::move(tableColumns),
