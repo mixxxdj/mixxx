@@ -18,7 +18,6 @@ constexpr int kXwaxDeviceFrame = 32;
 constexpr int kXwaxSmoothing = (128 / kXwaxDeviceFrame); /* result value is in frames */
 constexpr int kQualityRingSize = 32;
 
-class ControlProxy;
 class SteadyPitch;
 struct VinylSignalQualityReport;
 
