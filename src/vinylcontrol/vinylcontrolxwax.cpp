@@ -501,8 +501,9 @@ bool VinylControlXwax::resyncToTimecode(double pitch, double filePosition) {
     }
 
     if (fabs(m_dDriftAmt) > 0.1 && m_dVinylPosition < -2.0) {
-        // At first I thought it was a bug to resync to lead-in in relative mode,
-        // but after using it that way it's actually pretty convenient.
+        // It's always a good idea to resync in the lead-in period, because
+        // this let's the DJ quickly rewind the track without needing to switch to
+        // ABS mode or use a cue point.
         syncPosition();
         resetSteadyPitch(pitch, m_dVinylPosition);
         if (uiUpdateTime(filePosition)) {
