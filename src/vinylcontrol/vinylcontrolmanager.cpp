@@ -22,7 +22,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pProcessor(make_parented<VinylControlProcessor>(this, pConfig)),
-          m_pNumDecks(nullptr),
+          m_pNumDecks(),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
@@ -56,7 +56,8 @@ VinylControlManager::~VinylControlManager() {
 }
 
 void VinylControlManager::init() {
-    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
+    m_pNumDecks = make_parented<ControlProxy>(
+            QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &VinylControlManager::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 }

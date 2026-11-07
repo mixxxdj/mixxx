@@ -50,6 +50,6 @@ class VinylControlManager : public QObject {
     QSet<VinylSignalQualityListener*> m_listeners;
     parented_ptr<VinylControlProcessor> m_pProcessor;
     std::vector<parented_ptr<ControlProxy>> m_pVcEnabled;
-    ControlProxy* m_pNumDecks;
+    parented_ptr<ControlProxy> m_pNumDecks;
     int m_iNumConfiguredDecks;
 };
