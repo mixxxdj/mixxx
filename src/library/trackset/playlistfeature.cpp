@@ -59,6 +59,12 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
             &QAction::triggered,
             this,
             &PlaylistFeature::slotDeleteAllUnlockedPlaylists);
+
+    m_pMarkTracksPlayedAction = make_parented<QAction>(tr("Mark all tracks played"), this);
+    connect(m_pMarkTracksPlayedAction,
+            &QAction::triggered,
+            this,
+            &PlaylistFeature::slotMarkTracksPlayed);
 }
 
 QVariant PlaylistFeature::title() {
@@ -109,6 +115,7 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pDuplicatePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
+    menu.addAction(m_pMarkTracksPlayedAction);
     menu.addSeparator();
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
@@ -299,6 +306,37 @@ void PlaylistFeature::slotOrderTracksByCurrentPosition() {
 
 void PlaylistFeature::slotUnlockAllPlaylists() {
     m_playlistDao.setPlaylistsLockedByType(PlaylistDAO::PLHT_NOT_HIDDEN, false);
+}
+
+void PlaylistFeature::slotMarkTracksPlayed() {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+
+    int clickedPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
+    if (clickedPlaylistId == kInvalidPlaylistId) {
+        return;
+    }
+
+    // Right-clicked playlist may not be loaded. Use a temporary model to
+    // keep sidebar selection and table view in sync
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
+                    m_pLibrary->trackCollectionManager(),
+                    "mixxx.db.model.playlist_mark_played");
+    pPlaylistTableModel->selectPlaylist(clickedPlaylistId);
+    pPlaylistTableModel->select();
+    int rows = pPlaylistTableModel->rowCount();
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = pPlaylistTableModel->index(i, 0);
+        if (index.isValid()) {
+            TrackPointer pTrack = pPlaylistTableModel->getTrack(index);
+            if (pTrack) {
+                // Do not update the play count, just set played status.
+                pTrack->updatePlayedStatusKeepPlayCount(true);
+            }
+        }
+    }
 }
 
 void PlaylistFeature::slotDeleteAllUnlockedPlaylists() {
