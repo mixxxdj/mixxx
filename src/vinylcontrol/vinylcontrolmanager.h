@@ -22,7 +22,7 @@ class VinylControlManager : public QObject {
   public:
     VinylControlManager(QObject* pParent, UserSettingsPointer pConfig,
                         SoundManager* pSoundManager);
-    virtual ~VinylControlManager();
+    ~VinylControlManager() override;
 
     // Some initialization must wait until the decks have been created
     void init();
@@ -49,7 +49,7 @@ class VinylControlManager : public QObject {
     UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
     parented_ptr<VinylControlProcessor> m_pProcessor;
-    QList<ControlProxy*> m_pVcEnabled;
+    std::vector<parented_ptr<ControlProxy>> m_pVcEnabled;
     ControlProxy* m_pNumDecks;
     int m_iNumConfiguredDecks;
 };

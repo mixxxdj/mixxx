@@ -62,7 +62,7 @@ void VinylControlManager::init() {
 }
 
 void VinylControlManager::toggleVinylControl(int deck) {
-    if (deck < 0 || deck >= m_pVcEnabled.size()) {
+    if (deck < 0 || deck >= std::ssize(m_pVcEnabled)) {
         return;
     }
 
@@ -88,8 +88,10 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
-        m_pVcEnabled.push_back(pEnabled);
+
+        auto* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
+        m_pVcEnabled.emplace_back(pEnabled);
+
         pEnabled->connectValueChanged(this, [this, i] { slotVinylControlEnabledChanged(i); });
 
         // Default cueing should be off.
@@ -107,7 +109,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 }
 
 void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
-    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_pVcEnabled.size()) {
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < std::ssize(m_pVcEnabled)) {
         return;
     }
 
@@ -123,10 +125,12 @@ bool VinylControlManager::vinylInputConnected(int deck) const {
     if (deck < 0 || deck >= m_iNumConfiguredDecks) {
         return false;
     }
-    if (deck < 0 || deck >= m_pVcEnabled.length()) {
+
+    if (deck < 0 || deck >= std::ssize(m_pVcEnabled)) {
         qDebug() << "WARNING, tried to get vinyl enabled status for non-existent deck " << deck;
         return false;
     }
+
     return m_pProcessor->deckConfigured(deck);
 }
 
