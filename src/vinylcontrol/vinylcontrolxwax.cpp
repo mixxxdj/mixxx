@@ -274,6 +274,8 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
     // make sure m_dVinylPosition only has good values
     if (m_iPosition != -1) {
         m_dVinylPosition = static_cast<double>(m_iPosition) / 1000.0 - m_iLeadInTime;
+    } else {
+        m_dVinylPosition = -1.0;
     }
 
     // Get the playback position in the file in seconds.
@@ -456,7 +458,9 @@ bool VinylControlXwax::followTimecodePosition(
     m_bWasReversed = reversed;
 
     // save the absolute amount of drift for when we need to estimate vinyl position
-    m_dDriftAmt = m_dVinylPosition - filePosition;
+    if (m_dVinylPosition != -1.0) {
+        m_dDriftAmt = m_dVinylPosition - filePosition;
+    }
 
     if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
         m_deltaFilePos = filePosition - m_dOldFilePos;
