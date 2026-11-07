@@ -39,18 +39,22 @@ class FIFO {
             written += write(pData + written, count - written);
         }
     }
-    int aquireWriteRegions(int count,
-            DataType** dataPtr1, ring_buffer_size_t* sizePtr1,
-            DataType** dataPtr2, ring_buffer_size_t* sizePtr2) {
+    int acquireWriteRegions(int count,
+            DataType** dataPtr1,
+            ring_buffer_size_t* sizePtr1,
+            DataType** dataPtr2,
+            ring_buffer_size_t* sizePtr2) {
         return PaUtil_GetRingBufferWriteRegions(&m_ringBuffer, count,
                 (void**)dataPtr1, sizePtr1, (void**)dataPtr2, sizePtr2);
     }
     int releaseWriteRegions(int count) {
         return PaUtil_AdvanceRingBufferWriteIndex(&m_ringBuffer, count);
     }
-    int aquireReadRegions(int count,
-            DataType** dataPtr1, ring_buffer_size_t* sizePtr1,
-            DataType** dataPtr2, ring_buffer_size_t* sizePtr2) {
+    int acquireReadRegions(int count,
+            DataType** dataPtr1,
+            ring_buffer_size_t* sizePtr1,
+            DataType** dataPtr2,
+            ring_buffer_size_t* sizePtr2) {
         return PaUtil_GetRingBufferReadRegions(&m_ringBuffer, count,
                 (void**)dataPtr1, sizePtr1, (void**)dataPtr2, sizePtr2);
     }

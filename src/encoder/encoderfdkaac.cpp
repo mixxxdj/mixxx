@@ -370,7 +370,7 @@ void EncoderFdkAac::encodeBuffer(const CSAMPLE* samples, const std::size_t buffe
         SAMPLE* dataPtr2;
         ring_buffer_size_t size2;
         // We use size1 and size2, so we can ignore the return value
-        (void)m_pInputFifo->aquireWriteRegions(writeCount, &dataPtr1, &size1, &dataPtr2, &size2);
+        (void)m_pInputFifo->acquireWriteRegions(writeCount, &dataPtr1, &size1, &dataPtr2, &size2);
         // fdk-aac doesn't support float samples, so convert
         // to integers instead
         SampleUtil::convertFloat32ToS16(dataPtr1, samples, size1);
