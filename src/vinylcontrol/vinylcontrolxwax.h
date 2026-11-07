@@ -163,8 +163,8 @@ class VinylControlXwax : public VinylControl {
     // Steady pitch trackers.  "Subtle" will be more likely to return true,
     // so it is used to set the play button.  "Gross" is more likely to return
     // false, so it is used to trigger the "scratching" CO.
-    SteadyPitch* m_pSteadySubtle;
-    SteadyPitch* m_pSteadyGross;
+    std::unique_ptr<SteadyPitch> m_pSteadySubtle;
+    std::unique_ptr<SteadyPitch> m_pSteadyGross;
 
     // Whether the configured timecode is CD-based or not.
     bool m_bCDControl;

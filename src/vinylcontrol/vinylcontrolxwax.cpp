@@ -86,8 +86,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         timecode = kVinylSeratoCdXwaxName;
         m_bCDControl = true;
         // Set up very sensitive steady monitors for CDJs.
-        m_pSteadySubtle = new SteadyPitch(0.06, true);
-        m_pSteadyGross = new SteadyPitch(0.25, true);
+        m_pSteadySubtle = std::make_unique<SteadyPitch>(0.06, true);
+        m_pSteadyGross = std::make_unique<SteadyPitch>(0.25, true);
     } else if (strVinylType == kVinylTraktorScratchMk1SideA) {
         timecode = kVinylTraktorScratchMk1SideAXwaxName;
     } else if (strVinylType == kVinylTraktorScratchMk1SideB) {
@@ -117,10 +117,10 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 
     // If we didn't set up the steady monitors already (not CDJ), do it now.
     if (m_pSteadySubtle == nullptr) {
-        m_pSteadySubtle = new SteadyPitch(0.12, false);
+        m_pSteadySubtle = std::make_unique<SteadyPitch>(0.12, false);
     }
     if (m_pSteadyGross == nullptr) {
-        m_pSteadyGross = new SteadyPitch(0.5, false);
+        m_pSteadyGross = std::make_unique<SteadyPitch>(0.5, false);
     }
 
     // Determine the config folder path
@@ -190,9 +190,6 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 }
 
 VinylControlXwax::~VinylControlXwax() {
-    delete m_pSteadySubtle;
-    delete m_pSteadyGross;
-
     // Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);
     timecoder_clear(&timecoder);

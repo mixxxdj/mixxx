@@ -18,22 +18,22 @@ constexpr int kSamplePipeFifoSize = 65536;
 VinylControlProcessor::VinylControlProcessor(QObject* pParent, UserSettingsPointer pConfig)
         : QThread(pParent),
           m_pConfig(pConfig),
-          m_pToggle(new ControlPushButton(ConfigKey(kVinylPrefKey, "Toggle"))),
+          m_pToggle(std::make_unique<ControlPushButton>(ConfigKey(kVinylPrefKey, "Toggle"))),
+          m_processors(),
           m_pWorkBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_processorsLock(QRecursiveMutex()),
-          m_processors(kMaximumVinylControlInputs, nullptr),
           m_signalQualityFifo(kSignalQualityFifoSize),
           m_bReportSignalQuality(false),
           m_bQuit(false),
           m_bReloadConfig(false) {
-    connect(m_pToggle,
+    connect(m_pToggle.get(),
             &ControlPushButton::valueChanged,
             this,
             &VinylControlProcessor::toggleDeck,
             Qt::DirectConnection);
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        m_samplePipes[i] = new FIFO<CSAMPLE>(kSamplePipeFifoSize);
+        m_samplePipes[i] = std::make_unique<FIFO<CSAMPLE>>(kSamplePipeFifoSize);
     }
 
     start(QThread::HighPriority);
@@ -44,18 +44,13 @@ VinylControlProcessor::~VinylControlProcessor() {
     m_samplesAvailableSignal.wakeAll();
     wait();
 
-    delete m_pToggle;
     SampleUtil::free(m_pWorkBuffer);
 
     {
         const auto locker = QMutexLocker(&m_processorsLock);
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-            VinylControl* pProcessor = m_processors.at(i);
-            m_processors[i] = nullptr;
-            delete pProcessor;
-
-            delete m_samplePipes[i];
-            m_samplePipes[i] = nullptr;
+            m_processors[i].reset();
+            m_samplePipes[i].reset();
         }
     }
 
@@ -101,9 +96,9 @@ void VinylControlProcessor::run() {
 
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
             auto locker = QMutexLocker(&m_processorsLock);
-            VinylControl* pProcessor = m_processors[i];
+            auto* pProcessor = m_processors[i].get();
             locker.unlock();
-            FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[i];
+            auto* pSamplePipe = m_samplePipes[i].get();
 
             if (pSamplePipe->readAvailable() > 0) {
                 int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
@@ -152,18 +147,19 @@ void VinylControlProcessor::run() {
 void VinylControlProcessor::reloadConfig() {
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         auto locker = QMutexLocker(&m_processorsLock);
-        VinylControl* pCurrent = m_processors[i];
+        auto* pCurrent = m_processors[i].get();
 
         if (pCurrent == nullptr) {
             continue;
         }
 
-        VinylControl *pNew = new VinylControlXwax(
-            m_pConfig, kVCGroup.arg(i + 1));
-        m_processors.replace(i, pNew);
+        auto pNew = std::make_unique<VinylControlXwax>(m_pConfig, kVCGroup.arg(i + 1));
+
+        auto pVinylControlProcessor = std::exchange(m_processors[i], std::move(pNew));
+
         locker.unlock();
-        // Delete outside of the critical section to avoid deadlocks.
-        delete pCurrent;
+
+        pVinylControlProcessor.reset();
     }
 }
 
@@ -180,15 +176,15 @@ void VinylControlProcessor::onInputConfigured(const AudioInput& input) {
         return;
     }
 
-    VinylControl *pNew = new VinylControlXwax(
-        m_pConfig, kVCGroup.arg(index + 1));
+    auto pNew = std::make_unique<VinylControlXwax>(
+            m_pConfig, kVCGroup.arg(index + 1));
 
     auto locker = QMutexLocker(&m_processorsLock);
-    VinylControl* pCurrent = m_processors.at(index);
-    m_processors.replace(index, pNew);
+    auto pVinylControlProcessor = std::exchange(m_processors[index], std::move(pNew));
+
     locker.unlock();
     // Delete outside of the critical section to avoid deadlocks.
-    delete pCurrent;
+    pVinylControlProcessor.reset();
 }
 
 void VinylControlProcessor::onInputUnconfigured(const AudioInput& input) {
@@ -206,11 +202,11 @@ void VinylControlProcessor::onInputUnconfigured(const AudioInput& input) {
     }
 
     auto locker = QMutexLocker(&m_processorsLock);
-    VinylControl* pVC = m_processors.at(index);
-    m_processors.replace(index, nullptr);
+    auto pVinylControlProcessor = std::exchange(m_processors[index], nullptr);
     locker.unlock();
+
     // Delete outside of the critical section to avoid deadlocks.
-    delete pVC;
+    pVinylControlProcessor.reset();
 }
 
 bool VinylControlProcessor::deckConfigured(int index) const {
@@ -233,7 +229,7 @@ void VinylControlProcessor::receiveBuffer(const AudioInput& input,
         return;
     }
 
-    FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[vcIndex];
+    auto* pSamplePipe = m_samplePipes[vcIndex].get();
 
     if (pSamplePipe == nullptr) {
         // Should not be possible.
@@ -274,9 +270,9 @@ void VinylControlProcessor::toggleDeck(double value) {
 
     auto locker = QMutexLocker(&m_processorsLock);
 
-    for (int i = 0; i < m_processors.size(); ++i) {
-        VinylControl* pProcessor = m_processors.at(i);
-        if (pProcessor && pProcessor->isEnabled()) {
+    for (int i = 0; i < std::ssize(m_processors); ++i) {
+        auto* pVinylControlProcessor = m_processors[i].get();
+        if (pVinylControlProcessor && pVinylControlProcessor->isEnabled()) {
             if (enabled > -1) {
                 return; // case 3
             }
@@ -296,14 +292,14 @@ void VinylControlProcessor::toggleDeck(double value) {
             return;
         }
 
-        VinylControl* pEnabled = m_processors[enabled];
-        VinylControl* pNextProxy = m_processors[nextProxy];
+        auto* pEnabled = m_processors[enabled].get();
+        auto* pNextProxy = m_processors[nextProxy].get();
         locker.unlock();
         pEnabled->toggleVinylControl(false);
         pNextProxy->toggleVinylControl(true);
     } else if (enabled == -1) {
         // handle case 1, or we just don't have any processors
-        foreach (VinylControl* pProcessor, m_processors) {
+        for (const auto& pProcessor : m_processors) {
             if (pProcessor) {
                 locker.unlock();
                 pProcessor->toggleVinylControl(true);

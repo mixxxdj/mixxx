@@ -70,16 +70,21 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     void reloadConfig();
 
     UserSettingsPointer m_pConfig;
-    ControlPushButton* m_pToggle;
+    std::unique_ptr<ControlPushButton> m_pToggle;
+
     // A pre-allocated array of FIFOs for writing samples from the engine
     // callback to the processor thread. There is a maximum of
     // kMaximumVinylControlInputs pipes.
-    FIFO<CSAMPLE>* m_samplePipes[kMaximumVinylControlInputs];
+    using VinylControlRingbufferPtr = std::unique_ptr<FIFO<CSAMPLE>>;
+    std::array<VinylControlRingbufferPtr, kMaximumVinylControlInputs> m_samplePipes;
+
+    using VinylControlProcessorPtr = std::unique_ptr<VinylControl>;
+    std::array<VinylControlProcessorPtr, kMaximumVinylControlInputs> m_processors;
+
     CSAMPLE* m_pWorkBuffer;
     QWaitCondition m_samplesAvailableSignal;
     QMutex m_waitForSampleMutex;
     QRecursiveMutex m_processorsLock;
-    QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;
     volatile bool m_bQuit;
