@@ -3,7 +3,6 @@
 #include <QtDebug>
 #include <algorithm>
 
-#include "audio/types.h"
 #include "control/controlobject.h"
 #include "moc_vinylcontrolxwax.cpp"
 #include "util/defs.h"
