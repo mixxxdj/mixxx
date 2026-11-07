@@ -164,6 +164,10 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT){&LIBRARYTABLE_LAST_PLAYED_AT,
                 QT_TRANSLATE_NOOP("BaseTrackTableModel", "Last Played"),
                 kDefaultColumnWidth * 3},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_IS_AUTODJ_END_MARKER){
+                &LIBRARYTABLE_IS_AUTODJ_END_MARKER,
+                nullptr,
+                0},
         DI(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION){&TRACKLOCATIONSTABLE_LOCATION,
                 QT_TRANSLATE_NOOP("BaseTrackTableModel", "Location"),
                 kDefaultColumnWidth * 6},
