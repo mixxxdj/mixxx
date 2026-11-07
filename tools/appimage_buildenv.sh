@@ -52,7 +52,7 @@ HOST_ARCH=$(uname -m)  # One of x86_64, aarch64, etc.
 # does not need to be edited per release:
 #   BUILDENV_BRANCH  — release series, also the download path segment ("2.6")
 #   BUILDENV_NAME    — full archive basename
-#                      ("mixxx-deps-2.6-x64-linux-rel-eccc28a")
+#                      ("mixxx-deps-2.6-x64-linux-rel-8ceb2c8")
 #   VCPKG_TARGET_TRIPLET — vcpkg triplet for the host arch
 
 case "$HOST_ARCH" in
@@ -60,26 +60,26 @@ case "$HOST_ARCH" in
         if [ -n "${BUILDENV_RELEASE}" ]; then
             : "${VCPKG_TARGET_TRIPLET:=x64-linux-release}"
             : "${BUILDENV_BRANCH:=2.6-rel}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.6-x64-linux-rel-eccc28a}"
-            : "${BUILDENV_SHA256:=647279d9786e2df40cbfe5441357c028c4cc99c7cb29e4e771c5b2b123589d34}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.6-x64-linux-rel-8ceb2c8}"
+            : "${BUILDENV_SHA256:=68ddb6d386271386fcf3c7aaaf83b58c714cccda1f400beb19d3ea83d823f0ad}"
         else
             : "${VCPKG_TARGET_TRIPLET:=x64-linux}"
             : "${BUILDENV_BRANCH:=2.6}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.6-x64-linux-79e4016}"
-            : "${BUILDENV_SHA256:=48b29b7a2c41c2a4d10c3c7614d0f860d2f2850240c812ee0653a0f87de5e63f}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.6-x64-linux-0af8c2b}"
+            : "${BUILDENV_SHA256:=8a27b1262e43370a38902f750147dc8b72cd93c645cec0ee5dc521bb2649d566}"
         fi
         ;;
     aarch64)
         if [ -n "${BUILDENV_RELEASE}" ]; then
             : "${VCPKG_TARGET_TRIPLET:=arm64-linux-release}"
             : "${BUILDENV_BRANCH:=2.6-rel}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.6-arm64-linux-rel-eccc28a}"
-            : "${BUILDENV_SHA256:=e687bca5c6b54abf240c825e9ebbafb92be7f5f4e1b763f69a185b20e2d4f91f}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.6-arm64-linux-rel-8ceb2c8}"
+            : "${BUILDENV_SHA256:=6ff7dd8a0e0ef739f8aa193125dba6e2c7cdf213b717c54515c60a60e231c87c}"
         else
             : "${VCPKG_TARGET_TRIPLET:=arm64-linux}"
             : "${BUILDENV_BRANCH:=2.6}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.6-arm64-linux-5fdc9f8}"
-            : "${BUILDENV_SHA256:=53332a1ca5a97e77a42e145534fa67a99d3772c9eeafef711ede9840fc8f9f10}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.6-arm64-linux-0af8c2b}"
+            : "${BUILDENV_SHA256:=d29b3b874759bccd2989fedc2ec6c457a33677c0bd8da9c720d01a1e9fea89a9}"
         fi
         ;;
     *)
