@@ -442,11 +442,6 @@ DDJ200.init = function() {
     // reset start volume of channels 3 and 4 (can't be read from 2-deck controller)
     engine.setValue("[Channel3]", "volume", 0);
     engine.setValue("[Channel4]", "volume", 0);
-
-    // start with focus on library for selecting tracks (delay seems required)
-    engine.beginTimer(500, function() {
-        engine.setValue("[Library]", "MoveFocus", 1);
-    }, true);
 };
 
 DDJ200.Deck = class extends components.Deck {
