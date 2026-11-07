@@ -71,7 +71,7 @@ void VinylControlManager::toggleVinylControl(int deck) {
 }
 
 void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
-    int num_decks = static_cast<int>(dNumDecks);
+    auto num_decks = static_cast<int>(dNumDecks);
 
     // Complain if we try to create more decks than we can handle.
     if (num_decks > kMaxNumberOfDecks) {
