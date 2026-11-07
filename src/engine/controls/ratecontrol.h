@@ -162,6 +162,7 @@ private:
 
   // This is true if we've already started to ramp the rate
   bool m_bTempStarted;
+  bool m_prevPaused;
   // Set the Temporary Rate Change Mode
   static RampMode m_eRateRampMode;
   // The Rate Temp Sensitivity, the higher it is the slower it gets
@@ -174,4 +175,7 @@ private:
   double m_tempRateRatio;
   // Speed for temporary rate change
   double m_dRateTempRampChange;
+  // Physical spin-up rate limiter (0.0 → 1.0)
+  double m_spinupRateLimit;
+  ControlProxy* m_pRampStartEnabled;
 };
