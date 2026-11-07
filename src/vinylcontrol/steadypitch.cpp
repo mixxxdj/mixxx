@@ -52,6 +52,8 @@ double SteadyPitch::check(double pitch, double time) {
         return 0.0;
     }
 
+    // The track position runs backwards when playing in reverse, so jumps
+    // and durations are measured relative to the play direction.
     if (resyncDetected(time)) {
         m_dLastTime = time;
         // Rereport the last value since we don't want to interrupt steady
@@ -72,11 +74,18 @@ double SteadyPitch::check(double pitch, double time) {
 
     // If it's been less than the window-size since we reset, return a value
     // indicating that we're steady. This is for CDJs which are really accurate.
+    // Note that the reference pitch value is used as the window size in
+    // seconds, and that the returned value is just above the 0.5 seconds the
+    // caller waits for.
     if (m_bAssumeSteady && fabs(time - m_dSteadyPitchTime) <= m_dSteadyPitch) {
         return m_dSteadyPitch + 1;
     }
 
+    // Steady: the pitch is still within the threshold of the reference
     if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold) {
+        // Renew the reference pitch every second once it is older than two
+        // seconds, so that it follows slow pitch changes, e.g. from the
+        // pitch fader of the turntable, without breaking steadiness.
         // fabs for both directions
         if (fabs(time - m_dSteadyPitchTime) > 2.0) {
             m_dSteadyPitch = pitch;
@@ -91,7 +100,8 @@ double SteadyPitch::check(double pitch, double time) {
         return m_dLastSteadyDur;
     }
 
-    // else
+    // else: the pitch left the threshold, start over with it as the new
+    // reference
     reset(pitch, time);
     return 0.0;
 }
