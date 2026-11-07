@@ -14,7 +14,7 @@ class VinylControl : public QObject {
     Q_OBJECT
   public:
     VinylControl(UserSettingsPointer pConfig, const QString& group);
-    virtual ~VinylControl();
+    ~VinylControl() override;
 
     virtual void toggleVinylControl(bool enable);
     virtual bool isEnabled();
