@@ -357,6 +357,36 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   endif()
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND DEFINED MIXXX_VCPKG_ROOT)
+  # The Linux buildenvs are built on the glibc-2.28 Rocky 8 floor.  A host with
+  # an older glibc cannot run them, so fail at configure time with a clear
+  # message instead of a confusing link or load error.  A newer host is fine:
+  # the glibc __exp_finite shims below cover the known case of linking the
+  # 2.28-built SoundTouch on a newer glibc.
+  set(MIXXX_BUILDENV_GLIBC_FLOOR 2.28)
+  execute_process(
+    COMMAND ldd --version
+    OUTPUT_VARIABLE MIXXX_LDD_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(MIXXX_LDD_VERSION MATCHES "GLIBC ([0-9]+\\.[0-9]+)")
+    set(MIXXX_HOST_GLIBC "${CMAKE_MATCH_1}")
+    if(MIXXX_HOST_GLIBC VERSION_LESS MIXXX_BUILDENV_GLIBC_FLOOR)
+      message(
+        FATAL_ERROR
+        "The vcpkg buildenv requires glibc ${MIXXX_BUILDENV_GLIBC_FLOOR}, "
+        "but the host provides ${MIXXX_HOST_GLIBC}. Build inside a container "
+        "matching the buildenv base (rockylinux:8) instead."
+      )
+    else()
+      message(
+        STATUS
+        "Host glibc ${MIXXX_HOST_GLIBC} >= buildenv floor ${MIXXX_BUILDENV_GLIBC_FLOOR}"
+      )
+    endif()
+  endif()
+endif()
+
 if(NOT DEFINED VCPKG_TARGET_TRIPLET)
   if(DEFINED ENV{VCPKG_TARGET_TRIPLET})
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}")
