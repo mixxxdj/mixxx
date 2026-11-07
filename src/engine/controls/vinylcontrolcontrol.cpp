@@ -18,12 +18,12 @@ VinylControlControl::VinylControlControl(const QString& group, UserSettingsPoint
     //Convert the ConfigKey's value into a double for the CO (for fast reads).
     const QString strVinylSpeedType = pConfig->getValueString(ConfigKey(group,
             QStringLiteral("vinylcontrol_speed_type")));
-    if (strVinylSpeedType == MIXXX_VINYL_SPEED_33) {
-        m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_33_NUM);
-    } else if (strVinylSpeedType == MIXXX_VINYL_SPEED_45) {
-        m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_45_NUM);
+    if (strVinylSpeedType == kVinylSpeed33) {
+        m_pControlVinylSpeedType->set(kVinylSpeed33Num);
+    } else if (strVinylSpeedType == kVinylSpeed45) {
+        m_pControlVinylSpeedType->set(kVinylSpeed45Num);
     } else {
-        m_pControlVinylSpeedType->set(MIXXX_VINYL_SPEED_33_NUM);
+        m_pControlVinylSpeedType->set(kVinylSpeed33Num);
     }
 
     m_pControlVinylSeek = std::make_unique<ControlObject>(
@@ -90,10 +90,10 @@ void VinylControlControl::notifySeekQueued() {
     // m_bSeekRequested is set and unset in a single execution path,
     // so there are no issues with signals/slots causing timing
     // issues.
-    if (m_pControlVinylMode->get() == MIXXX_VCMODE_ABSOLUTE &&
+    if (m_pControlVinylMode->get() == kVcModeAbsolute &&
             m_playEnabled.get() > 0.0 &&
             !m_bSeekRequested) {
-        m_pControlVinylMode->set(MIXXX_VCMODE_RELATIVE);
+        m_pControlVinylMode->set(kVcModeRelative);
     }
 }
 
@@ -113,7 +113,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     const auto newPlayPos = mixxx::audio::kStartFramePos +
             (info.trackEndPosition - mixxx::audio::kStartFramePos) * fractionalPos;
 
-    if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {
+    if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == kVcModeRelative) {
         int cuemode = (int)m_pControlVinylCueing->get();
 
         //if in preroll, always seek
@@ -123,9 +123,9 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         }
 
         switch (cuemode) {
-        case MIXXX_RELATIVE_CUE_OFF:
+        case kRelativeCueOff:
             return; // If off, do nothing.
-        case MIXXX_RELATIVE_CUE_ONECUE: {
+        case kRelativeCueOneCue: {
             //if onecue, just seek to the regular cue
             const mixxx::audio::FramePos mainCuePosition = pTrack->getMainCuePosition();
             if (mainCuePosition.isValid()) {
@@ -133,7 +133,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             }
             return;
         }
-        case MIXXX_RELATIVE_CUE_HOTCUE:
+        case kRelativeCueHotCue:
             // Continue processing in this function.
             break;
         default:

@@ -12,12 +12,12 @@ class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListen
     Q_OBJECT
   public:
     VinylControlSignalWidget();
-    VinylControlSignalWidget(int size);
-    virtual ~VinylControlSignalWidget();
+    explicit VinylControlSignalWidget(int size);
+    ~VinylControlSignalWidget() override = default;
 
-    void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
+    void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
 
-    void paintEvent(QPaintEvent* event);
+    void paintEvent(QPaintEvent* event) override;
     void setVinylInput(int input);
     void setSize(int size);
     void setVinylActive(bool active);

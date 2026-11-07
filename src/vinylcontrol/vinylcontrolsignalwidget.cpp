@@ -8,7 +8,7 @@
 VinylControlSignalWidget::VinylControlSignalWidget()
         : QWidget(),
           m_iVinylInput(-1),
-          m_iSize(MIXXX_VINYL_SCOPE_SIZE),
+          m_iSize(kVinylScopeSize),
           m_qImage(),
           m_iAngle(0),
           m_fSignalQuality(0.0f),
@@ -26,9 +26,6 @@ void VinylControlSignalWidget::setSize(int size) {
 
 void VinylControlSignalWidget::setVinylInput(int input) {
     m_iVinylInput = input;
-}
-
-VinylControlSignalWidget::~VinylControlSignalWidget() {
 }
 
 void VinylControlSignalWidget::setVinylActive(bool active)
@@ -49,8 +46,11 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
     m_iAngle = static_cast<int>(report.angle);
     m_fSignalQuality = report.timecode_quality;
 
-    int r,g,b;
-    QColor qual_color = QColor();
+    auto qual_color = QColor();
+    int r;
+    int g;
+    int b;
+
     //color is related to signal quality
     //hsv:  s=1, v=1
     //h is the only variable.
@@ -77,11 +77,11 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
 
 void VinylControlSignalWidget::resetWidget()
 {
-    std::fill(std::begin(m_imageData), std::end(m_imageData), 0);
+    std::ranges::fill(m_imageData, 0);
 }
 
 void VinylControlSignalWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     int sizeX = this->width();
     int sizeY = this->height();
 

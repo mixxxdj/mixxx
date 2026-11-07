@@ -170,8 +170,11 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
         ring_buffer_size_t size1;
         CSAMPLE* dataPtr2;
         ring_buffer_size_t size2;
-        (void)m_inputFifo->aquireWriteRegions(copyCount,
-                &dataPtr1, &size1, &dataPtr2, &size2);
+        (void)m_inputFifo->acquireWriteRegions(copyCount,
+                &dataPtr1,
+                &size1,
+                &dataPtr2,
+                &size2);
         // Fetch fresh samples and write to the the input buffer
         m_pNetworkStream->read(dataPtr1,
                 size1 / m_numInputChannels);
@@ -199,7 +202,7 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
                 // duplicate one frame
                 //kLogger.debug() << "readProcess() duplicate one frame"
                 //                << (float)writeAvailable / inChunkSize << (float)readAvailable / inChunkSize;
-                (void)m_inputFifo->aquireWriteRegions(
+                (void)m_inputFifo->acquireWriteRegions(
                         m_numInputChannels, &dataPtr1, &size1, &dataPtr2, &size2);
                 if (size1) {
                     SampleUtil::copy(dataPtr1, lastFrame, size1);
@@ -226,8 +229,7 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
         CSAMPLE* dataPtr2;
         ring_buffer_size_t size2;
         // We use size1 and size2, so we can ignore the return value
-        (void) m_inputFifo->aquireReadRegions(readCount, &dataPtr1, &size1,
-                &dataPtr2, &size2);
+        (void)m_inputFifo->acquireReadRegions(readCount, &dataPtr1, &size1, &dataPtr2, &size2);
         // Fetch fresh samples and write to the the output buffer
         composeInputBuffer(dataPtr1,
                 size1 / m_numInputChannels,
@@ -270,8 +272,7 @@ void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
         CSAMPLE* dataPtr2;
         ring_buffer_size_t size2;
         // We use size1 and size2, so we can ignore the return value
-        (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
-                &size1, &dataPtr2, &size2);
+        (void)m_outputFifo->acquireWriteRegions(writeCount, &dataPtr1, &size1, &dataPtr2, &size2);
         // Fetch fresh samples and write to the the output buffer
         composeOutputBuffer(dataPtr1, size1 / m_numOutputChannels, 0, m_numOutputChannels);
         if (size2 > 0) {
@@ -292,8 +293,11 @@ void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
     // Try to read as most frames as possible.
     // NetworkStreamWorker::processWrite takes care of
     // keeping every output worker in sync
-    m_outputFifo->aquireReadRegions(readAvailable,
-            &dataPtr1, &size1, &dataPtr2, &size2);
+    m_outputFifo->acquireReadRegions(readAvailable,
+            &dataPtr1,
+            &size1,
+            &dataPtr2,
+            &size2);
 
     const QVector<NetworkOutputStreamWorkerPtr> workers =
             m_pNetworkStream->outputWorkers();
@@ -452,8 +456,11 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
             CSAMPLE* dataPtr2;
             ring_buffer_size_t size2;
 
-            (void)pFifo->aquireWriteRegions(clearCount,
-                    &dataPtr1, &size1, &dataPtr2, &size2);
+            (void)pFifo->acquireWriteRegions(clearCount,
+                    &dataPtr1,
+                    &size1,
+                    &dataPtr2,
+                    &size2);
             SampleUtil::clear(dataPtr1, size1);
             if (size2 > 0) {
                 SampleUtil::clear(dataPtr2, size2);
