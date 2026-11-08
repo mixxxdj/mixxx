@@ -198,12 +198,13 @@
 
 ### Effects
 
-* Compressor effect: Adjust Makeup Time constant calculation [#13261](https://github.com/mixxxdj/mixxx/pull/13261)
-[#13237](https://github.com/mixxxdj/mixxx/issues/13237)
-* Fix: prevent quickFX model out of bound [#13668](https://github.com/mixxxdj/mixxx/pull/13668)
-* WhiteNoise: enhance leveling [#15979](https://github.com/mixxxdj/mixxx/pull/15979)
-* WhiteNoise: improve ramp logic [#15949](https://github.com/mixxxdj/mixxx/pull/15949)
-* QuickEffect: fix crackling noise when switching
+* Compressor: improved makeup gain time constant calculations
+  [#13237](https://github.com/mixxxdj/mixxx/issues/13237)
+  [#13261](https://github.com/mixxxdj/mixxx/pull/13261)
+* White Noise: enhance leveling and fix crackling
+  [#15979](https://github.com/mixxxdj/mixxx/pull/15979)
+  [#15949](https://github.com/mixxxdj/mixxx/pull/15949)
+* Quick Effects: fix crackling noise when switching
   [#15796](https://github.com/mixxxdj/mixxx/pull/15796)
   [#15794](https://github.com/mixxxdj/mixxx/issues/15794)
 * Update tremolo effect label to tremolo/trans
