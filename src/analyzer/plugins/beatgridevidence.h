@@ -4,6 +4,8 @@
 #include <array>
 #include <vector>
 
+#include "analyzer/plugins/beatclockrecovery.h"
+#include "track/beatgridmode.h"
 #include "track/beats.h"
 #include "util/types.h"
 
@@ -32,13 +34,11 @@ class BeatGridEvidence {
     void prepare();
     bool hasEvidence() const;
     Result evaluate(const BeatsPointer& grid, bool regional) const;
+    BeatsPointer recoverGrid(const BeatsPointer& reference, BeatGridMode mode) const;
     static bool preferConstant(const Result& constant, const Result& variable, bool fallback);
 
   private:
-    struct Event {
-        double time;
-        double weight;
-    };
+    using Event = BeatClockEvent;
     struct Score {
         double f1 = 0;
         double precision = 0;
@@ -57,6 +57,7 @@ class BeatGridEvidence {
             double end,
             double radius = 0.04) const;
     static double utility(const Scores& scores);
+    static double phaseUtility(const Scores& scores);
 
     audio::SampleRate m_sampleRate;
     int m_hop = 0;

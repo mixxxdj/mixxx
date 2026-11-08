@@ -94,6 +94,79 @@ TEST(BeatGridModeTest, TrackerPhaseStepsAndOffbeatSlipsDoNotImplyChangingTempo) 
     }
 }
 
+TEST(BeatGridModeTest, AlternatingTrackerPhasePlateausKeepAConstantClock) {
+    for (const int plateauBeats : {64, 128, 256}) {
+        SCOPED_TRACE(testing::Message() << plateauBeats << " beats per tracker phase plateau");
+        QVector<mixxx::audio::FramePos> positions;
+        for (int i = 0; i < 1024; ++i) {
+            const double phase = (i / plateauBeats) % 2 ? 0.09 : 0;
+            positions.push_back(mixxx::audio::FramePos(
+                    std::round((0.2 + i * 0.5 + phase) * kRate)));
+        }
+        const auto grid = BeatFactory::makePreferredBeats(
+                positions, {}, mixxx::BeatGridMode::Auto, kRate);
+        ASSERT_TRUE(grid);
+        EXPECT_TRUE(grid->hasConstantTempo());
+        EXPECT_NEAR(120.0,
+                grid->getBpmInRange(positions.front(), positions.back()).value(),
+                0.01);
+
+        const auto secondPhase = mixxx::audio::FramePos(
+                positions.front().value() + 0.09 * kRate);
+        const double firstError =
+                std::abs(grid->findClosestBeat(positions.front()) - positions.front()) / 44100.0;
+        const double secondError =
+                std::abs(grid->findClosestBeat(secondPhase) - secondPhase) / 44100.0;
+        EXPECT_LT(std::min(firstError, secondError), 0.002);
+    }
+}
+
+TEST(BeatGridModeTest, BalancedOffbeatSectionsUseASupportedClockPhase) {
+    QVector<mixxx::audio::FramePos> positions;
+    for (int i = 0; i < 1024; ++i) {
+        const double phase = i >= 512 ? 0.25 : 0;
+        positions.push_back(mixxx::audio::FramePos(
+                std::round((0.2 + i * 0.5 + phase) * kRate)));
+    }
+    for (const auto mode : {mixxx::BeatGridMode::Auto, mixxx::BeatGridMode::Constant}) {
+        const auto grid = BeatFactory::makePreferredBeats(positions, {}, mode, kRate);
+        ASSERT_TRUE(grid);
+        EXPECT_TRUE(grid->hasConstantTempo());
+        EXPECT_NEAR(120.0,
+                grid->getBpmInRange(positions.front(), positions.back()).value(),
+                0.01);
+
+        const auto offbeat = mixxx::audio::FramePos(
+                positions.front().value() + 0.25 * kRate);
+        const double onbeatError =
+                std::abs(grid->findClosestBeat(positions.front()) - positions.front()) / 44100.0;
+        const double offbeatError =
+                std::abs(grid->findClosestBeat(offbeat) - offbeat) / 44100.0;
+        EXPECT_LT(std::min(onbeatError, offbeatError), 0.002);
+    }
+}
+
+TEST(BeatGridModeTest, SmoothTempoExcursionsAreNotDiscardedAsPhaseJumps) {
+    for (const double amplitude : {0.12, 0.20}) {
+        for (const bool jitter : {false, true}) {
+            SCOPED_TRACE(testing::Message()
+                    << amplitude << " seconds of accumulated drift, isolated jitter " << jitter);
+            QVector<mixxx::audio::FramePos> positions;
+            for (int i = 0; i < 1024; ++i) {
+                const double progress = std::clamp((i - 480) / 64.0, 0.0, 1.0);
+                const double phase = amplitude * (1 - std::cos(M_PI * progress)) * 0.5;
+                const double trackerError = jitter && i == 500 ? 0.041 : 0;
+                positions.push_back(mixxx::audio::FramePos(
+                        std::round((0.2 + i * 0.5 + phase + trackerError) * kRate)));
+            }
+            const auto grid = BeatFactory::makePreferredBeats(
+                    positions, {}, mixxx::BeatGridMode::Auto, kRate);
+            ASSERT_TRUE(grid);
+            EXPECT_FALSE(grid->hasConstantTempo());
+        }
+    }
+}
+
 TEST(BeatGridModeTest, SmoothTimingExcursionsAreJudgedByTheirSize) {
     for (const double amplitude : {0.02, 0.09}) {
         QVector<mixxx::audio::FramePos> positions;
@@ -120,6 +193,26 @@ TEST(BeatGridModeTest, SustainedDriftAtTheEndMustNotBeTrimmedAsOutliers) {
                 BeatFactory::makePreferredBeats(positions, {}, mixxx::BeatGridMode::Auto, kRate);
         ASSERT_TRUE(grid);
         EXPECT_FALSE(grid->hasConstantTempo());
+    }
+}
+
+TEST(BeatGridModeTest, TempoChangesAtTrackBoundariesAreNotDiscarded) {
+    for (const double changedBpm : {121.0, 128.0}) {
+        for (const bool atBeginning : {false, true}) {
+            SCOPED_TRACE(testing::Message()
+                    << changedBpm << " BPM, changed region at beginning " << atBeginning);
+            QVector<mixxx::audio::FramePos> positions;
+            double time = 0.2;
+            for (int i = 0; i < 1024; ++i) {
+                positions.push_back(mixxx::audio::FramePos(std::round(time * kRate)));
+                const bool changed = atBeginning ? i < 128 : i >= 896;
+                time += 60 / (changed ? changedBpm : 120.0);
+            }
+            const auto grid = BeatFactory::makePreferredBeats(
+                    positions, {}, mixxx::BeatGridMode::Auto, kRate);
+            ASSERT_TRUE(grid);
+            EXPECT_FALSE(grid->hasConstantTempo());
+        }
     }
 }
 

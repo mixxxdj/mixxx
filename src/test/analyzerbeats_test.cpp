@@ -288,7 +288,7 @@ TEST_F(AnalyzerBeatProtectionTest, CorrectedTempoIsStoredWithAnalysisVersion) {
     ASSERT_TRUE(track->getBeats());
     EXPECT_NEAR(174, track->getBpm(), 0.1);
     EXPECT_TRUE(track->getBeats()->getSubVersion().contains("beat_tracker_version=3"));
-    EXPECT_TRUE(track->getBeats()->getSubVersion().contains("audio_grid_evidence=4"));
+    EXPECT_TRUE(track->getBeats()->getSubVersion().contains("audio_grid_evidence=5"));
     EXPECT_FALSE(analyzer.initialize(AnalyzerTrack(track),
             track->getSampleRate(),
             mixxx::audio::ChannelCount::stereo(),

@@ -20,6 +20,7 @@ struct BeatGridV1Data {
 };
 
 constexpr double kEpsilon = 0.01;
+constexpr int kMaxBeatMapBeats = 1000000;
 
 } // namespace
 
@@ -680,12 +681,19 @@ std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames)
 }
 
 std::optional<BeatsPointer> Beats::tryTranslateBeats(double xBeats) const {
-    if (!hasConstantTempo()) {
+    if (!std::isfinite(xBeats)) {
         return std::nullopt;
+    }
+    if (!hasConstantTempo()) {
+        const double beatOffset = std::fmod(xBeats, 1.0);
+        return beatOffset == 0 ? tryScale(1.0) : tryResample(1.0, beatOffset);
     }
     const mixxx::audio::FrameDiff_t lastOffsetFrames =
             xBeats * m_sampleRate.value() * 60.0 / m_lastMarkerBpm.value();
     const auto lastMarkerPosition = m_lastMarkerPosition + lastOffsetFrames;
+    if (!lastMarkerPosition.isValid()) {
+        return std::nullopt;
+    }
     return BeatsPointer(new Beats(m_markers,
             lastMarkerPosition.toLowerFrameBoundary(),
             m_lastMarkerBpm,
@@ -722,36 +730,157 @@ std::optional<BeatsPointer> Beats::tryScale(BpmScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return nullptr;
+        return std::nullopt;
     }
 
-    std::vector<BeatMarker> markers;
-    markers.reserve(m_markers.size());
-    for (const auto& marker : std::as_const(m_markers)) {
-        const double beatsTillNextMarkerFractional = marker.beatsTillNextMarker() * scaleFactor;
-        const int beatsTillNextMarker = static_cast<int>(std::trunc(beatsTillNextMarkerFractional));
-        if (beatsTillNextMarkerFractional != beatsTillNextMarker) {
-            qWarning() << "Marker with" << marker.beatsTillNextMarker()
-                       << "beats till next marker cannot be scaled by"
-                       << scaleFactor;
-            return std::nullopt;
-        }
-
-        markers.push_back({marker.position(), beatsTillNextMarker});
-    }
-
-    Bpm lastMarkerBpm = m_lastMarkerBpm * scaleFactor;
-
-    return BeatsPointer(new Beats(markers,
-            m_lastMarkerPosition,
-            lastMarkerBpm,
-            m_sampleRate,
-            m_subVersion));
+    return tryScale(scaleFactor);
 }
 
-std::optional<BeatsPointer> Beats::trySetBpm(mixxx::Bpm bpm) const {
-    const auto it = cfirstmarker();
-    return BeatsPointer(new Beats({}, *it, bpm, m_sampleRate, m_subVersion));
+std::optional<BeatsPointer> Beats::tryScale(double scaleFactor) const {
+    const Bpm lastMarkerBpm = m_lastMarkerBpm * scaleFactor;
+    if (!std::isfinite(scaleFactor) || scaleFactor <= 0 || !lastMarkerBpm.isValid()) {
+        return std::nullopt;
+    }
+    std::vector<BeatMarker> markers;
+    markers.reserve(m_markers.size());
+    qint64 totalBeats = 0;
+    for (auto it = m_markers.cbegin(); it != m_markers.cend(); ++it) {
+        const double scaledBeatCount = it->beatsTillNextMarker() * scaleFactor;
+        const double roundedBeatCount = std::round(scaledBeatCount);
+        if (!std::isfinite(scaledBeatCount) || roundedBeatCount < 1 ||
+                roundedBeatCount > std::numeric_limits<int>::max() ||
+                std::fabs(scaledBeatCount - roundedBeatCount) > 1e-8) {
+            return tryResample(scaleFactor, 0.0);
+        }
+        const auto next = std::next(it);
+        const auto end = next == m_markers.cend() ? m_lastMarkerPosition : next->position();
+        totalBeats += static_cast<int>(roundedBeatCount);
+        if (roundedBeatCount > end - it->position() || totalBeats > kMaxBeatMapBeats) {
+            return std::nullopt;
+        }
+        markers.emplace_back(it->position(), static_cast<int>(roundedBeatCount));
+    }
+
+    auto lastMarkerPosition = m_lastMarkerPosition;
+    if (!m_markers.empty()) {
+        const auto& lastMarker = m_markers.back();
+        const auto finalInterval = (m_lastMarkerPosition - lastMarker.position()) /
+                lastMarker.beatsTillNextMarker() / scaleFactor;
+        const auto tailInterval = lastBeatLengthFrames() / scaleFactor;
+        if (std::fabs(finalInterval - tailInterval) >= 1.0) {
+            const auto tailEnd = m_lastMarkerPosition + tailInterval;
+            if (!tailEnd.isValid() ||
+                    tailEnd.value() > std::numeric_limits<qint32>::max() ||
+                    tailEnd.toLowerFrameBoundary() <= m_lastMarkerPosition ||
+                    totalBeats >= kMaxBeatMapBeats) {
+                return std::nullopt;
+            }
+            markers.emplace_back(m_lastMarkerPosition, 1);
+            lastMarkerPosition = tailEnd.toLowerFrameBoundary();
+        }
+    }
+
+    return std::make_shared<Beats>(std::move(markers),
+            lastMarkerPosition,
+            lastMarkerBpm,
+            m_sampleRate,
+            m_subVersion);
+}
+
+std::optional<BeatsPointer> Beats::tryResample(double scaleFactor, double beatOffset) const {
+    DEBUG_ASSERT(!m_markers.empty());
+    qint64 totalBeats = 0;
+    for (const auto& marker : m_markers) {
+        totalBeats += marker.beatsTillNextMarker();
+    }
+    const double lastIndex = std::ceil((totalBeats - beatOffset) * scaleFactor) + 1;
+    const double intervalCount = lastIndex;
+    if (!std::isfinite(intervalCount) || intervalCount < 1 ||
+            intervalCount > kMaxBeatMapBeats) {
+        return std::nullopt;
+    }
+
+    // Autonomously generated by an AI agent.
+    // Sample in beat coordinates rather than rounding each section's beat count.
+    // Keep the first marker as the anchor for subsequent edits. An extra interval
+    // after the original map retains its tail tempo when BeatMap serialization
+    // derives that tempo from the final interval.
+    // End of autonomously generated text.
+    std::vector<BeatMarker> markers;
+    markers.reserve(static_cast<size_t>(intervalCount));
+    auto markerIt = m_markers.cbegin();
+    double markerStartBeat = 0;
+    audio::FramePos previousPosition;
+    audio::FramePos sectionStart;
+    audio::FrameDiff_t previousLength = 0;
+    int sectionBeats = 0;
+    for (int i = 0; i <= static_cast<int>(intervalCount); ++i) {
+        const double sourceBeat = beatOffset + i / scaleFactor;
+        while (markerIt != m_markers.cend() &&
+                sourceBeat >= markerStartBeat + markerIt->beatsTillNextMarker()) {
+            markerStartBeat += markerIt->beatsTillNextMarker();
+            ++markerIt;
+        }
+        audio::FramePos position;
+        if (markerIt == m_markers.cend()) {
+            position = m_lastMarkerPosition +
+                    (sourceBeat - totalBeats) * lastBeatLengthFrames();
+        } else {
+            const auto next = std::next(markerIt);
+            const auto end = next == m_markers.cend()
+                    ? m_lastMarkerPosition
+                    : next->position();
+            const auto beatLength = (end - markerIt->position()) /
+                    markerIt->beatsTillNextMarker();
+            position = markerIt->position() + (sourceBeat - markerStartBeat) * beatLength;
+        }
+        if (!position.isValid() ||
+                position.value() < std::numeric_limits<qint32>::min() ||
+                position.value() > std::numeric_limits<qint32>::max()) {
+            return std::nullopt;
+        }
+        position = position.toLowerFrameBoundary();
+        if (i == 0) {
+            previousPosition = position;
+            sectionStart = position;
+            continue;
+        }
+        const auto length = position - previousPosition;
+        if (length <= 0) {
+            return std::nullopt;
+        }
+        if (sectionBeats > 0 && length != previousLength) {
+            markers.emplace_back(sectionStart, sectionBeats);
+            sectionStart = previousPosition;
+            sectionBeats = 0;
+        }
+        ++sectionBeats;
+        previousLength = length;
+        previousPosition = position;
+    }
+    markers.emplace_back(sectionStart, sectionBeats);
+    return std::make_shared<Beats>(std::move(markers),
+            previousPosition,
+            m_lastMarkerBpm * scaleFactor,
+            m_sampleRate,
+            m_subVersion);
+}
+
+std::optional<BeatsPointer> Beats::trySetBpm(Bpm bpm, Bpm referenceBpm) const {
+    if (!bpm.isValid()) {
+        return std::nullopt;
+    }
+    if (hasConstantTempo()) {
+        return std::make_shared<Beats>(
+                m_lastMarkerPosition, bpm, m_sampleRate, m_subVersion);
+    }
+    if (!referenceBpm.isValid()) {
+        referenceBpm = getBpmInRange(m_markers.front().position(), m_lastMarkerPosition);
+    }
+    if (!referenceBpm.isValid()) {
+        return std::nullopt;
+    }
+    return tryScale(bpm.value() / referenceBpm.value());
 }
 
 bool Beats::isValid() const {

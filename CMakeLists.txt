@@ -1214,6 +1214,7 @@ add_library(
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/beattrackingrefiner.cpp
   src/analyzer/plugins/beatgridevidence.cpp
+  src/analyzer/plugins/beatclockrecovery.cpp
   src/analyzer/plugins/buffering_utils.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
@@ -2928,8 +2929,10 @@ if(BUILD_TESTING)
     src-mixxx-test
     src/test/analyserwaveformtest.cpp
     src/test/beat_analysis_comparison_test.cpp
+    src/test/beatmaterial_test.cpp
     src/test/analyzerbeats_test.cpp
     src/test/beatgridevidence_test.cpp
+    src/test/beatclockrecovery_test.cpp
     src/test/beatphasealignment_test.cpp
     src/test/beatgridmode_test.cpp
     src/test/beatdetectionsettings_test.cpp

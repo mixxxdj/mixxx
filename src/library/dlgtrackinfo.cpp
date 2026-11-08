@@ -478,6 +478,7 @@ void DlgTrackInfo::updateSpinBpmFromBeats() {
                                    trackEndPosition)
                            .valueOr(mixxx::Bpm::kValueUndefined);
     }
+    const QSignalBlocker blocker(spinBpm);
     spinBpm->setValue(bpmValue);
 }
 
@@ -486,8 +487,8 @@ void DlgTrackInfo::updateBpmEditControls() {
     bpmLock->setText(m_bpmLocked ? tr("Unlock BPM") : tr("Lock BPM"));
 
     bpmConst->setEnabled(!m_bpmLocked && m_trackHasBeatMap);
-    spinBpm->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
-    bpmTap->setEnabled(!m_bpmLocked && !m_trackHasBeatMap);
+    spinBpm->setEnabled(!m_bpmLocked);
+    bpmTap->setEnabled(!m_bpmLocked);
     bpmHalve->setEnabled(!m_bpmLocked);
     bpmTwoThirds->setEnabled(!m_bpmLocked);
     bpmThreeFourths->setEnabled(!m_bpmLocked);
@@ -504,6 +505,7 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     updateSpinBpmFromBeats();
     updateBpmScaleButtonLabels();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
+    const QSignalBlocker blocker(bpmConst);
     bpmConst->setChecked(!m_trackHasBeatMap);
 
     // Store the lock state from the track into the local staging variable.
@@ -773,14 +775,24 @@ void DlgTrackInfo::slotBpmConstChanged(Qt::CheckState state) {
 #else
 void DlgTrackInfo::slotBpmConstChanged(int state) {
 #endif
+    if (!m_pLoadedTrack || m_bpmLocked) {
+        return;
+    }
     if (state == Qt::Unchecked) {
         // try to reload BeatMap from the Track
         reloadTrackBeats(*m_pLoadedTrack);
         return;
     }
-    spinBpm->setEnabled(true);
-    bpmTap->setEnabled(true);
-    slotSpinBpmValueChanged(spinBpm->value());
+    if (m_pBeatsClone && !m_pBeatsClone->hasConstantTempo()) {
+        m_pBeatsClone = mixxx::Beats::fromConstTempo(
+                m_pBeatsClone->getSampleRate(),
+                *m_pBeatsClone->cfirstmarker(),
+                mixxx::Bpm(spinBpm->value()),
+                m_pBeatsClone->getSubVersion());
+        updateSpinBpmFromBeats();
+        updateBpmScaleButtonLabels();
+    }
+    updateBpmEditControls();
 }
 
 void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
@@ -814,7 +826,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
             if (oldBpm == bpm) {
                 return;
             }
-            m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);
+            m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm, oldBpm).value_or(m_pBeatsClone);
         } else {
             mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
             // This should never happen, but we cannot be sure

@@ -309,7 +309,7 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
     mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
             centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
-    const auto newBeats = pBeats->trySetBpm(adjustedBpm);
+    const auto newBeats = pBeats->trySetBpm(adjustedBpm, bpm);
     if (!newBeats) {
         return;
     }
@@ -428,7 +428,9 @@ void BpmControl::slotBpmTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     auto averageBpm = averageBpmRoundedWithinRange(averageLength, rateRatio);
-    const auto newBeats = pBeats->trySetBpm(averageBpm);
+    const auto bpm = pBeats->getBpmInRange(
+            mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
+    const auto newBeats = pBeats->trySetBpm(averageBpm, bpm);
     if (!newBeats) {
         return;
     }

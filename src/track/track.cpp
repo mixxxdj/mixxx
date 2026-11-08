@@ -318,6 +318,10 @@ bool Track::replaceRecord(
     const auto oldRating = m_record.getRating();
     const bool oldBpmLocked = m_record.getBpmLocked();
 
+    if (oldBpmLocked && !newBpmLocked) {
+        m_record.setBpmLocked(false);
+    }
+
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
         bpmUpdatedFlag = trySetBeatsWhileLocked(pOptionalBeats);
@@ -421,7 +425,8 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         return trySetBeatsWhileLocked(pBeats);
     } else if (getBeatsPointerBpm(m_pBeats, getDuration()) != bpm) {
         // Continue with the regular cases
-        const auto newBeats = m_pBeats->trySetBpm(bpm);
+        const auto newBeats = m_pBeats->trySetBpm(
+                bpm, getBeatsPointerBpm(m_pBeats, getDuration()));
         if (newBeats) {
             if (kLogger.debugEnabled()) {
                 kLogger.debug() << "Updating BPM:" << getLocation();

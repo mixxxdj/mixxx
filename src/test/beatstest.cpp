@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 #include <cmath>
+#include <iterator>
 #include <limits>
 #include <memory>
 
@@ -9,6 +10,7 @@
 #include "track/beats.h"
 #include "track/beatutils.h"
 #include "track/bpm.h"
+#include "track/track.h"
 
 using namespace mixxx;
 
@@ -36,6 +38,272 @@ const auto kNonConstTempoBeats = Beats(
         kBpm,
         kSampleRate,
         QString());
+
+const std::vector<BeatMarker> kVariableTempoMarkers{
+        {kStartPosition, 1},
+        {kStartPosition + 24000, 1},
+        {kStartPosition + 48480, 1},
+        {kStartPosition + 71520, 1},
+        {kStartPosition + 96480, 1},
+        {kStartPosition + 120480, 1},
+        {kStartPosition + 144000, 1},
+};
+const auto kVariableTempoBeats = Beats(kVariableTempoMarkers,
+        kStartPosition + 169440,
+        Bpm(90.0),
+        kSampleRate,
+        QStringLiteral("variable-tempo-test"));
+
+audio::FramePos variableBeatPosition(double beat) {
+    if (beat < 0) {
+        return kStartPosition + beat * 24000;
+    }
+    if (beat >= kVariableTempoMarkers.size()) {
+        return kVariableTempoBeats.getLastMarkerPosition() +
+                (beat - kVariableTempoMarkers.size()) * 32000;
+    }
+    const int index = static_cast<int>(std::floor(beat));
+    const auto start = kVariableTempoMarkers[index].position();
+    const auto end = index + 1 < kVariableTempoMarkers.size()
+            ? kVariableTempoMarkers[index + 1].position()
+            : kVariableTempoBeats.getLastMarkerPosition();
+    return start + (end - start) * (beat - index);
+}
+
+TEST(BeatsTest, VariableTempoScaleAllFactors) {
+    const std::pair<Beats::BpmScale, double> scales[]{
+            {Beats::BpmScale::Halve, 0.5},
+            {Beats::BpmScale::TwoThirds, 2.0 / 3},
+            {Beats::BpmScale::ThreeFourths, 3.0 / 4},
+            {Beats::BpmScale::FourFifths, 4.0 / 5},
+            {Beats::BpmScale::FiveFourths, 5.0 / 4},
+            {Beats::BpmScale::FourThirds, 4.0 / 3},
+            {Beats::BpmScale::ThreeHalves, 1.5},
+            {Beats::BpmScale::Double, 2.0},
+    };
+    for (const auto& [scale, factor] : scales) {
+        SCOPED_TRACE(factor);
+        const auto result = kVariableTempoBeats.tryScale(scale);
+        ASSERT_TRUE(result.has_value());
+        ASSERT_NE(nullptr, *result);
+        const auto& scaled = **result;
+        EXPECT_FALSE(scaled.hasConstantTempo());
+        const auto anchor = scaled.iteratorFrom(kStartPosition);
+        EXPECT_EQ(kStartPosition, *anchor);
+        EXPECT_EQ(kVariableTempoBeats.getSubVersion(), scaled.getSubVersion());
+        EXPECT_DOUBLE_EQ(90.0 * factor, scaled.getLastMarkerBpm().value());
+        for (int n = 0; n < 7 * factor + 5; ++n) {
+            EXPECT_NEAR(variableBeatPosition(n / factor).value(),
+                    std::next(anchor, n)->value(),
+                    1.0);
+        }
+    }
+}
+
+TEST(BeatsTest, VariableTempoScaleKeepsRepresentableMarkers) {
+    const auto result = kNonConstTempoBeats.tryScale(Beats::BpmScale::ThreeHalves);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_NE(nullptr, *result);
+    const auto& scaled = **result;
+    ASSERT_EQ(3, scaled.getMarkers().size());
+    EXPECT_EQ(kNonConstTempoBeats.getMarkers()[0].position(),
+            scaled.getMarkers()[0].position());
+    EXPECT_EQ(kNonConstTempoBeats.getMarkers()[1].position(),
+            scaled.getMarkers()[1].position());
+    EXPECT_EQ(12, scaled.getMarkers()[0].beatsTillNextMarker());
+    EXPECT_EQ(24, scaled.getMarkers()[1].beatsTillNextMarker());
+    EXPECT_EQ(kNonConstTempoBeats.getLastMarkerPosition(), scaled.getMarkers()[2].position());
+    EXPECT_EQ(1, scaled.getMarkers()[2].beatsTillNextMarker());
+    EXPECT_DOUBLE_EQ(180.0, scaled.getLastMarkerBpm().value());
+    const auto restored = Beats::fromByteArray(
+            kSampleRate, scaled.getVersion(), QString(), scaled.toByteArray());
+    ASSERT_NE(nullptr, restored);
+    EXPECT_DOUBLE_EQ(180.0, restored->getLastMarkerBpm().value());
+}
+
+TEST(BeatsTest, VariableTempoScaleSurvivesSerializationAcrossTailBoundary) {
+    const auto result = kVariableTempoBeats.tryScale(Beats::BpmScale::ThreeHalves);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_NE(nullptr, *result);
+    const auto& scaled = **result;
+    const auto restored = Beats::fromByteArray(
+            kSampleRate, scaled.getVersion(), scaled.getSubVersion(), scaled.toByteArray());
+    ASSERT_NE(nullptr, restored);
+    EXPECT_FALSE(restored->hasConstantTempo());
+    const auto anchor = restored->iteratorFrom(kStartPosition);
+    EXPECT_EQ(kStartPosition, *anchor);
+    for (int n = 0; n < 16; ++n) {
+        EXPECT_NEAR(variableBeatPosition(n / 1.5).value(),
+                std::next(anchor, n)->value(),
+                3.0);
+    }
+    EXPECT_NEAR(135.0, restored->getLastMarkerBpm().value(), 0.01);
+}
+
+TEST(BeatsTest, VariableTempoTranslateFractionalBeats) {
+    for (const double offset : {-0.5, 0.0, 0.5, 2.5}) {
+        SCOPED_TRACE(offset);
+        const auto result = kVariableTempoBeats.tryTranslateBeats(offset);
+        ASSERT_TRUE(result.has_value());
+        ASSERT_NE(nullptr, *result);
+        const auto& translated = **result;
+        EXPECT_FALSE(translated.hasConstantTempo());
+        EXPECT_EQ(kVariableTempoBeats.getSubVersion(), translated.getSubVersion());
+        EXPECT_DOUBLE_EQ(90.0, translated.getLastMarkerBpm().value());
+        const auto anchorPosition = variableBeatPosition(offset);
+        const auto anchor = translated.iteratorFrom(anchorPosition);
+        EXPECT_EQ(anchorPosition, *anchor);
+        for (int n = 0; n < 12; ++n) {
+            EXPECT_NEAR(variableBeatPosition(n + offset).value(),
+                    std::next(anchor, n)->value(),
+                    1.0);
+        }
+    }
+}
+
+TEST(BeatsTest, VariableTempoSetBpmKeepsTempoChanges) {
+    const auto bpm = kVariableTempoBeats.getBpmInRange(
+            kStartPosition, kVariableTempoBeats.getLastMarkerPosition());
+    const auto result = kVariableTempoBeats.trySetBpm(bpm * 1.1);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_NE(nullptr, *result);
+    const auto& scaled = **result;
+    EXPECT_FALSE(scaled.hasConstantTempo());
+    const auto anchor = scaled.iteratorFrom(kStartPosition);
+    EXPECT_EQ(kStartPosition, *anchor);
+    EXPECT_DOUBLE_EQ(99.0, scaled.getLastMarkerBpm().value());
+    for (int n = 0; n < 12; ++n) {
+        EXPECT_NEAR(variableBeatPosition(n / 1.1).value(),
+                std::next(anchor, n)->value(),
+                1.0);
+    }
+}
+
+TEST(BeatsTest, VariableTempoSetBpmUsesTrackWideReference) {
+    const auto result = kVariableTempoBeats.trySetBpm(Bpm(135.0), Bpm(90.0));
+    ASSERT_TRUE(result.has_value());
+    ASSERT_NE(nullptr, *result);
+    const auto& scaled = **result;
+    const auto anchor = scaled.iteratorFrom(kStartPosition);
+    for (int n = 0; n < 16; ++n) {
+        EXPECT_NEAR(variableBeatPosition(n / 1.5).value(), std::next(anchor, n)->value(), 1.0);
+    }
+    EXPECT_DOUBLE_EQ(135.0,
+            scaled.getBpmInRange(audio::kStartFramePos, audio::FramePos(300 * kSampleRate))
+                    .value());
+}
+
+TEST(BeatsTest, VariableTempoTrackBpmEditsKeepTempoAndRespectLock) {
+    const auto track = Track::newTemporary();
+    track->setAudioProperties(audio::ChannelCount(2),
+            kSampleRate,
+            audio::Bitrate(),
+            Duration::fromSeconds(300));
+    ASSERT_TRUE(track->trySetBeats(Beats::fromBeatMarkers(kSampleRate,
+            kVariableTempoMarkers,
+            kVariableTempoBeats.getLastMarkerPosition(),
+            kVariableTempoBeats.getLastMarkerBpm(),
+            kVariableTempoBeats.getSubVersion())));
+    EXPECT_DOUBLE_EQ(90.0, track->getBpm());
+    ASSERT_TRUE(track->trySetBpm(135.0));
+    EXPECT_DOUBLE_EQ(135.0, track->getBpm());
+    const auto scaled = track->getBeats();
+    ASSERT_NE(nullptr, scaled);
+    EXPECT_FALSE(scaled->hasConstantTempo());
+    const auto anchor = scaled->iteratorFrom(kStartPosition);
+    for (int n = 0; n < 16; ++n) {
+        EXPECT_NEAR(variableBeatPosition(n / 1.5).value(), std::next(anchor, n)->value(), 1.0);
+    }
+    track->setBpmLocked(true);
+    EXPECT_FALSE(track->trySetBpm(140.0));
+    EXPECT_EQ(scaled, track->getBeats());
+    EXPECT_DOUBLE_EQ(135.0, track->getBpm());
+    EXPECT_TRUE(track->isBpmLocked());
+}
+
+TEST(BeatsTest, VariableTempoEditsRejectInvalidOrUnrepresentableValues) {
+    for (const double bpm : {0.0,
+                 -1.0,
+                 std::numeric_limits<double>::infinity(),
+                 std::numeric_limits<double>::quiet_NaN(),
+                 std::numeric_limits<double>::max(),
+                 1e-100,
+                 std::numeric_limits<double>::denorm_min()}) {
+        EXPECT_FALSE(kVariableTempoBeats.trySetBpm(Bpm(bpm)).has_value());
+    }
+    EXPECT_FALSE(kVariableTempoBeats
+                    .tryTranslateBeats(std::numeric_limits<double>::infinity())
+                    .has_value());
+    EXPECT_FALSE(kConstTempoBeats
+                    .tryTranslateBeats(std::numeric_limits<double>::max())
+                    .has_value());
+    EXPECT_FALSE(kVariableTempoBeats.trySetBpm(Bpm(90000000), Bpm(90)).has_value());
+}
+
+TEST(BeatsTest, VariableTempoRepeatedScalingKeepsOriginalAnchor) {
+    const auto first = kVariableTempoBeats.tryScale(Beats::BpmScale::ThreeHalves);
+    ASSERT_TRUE(first.has_value());
+    ASSERT_NE(nullptr, *first);
+    const auto restored = Beats::fromByteArray(kSampleRate,
+            (*first)->getVersion(),
+            (*first)->getSubVersion(),
+            (*first)->toByteArray());
+    ASSERT_NE(nullptr, restored);
+    for (const auto& beats : {*first, restored}) {
+        const auto second = beats->tryScale(Beats::BpmScale::ThreeHalves);
+        ASSERT_TRUE(second.has_value());
+        ASSERT_NE(nullptr, *second);
+        EXPECT_EQ(kStartPosition, *(*second)->cfirstmarker());
+        EXPECT_EQ(kStartPosition, (*second)->findClosestBeat(kStartPosition));
+        EXPECT_FALSE((*second)->hasConstantTempo());
+    }
+}
+
+TEST(BeatsTest, VariableTempoPropertiesUnlockAndEditTogether) {
+    const auto track = Track::newTemporary();
+    track->setAudioProperties(audio::ChannelCount(2),
+            kSampleRate,
+            audio::Bitrate(),
+            Duration::fromSeconds(300));
+    const auto original = Beats::fromBeatMarkers(kSampleRate,
+            kVariableTempoMarkers,
+            kVariableTempoBeats.getLastMarkerPosition(),
+            kVariableTempoBeats.getLastMarkerBpm());
+    ASSERT_TRUE(track->trySetBeats(original));
+    track->setBpmLocked(true);
+    const auto scaled = original->tryScale(Beats::BpmScale::ThreeHalves);
+    ASSERT_TRUE(scaled.has_value());
+    auto record = track->getRecord();
+    record.setBpmLocked(false);
+    ASSERT_TRUE(track->replaceRecord(record, *scaled));
+    EXPECT_EQ(*scaled, track->getBeats());
+    EXPECT_DOUBLE_EQ(135.0, track->getBpm());
+    EXPECT_FALSE(track->isBpmLocked());
+}
+
+TEST(BeatsTest, VariableTempoPropertiesApplyFinalEditBeforeLock) {
+    const auto track = Track::newTemporary();
+    track->setAudioProperties(audio::ChannelCount(2),
+            kSampleRate,
+            audio::Bitrate(),
+            Duration::fromSeconds(300));
+    const auto original = Beats::fromBeatMarkers(kSampleRate,
+            kVariableTempoMarkers,
+            kVariableTempoBeats.getLastMarkerPosition(),
+            kVariableTempoBeats.getLastMarkerBpm());
+    ASSERT_TRUE(track->trySetBeats(original));
+    const auto scaled = original->tryScale(Beats::BpmScale::ThreeHalves);
+    ASSERT_TRUE(scaled.has_value());
+    auto record = track->getRecord();
+    record.setBpmLocked(true);
+    ASSERT_TRUE(track->replaceRecord(record, *scaled));
+    EXPECT_EQ(*scaled, track->getBeats());
+    EXPECT_DOUBLE_EQ(135.0, track->getBpm());
+    EXPECT_TRUE(track->isBpmLocked());
+    EXPECT_FALSE(track->replaceRecord(track->getRecord(), original));
+    EXPECT_EQ(*scaled, track->getBeats());
+    EXPECT_TRUE(track->isBpmLocked());
+}
 
 TEST(BeatsTest, ConstTempoGetBpmInRange) {
     EXPECT_DOUBLE_EQ(kBpm.value(),

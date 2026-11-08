@@ -23,6 +23,7 @@ enum class RhythmChange {
     OffbeatKicks,
     EntirePatternPhase,
     SmoothTempo,
+    PercussionWithSyncopatedSubBass,
 };
 
 double beatTime(double beat, RhythmChange change) {
@@ -42,16 +43,25 @@ struct Instrument {
     double level;
 };
 
-void feedBreakbeat(mixxx::BeatGridEvidence* evidence, RhythmChange change) {
-    std::array<Instrument, 3> drums{
-            {{{}, 65, 240, 45, 0.7}, {{}, 1400, 2100, 100, 0.55}, {{}, 2700, 3300, 180, 0.22}}};
+void feedBreakbeat(mixxx::BeatGridEvidence* evidence, RhythmChange change, double delay = 0) {
+    std::array<Instrument, 4> drums{
+            {{{}, 65, 240, 45, 0.7},
+                    {{}, 1400, 2100, 100, 0.55},
+                    {{}, 2700, 3300, 180, 0.22},
+                    {{}, 45, 65, 25, 0.4}}};
+    if (change == RhythmChange::PercussionWithSyncopatedSubBass) {
+        drums[0] = {{}, 180, 240, 70, 0.85};
+    }
     // Kicks occupy alternating quarters, snares the intervening backbeats,
     // and hi-hats mark eighths. Only the kick arrangement changes midway;
     // its new offbeat position must not move the independently steady clock.
     for (double beat = 0; beatTime(beat, change) < kDuration; beat += 0.5) {
         const auto eighth = static_cast<int>(std::lround(beat * 2));
         double kickBeat = beat;
-        if (eighth % 4 == 0) {
+        if (change == RhythmChange::PercussionWithSyncopatedSubBass && eighth % 2 == 0) {
+            drums[0].times.push_back(beatTime(beat, change));
+            drums[3].times.push_back(beatTime(beat + 0.5, change));
+        } else if (change != RhythmChange::PercussionWithSyncopatedSubBass && eighth % 4 == 0) {
             if (change == RhythmChange::OffbeatKicks ||
                     (change == RhythmChange::KickPattern && beatTime(beat, change) >= 90)) {
                 kickBeat += 0.5;
@@ -63,7 +73,12 @@ void feedBreakbeat(mixxx::BeatGridEvidence* evidence, RhythmChange change) {
         }
         drums[2].times.push_back(beatTime(beat, change));
     }
-    std::array<size_t, 3> next{};
+    for (auto& drum : drums) {
+        for (auto& time : drum.times) {
+            time += delay;
+        }
+    }
+    std::array<size_t, drums.size()> next{};
     std::vector<CSAMPLE> stereo(8192);
     for (int start = 0; start < kSampleRate * kDuration; start += 4096) {
         const int frames = std::min(4096, kSampleRate * kDuration - start);
@@ -144,6 +159,97 @@ TEST(BreakbeatGridEvidenceTest, StrongOffbeatKicksDoNotOverrideTheOnbeatSnareClo
         const auto expected = mixxx::audio::FramePos((kOrigin + beat * 60 / kBpm) * kSampleRate);
         EXPECT_NEAR(expected.value(),
                 result.grid->findClosestBeat(expected).value(),
+                0.015 * kSampleRate);
+    }
+}
+
+TEST(BreakbeatGridEvidenceTest, RecoveredClockRetainsTheOnbeatPhaseWithOffbeatKicks) {
+    mixxx::BeatGridEvidence evidence;
+    evidence.initialize(kRate);
+    feedBreakbeat(&evidence, RhythmChange::OffbeatKicks);
+    for (const auto mode : {mixxx::BeatGridMode::Auto,
+                 mixxx::BeatGridMode::Constant,
+                 mixxx::BeatGridMode::Variable}) {
+        SCOPED_TRACE(static_cast<int>(mode));
+        const auto grid = evidence.recoverGrid(constantGrid(), mode);
+        ASSERT_TRUE(grid);
+        EXPECT_NEAR(kBpm,
+                grid->getBpmInRange(mixxx::audio::kStartFramePos,
+                            mixxx::audio::FramePos(kDuration * kSampleRate))
+                        .value(),
+                0.1);
+        for (const double beat : {80.0, 81.0, 320.0, 321.0}) {
+            const auto expected = mixxx::audio::FramePos(
+                    (kOrigin + beat * 60 / kBpm) * kSampleRate);
+            EXPECT_NEAR(expected.value(),
+                    grid->findClosestBeat(expected).value(),
+                    0.015 * kSampleRate);
+        }
+    }
+}
+
+TEST(BreakbeatGridEvidenceTest, RecoveredClockRetainsPhaseAcrossKickArrangementChanges) {
+    mixxx::BeatGridEvidence evidence;
+    evidence.initialize(kRate);
+    feedBreakbeat(&evidence, RhythmChange::KickPattern);
+    const auto grid = evidence.recoverGrid(constantGrid(), mixxx::BeatGridMode::Auto);
+    ASSERT_TRUE(grid);
+    EXPECT_TRUE(grid->hasConstantTempo());
+    EXPECT_NEAR(kBpm,
+            grid->getBpmInRange(mixxx::audio::kStartFramePos,
+                        mixxx::audio::FramePos(kDuration * kSampleRate))
+                    .value(),
+            0.1);
+    for (const double beat : {80.0, 81.0, 320.0, 321.0}) {
+        const auto expected = mixxx::audio::FramePos((kOrigin + beat * 60 / kBpm) * kSampleRate);
+        EXPECT_NEAR(expected.value(),
+                grid->findClosestBeat(expected).value(),
+                0.015 * kSampleRate);
+    }
+}
+
+TEST(BreakbeatGridEvidenceTest, RecoveredClockCorrectsWrongHalfPhaseDespiteSyncopatedSubBass) {
+    mixxx::BeatGridEvidence evidence;
+    evidence.initialize(kRate);
+    feedBreakbeat(&evidence, RhythmChange::PercussionWithSyncopatedSubBass);
+    const auto reference = constantGrid()->tryTranslate(30 / kBpm * kSampleRate);
+    ASSERT_TRUE(reference);
+    const auto grid = evidence.recoverGrid(*reference, mixxx::BeatGridMode::Auto);
+    ASSERT_TRUE(grid);
+    EXPECT_TRUE(grid->hasConstantTempo());
+    EXPECT_NEAR(kBpm,
+            grid->getBpmInRange(mixxx::audio::kStartFramePos,
+                        mixxx::audio::FramePos(kDuration * kSampleRate))
+                    .value(),
+            0.1);
+    for (const double beat : {80.0, 81.0, 320.0, 321.0}) {
+        const auto expected = mixxx::audio::FramePos((kOrigin + beat * 60 / kBpm) * kSampleRate);
+        EXPECT_NEAR(expected.value(),
+                grid->findClosestBeat(expected).value(),
+                0.015 * kSampleRate);
+    }
+}
+
+TEST(BreakbeatGridEvidenceTest, ConstantRecoveryKeepsReferencePhaseWhenHalfBeatSectionsAreBalanced) {
+    mixxx::BeatGridEvidence evidence;
+    evidence.initialize(kRate);
+    constexpr double origin = 0.3;
+    feedBreakbeat(&evidence, RhythmChange::EntirePatternPhase, origin - kOrigin);
+    const auto reference = mixxx::Beats::fromConstTempo(kRate,
+            mixxx::audio::FramePos(origin * kSampleRate),
+            mixxx::Bpm(160.2));
+    const auto grid = evidence.recoverGrid(reference, mixxx::BeatGridMode::Constant);
+    ASSERT_TRUE(grid);
+    EXPECT_TRUE(grid->hasConstantTempo());
+    EXPECT_NEAR(kBpm,
+            grid->getBpmInRange(mixxx::audio::kStartFramePos,
+                        mixxx::audio::FramePos(kDuration * kSampleRate))
+                    .value(),
+            0.1);
+    for (const double beat : {40.0, 41.0, 320.0, 321.0}) {
+        const auto expected = mixxx::audio::FramePos((origin + beat * 60 / kBpm) * kSampleRate);
+        EXPECT_NEAR(expected.value(),
+                grid->findClosestBeat(expected).value(),
                 0.015 * kSampleRate);
     }
 }
