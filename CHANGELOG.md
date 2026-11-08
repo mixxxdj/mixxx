@@ -82,78 +82,94 @@
 
 ### Library
 
-* Add color coding for Key column [#13390](https://github.com/mixxxdj/mixxx/pull/13390)
-* Add Key Color Palettes [#13497](https://github.com/mixxxdj/mixxx/pull/13497)
+* Add color coding for Key column with custom color palettes
+  [#13390](https://github.com/mixxxdj/mixxx/pull/13390)
+  [#13497](https://github.com/mixxxdj/mixxx/pull/13497)
+  [#13475](https://github.com/mixxxdj/mixxx/pull/13475)
+  [#15839](https://github.com/mixxxdj/mixxx/pull/15839)
 * Add overview column with small waveform
   [#14140](https://github.com/mixxxdj/mixxx/pull/14140)
   [#15368](https://github.com/mixxxdj/mixxx/pull/15368)
   [#15366](https://github.com/mixxxdj/mixxx/issues/15366)
   [#15431](https://github.com/mixxxdj/mixxx/pull/15431)
-* Add a rebindable keyboard shortcut for editing items as a replacement for F2 [#13148](https://github.com/mixxxdj/mixxx/pull/13148)
-* DeveloperTools: restore searchbar shortcut Ctrl+F
-  [#14761](https://github.com/mixxxdj/mixxx/pull/14761)
-* CmdlineArgs: Add `--rescan-library` for rescanning on startup [#13661](https://github.com/mixxxdj/mixxx/pull/13661)
-* Add case-insensitive parsing for Lancelot key notation [#14318](https://github.com/mixxxdj/mixxx/pull/14318)
+* Engine DJ (Engine Prime) and OneLibrary: update read support via libdjinterop 0.27.1
+  [#15958](https://github.com/mixxxdj/mixxx/pull/15958)
+  [#15696](https://github.com/mixxxdj/mixxx/pull/15696)
+  [#16133](https://github.com/mixxxdj/mixxx/pull/16133)
+  [#16329](https://github.com/mixxxdj/mixxx/pull/16329)
+* Engine DJ (Engine Prime): add support for playlists export [#14741](https://github.com/mixxxdj/mixxx/pull/14741)
+* Rhythmbox: fix imports
+  [#15798](https://github.com/mixxxdj/mixxx/pull/15798)
+  [#15770](https://github.com/mixxxdj/mixxx/pull/15770)
 * iTunes: Add iOS importer using the Media Player framework [#12690](https://github.com/mixxxdj/mixxx/pull/12690)
-* Add Shuffle action to track table header menu [#13392](https://github.com/mixxxdj/mixxx/pull/13392)
+* Library scan: add progress bar, plus some improvements
+  [#15517](https://github.com/mixxxdj/mixxx/pull/15517)
+  [#16457](https://github.com/mixxxdj/mixxx/pull/16457)
 * Library scan: log summary and show popup (opt-out)
   [#13427](https://github.com/mixxxdj/mixxx/pull/13427)
   [#10720](https://github.com/mixxxdj/mixxx/issues/10720)
   [#15089](https://github.com/mixxxdj/mixxx/pull/15089)
   [#15085](https://github.com/mixxxdj/mixxx/issues/15085)
+* Library scan: Fix track relocation query
+  [#16578](https://github.com/mixxxdj/mixxx/pull/16578)
+  [#16579](https://github.com/mixxxdj/mixxx/pull/16579)
+* Library scan: display rediscovered tracks [#15938](https://github.com/mixxxdj/mixxx/pull/15938)
 * Search: add BPM lock filter `bpm:locked`
   [#14590](https://github.com/mixxxdj/mixxx/pull/14590)
   [#14583](https://github.com/mixxxdj/mixxx/issues/14583)
-* Track menu, purge: allow to hide further success popups in the current session [#13807](https://github.com/mixxxdj/mixxx/pull/13807)
-* Track Info dialogs: move metadata buttons below color picker [#13632](https://github.com/mixxxdj/mixxx/pull/13632)
-* Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons [#13614](https://github.com/mixxxdj/mixxx/pull/13614)
-* Fix: restore BPM and Bitrate column width [#13571](https://github.com/mixxxdj/mixxx/pull/13571)
-* Elide key text from the right [#13475](https://github.com/mixxxdj/mixxx/pull/13475)
-* Playlists: add 'Unlock all' and 'Delete all unlocked' menu actions
-  [#14091](https://github.com/mixxxdj/mixxx/pull/14091)
-  [#8960](https://github.com/mixxxdj/mixxx/issues/8960)
-* Scan dialog: add progress bar, plus some improvements [#15517](https://github.com/mixxxdj/mixxx/pull/15517)
-* Update to libdjinterop 0.27.1
-  [#15958](https://github.com/mixxxdj/mixxx/pull/15958)
-  [#15696](https://github.com/mixxxdj/mixxx/pull/15696)
-  [#16133](https://github.com/mixxxdj/mixxx/pull/16133)
-  [#16329](https://github.com/mixxxdj/mixxx/pull/16329)
-* Library: enable drag'n'drop of directories
-  [#15688](https://github.com/mixxxdj/mixxx/pull/15688)
-  [#5100](https://github.com/mixxxdj/mixxx/issues/5100)
 * Search: add `directory` filter [#15701](https://github.com/mixxxdj/mixxx/pull/15701)
-* Search: add filter shortcuts, eg. t|title, a|artist, cm|comment, y|year
+* Search: add filter shortcuts, eg. t|title, a|artist, cm|comment, y|year, lo|location
   [#15115](https://github.com/mixxxdj/mixxx/pull/15115)
   [#15101](https://github.com/mixxxdj/mixxx/issues/15101)
   [#16315](https://github.com/mixxxdj/mixxx/pull/16315)
   [#16312](https://github.com/mixxxdj/mixxx/issues/16312)
+  [#16920](https://github.com/mixxxdj/mixxx/pull/16920)
+  [#16972](https://github.com/mixxxdj/mixxx/pull/16972)
 * Search: add constant BPM filter `bpm:const`
   [#14642](https://github.com/mixxxdj/mixxx/pull/14642)
   [#11064](https://github.com/mixxxdj/mixxx/issues/11064)
+  [#16589](https://github.com/mixxxdj/mixxx/pull/16589)
 * Search: fix 'not' operator
   [#15923](https://github.com/mixxxdj/mixxx/pull/15923)
   [#15918](https://github.com/mixxxdj/mixxx/issues/15918)
-* Library: also apply library font size(!) to tracks header
-  [#15392](https://github.com/mixxxdj/mixxx/pull/15392)
-  [#15476](https://github.com/mixxxdj/mixxx/pull/15476)
-* Rhythmbox: fix imports
-  [#15798](https://github.com/mixxxdj/mixxx/pull/15798)
-  [#15770](https://github.com/mixxxdj/mixxx/pull/15770)
-* WTrackMenu: warn before opening more than 10 tracks in file browser
-  [#15828](https://github.com/mixxxdj/mixxx/pull/15828)
-  [#15819](https://github.com/mixxxdj/mixxx/issues/15819)
-* Key delegate: apply 'played' color [#15839](https://github.com/mixxxdj/mixxx/pull/15839)
-* Track Info dialog: restore column stretching [#15037](https://github.com/mixxxdj/mixxx/pull/15037)
-* Computer feature: mention constraints of file view/model [#14934](https://github.com/mixxxdj/mixxx/pull/14934)
-* Fix "dataChanged() called with an invalid index range" warning
-  [#15937](https://github.com/mixxxdj/mixxx/pull/15937)
-  [#14610](https://github.com/mixxxdj/mixxx/issues/14610)
-* Fix: use correct Hidden settings namespace [#15120](https://github.com/mixxxdj/mixxx/pull/15120)
-* Engine DJ: add support for playlists export [#14741](https://github.com/mixxxdj/mixxx/pull/14741)
-* Fix: display rediscovered tracks [#15938](https://github.com/mixxxdj/mixxx/pull/15938)
 * Search: include half/double for fuzzy BPM search (~bpm:100)
   [#16703](https://github.com/mixxxdj/mixxx/pull/16703)
   [#17148](https://github.com/mixxxdj/mixxx/pull/17148)
+* Search Related: use compact BPM query `bpm:100-115` instead of `bpm:>=100 bpm:<=115` [#16701](https://github.com/mixxxdj/mixxx/pull/16701)
+* Track menu: warn before opening more than 10 tracks in file browser
+  [#15828](https://github.com/mixxxdj/mixxx/pull/15828)
+  [#15819](https://github.com/mixxxdj/mixxx/issues/15819)
+* Track menu: create/update menus only on demand, eg. not for showing the Track Info dialog
+  [#16492](https://github.com/mixxxdj/mixxx/pull/16492)
+* Track menu: allow to load hidden tracks from the hidden tracks table [#16385](https://github.com/mixxxdj/mixxx/pull/16385)
+* Track menu, purge: allow to hide further success popups in the current session [#13807](https://github.com/mixxxdj/mixxx/pull/13807)
+* Track Info: fit small screens, scrollable, resizable
+  [#15073](https://github.com/mixxxdj/mixxx/pull/15073)
+  [#14421](https://github.com/mixxxdj/mixxx/issues/14421)
+  [#16470](https://github.com/mixxxdj/mixxx/pull/16470)
+  [#15037](https://github.com/mixxxdj/mixxx/pull/15037)
+  [#13632](https://github.com/mixxxdj/mixxx/pull/13632)
+* Tracks table: right-align playlist position column [#16906](https://github.com/mixxxdj/mixxx/pull/16906)
+* Tracks table: also apply library font size to header
+  [#15392](https://github.com/mixxxdj/mixxx/pull/15392)
+  [#15476](https://github.com/mixxxdj/mixxx/pull/15476)
+* Track table: add shuffle action to header menu [#13392](https://github.com/mixxxdj/mixxx/pull/13392)
+* Track table: restore BPM and Bitrate column width [#13571](https://github.com/mixxxdj/mixxx/pull/13571)
+* Track table: fix set 'played' color for unselected tracks [#16531](https://github.com/mixxxdj/mixxx/pull/16531)
+* Track table (Computer and Recording): sort correctly by file creation and modification date
+  [#16527](https://github.com/mixxxdj/mixxx/pull/16527)
+  [#16588](https://github.com/mixxxdj/mixxx/pull/16588)
+* Add a rebindable keyboard shortcut for editing items as a replacement for F2 [#13148](https://github.com/mixxxdj/mixxx/pull/13148)
+* DeveloperTools: restore searchbar shortcut Ctrl+F
+  [#14761](https://github.com/mixxxdj/mixxx/pull/14761)
+* CmdlineArgs: Add `--rescan-library` for rescanning on startup [#13661](https://github.com/mixxxdj/mixxx/pull/13661)
+* Track File Export: add 'Apply to all' checkbox, remove ".. All" buttons [#13614](https://github.com/mixxxdj/mixxx/pull/13614)
+* Playlists: add 'Unlock all' and 'Delete all unlocked' menu actions
+  [#14091](https://github.com/mixxxdj/mixxx/pull/14091)
+  [#8960](https://github.com/mixxxdj/mixxx/issues/8960)
+* Library: enable drag'n'drop of directories
+  [#15688](https://github.com/mixxxdj/mixxx/pull/15688)
+  [#5100](https://github.com/mixxxdj/mixxx/issues/5100)
 * Fix incoorrect displayed Loop cue after track load
   [#16455](https://github.com/mixxxdj/mixxx/pull/16455)
   [#17111](https://github.com/mixxxdj/mixxx/pull/17111)
@@ -167,35 +183,15 @@
 * macOS: fix sandboxed Traktor collection access
   [#16205](https://github.com/mixxxdj/mixxx/pull/16205)
   [#16192](https://github.com/mixxxdj/mixxx/issues/16192)
-* Track menu: create/update menus only on demand, eg. not for showing the Track Info dialog
-  [#16492](https://github.com/mixxxdj/mixxx/pull/16492)
 * Fix lost BPM lock on tracks without a beatgrid
   [#16587](https://github.com/mixxxdj/mixxx/pull/16587)
   [#15196](https://github.com/mixxxdj/mixxx/issues/15196)
-* Search Fix crash when a track without beats hits bpm:const [#16589](https://github.com/mixxxdj/mixxx/pull/16589)
-* Search Related: use compact BPM query `bpm:100-115` instead of `bpm:>=100 bpm:<=115` [#16701](https://github.com/mixxxdj/mixxx/pull/16701)
-* Search Related: use field shortcuts [#16920](https://github.com/mixxxdj/mixxx/pull/16920)
-* (fix) Search: correct `location` shortcut "loc" -> "lo" [#16972](https://github.com/mixxxdj/mixxx/pull/16972)
-* Track menu: cache getFirstTrackPointer() when updating menus to reduce track cache calls [#16697](https://github.com/mixxxdj/mixxx/pull/16697)
-* Fix set 'played' color for unselected LocationDelegate [#16531](https://github.com/mixxxdj/mixxx/pull/16531)
-* Computer and Recording: sort correctly by file creation and modification date
-  [#16527](https://github.com/mixxxdj/mixxx/pull/16527)
-  [#16588](https://github.com/mixxxdj/mixxx/pull/16588)
-* Library Scanner: show progress also when looking for missing tracks [#16457](https://github.com/mixxxdj/mixxx/pull/16457)
-* Hidden tracks table: allow to load hidden tracks [#16385](https://github.com/mixxxdj/mixxx/pull/16385)
-* Library sidebar: fix bold state for root items when a trackset contains the selected track
+* Sidebar: fix bold state for root items when a trackset contains the selected track
   [#16568](https://github.com/mixxxdj/mixxx/pull/16568)
-* Library: add `stars_up`/`stars_down` and `set_bpmlock` controls
+* Add `stars_up`/`stars_down` and `set_bpmlock` controls
   [#15976](https://github.com/mixxxdj/mixxx/pull/15976)
   [#17319](https://github.com/mixxxdj/mixxx/pull/17319)
-* Tracks: right-align playlist position column [#16906](https://github.com/mixxxdj/mixxx/pull/16906)
-* Make Track Properties dialog fit small screens, scrollable
-  [#15073](https://github.com/mixxxdj/mixxx/pull/15073)
-  [#14421](https://github.com/mixxxdj/mixxx/issues/14421)
-* Track Info: expand only Comment editor when expanding vertically [#16470](https://github.com/mixxxdj/mixxx/pull/16470)
-* Library Scanner: Fix track relocation query
-  [#16578](https://github.com/mixxxdj/mixxx/pull/16578)
-  [#16579](https://github.com/mixxxdj/mixxx/pull/16579)
+* Add case-insensitive parsing for Lancelot key notation [#14318](https://github.com/mixxxdj/mixxx/pull/14318)
 * Tag Fetcher: show the real error when Cover Art Archive fails
   [#17427](https://github.com/mixxxdj/mixxx/pull/17427)
   [#11903](https://github.com/mixxxdj/mixxx/issues/11903)
