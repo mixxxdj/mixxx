@@ -507,6 +507,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     if (!Sandbox::askForAccess(&fileInfo)) {
         return QString();
     }
+    // askForAccess() only holds the security token during the check;
+    // keep it open while the database is read.
+    const auto securityToken = Sandbox::openSecurityToken(&fileInfo, true);
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
@@ -893,6 +896,9 @@ void readAnalyze(TrackPointer track,
 
     qDebug() << "Rekordbox ANLZ path:" << anlzPath << " for: " << track->getTitle();
 
+    // Hold sandbox access for the ANLZ file while it is read.
+    mixxx::FileInfo anlzFileInfo(anlzPath);
+    const auto securityToken = Sandbox::openSecurityToken(&anlzFileInfo, true);
     std::ifstream ifs(anlzPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
