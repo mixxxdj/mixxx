@@ -4,3 +4,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # Don't require python > 3.10 for Ubuntu 22.04 compat:
+      - dependency-name: "https://github.com/python-jsonschema/check-jsonschema"
+        versions: [">= 0.39.0"]
+      - dependency-name: "https://github.com/pycqa/flake8"
+        versions: [">= 7.5.0"]
