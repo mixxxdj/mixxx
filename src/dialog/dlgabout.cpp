@@ -177,7 +177,8 @@ DlgAbout::DlgAbout()
             << "nomiapps"
             << "sergioalexo"
             << "Ram&oacute;n Arnau"
-            << "Kameron Markham";
+            << "Kameron Markham"
+            << "Samarth Deshpande";
 
     QStringList specialThanks;
     specialThanks
