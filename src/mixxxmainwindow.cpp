@@ -1605,34 +1605,34 @@ bool MixxxMainWindow::confirmExit() {
     }
 
     bool requireWarning = false;
+    bool prefDlgOpen = false;
     QList<QWidget*> windowsToClose;
 
     const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
     for (QWidget* pWidget : topLevelWidgets) {
-        if (pWidget == this || !pWidget->isVisible()) {
+        // Parentless windows with WA_QuitOnClose prevent lastWindowClosed, so close them.
+        if (pWidget == this || !pWidget->isVisible() || pWidget->parentWidget() ||
+                !pWidget->testAttribute(Qt::WA_QuitOnClose)) {
             continue;
         }
 
-        Qt::WindowType type = pWidget->windowType();
-        if (type == Qt::ToolTip || type == Qt::Popup || type == Qt::Desktop) {
-            continue;
-        }
-
-        if (qobject_cast<DlgAbout*>(pWidget) ||
-                qobject_cast<DlgDeveloperTools*>(pWidget) ||
-                qobject_cast<DlgKeywheel*>(pWidget)) {
-            windowsToClose.append(pWidget);
-        } else if (!qobject_cast<QMessageBox*>(pWidget)) {
+        if (pWidget == m_pPrefDlg) {
             requireWarning = true;
-            windowsToClose.append(pWidget);
+            prefDlgOpen = true;
+        } else if (!qobject_cast<DlgAbout*>(pWidget) &&
+                !qobject_cast<QMessageBox*>(pWidget)) {
+            requireWarning = true;
         }
+        windowsToClose.append(pWidget);
     }
 
     if (requireWarning) {
+        const QString reason = prefDlgOpen
+                ? tr("The preferences window is still open.")
+                : tr("Another window is still open.");
         QMessageBox::StandardButton btn = QMessageBox::question(this,
                 tr("Confirm Exit"),
-                tr("Another window is still open.") + "<br>" +
-                        tr("Discard any changes and exit Mixxx?"),
+                reason + "<br>" + tr("Discard any changes and exit Mixxx?"),
                 QMessageBox::Yes | QMessageBox::No,
                 QMessageBox::No);
 
@@ -1641,11 +1641,10 @@ bool MixxxMainWindow::confirmExit() {
         }
     }
 
-    for (QWidget* pWidget : windowsToClose) {
+    while (!windowsToClose.isEmpty()) {
+        auto* pWidget = windowsToClose.takeFirst();
         pWidget->close();
     }
-
-    windowsToClose.clear();
 
     return true;
 }
