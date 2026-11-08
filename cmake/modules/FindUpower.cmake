@@ -35,12 +35,15 @@ The following cache variables may also be set:
   The directory containing ``libupower-glib/upower.h``.
 ``Upower_LIBRARY``
   The path to the Upower library.
+``Gio_LIBRARY``
+  The path to the GIO library required by Upower.
 
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_Upower QUIET upower-glib)
+  pkg_check_modules(PC_Gio QUIET gio-2.0)
 endif()
 
 find_path(
@@ -60,6 +63,14 @@ find_library(
 )
 mark_as_advanced(Upower_LIBRARY)
 
+find_library(
+  Gio_LIBRARY
+  NAMES gio-2.0
+  HINTS ${PC_Gio_LIBRARY_DIRS}
+  DOC "GIO library required by Upower"
+)
+mark_as_advanced(Gio_LIBRARY)
+
 if(DEFINED PC_Upower_VERSION AND NOT PC_Upower_VERSION STREQUAL "")
   set(Upower_VERSION "${PC_Upower_VERSION}")
 endif()
@@ -67,12 +78,12 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Upower
-  REQUIRED_VARS Upower_LIBRARY Upower_INCLUDE_DIR
+  REQUIRED_VARS Upower_LIBRARY Upower_INCLUDE_DIR Gio_LIBRARY
   VERSION_VAR Upower_VERSION
 )
 
 if(Upower_FOUND)
-  set(Upower_LIBRARIES "${Upower_LIBRARY}")
+  set(Upower_LIBRARIES "${Upower_LIBRARY}" "${Gio_LIBRARY}")
   set(Upower_INCLUDE_DIRS "${Upower_INCLUDE_DIR}")
   set(Upower_DEFINITIONS ${PC_Upower_CFLAGS_OTHER})
 
@@ -84,6 +95,7 @@ if(Upower_FOUND)
         IMPORTED_LOCATION "${Upower_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${PC_Upower_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${Upower_INCLUDE_DIR}"
+        INTERFACE_LINK_LIBRARIES "${Gio_LIBRARY}"
     )
   endif()
 endif()
