@@ -357,9 +357,12 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonLoopOut->set(1);
     m_pButtonBeatJumpForward->set(1);
     m_pButtonBeatJumpForward->set(0);
-    m_pButtonLoopOut->set(0);
     ProcessBuffer();
-    EXPECT_EQ(m_pClosestBeat->get(), m_pLoopEndPoint->get());
+    m_pButtonLoopOut->set(0);
+    ProcessBuffer(); // first process to schedule seek in a stopped deck
+    ProcessBuffer(); // then seek
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
+    EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2);
     EXPECT_FALSE(m_pBeatLoop4Enabled->toBool());
 }
 

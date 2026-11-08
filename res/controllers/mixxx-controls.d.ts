@@ -152,7 +152,12 @@ declare namespace MixxxControls {
         /**
          * The [VinylControl] group can toggle the vinyl control feature.
          */
-        | '[VinylControl]';
+        | '[VinylControl]'
+
+        /**
+         * The [Waveform] group contains controls that affect waveform rendering and visualization settings.
+         */
+        | '[Waveform]';
 
     /*
      * Public
@@ -184,6 +189,7 @@ declare namespace MixxxControls {
         '[Shoutcast]': ShoutcastControl;
         '[Skin]': SkinControl;
         '[VinylControl]': VinylControlControl;
+        '[Waveform]': WaveformControl;
     } & {
         [key: `[Auxiliary${number}]`]: AuxiliaryNControl;
         [key: `[Channel${number}]`]: ChannelNControl;
@@ -3202,6 +3208,16 @@ declare namespace MixxxControls {
         | 'search_history_selector'
 
         /**
+         * Set the beatgrid/BPM lock state of the selected track(s).
+         *
+         * @groups [Library]
+         * @range binary
+         * @feedback The lock icon of the selected track(s) is activated/deactivated.
+         * @since New in version 2.6.0.
+         */
+        | 'set_bpmlock'
+
+        /**
          * Toggle the track context menu for all tracks selected in the current library view.
          * The control value is 1 if there is already a menu shown for the current view.
          * Note that the control is not aware of other track menus, for example those opened
@@ -3290,6 +3306,26 @@ declare namespace MixxxControls {
          * @since New in version 2.3.0.
          */
         | 'sort_order'
+
+        /**
+         * Decrease the rating of the currently selected track(s).
+         *
+         * @groups [Library]
+         * @range binary
+         * @feedback Star count is decreased in the library’s Rating column and in star widgets of deckswhere the selected track is loaded.
+         * @since New in version 2.6.0.
+         */
+        | 'stars_down'
+
+        /**
+         * Increase the rating of the currently selected track(s).
+         *
+         * @groups [Library]
+         * @range binary
+         * @feedback Star count is increased in the library’s Rating column and in star widgets of deckswhere the selected track is loaded.
+         * @since New in version 2.6.0.
+         */
+        | 'stars_up'
 
         /**
          * Set color of selected track to next color in palette.
@@ -3790,6 +3826,21 @@ declare namespace MixxxControls {
          * @since New in version 1.10.0.
          */
         | 'Toggle';
+
+    type WaveformControl =
+        /**
+         * Toggles between stacked (split tracks) and overlapping stem waveform display modes.
+         *
+         * @groups [Waveform]
+         * @range
+         * |Value|Meaning|
+         * |---|---|
+         * |0  |Overlapping stem waveforms (default)|
+         * |1  |Stacked (split) stem waveforms|
+         * @feedback Waveform overview and scrolling display mode changes.
+         * @since New in version 2.6.0.
+         */
+        'stem_split_tracks';
 
     type ChannelNStemMControl = ChannelNChannelNStemMPreviewDeckNSamplerNControl;
 

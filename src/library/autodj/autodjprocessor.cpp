@@ -5,9 +5,11 @@
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"
 #include "track/track.h"
+#include "util/logger.h"
 #include "util/math.h"
 
 namespace {
+const mixxx::Logger kLogger("AutoDJ");
 const QString kPreferenceGroup = QStringLiteral("[Auto DJ]");
 const QString kControlGroup = QStringLiteral("[AutoDJ]");
 const char* kTransitionPreferenceName = "Transition";
@@ -18,7 +20,37 @@ constexpr double kKeepPosition = -1.0;
 // A track needs to be longer than two callbacks to not stop AutoDJ
 constexpr double kMinimumTrackDurationSec = 0.2;
 
-constexpr bool sDebug = false;
+const char* autoDJStateName(AutoDJProcessor::AutoDJState state) {
+    switch (state) {
+    case AutoDJProcessor::ADJ_IDLE:
+        return "IDLE";
+    case AutoDJProcessor::ADJ_LEFT_FADING:
+        return "LEFT_FADING";
+    case AutoDJProcessor::ADJ_RIGHT_FADING:
+        return "RIGHT_FADING";
+    case AutoDJProcessor::ADJ_ENABLE_P1LOADED:
+        return "ENABLE_P1LOADED";
+    case AutoDJProcessor::ADJ_ENABLE_P1PLAYING:
+        return "ENABLE_P1PLAYING";
+    case AutoDJProcessor::ADJ_DISABLED:
+        return "DISABLED";
+    }
+    return "UNKNOWN";
+}
+
+// True when the from-deck has reached its fade point, or the engine has
+// stopped it at EOF before playposition caught up to 1.0 / fadeBeginPos.
+bool fromDeckReachedFadeOrEnd(
+        const DeckAttributes* pDeck, double playPosition, double durationSec) {
+    if (!pDeck->isFromDeck) {
+        return false;
+    }
+    if (playPosition >= pDeck->fadeBeginPos || playPosition >= 1.0) {
+        return true;
+    }
+    return durationSec > 0.0 &&
+            (1.0 - playPosition) * durationSec <= kMinimumTrackDurationSec;
+}
 } // anonymous namespace
 
 DeckAttributes::DeckAttributes(int index,
@@ -55,6 +87,7 @@ DeckAttributes::DeckAttributes(int index,
     m_outroStartPos.connectValueChanged(this, &DeckAttributes::slotOutroStartPositionChanged);
     m_outroEndPos.connectValueChanged(this, &DeckAttributes::slotOutroEndPositionChanged);
     m_rateRatio.connectValueChanged(this, &DeckAttributes::slotRateChanged);
+    m_orientation.connectValueChanged(this, &DeckAttributes::slotOrientationChanged);
 }
 
 DeckAttributes::~DeckAttributes() {
@@ -89,7 +122,7 @@ void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void DeckAttributes::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    //qDebug() << "DeckAttributes::slotLoadingTrack";
+    // qDebug() << "DeckAttributes::slotLoadingTrack";
     emit loadingTrack(this, pNewTrack, pOldTrack);
 }
 
@@ -100,6 +133,11 @@ void DeckAttributes::slotPlayerEmpty() {
 void DeckAttributes::slotRateChanged(double v) {
     Q_UNUSED(v);
     emit rateChanged(this);
+}
+
+void DeckAttributes::slotOrientationChanged(double v) {
+    Q_UNUSED(v);
+    emit orientationChanged(this);
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
@@ -532,6 +570,16 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &DeckAttributes::rateChanged,
                 this,
                 &AutoDJProcessor::playerRateChanged);
+
+        connect(pLeftDeck,
+                &DeckAttributes::orientationChanged,
+                this,
+                &AutoDJProcessor::playerOrientationChanged);
+        connect(pRightDeck,
+                &DeckAttributes::orientationChanged,
+                this,
+                &AutoDJProcessor::playerOrientationChanged);
+
         connect(m_pAutoDJTableModel,
                 &PlaylistTableModel::firstTrackChanged,
                 this,
@@ -578,6 +626,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &ControlProxy::valueChanged,
                 this,
                 &AutoDJProcessor::crossfaderChanged);
+        disconnect(m_pAutoDJTableModel,
+                &PlaylistTableModel::firstTrackChanged,
+                this,
+                &AutoDJProcessor::playlistFirstTrackChanged);
         for (const auto& pDeck : m_decks) {
             pDeck->disconnect(this);
         }
@@ -639,6 +691,12 @@ void AutoDJProcessor::crossfaderChanged(double value) {
         double crossfaderPosition = value * (m_coCrossfaderReverse.toBool() ? -1 : 1);
         if ((crossfaderPosition == 1.0 && pFromDeck->isLeft()) ||       // crossfader right
                 (crossfaderPosition == -1.0 && pFromDeck->isRight())) { // crossfader left
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "crossfaderChanged force-advance"
+                                << "from" << pFromDeck->group
+                                << "to" << pToDeck->group
+                                << "xfader" << crossfaderPosition;
+            }
             if (!pToDeck->isPlaying()) {
                 if (getEndSecond(pToDeck) >= kMinimumTrackDurationSec) {
                     // Re-cue the track if the user has seeked it to the very end
@@ -707,7 +765,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
         if (leftDeckPlaying || rightDeckPlaying || leftDeckReachesEnd) {
             // One of left and right is playing. Switch to IDLE mode and make
-            // sure our thresholds are configured (by calling calculateFadeThresholds
+            // sure our thresholds are configured (by calling calculateTransition
             // for the playing deck).
             m_eState = ADJ_IDLE;
 
@@ -730,9 +788,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             } else {
                 // At least right deck is playing
                 // Set crossfade thresholds for right deck.
-                if constexpr (sDebug) {
-                    qDebug() << this << "playerPositionChanged"
-                             << "right deck playing";
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug() << "playerPositionChanged"
+                                    << "right deck playing";
                 }
                 calculateTransition(rightDeck, leftDeck, false);
             }
@@ -755,6 +813,11 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             } else {
                 setCrossfader(1.0);
             }
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "playerPositionChanged" << thisDeck->group
+                                << "fade complete" << autoDJStateName(m_eState)
+                                << "-> IDLE";
+            }
             m_eState = ADJ_IDLE;
             // Invalidate threshold calculated for the old otherDeck
             // This avoids starting a fade back before the new track is
@@ -769,6 +832,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
         }
     }
 
+    const bool fromDeckAtFadeOrEnd = fromDeckReachedFadeOrEnd(
+            thisDeck, thisPlayPosition, getEndSecond(thisDeck));
+
     if (m_eState == ADJ_IDLE) {
         if (!thisDeckPlaying && thisPlayPosition < 1) {
             // this is a cueing seek, recalculate the transition, from the
@@ -779,12 +845,23 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // thisDeckPlaying will be false but the transition should not be
             // recalculated here.
             // Don't adjust transition when reaching the end. In this case it is
-            // always stopped.
-            if constexpr (sDebug) {
-                qDebug() << this << "playerPositionChanged"
-                         << "cueing seek";
+            // always stopped. The engine may also stop play before playposition
+            // reaches 1.0, so treat a from-deck stopped near EOF as the fade
+            // point rather than a cueing seek (which would swap from/to roles).
+            if (fromDeckAtFadeOrEnd) {
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug() << "playerPositionChanged" << thisDeck->group
+                                    << "from-deck stopped at EOF, start transition"
+                                    << "pos" << thisPlayPosition
+                                    << "fadeBegin" << thisDeck->fadeBeginPos;
+                }
+            } else {
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug() << "playerPositionChanged" << thisDeck->group
+                                    << "cueing seek" << thisPlayPosition;
+                }
+                calculateTransition(otherDeck, thisDeck, false);
             }
-            calculateTransition(otherDeck, thisDeck, false);
         } else if (thisDeck->isRepeat()) {
             // repeat pauses auto DJ
             return;
@@ -795,11 +872,21 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // - transition into fading mode, play the other deck and fade to it.
     // - check if fading is done and stop the deck
     // - update the crossfader
-    if (thisPlayPosition >= thisDeck->fadeBeginPos && thisDeck->isFromDeck && !otherDeck->loading) {
+    if (thisDeck->isFromDeck && !otherDeck->loading &&
+            (thisPlayPosition >= thisDeck->fadeBeginPos ||
+                    (!thisDeckPlaying && fromDeckAtFadeOrEnd))) {
         if (m_eState == ADJ_IDLE) {
-            if (thisDeckPlaying || thisPlayPosition >= 1.0) {
+            if (thisDeckPlaying || thisPlayPosition >= 1.0 || fromDeckAtFadeOrEnd) {
                 // Set the state as FADING.
                 m_eState = thisDeck->isLeft() ? ADJ_LEFT_FADING : ADJ_RIGHT_FADING;
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug() << "playerPositionChanged" << thisDeck->group
+                                    << "start fade" << autoDJStateName(m_eState)
+                                    << "pos" << thisPlayPosition
+                                    << "fadeBegin" << thisDeck->fadeBeginPos
+                                    << "fadeEnd" << thisDeck->fadeEndPos
+                                    << "playing" << thisDeckPlaying;
+                }
                 m_transitionProgress = 0.0;
                 emitAutoDJStateChanged(m_eState);
 
@@ -826,10 +913,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                 // Note: This is a DB call and takes long.
                 removeLoadedTrackFromTopOfQueue(*otherDeck);
             } else {
-                if constexpr (sDebug) {
-                    qDebug() << this << "playerPositionChanged()"
-                             << pAttributes->group << thisPlayPosition
-                             << "but not playing";
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug() << "playerPositionChanged"
+                                    << pAttributes->group << thisPlayPosition
+                                    << "but not playing";
                 }
             }
         }
@@ -881,6 +968,15 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // if we are at 1.0 here, we need an additional callback until the last
             // step is processed and we can stop the deck.
         }
+    } else if (kLogger.debugEnabled() &&
+            (thisPlayPosition >= thisDeck->fadeBeginPos || fromDeckAtFadeOrEnd)) {
+        kLogger.debug() << "playerPositionChanged skip fade" << thisDeck->group
+                        << "pos" << thisPlayPosition
+                        << "fadeBegin" << thisDeck->fadeBeginPos
+                        << "isFromDeck" << thisDeck->isFromDeck
+                        << "otherLoading" << otherDeck->loading
+                        << "playing" << thisDeckPlaying
+                        << "state" << autoDJStateName(m_eState);
     }
 }
 
@@ -999,8 +1095,8 @@ void AutoDJProcessor::maybeFillRandomTracks() {
 }
 
 void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerPlayChanged" << thisDeck->group << playing;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerPlayChanged" << thisDeck->group << playing;
     }
 
     if (m_eState != ADJ_IDLE) {
@@ -1028,6 +1124,21 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
         }
     } else {
         // Deck paused
+        if (fromDeckReachedFadeOrEnd(
+                    thisDeck, thisDeck->playPosition(), getEndSecond(thisDeck))) {
+            // Engine may stop play at EOF before playposition reaches fadeBeginPos
+            // or 1.0. Start the same IDLE->FADING path used when position crosses
+            // the threshold. Pass at least fadeBeginPos so the fade gate matches.
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "playerPlayChanged" << thisDeck->group
+                                << "from-deck stopped at fade/EOF, start transition"
+                                << "pos" << thisDeck->playPosition()
+                                << "fadeBegin" << thisDeck->fadeBeginPos;
+            }
+            playerPositionChanged(thisDeck,
+                    math_max(thisDeck->playPosition(), thisDeck->fadeBeginPos));
+            return;
+        }
         // This may happen if the user has previously pressed play on the "to deck"
         // before fading, for example to adjust the intro/outro cues, and lets the
         // deck play until the end, seek back to the start point instead of keeping
@@ -1047,16 +1158,16 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) 
 }
 
 void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, double position) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerIntroStartChanged" << pAttributes->group << position;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerIntroStartChanged" << pAttributes->group << position;
     }
     // nothing to do, because we want not to re-cue the toDeck and the from
     // Deck has already passed the intro
 }
 
 void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double position) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerIntroEndChanged" << pAttributes->group << position;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerIntroEndChanged" << pAttributes->group << position;
     }
 
     if (m_eState != ADJ_IDLE) {
@@ -1076,8 +1187,8 @@ void AutoDJProcessor::playerIntroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, double position) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerOutroStartChanged" << pAttributes->group << position;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerOutroStartChanged" << pAttributes->group << position;
     }
 
     if (m_eState != ADJ_IDLE) {
@@ -1093,8 +1204,8 @@ void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, doubl
 }
 
 void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double position) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerOutroEndChanged" << pAttributes->group << position;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerOutroEndChanged" << pAttributes->group << position;
     }
 
     if (m_eState != ADJ_IDLE) {
@@ -1352,10 +1463,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         }
     }
 
-    if constexpr (sDebug) {
-        qDebug() << this << "calculateTransition"
-                 << "introLength" << introLength
-                 << "outroLength" << outroLength;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "calculateTransition"
+                        << "introLength" << introLength
+                        << "outroLength" << outroLength;
     }
 
     m_crossfaderStartCenter = false;
@@ -1512,10 +1623,10 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         pFromDeck->fadeBeginPos = 1;
     }
 
-    if constexpr (sDebug) {
-        qDebug() << this << "calculateTransition" << pFromDeck->group
-                 << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
-                 << pToDeck->startPos;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "calculateTransition" << pFromDeck->group
+                        << pFromDeck->fadeBeginPos << pFromDeck->fadeEndPos
+                        << pToDeck->startPos;
     }
 }
 
@@ -1536,7 +1647,7 @@ void AutoDJProcessor::useFixedFadeTime(
         if (toDeckOutroStart <= toDeckStartSecond + kMinimumTrackDurationSec) {
             // we have already passed the outro start
             // Check OutroEnd as alternative, which is for all transition mode
-            // better than directly default to duration()
+            // better than directly defaulting to duration()
             double end = getOutroEndSecond(pToDeck);
             if (end <= toDeckStartSecond + kMinimumTrackDurationSec) {
                 // we have also passed the outro end
@@ -1568,9 +1679,9 @@ void AutoDJProcessor::useFixedFadeTime(
 }
 
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerTrackLoaded" << pDeck->group
-                 << (pTrack ? pTrack->getLocation() : "(null)");
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerTrackLoaded" << pDeck->group
+                        << (pTrack ? pTrack->getLocation() : "(null)");
     }
 
     pDeck->loading = false;
@@ -1581,7 +1692,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     if (duration < kMinimumTrackDurationSec) {
         qWarning() << "Skip track with" << duration << "Duration"
                    << pTrack->getLocation();
-        // Remove Tack with duration smaller than two callbacks
+        // Remove Track with duration smaller than two callbacks
         removeTrackFromTopOfQueue(pTrack);
 
         // Load the next track. If we are the first AutoDJ track
@@ -1592,8 +1703,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         DeckAttributes* fromDeck = getOtherDeck(pDeck);
         // check if this deck has suitable alignment
         if (fromDeck && getOtherDeck(fromDeck) != pDeck) {
-            if constexpr (sDebug) {
-                qDebug() << this << "playerTrackLoaded()" << pDeck->group << "but not a toDeck";
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "playerTrackLoaded()" << pDeck->group << "but not a toDeck";
             }
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
@@ -1604,10 +1715,10 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         calculateTransition(fromDeck, pDeck, true);
         if (pDeck->startPos != kKeepPosition) {
             // Note: this seek will trigger the playerPositionChanged slot
-            // which may calls the calculateTransition() again without seek = true;
+            // which may call the calculateTransition() again without seek = true;
             pDeck->setPlayPosition(pDeck->startPos);
         }
-        // we are her in the relative domain 0..1
+        // we are here in the relative domain 0..1
         if (!fromDeck->isPlaying() && fromDeck->playPosition() >= 1.0) {
             // repeat a probably missed update
             playerPositionChanged(fromDeck, 1.0);
@@ -1627,10 +1738,10 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
 
 void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerLoadingTrack" << pDeck->group
-                 << "new:" << (pNewTrack ? pNewTrack->getLocation() : "(null)")
-                 << "old:" << (pOldTrack ? pOldTrack->getLocation() : "(null)");
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerLoadingTrack" << pDeck->group
+                        << "new:" << (pNewTrack ? pNewTrack->getLocation() : "(null)")
+                        << "old:" << (pOldTrack ? pOldTrack->getLocation() : "(null)");
     }
 
     pDeck->loading = true;
@@ -1647,20 +1758,20 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
 
     if (!pNewTrack) {
         // If a track is ejected because of a manual eject command or a load failure
-        // this track seams to be undesired. Remove the bad track from the queue.
+        // this track seems to be undesired. Remove the bad track from the queue.
         removeTrackFromTopOfQueue(pOldTrack);
 
-        // wait until the track is fully unloaded and the playerEmpty()
-        // slot is called before load an alternative track.
+        // Wait until the track is fully unloaded and the playerEmpty()
+        // slot is called before loading an alternative track.
     }
 }
 
 void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerEmpty()" << pDeck->group;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerEmpty()" << pDeck->group;
     }
 
-    // The Deck has ejected a track and no new one is loaded
+    // The Deck has ejected a track and no new one is loaded.
     // This happens if loading fails or the user manually ejected the track
     // and would normally stop the AutoDJ flow, which is not desired.
     // It should be safe to load a new track from the queue. The only case where
@@ -1673,8 +1784,8 @@ void AutoDJProcessor::playerEmpty(DeckAttributes* pDeck) {
 }
 
 void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
-    if constexpr (sDebug) {
-        qDebug() << this << "playerRateChanged" << pAttributes->group;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerRateChanged" << pAttributes->group;
     }
 
     if (m_eState != ADJ_IDLE) {
@@ -1689,9 +1800,21 @@ void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
     calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
 }
 
+void AutoDJProcessor::playerOrientationChanged(DeckAttributes* pAttributes) {
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playerOrientationChanged" << pAttributes->group;
+    }
+
+    if (m_eState != ADJ_DISABLED) {
+        // Disable auto DJ and emit the error explaining that we no longer have two valid decks.
+        toggleAutoDJ(false);
+        emit autoDJError(ADJ_NOT_TWO_DECKS);
+    }
+}
+
 void AutoDJProcessor::playlistFirstTrackChanged() {
-    if constexpr (sDebug) {
-        qDebug() << this << "playlistFirstTrackChanged";
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "playlistFirstTrackChanged";
     }
     if (m_eState != ADJ_DISABLED) {
         DeckAttributes* pLeftDeck = getLeftDeck();
@@ -1706,8 +1829,8 @@ void AutoDJProcessor::playlistFirstTrackChanged() {
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {
-    if constexpr (sDebug) {
-        qDebug() << this << "setTransitionTime" << time;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "setTransitionTime" << time;
     }
 
     // Update the transition time first.

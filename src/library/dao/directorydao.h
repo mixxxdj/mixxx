@@ -8,13 +8,21 @@
 
 class DirectoryDAO : public DAO {
   public:
+    struct RootDirectoryInfo {
+        QString path;
+        uint trackCount;
+        uint totalSecond;
+    };
+
     ~DirectoryDAO() override = default;
+
+    void repairDatabase(const QSqlDatabase& database);
 
     QList<mixxx::FileInfo> loadAllDirectories(
             bool skipInvalidOrMissing = false) const;
-    /// Same as loadAllDirectories() just with paths as QString.
+    /// Same as loadAllDirectories() just with paths info as RootDirectoryInfo.
     /// See DlgPrefLibrary::populateDirList() for info.
-    QStringList getRootDirStrings() const;
+    QList<RootDirectoryInfo> getRootDirectories() const;
 
     enum class AddResult {
         Ok,

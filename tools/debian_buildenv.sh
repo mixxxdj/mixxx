@@ -90,7 +90,7 @@ case "$1" in
             debhelper \
             devscripts \
             docbook-to-man \
-            dput \
+            dput-ng \
             fonts-open-sans \
             g++ \
             lcov \
@@ -136,11 +136,13 @@ case "$1" in
             markdown \
             portaudio19-dev \
             protobuf-compiler \
+            python3-paramiko \
             qtkeychain-qt6-dev \
             qt6-declarative-private-dev \
             qt6-base-private-dev \
             qt6-multimedia-dev \
             qml6-module-qt5compat-graphicaleffects \
+            qml6-module-qtcore \
             qml6-module-qtqml-workerscript \
             qml6-module-qtquick-controls \
             qml6-module-qtquick-dialogs \

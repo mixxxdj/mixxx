@@ -7,10 +7,6 @@
 #include <QOpenGLContext>
 #include <QUrl>
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QGLFormat>
-#endif
-
 #if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -53,6 +49,7 @@
 #include "track/track.h"
 #include "util/debug.h"
 #include "util/desktophelper.h"
+#include "util/menubarhelper.h"
 #include "util/sandbox.h"
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
@@ -69,25 +66,6 @@
 #endif
 
 namespace {
-#ifdef __LINUX__
-// Detect if the desktop supports a global menu to decide whether we need to rebuild
-// and reconnect the menu bar when switching to/from fullscreen mode.
-// Compared to QMenuBar::isNativeMenuBar() (requires a set menu bar) and
-// Qt::AA_DontUseNativeMenuBar, which may both change, this is way more reliable
-// since it's rather unlikely that the Appmenu.Registrar service is unloaded/stopped
-// while Mixxx is running.
-// This is a reimplementation of QGenericUnixTheme > checkDBusGlobalMenuAvailable()
-inline bool supportsGlobalMenu() {
-#ifndef QT_NO_DBUS
-    QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto* pIface = conn.interface()) {
-        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
-    }
-#endif
-    return false;
-}
-#endif
-
 const ConfigKey kHideMenuBarConfigKey = ConfigKey("[Config]", "hide_menubar");
 const ConfigKey kMenuBarHintConfigKey = ConfigKey("[Config]", "show_menubar_hint");
 } // namespace
@@ -105,7 +83,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
           m_noAuxInputDialog(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
-          m_supportsGlobalMenuBar(supportsGlobalMenu()),
+          m_supportsGlobalMenuBar(mixxx::desktopSupportsGlobalMenuBar()),
 #endif
           m_inRebootMixxxView(false),
           m_pDeveloperToolsDlg(nullptr),
@@ -153,18 +131,12 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 
 #ifdef MIXXX_USE_QOPENGL
 void MixxxMainWindow::initializeQOpenGL() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    // Qt 6 will nno longer crash if no GL is available and
-    // QGLFormat::hasOpenGL() has been removed.
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-#else
     // With EGLFS there is always exactly one native window and one EGL window surface
     // OpenGL windows cannot be embedded into our QWidgets main window we already have.
     // https://doc.qt.io/qt-6/embedded-linux.html
     bool isEglfs = QGuiApplication::platformName() == "eglfs";
 
     if (!CmdlineArgs::Instance().getSafeMode() && !isEglfs) {
-#endif
         QOpenGLContext context;
         context.setFormat(WaveformWidgetFactory::getSurfaceFormat(m_pCoreServices->getSettings()));
         if (context.create()) {
@@ -391,7 +363,11 @@ void MixxxMainWindow::initialize() {
     // that says "mixxx will barely work with no outs".
     // In case of persisting errors, the user has already received a message
     // above. So we can just check the output count here.
-    while (m_pCoreServices->getSoundManager()->getConfig().getOutputs().isEmpty()) {
+    while (m_pCoreServices->getSoundManager()
+                    ->getConfig()
+                    .getOutputs()
+                    .isEmpty() &&
+            !m_pCoreServices->getSoundManager()->pipewireSkipConfig()) {
         // Exit when we press the Exit button in the noSoundDlg dialog
         // only call it if result != OK
         bool continueClicked = false;
@@ -1262,15 +1238,16 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         return;
     }
 
-    QMessageBox msgBox;
-    msgBox.setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    msgBox.setWindowTitle(tr("Library scan finished"));
+    QMessageBox* pMsg = new QMessageBox();
+    pMsg->setAttribute(Qt::WA_DeleteOnClose);
+    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
+    pMsg->setWindowTitle(tr("Library scan finished"));
 
     if (result.noDirectoriesConfigured) {
-        msgBox.setText(tr("No music directories configured for scanning.") +
+        pMsg->setText(tr("No music directories configured for scanning.") +
                 QStringLiteral("<br>") +
                 tr("Add directories in the library preferences."));
-        msgBox.show();
+        pMsg->show();
         return;
     }
 
@@ -1296,7 +1273,8 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
         if (result.numNewMissingTracks != 0) {
             summary += tr("%n track(s) missing (%1 total)",
                     nullptr,
-                    result.numNewMissingTracks);
+                    result.numNewMissingTracks)
+                               .arg(result.numMissingTracks);
         }
         if (result.numRediscoveredTracks != 0) {
             summary += QStringLiteral("<br>") +
@@ -1309,8 +1287,8 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 QStringLiteral("</b>");
     }
 
-    msgBox.setText(summary);
-    msgBox.show();
+    pMsg->setText(summary);
+    pMsg->show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {

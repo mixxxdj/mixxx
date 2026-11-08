@@ -4,7 +4,13 @@ import QtQuick
 Item {
     id: root
 
+    function focusSearch() {
+        legacyLibrary.focusSearch();
+    }
+
     Mixxx.LegacyLibraryItem {
+        id: legacyLibrary
+
         anchors.fill: parent
     }
 }

@@ -217,7 +217,6 @@ class SoundSourceFFmpeg : public SoundSource {
     bool consumeNextAVPacket(AVPacket** ppavNextPacket);
 
     int m_wantedStreamIndex;
-    bool m_isLibfdk_aac;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {

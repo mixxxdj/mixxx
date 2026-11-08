@@ -516,6 +516,7 @@ void EffectChainPresetManager::updatePreset(EffectChainPointer pChainSlot) {
     m_effectChainPresetsSorted.replace(index, pPreset);
     m_effectChainPresets.insert(name, pPreset);
     savePresetXml(pPreset);
+    emit effectChainPresetListUpdated();
 }
 
 void EffectChainPresetManager::importUserPresets() {

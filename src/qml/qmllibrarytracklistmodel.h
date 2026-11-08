@@ -70,6 +70,7 @@ class QmlLibraryTrackListModel : public QIdentityProxyModel {
     Q_INVOKABLE mixxx::qml::QmlTrackProxy* getTrack(int row) const;
     Q_INVOKABLE TrackModel::Capabilities getCapabilities() const;
     Q_INVOKABLE bool hasCapabilities(TrackModel::Capabilities caps) const;
+    Q_INVOKABLE void search(const QString& searchText);
     QHash<int, QByteArray> roleNames() const override;
     Q_INVOKABLE QVariant headerData(int section,
             Qt::Orientation orientation,

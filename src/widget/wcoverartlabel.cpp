@@ -48,6 +48,20 @@ WCoverArtLabel::WCoverArtLabel(QWidget* pParent, WCoverArtMenu* pCoverMenu)
     setFrameShape(QFrame::Box);
     setAlignment(Qt::AlignCenter);
     setPixmapAndResize(m_defaultCover);
+
+    // Note: We reuse existing translation strings from src/skin/legacy/tooltips.cpp
+    // to avoid having to retranslate basically the same content twice.
+    // Please sync changes made here to tooltips.cpp, and vice versa.
+    QString tooltip = QString("%1: %2").arg(
+            tr("Left-click"),
+            tr("Opens separate artwork viewer."));
+    if (m_pCoverMenu) {
+        tooltip += "\n";
+        tooltip += QString("%1: %2").arg(
+                tr("Right-click"),
+                tr("Displays options for editing cover artwork."));
+    }
+    setToolTip(tooltip);
 }
 
 WCoverArtLabel::~WCoverArtLabel() = default;
@@ -70,11 +84,7 @@ void WCoverArtLabel::setPixmapAndResize(const QPixmap& px) {
         m_fullSizeCover = px;
         setPixmap(m_loadedCover);
     }
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
     QSize newSize = pixmap().size() / devicePixelRatioF();
-#else
-    QSize newSize = pixmap()->size() / devicePixelRatioF();
-#endif
     // add the frame so the entire pixmap is visible
     newSize += QSize(frameWidth() * 2, frameWidth() * 2);
     if (size() != newSize) {

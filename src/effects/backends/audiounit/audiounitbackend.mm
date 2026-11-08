@@ -9,6 +9,7 @@
 #include <QHash>
 #include <QList>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QString>
 #include <memory>
 
@@ -16,7 +17,6 @@
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "effects/backends/audiounit/audiounitmanifest.h"
 #include "effects/defs.h"
-#include "util/compatibility/qmutex.h"
 
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AudioUnitBackend : public EffectsBackend {
@@ -33,20 +33,22 @@ class AudioUnitBackend : public EffectsBackend {
     };
 
     const QList<QString> getEffectIds() const override {
-        QList<QString> effectIds;
-
-        for (NSString* effectId in m_componentsById) {
-            effectIds.append(QString::fromNSString(effectId));
-        }
-
-        return effectIds;
+        // Only report effects whose manifest actually finished loading.
+        // If loadAudioUnitsOfType() timed out, some components in
+        // m_componentsById may not have a corresponding manifest yet, and
+        // callers would get a null EffectManifestPointer from getManifest(),
+        // which crashes downstream (e.g. EffectManifest::sortLexigraphically).
+        auto locker = QMutexLocker(&m_mutex);
+        return m_manifestsById.keys();
     }
 
     EffectManifestPointer getManifest(const QString& effectId) const override {
-        return m_manifestsById[effectId];
+        auto locker = QMutexLocker(&m_mutex);
+        return m_manifestsById.value(effectId);
     }
 
     const QList<EffectManifestPointer> getManifests() const override {
+        auto locker = QMutexLocker(&m_mutex);
         return m_manifestsById.values();
     }
 
@@ -64,7 +66,7 @@ class AudioUnitBackend : public EffectsBackend {
   private:
     NSMutableDictionary<NSString*, AVAudioUnitComponent*>* m_componentsById;
     QHash<QString, EffectManifestPointer> m_manifestsById;
-    QMutex m_mutex;
+    mutable QMutex m_mutex;
 
     void loadAudioUnits() {
         qDebug() << "Loading audio units...";
@@ -135,7 +137,7 @@ class AudioUnitBackend : public EffectsBackend {
                         new AudioUnitManifest(effectId, component));
 
                 // Register manifest
-                auto locker = lockMutex(&m_mutex);
+                auto locker = QMutexLocker(&m_mutex);
                 m_manifestsById[effectId] = manifest;
                 locker.unlock();
 

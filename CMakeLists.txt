@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.21)
+# Qt 6.10 requires minimum CMake 3.22: https://doc.qt.io/qt-6.10/cmake-supported-cmake-versions.html
+cmake_minimum_required(VERSION 3.22)
 # lint_cmake: -readability/wonkycase
 
 message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
@@ -98,7 +99,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Android)
 endif()
 
 if(
-  ((APPLE AND NOT IOS) OR WIN32 OR ANDROID)
+  (DEFINED ENV{BUILDENV_URL} OR (APPLE AND NOT IOS) OR WIN32 OR ANDROID)
   AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}"
 )
   if(NOT DEFINED BUILDENV_BASEPATH)
@@ -226,7 +227,16 @@ function(fatal_error_missing_env)
     endif()
   elseif(UNIX AND NOT APPLE AND NOT ANDROID)
     # Linux, BSD, Solaris, Minix
-    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+    if(DEFINED MIXXX_VCPKG_ROOT)
+      # On Linux a vcpkg build environment is currently only used for the
+      # AppImage build.  Point the user at the right setup script instead of
+      # the generic distro dev-package hint below.
+      message(
+        FATAL_ERROR
+        "The Mixxx vcpkg build environment is not set up correctly. Download and\n"
+        "set it up via `source ${CMAKE_SOURCE_DIR}/tools/appimage_buildenv.sh setup`"
+      )
+    elseif(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
         FATAL_ERROR
         "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh setup`?"
@@ -356,13 +366,21 @@ if(NOT DEFINED VCPKG_TARGET_TRIPLET)
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
   endif()
 endif()
-set(
-  X_VCPKG_APPLOCAL_DEPS_INSTALL
-  ON
-  CACHE BOOL
-  "Automatically copy dependencies into the install target directory for executables."
-  FORCE
-)
+# vcpkg's applocal dependency copying is a Windows mechanism (it walks the
+# DLL dependency graph of installed executables).  It only does something on
+# Windows/uwp/xbox platforms, but vcpkg's toolchain hijacks the install()
+# command whenever this variable is ON, so keep it OFF elsewhere (in
+# particular on Linux, where the AppImage packaging uses install(...)
+# RUNTIME_DEPENDENCY_SET).
+if(WIN32)
+  set(
+    X_VCPKG_APPLOCAL_DEPS_INSTALL
+    ON
+    CACHE BOOL
+    "Automatically copy dependencies into the install target directory for executables."
+    FORCE
+  )
+endif()
 
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
@@ -401,27 +419,32 @@ endif()
 
 include(CMakeDependentOption)
 
-option(QT6 "Build with Qt6" ON)
-cmake_dependent_option(
-  QML
-  "Build with QML"
-  ON
-  "QT6"
+option(
+  MIXXX_APPIMAGE
+  "Build for AppImage distribution (install AppImage-specific desktop file)"
   OFF
 )
-
-if(QT6)
-  set(QOPENGL ON CACHE INTERNAL "Forced ON because QT6=ON")
-else()
-  option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+# Auto-detect AppImage builds in both directions, so the two flags do not
+# need to be passed independently:
+#   cmake -DCPACK_GENERATOR=AppImage  -> enables the AppImage install rules
+#   cmake -DMIXXX_APPIMAGE=ON         -> cpack defaults to the AppImage generator
+if(CPACK_GENERATOR MATCHES "AppImage")
+  set(MIXXX_APPIMAGE ON CACHE BOOL "" FORCE)
 endif()
+if(MIXXX_APPIMAGE AND NOT DEFINED CPACK_GENERATOR)
+  set(CPACK_GENERATOR "AppImage" CACHE STRING "Package generator")
+endif()
+# mold 1.0.3 emits a .rela.dyn layout the dynamic loader cannot process,
+# which made the AppImage fail to start (verified fixed in mold 2.42).
+# Use the default linker for AppImage builds; users can still opt in
+# explicitly with -DMOLD_SUPPORT=ON.
+if(MIXXX_APPIMAGE OR CPACK_GENERATOR MATCHES "AppImage")
+  set(MOLD_SUPPORT OFF CACHE BOOL "Use 'mold' for linking")
+endif()
+set(QOPENGL ON CACHE INTERNAL "Forced ON")
 
 if(QOPENGL)
   add_compile_definitions(MIXXX_USE_QOPENGL)
-endif()
-
-if(QML)
-  add_compile_definitions(MIXXX_USE_QML)
 endif()
 
 if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
@@ -481,25 +504,13 @@ elseif(APPLE)
         "The target system processor"
       )
     else()
-      if(QT6)
-        # Minimum macOS version supported by Qt 6.5
-        set(
-          CMAKE_OSX_DEPLOYMENT_TARGET
-          11.0
-          CACHE STRING
-          "Minimum macOS version the build will be able to run on"
-        )
-      else()
-        # Minimum macOS version supported by Qt 5.12
-        set(
-          CMAKE_OSX_DEPLOYMENT_TARGET
-          10.12
-          CACHE STRING
-          "Minimum macOS version the build will be able to run on"
-        )
-        # Needed for deployment target < 10.14
-        add_compile_options(-fno-aligned-allocation)
-      endif()
+      # Minimum macOS version supported by Qt 6.5
+      set(
+        CMAKE_OSX_DEPLOYMENT_TARGET
+        11.0
+        CACHE STRING
+        "Minimum macOS version the build will be able to run on"
+      )
     endif()
   elseif(VCPKG_TARGET_TRIPLET MATCHES "^[a-zA-Z0-9]+-ios")
     message(STATUS "Targeting iOS (${VCPKG_TARGET_TRIPLET})")
@@ -1405,6 +1416,7 @@ add_library(
   src/library/coverart.cpp
   src/library/coverartcache.cpp
   src/library/coverartutils.cpp
+  src/library/dateformatbroadcaster.cpp
   src/library/dao/analysisdao.cpp
   src/library/dao/autodjcratesdao.cpp
   src/library/dao/cuedao.cpp
@@ -1647,7 +1659,6 @@ add_library(
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
-  src/util/colorcomponents.cpp
   src/util/console.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
@@ -1885,11 +1896,6 @@ set(
   src/util/color/colorpalette.h
   src/util/color/predefinedcolorpalettes.h
   src/util/color/rgbcolor.h
-  src/util/colorcomponents.h
-  src/util/compatibility/qatomic.h
-  src/util/compatibility/qbytearray.h
-  src/util/compatibility/qhash.h
-  src/util/compatibility/qmutex.h
   src/util/console.h
   src/util/counter.h
   src/util/datetime.h
@@ -1988,26 +1994,6 @@ set(
   src/util/workerthreadscheduler.h
   src/util/xml.h
 )
-if(NOT QML)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
-      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
-      # main target
-      src/control/controlmodel.cpp
-      src/control/controlsortfiltermodel.cpp
-  )
-else()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      # The following source depends of QML being available but aren't part of the new QML UI
-      src/controllers/rendering/controllerrenderingengine.cpp
-      src/controllers/controllerenginethreadcontrol.cpp
-      src/controllers/controllerscreenpreview.cpp
-  )
-endif()
 if(QOPENGL)
   target_sources(
     mixxx-lib
@@ -2361,109 +2347,133 @@ elseif(UNIX)
 endif()
 
 # The mixxx executable
-if(QT6)
-  find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
-  # This is the first package form the environment, if this fails give hints how to install the environment
-  if(NOT Qt6_FOUND)
-    fatal_error_missing_env()
-  endif()
-  # qt_add_executable() is the recommended initial call for qt_finalize_target()
-  # below that takes care of the correct object order in the resulting binary
-  # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
-  # builds with Qt < 3.21
-  if(ANDROID)
-    target_compile_definitions(
-      mixxx-lib
-      PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
-    )
-    set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
-    target_compile_definitions(
-      mixxx-lib
-      PUBLIC ANDROID_PACKAGE_NAME="org.mixxx"
-    )
-    qt_add_executable(mixxx src/main.cpp MANUAL_FINALIZATION)
-    set_property(
-      TARGET mixxx
-      PROPERTY
-        QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/packaging/android"
-    )
-    set_target_properties(mixxx PROPERTIES QT_ANDROID_ABIS "${ANDROID_ABI}")
-    set_target_properties(mixxx PROPERTIES QT_ANDROID_PACKAGE_NAME "org.mixxx")
-    set_target_properties(
-      mixxx
-      PROPERTIES QT_ANDROID_VERSION_NAME "${MIXXX_VERSION}"
-    )
-    set_target_properties(
-      mixxx
-      PROPERTIES
-        QT_ANDROID_APPLICATION_ARGUMENTS "--qml --log-level debug --developer"
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.ACCESS_NETWORK_STATE
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.INTERNET
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.MODIFY_AUDIO_SETTINGS
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.RECORD_AUDIO
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.WRITE_EXTERNAL_STORAGE
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.MANAGE_EXTERNAL_STORAGE
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.WAKE_LOCK
-    )
-    qt_add_android_permission(mixxx
-    NAME android.permission.USB_PERMISSION
-    )
-    set(
-      CMAKE_LINKER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/ld"
-    )
-    set(
-      CMAKE_C_COMPILER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang"
-    )
-    set(
-      CMAKE_CXX_COMPILER
-      "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
-    )
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
-    set_target_properties(
-      mixxx
-      PROPERTIES
-        QT_ANDROID_EXTRA_LIBS
-          ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/18/lib/linux/aarch64/libomp.so
-    )
-    add_custom_target(
-      copy-resource-android
-      COMMENT "Copy resources folder to Android build asset directory"
-      COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
-        ${CMAKE_CURRENT_BINARY_DIR}/android
-      COMMAND
-        ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res
-        ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets
-      WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    )
-    add_dependencies(mixxx copy-resource-android)
-    target_link_libraries(mixxx PUBLIC omp)
-  else()
-    qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
-  endif()
+find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
+# This is the first package form the environment, if this fails give hints how to install the environment
+if(NOT Qt6_FOUND)
+  fatal_error_missing_env()
+endif()
+
+# We need Qt 6.4 for ComponentBehavior: Bound
+cmake_dependent_option(
+  QML
+  "Build with QML"
+  ON
+  "Qt6_VERSION VERSION_GREATER_EQUAL 6.4"
+  OFF
+)
+if(QML)
+  add_compile_definitions(MIXXX_USE_QML)
 else()
-  find_package(Qt5 COMPONENTS Core) # For Qt Core cmake functions
-  # This is the first package form the environment, if this fails give hints how to install the environment
-  if(NOT Qt5_FOUND)
-    fatal_error_missing_env()
-  endif()
-  add_executable(mixxx WIN32 src/main.cpp)
+  message(STATUS "Building without QML")
+endif()
+
+# qt_add_executable() is the recommended initial call for qt_finalize_target()
+# below that takes care of the correct object order in the resulting binary
+# According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
+# builds with Qt < 3.21
+if(ANDROID)
+  target_compile_definitions(
+    mixxx-lib
+    PUBLIC __STDC_CONSTANT_MACROS __STDC_LIMIT_MACROS __STDC_FORMAT_MACROS
+  )
+  set_property(TARGET mixxx-lib PROPERTY ANDROID_ABIS "arm64-v8a")
+  target_compile_definitions(mixxx-lib PUBLIC ANDROID_PACKAGE_NAME="org.mixxx")
+  qt_add_executable(mixxx src/main.cpp MANUAL_FINALIZATION)
+  set_property(
+    TARGET mixxx
+    PROPERTY
+      QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_SOURCE_DIR}/packaging/android"
+  )
+  set_target_properties(mixxx PROPERTIES QT_ANDROID_ABIS "${ANDROID_ABI}")
+  set_target_properties(mixxx PROPERTIES QT_ANDROID_PACKAGE_NAME "org.mixxx")
+  set_target_properties(
+    mixxx
+    PROPERTIES QT_ANDROID_VERSION_NAME "${MIXXX_VERSION}"
+  )
+  set_target_properties(
+    mixxx
+    PROPERTIES
+      QT_ANDROID_APPLICATION_ARGUMENTS "--qml --log-level debug --developer"
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.ACCESS_NETWORK_STATE
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.INTERNET
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.MODIFY_AUDIO_SETTINGS
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.RECORD_AUDIO
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.WRITE_EXTERNAL_STORAGE
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.MANAGE_EXTERNAL_STORAGE
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.WAKE_LOCK
+  )
+  qt_add_android_permission(mixxx
+  NAME android.permission.USB_PERMISSION
+  )
+  set(
+    CMAKE_LINKER
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/ld"
+  )
+  set(
+    CMAKE_C_COMPILER
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang"
+  )
+  set(
+    CMAKE_CXX_COMPILER
+    "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/clang++"
+  )
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC")
+  set_target_properties(
+    mixxx
+    PROPERTIES
+      QT_ANDROID_EXTRA_LIBS
+        ${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/lib/clang/18/lib/linux/aarch64/libomp.so
+  )
+  add_custom_target(
+    copy-resource-android
+    COMMENT "Copy resources folder to Android build asset directory"
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/packaging/android
+      ${CMAKE_CURRENT_BINARY_DIR}/android
+    COMMAND
+      ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/res
+      ${CMAKE_CURRENT_BINARY_DIR}/android-build/assets
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  )
+  add_dependencies(mixxx copy-resource-android)
+  target_link_libraries(mixxx PUBLIC omp)
+else()
+  qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
+endif()
+
+if(NOT QML)
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+      # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+      # main target
+      src/control/controlmodel.cpp
+      src/control/controlsortfiltermodel.cpp
+  )
+else()
+  target_sources(
+    mixxx-lib
+    PRIVATE
+      # The following source depends of QML being available but aren't part of the new QML UI
+      src/controllers/rendering/controllerrenderingengine.cpp
+      src/controllers/controllerenginethreadcontrol.cpp
+      src/controllers/controllerscreenpreview.cpp
+  )
 endif()
 
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
@@ -2632,6 +2642,11 @@ if(UNIX AND NOT APPLE)
     DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
   )
 
+  # AppImage-specific install rules (desktop file, shared libraries).
+  if(MIXXX_APPIMAGE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/appimage/appimage.cmake")
+  endif()
+
   # Icon files for menu entry
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/"
@@ -2719,25 +2734,6 @@ if(MSVC)
   )
 endif()
 
-if(WIN32 AND NOT QT6)
-  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is on the ignore list.
-  # It does not work with Debug, because the debug version is compiled without the a d suffix
-  find_package(unofficial-angle CONFIG REQUIRED)
-  install(
-    IMPORTED_RUNTIME_ARTIFACTS
-      unofficial::angle::libEGL
-      unofficial::angle::libGLESv2
-      CONFIGURATIONS
-      RelWithDebInfo
-      Release
-      DESTINATION
-      "${MIXXX_INSTALL_BINDIR}"
-      COMPONENT
-      applocal
-  )
-  set(APPLOCAL_COMPONENT_DEFINED true)
-endif()
-
 #
 # Tests
 #
@@ -2767,11 +2763,11 @@ endif()
 
 # FFmpeg support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
-find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFMPEG_FOUND")
+find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL SWRESAMPLE)
+default_option(FFMPEG "FFmpeg support (version 4.1.9 or later)" "FFmpeg_FOUND")
 if(FFMPEG)
-  if(NOT FFMPEG_FOUND)
-    message(FATAL_ERROR "FFMPEG was not found")
+  if(NOT FFmpeg_FOUND)
+    message(FATAL_ERROR "FFmpeg was not found")
   endif()
 
   # Check minimum required versions
@@ -2779,39 +2775,56 @@ if(FFMPEG)
   # Windows: Version numbers are not available!?
   # macOS: Untested
   if(
-    FFMPEG_libavcodec_VERSION
-    AND FFMPEG_libavcodec_VERSION VERSION_LESS 58.35.100
+    NOT FFmpeg_AVCODEC_VERSION
+    OR FFmpeg_AVCODEC_VERSION VERSION_LESS 58.35.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFMPEG_libavcodec_VERSION})."
+      "FFmpeg support requires at least version 58.35.100 of libavcodec (found: ${FFmpeg_AVCODEC_VERSION})."
+    )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVCODEC: ${FFmpeg_AVCODEC_LIBRARIES} (found version \"${FFmpeg_AVCODEC_VERSION}\")"
     )
   endif()
   if(
-    FFMPEG_libavformat_VERSION
-    AND FFMPEG_libavformat_VERSION VERSION_LESS 58.20.100
+    NOT FFmpeg_AVFORMAT_VERSION
+    OR FFmpeg_AVFORMAT_VERSION VERSION_LESS 58.20.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFMPEG_libavformat_VERSION})."
+      "FFmpeg support requires at least version 58.20.100 of libavformat (found: ${FFmpeg_AVFORMAT_VERSION})."
+    )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVFORMAT: ${FFmpeg_AVFORMAT_LIBRARIES} (found version \"${FFmpeg_AVFORMAT_VERSION}\")"
+    )
+  endif()
+  if(NOT FFmpeg_AVUTIL_VERSION OR FFmpeg_AVUTIL_VERSION VERSION_LESS 56.22.100)
+    message(
+      FATAL_ERROR
+      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFmpeg_AVUTIL_VERSION})."
+    )
+  else()
+    message(
+      STATUS
+      "Found FFmpeg AVUTIL: ${FFmpeg_AVUTIL_LIBRARIES} (found version \"${FFmpeg_AVUTIL_VERSION}\")"
     )
   endif()
   if(
-    FFMPEG_libavutil_VERSION
-    AND FFMPEG_libavutil_VERSION VERSION_LESS 56.22.100
+    NOT FFmpeg_SWRESAMPLE_VERSION
+    OR FFmpeg_SWRESAMPLE_VERSION VERSION_LESS 3.3.100
   )
     message(
       FATAL_ERROR
-      "FFmpeg support requires at least version 56.22.100 of libavutil (found: ${FFMPEG_libavutil_VERSION})."
+      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFmpeg_SWRESAMPLE_VERSION})."
     )
-  endif()
-  if(
-    FFMPEG_libswresample_VERSION
-    AND FFMPEG_libswresample_VERSION VERSION_LESS 3.3.100
-  )
+  else()
     message(
-      FATAL_ERROR
-      "FFmpeg support requires at least version 3.3.100 of libswresample (found: ${FFMPEG_libswresample_VERSION})."
+      STATUS
+      "Found FFmpeg SWRESAMPLE: ${FFmpeg_SWRESAMPLE_LIBRARIES} (found version \"${FFmpeg_SWRESAMPLE_VERSION}\")"
     )
   endif()
 
@@ -2825,15 +2838,16 @@ if(FFMPEG)
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
-  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
+
+  target_link_libraries(mixxx-lib PRIVATE FFmpeg::FFmpeg)
+  target_include_directories(mixxx-lib PUBLIC "${FFmpeg_INCLUDE_DIRS}")
 endif()
 
 # STEM file support
-default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+default_option(STEM "STEM file support" "FFmpeg_FOUND;FFMPEG")
 if(STEM)
   if(NOT FFMPEG)
-    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
+    message(FATAL_ERROR "STEM requires that also FFmpeg is enabled")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
   list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
@@ -2892,6 +2906,7 @@ if(BUILD_TESTING)
     src/test/cratestorage_test.cpp
     src/test/cue_test.cpp
     src/test/cuecontrol_test.cpp
+    src/test/delayringtest.cpp
     src/test/dbconnectionpool_test.cpp
     src/test/dbidtest.cpp
     src/test/directorydaotest.cpp
@@ -2997,7 +3012,11 @@ if(BUILD_TESTING)
     )
   endif()
 
-  add_executable(mixxx-test ${src-mixxx-test})
+  if(QML)
+    qt_add_executable(mixxx-test ${src-mixxx-test} MANUAL_FINALIZATION)
+  else()
+    add_executable(mixxx-test ${src-mixxx-test})
+  endif()
   target_compile_definitions(
     mixxx-test
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
@@ -3016,9 +3035,16 @@ if(BUILD_TESTING)
       PRIVATE
         src/test/controller_mapping_file_handler_test.cpp
         src/test/controllerrenderingengine_test.cpp
+        src/test/qml/qmlstartupsmoketest.cpp
         src/test/qmlcontrolproxytest.cpp
+        src/test/qmldurationformattertest.cpp
+        src/test/qmleffectsproxytest.cpp
         src/test/qmlkeyutilstest.cpp
+        src/test/qmllibraryproxytest.cpp
+        src/test/qmlspinnypositiontest.cpp
         src/test/qmlskincontrolcreatortest.cpp
+        src/test/qmlwaveformoverviewtest.cpp
+        src/test/latenightlayoutstate_test.cpp
         src/test/themeqml_test.cpp
     )
   endif()
@@ -3072,6 +3098,7 @@ if(BUILD_TESTING)
     WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
     TEST_LIST testsuite
     DISCOVERY_MODE PRE_TEST
+    DISCOVERY_TIMEOUT 60
   )
 
   if(BUILD_BENCH)
@@ -3800,22 +3827,19 @@ set(
   Xml
 )
 set(QT_EXTRA_COMPONENTS "")
-if(QT6)
-  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
-  list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
-  list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
-  list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
-  if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
-    # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
-    list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
-    set(QT_NO_PRIVATE_MODULE_WARNING ON)
-  endif()
-else()
-  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
+find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
+list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
+list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
+if(QT_VERSION VERSION_GREATER_EQUAL 6.10)
+  # from Qt 6.10 GuiPrivate required for QShader/rendergraph (rhi/qshader.h)
+  list(APPEND QT_EXTRA_COMPONENTS "GuiPrivate")
+  set(QT_NO_PRIVATE_MODULE_WARNING ON)
 endif()
 if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "LabsQmlModels")
   list(APPEND QT_EXTRA_COMPONENTS "Multimedia")
+  list(APPEND QT_EXTRA_COMPONENTS "QmlCore")
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
@@ -3906,6 +3930,12 @@ if(QML)
     PROPERTIES QT_RESOURCE_ALIAS MathUtils.mjs
   )
   set_source_files_properties(
+    res/qml/Mixxx/DurationFormatter.qml
+    PROPERTIES
+      QT_QML_SINGLETON_TYPE TRUE
+      QT_RESOURCE_ALIAS DurationFormatter.qml
+  )
+  set_source_files_properties(
     res/qml/Mixxx/PlayerDropArea.qml
     PROPERTIES QT_RESOURCE_ALIAS PlayerDropArea.qml
   )
@@ -3915,6 +3945,7 @@ if(QML)
     RESOURCE_PREFIX /mixxx.org/imports
     IMPORTS QtQuick
     QML_FILES
+      res/qml/Mixxx/DurationFormatter.qml
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
   )
@@ -3953,6 +3984,7 @@ if(QML)
       res/qml/Mixxx/Controls/Knob.qml
       res/qml/Mixxx/Controls/Fader.qml
       res/qml/Mixxx/Controls/Spinny.qml
+      res/qml/Mixxx/Controls/KeyColorIndicator.qml
       res/qml/Mixxx/Controls/WaveformOverviewHotcueMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverviewMarkerLayer.qml
@@ -3966,7 +3998,9 @@ if(QML)
     PRIVATE
       src/qml/asyncimageprovider.cpp
       src/qml/qmlapplication.cpp
+      src/qml/qmlapplicationproxy.cpp
       src/qml/qmlautoreload.cpp
+      src/qml/qmlcoreservices.cpp
       src/qml/qmlbatteryproxy.cpp
       src/qml/qmlbeatsmodel.cpp
       src/qml/qmlchainpresetmodel.cpp
@@ -3975,8 +4009,9 @@ if(QML)
       src/qml/qmlcontrolproxy.cpp
       src/qml/qmlcuesmodel.cpp
       src/qml/qmldlgpreferencesproxy.cpp
-      src/qml/qmleffectmanifestparametersmodel.cpp
+      src/qml/qmleffectslotparametersmodel.cpp
       src/qml/qmleffectslotproxy.cpp
+      src/qml/qmleffectunitproxy.cpp
       src/qml/qmleffectsmanagerproxy.cpp
       src/qml/qmlkeyutils.cpp
       src/qml/qmllegacylibraryitem.cpp
@@ -3991,6 +4026,8 @@ if(QML)
       src/qml/qmlsidebarmodelproxy.cpp
       src/qml/qmllibrarytracklistcolumn.cpp
       src/qml/qmltrackproxy.cpp
+      src/qml/qmlspinnyposition.cpp
+      src/qml/qmlvinylsignalquality.cpp
       src/qml/qmlvisibleeffectsmodel.cpp
       src/qml/qmlwaveformdisplay.cpp
       src/qml/qmlwaveformoverview.cpp
@@ -4154,7 +4191,7 @@ if(Qt_IS_STATIC)
     endif()
   endif()
 else()
-  if(QT6 AND (WIN32 OR APPLE))
+  if(WIN32 OR APPLE)
     # Qt6 does not automatically install plugins like in Qt 5
 
     find_package(libjpeg-turbo CONFIG REQUIRED)
@@ -4215,6 +4252,15 @@ else()
       install(
         IMPORTED_RUNTIME_ARTIFACTS
           Qt${QT_VERSION_MAJOR}::LabsQmlModels
+          DESTINATION
+          "${MIXXX_INSTALL_DATADIR}"
+          COMPONENT
+          applocal
+      )
+
+      install(
+        IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QmlCore
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
           COMPONENT
@@ -4369,6 +4415,13 @@ else()
         COMPONENT applocal
       )
 
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtCore"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
+        COMPONENT applocal
+      )
+
       # install qml6-module-qtquick-controls
       install(
         DIRECTORY
@@ -4422,6 +4475,14 @@ else()
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Window"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
+        COMPONENT applocal
+      )
+
+      # qml6-module-qtquick-effects
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Effects"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Effects"
         COMPONENT applocal
       )
 
@@ -4503,43 +4564,32 @@ else()
 endif()
 
 if(APPLE)
-  if(Qt_IS_STATIC OR QT6)
+  target_link_libraries(
+    mixxx-lib
+    PRIVATE
+      "-weak_framework Accelerate"
+      "-weak_framework AudioToolbox"
+      "-weak_framework AVFoundation"
+      "-weak_framework CoreAudio"
+      "-weak_framework CoreFoundation"
+      "-weak_framework CoreImage"
+      "-weak_framework CoreMedia"
+      "-weak_framework CoreMidi"
+      "-weak_framework CoreServices"
+      "-weak_framework CoreVideo"
+      "-weak_framework IOSurface"
+      "-weak_framework VideoToolbox"
+  )
+  if(IOS)
+    target_link_libraries(mixxx-lib PRIVATE "-weak_framework UIKit")
+  else()
     target_link_libraries(
       mixxx-lib
-      PRIVATE
-        "-weak_framework Accelerate"
-        "-weak_framework AudioToolbox"
-        "-weak_framework AVFoundation"
-        "-weak_framework CoreAudio"
-        "-weak_framework CoreFoundation"
-        "-weak_framework CoreImage"
-        "-weak_framework CoreMedia"
-        "-weak_framework CoreMidi"
-        "-weak_framework CoreServices"
-        "-weak_framework CoreVideo"
-        "-weak_framework IOSurface"
-        "-weak_framework VideoToolbox"
+      PRIVATE "-weak_framework AppKit" "-weak_framework AudioUnit"
     )
-    if(IOS)
-      target_link_libraries(mixxx-lib PRIVATE "-weak_framework UIKit")
-    else()
-      target_link_libraries(
-        mixxx-lib
-        PRIVATE "-weak_framework AppKit" "-weak_framework AudioUnit"
-      )
-    endif()
-  else()
-    # Used for battery measurements and controlling the screensaver on macOS.
-    target_link_libraries(mixxx-lib PRIVATE "-weak_framework IOKit")
   endif()
 elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID)
-  if(QT6)
-    find_package(X11)
-  else()
-    find_package(X11 REQUIRED)
-    find_package(Qt5 COMPONENTS X11Extras REQUIRED)
-    target_link_libraries(mixxx-lib PUBLIC Qt5::X11Extras)
-  endif()
+  find_package(X11)
   if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
     target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
@@ -4547,6 +4597,9 @@ elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN AND NOT ANDROID)
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::DBus)
+  if(QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE Qt${QT_VERSION_MAJOR}::DBus)
+  endif()
 elseif(WIN32)
   if(Qt_IS_STATIC)
     target_link_libraries(
@@ -4574,10 +4627,10 @@ elseif(WIN32)
         # QtNetwork openssl-linked
         crypt32
         dwmapi # qtwindows
-        iphlpapi # qt5network
-        mpr # qt5core
-        netapi32 # qt5core
-        userenv # qt5core
+        iphlpapi # qtnetwork
+        mpr # qtcore
+        netapi32 # qtcore
+        userenv # qtcore
         uxtheme # ?
         version # ?
         wtsapi32 # ?
@@ -4629,25 +4682,13 @@ endif()
 if(APPLE OR WIN32)
   # qt_de.qm is just one arbitrary file in the directory that needs to be located;
   # there is no particular reason to look for this file versus any other one in the directory.
-  if(QT6)
-    find_file(
-      QT_TRANSLATION_FILE
-      qt_de.qm
-      PATHS "${Qt6_DIR}/../../translations/Qt6"
-      REQUIRED
-      NO_DEFAULT_PATH
-    )
-  else()
-    find_file(
-      QT_TRANSLATION_FILE
-      qt_de.qm
-      PATHS
-        "${Qt5_DIR}/../../../translations"
-        "${Qt5_DIR}/../../qt5/translations"
-      REQUIRED
-      NO_DEFAULT_PATH
-    )
-  endif()
+  find_file(
+    QT_TRANSLATION_FILE
+    qt_de.qm
+    PATHS "${Qt6_DIR}/../../translations/Qt6"
+    REQUIRED
+    NO_DEFAULT_PATH
+  )
   get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
   install(
     DIRECTORY "${QT_TRANSLATIONS}/"
@@ -5342,6 +5383,9 @@ if(VINYLCONTROL)
       src/engine/controls/vinylcontrolcontrol.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __VINYLCONTROL__)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __VINYLCONTROL__)
+  endif()
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)
@@ -5409,6 +5453,10 @@ if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 endif()
 
+if(BUILD_TESTING AND QML)
+  qt_finalize_target(mixxx-test)
+endif()
+
 # Configure file with build options
 file(
   RELATIVE_PATH
@@ -5425,7 +5473,10 @@ configure_file(
 # Packaging
 set(CPACK_PACKAGE_NAME "Mixxx")
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
-set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
+# TODO: Split this into Maintainer field: core-team@mixxx.org for package issues
+# and Uploaders field for personal signing email per Debian Policy.
+# https://www.debian.org/doc/debian-policy/ch-binary.html#the-maintainer-of-a-package
+set(CPACK_PACKAGE_CONTACT "Daniel Schürmann <daschuer@mixxx.org>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Digital DJ Application")
 set(
   CPACK_PACKAGE_DESCRIPTION_FILE
@@ -5461,52 +5512,39 @@ set(CPACK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-if(QT6)
-  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-translations-l10n")
-else()
-  set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qttranslations5-l10n")
-endif()
+set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-translations-l10n")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-open-sans")
 list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "fonts-ubuntu")
-if(QT6)
-  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite")
-  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-qpa-plugins")
-  if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-svg-plugins")
-  endif()
-  if(QML)
-    list(
-      APPEND
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "qml6-module-qt-labs-folderlistmodel"
-    )
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
-    list(
-      APPEND
-      CPACK_DEBIAN_PACKAGE_DEPENDS
-      "qml6-module-qt5compat-graphicaleffects"
-    )
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtmultimedia")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-dialogs")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
-  endif()
-else()
-  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite")
-  if(QML)
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-controls2")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qt-labs-qmlmodels")
-    list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml-module-qtquick-shapes")
-  endif()
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite")
+list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-qpa-plugins")
+if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-svg-plugins")
+endif()
+if(QML)
+  list(
+    APPEND
+    CPACK_DEBIAN_PACKAGE_DEPENDS
+    "qml6-module-qt-labs-folderlistmodel"
+  )
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
+  list(
+    APPEND
+    CPACK_DEBIAN_PACKAGE_DEPENDS
+    "qml6-module-qt5compat-graphicaleffects"
+  )
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtcore")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtmultimedia")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtqml-workerscript")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-dialogs")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-layouts")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-shapes")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-templates")
+  list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-window")
 endif()
 list(JOIN CPACK_DEBIAN_PACKAGE_DEPENDS ", " CPACK_DEBIAN_PACKAGE_DEPENDS)
 
@@ -5545,7 +5583,7 @@ if(NOT CPACK_DEBIAN_PACKAGE_RELEASE)
   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble questing resolute stonking)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES noble resolute stonking)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(
   CPACK_DEBIAN_UPLOAD_PPA_SCRIPT

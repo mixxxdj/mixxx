@@ -306,7 +306,7 @@ ca,de,fr,it,nl,pl,sv,es*	Intro
 cs,de,fr,sl,sv	Formant
 da,es,eu,fr,hu,id,it,lv,nb,oc,pl,pt*,ro,ru,sk,sv,sq_AL,zh_CN	Auto DJ
 da,fr,nb,nl,nn	Type
-de,nl,pl,sv	Status
+de,nl,pl,sv,nb	Status
 da,de,it,nl	Computer
 da,lb,nl	USB Controller
 da,de,id,nl,sk,sl,sv	Parameter
@@ -467,17 +467,23 @@ tr	Mount
 vi	Samplerate
 fr,sl,cs	Stem
 fr	Gain (dB)
-sl,sv,cs,ko	AGC
+sl,sv,cs,ko,zh,zh_CN,zh_HK,zh_TW	AGC
 ar	Space
 fr	bytes
 ta	ExtraBold
 ta	Biquad Full Kill Equalizer
 cs	Abs/Rel
-cs,ko	 Hz
+cs,ko,zh,zh_CN,zh_HK,zh_TW	 Hz
 cs	Ok
 cs	N/A
-ko	4/5 BPM
-ko	5/4 BPM
+ko,zh,zh_CN,zh_HK,zh_TW	4/5 BPM
+ko,zh,zh_CN,zh_HK,zh_TW	5/4 BPM
 ko	ISO 8601 (yyyy-MM-dd)
-ko	1/2 BPM
-ko	2x BPM
+ko,zh,zh_CN,zh_HK,zh_TW	1/2 BPM
+ko,zh,zh_CN,zh_HK,zh_TW	2x BPM
+cs,zh,zh_CN,zh_HK,zh_TW	650 MB
+cs	700 MB (CD)
+cs,zh,zh_CN,zh_HK,zh_TW	1 GB
+cs,zh,zh_CN,zh_HK,zh_TW	2 GB
+cs,zh,zh_CN,zh_HK,zh_TW	4 GB
+cs,zh,zh_CN,zh_HK,zh_TW	HDMI

@@ -54,6 +54,7 @@ execute_process(
   COMMAND ${CPACK_DEBIAN_DOCBOOK_TO_MAN} debian/mixxx.sgml
   OUTPUT_FILE mixxx.1
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
+  COMMAND_ERROR_IS_FATAL ANY
 )
 
 execute_process(
@@ -61,6 +62,7 @@ execute_process(
   OUTPUT_FILE NEWS.html
   WORKING_DIRECTORY
     ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian
+  COMMAND_ERROR_IS_FATAL ANY
 )
 
 if(DEB_BUILD)
@@ -77,25 +79,21 @@ execute_process(
     "${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}" -M
     "Build of ${CPACK_DEBIAN_PACKAGE_VERSION}"
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
+  COMMAND_ERROR_IS_FATAL ANY
 )
 execute_process(
   COMMAND
     ${CPACK_DEBIAN_DEBCHANGE} -r -M "Build of ${CPACK_DEBIAN_PACKAGE_VERSION}"
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
+  COMMAND_ERROR_IS_FATAL ANY
 )
 
 function(run_dh dh_command)
   execute_process(
     COMMAND ${dh_command} ${ARGV1} ${ARGV2} -P.
     WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
-    RESULT_VARIABLE CPACK_DEBIAN_DH_RET
+    COMMAND_ERROR_IS_FATAL ANY
   )
-  if(NOT CPACK_DEBIAN_DH_RET EQUAL "0")
-    message(
-      FATAL_ERROR
-      "${dh_command} returned exit code ${CPACK_DEBIAN_DH_RET}"
-    )
-  endif()
 endfunction()
 
 # We don't need root, normally read as Rules-Requires-Root from debian/control
