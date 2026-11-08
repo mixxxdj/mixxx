@@ -2,9 +2,9 @@
 
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
-### STEM file support
+### STEM File Support
 
-* Add simple support for STEM files
+* Add support for playing NI STEM files (.stem.mp4) using FFmpeg for ALAC and AAC
   [#13044](https://github.com/mixxxdj/mixxx/pull/13044)
   [#16318](https://github.com/mixxxdj/mixxx/pull/16318)
   [#16494](https://github.com/mixxxdj/mixxx/pull/16494)
@@ -12,6 +12,23 @@
   [#16493](https://github.com/mixxxdj/mixxx/issues/16493)
   [#16451](https://github.com/mixxxdj/mixxx/pull/16451)
   [#16134](https://github.com/mixxxdj/mixxx/pull/16134)
+  [#13268](https://github.com/mixxxdj/mixxx/pull/13268)
+  [#13070](https://github.com/mixxxdj/mixxx/pull/13070)
+  [#14244](https://github.com/mixxxdj/mixxx/pull/14244)
+  [#13612](https://github.com/mixxxdj/mixxx/pull/13612)
+  [#13784](https://github.com/mixxxdj/mixxx/pull/13784)
+  [#14695](https://github.com/mixxxdj/mixxx/pull/14695)
+  [#14645](https://github.com/mixxxdj/mixxx/pull/14645)
+  [#13948](https://github.com/mixxxdj/mixxx/pull/13948)
+  [#15246](https://github.com/mixxxdj/mixxx/pull/15246)
+  [#14572](https://github.com/mixxxdj/mixxx/issues/14572)
+  [#15494](https://github.com/mixxxdj/mixxx/pull/15494)
+  [#14769](https://github.com/mixxxdj/mixxx/issues/14769)
+  [#15655](https://github.com/mixxxdj/mixxx/pull/15655)
+  [#15593](https://github.com/mixxxdj/mixxx/issues/15593)
+  [#17185](https://github.com/mixxxdj/mixxx/pull/17185)
+  [#17159](https://github.com/mixxxdj/mixxx/pull/17159)
+  [#17158](https://github.com/mixxxdj/mixxx/issues/17158)
 * Add stem controls and waveforms
   [#13086](https://github.com/mixxxdj/mixxx/pull/13086)
   [#14951](https://github.com/mixxxdj/mixxx/pull/14951)
@@ -37,57 +54,31 @@
   [#16019](https://github.com/mixxxdj/mixxx/pull/16019)
   [#16017](https://github.com/mixxxdj/mixxx/issues/16017)
   [#15714](https://github.com/mixxxdj/mixxx/pull/15714)
+  [#13751](https://github.com/mixxxdj/mixxx/pull/13751)
+  [#13749](https://github.com/mixxxdj/mixxx/issues/13749)
+  [#13960](https://github.com/mixxxdj/mixxx/pull/13960)
+  [#16452](https://github.com/mixxxdj/mixxx/pull/16452)
+  [#13655](https://github.com/mixxxdj/mixxx/pull/13655)
+  [#14291](https://github.com/mixxxdj/mixxx/pull/14291)
+  [#17181](https://github.com/mixxxdj/mixxx/pull/17181)
+  [#17027](https://github.com/mixxxdj/mixxx/pull/17027)
+  [#17026](https://github.com/mixxxdj/mixxx/issues/17026)
+  [#17025](https://github.com/mixxxdj/mixxx/pull/17025)
+  [#16987](https://github.com/mixxxdj/mixxx/issues/16987)
 * Add analyser support for stem
   [#13106](https://github.com/mixxxdj/mixxx/pull/13106)
   [#16398](https://github.com/mixxxdj/mixxx/pull/16398)
-* Add quick effect support on stem [#13123](https://github.com/mixxxdj/mixxx/pull/13123)
-* Add advanced stem loading COs [#13268](https://github.com/mixxxdj/mixxx/pull/13268)
-* Multithreaded Rubberband
+* Add quick effect support on stem
+  [#13123](https://github.com/mixxxdj/mixxx/pull/13123)
+  [#15743](https://github.com/mixxxdj/mixxx/pull/15743)
+  [#15530](https://github.com/mixxxdj/mixxx/pull/15530)
+* Multithreaded Rubberband (Smooth keylock support)
   [#13143](https://github.com/mixxxdj/mixxx/pull/13143)
   [#13649](https://github.com/mixxxdj/mixxx/pull/13649)
-* Add support for stem in the engine
-  [#13070](https://github.com/mixxxdj/mixxx/pull/13070)
-  [#14244](https://github.com/mixxxdj/mixxx/pull/14244)
-* Add stem files to the taglib lookup table [#13612](https://github.com/mixxxdj/mixxx/pull/13612)
-* Fix: make "stem_group,mute" a powerwindow button
-  [#13751](https://github.com/mixxxdj/mixxx/pull/13751)
-  [#13749](https://github.com/mixxxdj/mixxx/issues/13749)
-* Stem control test fix
-  [#13960](https://github.com/mixxxdj/mixxx/pull/13960)
-  [#16452](https://github.com/mixxxdj/mixxx/pull/16452)
-* Solves problem with special characters in path to stems [#13784](https://github.com/mixxxdj/mixxx/pull/13784)
-* Enable FFmpeg (free) on Windows. [#14695](https://github.com/mixxxdj/mixxx/pull/14695)
-* FFmpeg: Use internal aac decoder. If not available give a hint. [#14645](https://github.com/mixxxdj/mixxx/pull/14645)
-* Fix build with -DSTEM=OFF [#13948](https://github.com/mixxxdj/mixxx/pull/13948)
-* Fix warning when building without STEM support [#14551](https://github.com/mixxxdj/mixxx/pull/14551)
-* Fix: exclude stem samples for QML waveform [#13655](https://github.com/mixxxdj/mixxx/pull/13655)
-* Fix: use generic way to get the group on stem waveform renderer [#14291](https://github.com/mixxxdj/mixxx/pull/14291)
-* Fix: reset the STEM Quick FX on track load when enabled [#15743](https://github.com/mixxxdj/mixxx/pull/15743)
-* Allow pre-mastered stream not to match stem streams properties
-  [#15246](https://github.com/mixxxdj/mixxx/pull/15246)
-  [#14572](https://github.com/mixxxdj/mixxx/issues/14572)
-* Fix: clone states when cloning a deck
+* Allow cloning stem decks
   [#15501](https://github.com/mixxxdj/mixxx/pull/15501)
   [#15093](https://github.com/mixxxdj/mixxx/issues/15093)
   [#15510](https://github.com/mixxxdj/mixxx/pull/15510)
-* Fix: reset stem color correctly
-  [#15494](https://github.com/mixxxdj/mixxx/pull/15494)
-  [#14769](https://github.com/mixxxdj/mixxx/issues/14769)
-* Fix: skip stem count assert on secondary decks
-  [#15655](https://github.com/mixxxdj/mixxx/pull/15655)
-  [#15593](https://github.com/mixxxdj/mixxx/issues/15593)
-* Name Stem QuickEffect chains node like deck QuickEffects in effects.xml [#15530](https://github.com/mixxxdj/mixxx/pull/15530)
-* Fix crash with waveforms on Ubuntu 26.04.1 LTS Resolute [#17181](https://github.com/mixxxdj/mixxx/pull/17181)
-* Fix cue and intro/outro markers in slip mode with stacked stem
-  [#17027](https://github.com/mixxxdj/mixxx/pull/17027)
-  [#17026](https://github.com/mixxxdj/mixxx/issues/17026)
-* Stem Tests: Add second stem test track [#17185](https://github.com/mixxxdj/mixxx/pull/17185)
-* (fix) CachingReader: avoid segfault when logging unsupported channel count
-  [#17159](https://github.com/mixxxdj/mixxx/pull/17159)
-  [#17158](https://github.com/mixxxdj/mixxx/issues/17158)
-* Fix 16987 stacked stem preroll
-  [#17025](https://github.com/mixxxdj/mixxx/pull/17025)
-  [#16987](https://github.com/mixxxdj/mixxx/issues/16987)
 
 ### Library
 
