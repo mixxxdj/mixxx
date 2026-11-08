@@ -65,6 +65,8 @@
   [#17026](https://github.com/mixxxdj/mixxx/issues/17026)
   [#17025](https://github.com/mixxxdj/mixxx/pull/17025)
   [#16987](https://github.com/mixxxdj/mixxx/issues/16987)
+  [#14928](https://github.com/mixxxdj/mixxx/pull/14928)
+  [#14764](https://github.com/mixxxdj/mixxx/issues/14764)
 * Add analyser support for stem
   [#13106](https://github.com/mixxxdj/mixxx/pull/13106)
   [#16398](https://github.com/mixxxdj/mixxx/pull/16398)
@@ -372,36 +374,20 @@
 * Add screen renderer to support controllers with a screen
   [#11407](https://github.com/mixxxdj/mixxx/pull/11407)
   [#13334](https://github.com/mixxxdj/mixxx/pull/13334)
-* Deprecate `lodash.mixxx.js`, and `script.deepMerge` [#13460](https://github.com/mixxxdj/mixxx/pull/13460)
-* Add New CO "beats_translate_half" to move beatgrid a half beat
-  [#14279](https://github.com/mixxxdj/mixxx/pull/14279)
-  [#10811](https://github.com/mixxxdj/mixxx/issues/10811)
-* Settings: Add a file and color controller setting types [#13669](https://github.com/mixxxdj/mixxx/pull/13669)
-* Allow to enable MIDI Through Port in non-developer sessions [#13909](https://github.com/mixxxdj/mixxx/pull/13909)
-* Refactor: modernize softtakeover code [#13553](https://github.com/mixxxdj/mixxx/pull/13553)
-* document `ScriptConnection` readonly properties & slight cleanup [#13630](https://github.com/mixxxdj/mixxx/pull/13630)
-* Modernize Hid/Bulk Lists [#13622](https://github.com/mixxxdj/mixxx/pull/13622)
-* Prevent deadlock with BULK transfer and reduce log noise [#13735](https://github.com/mixxxdj/mixxx/pull/13735)
+  [#15524](https://github.com/mixxxdj/mixxx/pull/15524)
+  [#15566](https://github.com/mixxxdj/mixxx/pull/15566)
 * Expose convertCharset convenience function to controllers
   [#13935](https://github.com/mixxxdj/mixxx/pull/13935)
   [#14108](https://github.com/mixxxdj/mixxx/pull/14108)
-* Add HID error message upon failed open [#14184](https://github.com/mixxxdj/mixxx/pull/14184)
-* Remove boilerplate and duplication in controller setting definition [#13920](https://github.com/mixxxdj/mixxx/pull/13920)
-* Allow feedback on every release of a `powerWindow` button [#14335](https://github.com/mixxxdj/mixxx/pull/14335)
+* New Control: "beats_translate_half" to move beatgrid a half beat
+  [#14279](https://github.com/mixxxdj/mixxx/pull/14279)
+  [#10811](https://github.com/mixxxdj/mixxx/issues/10811)
 * Controller Settings: Improve click event filter [#14355](https://github.com/mixxxdj/mixxx/pull/14355)
 * Controller Settings: Add a collapsible group box [#14324](https://github.com/mixxxdj/mixxx/pull/14324)
-* Fix: Don't return in JogWheelBasic on deck absent in option
-  [#13425](https://github.com/mixxxdj/mixxx/pull/13425)
-  [#14106](https://github.com/mixxxdj/mixxx/pull/14106)
-  [#16028](https://github.com/mixxxdj/mixxx/pull/16028)
+* Controller Settings: Add a file and color controller setting types [#13669](https://github.com/mixxxdj/mixxx/pull/13669)
+* Deprecate `lodash.mixxx.js`, and `script.deepMerge` [#13460](https://github.com/mixxxdj/mixxx/pull/13460)
+* Allow to enable MIDI Through Port in non-developer sessions [#13909](https://github.com/mixxxdj/mixxx/pull/13909)
 * Controller engine: add convenience functions `isBrakeActive()`, `isSpinbackActive()` and `isSoftStartActive()` [#14925](https://github.com/mixxxdj/mixxx/pull/14925)
-* ControllerRenderingEngine: fix deadlock with mappings with display controllers [#15524](https://github.com/mixxxdj/mixxx/pull/15524)
-* Restore common-hid-packet-parser global symbol exceptions for eslint [#15961](https://github.com/mixxxdj/mixxx/pull/15961)
-* ControllerRenderingEngine: add OpenGL ES for controller screen rendering [#15566](https://github.com/mixxxdj/mixxx/pull/15566)
-* Fix changing stem group for deck in ComponentsJS
-  [#14928](https://github.com/mixxxdj/mixxx/pull/14928)
-  [#14764](https://github.com/mixxxdj/mixxx/issues/14764)
-* Fix an unused parameter warning [#15313](https://github.com/mixxxdj/mixxx/pull/15313)
 * Add TypeScript mixxx controls definitions
   [#15441](https://github.com/mixxxdj/mixxx/pull/15441)
   [#16105](https://github.com/mixxxdj/mixxx/pull/16105)
