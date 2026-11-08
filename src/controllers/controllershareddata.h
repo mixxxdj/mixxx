@@ -33,8 +33,8 @@ class ControllerSharedData : public QObject {
     /// Create a namespace-scoped wrapper for use by a controller.
     /// The caller owns the returned wrapper.
     /// @param ns The namespace to restrict access to
-    /// @return The pointer to the newly allocated wrapper
-    ControllerNamespacedSharedData* namespaced(const QString& ns);
+    /// @return A shared pointer to the newly allocated wrapper
+    std::shared_ptr<ControllerNamespacedSharedData> namespaced(const QString& ns);
 
   public slots:
     /// Set a value for a specific namespace/entity/key triple.
@@ -44,13 +44,6 @@ class ControllerSharedData : public QObject {
             const QString& entity,
             const QString& key,
             const QVariant& value,
-            QObject* sender = nullptr);
-
-    /// Set multiple entity/key/value entries for a namespace in a single
-    /// write-lock acquisition. Emits updated() for each individual entry
-    /// after releasing the lock.
-    void setMultiple(const QString& ns,
-            const QHash<QString, QHash<QString, QVariant>>& values,
             QObject* sender = nullptr);
 
   signals:
@@ -95,12 +88,6 @@ class ControllerNamespacedSharedData : public QObject {
     void set(const QString& entity,
             const QString& key,
             const QVariant& value,
-            QObject* sender = nullptr);
-
-    /// Set multiple entity/key/value entries in a single lock acquisition.
-    /// Emits updated() for each individual entry.
-    void setMultiple(
-            const QHash<QString, QHash<QString, QVariant>>& values,
             QObject* sender = nullptr);
 
   signals:

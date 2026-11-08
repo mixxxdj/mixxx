@@ -47,6 +47,13 @@ void ControllerSharedData::set(const QString& ns,
         QWriteLocker locker(&m_lock);
         // QHash default-constructs entries if they do not exist, no need to
         // check if they exist already.
+        const auto existing = m_values[ns][entity].find(key);
+        if (existing != m_values[ns][entity].cend()) {
+            if (existing->metaType() != value.metaType()) {
+                qWarning() << "Different type when updating shared data value" << ns << entity << key
+                << "was" << existing->typeName() << ", new type is " << value.typeName() << ". Updating anyway.";
+            }
+        }
         m_values[ns][entity][key] = value;
     }
     // Emit outside the lock to avoid holding it during signal delivery,
@@ -54,38 +61,9 @@ void ControllerSharedData::set(const QString& ns,
     emit updated(ns, entity, key, value, sender);
 }
 
-void ControllerSharedData::setMultiple(const QString& ns,
-        const QHash<QString, QHash<QString, QVariant>>& values,
-        QObject* sender) {
-    {
-        QWriteLocker locker(&m_lock);
-        auto& nsMap = m_values[ns];
-        for (auto entityIt = values.constBegin();
-                entityIt != values.constEnd();
-                ++entityIt) {
-            auto& entityMap = nsMap[entityIt.key()];
-            for (auto keyIt = entityIt->constBegin();
-                    keyIt != entityIt->constEnd();
-                    ++keyIt) {
-                entityMap[keyIt.key()] = keyIt.value();
-            }
-        }
-    }
-    // Emit individual signals outside the lock.
-    for (auto entityIt = values.constBegin();
-            entityIt != values.constEnd();
-            ++entityIt) {
-        for (auto keyIt = entityIt->constBegin();
-                keyIt != entityIt->constEnd();
-                ++keyIt) {
-            emit updated(ns, entityIt.key(), keyIt.key(), keyIt.value(), sender);
-        }
-    }
-}
-
-ControllerNamespacedSharedData* ControllerSharedData::namespaced(
+std::shared_ptr<ControllerNamespacedSharedData> ControllerSharedData::namespaced(
         const QString& ns) {
-    return new ControllerNamespacedSharedData(this, ns);
+    return std::make_shared<ControllerNamespacedSharedData>(this, ns);
 }
 
 ControllerNamespacedSharedData::ControllerNamespacedSharedData(
@@ -123,11 +101,4 @@ void ControllerNamespacedSharedData::set(const QString& entity,
         QObject* sender) {
     static_cast<ControllerSharedData*>(parent())->set(
             m_namespace, entity, key, value, sender);
-}
-
-void ControllerNamespacedSharedData::setMultiple(
-        const QHash<QString, QHash<QString, QVariant>>& values,
-        QObject* sender) {
-    static_cast<ControllerSharedData*>(parent())->setMultiple(
-            m_namespace, values, sender);
 }

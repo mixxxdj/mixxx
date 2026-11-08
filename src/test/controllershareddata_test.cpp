@@ -140,11 +140,11 @@ class NamespacedSharedDataTest : public ::testing::Test {
   protected:
     void SetUp() override {
         m_pSharedData = std::make_unique<ControllerSharedData>();
-        m_pNamespaced.reset(m_pSharedData->namespaced("testNS"));
+        m_pNamespaced = m_pSharedData->namespaced("testNS");
     }
 
     std::unique_ptr<ControllerSharedData> m_pSharedData;
-    std::unique_ptr<ControllerNamespacedSharedData> m_pNamespaced;
+    std::shared_ptr<ControllerNamespacedSharedData> m_pNamespaced;
 };
 
 TEST_F(NamespacedSharedDataTest, GetReturnsNullForMissing) {
@@ -176,6 +176,7 @@ TEST_F(NamespacedSharedDataTest, OnlyReceivesOwnNamespace) {
     };
     auto received = std::make_shared<Result>();
 
+    // clazy:exclude=connect-3arg-lambda
     QObject::connect(m_pNamespaced.get(),
             &ControllerNamespacedSharedData::updated,
             [&](const QString& entity,
