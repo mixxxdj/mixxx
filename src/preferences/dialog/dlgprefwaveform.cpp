@@ -7,6 +7,7 @@
 #include "library/library.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
+#include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -268,7 +269,15 @@ void DlgPrefWaveform::slotUpdate() {
                 pFactory->getBackendFromConfig() != WaveformWidgetBackend::None;
         useAccelerationCheckBox->setChecked(isAccelerationEnabled);
     } else {
-        openGlStatusData->setText(tr("OpenGL not available") + ": " + pFactory->getOpenGLVersion());
+        const QString openGlVersion = pFactory->getOpenGLVersion();
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            openGlStatusData->setText(tr("OpenGL disabled in safe mode"));
+        } else if (openGlVersion.isEmpty()) {
+            openGlStatusData->setText(tr("OpenGL not available"));
+        } else {
+            openGlStatusData->setText(
+                    tr("OpenGL version not supported: %1").arg(openGlVersion));
+        }
         useAccelerationCheckBox->setEnabled(false);
         useAccelerationCheckBox->setChecked(false);
     }
