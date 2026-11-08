@@ -215,15 +215,6 @@
 
 ### Waveforms
 
-* Simplify waveform combobox in preferences
-  [#13220](https://github.com/mixxxdj/mixxx/issues/13220)
-  [#6428](https://github.com/mixxxdj/mixxx/issues/6428)
-  [#13226](https://github.com/mixxxdj/mixxx/issues/13226)
-  [#15277](https://github.com/mixxxdj/mixxx/pull/15277)
-  [#14801](https://github.com/mixxxdj/mixxx/issues/14801)
-  [#15272](https://github.com/mixxxdj/mixxx/issues/15272)
-  [#15349](https://github.com/mixxxdj/mixxx/pull/15349)
-  [#15338](https://github.com/mixxxdj/mixxx/issues/15338)
 * Add minute markers on horizontal waveform overview
   [#13401](https://github.com/mixxxdj/mixxx/pull/13401)
   [#5843](https://github.com/mixxxdj/mixxx/issues/5843)
@@ -234,14 +225,24 @@
   [#13422](https://github.com/mixxxdj/mixxx/pull/13422)
   [#15837](https://github.com/mixxxdj/mixxx/pull/15837)
   [#15834](https://github.com/mixxxdj/mixxx/issues/15834)
-* Disable textured waveforms when using OpenGL ES
-  [#13381](https://github.com/mixxxdj/mixxx/pull/13381)
-  [#13380](https://github.com/mixxxdj/mixxx/issues/13380)
-* Waveform Overview: Scale by ReplayGain
+* Waveform and Overview: Scale by ReplayGain and unify scaling
   [#14309](https://github.com/mixxxdj/mixxx/pull/14309)
   [#14331](https://github.com/mixxxdj/mixxx/pull/14331)
-* feat: improve screen rendering framework [#13737](https://github.com/mixxxdj/mixxx/pull/13737)
+  [#13416](https://github.com/mixxxdj/mixxx/pull/13416)
+  [#13474](https://github.com/mixxxdj/mixxx/pull/13474)
+  [#13472](https://github.com/mixxxdj/mixxx/issues/13472)
+  [#16666](https://github.com/mixxxdj/mixxx/pull/16666)
+* Simplify waveform combobox in preferences
+  [#13220](https://github.com/mixxxdj/mixxx/issues/13220)
+  [#6428](https://github.com/mixxxdj/mixxx/issues/6428)
+  [#13226](https://github.com/mixxxdj/mixxx/issues/13226)
+  [#15277](https://github.com/mixxxdj/mixxx/pull/15277)
+  [#14801](https://github.com/mixxxdj/mixxx/issues/14801)
+  [#15272](https://github.com/mixxxdj/mixxx/issues/15272)
+  [#15349](https://github.com/mixxxdj/mixxx/pull/15349)
+  [#15338](https://github.com/mixxxdj/mixxx/issues/15338)
 * Rendergraph: Add rendergraph library and use it for waveform rendering
+  [#13737](https://github.com/mixxxdj/mixxx/pull/13737)
   [#14007](https://github.com/mixxxdj/mixxx/pull/14007)
   [#14021](https://github.com/mixxxdj/mixxx/pull/14021)
   [#14191](https://github.com/mixxxdj/mixxx/pull/14191)
@@ -279,45 +280,36 @@
   [#14317](https://github.com/mixxxdj/mixxx/issues/14317)
   [#15419](https://github.com/mixxxdj/mixxx/pull/15419)
   [#15374](https://github.com/mixxxdj/mixxx/issues/15374)
-* Improve appearance of marks on the waveforms [#13969](https://github.com/mixxxdj/mixxx/pull/13969)
-* ControllerRenderingEngine: Patch out unavailable APIs when using GL ES [#13382](https://github.com/mixxxdj/mixxx/pull/13382)
-* Fix high details waveforms wrapping around after visual index 65K [#13491](https://github.com/mixxxdj/mixxx/pull/13491)
-* Fix: support for new WaveformData struct in shaders
   [#13474](https://github.com/mixxxdj/mixxx/pull/13474)
   [#13472](https://github.com/mixxxdj/mixxx/issues/13472)
   [#16666](https://github.com/mixxxdj/mixxx/pull/16666)
-* Fix: remove scaleSignal in waveform analyzer [#13416](https://github.com/mixxxdj/mixxx/pull/13416)
-* Fix: prevent double free on DigitsRenderer [#13859](https://github.com/mixxxdj/mixxx/pull/13859)
+  [#13969](https://github.com/mixxxdj/mixxx/pull/13969)
+  [#17325](https://github.com/mixxxdj/mixxx/pull/17325)
+  [#16297](https://github.com/mixxxdj/mixxx/issues/16297)
+  [#13491](https://github.com/mixxxdj/mixxx/pull/13491)
+  [#17394](https://github.com/mixxxdj/mixxx/pull/17394)
+  [#14656](https://github.com/mixxxdj/mixxx/pull/14656)
+  [#14037](https://github.com/mixxxdj/mixxx/issues/14037)
 * Fix: waveform overview seeking
   [#13947](https://github.com/mixxxdj/mixxx/pull/13947)
   [#13946](https://github.com/mixxxdj/mixxx/issues/13946)
-* Fix waveform marker image alignment
-  [#14656](https://github.com/mixxxdj/mixxx/pull/14656)
-  [#14037](https://github.com/mixxxdj/mixxx/issues/14037)
-* Fix: unify scaling of scrolling waveforms
-  [#15324](https://github.com/mixxxdj/mixxx/pull/15324)
-  [#15808](https://github.com/mixxxdj/mixxx/pull/15808)
-  [#15788](https://github.com/mixxxdj/mixxx/issues/15788)
-* Fix allshader textured High details waveform crash and empty GLES waveform issue
+* Maintain OpenGL ES Support
+  [#13381](https://github.com/mixxxdj/mixxx/pull/13381)
+  [#13380](https://github.com/mixxxdj/mixxx/issues/13380)
+  [#13382](https://github.com/mixxxdj/mixxx/pull/13382)
   [#17280](https://github.com/mixxxdj/mixxx/pull/17280)
   [#17279](https://github.com/mixxxdj/mixxx/issues/17279)
   [#17329](https://github.com/mixxxdj/mixxx/issues/17329)
 * Don't allow to set up GL waveforms if GL is not available
   [#15762](https://github.com/mixxxdj/mixxx/pull/15762)
   [#14561](https://github.com/mixxxdj/mixxx/issues/14561)
+  [#16236](https://github.com/mixxxdj/mixxx/pull/16236)
+  [#16213](https://github.com/mixxxdj/mixxx/issues/16213)
+  [#15874](https://github.com/mixxxdj/mixxx/pull/15874)
+  [#15863](https://github.com/mixxxdj/mixxx/issues/15863)
 * Warn when running OpenGL waveforms on Wayland
   [#16014](https://github.com/mixxxdj/mixxx/pull/16014)
   [#16013](https://github.com/mixxxdj/mixxx/issues/16013)
-* Early return when rendering with a shader that cannot be bound and don't crash
-  [#16236](https://github.com/mixxxdj/mixxx/pull/16236)
-  [#16213](https://github.com/mixxxdj/mixxx/issues/16213)
-* Avoid crash with unsupported EGLFS
-  [#15874](https://github.com/mixxxdj/mixxx/pull/15874)
-  [#15863](https://github.com/mixxxdj/mixxx/issues/15863)
-* Fix allshader waveform flicker with fractional display scaling (Wayland) [#17394](https://github.com/mixxxdj/mixxx/pull/17394)
-* Fix Waveform resize glitch
-  [#17325](https://github.com/mixxxdj/mixxx/pull/17325)
-  [#16297](https://github.com/mixxxdj/mixxx/issues/16297)
 
 ### Auto-DJ
 
