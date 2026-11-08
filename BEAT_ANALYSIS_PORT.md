@@ -16,6 +16,7 @@ commit `0fffd3d0d07b755c34c1730f7b87afadd8f2be19`.
 | Queen Mary refinement | `refineBeatTrackingTempo()` | Supplies the initial beat sequence and corrects supported metrical errors before audio-clock recovery. |
 | BPM display and editing | `getBpmInRange()`, `tryScale()`, `tryTranslateBeats()`, `trySetBpm()` | Steadier BPM readings; fractional factors, phase shifts and BPM edits preserve variable tempo. Locked grids remain protected. |
 | Analysis and caching | `AnalyzerBeats` | Preserves protected grids, handles partial final blocks, and versions analysis results. Fast analysis applies to Constant mode. |
+| Waveform transport | `VisualPlayPosition::getPlaySlipAtNextVSync()` | Searches the complete position history at higher output latency. A bounded fallback keeps the waveform moving while the history fills. |
 | Linux installation | `install-linux.sh`, `tools/install-linux.py` | User-local build/install workflow, dedicated profile and starter, safe updates and RAM-aware parallelism. |
 
 ## Tests
@@ -26,8 +27,9 @@ commit `0fffd3d0d07b755c34c1730f7b87afadd8f2be19`.
 | Initial port (`c85a8ae16b`) | Debian 13 | 1,330 |
 | Attack correction (`9aaf9881e9`) | Ubuntu 24.04 container | 1,340 |
 | Audio-clock recovery and variable-grid editing | Ubuntu 24.04 container | 1,376 |
+| Waveform transport fix | Ubuntu 24.04 container | 1,387 |
 
-Application and test builds succeeded. The latest total combines 1,375 CTest
+Application and test builds succeeded. The latest total combines 1,386 CTest
 cases and one file test run from a writable directory. The 38 repository-disabled
 tests remain disabled; the optional external-material test adds one more disabled
 entry and was run separately. Use CTest's separate processes to avoid existing
@@ -49,6 +51,10 @@ Coverage includes:
   cases, four clock-fit cases and 11 variable-grid editing/serialization cases.
   Cover sparse offbeat kicks, missing pulses, silence, independent band offsets,
   small coherent drift, fractional factors and BPM locks.
+- **11 waveform regressions:** delayed audio output, short history, seek,
+  pause/play, reverse, slip, loops and invalidation. Two renderer cases reproduce
+  the frozen-at-start display before the fix and pass afterward, including beat
+  analysis updates. Beat-analysis code and existing grid data are unchanged.
 
 ### Initial port comparison
 

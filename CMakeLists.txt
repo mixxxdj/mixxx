@@ -2970,6 +2970,8 @@ if(BUILD_TESTING)
     src/test/cue_test.cpp
     src/test/cuecontrol_test.cpp
     src/test/delayringtest.cpp
+    src/test/visualplayposition_test.cpp
+    src/test/waveformposition_test.cpp
     src/test/dbconnectionpool_test.cpp
     src/test/dbidtest.cpp
     src/test/directorydaotest.cpp
