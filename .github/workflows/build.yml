@@ -596,6 +596,21 @@ jobs:
           dotnet.exe tool install --global wix --version 6.0.2
           wix extension add --global WixToolset.UI.wixext/6.0.2
 
+      - name: "[AppImage] Import signing GPG key"
+        # Sign the AppImage with the release GPG key, like the Flatpak
+        # publishing.  The secret is only passed on release builds; on develop
+        # and pull-request builds it is empty and the step is a no-op.  The
+        # import and the MIXXX_APPIMAGE_SIGN switch make CPackConfig.cmake pass
+        # --sign to appimagetool.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "${GPG_PRIVATE_KEY}" ]; then
+            gpg --batch --import <(printf '%s' "${GPG_PRIVATE_KEY}")
+            echo "MIXXX_APPIMAGE_SIGN=ON" >> "${GITHUB_ENV}"
+          fi
+
       - name: "Package"
         id: package
         if: matrix.cpack_generator != null
