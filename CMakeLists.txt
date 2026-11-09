@@ -3861,6 +3861,7 @@ endif()
 find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS ${QT_COMPONENTS} ${QT_EXTRA_COMPONENTS}
+  OPTIONAL_COMPONENTS QuickShapes
   REQUIRED
 )
 # PUBLIC is required below to find included headers
