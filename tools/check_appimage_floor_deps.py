@@ -32,9 +32,16 @@ packaged AppImage; the build host in CI is Ubuntu 22.04, which is the floor
 the AppImage targets.
 
 Usage:
-  check_appimage_floor_deps.py <AppImage>  # CI: check the packaged AppImage
-  check_appimage_floor_deps.py <mixxx-binary> <lib-dir>
-      # testing: walk a given closure
+  check_appimage_floor_deps.py mixxx-2.7.0-x86_64.AppImage
+      # CI: check the packaged AppImage.  It is extracted and the AppImage's
+      # own lib/ is resolved first, then the host system (the modeled floor).
+  check_appimage_floor_deps.py build/src/mixxx buildenv/installed/<triplet>/lib
+      # development: check an un-packaged build tree against a lib dir (the
+      # buildenv's installed libraries).  lib-dir is searched first, but the
+      # host system is always the fallback, because at runtime the AppImage
+      # resolves the delegated libraries against the host.
+  The first argument must be a real ELF file; an AppImage is recognized and
+  rejected here (use the one-argument form).
 """
 
 import collections
@@ -186,6 +193,21 @@ def elf_bits(path):
         return None
 
 
+def _is_appimage(path):
+    """Whether the file is an AppImage (an ELF runtime with an embedded squashfs).
+
+    AppImage type 2 files carry the magic "AI\\x02" right after the ELF header
+    (bytes 8-10).  The two-argument form must reject them: readelf would walk
+    the tiny runtime ELF, not the bundled application.
+    """
+    try:
+        with open(path, "rb") as f:
+            f.seek(8)
+            return f.read(3) == b"AI\x02"
+    except OSError:
+        return False
+
+
 def ldconfig_map():
     """soname -> path, from the host's dynamic linker cache."""
     ldconfig = shutil.which("ldconfig")
@@ -312,6 +334,20 @@ def main():
         return 2
     if not os.path.isdir(libdir):
         print(f"ERROR: buildenv lib dir not found: {libdir}", file=sys.stderr)
+        return 2
+    # The two-argument form is for checking an un-packaged build tree; it
+    # must receive a real ELF, not the packaged AppImage (whose magic makes
+    # readelf walk the tiny runtime ELF instead of the application).
+    if _is_appimage(binary):
+        print(
+            "ERROR: this looks like an AppImage; use the one-argument form "
+            "(check_appimage_floor_deps.py <AppImage>) or extract it and "
+            "pass the binary with a lib dir.",
+            file=sys.stderr,
+        )
+        return 2
+    if elf_bits(binary) is None:
+        print(f"ERROR: not an ELF file: {binary}", file=sys.stderr)
         return 2
     return _run_check(binary, libdir)
 
