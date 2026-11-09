@@ -206,7 +206,6 @@ jobs:
           - name: AppImage Linux x86_64
             os: ubuntu-22.04
             cmake_args: >-
-              -DQT6=ON
               -DQML=ON
               -DMIXXX_APPIMAGE=ON
               -DINSTALL_USER_UDEV_RULES=OFF
@@ -231,8 +230,11 @@ jobs:
             arch: x86_64
           - name: AppImage Linux aarch64
             os: ubuntu-22.04-arm
+            # -Wl,--allow-shlib-undefined permits a bundled shared library to
+            # reference a symbol that the host's system libraries do not
+            # provide at link time; the AppImage ships its own copy of that
+            # library, which satisfies the reference at runtime.
             cmake_args: >-
-              -DQT6=ON
               -DQML=ON
               -DMIXXX_APPIMAGE=ON
               -DINSTALL_USER_UDEV_RULES=OFF
