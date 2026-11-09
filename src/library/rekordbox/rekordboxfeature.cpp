@@ -503,13 +503,14 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
+    // Access was requested on the main thread before this worker started
+    // (see RekordboxFeature::activateChild()); no dialogs can be shown here.
+    // Keep the security token open while the database is read.
     mixxx::FileInfo fileInfo(dbPath);
-    if (!Sandbox::askForAccess(&fileInfo)) {
+    const auto securityToken = Sandbox::openSecurityToken(&fileInfo, true);
+    if (!Sandbox::canAccess(&fileInfo)) {
         return QString();
     }
-    // askForAccess() only holds the security token during the check;
-    // keep it open while the database is read.
-    const auto securityToken = Sandbox::openSecurityToken(&fileInfo, true);
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
@@ -1542,6 +1543,16 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 
     if (doParseDeviceDB) {
         qDebug() << "Parse Rekordbox Device DB: " << playlist;
+
+        // parseDeviceDB() runs on a worker thread, which must not show the
+        // sandbox permission dialogs, so ask for access here.
+        const QString dbPath = findRekordboxPdbPath(playlist);
+        if (!dbPath.isEmpty()) {
+            mixxx::FileInfo dbFileInfo(dbPath);
+            if (!Sandbox::askForAccess(&dbFileInfo)) {
+                return;
+            }
+        }
 
         // Let a worker thread do the XML parsing
         m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library*>(parent())->dbConnectionPool(), item);
