@@ -186,6 +186,7 @@ DlgAbout::DlgAbout()
             << "sergioalexo"
             << "Ram&oacute;n Arnau"
             << "Kameron Markham"
+            << "Samarth Deshpande"
             << "Nicolas Predella"
             << "JCCoynel"
             << "Konstantin Smirnov"
