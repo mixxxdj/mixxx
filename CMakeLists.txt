@@ -2635,11 +2635,15 @@ endif()
 
 # Additional Linux-only files
 if(UNIX AND NOT APPLE)
-  # .desktop file for KDE/GNOME menu
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
-    DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
-  )
+  # .desktop file for KDE/GNOME menu.  The AppImage ships its own AppImage-
+  # adjusted desktop file (Exec=mixxx, Icon=mixxx-512), so skip this one there
+  # to avoid installing two desktop files with the same name.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
+      DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+    )
+  endif()
 
   # AppImage-specific install rules (desktop file, shared libraries).
   if(MIXXX_APPIMAGE)
@@ -2654,11 +2658,15 @@ if(UNIX AND NOT APPLE)
     PATTERN ic_mixxx.ico EXCLUDE
   )
 
-  # .metainfo.xml file for KDE/GNOME AppStream initiative
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
-  )
+  # .metainfo.xml file for KDE/GNOME AppStream initiative.  The AppImage ships
+  # the same metadata as org.mixxx.Mixxx.appdata.xml (see appimage.cmake), so
+  # skip this copy there to avoid a duplicate install.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
+      DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
+    )
+  endif()
 
   option(
     INSTALL_USER_UDEV_RULES
