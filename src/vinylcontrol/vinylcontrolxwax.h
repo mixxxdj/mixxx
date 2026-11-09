@@ -43,7 +43,7 @@ class VinylControlXwax : public VinylControl {
     void doTrackSelection(bool valid_pos, double pitch, double position);
     void resetSteadyPitch(double pitch, double time);
     double checkSteadyPitch(double pitch, double time);
-    double calcDeltaRelativeDriftAmount(double deltaFilePosition);
+    double calcDeltaRelativeDriftAmount(double deltaFilePosition, double deltaVinylPosition);
     void enableRecordEndMode();
     void disableRecordEndMode();
     void enableConstantMode();
@@ -126,6 +126,12 @@ class VinylControlXwax : public VinylControl {
     double m_dDriftAmt;
     double m_initialRelativeDriftAmt;
     double m_deltaRelativeDriftAmount;
+    // Seconds elapsed since the timecode bit m_iPosition was decoded from.
+    double m_dPositionAge;
+    // Vinyl position at the previous drift calculation, to detect needle drops.
+    double m_dOldDriftVinylPos;
+    // Whether the drift was calculated since the last print.
+    bool m_bDriftUpdated;
 
     // Records the time of the last UI update. Used to prevent hammering the GUI
     // with updates.
