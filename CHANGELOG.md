@@ -153,7 +153,10 @@
   [#16470](https://github.com/mixxxdj/mixxx/pull/16470)
   [#15037](https://github.com/mixxxdj/mixxx/pull/15037)
   [#13632](https://github.com/mixxxdj/mixxx/pull/13632)
-* Tracks table: right-align playlist position column [#16906](https://github.com/mixxxdj/mixxx/pull/16906)
+* Tracks table: right-align playlist position and ReplayGain column
+  [#16906](https://github.com/mixxxdj/mixxx/pull/16906)
+  [#15144](https://github.com/mixxxdj/mixxx/pull/15144)
+  [#14997](https://github.com/mixxxdj/mixxx/issues/14997)
 * Tracks table: also apply library font size to header
   [#15392](https://github.com/mixxxdj/mixxx/pull/15392)
   [#15476](https://github.com/mixxxdj/mixxx/pull/15476)
@@ -163,6 +166,10 @@
 * Track table (Computer and Recording): sort correctly by file creation and modification date
   [#16527](https://github.com/mixxxdj/mixxx/pull/16527)
   [#16588](https://github.com/mixxxdj/mixxx/pull/16588)
+* Track table: avoid re-sorting table when purging/hiding tracks
+  [#15872](https://github.com/mixxxdj/mixxx/pull/15872)
+  [#12565](https://github.com/mixxxdj/mixxx/issues/12565)
+* Track table: add track drop indicator line [#15228](https://github.com/mixxxdj/mixxx/pull/15228)
 * Add a rebindable keyboard shortcut for editing items as a replacement for F2 [#13148](https://github.com/mixxxdj/mixxx/pull/13148)
 * DeveloperTools: restore searchbar shortcut Ctrl+F
   [#14761](https://github.com/mixxxdj/mixxx/pull/14761)
@@ -237,6 +244,7 @@
   [#13474](https://github.com/mixxxdj/mixxx/pull/13474)
   [#13472](https://github.com/mixxxdj/mixxx/issues/13472)
   [#16666](https://github.com/mixxxdj/mixxx/pull/16666)
+  [#14463](https://github.com/mixxxdj/mixxx/pull/14463)
 * Simplify waveform combobox in preferences
   [#13220](https://github.com/mixxxdj/mixxx/issues/13220)
   [#6428](https://github.com/mixxxdj/mixxx/issues/6428)
@@ -330,6 +338,9 @@
 * Reset Auto DJ when deck orientation changes
   [#15963](https://github.com/mixxxdj/mixxx/pull/15963)
   [#15962](https://github.com/mixxxdj/mixxx/issues/15962)
+* Confirm dialog for Auto DJ queue replace action
+  [#15149](https://github.com/mixxxdj/mixxx/pull/15149)
+  [#14956](https://github.com/mixxxdj/mixxx/issues/14952)
 
 ### Controller Mappings
 
@@ -471,12 +482,16 @@
 
 ### Skins
 
-* Allow swapping hotcues via dragging and dropping hotcue buttons
+* Reduce skin load time, by creating some menus only on demand and fix warnings
+  [#16941](https://github.com/mixxxdj/mixxx/pull/16941)
+  [#16944](https://github.com/mixxxdj/mixxx/pull/16944)
+  [#16393](https://github.com/mixxxdj/mixxx/pull/16393)
+* Hotcues: Allow swapping via dragging and dropping hotcue buttons
   [#13394](https://github.com/mixxxdj/mixxx/pull/13394)
   [#14367](https://github.com/mixxxdj/mixxx/pull/14367)
   [#16304](https://github.com/mixxxdj/mixxx/pull/16304)
   [#16302](https://github.com/mixxxdj/mixxx/issues/16302)
-* Add controls to order Hotcues by position in the track
+* Hotcues: Add controls to order Hotcues by position in the track
   [#13808](https://github.com/mixxxdj/mixxx/pull/13808)
   [#14423](https://github.com/mixxxdj/mixxx/pull/14423)
   [#17102](https://github.com/mixxxdj/mixxx/pull/17102)
@@ -486,9 +501,6 @@
   [#14178](https://github.com/mixxxdj/mixxx/pull/14178)
   [#14753](https://github.com/mixxxdj/mixxx/pull/14753)
 * Always show tooltips if Ctrl key is pressed [#14078](https://github.com/mixxxdj/mixxx/pull/14078)
-* Update waveforms_container.xml [#13501](https://github.com/mixxxdj/mixxx/pull/13501)
-* LegacySkinParser: Short-circuit if template fails to open [#13488](https://github.com/mixxxdj/mixxx/pull/13488)
-* Tooltips: Fix cue mode setting location [#14045](https://github.com/mixxxdj/mixxx/pull/14045)
 * Latenight, Tango and Deere: Add STEM controls
   [#15492](https://github.com/mixxxdj/mixxx/pull/15492)
   [#15310](https://github.com/mixxxdj/mixxx/issues/15310)
@@ -504,47 +516,24 @@
   [#14242](https://github.com/mixxxdj/mixxx/issues/14242)
   [#15535](https://github.com/mixxxdj/mixxx/pull/15535)
   [#15533](https://github.com/mixxxdj/mixxx/issues/15533)
-* Tracks: avoid re-sorting table when purging/hiding tracks
-  [#15872](https://github.com/mixxxdj/mixxx/pull/15872)
-  [#12565](https://github.com/mixxxdj/mixxx/issues/12565)
-* Tracks: confirm dialog for Auto DJ queue replace action
-  [#15149](https://github.com/mixxxdj/mixxx/pull/15149)
-  [#14956](https://github.com/mixxxdj/mixxx/issues/14952)
-* Tracks: add track drop indicator line [#15228](https://github.com/mixxxdj/mixxx/pull/15228)
-* Tracks: align ReplayGain right
-  [#15144](https://github.com/mixxxdj/mixxx/pull/15144)
-  [#14997](https://github.com/mixxxdj/mixxx/issues/14997)
 * Update cue & play indicators on paused decks when switching cue mode
   [#14930](https://github.com/mixxxdj/mixxx/pull/14930)
   [#9928](https://github.com/mixxxdj/mixxx/issues/9928)
 * Time widget: make ShowSeconds only show seconds, no extra locale info
   [#15805](https://github.com/mixxxdj/mixxx/pull/15805)
   [#15804](https://github.com/mixxxdj/mixxx/issues/15804)
-* EngineVuMeter: fix constructor [#14811](https://github.com/mixxxdj/mixxx/pull/14811)
-* Overview scale options [#14463](https://github.com/mixxxdj/mixxx/pull/14463)
-* LateNight: fix box style of xfader toggle in Classic 4-decks mode [#17076](https://github.com/mixxxdj/mixxx/pull/17076)
-* Latenight: Set explicit sizes for svg files [#17075](https://github.com/mixxxdj/mixxx/pull/17075)
-* Reduce skin load time, by creating some menus only on demand
-  [#16941](https://github.com/mixxxdj/mixxx/pull/16941)
-  [#16944](https://github.com/mixxxdj/mixxx/pull/16944)
-* LateNight: use 'Buffer %' for the latency meter label
-  [#16469](https://github.com/mixxxdj/mixxx/pull/16469)
-  [#15855](https://github.com/mixxxdj/mixxx/issues/15855)
-* Skins cleanup to prevent warnings during load [#16393](https://github.com/mixxxdj/mixxx/pull/16393)
-* LateNight: make xfader assign buttons strict (no toggling to 0)
-  [#16665](https://github.com/mixxxdj/mixxx/pull/16665)
-  [#16872](https://github.com/mixxxdj/mixxx/pull/16872)
-* LateNight: show quick effect icon for On state, minor layout fixes
-  [#16255](https://github.com/mixxxdj/mixxx/pull/16255)
-  [#14243](https://github.com/mixxxdj/mixxx/issues/14243)
 * Fix seeking to the very start using mouse on the Waveform Overview
   [#16371](https://github.com/mixxxdj/mixxx/pull/16371)
   [#16306](https://github.com/mixxxdj/mixxx/issues/16306)
-* Menubar: avoid crash with invalid keyboard shortcut strings
-  [#16219](https://github.com/mixxxdj/mixxx/pull/16219)
-  [#16216](https://github.com/mixxxdj/mixxx/issues/16216)
-* Tooltips: combine `latency_usage` and `latency_overload` for combo widgets [#17365](https://github.com/mixxxdj/mixxx/pull/17365)
-* Retry build-environment downloads, to prevent manual CI rebuilds if network transport issues occur [#17356](https://github.com/mixxxdj/mixxx/pull/17356)
+* LateNight: polished details
+  [#17076](https://github.com/mixxxdj/mixxx/pull/17076)
+  [#17075](https://github.com/mixxxdj/mixxx/pull/17075)
+  [#16469](https://github.com/mixxxdj/mixxx/pull/16469)
+  [#15855](https://github.com/mixxxdj/mixxx/issues/15855)
+  [#16665](https://github.com/mixxxdj/mixxx/pull/16665)
+  [#16872](https://github.com/mixxxdj/mixxx/pull/16872)
+  [#16255](https://github.com/mixxxdj/mixxx/pull/16255)
+  [#14243](https://github.com/mixxxdj/mixxx/issues/14243)
 
 ### Experimental Features
 
