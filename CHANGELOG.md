@@ -214,6 +214,7 @@
   [#8870](https://github.com/mixxxdj/mixxx/issues/8870)
 * macOs: fix crash when AU manifest loading times out [#16298](https://github.com/mixxxdj/mixxx/pull/16298)
 * Add control to show/hide effect/chain preset popup [#15984](https://github.com/mixxxdj/mixxx/pull/15984)
+* AudioUnit: fix crash due to off-by-one error in parameter syncing [#15919](https://github.com/mixxxdj/mixxx/pull/15919)
 
 ### Waveforms
 
@@ -323,6 +324,9 @@
 * Fix Auto DJ sometimes stopping at end of a track
   [#16885](https://github.com/mixxxdj/mixxx/pull/16885)
   [#15260](https://github.com/mixxxdj/mixxx/issues/15260)
+* Reset Auto DJ when deck orientation changes
+  [#15963](https://github.com/mixxxdj/mixxx/pull/15963)
+  [#15962](https://github.com/mixxxdj/mixxx/issues/15962)
 
 ### Controller Mappings
 
@@ -396,55 +400,40 @@
   [#16824](https://github.com/mixxxdj/mixxx/pull/16824)
   [#16922](https://github.com/mixxxdj/mixxx/pull/16922)
 
-### Engine
+### Audio Engine
 
-* Fix: sync rate using the current BPM instead of the file one
+* Keylock: add rubberband R3 short window support "Rubberband R3 SW (fast, high quality)" [#16752](https://github.com/mixxxdj/mixxx/pull/16752)
+* Avoid automatic key offset after track load with keylock mode 'Keep current key'
+  [#16460](https://github.com/mixxxdj/mixxx/pull/16460)
+  [#12027](https://github.com/mixxxdj/mixxx/issues/12027)
+* Sync: use the current BPM instead of the file one for calculating target BPM
   [#13671](https://github.com/mixxxdj/mixxx/pull/13671)
   [#12738](https://github.com/mixxxdj/mixxx/issues/12738)
 * Sync: prefer playing inaudible decks over stopped non-sync decks [#14580](https://github.com/mixxxdj/mixxx/pull/14580)
 * Sync: clamp user offset values to less than 1 beat [#15906](https://github.com/mixxxdj/mixxx/pull/15906)
-* Fix: prevent null CO access when cloning sampler or preview [#13740](https://github.com/mixxxdj/mixxx/pull/13740)
-* Use correct detected channel count on CoreAudio [#14372](https://github.com/mixxxdj/mixxx/pull/14372)
-* Fix: revert to max. 36 hotcues, fix one-off issue [#14753](https://github.com/mixxxdj/mixxx/pull/14753)
-* QueenMaryBeats: detection speed up
-  [#15127](https://github.com/mixxxdj/mixxx/pull/15127)
-  [#15067](https://github.com/mixxxdj/mixxx/pull/15067)
-* QueenMaryBeats: clamp the beat count value [#15657](https://github.com/mixxxdj/mixxx/pull/15657)
-* QueenMaryBeats: fix offset issue [#15076](https://github.com/mixxxdj/mixxx/pull/15076)
-* RateControl: initialize `m_pVCEnabled` with nullptr for samplers
-  [#15303](https://github.com/mixxxdj/mixxx/pull/15303)
-  [#15288](https://github.com/mixxxdj/mixxx/issues/15288)
-* Fix: document libFLAC 1.5 `FLAC__STREAM_DECODER_ERROR_STATUS_MISSING_FRAME` [#14876](https://github.com/mixxxdj/mixxx/pull/14876)
-* Fix: soundsourceflac.cpp flac api version and missing error [#15295](https://github.com/mixxxdj/mixxx/pull/15295)
-* chore: remove unused/undefined declared members from BaseTrackCache [#14965](https://github.com/mixxxdj/mixxx/pull/14965)
-* Changed audio engine to switch to linear scaler upon entering scratching mode [#15845](https://github.com/mixxxdj/mixxx/pull/15845)
-* AudioUnit: fix crash due to off-by-one error in parameter syncing [#15919](https://github.com/mixxxdj/mixxx/pull/15919)
-* Broadcasting: Improve Network clock underrun compensation
-  [#15433](https://github.com/mixxxdj/mixxx/pull/15433)
-  [#15259](https://github.com/mixxxdj/mixxx/pull/15259)
-* Fix crash when Media Foundation returns no sample
-  [#17151](https://github.com/mixxxdj/mixxx/pull/17151)
-  [#15638](https://github.com/mixxxdj/mixxx/issues/15638)
-* Deck cloning: avoid stuck `reloop_toggle` button [#16466](https://github.com/mixxxdj/mixxx/pull/16466)
-* Auto DJ: Reset Auto DJ when deck orientation changes
-  [#15963](https://github.com/mixxxdj/mixxx/pull/15963)
-  [#15962](https://github.com/mixxxdj/mixxx/issues/15962)
 * Always quantize loop endpoints to closest beat
   [#16724](https://github.com/mixxxdj/mixxx/pull/16724)
   [#16612](https://github.com/mixxxdj/mixxx/issues/16612)
 * Correctly seek to saved loop with quantize enabled
   [#16552](https://github.com/mixxxdj/mixxx/pull/16552)
   [#16551](https://github.com/mixxxdj/mixxx/issues/16551)
-* Add rubberband R3 short window support "Rubberband R3 SW (fast, high quality)" [#16752](https://github.com/mixxxdj/mixxx/pull/16752)
-* VinylControl: limit writing of VinylSignalQualityReport to 66 ms [#16538](https://github.com/mixxxdj/mixxx/pull/16538)
-* Avoid automatic key offset after track load with keylock mode 'Keep current key'
-  [#16460](https://github.com/mixxxdj/mixxx/pull/16460)
-  [#12027](https://github.com/mixxxdj/mixxx/issues/12027)
+* Use correct detected channel count on CoreAudio [#14372](https://github.com/mixxxdj/mixxx/pull/14372)
+* Improve beat detection
+  [#15127](https://github.com/mixxxdj/mixxx/pull/15127)
+  [#15067](https://github.com/mixxxdj/mixxx/pull/15067)
+  [#15657](https://github.com/mixxxdj/mixxx/pull/15657)
+  [#15076](https://github.com/mixxxdj/mixxx/pull/15076)
+* Broadcasting: improve Network clock underrun compensation
+  [#15433](https://github.com/mixxxdj/mixxx/pull/15433)
+  [#15259](https://github.com/mixxxdj/mixxx/pull/15259)
+* Fix crash when Media Foundation returns no sample
+  [#17151](https://github.com/mixxxdj/mixxx/pull/17151)
+  [#15638](https://github.com/mixxxdj/mixxx/issues/15638)
+* Deck cloning: avoid stuck `reloop_toggle` button [#16466](https://github.com/mixxxdj/mixxx/pull/16466)
 * Fix false positive "First sound has been moved!" warnings at the very first sample
   [#16185](https://github.com/mixxxdj/mixxx/pull/16185)
   [#16183](https://github.com/mixxxdj/mixxx/issues/16183)
   [#16054](https://github.com/mixxxdj/mixxx/pull/16054)
-* Improve logging and file access during type probing [#16396](https://github.com/mixxxdj/mixxx/pull/16396)
 
 ### Preferences
 
