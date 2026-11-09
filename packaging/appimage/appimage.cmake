@@ -42,8 +42,23 @@ install(
 )
 install(
   FILES "${MIXXX_APPIMAGE_DESKTOP_FILE}"
-  DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
-  RENAME "mixxx-appimage.desktop"
+  # usr/share/applications, not ${CMAKE_INSTALL_DATADIR}/applications: the
+  # AppImage AppDir is not a usr-prefixed tree, and appstreamcli's tree
+  # validation resolves the appdata's launchable against usr/share/applications.
+  DESTINATION "usr/share/applications"
+  RENAME "org.mixxx.Mixxx.desktop"
+)
+# AppStream metadata, so appimagetool's validation and AppStream-aware
+# launchers find upstream metadata in the AppImage.  appimagetool derives the
+# expected file name from the AppImage desktop file (org.mixxx.Mixxx.desktop ->
+# org.mixxx.Mixxx.appdata.xml) and, with appstreamcli installed, validates the
+# tree, so the metadata must live under usr/share/metainfo under that name
+# with a matching component id and launchable (the reverse-DNS id matches the
+# AppDir's desktop file).  It is the unmodified upstream metadata.
+install(
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
+  DESTINATION "usr/share/metainfo"
+  RENAME "org.mixxx.Mixxx.appdata.xml"
 )
 
 # Custom AppRun: the CPack AppImage generator uses an AppRun installed in
