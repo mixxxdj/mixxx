@@ -4344,48 +4344,31 @@ else()
           applocal
       )
 
-      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
-        get_target_property(
-          _QuickShapes_Type
-          Qt${QT_VERSION_MAJOR}::QuickShapes
-          TYPE
-        )
-        if(
-          _QuickShapes_Type STREQUAL "SHARED_LIBRARY"
-          OR _QuickShapes_Type STREQUAL "MODULE_LIBRARY"
-          OR _QuickShapes_Type STREQUAL "EXECUTABLE"
-        )
-          install(
-            IMPORTED_RUNTIME_ARTIFACTS
-              Qt${QT_VERSION_MAJOR}::QuickShapes
-              DESTINATION
-              "${MIXXX_INSTALL_DATADIR}"
-              COMPONENT
-              applocal
+      # Bundle the QuickShapes module runtime libraries where they are shared; a
+      # static build links them into the binary and has nothing to install.
+      foreach(_qtmodule QuickShapes QuickShapesPrivate)
+        if(TARGET Qt${QT_VERSION_MAJOR}::${_qtmodule})
+          get_target_property(
+            _qtmodule_type
+            Qt${QT_VERSION_MAJOR}::${_qtmodule}
+            TYPE
           )
-        endif()
-      endif()
-      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapesPrivate)
-        get_target_property(
-          _QuickShapesPrivate_Type
-          Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          TYPE
-        )
-        if(
-          _QuickShapesPrivate_Type STREQUAL "SHARED_LIBRARY"
-          OR _QuickShapesPrivate_Type STREQUAL "MODULE_LIBRARY"
-          OR _QuickShapesPrivate_Type STREQUAL "EXECUTABLE"
-        )
-          install(
-            IMPORTED_RUNTIME_ARTIFACTS
-              Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-              DESTINATION
-              "${MIXXX_INSTALL_DATADIR}"
-              COMPONENT
-              applocal
+          if(
+            _qtmodule_type STREQUAL "SHARED_LIBRARY"
+            OR _qtmodule_type STREQUAL "MODULE_LIBRARY"
+            OR _qtmodule_type STREQUAL "EXECUTABLE"
           )
+            install(
+              IMPORTED_RUNTIME_ARTIFACTS
+                Qt${QT_VERSION_MAJOR}::${_qtmodule}
+                DESTINATION
+                "${MIXXX_INSTALL_DATADIR}"
+                COMPONENT
+                applocal
+            )
+          endif()
         endif()
-      endif()
+      endforeach()
 
       if(QT_VERSION VERSION_LESS 6.4)
         # From Qt 6.4 integrated in QuickControls2
