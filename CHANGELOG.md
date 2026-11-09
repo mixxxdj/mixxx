@@ -538,20 +538,7 @@
 
 ### Target support
 
-* Sound preferences: Add missing ifdefs for building without Rubberband [#13577](https://github.com/mixxxdj/mixxx/pull/13577)
-* Update Linux-GitHub runner to Ubuntu 24.04.01 LTS
-  [#13781](https://github.com/mixxxdj/mixxx/pull/13781)
-  [#13880](https://github.com/mixxxdj/mixxx/pull/13880)
-* Debian: Add missing qt6-declarative-private-dev and qt6-base-private-dev package
-  [#13904](https://github.com/mixxxdj/mixxx/pull/13904)
-* RPM: Add missing deps [#14183](https://github.com/mixxxdj/mixxx/pull/14183)
-* Show translator file path in debug message [#14209](https://github.com/mixxxdj/mixxx/pull/14209)
-* Building without tests-tools [#14268](https://github.com/mixxxdj/mixxx/pull/14268)
-* Remove unmaintained shell.nix [#14300](https://github.com/mixxxdj/mixxx/pull/14300)
-* Add QGLES2 option for UNIX [#14489](https://github.com/mixxxdj/mixxx/pull/14489)
-* Don't set GL_BGRA if QT_OPENGL_ES_2 [#14488](https://github.com/mixxxdj/mixxx/pull/14488)
 * Windows and macOS: Update to Qt 6.8.3 (requires MSVC 2022) [#14655](https://github.com/mixxxdj/mixxx/pull/14655)
-* Retire Ubuntu Jammy 22.04 [#14784](https://github.com/mixxxdj/mixxx/pull/14784)
 * Allow any taglib  [#14694](https://github.com/mixxxdj/mixxx/pull/14694)
 * Add Flatpak build workflows and publish at [downloads.mixxx.org](https://downloads.mixxx.org/flatpak)
   [#15695](https://github.com/mixxxdj/mixxx/pull/15695)
@@ -567,45 +554,14 @@
   [#17205](https://github.com/mixxxdj/mixxx/pull/17205)
   [#16810](https://github.com/mixxxdj/mixxx/pull/16810)
   [#16515](https://github.com/mixxxdj/mixxx/pull/16515)
-* Update to latest VCPKG with the sleef backport  [#15783](https://github.com/mixxxdj/mixxx/pull/15783)
-* VCPKG update for 2.6 [#14815](https://github.com/mixxxdj/mixxx/pull/14815)
-* Remove 'qml6-module-qtquick-nativestyle'
-  [#15771](https://github.com/mixxxdj/mixxx/pull/15771)
-  [#15440](https://github.com/mixxxdj/mixxx/pull/15440)
-* chore: replace deprecated `QImage::mirror` with `QImage::flip` from Qt6.9 [#14954](https://github.com/mixxxdj/mixxx/pull/14954)
-* Never render into an invalid OpenGL Window
-  [#15951](https://github.com/mixxxdj/mixxx/pull/15951)
-  [#15942](https://github.com/mixxxdj/mixxx/issues/15942)
-* Fail early if not running from Visual Studio environment [#14623](https://github.com/mixxxdj/mixxx/pull/14623)
-* Fail verbose when Chromaprint is missing [#14548](https://github.com/mixxxdj/mixxx/pull/14548)
-* Move download, SHA256 check and unzip of Windows buildenv from windows_buildenv.bat to CMakelists.txt [#13306](https://github.com/mixxxdj/mixxx/pull/13306)
-* Install ucrtbased.dll in debug mode [#14579](https://github.com/mixxxdj/mixxx/pull/14579)
-* Fix: Resolve the warning for redundant Czech desktop entry fields [#15720](https://github.com/mixxxdj/mixxx/pull/15720)
-* Fix setting of BUNDLE_DIRS [#14550](https://github.com/mixxxdj/mixxx/pull/14550)
-* Make Debian non-free optional [#15895](https://github.com/mixxxdj/mixxx/pull/15895)
-* MacOS: don't install already installed Ninja [#14499](https://github.com/mixxxdj/mixxx/pull/14499)
-* MacOS: Use same CMake internal buildenv download/unzip as for Windows [#15033](https://github.com/mixxxdj/mixxx/pull/15033)
-* MacOS: String comparison fix for zsh [#15568](https://github.com/mixxxdj/mixxx/pull/15568)
-* Fix qt 6.10 warnings
-  [#15719](https://github.com/mixxxdj/mixxx/pull/15719)
-  [#15698](https://github.com/mixxxdj/mixxx/issues/15698)
-* Follow Ubuntu libstdc++6 and libgcc-s1 updates [#15275](https://github.com/mixxxdj/mixxx/pull/15275)
-* Fix WiX error log file generation in GitHub workflow [#15045](https://github.com/mixxxdj/mixxx/pull/15045)
-* ci: don't cache signing action dependencies for WiX DLL step [#17195](https://github.com/mixxxdj/mixxx/pull/17195)
-* Fix MIDI learning wizard not showing on Ubuntu 26.04 [#17157](https://github.com/mixxxdj/mixxx/pull/17157)
-* Added missing include file for PATH_MAX on Windows
-  [#16601](https://github.com/mixxxdj/mixxx/pull/16601)
-  [#16600](https://github.com/mixxxdj/mixxx/issues/16600)
+* Provide an AppImage build: Supports glibc >= 2.28 (>= Ubuntu Cosmic 18.10) [#17298](https://github.com/mixxxdj/mixxx/pull/17298)
 * Windows MSI: fix incorrect install scope, a known issue with CPack and WiX toolset 3.x
   [#15056](https://github.com/mixxxdj/mixxx/issues/15056)
   [#15060](https://github.com/mixxxdj/mixxx/pull/15060)
   [#16173](https://github.com/mixxxdj/mixxx/pull/16173)
   [#17296](https://github.com/mixxxdj/mixxx/pull/17296)
   [#17300](https://github.com/mixxxdj/mixxx/pull/17300)
-* Stats: convert ns to ms and add spacing for readability
-  [#14978](https://github.com/mixxxdj/mixxx/pull/14978)
-  [#14908](https://github.com/mixxxdj/mixxx/issues/14908)
-* Provide an AppImage build: Supports glibc >= 2.28 (>= Ubuntu Cosmic 18.10) [#17298](https://github.com/mixxxdj/mixxx/pull/17298)
+  [#15045](https://github.com/mixxxdj/mixxx/pull/15045)
 
 ### Misc Refactorings
 
