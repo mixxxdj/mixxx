@@ -67,6 +67,8 @@
   [#16987](https://github.com/mixxxdj/mixxx/issues/16987)
   [#14928](https://github.com/mixxxdj/mixxx/pull/14928)
   [#14764](https://github.com/mixxxdj/mixxx/issues/14764)
+  [#17416](https://github.com/mixxxdj/mixxx/pull/17416)
+  [#17410](https://github.com/mixxxdj/mixxx/issues/17410)
 * Add analyser support for stem
   [#13106](https://github.com/mixxxdj/mixxx/pull/13106)
   [#16398](https://github.com/mixxxdj/mixxx/pull/16398)
@@ -244,6 +246,7 @@
   [#15272](https://github.com/mixxxdj/mixxx/issues/15272)
   [#15349](https://github.com/mixxxdj/mixxx/pull/15349)
   [#15338](https://github.com/mixxxdj/mixxx/issues/15338)
+  [#13615](https://github.com/mixxxdj/mixxx/pull/13615)
 * Rendergraph: Add rendergraph library and use it for waveform rendering
   [#13737](https://github.com/mixxxdj/mixxx/pull/13737)
   [#14007](https://github.com/mixxxdj/mixxx/pull/14007)
@@ -437,29 +440,26 @@
 
 ### Preferences
 
-* Waveforms: Group options, adjust tabstops, reorder ui file [#13615](https://github.com/mixxxdj/mixxx/pull/13615)
-* Waveforms: Fix Restore Defaults for until-marker and stem waveform options
-  [#17416](https://github.com/mixxxdj/mixxx/pull/17416)
-  [#17410](https://github.com/mixxxdj/mixxx/issues/17410)
-* Controllers: make extended controller information available for device selection
-* Controllers: reorganize content into tabs
-* Controllers: strip leading whitespaces for mapping name display [#15844](https://github.com/mixxxdj/mixxx/pull/15844)
-* Controllers: allow non-exclusive MIDI options to be combined [#16851](https://github.com/mixxxdj/mixxx/pull/16851)
-* Controllers: add missing HercJogFast option [#16852](https://github.com/mixxxdj/mixxx/pull/16852)
-* Controllers: add reload button to refresh mapping list [#15627](https://github.com/mixxxdj/mixxx/pull/15627)
-* Controllers: fix the tabs display for QML=OFF [#15027](https://github.com/mixxxdj/mixxx/pull/15027)
-* Controllers: add missing layout  [#14606](https://github.com/mixxxdj/mixxx/pull/14606)
-* Mixer: Show 'real' crossfader configuration [#14124](https://github.com/mixxxdj/mixxx/pull/14124)
-* Mixer: Fix crossader graph [#13848](https://github.com/mixxxdj/mixxx/pull/13848)
-  [#13896](https://github.com/mixxxdj/mixxx/pull/13896)
+* Controllers: reorganize content into tabs and add more info
   [#14006](https://github.com/mixxxdj/mixxx/pull/14006)
   [#14354](https://github.com/mixxxdj/mixxx/pull/14354)
+  [#13896](https://github.com/mixxxdj/mixxx/pull/13896)
+  [#15844](https://github.com/mixxxdj/mixxx/pull/15844)
+  [#16851](https://github.com/mixxxdj/mixxx/pull/16851)
+  [#16852](https://github.com/mixxxdj/mixxx/pull/16852)
+  [#15627](https://github.com/mixxxdj/mixxx/pull/15627)
+  [#15027](https://github.com/mixxxdj/mixxx/pull/15027)
+  [#14606](https://github.com/mixxxdj/mixxx/pull/14606)
+* Mixer: Show 'real' crossfader configuration and fix praph
+  [#14124](https://github.com/mixxxdj/mixxx/pull/14124)
+  [#13848](https://github.com/mixxxdj/mixxx/pull/13848)
 * Effects: Left/Right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
-* Sound Hardware: Open with sprecific I/O tab selected [#14346](https://github.com/mixxxdj/mixxx/pull/14346)
-* Sound Hardware: Don't set m_settingsModified in update slots [#13450](https://github.com/mixxxdj/mixxx/pull/13450)
-* Sound Hardware: move latency/underflow values closer to labels [#16184](https://github.com/mixxxdj/mixxx/pull/16184)
-* Sound Hardware: Default to WASAPI on Windows instead of ASIO [#16989](https://github.com/mixxxdj/mixxx/pull/16989)
-* Library, Track Search: Fix accidental use of wrong preference controls [#13592](https://github.com/mixxxdj/mixxx/pull/13592)
+* Sound Hardware: default to WASAPI on Windows instead of ASIO and polish the view
+  [#16989](https://github.com/mixxxdj/mixxx/pull/16989)
+  [#14346](https://github.com/mixxxdj/mixxx/pull/14346)
+  [#13450](https://github.com/mixxxdj/mixxx/pull/13450)
+  [#16184](https://github.com/mixxxdj/mixxx/pull/16184)
+* Library, Track Search: fix accidental use of wrong preference controls [#13592](https://github.com/mixxxdj/mixxx/pull/13592)
 * Interface: use main window screen to detect if skin fits
   [#15824](https://github.com/mixxxdj/mixxx/pull/15824)
   [#15823](https://github.com/mixxxdj/mixxx/issues/15823)
