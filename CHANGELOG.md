@@ -170,6 +170,7 @@
   [#15872](https://github.com/mixxxdj/mixxx/pull/15872)
   [#12565](https://github.com/mixxxdj/mixxx/issues/12565)
 * Track table: add track drop indicator line [#15228](https://github.com/mixxxdj/mixxx/pull/15228)
+* Track Table: disable inline track editing on iOS to not enable on-screen keyboard [#13494](https://github.com/mixxxdj/mixxx/pull/13494)
 * Add a rebindable keyboard shortcut for editing items as a replacement for F2 [#13148](https://github.com/mixxxdj/mixxx/pull/13148)
 * DeveloperTools: restore searchbar shortcut Ctrl+F
   [#14761](https://github.com/mixxxdj/mixxx/pull/14761)
@@ -534,18 +535,6 @@
   [#16872](https://github.com/mixxxdj/mixxx/pull/16872)
   [#16255](https://github.com/mixxxdj/mixxx/pull/16255)
   [#14243](https://github.com/mixxxdj/mixxx/issues/14243)
-
-### Experimental Features
-
-* SoundManagerIOS: Remove unsupported/redundant options [#13487](https://github.com/mixxxdj/mixxx/pull/13487)
-* ControllerRenderingEngine: Disable BGRA when targeting Wasm [#13502](https://github.com/mixxxdj/mixxx/pull/13502)
-* BaseTrackTableModel: Disable inline track editing on iOS [#13494](https://github.com/mixxxdj/mixxx/pull/13494)
-* Set QQuickStyle to "basic" [#13696](https://github.com/mixxxdj/mixxx/pull/13696)
-  [#13600](https://github.com/mixxxdj/mixxx/issues/13600)
-* Fix: trigger QML waveform slot at init [#13736](https://github.com/mixxxdj/mixxx/pull/13736)
-* CoreServices: Default to `~/Music` as a music directory on WASM and iOS [#13498](https://github.com/mixxxdj/mixxx/pull/13498)
-* CMakeLists: Disable `QTlsBackendOpenSSLPlugin` on iOS [#14375](https://github.com/mixxxdj/mixxx/pull/14375)
-* QML: disable to fix link failure and avoid undefined behaviour [#14772](https://github.com/mixxxdj/mixxx/pull/14772)
 
 ### Target support
 
