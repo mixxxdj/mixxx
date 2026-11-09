@@ -503,9 +503,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
-    // Access was requested on the main thread before this worker started
-    // (see RekordboxFeature::activateChild()); no dialogs can be shown here.
-    // Keep the security token open while the database is read.
+    // Access to the device was requested on the main thread before this
+    // worker started (see RekordboxFeature::activateChild()); no dialogs can
+    // be shown here. Keep the security token open while the database is read.
     mixxx::FileInfo fileInfo(dbPath);
     const auto securityToken = Sandbox::openSecurityToken(&fileInfo, true);
     if (!Sandbox::canAccess(&fileInfo)) {
@@ -1545,13 +1545,12 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
         qDebug() << "Parse Rekordbox Device DB: " << playlist;
 
         // parseDeviceDB() runs on a worker thread, which must not show the
-        // sandbox permission dialogs, so ask for access here.
-        const QString dbPath = findRekordboxPdbPath(playlist);
-        if (!dbPath.isEmpty()) {
-            mixxx::FileInfo dbFileInfo(dbPath);
-            if (!Sandbox::askForAccess(&dbFileInfo)) {
-                return;
-            }
+        // sandbox permission dialogs, so ask for access here. Ask for the
+        // whole device (playlist holds its path): that also covers the ANLZ
+        // files and the tracks, so loading a track from it doesn't ask again.
+        mixxx::FileInfo deviceInfo(playlist);
+        if (!Sandbox::askForAccess(&deviceInfo)) {
+            return;
         }
 
         // Let a worker thread do the XML parsing
