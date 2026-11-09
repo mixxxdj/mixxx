@@ -194,7 +194,7 @@ def elf_bits(path):
 
 
 def _is_appimage(path):
-    """Whether the file is an AppImage (an ELF runtime with an embedded squashfs).
+    """Whether the file is an AppImage (ELF runtime + embedded squashfs).
 
     AppImage type 2 files carry the magic "AI\\x02" right after the ELF header
     (bytes 8-10).  The two-argument form must reject them: readelf would walk
