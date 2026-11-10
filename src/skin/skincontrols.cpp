@@ -7,28 +7,36 @@ const QString kSkinGroup = QStringLiteral("[Skin]");
 } // namespace
 
 SkinControls::SkinControls()
-        : m_showEffectRack(ConfigKey(kSkinGroup, QStringLiteral("show_effectrack")),
+        : m_showEffectRack(
+                  ConfigKey(kSkinGroup, QStringLiteral("show_effectrack")),
                   true,
                   true),
-          m_showLibraryCoverArt(ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")),
+          m_showLibraryCoverArt(
+                  ConfigKey(
+                          kSkinGroup, QStringLiteral("show_library_coverart")),
                   true,
                   true),
-          m_showMicrophones(ConfigKey(kSkinGroup, QStringLiteral("show_microphones")),
+          m_showMicrophones(
+                  ConfigKey(kSkinGroup, QStringLiteral("show_microphones")),
                   true,
                   true),
-          m_showPreviewDecks(ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")),
+          m_showPreviewDecks(
+                  ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")),
                   true,
                   true),
           m_showSamplers(ConfigKey(kSkinGroup, QStringLiteral("show_samplers")),
                   true,
                   true),
-          m_show4EffectUnits(ConfigKey(kSkinGroup, QStringLiteral("show_4effectunits")),
+          m_show4EffectUnits(
+                  ConfigKey(kSkinGroup, QStringLiteral("show_4effectunits")),
                   true,
                   false),
           m_showCoverArt(ConfigKey(kSkinGroup, QStringLiteral("show_coverart")),
                   true,
                   true),
-          m_showMaximizedLibrary(ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")),
+          m_showMaximizedLibrary(
+                  ConfigKey(
+                          kSkinGroup, QStringLiteral("show_maximized_library")),
                   true,
                   false),
           m_showMixer(ConfigKey(kSkinGroup, QStringLiteral("show_mixer")),
@@ -40,8 +48,74 @@ SkinControls::SkinControls()
           m_showSpinnies(ConfigKey(kSkinGroup, QStringLiteral("show_spinnies")),
                   true,
                   true),
-          m_showVinylControl(ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
+          m_showVinylControl(
+                  ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")),
                   true,
+                  false),
+          m_hightlightInputAllow(
+                  ConfigKey(
+                          kSkinGroup, QStringLiteral("highlight_input_allow")),
+                  true,
+                  false),
+          m_hightlightMixerChannel1(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_mixer_[Channel1]")),
+                  false,
+                  false),
+          m_hightlightMixerChannel2(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_mixer_[Channel2]")),
+                  false,
+                  false),
+          m_hightlightMixerChannel3(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_mixer_[Channel3]")),
+                  false,
+                  false),
+          m_hightlightMixerChannel4(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_mixer_[Channel4]")),
+                  false,
+                  false),
+          m_hightlightDeckChannel1(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_deck_[Channel1]")),
+                  false,
+                  false),
+          m_hightlightDeckChannel2(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_deck_[Channel2]")),
+                  false,
+                  false),
+          m_hightlightDeckChannel3(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_deck_[Channel3]")),
+                  false,
+                  false),
+          m_hightlightDeckChannel4(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_deck_[Channel4]")),
+                  false,
+                  false),
+          m_hightlightWaveformChannel1(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_waveform_[Channel1]")),
+                  false,
+                  false),
+          m_hightlightWaveformChannel2(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_waveform_[Channel2]")),
+                  false,
+                  false),
+          m_hightlightWaveformChannel3(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_waveform_[Channel3]")),
+                  false,
+                  false),
+          m_hightlightWaveformChannel4(
+                  ConfigKey(kSkinGroup,
+                          QStringLiteral("highlight_waveform_[Channel4]")),
+                  false,
                   false) {
     m_showEffectRack.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showLibraryCoverArt.setButtonMode(mixxx::control::ButtonMode::Toggle);
@@ -55,6 +129,19 @@ SkinControls::SkinControls()
     m_showSettings.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showSpinnies.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_showVinylControl.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightInputAllow.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightMixerChannel1.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightMixerChannel2.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightMixerChannel3.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightMixerChannel4.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightDeckChannel1.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightDeckChannel2.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightDeckChannel3.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightDeckChannel4.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightWaveformChannel1.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightWaveformChannel2.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightWaveformChannel3.setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_hightlightWaveformChannel4.setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_showEffectRack.addAlias(ConfigKey(QStringLiteral("[EffectRack1]"), QStringLiteral("show")));
     m_showLibraryCoverArt.addAlias(ConfigKey(

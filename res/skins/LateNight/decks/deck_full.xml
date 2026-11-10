@@ -9,6 +9,14 @@
         <ObjectName>Deck<Variable name="ChanNum"/></ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
+        <Connection>
+          <ConfigKey>[Skin],highlight_deck_<Variable name="Group"/></ConfigKey>
+          <BindProperty>highlight_deck</BindProperty>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Skin],highlight_input_allow</ConfigKey>
+          <BindProperty>highlight_input_allow</BindProperty>
+        </Connection>
         <Children>
 
           <WidgetGroup>
