@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QStringList>
 #include <QThread>
 #include <future>
 
@@ -49,6 +50,16 @@ class TrackExportWorker : public QThread {
         return m_errorMessage;
     }
 
+    // Returns list of files/tracks that were missing or failed to copy.
+    QStringList failedTracks() const {
+        return m_failedTracks;
+    }
+
+    // Returns total count of failed/missing files.
+    int failedCount() const {
+        return m_failedTracks.size();
+    }
+
     // Cancels the export after the current copy operation.
     // May be called from another thread.
     void stop();
@@ -63,6 +74,10 @@ class TrackExportWorker : public QThread {
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void progress(const QString& filename, int progress, int count);
+    // Emitted once at the end of run() when the export was not stopped.
+    void progressFinished();
+    // Emitted once at the end of run() when the export was stopped, either
+    // by the user (e.g. Cancel on the overwrite prompt) or by a fatal error.
     void canceled();
 
   private:
@@ -80,6 +95,7 @@ class TrackExportWorker : public QThread {
 
     QAtomicInt m_bStop = false;
     QString m_errorMessage;
+    QStringList m_failedTracks;
 
     OverwriteMode m_overwriteMode = OverwriteMode::ASK;
     const QString m_destDir;
