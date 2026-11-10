@@ -201,7 +201,7 @@ static int fmat_lup_decompose(struct fmatrix *a, size_t *perm, double *sign)
 	return 0;
 }
 
-static void fmat_lu_solve(const struct fmatrix *lu, const size_t *perm, const double *b, double *x)
+static void fmat_lu_solve(double *x, const struct fmatrix *lu, const size_t *perm, const double *b)
 {
 	const size_t n = lu->rows;
 
@@ -266,7 +266,7 @@ struct fmatrix *fmat_inv_lup(struct fmatrix *dest, const struct fmatrix *src)
 	for (size_t col = 0; col < n; ++col) {
 		memset(rhs, 0, n * sizeof(*rhs));
 		rhs[col] = 1.0;
-		fmat_lu_solve(lu, perm, rhs, sol);
+		fmat_lu_solve(sol, lu, perm, rhs);
 
 		for (size_t row = 0; row < n; ++row)
 			dest->data[row * n + col] = sol[row];
@@ -290,7 +290,7 @@ out:
 	return dest;
 }
 
-static int fmat_inv_2x2(const struct fmatrix *src, struct fmatrix *dest)
+static int fmat_inv_2x2(struct fmatrix *dest, const struct fmatrix *src)
 {
 	const double a = src->data[0];
 	const double b = src->data[1];
@@ -311,7 +311,7 @@ static int fmat_inv_2x2(const struct fmatrix *src, struct fmatrix *dest)
 	return 0;
 }
 
-static int fmat_inv_3x3(const struct fmatrix *src, struct fmatrix *dest)
+static int fmat_inv_3x3(struct fmatrix *dest, const struct fmatrix *src)
 {
 	const double *m = src->data;
 
@@ -386,7 +386,7 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 	}
 
 	if (n == 2) {
-		if (fmat_inv_2x2(src, dest) != 0) {
+		if (fmat_inv_2x2(dest, src) != 0) {
 			fprintf(stderr, "%s: matrix is singular\n", __func__);
 			goto error;
 		}
@@ -395,7 +395,7 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 	}
 
 	if (n == 3) {
-		if (fmat_inv_3x3(src, dest) != 0) {
+		if (fmat_inv_3x3(dest, src) != 0) {
 			fprintf(stderr, "%s: matrix is singular\n", __func__);
 			goto error;
 		}
