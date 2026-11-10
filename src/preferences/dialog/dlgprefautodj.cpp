@@ -58,6 +58,7 @@ void DlgPrefAutoDJ::slotUpdate() {
                     RequeueIgnoreTimeEdit->displayFormat()));
     RequeueIgnoreTimeEdit->setEnabled(
             RequeueIgnoreCheckBox->checkState() == Qt::Checked);
+    updateRequeueIgnoreToolTip();
 
     // Auto DJ random enqueue
     RandomQueueCheckBox->setChecked(m_pConfig->getValue(
@@ -107,6 +108,7 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
 
     RequeueIgnoreCheckBox->setChecked(false);
     RequeueIgnoreTimeEdit->setEnabled(false);
+    updateRequeueIgnoreToolTip();
     RequeueIgnoreTimeEdit->setTime(QTime::fromString("23:59"));
 
     RandomQueueCheckBox->setChecked(false);
@@ -123,6 +125,16 @@ void DlgPrefAutoDJ::slotToggleRequeueIgnore(Qt::CheckState buttonState) {
 void DlgPrefAutoDJ::slotToggleRequeueIgnore(int buttonState) {
 #endif
     RequeueIgnoreTimeEdit->setEnabled(buttonState == Qt::Checked);
+    updateRequeueIgnoreToolTip();
+}
+
+void DlgPrefAutoDJ::updateRequeueIgnoreToolTip() {
+    const QString toolTip = RequeueIgnoreCheckBox->isChecked()
+            ? tr("Played tracks can be selected again after the waiting time below.")
+            : tr("Played tracks are not selected again, except to keep the "
+                 "minimum available tracks.");
+    RequeueIgnoreLabel->setToolTip(toolTip);
+    RequeueIgnoreCheckBox->setToolTip(toolTip);
 }
 
 void DlgPrefAutoDJ::considerRepeatPlaylistState(bool enable) {
