@@ -77,7 +77,7 @@ WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformTy
 
 VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
     using VT = VSyncThread;
-    if (configVSyncMode >= 0 || configVSyncMode <= static_cast<int>(VT::ST_COUNT)) {
+    if (configVSyncMode >= 0 && configVSyncMode <= static_cast<int>(VT::ST_COUNT)) {
         switch (static_cast<VSyncThread::VSyncMode>(configVSyncMode)) {
         case VT::ST_DEFAULT:
             return VT::ST_DEFAULT;
