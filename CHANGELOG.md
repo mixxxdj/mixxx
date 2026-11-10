@@ -96,8 +96,7 @@
   [#15368](https://github.com/mixxxdj/mixxx/pull/15368)
   [#15366](https://github.com/mixxxdj/mixxx/issues/15366)
   [#15431](https://github.com/mixxxdj/mixxx/pull/15431)
-* Engine DJ (Engine Prime) and OneLibrary: update read support via libdjinterop 0.27.1
-  [#15958](https://github.com/mixxxdj/mixxx/pull/15958)
+* Engine DJ (Engine Prime): update support for schemas 1.0.1 to 4.3.0 via libdjinterop 0.27.1
   [#15696](https://github.com/mixxxdj/mixxx/pull/15696)
   [#16133](https://github.com/mixxxdj/mixxx/pull/16133)
   [#16329](https://github.com/mixxxdj/mixxx/pull/16329)
@@ -554,6 +553,7 @@
   [#17205](https://github.com/mixxxdj/mixxx/pull/17205)
   [#16810](https://github.com/mixxxdj/mixxx/pull/16810)
   [#16515](https://github.com/mixxxdj/mixxx/pull/16515)
+  [#15958](https://github.com/mixxxdj/mixxx/pull/15958)
 * Provide an AppImage build: Supports glibc >= 2.28 (>= Ubuntu Cosmic 18.10) [#17298](https://github.com/mixxxdj/mixxx/pull/17298)
 * Windows MSI: fix incorrect install scope, a known issue with CPack and WiX toolset 3.x
   [#15056](https://github.com/mixxxdj/mixxx/issues/15056)
