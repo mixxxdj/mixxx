@@ -284,6 +284,25 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetUntilMarkShowBeats);
+    connect(hotCueLettersCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetHotCueLetters);
+    // Index matches WaveformMark::HotCueLabelStyle ("HotCueLabelStyle")
+    hotCueLabelStyleComboBox->addItem(tr("Mixxx"));
+    hotCueLabelStyleComboBox->addItem(tr("rekordbox"));
+    connect(hotCueLabelStyleComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetHotCueLabelStyle);
+    // Index matches WaveformMark::HotCueLabelPlacement ("HotCueLabelPlacement")
+    hotCueLabelPlacementComboBox->addItem(tr("Skin default"));
+    hotCueLabelPlacementComboBox->addItem(tr("Top"));
+    hotCueLabelPlacementComboBox->addItem(tr("Bottom"));
+    connect(hotCueLabelPlacementComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetHotCueLabelPlacement);
     connect(untilMarkShowTimeCheckBox,
             &QCheckBox::toggled,
             this,
@@ -405,6 +424,11 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSlider->setValue(pFactory->getBeatGridAlpha());
 
     untilMarkShowBeatsCheckBox->setChecked(pFactory->getUntilMarkShowBeats());
+    hotCueLettersCheckBox->setChecked(pFactory->getHotCueLetters());
+    hotCueLabelPlacementComboBox->setCurrentIndex(
+            static_cast<int>(pFactory->getHotCueLabelPlacement()));
+    hotCueLabelStyleComboBox->setCurrentIndex(
+            static_cast<int>(pFactory->getHotCueLabelStyle()));
     untilMarkShowTimeCheckBox->setChecked(pFactory->getUntilMarkShowTime());
     untilMarkAlignComboBox->setCurrentIndex(
             WaveformWidgetFactory::toUntilMarkAlignIndex(
@@ -525,6 +549,12 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Beat grid alpha default is 90
     beatGridAlphaSlider->setValue(90);
     beatGridAlphaSpinBox->setValue(90);
+
+    hotCueLettersCheckBox->setChecked(false);
+    hotCueLabelPlacementComboBox->setCurrentIndex(
+            static_cast<int>(WaveformMark::HotCueLabelPlacement::SkinDefault));
+    hotCueLabelStyleComboBox->setCurrentIndex(
+            static_cast<int>(WaveformMark::HotCueLabelStyle::Mixxx));
 
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
@@ -848,6 +878,34 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
     notifyQmlWaveformSettingsChanged();
+}
+
+void DlgPrefWaveform::slotSetHotCueLetters(bool checked) {
+    WaveformWidgetFactory::instance()->setHotCueLetters(checked);
+}
+
+void DlgPrefWaveform::slotSetHotCueLabelStyle(int index) {
+    WaveformWidgetFactory::instance()->setHotCueLabelStyle(
+            index == static_cast<int>(WaveformMark::HotCueLabelStyle::Rekordbox)
+                    ? WaveformMark::HotCueLabelStyle::Rekordbox
+                    : WaveformMark::HotCueLabelStyle::Mixxx);
+}
+
+void DlgPrefWaveform::slotSetHotCueLabelPlacement(int index) {
+    switch (index) {
+    case static_cast<int>(WaveformMark::HotCueLabelPlacement::Top):
+        WaveformWidgetFactory::instance()->setHotCueLabelPlacement(
+                WaveformMark::HotCueLabelPlacement::Top);
+        break;
+    case static_cast<int>(WaveformMark::HotCueLabelPlacement::Bottom):
+        WaveformWidgetFactory::instance()->setHotCueLabelPlacement(
+                WaveformMark::HotCueLabelPlacement::Bottom);
+        break;
+    default:
+        WaveformWidgetFactory::instance()->setHotCueLabelPlacement(
+                WaveformMark::HotCueLabelPlacement::SkinDefault);
+        break;
+    }
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
