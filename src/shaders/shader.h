@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef MIXXX_USE_QOPENGL
 #include <QOpenGLShaderProgram>
-#else
-#include <QGLShaderProgram>
-#endif
 
 #include "util/class.h"
 
@@ -12,12 +8,7 @@ namespace mixxx {
 class Shader;
 }
 
-class mixxx::Shader
-#ifdef MIXXX_USE_QOPENGL
-        : public QOpenGLShaderProgram {
-#else
-        : public QGLShaderProgram {
-#endif
+class mixxx::Shader : public QOpenGLShaderProgram {
   public:
     Shader();
     ~Shader();

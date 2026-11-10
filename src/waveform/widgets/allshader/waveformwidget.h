@@ -3,7 +3,7 @@
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "waveform/widgets/waveformwidgetvars.h"
-#include "widget/wglwidget.h"
+#include "widget/wglwidgetqopengl.h"
 
 namespace rendergraph {
 class Engine;

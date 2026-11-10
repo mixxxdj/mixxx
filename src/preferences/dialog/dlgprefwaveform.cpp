@@ -641,7 +641,6 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
     splitLeftRightCheckBox->blockSignals(true);
     highDetailCheckBox->blockSignals(true);
 
-#ifdef MIXXX_USE_QOPENGL
     auto* pFactory = WaveformWidgetFactory::instance();
 
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
@@ -666,24 +665,16 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
             (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
-#else
-    splitLeftRightCheckBox->setVisible(false);
-    highDetailCheckBox->setVisible(false);
-#endif
 
     splitLeftRightCheckBox->blockSignals(false);
     highDetailCheckBox->blockSignals(false);
 }
 
 void DlgPrefWaveform::updateEnableUntilMark() {
-#ifndef MIXXX_USE_QOPENGL
-    const bool enabled = false;
-#else
     auto* pFactory = WaveformWidgetFactory::instance();
     const bool enabled =
             pFactory->widgetTypeSupportsUntilMark() &&
             pFactory->getBackendFromConfig() != WaveformWidgetBackend::None;
-#endif
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);
     // Disable the beats/time options if neither beats nor time is enabled
@@ -714,14 +705,10 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
 }
 
 void DlgPrefWaveform::updateStemOptionsEnabled() {
-#ifndef MIXXX_USE_QOPENGL
-    const bool stemsSupported = false;
-#else
     auto* pFactory = WaveformWidgetFactory::instance();
     const bool stemsSupported =
             pFactory->widgetTypeSupportsStems() &&
             pFactory->getBackendFromConfig() == WaveformWidgetBackend::AllShader;
-#endif
     bool enabled = useWaveformCheckBox->isChecked();
     const bool stemReorderEnabled = stemsSupported && enabled &&
             stemDisplayModeComboBox->currentIndex() == 0;
