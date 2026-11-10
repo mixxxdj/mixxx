@@ -14,6 +14,7 @@ Item {
     // created by SkinControlCreator before toolbar proxies bind to it.
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "initialized_toolbar_defaults"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_waveforms"; persist: true }
+    Mixxx.SkinControlCreator { defaultValue: 120.0; group: "[Skin]"; key: "latenight_waveform_height"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_hotcues"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_8_hotcues"; persist: true }
     Mixxx.SkinControlCreator { defaultValue: 1.0; group: "[Skin]"; key: "show_intro_outro_cues"; persist: true }
