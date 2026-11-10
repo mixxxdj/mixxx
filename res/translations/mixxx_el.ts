@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="99"/>
         <source>Clear Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Εκκαθάριση ουράς Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="115"/>
@@ -41,7 +41,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="184"/>
         <source>Confirmation Clear</source>
-        <translation type="unfinished"/>
+        <translation>Επιβεβαίωση εκκαθάρισης</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="185"/>
@@ -108,7 +108,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="45"/>
         <source>Import as Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Εισαγωγή ως λίστα αναπαραγωγής</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="51"/>
@@ -550,7 +550,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="90"/>
         <source>Refresh directory tree</source>
-        <translation type="unfinished"/>
+        <translation>Ανανέωση δέντρου καταλόγων</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="107"/>
@@ -3866,12 +3866,12 @@ trace    - Above + Profiling messages</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="471"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="478"/>
         <source>Official Website</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="481"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="488"/>
         <source>Donate</source>
         <translation type="unfinished"/>
     </message>
@@ -7697,57 +7697,67 @@ The loudness target is approximate and assumes track pregain and main output lev
 <context>
     <name>DlgPrefWaveform</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="31"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="32"/>
         <source>Filtered</source>
         <translation>Φιλτραρισμένη</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="32"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="33"/>
         <source>HSV</source>
         <translation>HSV</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="33"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="34"/>
         <source>RGB</source>
         <translation>RGB</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="73"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="74"/>
         <source>Top</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="74"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="75"/>
         <source>Center</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="75"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="76"/>
         <source>Bottom</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="77"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="78"/>
         <source>1/3rd of waveform viewer</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="78"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="79"/>
         <source>Full waveform viewer height</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="203"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="206"/>
+        <source>OpenGL disabled in safe mode</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="208"/>
         <source>OpenGL not available</source>
         <translation>Η OpenGL δεν είναι διαθέσιμη</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="378"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="211"/>
+        <source>OpenGL version not supported: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="387"/>
         <source>dropped frames</source>
         <translation>απορριφθέντα καρέ</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="435"/>
+        <location filename="../../src/preferences/dialog/dlgprefwaveform.cpp" line="444"/>
         <source>Cached waveforms occupy %1 MiB on disk.</source>
         <translation type="unfinished"/>
     </message>
@@ -16256,7 +16266,7 @@ This can not be undone!</source>
         <location filename="../../src/widget/wtrackmenu.cpp" line="221"/>
         <source>Clear</source>
         <extracomment>Reset metadata in right click track context menu in library</extracomment>
-        <translation type="unfinished"/>
+        <translation>Εκκαθάριση</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="466"/>
@@ -16276,12 +16286,12 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2377"/>
         <source>Move this track file to the trash bin?</source>
-        <translation type="unfinished"/>
+        <translation>Μετακίνηση αυτού του αρχείου κομματιού στον κάδο απορριμμάτων;</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2380"/>
         <source>Permanently delete this track file from disk?</source>
-        <translation type="unfinished"/>
+        <translation>Οριστική διαγραφή αυτού του αρχείου κομματιού από τον δίσκο;</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="2387"/>
@@ -16339,7 +16349,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wtrackproperty.cpp" line="167"/>
         <source>title</source>
-        <translation type="unfinished"/>
+        <translation>τίτλος</translation>
     </message>
 </context>
 <context>
@@ -16473,17 +16483,17 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/coreservices.cpp" line="469"/>
         <source>fonts</source>
-        <translation type="unfinished"/>
+        <translation>γραμματοσειρές</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="473"/>
         <source>database</source>
-        <translation type="unfinished"/>
+        <translation>βάση δεδομένων</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="488"/>
         <source>effects</source>
-        <translation type="unfinished"/>
+        <translation>εφέ</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="498"/>
@@ -16498,7 +16508,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/coreservices.cpp" line="564"/>
         <source>library</source>
-        <translation type="unfinished"/>
+        <translation>βιβλιοθήκη</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="598"/>

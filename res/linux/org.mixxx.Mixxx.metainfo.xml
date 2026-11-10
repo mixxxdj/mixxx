@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.7" type="development" date="2026-11-01" timestamp="1793521885">
+    <release version="2.5.7" type="development" date="2026-11-10" timestamp="1794318622">
       <description>
  <p>
   Controller Mappings
@@ -183,6 +183,11 @@
    Rekordbox: detect databases in hidden .PIONEER directory
    #16895
    #16894
+  </li>
+  <li>
+   Rekordbox: fix empty USB device and first-open crash in the macOS sandbox
+   #17441
+   #13624
   </li>
   <li>
    Track table header: throw warning when storing the state fails
@@ -272,6 +277,10 @@
   <li>
    Color Preferences: avoid crash when saving palette after color row drag'n'drop
    #17228
+  </li>
+  <li>
+   DlgPrefWaveform: fix stray colon in OpenGL status
+   #17409
   </li>
  </ul>
  <p>
@@ -636,7 +645,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-11-01" timestamp="1793521885">
+    <release version="2.5.5" type="development" date="2026-11-10" timestamp="1794318622">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.

@@ -177,7 +177,8 @@ DlgAbout::DlgAbout()
             << "nomiapps"
             << "sergioalexo"
             << "Ram&oacute;n Arnau"
-            << "Kameron Markham";
+            << "Kameron Markham"
+            << "Samarth Deshpande";
 
     QStringList specialThanks;
     specialThanks
@@ -197,7 +198,8 @@ DlgAbout::DlgAbout()
             << "Pau Arum&iacute;"
             << "David Garcia"
             << "Seb Ruiz"
-            << "Joseph Mattiello";
+            << "Joseph Mattiello"
+            << "timklop";
 
     QStringList pastDevelopers;
     pastDevelopers
