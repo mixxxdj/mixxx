@@ -9,7 +9,16 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup><Size>0me,154f</Size></WidgetGroup>
+      <WidgetGroup><Size>0me,149f</Size></WidgetGroup>
+
+      <!-- BPM Display -->
+      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_bpm</SetVariable>
+        <SetVariable name="Text">BPM Display</SetVariable>
+        <SetVariable name="Setting">[Skin],show_bpm</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
 
       <!-- Spinny -->
       <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
