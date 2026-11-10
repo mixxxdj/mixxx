@@ -48,6 +48,16 @@
 
 #define MONITOR_DECAY_EVERY 512 /* in samples */
 
+/* Polynomial order of the Savitzky-Golay filter smoothing the derivative */
+
+#define SAVGOL_ORDER 3
+
+/* The Savitzky-Golay window is chosen so the carrier still passes within
+ * -3 dB at this multiple of the reference speed. The empirically tuned
+ * windows (e.g. 5 for Traktor MK2 at 44.1 kHz) correspond to about 4. */
+
+#define SAVGOL_PASSBAND_PITCH 4.0
+
 #define SQ(x) ((x)*(x))
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*x))
 
@@ -414,7 +424,7 @@ void mk2_subcode_init(struct mk2_subcode *sc)
  */
 
 static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
-    unsigned int sample_rate)
+    double speed, unsigned int sample_rate)
 {
     ch->positive = false;
     ch->zero = 0;
@@ -436,15 +446,14 @@ static void init_channel(struct timecode_def *def, struct timecoder_channel *ch,
     rms_init(&ch->rms_deriv_filter, 1e-3);
 
     /*
-     * The ratio of the sampling rate and carrier frequency divided by four
-     * make for a good window size. This was concluded empirically.
+     * Smooth the derivative as much as possible, while still passing the
+     * carrier at up to SAVGOL_PASSBAND_PITCH times the reference speed.
      */
 
-    size_t window = (size_t)ceil(sample_rate / def->resolution)/4;
-    if (window % 2 == 0)
-        window++;
+    double carrier = def->resolution * speed / sample_rate; /* cycles per sample */
+    size_t window = savgol_window_size(SAVGOL_ORDER, SAVGOL_PASSBAND_PITCH * carrier);
 
-    ch->savgol_filter = savgol_create(window, 3);
+    ch->savgol_filter = savgol_create(window, SAVGOL_ORDER);
     assert(ch->savgol_filter);
 
     rhpf_init(&ch->rumble_filter, sample_rate, 50.0 * ((double)def->resolution / 1000.0));
@@ -478,8 +487,8 @@ void timecoder_init(struct timecoder *tc, struct timecode_def *def,
         tc->threshold >>= 5; /* approx -36dB */
 
     tc->forwards = 1;
-    init_channel(tc->def, &tc->primary, sample_rate);
-    init_channel(tc->def, &tc->secondary, sample_rate);
+    init_channel(tc->def, &tc->primary, speed, sample_rate);
+    init_channel(tc->def, &tc->secondary, speed, sample_rate);
 
     tc->use_legacy_pitch_filter = pitch_estimator; /* Switch for pitch filter type */
 
