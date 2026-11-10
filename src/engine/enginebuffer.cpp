@@ -292,8 +292,11 @@ EngineBuffer::EngineBuffer(const QString& group,
 
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
-    df.open(QIODevice::WriteOnly | QIODevice::Text);
-    writer.setDevice(&df);
+    if (!df.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open scaler debug file:" << df.errorString();
+    } else {
+        writer.setDevice(&df);
+    }
 #endif
 
     // Now that all EngineControls have been created call setEngineMixer.
