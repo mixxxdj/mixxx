@@ -85,102 +85,128 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         clip: true
-        model: root.slot.parametersModel
+        model: parameterVisualModel
         orientation: ListView.Horizontal
         spacing: 5
         visible: root.expanded
 
-        delegate: Item {
-            id: parameter
-
-            required property string controlKey
-            required property int index
-            readonly property bool isButton: type === Mixxx.EffectSlotParametersModel.Button
-            readonly property bool isKnob: type === Mixxx.EffectSlotParametersModel.Knob
-            readonly property string label: shortName || name
-            required property bool loaded
-            required property string name
-            required property string shortName
-            readonly property bool shown: loaded && slotNumber > 0 && slotNumber <= root.maximumParametersPerType
-            readonly property int slotNumber: {
-                const match = controlKey.match(/(\d+)$/);
-                return match ? Number(match[1]) : 0;
+        displaced: Transition {
+            NumberAnimation {
+                duration: 120
+                properties: "x"
             }
-            required property int type
+        }
 
-            height: 50
-            visible: shown
-            width: shown ? 55 : 0
+        EffectParameterReorderModel {
+            id: parameterVisualModel
 
-            Skin.EmbeddedText {
-                anchors.fill: parent
-                font.bold: false
-                text: parameter.label
-                verticalAlignment: Text.AlignBottom
-            }
-            Loader {
-                active: parameter.shown && parameter.isKnob
-                anchors.horizontalCenter: parent.horizontalCenter
-                height: 30
-                width: 30
+            sourceModel: root.slot.parametersModel.orderedModel
 
-                sourceComponent: Skin.ControlMiniKnob {
-                    arcStart: 0
-                    color: Theme.effectColor
-                    group: root.group
-                    key: parameter.controlKey
+            delegate: Item {
+                id: parameter
+
+                required property string controlKey
+                required property int index
+                readonly property bool isButton: type === Mixxx.EffectSlotParametersModel.Button
+                readonly property bool isKnob: type === Mixxx.EffectSlotParametersModel.Knob
+                readonly property string label: shortName || name
+                required property bool loaded
+                required property string name
+                required property string shortName
+                readonly property bool shown: loaded && slotNumber > 0 && slotNumber <= root.maximumParametersPerType
+                readonly property int slotNumber: {
+                    const match = controlKey.match(/(\d+)$/);
+                    return match ? Number(match[1]) : 0;
                 }
-            }
-            Loader {
-                active: parameter.shown && parameter.isButton
-                anchors.horizontalCenter: parent.horizontalCenter
-                height: 22
-                width: parent.width
+                required property int type
 
-                sourceComponent: Skin.ControlButton {
-                    activeColor: Theme.effectColor
-                    group: root.group
-                    key: parameter.controlKey
-                    text: "ON"
-                    toggleable: true
+                height: 50
+                opacity: parameterVisualModel.draggedKey === controlKey ? 0 : 1
+                visible: shown
+                width: shown ? 55 : 0
+
+                Skin.EmbeddedText {
+                    anchors.fill: parent
+                    font.bold: false
+                    text: parameter.label
+                    verticalAlignment: Text.AlignBottom
+
+                    EffectParameterDragArea {
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        controlKey: parameter.controlKey
+                        dragItem: parameter
+                        effectSlot: root.slot
+                        height: parent.implicitHeight
+                        parameterType: parameter.type
+                        reorderModel: parameterVisualModel
+                    }
                 }
-            }
-            Row {
-                anchors.bottom: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
-                height: 8
-                visible: parameter.shown && parameter.isKnob
+                Loader {
+                    active: parameter.shown && parameter.isKnob
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: 30
+                    width: 30
 
-                Skin.ControlButton {
-                    activeColor: Theme.effectColor
-                    group: root.group
-                    height: 8
-                    key: parameter.controlKey + "_link_inverse"
-                    text: "I"
-                    toggleable: true
-                    width: 12
-                }
-                Item {
-                    height: 8
-                    width: 34
-
-                    Rectangle {
-                        anchors.fill: parent
-                        color: linkTypeControl.value > 0 ? Theme.effectColor : Theme.knobBackgroundColor
-                    }
-                    Text {
-                        anchors.centerIn: parent
-                        font.pixelSize: 7
-                        text: "LINK " + Math.round(linkTypeControl.value)
-                    }
-                    TapHandler {
-                        onTapped: linkTypeControl.value = (Math.round(linkTypeControl.value) + 1) % 5
-                    }
-                    Mixxx.ControlProxy {
-                        id: linkTypeControl
-
+                    sourceComponent: Skin.ControlMiniKnob {
+                        arcStart: 0
+                        color: Theme.effectColor
                         group: root.group
-                        key: parameter.controlKey + "_link_type"
+                        key: parameter.controlKey
+                    }
+                }
+                Loader {
+                    active: parameter.shown && parameter.isButton
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: 22
+                    width: parent.width
+
+                    sourceComponent: Skin.ControlButton {
+                        activeColor: Theme.effectColor
+                        group: root.group
+                        key: parameter.controlKey
+                        text: "ON"
+                        toggleable: true
+                    }
+                }
+                Row {
+                    anchors.bottom: parent.bottom
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: 8
+                    visible: parameter.shown && parameter.isKnob
+
+                    Skin.ControlButton {
+                        activeColor: Theme.effectColor
+                        group: root.group
+                        height: 8
+                        key: parameter.controlKey + "_link_inverse"
+                        text: "I"
+                        toggleable: true
+                        width: 12
+                    }
+                    Item {
+                        height: 8
+                        width: 34
+
+                        Rectangle {
+                            anchors.fill: parent
+                            color: linkTypeControl.value > 0 ? Theme.effectColor : Theme.knobBackgroundColor
+                        }
+                        Text {
+                            anchors.centerIn: parent
+                            font.pixelSize: 7
+                            text: "LINK " + Math.round(linkTypeControl.value)
+                        }
+                        TapHandler {
+                            onTapped: linkTypeControl.value = (Math.round(linkTypeControl.value) + 1) % 5
+                        }
+                        Mixxx.ControlProxy {
+                            id: linkTypeControl
+
+                            group: root.group
+                            key: parameter.controlKey + "_link_type"
+                        }
                     }
                 }
             }

@@ -35,6 +35,7 @@ Item {
     property alias background: background.data
     property alias foreground: foreground.data
     property bool hideCursorWhileDragging: true
+    property bool inputEnabled: true
     property real knobCenterOffsetX: 0
     property real knobCenterOffsetY: 0
     property real max: 1
@@ -105,6 +106,7 @@ Item {
         property real value
 
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        enabled: root.inputEnabled
         target: null
 
         onActiveChanged: {
@@ -141,7 +143,7 @@ Item {
 
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-        enabled: root.hideCursorWhileDragging && root.Window.active
+        enabled: root.inputEnabled && root.hideCursorWhileDragging && root.Window.active
     }
     MouseArea {
         acceptedButtons: Qt.NoButton
@@ -156,13 +158,30 @@ Item {
     }
     WheelHandler {
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        enabled: root.inputEnabled
         target: null
 
         onWheel: event => {
             const wheelAdjustment = event.angleDelta.y / root.wheelDeltaStep * root.wheelStepSize;
             const value = Mixxx.MathUtils.clamp(root.value + wheelAdjustment, root.min, root.max);
             root.turned(value);
+            wheelCursorTimer.restart();
             event.accepted = true;
+        }
+    }
+    Timer {
+        id: wheelCursorTimer
+
+        interval: 800
+    }
+    HoverHandler {
+        cursorShape: wheelCursorTimer.running ? Qt.BlankCursor : undefined
+        enabled: root.inputEnabled && root.Window.active
+
+        onHoveredChanged: {
+            if (!hovered) {
+                wheelCursorTimer.stop();
+            }
         }
     }
 }

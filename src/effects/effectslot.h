@@ -102,6 +102,16 @@ class EffectSlot : public QObject {
     void hideParameter(EffectParameterPointer pParameter);
     void showParameter(EffectParameterPointer pParameter);
     void swapParameters(EffectParameterType type, int index1, int index2);
+    void swapParameters(EffectParameterType firstType,
+            int firstIndex,
+            EffectParameterType secondType,
+            int secondIndex);
+
+    void moveParameter(EffectParameterType type,
+            int index,
+            EffectParameterType targetType,
+            int targetIndex,
+            bool after);
 
     void addEffectParameterSlot(EffectParameterType parameterType);
     EffectParameterSlotBasePointer getEffectParameterSlot(
