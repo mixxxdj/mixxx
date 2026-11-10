@@ -97,13 +97,13 @@ VestaxVCI1003DEX.loopPlus = function (channel, control, value, status, group) {i
 // deck specific buttons start
 
 VestaxVCI1003DEX.jog_touch1 = function (channel, control, value, status, group) {
-if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);}
+if(value==0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);}
 if(value==0)  {engine.scratchDisable("[Channel1]");}
 }
 
 VestaxVCI1003DEX.jog_touch2 = function (channel, control, value, status, group) {
-if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);}
-if(value==0)  {engine.scratchDisable("[Channel1]");}
+if(value==0x7F){engine.scratchEnable("[Channel2]", 128*3, 45, 1.0/8, (1.0/8)/32);}
+if(value==0)  {engine.scratchDisable("[Channel2]");}
 }
 
 VestaxVCI1003DEX.jog_wheel1 = function (channel, control, value, status, group) {
