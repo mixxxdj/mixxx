@@ -357,6 +357,7 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 	}
 
 	const size_t n = src->rows;
+	int dest_allocated = 0;
 
 	if (dest) {
 		if (dest->rows != n || dest->cols != n) {
@@ -367,9 +368,10 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 		}
 	} else {
 		dest = fmat_alloc(n, n);
-
 		if (!dest)
 			return NULL;
+
+		dest_allocated = 1;
 	}
 
 	if (n == 1) {
@@ -401,9 +403,14 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 		return dest;
 	}
 
-	return fmat_inv_lup(dest, src);
+	if (!fmat_inv_lup(dest, src))
+		goto error;
+
+	return dest;
 
 error:
-	fmat_free(dest);
+	if (dest_allocated)
+		fmat_free(dest);
+
 	return NULL;
 }
