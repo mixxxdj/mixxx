@@ -43,26 +43,26 @@ case "$HOST_ARCH" in
         if [ -n "${BUILDENV_RELEASE}" ]; then
             : "${VCPKG_TARGET_TRIPLET:=x64-linux-release}"
             : "${BUILDENV_BRANCH:=2.7-rel}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-c2a79b5e}"
-            : "${BUILDENV_SHA256:=b77478f14bb632dfb0dd76ad42a09f351e48431e3ebfdb2f5944d00d561393f3}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-rel-14164a5c}"
+            : "${BUILDENV_SHA256:=0cc0212fb0dc55cd6852fa78bde2d830f678d721ab27dba4959f7f17a9f93d12}"
         else
             : "${VCPKG_TARGET_TRIPLET:=x64-linux}"
             : "${BUILDENV_BRANCH:=2.7}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-42c3d165}"
-            : "${BUILDENV_SHA256:=da3eb518cf96fdfd5238a2c0ff63a72d9f1af10b79fa3fe6354f7f9a8fa18516}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-x64-linux-f18bf7af}"
+            : "${BUILDENV_SHA256:=6b4775067aeb8676ac5b753946dbea0c80bde2cd127d2d8ee070d0b29c651c82}"
         fi
         ;;
     aarch64)
         if [ -n "${BUILDENV_RELEASE}" ]; then
             : "${VCPKG_TARGET_TRIPLET:=arm64-linux-release}"
             : "${BUILDENV_BRANCH:=2.7-rel}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-rel-c2a79b5e}"
-            : "${BUILDENV_SHA256:=721bd3ac560f45f2810c9240f368e7fb982db3b05bd4a4918fa200bd75df84f0}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-rel-14164a5c}"
+            : "${BUILDENV_SHA256:=51c3d64daae85e15ca17df27d869e75e1eec2d6bb75e86356332e4990f39c081}"
         else
             : "${VCPKG_TARGET_TRIPLET:=arm64-linux}"
             : "${BUILDENV_BRANCH:=2.7}"
-            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-42c3d165}"
-            : "${BUILDENV_SHA256:=69501c2b0af41ac3422289c45f499ff40fe74f9e6c6755a8a90f4360469a9553}"
+            : "${BUILDENV_NAME:=mixxx-deps-2.7-arm64-linux-f18bf7af}"
+            : "${BUILDENV_SHA256:=d91e75c9c305c08d2e0320b81c1f94663dbab963ffe005c1c65774a058616150}"
         fi
         ;;
     *)

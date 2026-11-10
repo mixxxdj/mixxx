@@ -34,38 +34,38 @@ if [ "$HOST_ARCH" = "x86_64" ]; then
 	    if [ -n "${BUILDENV_RELEASE}" ]; then
 	        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
 	        BUILDENV_BRANCH="2.7-rel"
-	        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-cross-rel-c2a79b5e"
-	        BUILDENV_SHA256="e1ff2f64feae3f718ccd40eded548d04d3916e282cae75ef5d3fad8a6277ca3a"
+	        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-cross-rel-14164a5c"
+	        BUILDENV_SHA256="a26745884921bc5dfc623ceb800a3d273c60be0b52a1853d2d1a9a9fd330345b"
 	    else
 	        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
 	        BUILDENV_BRANCH="2.7"
-	        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-cross-42c3d165"
-	        BUILDENV_SHA256="d76e30d5636c8b472b8d412432b0f2c19e85acb451b8bb79655885888f56a862"
+	        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-cross-f18bf7af"
+	        BUILDENV_SHA256="bf97615b1c4c16bee24ca09e523427749e6ae17515bd53a6ab62be5574612097"
 	    fi
 	else
 	    if [ -n "${BUILDENV_RELEASE}" ]; then
 	        VCPKG_TARGET_TRIPLET="x64-osx-min1100-release"
 	        BUILDENV_BRANCH="2.7-rel"
-	        BUILDENV_NAME="mixxx-deps-2.7-x64-osx-rel-c2a79b5e"
-	        BUILDENV_SHA256="131875824104b8dacc9edc7e4e13e68fe38501e02041019241cf340fb8d906c0"
+	        BUILDENV_NAME="mixxx-deps-2.7-x64-osx-rel-14164a5c"
+	        BUILDENV_SHA256="610ce5ced8475493dc018de284e61aff0cf67c69bfed9d7d64c9a517ac1bad1b"
 	    else
 	        VCPKG_TARGET_TRIPLET="x64-osx-min1100"
 	        BUILDENV_BRANCH="2.7"
-	        BUILDENV_NAME="mixxx-deps-2.7-x64-osx-42c3d165"
-	        BUILDENV_SHA256="33dde35afff6b69ad5bb37992a2b73836c3d718658018f021d3045fb46f8d814"
+	        BUILDENV_NAME="mixxx-deps-2.7-x64-osx-f18bf7af"
+	        BUILDENV_SHA256="7521058d0a4362077996ab0b421a4fc0fb0f4db2b57a91e8879e300090e4dbc4"
 	    fi
 	fi
 elif [ "$HOST_ARCH" = "arm64" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
         VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
         BUILDENV_BRANCH="2.7-rel"
-        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-rel-c2a79b5e"
-        BUILDENV_SHA256="5f65ee23a7faad1920c0d439d2ad4e7cd879281516b35d10b3320955557cf97e"
+        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-rel-14164a5c"
+        BUILDENV_SHA256="03a32c1af1a1a67ec1b1ec8d4cfdcd17e7082db42fae431d6f534d7e7b017d64"
     else
         VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
         BUILDENV_BRANCH="2.7"
-        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-42c3d165"
-        BUILDENV_SHA256="b494e9fba8c9c30c2de048efe7ff60911dc45d3cf993e8d006fa284bd96d81b8"
+        BUILDENV_NAME="mixxx-deps-2.7-arm64-osx-f18bf7af"
+        BUILDENV_SHA256="ee6eaac5638b5dac049e8132cc38317f75dbeade39859743a09b860cebe24220"
     fi
 else
     echo "ERROR: Unsupported architecture detected: $HOST_ARCH"
