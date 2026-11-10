@@ -205,6 +205,9 @@
 * Library Scanner: Fix track relocation query
   [#16578](https://github.com/mixxxdj/mixxx/pull/16578)
   [#16579](https://github.com/mixxxdj/mixxx/pull/16579)
+* Tag Fetcher: show the real error when Cover Art Archive fails
+  [#17427](https://github.com/mixxxdj/mixxx/pull/17427)
+  [#11903](https://github.com/mixxxdj/mixxx/issues/11903)
 
 ### Effects
 
@@ -323,6 +326,10 @@
 * Avoid crash with unsupported EGLFS
   [#15874](https://github.com/mixxxdj/mixxx/pull/15874)
   [#15863](https://github.com/mixxxdj/mixxx/issues/15863)
+* Fix allshader waveform flicker with fractional display scaling (Wayland) [#17394](https://github.com/mixxxdj/mixxx/pull/17394)
+* Fix Waveform resize glitch
+  [#17325](https://github.com/mixxxdj/mixxx/pull/17325)
+  [#16297](https://github.com/mixxxdj/mixxx/issues/16297)
 
 ### Auto-DJ
 
@@ -476,6 +483,9 @@
 ### Preferences
 
 * Waveforms: Group options, adjust tabstops, reorder ui file [#13615](https://github.com/mixxxdj/mixxx/pull/13615)
+* Waveforms: Fix Restore Defaults for until-marker and stem waveform options
+  [#17416](https://github.com/mixxxdj/mixxx/pull/17416)
+  [#17410](https://github.com/mixxxdj/mixxx/issues/17410)
 * Controllers: make extended controller information available for device selection
 * Controllers: reorganize content into tabs
 * Controllers: strip leading whitespaces for mapping name display [#15844](https://github.com/mixxxdj/mixxx/pull/15844)
@@ -662,6 +672,7 @@
 * Stats: convert ns to ms and add spacing for readability
   [#14978](https://github.com/mixxxdj/mixxx/pull/14978)
   [#14908](https://github.com/mixxxdj/mixxx/issues/14908)
+* Provide an AppImage build: Supports glibc >= 2.28 (>= Ubuntu Cosmic 18.10) [#17298](https://github.com/mixxxdj/mixxx/pull/17298)
 
 ### Misc Refactorings
 
@@ -871,6 +882,7 @@
   [#16956](https://github.com/mixxxdj/mixxx/pull/16956)
   [#10516](https://github.com/mixxxdj/mixxx/issues/10516)
 * SoundSourceProxyTest: split file loops into per-file tests [#17198](https://github.com/mixxxdj/mixxx/pull/17198)
+* Update to gersemi 0.26.1, fix all warnings and enable warnings-as-errors [#16253](https://github.com/mixxxdj/mixxx/pull/16253)
 
 ## [2.5.7](https://github.com/mixxxdj/mixxx/milestone/56) (unreleased)
 
