@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2026-11-09" timestamp="1794208957">
+    <release version="2.6.0" type="development" date="2026-11-10" timestamp="1794339706">
       <description>
  <p>
   STEM File Support
@@ -901,7 +901,7 @@
    #14606
   </li>
   <li>
-   Mixer: Show 'real' crossfader configuration and fix praph
+   Mixer: Show 'real' crossfader configuration and fix graph
    #14124
    #13848
   </li>
@@ -1057,6 +1057,10 @@
    #17298
   </li>
   <li>
+   Retire Ubuntu 22.04 (Jammy) PPA builds. Use Flatpak instead
+   #14784
+  </li>
+  <li>
    Windows MSI: fix incorrect install scope, a known issue with CPack and WiX toolset 3.x
    #15056
    #15060
@@ -1068,7 +1072,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.7" type="development" date="2026-11-09" timestamp="1794208957">
+    <release version="2.5.7" type="development" date="2026-11-10" timestamp="1794339706">
       <description>
  <p>
   Controller Mappings
@@ -1613,7 +1617,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-11-09" timestamp="1794208957">
+    <release version="2.5.5" type="development" date="2026-11-10" timestamp="1794339706">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.

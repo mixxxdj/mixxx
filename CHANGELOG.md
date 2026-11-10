@@ -461,7 +461,7 @@
   [#15627](https://github.com/mixxxdj/mixxx/pull/15627)
   [#15027](https://github.com/mixxxdj/mixxx/pull/15027)
   [#14606](https://github.com/mixxxdj/mixxx/pull/14606)
-* Mixer: Show 'real' crossfader configuration and fix praph
+* Mixer: Show 'real' crossfader configuration and fix graph
   [#14124](https://github.com/mixxxdj/mixxx/pull/14124)
   [#13848](https://github.com/mixxxdj/mixxx/pull/13848)
 * Effects: Left/Right key in effect lists trigger hide/unhide [#14205](https://github.com/mixxxdj/mixxx/pull/14205)
@@ -555,6 +555,7 @@
   [#16515](https://github.com/mixxxdj/mixxx/pull/16515)
   [#15958](https://github.com/mixxxdj/mixxx/pull/15958)
 * Provide an AppImage build: Supports glibc >= 2.28 (>= Ubuntu Cosmic 18.10) [#17298](https://github.com/mixxxdj/mixxx/pull/17298)
+* Retire Ubuntu 22.04 (Jammy) PPA builds. Use Flatpak instead [#14784](https://github.com/mixxxdj/mixxx/pull/14784)
 * Windows MSI: fix incorrect install scope, a known issue with CPack and WiX toolset 3.x
   [#15056](https://github.com/mixxxdj/mixxx/issues/15056)
   [#15060](https://github.com/mixxxdj/mixxx/pull/15060)
