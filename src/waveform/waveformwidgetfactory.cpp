@@ -28,6 +28,7 @@
 #include "util/performancetimer.h"
 #include "util/timer.h"
 #include "waveform/guitick.h"
+#include "waveform/renderers/waveformmark.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"
@@ -470,6 +471,88 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkShowTime")),
                 m_untilMarkShowTime);
     }
+
+    setShowMemoryCueMarkers(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("ShowMemoryCueMarkers")), true));
+    // 0 = both, 1 = scrolling waveforms only, 2 = overview only
+    switch (m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerShowIn")), 0)) {
+    case 1:
+        setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView::ScrollingWaveformsOnly);
+        break;
+    case 2:
+        setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView::OverviewOnly);
+        break;
+    default:
+        setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView::Both);
+        break;
+    }
+    // 0 = top, 1 = bottom, 2 = top and bottom
+    switch (m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")), 1)) {
+    case 0:
+        setMemoryCueMarkerAlign(Qt::AlignTop);
+        break;
+    case 2:
+        setMemoryCueMarkerAlign(Qt::AlignTop | Qt::AlignBottom);
+        break;
+    default:
+        setMemoryCueMarkerAlign(Qt::AlignBottom);
+        break;
+    }
+    setMemoryCueMarkerLineWidth(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerLineWidth")),
+            WaveformMark::kDefaultMemoryCueLineWidth));
+    setMemoryCueMarkerOpacity(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOpacity")),
+            WaveformMark::kMaxMemoryCueMarkerOpacity));
+    setMemoryCueMarkerSize(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSize")),
+            WaveformMark::kDefaultMemoryCueMarkerSize));
+    setMemoryCueMarkerCustomOutline(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerCustomOutline")),
+            false));
+    setMemoryCueMarkerOutlineColor(QColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOutlineColor")),
+            QStringLiteral("#ffffff"))));
+    setMemoryCueMarkerSingleColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSingleColor")),
+            false));
+    setMemoryCueMarkerColor(QColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerColor")),
+            QStringLiteral("#e62828"))));
+    setMemoryCueMarkerShowNames(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerShowNames")),
+            false));
+    // 0 = top, 1 = bottom
+    setMemoryCueNameAlign(m_config->getValue(
+                                  ConfigKey(kWaveformGroup,
+                                          QStringLiteral("MemoryCueNameAlign")),
+                                  0) == 1
+                    ? Qt::AlignBottom
+                    : Qt::AlignTop);
+    // 0 = off, 1 = cue color, 2 = custom color (older configs stored 0/1 as a bool)
+    switch (m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameBackground")), 1)) {
+    case 0:
+        setMemoryCueNameBackground(WaveformMark::MemoryCueNameBackground::Off);
+        break;
+    case 2:
+        setMemoryCueNameBackground(WaveformMark::MemoryCueNameBackground::CustomColor);
+        break;
+    default:
+        setMemoryCueNameBackground(WaveformMark::MemoryCueNameBackground::CueColor);
+        break;
+    }
+    setMemoryCueNameBackgroundCustomColor(QColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameBackgroundColor")),
+            QStringLiteral("#99000000"))));
+    setMemoryCueNameCustomTextColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameCustomTextColor")),
+            false));
+    setMemoryCueNameTextColor(QColor(m_config->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameTextColor")),
+            QStringLiteral("#ffffff"))));
 
     setUntilMarkAlign(toUntilMarkAlign(
             m_config->getValue(ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkAlign")),
@@ -1626,6 +1709,213 @@ void WaveformWidgetFactory::setUntilMarkShowBeats(bool value) {
                 m_untilMarkShowBeats);
     }
     emit untilMarkShowBeatsChanged(value);
+}
+
+void WaveformWidgetFactory::setShowMemoryCueMarkers(bool value) {
+    WaveformMark::setShowMemoryCueMarkers(value);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup,
+                                   QStringLiteral("ShowMemoryCueMarkers")),
+                value);
+    }
+}
+
+bool WaveformWidgetFactory::getShowMemoryCueMarkers() const {
+    return WaveformMark::showMemoryCueMarkers();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerView(WaveformMark::MemoryCueMarkerView view) {
+    WaveformMark::setMemoryCueMarkerView(view);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerShowIn")),
+                static_cast<int>(getMemoryCueMarkerView()));
+    }
+}
+
+WaveformMark::MemoryCueMarkerView WaveformWidgetFactory::getMemoryCueMarkerView() const {
+    return WaveformMark::memoryCueMarkerView();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerAlign(Qt::Alignment align) {
+    WaveformMark::setMemoryCueMarkerAlign(align);
+    if (m_config) {
+        const Qt::Alignment storedAlign = getMemoryCueMarkerAlign();
+        const bool top = storedAlign.testFlag(Qt::AlignTop);
+        const bool bottom = storedAlign.testFlag(Qt::AlignBottom);
+        // 0 = top, 1 = bottom, 2 = top and bottom
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerAlign")),
+                top && bottom ? 2 : (top ? 0 : 1));
+    }
+}
+
+Qt::Alignment WaveformWidgetFactory::getMemoryCueMarkerAlign() const {
+    return WaveformMark::memoryCueMarkerAlign();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerLineWidth(int width) {
+    WaveformMark::setMemoryCueMarkerLineWidth(width);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerLineWidth")),
+                getMemoryCueMarkerLineWidth());
+    }
+}
+
+int WaveformWidgetFactory::getMemoryCueMarkerLineWidth() const {
+    return WaveformMark::memoryCueMarkerLineWidth();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerOpacity(int percent) {
+    WaveformMark::setMemoryCueMarkerOpacity(percent);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOpacity")),
+                getMemoryCueMarkerOpacity());
+    }
+}
+
+int WaveformWidgetFactory::getMemoryCueMarkerOpacity() const {
+    return WaveformMark::memoryCueMarkerOpacity();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerSize(int size) {
+    WaveformMark::setMemoryCueMarkerSize(size);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSize")),
+                getMemoryCueMarkerSize());
+    }
+}
+
+int WaveformWidgetFactory::getMemoryCueMarkerSize() const {
+    return WaveformMark::memoryCueMarkerSize();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerCustomOutline(bool enabled) {
+    WaveformMark::setMemoryCueMarkerCustomOutline(enabled);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerCustomOutline")),
+                enabled);
+    }
+}
+
+bool WaveformWidgetFactory::getMemoryCueMarkerCustomOutline() const {
+    return WaveformMark::memoryCueMarkerCustomOutline();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerOutlineColor(const QColor& color) {
+    WaveformMark::setMemoryCueMarkerOutlineColor(color);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerOutlineColor")),
+                getMemoryCueMarkerOutlineColor().name());
+    }
+}
+
+QColor WaveformWidgetFactory::getMemoryCueMarkerOutlineColor() const {
+    return WaveformMark::memoryCueMarkerOutlineColor();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerSingleColor(bool enabled) {
+    WaveformMark::setMemoryCueMarkerSingleColor(enabled);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerSingleColor")),
+                enabled);
+    }
+}
+
+bool WaveformWidgetFactory::getMemoryCueMarkerSingleColor() const {
+    return WaveformMark::memoryCueMarkerSingleColor();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerColor(const QColor& color) {
+    WaveformMark::setMemoryCueMarkerColor(color);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerColor")),
+                getMemoryCueMarkerColor().name());
+    }
+}
+
+QColor WaveformWidgetFactory::getMemoryCueMarkerColor() const {
+    return WaveformMark::memoryCueMarkerColor();
+}
+
+void WaveformWidgetFactory::setMemoryCueMarkerShowNames(bool show) {
+    WaveformMark::setMemoryCueMarkerShowNames(show);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueMarkerShowNames")),
+                show);
+    }
+}
+
+bool WaveformWidgetFactory::getMemoryCueMarkerShowNames() const {
+    return WaveformMark::memoryCueMarkerShowNames();
+}
+
+void WaveformWidgetFactory::setMemoryCueNameAlign(Qt::Alignment align) {
+    WaveformMark::setMemoryCueNameAlign(align);
+    if (m_config) {
+        m_config->setValue(ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameAlign")),
+                getMemoryCueNameAlign().testFlag(Qt::AlignBottom) ? 1 : 0);
+    }
+}
+
+Qt::Alignment WaveformWidgetFactory::getMemoryCueNameAlign() const {
+    return WaveformMark::memoryCueNameAlign();
+}
+
+void WaveformWidgetFactory::setMemoryCueNameBackground(
+        WaveformMark::MemoryCueNameBackground background) {
+    WaveformMark::setMemoryCueNameBackground(background);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameBackground")),
+                static_cast<int>(getMemoryCueNameBackground()));
+    }
+}
+
+WaveformMark::MemoryCueNameBackground WaveformWidgetFactory::getMemoryCueNameBackground() const {
+    return WaveformMark::memoryCueNameBackground();
+}
+
+void WaveformWidgetFactory::setMemoryCueNameBackgroundCustomColor(const QColor& color) {
+    WaveformMark::setMemoryCueNameBackgroundCustomColor(color);
+    if (m_config) {
+        // #AARRGGBB, keeps the transparency
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameBackgroundColor")),
+                getMemoryCueNameBackgroundCustomColor().name(QColor::HexArgb));
+    }
+}
+
+QColor WaveformWidgetFactory::getMemoryCueNameBackgroundCustomColor() const {
+    return WaveformMark::memoryCueNameBackgroundCustomColor();
+}
+
+void WaveformWidgetFactory::setMemoryCueNameCustomTextColor(bool enabled) {
+    WaveformMark::setMemoryCueNameCustomTextColor(enabled);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameCustomTextColor")),
+                enabled);
+    }
+}
+
+bool WaveformWidgetFactory::getMemoryCueNameCustomTextColor() const {
+    return WaveformMark::memoryCueNameCustomTextColor();
+}
+
+void WaveformWidgetFactory::setMemoryCueNameTextColor(const QColor& color) {
+    WaveformMark::setMemoryCueNameTextColor(color);
+    if (m_config) {
+        m_config->setValue(
+                ConfigKey(kWaveformGroup, QStringLiteral("MemoryCueNameTextColor")),
+                getMemoryCueNameTextColor().name());
+    }
+}
+
+QColor WaveformWidgetFactory::getMemoryCueNameTextColor() const {
+    return WaveformMark::memoryCueNameTextColor();
 }
 
 void WaveformWidgetFactory::setUntilMarkShowTime(bool value) {

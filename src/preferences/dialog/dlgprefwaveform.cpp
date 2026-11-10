@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
+#include <QColorDialog>
 #include <QLocale>
 #include <QMetaEnum>
 #include <QtGlobal>
@@ -162,6 +163,22 @@ DlgPrefWaveform::DlgPrefWaveform(
     // Adopt tr string from first GLSL hint
     requiresGLSLLabel2->setText(requiresGLSLLabel->text());
 
+    // Index matches WaveformMark::MemoryCueMarkerView ("MemoryCueMarkerShowIn")
+    memoryCueMarkerViewComboBox->addItem(tr("Scrolling waveforms and overview"));
+    memoryCueMarkerViewComboBox->addItem(tr("Scrolling waveforms only"));
+    memoryCueMarkerViewComboBox->addItem(tr("Overview only"));
+    // Index 0 = top, 1 = bottom, 2 = both (matches the "MemoryCueMarkerAlign" config value)
+    memoryCueMarkerAlignComboBox->addItem(tr("Top"));
+    memoryCueMarkerAlignComboBox->addItem(tr("Bottom"));
+    memoryCueMarkerAlignComboBox->addItem(tr("Top and bottom"));
+    // Index 0 = top, 1 = bottom (matches the "MemoryCueNameAlign" config value)
+    memoryCueNameAlignComboBox->addItem(tr("Top"));
+    memoryCueNameAlignComboBox->addItem(tr("Bottom"));
+    // Index matches WaveformMark::MemoryCueNameBackground
+    memoryCueNameBackgroundComboBox->addItem(tr("Off"));
+    memoryCueNameBackgroundComboBox->addItem(tr("Cue color"));
+    memoryCueNameBackgroundComboBox->addItem(tr("Custom color"));
+
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
@@ -284,6 +301,70 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetUntilMarkShowBeats);
+    connect(showMemoryCueMarkersCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetShowMemoryCueMarkers);
+    connect(memoryCueMarkerViewComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerView);
+    connect(memoryCueMarkerAlignComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerAlign);
+    connect(memoryCueMarkerLineWidthSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth);
+    connect(memoryCueMarkerOpacitySpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerOpacity);
+    connect(memoryCueMarkerSizeSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerSize);
+    connect(memoryCueMarkerCustomOutlineCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerCustomOutline);
+    connect(memoryCueMarkerOutlineColorButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefWaveform::slotChooseMemoryCueMarkerOutlineColor);
+    connect(memoryCueMarkerSingleColorCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerSingleColor);
+    connect(memoryCueMarkerColorButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefWaveform::slotChooseMemoryCueMarkerColor);
+    connect(memoryCueMarkerShowNamesCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueMarkerShowNames);
+    connect(memoryCueNameAlignComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueNameAlign);
+    connect(memoryCueNameBackgroundComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueNameBackground);
+    connect(memoryCueNameBackgroundColorButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefWaveform::slotChooseMemoryCueNameBackgroundColor);
+    connect(memoryCueNameCustomTextColorCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetMemoryCueNameCustomTextColor);
+    connect(memoryCueNameTextColorButton,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefWaveform::slotChooseMemoryCueNameTextColor);
     connect(untilMarkShowTimeCheckBox,
             &QCheckBox::toggled,
             this,
@@ -404,6 +485,33 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSpinBox->setValue(pFactory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(pFactory->getBeatGridAlpha());
 
+    showMemoryCueMarkersCheckBox->setChecked(pFactory->getShowMemoryCueMarkers());
+    memoryCueMarkerViewComboBox->setCurrentIndex(
+            static_cast<int>(pFactory->getMemoryCueMarkerView()));
+    {
+        const Qt::Alignment memoryCueAlign = pFactory->getMemoryCueMarkerAlign();
+        const bool top = memoryCueAlign.testFlag(Qt::AlignTop);
+        const bool bottom = memoryCueAlign.testFlag(Qt::AlignBottom);
+        memoryCueMarkerAlignComboBox->setCurrentIndex(top && bottom ? 2 : (top ? 0 : 1));
+    }
+    memoryCueMarkerLineWidthSpinBox->setValue(pFactory->getMemoryCueMarkerLineWidth());
+    memoryCueMarkerSizeSpinBox->setValue(pFactory->getMemoryCueMarkerSize());
+    memoryCueMarkerOpacitySpinBox->setValue(pFactory->getMemoryCueMarkerOpacity());
+    memoryCueMarkerCustomOutlineCheckBox->setChecked(
+            pFactory->getMemoryCueMarkerCustomOutline());
+    updateMemoryCueMarkerOutlineColorButton();
+    memoryCueMarkerSingleColorCheckBox->setChecked(pFactory->getMemoryCueMarkerSingleColor());
+    updateMemoryCueMarkerColorButton();
+    memoryCueMarkerShowNamesCheckBox->setChecked(pFactory->getMemoryCueMarkerShowNames());
+    memoryCueNameAlignComboBox->setCurrentIndex(
+            pFactory->getMemoryCueNameAlign().testFlag(Qt::AlignBottom) ? 1 : 0);
+    memoryCueNameBackgroundComboBox->setCurrentIndex(
+            static_cast<int>(pFactory->getMemoryCueNameBackground()));
+    updateMemoryCueNameBackgroundColorButton();
+    memoryCueNameCustomTextColorCheckBox->setChecked(
+            pFactory->getMemoryCueNameCustomTextColor());
+    updateMemoryCueNameTextColorButton();
+    updateEnableMemoryCueMarkers();
     untilMarkShowBeatsCheckBox->setChecked(pFactory->getUntilMarkShowBeats());
     untilMarkShowTimeCheckBox->setChecked(pFactory->getUntilMarkShowTime());
     untilMarkAlignComboBox->setCurrentIndex(
@@ -524,6 +632,30 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Beat grid alpha default is 90
     beatGridAlphaSlider->setValue(90);
+
+    showMemoryCueMarkersCheckBox->setChecked(true);
+    memoryCueMarkerViewComboBox->setCurrentIndex(
+            static_cast<int>(WaveformMark::MemoryCueMarkerView::Both));
+    memoryCueMarkerAlignComboBox->setCurrentIndex(1); // Bottom
+    memoryCueMarkerLineWidthSpinBox->setValue(1);
+    memoryCueMarkerSizeSpinBox->setValue(11);
+    memoryCueMarkerOpacitySpinBox->setValue(100);
+    memoryCueMarkerCustomOutlineCheckBox->setChecked(false);
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerOutlineColor(Qt::white);
+    updateMemoryCueMarkerOutlineColorButton();
+    memoryCueMarkerSingleColorCheckBox->setChecked(false);
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerColor(QColor(230, 40, 40));
+    updateMemoryCueMarkerColorButton();
+    memoryCueMarkerShowNamesCheckBox->setChecked(false);
+    memoryCueNameAlignComboBox->setCurrentIndex(0); // Top
+    memoryCueNameBackgroundComboBox->setCurrentIndex(
+            static_cast<int>(WaveformMark::MemoryCueNameBackground::CueColor));
+    WaveformWidgetFactory::instance()->setMemoryCueNameBackgroundCustomColor(
+            QColor(0, 0, 0, 153));
+    updateMemoryCueNameBackgroundColorButton();
+    memoryCueNameCustomTextColorCheckBox->setChecked(false);
+    WaveformWidgetFactory::instance()->setMemoryCueNameTextColor(Qt::white);
+    updateMemoryCueNameTextColorButton();
     beatGridAlphaSpinBox->setValue(90);
 
     // 50 (center) is default
@@ -848,6 +980,218 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
     notifyQmlWaveformSettingsChanged();
+}
+
+void DlgPrefWaveform::slotSetShowMemoryCueMarkers(bool checked) {
+    WaveformWidgetFactory::instance()->setShowMemoryCueMarkers(checked);
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerView(int index) {
+    switch (index) {
+    case static_cast<int>(WaveformMark::MemoryCueMarkerView::ScrollingWaveformsOnly):
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerView(
+                WaveformMark::MemoryCueMarkerView::ScrollingWaveformsOnly);
+        break;
+    case static_cast<int>(WaveformMark::MemoryCueMarkerView::OverviewOnly):
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerView(
+                WaveformMark::MemoryCueMarkerView::OverviewOnly);
+        break;
+    default:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerView(
+                WaveformMark::MemoryCueMarkerView::Both);
+        break;
+    }
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerAlign(int index) {
+    switch (index) {
+    case 0:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(Qt::AlignTop);
+        break;
+    case 2:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(
+                Qt::AlignTop | Qt::AlignBottom);
+        break;
+    default:
+        WaveformWidgetFactory::instance()->setMemoryCueMarkerAlign(Qt::AlignBottom);
+        break;
+    }
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerLineWidth(int width) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerLineWidth(width);
+}
+
+void DlgPrefWaveform::updateEnableMemoryCueMarkers() {
+    const bool enabled = showMemoryCueMarkersCheckBox->isChecked();
+    memoryCueMarkerViewComboBox->setEnabled(enabled);
+    memoryCueMarkerAlignLabel->setEnabled(enabled);
+    memoryCueMarkerAlignComboBox->setEnabled(enabled);
+    memoryCueMarkerLineWidthLabel->setEnabled(enabled);
+    memoryCueMarkerLineWidthSpinBox->setEnabled(enabled);
+    memoryCueMarkerSizeLabel->setEnabled(enabled);
+    memoryCueMarkerOpacityLabel->setEnabled(enabled);
+    memoryCueMarkerOpacitySpinBox->setEnabled(enabled);
+    memoryCueMarkerSizeSpinBox->setEnabled(enabled);
+    memoryCueMarkerCustomOutlineCheckBox->setEnabled(enabled);
+    memoryCueMarkerOutlineColorButton->setEnabled(
+            enabled && memoryCueMarkerCustomOutlineCheckBox->isChecked());
+    memoryCueMarkerSingleColorCheckBox->setEnabled(enabled);
+    memoryCueMarkerColorButton->setEnabled(
+            enabled && memoryCueMarkerSingleColorCheckBox->isChecked());
+    memoryCueMarkerShowNamesCheckBox->setEnabled(enabled);
+    const bool namesEnabled = enabled && memoryCueMarkerShowNamesCheckBox->isChecked();
+    memoryCueNameAlignLabel->setEnabled(namesEnabled);
+    memoryCueNameAlignComboBox->setEnabled(namesEnabled);
+    memoryCueNameBackgroundLabel->setEnabled(namesEnabled);
+    memoryCueNameBackgroundComboBox->setEnabled(namesEnabled);
+    memoryCueNameBackgroundColorButton->setEnabled(namesEnabled &&
+            memoryCueNameBackgroundComboBox->currentIndex() ==
+                    static_cast<int>(WaveformMark::MemoryCueNameBackground::CustomColor));
+    memoryCueNameCustomTextColorCheckBox->setEnabled(namesEnabled);
+    memoryCueNameTextColorButton->setEnabled(
+            namesEnabled && memoryCueNameCustomTextColorCheckBox->isChecked());
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerShowNames(bool checked) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerShowNames(checked);
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotSetMemoryCueNameAlign(int index) {
+    WaveformWidgetFactory::instance()->setMemoryCueNameAlign(
+            index == 1 ? Qt::AlignBottom : Qt::AlignTop);
+}
+
+void DlgPrefWaveform::slotSetMemoryCueNameBackground(int index) {
+    switch (index) {
+    case static_cast<int>(WaveformMark::MemoryCueNameBackground::Off):
+        WaveformWidgetFactory::instance()->setMemoryCueNameBackground(
+                WaveformMark::MemoryCueNameBackground::Off);
+        break;
+    case static_cast<int>(WaveformMark::MemoryCueNameBackground::CustomColor):
+        WaveformWidgetFactory::instance()->setMemoryCueNameBackground(
+                WaveformMark::MemoryCueNameBackground::CustomColor);
+        break;
+    default:
+        WaveformWidgetFactory::instance()->setMemoryCueNameBackground(
+                WaveformMark::MemoryCueNameBackground::CueColor);
+        break;
+    }
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotChooseMemoryCueNameBackgroundColor() {
+    const QColor oldColor =
+            WaveformWidgetFactory::instance()->getMemoryCueNameBackgroundCustomColor();
+    const QColor newColor = QColorDialog::getColor(oldColor,
+            this,
+            tr("Memory cue name background color"),
+            QColorDialog::ShowAlphaChannel);
+    if (!newColor.isValid()) {
+        return; // dialog canceled
+    }
+    WaveformWidgetFactory::instance()->setMemoryCueNameBackgroundCustomColor(newColor);
+    updateMemoryCueNameBackgroundColorButton();
+}
+
+void DlgPrefWaveform::updateMemoryCueNameBackgroundColorButton() {
+    const QColor color =
+            WaveformWidgetFactory::instance()->getMemoryCueNameBackgroundCustomColor();
+    memoryCueNameBackgroundColorButton->setStyleSheet(
+            QStringLiteral("QPushButton { background-color: rgba(%1, %2, %3, %4); }")
+                    .arg(color.red())
+                    .arg(color.green())
+                    .arg(color.blue())
+                    .arg(color.alpha()));
+    memoryCueNameBackgroundColorButton->setToolTip(
+            tr("Custom background color of the memory cue names (%1, %2 % opaque). "
+               "Click to change.")
+                    .arg(color.name())
+                    .arg(qRound(color.alphaF() * 100)));
+}
+
+void DlgPrefWaveform::slotSetMemoryCueNameCustomTextColor(bool checked) {
+    WaveformWidgetFactory::instance()->setMemoryCueNameCustomTextColor(checked);
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotChooseMemoryCueNameTextColor() {
+    const QColor oldColor = WaveformWidgetFactory::instance()->getMemoryCueNameTextColor();
+    const QColor newColor = QColorDialog::getColor(
+            oldColor, this, tr("Memory cue name text color"));
+    if (!newColor.isValid()) {
+        return; // dialog canceled
+    }
+    WaveformWidgetFactory::instance()->setMemoryCueNameTextColor(newColor);
+    updateMemoryCueNameTextColorButton();
+}
+
+void DlgPrefWaveform::updateMemoryCueNameTextColorButton() {
+    const QColor color = WaveformWidgetFactory::instance()->getMemoryCueNameTextColor();
+    memoryCueNameTextColorButton->setStyleSheet(
+            QStringLiteral("QPushButton { background-color: %1; }").arg(color.name()));
+    memoryCueNameTextColorButton->setToolTip(
+            tr("Text color of the memory cue names (%1). Click to change.")
+                    .arg(color.name()));
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerSize(int size) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerSize(size);
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerOpacity(int percent) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerOpacity(percent);
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerCustomOutline(bool checked) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerCustomOutline(checked);
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotChooseMemoryCueMarkerOutlineColor() {
+    const QColor oldColor = WaveformWidgetFactory::instance()->getMemoryCueMarkerOutlineColor();
+    const QColor newColor = QColorDialog::getColor(
+            oldColor, this, tr("Memory cue marker outline color"));
+    if (!newColor.isValid()) {
+        return; // dialog canceled
+    }
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerOutlineColor(newColor);
+    updateMemoryCueMarkerOutlineColorButton();
+}
+
+void DlgPrefWaveform::slotSetMemoryCueMarkerSingleColor(bool checked) {
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerSingleColor(checked);
+    updateEnableMemoryCueMarkers();
+}
+
+void DlgPrefWaveform::slotChooseMemoryCueMarkerColor() {
+    const QColor oldColor = WaveformWidgetFactory::instance()->getMemoryCueMarkerColor();
+    const QColor newColor = QColorDialog::getColor(
+            oldColor, this, tr("Memory cue marker color"));
+    if (!newColor.isValid()) {
+        return; // dialog canceled
+    }
+    WaveformWidgetFactory::instance()->setMemoryCueMarkerColor(newColor);
+    updateMemoryCueMarkerColorButton();
+}
+
+void DlgPrefWaveform::updateMemoryCueMarkerColorButton() {
+    const QColor color = WaveformWidgetFactory::instance()->getMemoryCueMarkerColor();
+    memoryCueMarkerColorButton->setStyleSheet(
+            QStringLiteral("QPushButton { background-color: %1; }").arg(color.name()));
+    memoryCueMarkerColorButton->setToolTip(
+            tr("Color of all memory cue markers (%1). Click to change.").arg(color.name()));
+}
+
+void DlgPrefWaveform::updateMemoryCueMarkerOutlineColorButton() {
+    const QColor color = WaveformWidgetFactory::instance()->getMemoryCueMarkerOutlineColor();
+    memoryCueMarkerOutlineColorButton->setStyleSheet(
+            QStringLiteral("QPushButton { background-color: %1; }").arg(color.name()));
+    memoryCueMarkerOutlineColorButton->setToolTip(
+            tr("Outline color of the memory cue triangles (%1). Click to change.")
+                    .arg(color.name()));
 }
 
 void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
