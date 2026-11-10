@@ -155,6 +155,7 @@ class WTrackMenu : public QMenu {
     void slotClearKey();
     void slotClearReplayGain();
     void slotClearWaveform();
+    void slotClearFingerprint();
     void slotClearAllMetadata();
 
     // Analysis
@@ -162,6 +163,7 @@ class WTrackMenu : public QMenu {
     void slotReanalyze();
     void slotReanalyzeWithFixedTempo();
     void slotReanalyzeWithVariableTempo();
+    void slotAnalyzeFingerprint();
 
     // BPM
     void slotLockBpm();
@@ -358,6 +360,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pReanalyzeAction;
     parented_ptr<QAction> m_pReanalyzeConstBpmAction;
     parented_ptr<QAction> m_pReanalyzeVarBpmAction;
+    parented_ptr<QAction> m_pAnalyzeFingerprintAction;
 
     // Clear track metadata actions
     parented_ptr<QAction> m_pClearBeatsAction;
@@ -372,6 +375,7 @@ class WTrackMenu : public QMenu {
     parented_ptr<QAction> m_pClearCommentAction;
     parented_ptr<QAction> m_pClearKeyAction;
     parented_ptr<QAction> m_pClearReplayGainAction;
+    parented_ptr<QAction> m_pClearFingerprintAction;
     parented_ptr<QAction> m_pClearAllMetadataAction;
     parented_ptr<QAction> m_pSortHotcuesByPositionAction{};
     parented_ptr<QAction> m_pSortHotcuesByPositionCompressAction{};
