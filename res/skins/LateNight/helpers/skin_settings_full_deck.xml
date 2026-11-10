@@ -9,7 +9,7 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <!-- 4/8 Hotcues -->
+      <!-- 4/8/16 Hotcues -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Size>180min,18f</Size>
@@ -38,13 +38,19 @@ Description:
                 <Children>
                   <Template src="skins:LateNight/helpers/skin_settings_numToggle.xml">
                     <SetVariable name="Text">4</SetVariable>
-                    <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
-                    <SetVariable name="IsEqual">0</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_4_hotcues</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
                     <SetVariable name="Width">20f</SetVariable>
                   </Template>
                   <Template src="skins:LateNight/helpers/skin_settings_numToggle.xml">
                     <SetVariable name="Text">8</SetVariable>
                     <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="Width">20f</SetVariable>
+                  </Template>
+                  <Template src="skins:LateNight/helpers/skin_settings_numToggle.xml">
+                    <SetVariable name="Text">16</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_16_hotcues</SetVariable>
                     <SetVariable name="IsEqual">1</SetVariable>
                     <SetVariable name="Width">20f</SetVariable>
                   </Template>
@@ -55,7 +61,7 @@ Description:
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup><!-- 4/8 Hotcues -->
+      </WidgetGroup><!-- 4/8/16 Hotcues -->
 
       <!-- Intro & Outro cues -->
       <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
