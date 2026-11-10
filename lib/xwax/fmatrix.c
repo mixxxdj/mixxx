@@ -149,6 +149,19 @@ struct fmatrix *fmat_trans(struct fmatrix *dest, const struct fmatrix *src)
 	return dest;
 }
 
+/*
+ * Compute the LUP decomposition of a square floating-point matrix in place
+ *
+ * LUP decomposition factors a matrix A into P * A = L * U, where L is a lower
+ * triangular matrix with ones on its diagonal, U is an upper triangular matrix
+ * and P is a permutation matrix that reorders the rows of A. The rows are
+ * swapped so that the pivot with the largest absolute value is used in each
+ * step (partial pivoting), which keeps the decomposition numerically stable.
+ *
+ * L (without its diagonal) and U are stored together in a, perm[i] is the
+ * original row of A that ends up in row i, and sign is the determinant of P
+ * (1 or -1). Returns -1 if the matrix is singular.
+ */
 static int fmat_lup_decompose(struct fmatrix *a, size_t *perm, double *sign)
 {
 	const size_t n = a->rows;
@@ -201,6 +214,10 @@ static int fmat_lup_decompose(struct fmatrix *a, size_t *perm, double *sign)
 	return 0;
 }
 
+/*
+ * Solve the linear system A * x = b using the LUP decomposition of A from
+ * fmat_lup_decompose(), by forward substitution with L and back substitution with U
+ */
 static void fmat_lu_solve(double *x, const struct fmatrix *lu, const size_t *perm, const double *b)
 {
 	const size_t n = lu->rows;
@@ -220,7 +237,8 @@ static void fmat_lu_solve(double *x, const struct fmatrix *lu, const size_t *per
 	}
 }
 
-struct fmatrix *fmat_inv_lup(struct fmatrix *dest, const struct fmatrix *src)
+/* Compute the inverse of a square floating-point matrix using LUP decomposition */
+static struct fmatrix *fmat_inv_lup(struct fmatrix *dest, const struct fmatrix *src)
 {
 	struct fmatrix *lu = NULL;
 	int dest_allocated = 0;
@@ -290,6 +308,7 @@ out:
 	return dest;
 }
 
+/* Compute the inverse of a 2x2 floating-point matrix */
 static int fmat_inv_2x2(struct fmatrix *dest, const struct fmatrix *src)
 {
 	const double a = src->data[0];
@@ -311,6 +330,7 @@ static int fmat_inv_2x2(struct fmatrix *dest, const struct fmatrix *src)
 	return 0;
 }
 
+/* Compute the inverse of a 3x3 floating-point matrix */
 static int fmat_inv_3x3(struct fmatrix *dest, const struct fmatrix *src)
 {
 	const double *m = src->data;
