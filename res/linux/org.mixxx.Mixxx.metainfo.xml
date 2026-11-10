@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2026-11-07" timestamp="1794055051">
+    <release version="2.6.0" type="development" date="2026-11-09" timestamp="1794225290">
       <description>
  <p>
   STEM file support
@@ -532,6 +532,11 @@
    #16578
    #16579
   </li>
+  <li>
+   Tag Fetcher: show the real error when Cover Art Archive fails
+   #17427
+   #11903
+  </li>
  </ul>
  <p>
   Effects
@@ -723,6 +728,15 @@
    Avoid crash with unsupported EGLFS
    #15874
    #15863
+  </li>
+  <li>
+   Fix allshader waveform flicker with fractional display scaling (Wayland)
+   #17394
+  </li>
+  <li>
+   Fix Waveform resize glitch
+   #17325
+   #16297
   </li>
  </ul>
  <p>
@@ -1121,6 +1135,11 @@
   <li>
    Waveforms: Group options, adjust tabstops, reorder ui file
    #13615
+  </li>
+  <li>
+   Waveforms: Fix Restore Defaults for until-marker and stem waveform options
+   #17416
+   #17410
   </li>
   <li>
    Controllers: make extended controller information available for device selection
@@ -1576,6 +1595,10 @@
    Stats: convert ns to ms and add spacing for readability
    #14978
    #14908
+  </li>
+  <li>
+   Provide an AppImage build: Supports glibc &gt;= 2.28 (&gt;= Ubuntu Cosmic 18.10)
+   #17298
   </li>
  </ul>
  <p>
@@ -2265,10 +2288,14 @@
    SoundSourceProxyTest: split file loops into per-file tests
    #17198
   </li>
+  <li>
+   Update to gersemi 0.26.1, fix all warnings and enable warnings-as-errors
+   #16253
+  </li>
  </ul>
 </description>
     </release>
-    <release version="2.5.7" type="development" date="2026-11-07" timestamp="1794055051">
+    <release version="2.5.7" type="development" date="2026-11-09" timestamp="1794225290">
       <description>
  <p>
   Controller Mappings
@@ -2813,7 +2840,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-11-07" timestamp="1794055051">
+    <release version="2.5.5" type="development" date="2026-11-09" timestamp="1794225290">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.
