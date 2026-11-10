@@ -1055,8 +1055,8 @@ void ShoutConnection::run() {
             ring_buffer_size_t size2;
 
             // We use size1 and size2, so we can ignore the return value
-            (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
-                    &dataPtr2, &size2);
+            (void)m_pOutputFifo->acquireReadRegions(
+                    readAvailable, &dataPtr1, &size1, &dataPtr2, &size2);
 
             // Push frames to the encoder.
             process(dataPtr1, size1);

@@ -5,11 +5,8 @@
 
 #include "control/pollingcontrolproxy.h"
 #include "preferences/usersettings.h"
-#include "util/parented_ptr.h"
 #include "util/types.h"
 
-class PollingControlProxy;
-class ControlProxy;
 class VisualPlayPosition;
 struct VinylSignalQualityReport;
 
@@ -17,7 +14,7 @@ class VinylControl : public QObject {
     Q_OBJECT
   public:
     VinylControl(UserSettingsPointer pConfig, const QString& group);
-    virtual ~VinylControl();
+    ~VinylControl() override;
 
     virtual void toggleVinylControl(bool enable);
     virtual bool isEnabled();
@@ -31,46 +28,46 @@ class VinylControl : public QObject {
     const QString m_group;
 
     // The VC input gain preference.
-    ControlProxy* m_pVinylControlInputGain;
+    PollingControlProxy m_vinylControlInputGain;
 
-    //The ControlObject used to start/stop playback of the song.
-    ControlProxy* playButton;
+    // The ControlObject used to start/stop playback of the song.
+    PollingControlProxy m_playButton;
     // Playback position in the song. VisualPlayPosition is updated at engine
     // rate, unlike the rate-limited playposition CO.
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
-    ControlProxy* trackSamples;
-    ControlProxy* trackSampleRate;
-    //The ControlObject used to change the playback position in the song.
-    ControlProxy* vinylSeek;
+    PollingControlProxy m_trackSamples;
+    PollingControlProxy m_trackSampleRate;
+    // The ControlObject used to change the playback position in the song.
+    PollingControlProxy m_vinylSeek;
     // this rate is used in engine buffer for transport
     // 1.0 = original rate
-    ControlProxy* m_pVCRate;
-    // Reflects the mean value (filtered for display) used of m_pVCRate during
+    PollingControlProxy m_vinylControlRate;
+    // Reflects the mean value (filtered for display) used of m_vinylControlRate during
     // VC and and is used to change the speed/pitch of the song without VC
     // 1.0 = original rate
-    ControlProxy* m_pRateRatio;
+    PollingControlProxy m_rateRatio;
     // The ControlObject used to get the duration of the current song.
-    ControlProxy* duration;
+    PollingControlProxy m_duration;
     // The ControlObject used to get the vinyl control mode
     // (absolute/relative/scratch)
-    ControlProxy* mode;
+    PollingControlProxy m_mode;
     // The ControlObject used to get if the vinyl control is
     // enabled or disabled.
-    ControlProxy* enabled;
+    PollingControlProxy m_enabled;
     // The ControlObject used to get if the vinyl control should try to
     // enable itself
-    ControlProxy* wantenabled;
+    PollingControlProxy m_wantEnabled;
     // Should cueing mode be active?
-    ControlProxy* cueing;
+    PollingControlProxy m_cueing;
     // Is pitch changing very quickly?
-    ControlProxy* scratching;
-    ControlProxy* vinylStatus;
+    PollingControlProxy m_scratching;
+    PollingControlProxy m_vinylStatus;
     // looping enabled?
-    ControlProxy* loopEnabled;
+    PollingControlProxy m_loopEnabled;
     // show the signal in the skin?
-    ControlProxy* signalenabled;
+    PollingControlProxy m_signalEnabled;
     // When the user has pressed the "reverse" button.
-    ControlProxy* reverseButton;
+    PollingControlProxy m_reverseButton;
     PollingControlProxy m_passthroughEnabled;
     PollingControlProxy m_scratchPositionEnabled;
 

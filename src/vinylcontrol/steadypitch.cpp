@@ -1,32 +1,33 @@
 #include "steadypitch.h"
+
 #include "util/math.h"
 
 SteadyPitch::SteadyPitch(double threshold, bool assumeSteady)
-    : m_bAssumeSteady(assumeSteady),
-      m_dSteadyPitch(0.0),
-      m_dOldSteadyPitch(1.0),       // last-known steady pitch value
-      m_dSteadyPitchTime(0.0),      // last track location we had a steady pitch
-      m_dLastSteadyDur(0.0),        // last known duration of steadiness
-      m_dLastTime(0.0),             // track location of previous call
-      m_dPitchThreshold(threshold), // variation above which we say we aren't steady
-      m_iPlayDirection(1) {         // 1=forward, -1=backward
+        : m_bAssumeSteady(assumeSteady),
+          m_dSteadyPitch(0.0),
+          m_dOldSteadyPitch(1.0),       // last-known steady pitch value
+          m_dSteadyPitchTime(0.0),      // last track location we had a steady pitch
+          m_dLastSteadyDur(0.0),        // last known duration of steadiness
+          m_dLastTime(0.0),             // track location of previous call
+          m_dPitchThreshold(threshold), // variation above which we say we aren't steady
+          m_iPlayDirection(1) {         // 1=forward, -1=backward
 }
 
-void SteadyPitch::reset(double pitch, double time)
-{
+void SteadyPitch::reset(double pitch, double time) {
     m_dSteadyPitch = pitch;
     m_dSteadyPitchTime = time;
     m_dLastTime = time;
+
     if (m_dSteadyPitch >= 0) {
         m_iPlayDirection = 1;
     } else {
         m_iPlayDirection = -1;
     }
+
     m_dLastSteadyDur = 0.0;
 }
 
-bool SteadyPitch::directionChanged(double pitch)
-{
+bool SteadyPitch::directionChanged(double pitch) const {
     if (pitch >= 0) {
         return m_iPlayDirection != 1;
     } else {
@@ -34,67 +35,73 @@ bool SteadyPitch::directionChanged(double pitch)
     }
 }
 
-bool SteadyPitch::resyncDetected(double new_time)
-{
-    //did track location jump opposite to the play direction?
-    if (m_iPlayDirection >= 0)
-    {
+bool SteadyPitch::resyncDetected(double new_time) const {
+    // did track location jump opposite to the play direction?
+    if (m_iPlayDirection >= 0) {
         return new_time < m_dLastTime;
-    }
-    else
-    {
+    } else {
         return new_time > m_dLastTime;
     }
 }
 
-double SteadyPitch::check(double pitch, double time)
-{
-    //return length of time pitch has been steady, 0 if not steady
-    if (directionChanged(pitch))
-    {
-        //we've reversed direction, reset
+double SteadyPitch::check(double pitch, double time) {
+    // return length of time pitch has been steady, 0 if not steady
+    if (directionChanged(pitch)) {
+        // we've reversed direction, reset
         reset(pitch, time);
         return 0.0;
     }
 
-    if (resyncDetected(time))
-    {
+    // The track position runs backwards when playing in reverse, so jumps
+    // and durations are measured relative to the play direction.
+    if (resyncDetected(time)) {
         m_dLastTime = time;
         // Rereport the last value since we don't want to interrupt steady
         // pitch in case of resync due to looping or cuepoints.
-        if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
-        {
-            //fabricate an old time by take current time and applying
-            //last known duration
+        if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold) {
+            // fabricate an old time by take current time and applying
+            // last known duration
             m_dSteadyPitchTime = time - (m_dLastSteadyDur * m_iPlayDirection);
+
             return m_dLastSteadyDur;
         }
+
         reset(pitch, time);
         return 0.0;
     }
+
     m_dLastTime = time;
 
     // If it's been less than the window-size since we reset, return a value
     // indicating that we're steady. This is for CDJs which are really accurate.
+    // Note that the reference pitch value is used as the window size in
+    // seconds, and that the returned value is just above the 0.5 seconds the
+    // caller waits for.
     if (m_bAssumeSteady && fabs(time - m_dSteadyPitchTime) <= m_dSteadyPitch) {
         return m_dSteadyPitch + 1;
     }
 
-    if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold)
-    {
-        if (fabs(time - m_dSteadyPitchTime) > 2.0) //fabs for both directions
-        {
+    // Steady: the pitch is still within the threshold of the reference
+    if (fabs(pitch - m_dSteadyPitch) < m_dPitchThreshold) {
+        // Renew the reference pitch every second once it is older than two
+        // seconds, so that it follows slow pitch changes, e.g. from the
+        // pitch fader of the turntable, without breaking steadiness.
+        // fabs for both directions
+        if (fabs(time - m_dSteadyPitchTime) > 2.0) {
             m_dSteadyPitch = pitch;
-            m_dOldSteadyPitch = m_dSteadyPitch; //this was a known-good value
-            //update steady pitch time so it's between 1 and 2 seconds ago
+            m_dOldSteadyPitch = m_dSteadyPitch; // this was a known-good value
+            // update steady pitch time so it's between 1 and 2 seconds ago
             //(or ahead, if moving backward)
             m_dSteadyPitchTime += 1.0 * m_iPlayDirection;
         }
+
         m_dLastSteadyDur = fabs(time - m_dSteadyPitchTime);
+
         return m_dLastSteadyDur;
     }
 
-    //else
+    // else: the pitch left the threshold, start over with it as the new
+    // reference
     reset(pitch, time);
     return 0.0;
 }

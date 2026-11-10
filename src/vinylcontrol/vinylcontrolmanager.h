@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 class SoundManager;
@@ -21,13 +22,13 @@ class VinylControlManager : public QObject {
   public:
     VinylControlManager(QObject* pParent, UserSettingsPointer pConfig,
                         SoundManager* pSoundManager);
-    virtual ~VinylControlManager();
+    ~VinylControlManager() override;
 
     // Some initialization must wait until the decks have been created
     void init();
 
-    bool vinylInputConnected(int deck);
-    int vinylInputFromGroup(const QString& group);
+    bool vinylInputConnected(int deck) const;
+    int vinylInputFromGroup(const QString& group) const;
 
     void addSignalQualityListener(VinylSignalQualityListener* pListener);
     void removeSignalQualityListener(VinylSignalQualityListener* pListener);
@@ -47,8 +48,8 @@ class VinylControlManager : public QObject {
   private:
     UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
-    VinylControlProcessor* m_pProcessor;
-    QList<ControlProxy*> m_pVcEnabled;
-    ControlProxy* m_pNumDecks;
+    parented_ptr<VinylControlProcessor> m_pProcessor;
+    std::vector<parented_ptr<ControlProxy>> m_pVcEnabled;
+    parented_ptr<ControlProxy> m_pNumDecks;
     int m_iNumConfiguredDecks;
 };

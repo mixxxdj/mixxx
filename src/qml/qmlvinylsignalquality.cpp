@@ -12,8 +12,8 @@ namespace qml {
 
 QmlVinylSignalQuality::QmlVinylSignalQuality(QQuickItem* parent)
         : QQuickPaintedItem(parent),
-          m_signalImage(MIXXX_VINYL_SCOPE_SIZE,
-                  MIXXX_VINYL_SCOPE_SIZE,
+          m_signalImage(kVinylScopeSize,
+                  kVinylScopeSize,
                   QImage::Format_ARGB32) {
     connect(this, &QQuickItem::visibleChanged, this, [this]() {
         updateSignalQualityListener();
@@ -101,14 +101,14 @@ void QmlVinylSignalQuality::onVinylSignalQualityUpdate(
     int blue;
     qualityColor.getRgb(&red, &green, &blue);
 
-    for (int y = 0; y < MIXXX_VINYL_SCOPE_SIZE; ++y) {
+    for (int y = 0; y < kVinylScopeSize; ++y) {
         QRgb* line = reinterpret_cast<QRgb*>(m_signalImage.scanLine(y));
-        for (int x = 0; x < MIXXX_VINYL_SCOPE_SIZE; ++x) {
+        for (int x = 0; x < kVinylScopeSize; ++x) {
             *line = qRgba(red,
                     green,
                     blue,
                     static_cast<int>(
-                            report.scope[x + MIXXX_VINYL_SCOPE_SIZE * y] * 0.75));
+                            report.scope[x + kVinylScopeSize * y] * 0.75));
             ++line;
         }
     }

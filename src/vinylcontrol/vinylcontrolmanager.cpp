@@ -17,12 +17,12 @@ const QRegularExpression kChannelRegex(QStringLiteral("\\[Channel([1-9]\\d*)\\]"
 } // namespace
 
 VinylControlManager::VinylControlManager(QObject* pParent,
-                                         UserSettingsPointer pConfig,
-                                         SoundManager* pSoundManager)
+        UserSettingsPointer pConfig,
+        SoundManager* pSoundManager)
         : QObject(pParent),
           m_pConfig(pConfig),
-          m_pProcessor(new VinylControlProcessor(this, pConfig)),
-          m_pNumDecks(nullptr),
+          m_pProcessor(make_parented<VinylControlProcessor>(this, pConfig)),
+          m_pNumDecks(),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
@@ -31,7 +31,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
                 AudioInput(AudioPathType::VinylControl,
                         0,
                         mixxx::audio::ChannelCount::stereo(),
-                        i),
+                        static_cast<unsigned char>(i)),
                 m_pProcessor);
     }
     connect(m_pProcessor,
@@ -41,30 +41,29 @@ VinylControlManager::VinylControlManager(QObject* pParent,
 }
 
 VinylControlManager::~VinylControlManager() {
-    delete m_pProcessor;
-
     // save a bunch of stuff to config
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("cueing_ch%1").arg(i + 1)),
+        m_pConfig->set(ConfigKey(kVinylPrefKey, QStringLiteral("cueing_ch%1").arg(i + 1)),
                 ConfigValue(static_cast<int>(ControlObject::get(
                         ConfigKey(group, "vinylcontrol_cueing")))));
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("mode_ch%1").arg(i + 1)),
+        m_pConfig->set(ConfigKey(kVinylPrefKey, QStringLiteral("mode_ch%1").arg(i + 1)),
                 ConfigValue(static_cast<int>(ControlObject::get(
                         ConfigKey(group, "vinylcontrol_mode")))));
     }
 }
 
 void VinylControlManager::init() {
-    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
+    m_pNumDecks = make_parented<ControlProxy>(
+            QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &VinylControlManager::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 }
 
 void VinylControlManager::toggleVinylControl(int deck) {
-    if (deck < 0 || deck >= m_pVcEnabled.size()) {
+    if (deck < 0 || deck >= std::ssize(m_pVcEnabled)) {
         return;
     }
 
@@ -73,7 +72,7 @@ void VinylControlManager::toggleVinylControl(int deck) {
 }
 
 void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
-    int num_decks = static_cast<int>(dNumDecks);
+    auto num_decks = static_cast<int>(dNumDecks);
 
     // Complain if we try to create more decks than we can handle.
     if (num_decks > kMaxNumberOfDecks) {
@@ -90,30 +89,32 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
     for (int i = m_iNumConfiguredDecks; i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
-        m_pVcEnabled.push_back(pEnabled);
+
+        auto* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
+        m_pVcEnabled.emplace_back(pEnabled);
+
         pEnabled->connectValueChanged(this, [this, i] { slotVinylControlEnabledChanged(i); });
 
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
                 m_pConfig->getValue(
-                        ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
+                        ConfigKey(kVinylPrefKey, QString("cueing_ch%1").arg(i + 1)),
                         0.0));
         // Default mode should be relative.
         ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
                 m_pConfig->getValue(
-                        ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
-                        MIXXX_VCMODE_RELATIVE));
+                        ConfigKey(kVinylPrefKey, QString("mode_ch%1").arg(i + 1)),
+                        kVcModeRelative));
     }
     m_iNumConfiguredDecks = num_decks;
 }
 
 void VinylControlManager::slotVinylControlEnabledChanged(int deck) {
-    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_pVcEnabled.size()) {
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < std::ssize(m_pVcEnabled)) {
         return;
     }
 
-    ControlProxy* pEnabled = m_pVcEnabled.at(deck);
+    const ControlProxy* pEnabled = m_pVcEnabled.at(deck);
     emit vinylControlDeckEnabled(deck, pEnabled->toBool());
 }
 
@@ -121,18 +122,20 @@ void VinylControlManager::requestReloadConfig() {
     m_pProcessor->requestReloadConfig();
 }
 
-bool VinylControlManager::vinylInputConnected(int deck) {
+bool VinylControlManager::vinylInputConnected(int deck) const {
     if (deck < 0 || deck >= m_iNumConfiguredDecks) {
         return false;
     }
-    if (deck < 0 || deck >= m_pVcEnabled.length()) {
+
+    if (deck < 0 || deck >= std::ssize(m_pVcEnabled)) {
         qDebug() << "WARNING, tried to get vinyl enabled status for non-existent deck " << deck;
         return false;
     }
+
     return m_pProcessor->deckConfigured(deck);
 }
 
-int VinylControlManager::vinylInputFromGroup(const QString& group) {
+int VinylControlManager::vinylInputFromGroup(const QString& group) const {
     QRegularExpressionMatch channelMatch = kChannelRegex.match(group);
     if (channelMatch.hasMatch()) {
         bool ok = false;
