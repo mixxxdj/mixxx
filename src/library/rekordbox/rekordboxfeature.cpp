@@ -886,6 +886,7 @@ void readAnalyze(TrackPointer track,
         mixxx::audio::SampleRate sampleRate,
         int timingOffset,
         bool ignoreCues,
+        bool firstMemoryCueAsMainCue,
         const QString& anlzPath) {
     if (!QFile(anlzPath).exists()) {
         return;
@@ -1075,13 +1076,23 @@ void readAnalyze(TrackPointer track,
 
         bool mainCueFound = false;
 
+        // rekordbox hot cues A-H use Mixxx hotcues 1-8. Always put memory cues
+        // and loops from hotcue 9 on, so they line up with the
+        // "Show rekordbox memory cues markers" waveform option and with
+        // controller mappings that treat hotcues 9+ as memory cues.
+        constexpr int kLastRekordboxHotCueIndex = 7; // 0-based, hot cue H
+        if (lastHotCueIndex < kLastRekordboxHotCueIndex) {
+            lastHotCueIndex = kLastRekordboxHotCueIndex;
+        }
+
         // Add memory cues and loops
         for (int memoryCueOrLoopIndex = 0;
                 memoryCueOrLoopIndex < memoryCuesAndLoops.size();
                 memoryCueOrLoopIndex++) {
             memory_cue_loop_t memoryCueOrLoop = memoryCuesAndLoops[memoryCueOrLoopIndex];
 
-            if (!mainCueFound && !memoryCueOrLoop.endPosition.isValid()) {
+            if (firstMemoryCueAsMainCue && !mainCueFound &&
+                    !memoryCueOrLoop.endPosition.isValid()) {
                 // Set first chronological memory cue as Mixxx MainCue
                 track->setMainCuePosition(memoryCueOrLoop.startPosition);
                 CuePointer pMainCue = track->findCueByType(mixxx::CueType::MainCue);
@@ -1108,13 +1119,15 @@ void readAnalyze(TrackPointer track,
 
 RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
         TrackCollectionManager* trackCollectionManager,
-        QSharedPointer<BaseTrackCache> trackSource)
+        QSharedPointer<BaseTrackCache> trackSource,
+        UserSettingsPointer pConfig)
         : BaseExternalPlaylistModel(parent,
                   trackCollectionManager,
                   "mixxx.db.model.rekordbox.playlistmodel",
                   kRekordboxPlaylistsTable,
                   kRekordboxPlaylistTracksTable,
-                  trackSource) {
+                  trackSource),
+          m_pConfig(pConfig) {
 }
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
@@ -1281,12 +1294,23 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
                     .toString();
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";
 
+    // Preferences > Library: use the first rekordbox memory cue as Mixxx cue point.
+    // When off, the first memory cue becomes a memory cue hotcue like the others.
+    const bool firstMemoryCueAsMainCue = !m_pConfig ||
+            m_pConfig->getValue(
+                    ConfigKey("[Library]", "RekordboxFirstMemoryCueAsMainCue"), true);
+
     if (QFile(anlzPathExt).exists()) {
         // Beatgrids appear to be only correct in legacy ANLZ file
-        readAnalyze(track, sampleRate, timingOffset, true, anlzPath);
-        readAnalyze(track, sampleRate, timingOffset, false, anlzPathExt);
+        readAnalyze(track, sampleRate, timingOffset, true, firstMemoryCueAsMainCue, anlzPath);
+        readAnalyze(track,
+                sampleRate,
+                timingOffset,
+                false,
+                firstMemoryCueAsMainCue,
+                anlzPathExt);
     } else {
-        readAnalyze(track, sampleRate, timingOffset, false, anlzPath);
+        readAnalyze(track, sampleRate, timingOffset, false, firstMemoryCueAsMainCue, anlzPath);
     }
 
     // Assume that the key of the file the has been analyzed in Recordbox is correct
@@ -1362,7 +1386,7 @@ RekordboxFeature::RekordboxFeature(
             std::move(searchColumns),
             false);
     m_pRekordboxPlaylistModel = make_parented<RekordboxPlaylistModel>(
-            this, pLibrary->trackCollectionManager(), m_trackSource);
+            this, pLibrary->trackCollectionManager(), m_trackSource, m_pConfig);
 
     m_title = tr("Rekordbox");
 
@@ -1432,7 +1456,7 @@ RekordboxFeature::createPlaylistModelForPlaylist(const QVariant& data) {
         return {};
     }
     auto pModel = std::make_unique<RekordboxPlaylistModel>(
-            this, m_pLibrary->trackCollectionManager(), m_trackSource);
+            this, m_pLibrary->trackCollectionManager(), m_trackSource, m_pConfig);
     pModel->setPlaylist(playlists.at(0).toString());
     return pModel;
 }

@@ -306,6 +306,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_show_itunes->setChecked(true);
     checkBox_show_traktor->setChecked(true);
     checkBox_show_rekordbox->setChecked(true);
+    checkBox_rekordbox_first_memory_cue_as_cue->setChecked(true);
 }
 
 void DlgPrefLibrary::slotUpdate() {
@@ -340,6 +341,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]", "ShowTraktorLibrary"), true));
     checkBox_show_rekordbox->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowRekordboxLibrary"), true));
+    checkBox_rekordbox_first_memory_cue_as_cue->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "RekordboxFirstMemoryCueAsMainCue"), true));
     checkBox_show_serato->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]", "ShowSeratoLibrary"), true));
 
@@ -625,6 +628,8 @@ void DlgPrefLibrary::slotApply() {
             ConfigValue((int)checkBox_show_traktor->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowRekordboxLibrary"),
             ConfigValue((int)checkBox_show_rekordbox->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "RekordboxFirstMemoryCueAsMainCue"),
+            ConfigValue((int)checkBox_rekordbox_first_memory_cue_as_cue->isChecked()));
     m_pConfig->set(ConfigKey("[Library]", "ShowSeratoLibrary"),
             ConfigValue((int)checkBox_show_serato->isChecked()));
 
