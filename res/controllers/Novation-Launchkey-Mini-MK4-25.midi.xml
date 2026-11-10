@@ -10,7 +10,7 @@
     <controller id="Launchkey">
         <scriptfiles>
             <file
-                filename="Launchkey_Mini_MK4_25-scripts.js"
+                filename="Novation-Launchkey-Mini-MK4-25.scripts.js"
                 functionprefix="LaunchkeyJog"
             />
         </scriptfiles>
