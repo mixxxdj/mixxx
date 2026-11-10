@@ -198,7 +198,8 @@ DlgAbout::DlgAbout()
             << "Pau Arum&iacute;"
             << "David Garcia"
             << "Seb Ruiz"
-            << "Joseph Mattiello";
+            << "Joseph Mattiello"
+            << "timklop";
 
     QStringList pastDevelopers;
     pastDevelopers
