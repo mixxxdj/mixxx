@@ -13,7 +13,7 @@ QString filePathWithSelectedExtension(const QString& fileLocationInput,
 // manually add the selected extension to the selected file name.
 // Unfortunately, this would bypass Qt's file overwrite dialog. To avoid
 // creating our own file overwrite dialog we show the file dialog again with
-// the repaired file path pre-selected so Qt's overwrite dialog can kick in.
+// the repaired file path preselected so Qt's overwrite dialog can kick in.
 QString getFilePathWithVerifiedExtensionFromFileDialog(
         const QString& caption,
         const QString& preSelectedDirectory,
