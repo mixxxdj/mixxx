@@ -225,8 +225,11 @@ EffectChainPointer EffectsManager::getEffectChain(
     return m_effectChainSlotsByGroup.value(group);
 }
 
-bool EffectsManager::isAdoptMetaknobSettingEnabled() const {
-    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
+AdoptMetaknobValue EffectsManager::adoptMetaknobSetting() const {
+    const QString v =
+            m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobEnum"),
+                    toQString(defaultAdoptMetaknobValue));
+    return toAdoptMetaknobValue(v);
 }
 
 void EffectsManager::readEffectsXml() {
@@ -412,4 +415,29 @@ void EffectsManager::saveEffectsXml() {
     }
     file.write(doc.toString().toUtf8());
     file.close();
+}
+
+AdoptMetaknobValue toAdoptMetaknobValue(const QString& v) {
+    if (v == "KEEP_ALL") {
+        return AdoptMetaknobValue::KEEP_ALL;
+    } else if (v == "KEEP_TOP") {
+        return AdoptMetaknobValue::KEEP_TOP;
+    } else if (v == "LOAD_DEFAULT") {
+        return AdoptMetaknobValue::LOAD_DEFAULT;
+    } else {
+        return defaultAdoptMetaknobValue;
+    }
+}
+
+QString toQString(AdoptMetaknobValue v) {
+    switch (v) {
+    case AdoptMetaknobValue::KEEP_ALL:
+        return "KEEP_ALL";
+    case AdoptMetaknobValue::KEEP_TOP:
+        return "KEEP_TOP";
+    case AdoptMetaknobValue::LOAD_DEFAULT:
+        return "LOAD_DEFAULT";
+    default:
+        return toQString(defaultAdoptMetaknobValue);
+    }
 }
