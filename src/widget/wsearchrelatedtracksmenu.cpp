@@ -135,7 +135,8 @@ QString WSearchRelatedTracksMenu::elideActionText(
 }
 
 void WSearchRelatedTracksMenu::addActionsForTrack(
-        const Track& track) {
+        const Track& track,
+        const QStringList& crateNames) {
     // NOTE: We have to explicitly use `QString` instead of `auto`
     // when composing search queries using `QStringBuilder`. Otherwise
     // string concatenation will fail at runtime!
@@ -334,6 +335,18 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     searchQuery,
                     tr("Genre"),
                     genre);
+        }
+    }
+    {
+        for (const auto& crateName : crateNames) {
+            const QString searchQuery =
+                    QStringLiteral("crate:") +
+                    quoteSearchQueryText(crateName);
+            addTriggerSearchAction(
+                    &addSeparatorBeforeNextAction,
+                    searchQuery,
+                    tr("Crate"),
+                    crateName);
         }
     }
     {
