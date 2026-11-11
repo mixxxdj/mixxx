@@ -1,104 +1,29 @@
 <!DOCTYPE template>
 <!--
   Description:
-    A grid of hotcue controls.
+    A grid of hotcue controls. The visible count is selected via a
+    WidgetStack driven by the [Skin],hotcue_count control, with one
+    exclusive trigger CO per option ([Skin],show_N_hotcues).
   Variables:
     group: The group for the controls.
 -->
 <Template>
-  <!--Default grid Hotcue 1-4 -->
   <WidgetGroup>
-    <Layout>vertical</Layout>
-    <MinimumSize>40,48</MinimumSize>
-    <MaximumSize>48,48</MaximumSize>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
-      <WidgetGroup>
-        <ObjectName>HotcueGrid</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
+      <WidgetStack currentpage="[Skin],hotcue_count" persist="true">
         <Children>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">1</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">2</SetVariable>
-          </Template>
+          <Template trigger="[Skin],show_4_hotcues" on_hide_select="1" src="skin:hotcues_4.xml"/>
+          <Template trigger="[Skin],show_8_hotcues" src="skin:hotcues_8.xml"/>
+          <Template trigger="[Skin],show_16_hotcues" src="skin:hotcues_16.xml"/>
+          <Template trigger="[Skin],show_24_hotcues" src="skin:hotcues_24.xml"/>
+          <Template trigger="[Skin],show_36_hotcues" on_hide_select="0" src="skin:hotcues_36.xml"/>
         </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>HotcueGrid</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">3</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">4</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
+      </WidgetStack>
     </Children>
     <Connection>
-      <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
-      <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
-    </Connection>
-  </WidgetGroup>
-
-  <!--Extended grid Hotcue 1-8 -->
-  <WidgetGroup>
-    <Layout>vertical</Layout>
-    <MinimumSize>76,48</MinimumSize>
-    <MaximumSize>96,48</MaximumSize>
-    <SizePolicy>me,min</SizePolicy>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>HotcueGrid</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">1</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">2</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">3</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">4</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <ObjectName>HotcueGrid</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">5</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">6</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">7</SetVariable>
-          </Template>
-          <Template src="skin:hotcue_button.xml">
-            <SetVariable name="hotcue">8</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-    <Connection>
-      <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
+      <ConfigKey>[Skin],show_hotcues</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
