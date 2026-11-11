@@ -548,8 +548,9 @@ void writeSettingsLayoutElement(
     }
 
     // Groups are containers with a label
-    if (const auto* pGroup =
-                    dynamic_cast<const LegacyControllerSettingsGroup*>(pElement)) {
+    const auto* pGroup =
+            dynamic_cast<const LegacyControllerSettingsGroup*>(pElement);
+    if (pGroup) {
         QDomElement groupNode = pDoc->createElement("group");
         groupNode.setAttribute("label", pGroup->label());
         for (const auto& child : pGroup->getElements()) {
@@ -560,8 +561,9 @@ void writeSettingsLayoutElement(
     }
 
     // Rows are containers with an orientation
-    if (const auto* pContainer =
-                    dynamic_cast<const LegacyControllerSettingsLayoutContainer*>(pElement)) {
+    const auto* pContainer =
+            dynamic_cast<const LegacyControllerSettingsLayoutContainer*>(pElement);
+    if (pContainer) {
         QString orientation =
                 pContainer->getDisposition() ==
                         LegacyControllerSettingsLayoutContainer::VERTICAL
@@ -577,8 +579,9 @@ void writeSettingsLayoutElement(
     }
 
     // Items wrap a single setting
-    if (const auto* pItem =
-                    dynamic_cast<const LegacyControllerSettingsLayoutItem*>(pElement)) {
+    const auto* pItem =
+            dynamic_cast<const LegacyControllerSettingsLayoutItem*>(pElement);
+    if (pItem) {
         std::shared_ptr<AbstractLegacyControllerSetting> pSetting = pItem->getSetting();
         if (pSetting) {
             QDomElement option = pSetting->toXML(pDoc);
@@ -592,7 +595,7 @@ void writeSettingsLayoutElement(
 
 } // namespace
 
-void LegacyControllerMappingFileHandler::writeSettings(
+void LegacyControllerMappingFileHandler::addSettingsToDocument(
         const LegacyControllerMapping& mapping, QDomDocument* pDoc) const {
     if (pDoc == nullptr) {
         return;

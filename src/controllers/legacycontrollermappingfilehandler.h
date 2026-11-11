@@ -77,7 +77,7 @@ class LegacyControllerMappingFileHandler {
     /// Serializes the mapping's settings (definitions and layout) into a
     /// <settings> element and appends it to the given document's root node
     /// right after <info>
-    void writeSettings(const LegacyControllerMapping& mapping,
+    void addSettingsToDocument(const LegacyControllerMapping& mapping,
             QDomDocument* pDoc) const;
 
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
