@@ -18,6 +18,15 @@ class BeatJumpControl;
 class BeatLoopingControl;
 
 class LoopingControl : public EngineControl {
+  public:
+    enum class ReloopToggleMode {
+        Legacy = 0,
+        NearestLoop = 1,
+    };
+    static ConfigKey reloopToggleModeConfigKey() {
+        return ConfigKey(QStringLiteral("[Controls]"),
+                QStringLiteral("ReloopToggleMode"));
+    }
     Q_OBJECT
   public:
     static QList<double> getBeatSizes();
