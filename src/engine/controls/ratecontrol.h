@@ -83,6 +83,7 @@ public slots:
   void slotRateRangeChanged(double);
   void slotRateSliderChanged(double);
   void slotRateRatioChanged(double);
+  void slotRateUltraToggled(double v);
   void slotReverseRollActivate(double);
   void slotControlRatePermDown(double);
   void slotControlRatePermDownSmall(double);
@@ -112,11 +113,17 @@ private:
   BpmControl* m_pBpmControl;
 
   PollingControlProxy m_pSampleRate;
+
+  // Only main decks use rate_ultra and rate_ultra_enabled
+  bool m_usingRateUltra;
   std::unique_ptr<ControlObject> m_pRateRatio;
   std::unique_ptr<ControlObject> m_pRateDir;
   std::unique_ptr<ControlObject> m_pRateRange;
   std::unique_ptr<ControlPotmeter> m_pRateSlider;
+  std::unique_ptr<ControlPotmeter> m_pRateUltraSlider;
   std::unique_ptr<ControlPotmeter> m_pRateSearch;
+
+  std::unique_ptr<ControlPushButton> m_pRateUltraEnabled;
 
   std::unique_ptr<ControlPushButton> m_pButtonRateTempDown;
   std::unique_ptr<ControlPushButton> m_pButtonRateTempDownSmall;

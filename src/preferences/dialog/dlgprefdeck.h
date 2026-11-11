@@ -13,6 +13,7 @@
 
 class ControlProxy;
 class ControlObject;
+class PollingControlProxy;
 class QWidget;
 
 namespace {
@@ -31,7 +32,6 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
   public:
     DlgPrefDeck(QWidget* parent,
             UserSettingsPointer pConfig);
-    ~DlgPrefDeck() override;
 
   public slots:
     void slotUpdate() override;
@@ -61,8 +61,10 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotNumDecksChanged(double, bool initializing=false);
     void slotNumSamplersChanged(double, bool initializing=false);
 
+    void slotUltraSpeedCheckboxToggled(bool);
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
+    void slotUpdateUltraspeedAutoReset(bool);
 
   private:
     // Because the CueDefault list is out of order, we have to set the combo
@@ -73,6 +75,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     void setRateRangeForAllDecks(int rangePercent);
     void setRateDirectionForAllDecks(bool inverted);
+    void maybeToggleUltraSpeedForAllDecks();
+    void updateUltraSpeedCheckBox();
 
     const UserSettingsPointer m_pConfig;
 
@@ -82,12 +86,12 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     const parented_ptr<ControlProxy> m_pNumDecks;
     const parented_ptr<ControlProxy> m_pNumSamplers;
 
-    QList<ControlProxy*> m_cueControls;
-    QList<ControlProxy*> m_rateControls;
-    QList<ControlProxy*> m_rateDirectionControls;
-    QList<ControlProxy*> m_rateRangeControls;
-    QList<ControlProxy*> m_keylockModeControls;
-    QList<ControlProxy*> m_keyunlockModeControls;
+    QList<PollingControlProxy> m_cueControls;
+    QList<PollingControlProxy> m_rateDirectionControls;
+    QList<PollingControlProxy> m_rateRangeControls;
+    QList<PollingControlProxy> m_rateUtraEnabledControls;
+    QList<PollingControlProxy> m_keylockModeControls;
+    QList<PollingControlProxy> m_keyunlockModeControls;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
@@ -104,6 +108,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
+    bool m_ultraspeedAutoReset;
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
     SeekOnLoadMode m_seekOnLoadMode;
