@@ -2,6 +2,9 @@
 #include <gtest/gtest.h>
 
 #include <QDomDocument>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
 
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
@@ -389,6 +392,16 @@ class LegacyDummyMappingFileHandler : public LegacyControllerMappingFileHandler 
         return handler.load(root, filePath, QDir());
     }
 
+    /// Serialize a mapping's settings to a QDomDocument (no file I/O).
+    /// Calls the protected buildRootWithScripts() + addSettingsToDocument()
+    /// to produce the same XML that save() would write to disk.
+    static QDomDocument mapToDocument(const LegacyControllerMapping& mapping) {
+        LegacyDummyMappingFileHandler handler;
+        QDomDocument doc = handler.buildRootWithScripts(mapping);
+        handler.addSettingsToDocument(mapping, &doc);
+        return doc;
+    }
+
   private:
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
@@ -514,4 +527,60 @@ TEST_F(LegacyControllerMappingSettingsTest, handleNumberWithNegativeRange) {
     ASSERT_EQ(pMapping->getSettings().size(), 1);
     ASSERT_EQ(pMapping->getSettings().at(0)->variableName(), "myInteger1");
     ASSERT_EQ(pMapping->getSettings().at(0)->value().toNumber(), 20);
+}
+
+/// Verify that all settings are preserved when saving a mapping, eg. after
+/// learning inputs or altering I/O controls manually.
+/// Note that this does not verify the layout (groups, rows, columns).
+TEST_F(LegacyControllerMappingSettingsTest, verifySettingsPreservedInSave) {
+    QFileInfo mappingFile(getTestDir(), "controllers/test_mapping_settings.xml");
+    QFile file(mappingFile.absoluteFilePath());
+    QDomDocument origDoc;
+
+    EXPECT_TRUE(file.open(QIODevice::ReadOnly));
+    EXPECT_TRUE(origDoc.setContent(&file));
+    file.close();
+
+    auto pMapping = LegacyDummyMappingFileHandler::loadDummyMapping(
+            origDoc.documentElement(), mappingFile.absoluteFilePath());
+
+    // Verify the mapping has settings loaded from the XML
+    EXPECT_TRUE(pMapping->getSettings().size() > 0)
+            << "Mapping should have settings loaded from test_mapping_settings.xml";
+
+    // Save the mapping to QDomDocument directly (no temp file).
+    QDomDocument doc = LegacyDummyMappingFileHandler::mapToDocument(*pMapping);
+
+    // Verify the <settings> element exists in the exported XML
+    QDomElement root = doc.documentElement();
+    EXPECT_FALSE(root.isNull());
+
+    QDomElement settings = root.firstChildElement("settings");
+    EXPECT_FALSE(settings.isNull())
+            << "mapToDocument() should write <settings> element";
+
+    // Reload the exported XML into a new mapping and compare settings.
+    auto pMappingReloaded = LegacyDummyMappingFileHandler::loadDummyMapping(
+            doc.documentElement(), "/fake/path-reloaded");
+
+    // Verify the reloaded mapping has the same number of settings
+    EXPECT_EQ(pMapping->getSettings().size(),
+            pMappingReloaded->getSettings().size())
+            << "Reloaded mapping should have same number of settings";
+
+    // Iterate over original settings and verify each exists in reloaded
+    QList<QString> originalSettingsNames;
+    for (const auto& setting : pMapping->getSettings()) {
+        originalSettingsNames.append(setting->variableName());
+    }
+    QList<QString> reloadedSettingNames;
+    for (const auto& setting : pMappingReloaded->getSettings()) {
+        reloadedSettingNames.append(setting->variableName());
+    }
+
+    for (const auto& name : originalSettingsNames) {
+        EXPECT_TRUE(reloadedSettingNames.contains(name))
+                << "Setting variable '" << name.toStdString()
+                << "' not found in reloaded mapping";
+    }
 }
