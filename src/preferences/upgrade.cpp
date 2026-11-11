@@ -77,28 +77,26 @@ WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformTy
 
 VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
     using VT = VSyncThread;
-    if (configVSyncMode >= 0 && configVSyncMode <= static_cast<int>(VT::ST_COUNT)) {
-        switch (static_cast<VSyncThread::VSyncMode>(configVSyncMode)) {
-        case VT::ST_DEFAULT:
-            return VT::ST_DEFAULT;
-        case VT::ST_MESA_VBLANK_MODE_1_DEPRECATED:
-            return VT::ST_DEFAULT;
-        case VT::ST_SGI_VIDEO_SYNC_DEPRECATED:
-            return VT::ST_DEFAULT;
-        case VT::ST_OML_SYNC_CONTROL_DEPRECATED:
-            return VT::ST_DEFAULT;
-        case VT::ST_FREE:
-            return VT::ST_FREE;
-        case VT::ST_TIMER:
-            return VT::ST_TIMER;
-        case VT::ST_PLL:
-            return VT::ST_PLL;
-        case VT::ST_COUNT:
-            return VT::ST_DEFAULT;
-        }
+    switch (static_cast<VSyncThread::VSyncMode>(configVSyncMode)) {
+    case VT::ST_DEFAULT:
+        return VT::ST_DEFAULT;
+    case VT::ST_MESA_VBLANK_MODE_1_DEPRECATED:
+        return VT::ST_DEFAULT;
+    case VT::ST_SGI_VIDEO_SYNC_DEPRECATED:
+        return VT::ST_DEFAULT;
+    case VT::ST_OML_SYNC_CONTROL_DEPRECATED:
+        return VT::ST_DEFAULT;
+    case VT::ST_FREE:
+        return VT::ST_FREE;
+    case VT::ST_TIMER:
+        return VT::ST_TIMER;
+    case VT::ST_PLL:
+        return VT::ST_PLL;
+    case VT::ST_COUNT:
+        return VT::ST_DEFAULT;
+    default:
+        return VT::ST_DEFAULT;
     }
-
-    return VT::ST_DEFAULT;
 }
 } // namespace
 
