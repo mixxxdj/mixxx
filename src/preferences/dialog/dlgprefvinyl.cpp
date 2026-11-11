@@ -183,6 +183,7 @@ void DlgPrefVinyl::slotResetToDefaults() {
     }
 
     SignalQualityEnable->setChecked(true);
+    RememberVinylControlState->setChecked(false);
     SliderVinylGain->setValue(0);
     slotUpdateVinylGain();
 }
@@ -196,6 +197,8 @@ void DlgPrefVinyl::slotUpdate() {
 
     SignalQualityEnable->setChecked(
             (bool)config->getValue<bool>(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")));
+    RememberVinylControlState->setChecked(config->getValue(
+            ConfigKey(VINYL_PREF_KEY, "remember_enabled_state"), false));
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         QString group = PlayerManager::groupForDeck(i);
@@ -310,6 +313,8 @@ void DlgPrefVinyl::slotApply() {
 
     config->set(ConfigKey(VINYL_PREF_KEY,"show_signal_quality"),
                 ConfigValue((int)(SignalQualityEnable->isChecked())));
+    config->setValue(ConfigKey(VINYL_PREF_KEY, "remember_enabled_state"),
+            RememberVinylControlState->isChecked());
 
     m_pVCManager->requestReloadConfig();
     slotUpdate();

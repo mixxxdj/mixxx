@@ -57,6 +57,19 @@ VinylControlManager::~VinylControlManager() {
     }
 }
 
+void VinylControlManager::saveEnabledStates() {
+    const bool rememberEnabledState = m_pConfig->getValue(
+            ConfigKey(VINYL_PREF_KEY, "remember_enabled_state"), false);
+    for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+        const QString group = PlayerManager::groupForDeck(i);
+        m_pConfig->setValue(
+                ConfigKey(VINYL_PREF_KEY,
+                        QStringLiteral("enabled_ch%1").arg(i + 1)),
+                rememberEnabledState && i < m_iNumConfiguredDecks &&
+                        ControlObject::get(ConfigKey(group, "vinylcontrol_enabled")) > 0.0);
+    }
+}
+
 void VinylControlManager::init() {
     m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &VinylControlManager::slotNumDecksChanged);
@@ -93,6 +106,14 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
         m_pVcEnabled.push_back(pEnabled);
         pEnabled->connectValueChanged(this, [this, i] { slotVinylControlEnabledChanged(i); });
+
+        if (m_pConfig->getValue(ConfigKey(VINYL_PREF_KEY, "remember_enabled_state"), false) &&
+                m_pConfig->getValue(
+                        ConfigKey(VINYL_PREF_KEY,
+                                QStringLiteral("enabled_ch%1").arg(i + 1)),
+                        false)) {
+            ControlObject::set(ConfigKey(group, "vinylcontrol_wantenabled"), 1.0);
+        }
 
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
