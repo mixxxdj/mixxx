@@ -27,23 +27,30 @@ class Waveform;
 #define WAVEFORM_5_DESCRIPTION "Waveform 5.0"
 #define WAVEFORMSUMMARY_5_DESCRIPTION "WaveformSummary 5.0"
 
+#define WAVEFORM_5_1_VERSION "Waveform-5.1"
+#define WAVEFORM_5_1_DESCRIPTION "Waveform 5.1"
+#define WAVEFORMSUMMARY_5_1_VERSION "WaveformSummary-5.1"
+#define WAVEFORMSUMMARY_5_1_DESCRIPTION "WaveformSummary 5.1"
+
 #ifdef __STEM__
 // Used from Mixxx 2.6-pre-alpha with Stem data (6.0) and without
 // analyzer/analyzerwaveform.h:scaleSignal (6.1)
 #define WAVEFORM_6_0_VERSION "Waveform-6.0" // Superseded by 6.1
 #define WAVEFORM_6_VERSION "Waveform-6.1"
+#define WAVEFORM_6_2_VERSION "Waveform-6.2"
+#define WAVEFORM_6_2_DESCRIPTION "Waveform 6.2"
 #define WAVEFORMSUMMARY_6_VERSION "WaveformSummary-6.1"
 #define WAVEFORM_6_DESCRIPTION "Waveform 6.1"
 #define WAVEFORMSUMMARY_6_DESCRIPTION "WaveformSummary 6.1"
 
-#define WAVEFORM_CURRENT_VERSION WAVEFORM_6_VERSION
-#define WAVEFORM_CURRENT_DESCRIPTION WAVEFORM_6_DESCRIPTION
+#define WAVEFORM_CURRENT_VERSION WAVEFORM_6_2_VERSION
+#define WAVEFORM_CURRENT_DESCRIPTION WAVEFORM_6_2_DESCRIPTION
 #else
-#define WAVEFORM_CURRENT_VERSION WAVEFORM_5_VERSION
-#define WAVEFORM_CURRENT_DESCRIPTION WAVEFORM_5_DESCRIPTION
+#define WAVEFORM_CURRENT_VERSION WAVEFORM_5_1_VERSION
+#define WAVEFORM_CURRENT_DESCRIPTION WAVEFORM_5_1_DESCRIPTION
 #endif
-#define WAVEFORMSUMMARY_CURRENT_VERSION WAVEFORMSUMMARY_5_VERSION
-#define WAVEFORMSUMMARY_CURRENT_DESCRIPTION WAVEFORMSUMMARY_5_DESCRIPTION
+#define WAVEFORMSUMMARY_CURRENT_VERSION WAVEFORMSUMMARY_5_1_VERSION
+#define WAVEFORMSUMMARY_CURRENT_DESCRIPTION WAVEFORMSUMMARY_5_1_DESCRIPTION
 
 class WaveformFactory {
   public:
@@ -55,10 +62,12 @@ class WaveformFactory {
 
     static Waveform* loadWaveformFromAnalysis(
             const AnalysisDao::AnalysisInfo& analysis);
-    static VersionClass waveformVersionToVersionClass(const QString& version);
-    static VersionClass waveformSummaryVersionToVersionClass(const QString& version);
-    static QString currentWaveformVersion();
+    static VersionClass waveformVersionToVersionClass(
+            const QString& version, double lowMidFrequency, double midHighFrequency);
+    static VersionClass waveformSummaryVersionToVersionClass(
+            const QString& version, double lowMidFrequency, double midHighFrequency);
+    static QString currentWaveformVersion(double lowMidFrequency, double midHighFrequency);
     static QString currentWaveformDescription();
-    static QString currentWaveformSummaryVersion();
+    static QString currentWaveformSummaryVersion(double lowMidFrequency, double midHighFrequency);
     static QString currentWaveformSummaryDescription();
 };

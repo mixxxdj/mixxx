@@ -79,6 +79,11 @@ class Waveform {
         m_description = description;
     }
 
+    void setFilterFrequencies(double lowMidFrequency, double midHighFrequency) {
+        m_lowMidFrequency = lowMidFrequency;
+        m_midHighFrequency = midHighFrequency;
+    }
+
     QByteArray toByteArray() const;
 
     SaveState saveState() const {
@@ -157,6 +162,8 @@ class Waveform {
     mutable SaveState m_saveState;
     QString m_version;
     QString m_description;
+    double m_lowMidFrequency = 600.0;
+    double m_midHighFrequency = 4000.0;
 
     // The size of the waveform data stored in m_data. Not allowed to change
     // after the constructor runs.
