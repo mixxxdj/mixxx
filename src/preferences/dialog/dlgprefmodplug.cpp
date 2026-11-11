@@ -3,7 +3,12 @@
 #include "moc_dlgprefmodplug.cpp"
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 #include "preferences/usersettings.h"
+#ifdef __OPENMPT__
+#include "sources/soundsourceopenmpt.h"
+#endif
+#ifdef __MODPLUG__
 #include "sources/soundsourcemodplug.h"
+#endif
 #include "util/string.h"
 
 #define kConfigKey "[Modplug]"
@@ -142,6 +147,14 @@ void DlgPrefModplug::saveSettings() {
 void DlgPrefModplug::applySettings() {
     // read ui parameters and configure soundsource
     unsigned int bufferSizeLimit = m_pUi->memoryLimit->value() << 20;
+
+#ifdef __OPENMPT__
+    // DSP effects (reverb, megabass, surround, noise reduction) are now
+    // handled by the Tracker DSP effect in the effect rack, not at decode time.
+    mixxx::SoundSourceOpenMPT::configure(bufferSizeLimit);
+#endif
+
+#ifdef __MODPLUG__
     ModPlug::ModPlug_Settings settings;
 
     // Note that ModPlug always decodes sound at 44.1kHz, 32 bit, stereo
@@ -210,4 +223,5 @@ void DlgPrefModplug::applySettings() {
 
     // apply modplug settings
     mixxx::SoundSourceModPlug::configure(bufferSizeLimit, settings);
+#endif
 }
