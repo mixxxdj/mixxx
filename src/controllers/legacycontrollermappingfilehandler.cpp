@@ -534,3 +534,100 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     }
     return doc;
 }
+
+namespace {
+
+/// Recursively serialize a layout element tree into XML under the given
+/// parent element. Handles <row>, <group>, and <option> elements.
+void writeSettingsLayoutElement(
+        QDomDocument* pDoc,
+        QDomElement& parent,
+        const LegacyControllerSettingsLayoutElement* pElement) {
+    if (pElement == nullptr) {
+        return;
+    }
+
+    // Groups are containers with a label
+    if (const auto* pGroup =
+                    dynamic_cast<const LegacyControllerSettingsGroup*>(pElement)) {
+        QDomElement groupNode = pDoc->createElement("group");
+        groupNode.setAttribute("label", pGroup->label());
+        for (const auto& child : pGroup->getElements()) {
+            writeSettingsLayoutElement(pDoc, groupNode, child.get());
+        }
+        parent.appendChild(groupNode);
+        return;
+    }
+
+    // Rows are containers with an orientation
+    if (const auto* pContainer =
+                    dynamic_cast<const LegacyControllerSettingsLayoutContainer*>(pElement)) {
+        QString orientation =
+                pContainer->getDisposition() ==
+                        LegacyControllerSettingsLayoutContainer::VERTICAL
+                ? QString("vertical")
+                : QString("horizontal");
+        QDomElement rowNode = pDoc->createElement("row");
+        rowNode.setAttribute("orientation", orientation);
+        for (const auto& child : pContainer->getElements()) {
+            writeSettingsLayoutElement(pDoc, rowNode, child.get());
+        }
+        parent.appendChild(rowNode);
+        return;
+    }
+
+    // Items wrap a single setting
+    if (const auto* pItem =
+                    dynamic_cast<const LegacyControllerSettingsLayoutItem*>(pElement)) {
+        std::shared_ptr<AbstractLegacyControllerSetting> pSetting = pItem->getSetting();
+        if (pSetting) {
+            QDomElement option = pSetting->toXML(pDoc);
+            if (!option.isNull()) {
+                parent.appendChild(option);
+            }
+        }
+        return;
+    }
+}
+
+} // namespace
+
+void LegacyControllerMappingFileHandler::writeSettings(
+        const LegacyControllerMapping& mapping, QDomDocument* pDoc) const {
+    if (pDoc == nullptr) {
+        return;
+    }
+
+    QDomElement rootNode = pDoc->documentElement();
+    if (rootNode.isNull()) {
+        return;
+    }
+
+    const LegacyControllerSettingsLayoutElement* pLayout =
+            mapping.getSettingsLayout();
+    if (pLayout == nullptr) {
+        return;
+    }
+
+    const auto* pRootContainer =
+            dynamic_cast<const LegacyControllerSettingsLayoutContainer*>(pLayout);
+    if (pRootContainer == nullptr) {
+        return;
+    }
+
+    // The root layout is a container; write its direct children under <settings>
+    QDomElement settings = pDoc->createElement("settings");
+    for (const auto& child : pRootContainer->getElements()) {
+        writeSettingsLayoutElement(pDoc, settings, child.get());
+    }
+
+    // Insert <settings> between <info> and <controller>.
+    // Note(ronso0) We don't have a rule for where <settings> should be but
+    // in most mappings it's right after <info>
+    QDomElement info = rootNode.firstChildElement("info");
+    if (!info.isNull()) {
+        rootNode.insertAfter(settings, info);
+    } else {
+        rootNode.appendChild(settings);
+    }
+}

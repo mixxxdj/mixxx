@@ -123,6 +123,21 @@ QWidget* AbstractLegacyControllerSetting::buildWidget(QWidget* pParent,
     return pRoot;
 }
 
+QDomElement AbstractLegacyControllerSetting::toXML(QDomDocument* pDoc) const {
+    QDomElement option = pDoc->createElement(QStringLiteral("option"));
+    option.setAttribute(QStringLiteral("variable"), m_variableName);
+    if (!m_label.isEmpty()) {
+        option.setAttribute(QStringLiteral("label"), m_label);
+    }
+    if (!m_description.isEmpty()) {
+        QDomElement description = pDoc->createElement(QStringLiteral("description"));
+        QDomText textNode = pDoc->createTextNode(m_description);
+        description.appendChild(textNode);
+        option.appendChild(description);
+    }
+    return option;
+}
+
 LegacyControllerBooleanSetting::LegacyControllerBooleanSetting(
         const QDomElement& element)
         : LegacyControllerSettingMixin(element) {
@@ -184,6 +199,14 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
     return pWidget;
 }
 
+QDomElement LegacyControllerBooleanSetting::toXML(QDomDocument* pDoc) const {
+    QDomElement option = AbstractLegacyControllerSetting::toXML(pDoc);
+    option.setAttribute(QStringLiteral("type"), QStringLiteral("boolean"));
+    option.setAttribute(QStringLiteral("default"),
+            m_defaultValue ? QStringLiteral("true") : QStringLiteral("false"));
+    return option;
+}
+
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
     return element.hasAttribute(QStringLiteral("type")) &&
             QString::compare(element.attribute(QStringLiteral("type")),
@@ -232,6 +255,13 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
     spinBox->setDecimals(m_precisionValue);
 
     return spinBox;
+}
+
+QDomElement LegacyControllerRealSetting::toXML(QDomDocument* pDoc) const {
+    QDomElement option = LegacyControllerNumberSetting::toXML(pDoc);
+    option.setAttribute(QStringLiteral("type"), QStringLiteral("real"));
+    option.setAttribute(QStringLiteral("precision"), QString::number(m_precisionValue));
+    return option;
 }
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
@@ -312,6 +342,27 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     return pComboBox;
 }
 
+QDomElement LegacyControllerEnumSetting::toXML(QDomDocument* pDoc) const {
+    QDomElement option = AbstractLegacyControllerSetting::toXML(pDoc);
+    option.setAttribute(QStringLiteral("type"), QStringLiteral("enum"));
+    size_t pos = 0;
+    for (const auto& item : std::as_const(m_options)) {
+        QDomElement value = pDoc->createElement(QStringLiteral("value"));
+        QDomText textNode = pDoc->createTextNode(item.value);
+        value.appendChild(textNode);
+        value.setAttribute(QStringLiteral("label"), item.label);
+        if (item.color.isValid()) {
+            value.setAttribute(QStringLiteral("color"), item.color.name(QColor::HexRgb));
+        }
+        if (static_cast<size_t>(pos) == m_defaultValue) {
+            value.setAttribute(QStringLiteral("default"), QStringLiteral("true"));
+        }
+        option.appendChild(value);
+        pos++;
+    }
+    return option;
+}
+
 LegacyControllerColorSetting::LegacyControllerColorSetting(
         const QDomElement& element)
         : LegacyControllerSettingMixin(element,
@@ -372,6 +423,13 @@ QWidget* LegacyControllerColorSetting::buildInputWidget(QWidget* pParent) {
     }
 
     return pPushButton;
+}
+
+QDomElement LegacyControllerColorSetting::toXML(QDomDocument* pDoc) const {
+    QDomElement option = AbstractLegacyControllerSetting::toXML(pDoc);
+    option.setAttribute(QStringLiteral("type"), QStringLiteral("color"));
+    option.setAttribute(QStringLiteral("default"), m_defaultValue.name(QColor::HexRgb));
+    return option;
 }
 
 LegacyControllerFileSetting::LegacyControllerFileSetting(
@@ -440,4 +498,14 @@ QWidget* LegacyControllerFileSetting::buildInputWidget(QWidget* pParent) {
     }
 
     return pWidget;
+}
+
+QDomElement LegacyControllerFileSetting::toXML(QDomDocument* pDoc) const {
+    QDomElement option = AbstractLegacyControllerSetting::toXML(pDoc);
+    option.setAttribute(QStringLiteral("type"), QStringLiteral("file"));
+    option.setAttribute(QStringLiteral("default"), m_defaultValue.absoluteFilePath());
+    if (!m_fileFilter.isEmpty()) {
+        option.setAttribute(QStringLiteral("pattern"), m_fileFilter);
+    }
+    return option;
 }

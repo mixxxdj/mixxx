@@ -3,6 +3,7 @@
 #include <gtest/gtest_prod.h>
 
 #include <QColor>
+#include <QDomDocument>
 #include <QFileInfo>
 #include <QJSValue>
 
@@ -85,6 +86,12 @@ class AbstractLegacyControllerSetting : public QObject {
     QString variableName() const {
         return m_variableName;
     }
+
+    /// @brief Serialize this setting definition to an XML <option> element.
+    /// @param doc The QDomDocument used to create the element.
+    /// @return A QDomElement representing this setting, or a null element if
+    ///         serialization is not supported.
+    virtual QDomElement toXML(QDomDocument* pDoc) const;
 
     /// @brief The user-friendly label to be display in the UI
     /// @return a string
@@ -207,6 +214,8 @@ class LegacyControllerBooleanSetting
     }
     static bool match(const QDomElement& element);
 
+    QDomElement toXML(QDomDocument* pDoc) const override;
+
   protected:
     bool parseValue(const QString& in) {
         return QString::compare(in, "true", Qt::CaseInsensitive) == 0 || in == "1";
@@ -302,6 +311,16 @@ class LegacyControllerNumberSetting
     }
     static bool match(const QDomElement& element);
 
+    QDomElement toXML(QDomDocument* pDoc) const override {
+        QDomElement option = AbstractLegacyControllerSetting::toXML(pDoc);
+        option.setAttribute(QStringLiteral("type"), QStringLiteral("integer"));
+        option.setAttribute(QStringLiteral("default"), ValueSerializer(m_defaultValue));
+        option.setAttribute(QStringLiteral("min"), ValueSerializer(m_minValue));
+        option.setAttribute(QStringLiteral("max"), ValueSerializer(m_maxValue));
+        option.setAttribute(QStringLiteral("step"), ValueSerializer(m_stepValue));
+        return option;
+    }
+
   protected:
     LegacyControllerNumberSetting(const QDomElement& element,
             SettingType currentValue,
@@ -368,6 +387,8 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
         return std::make_shared<LegacyControllerRealSetting>(element);
     }
 
+    QDomElement toXML(QDomDocument* pDoc) const override;
+
     QWidget* buildInputWidget(QWidget* parent) override;
 
   private:
@@ -415,6 +436,8 @@ class LegacyControllerEnumSetting
         return std::make_shared<LegacyControllerEnumSetting>(element);
     }
     static inline bool match(const QDomElement& element);
+
+    QDomElement toXML(QDomDocument* pDoc) const override;
 
   protected:
     LegacyControllerEnumSetting(const QDomElement& element,
@@ -472,6 +495,8 @@ class LegacyControllerColorSetting
                         Qt::CaseInsensitive) == 0;
     }
 
+    QDomElement toXML(QDomDocument* pDoc) const override;
+
   protected:
     LegacyControllerColorSetting(const QDomElement& element,
             QColor currentValue,
@@ -522,6 +547,8 @@ class LegacyControllerFileSetting
                         QStringLiteral("file"),
                         Qt::CaseInsensitive) == 0;
     }
+
+    QDomElement toXML(QDomDocument* pDoc) const override;
 
   protected:
     LegacyControllerFileSetting(const QDomElement& element,
