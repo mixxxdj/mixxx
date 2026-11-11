@@ -58,6 +58,6 @@ if(CPACK_GENERATOR STREQUAL "AppImage")
   # binary by basename only, as CPack matches it against an installed file).
   set(CPACK_APPIMAGE_DESKTOP_FILE "mixxx-appimage.desktop")
   # CPACK_PACKAGE_ICON must be the bare file name of an installed icon matching
-  # the Icon= key in the desktop file (which is "mixxx").
-  set(CPACK_PACKAGE_ICON "mixxx.png")
+  # the Icon= key in the desktop file (which is "mixxx-512" for the AppImage).
+  set(CPACK_PACKAGE_ICON "mixxx-512.png")
 endif()
