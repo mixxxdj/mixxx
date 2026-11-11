@@ -10,6 +10,7 @@
 
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
+#include "library/library_decl.h"
 #include "library/treeitemmodel.h"
 #include "track/track_decl.h"
 #ifdef __STEM__
@@ -176,7 +177,7 @@ class LibraryFeature : public QObject {
     static bool exportPlaylistItemsIntoFile(
             QString playlistFilePath,
             const QList<QString>& playlistItemLocations,
-            bool useRelativePath);
+            PlaylistExportFilePathMode filePathMode);
 
   private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
