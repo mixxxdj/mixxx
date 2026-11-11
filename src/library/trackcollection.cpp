@@ -335,7 +335,17 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
 void TrackCollection::hideAllTracks(const QDir& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    m_trackDao.hideAllTracks(rootDir);
+    const QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
+    if (trackRefs.isEmpty()) {
+        return;
+    }
+    QList<TrackId> trackIds;
+    trackIds.reserve(trackRefs.size());
+    for (const auto& trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasId());
+        trackIds.append(trackRef.getId());
+    }
+    hideTracks(trackIds);
 }
 
 bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
