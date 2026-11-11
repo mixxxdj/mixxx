@@ -32,6 +32,7 @@
 #include "effects/backends/builtin/gaineffect.h"
 #include "effects/backends/builtin/tremoloeffect.h"
 #include "effects/backends/builtin/whitenoiseeffect.h"
+#include "effects/backends/builtin/bandpassreverbeffect.h"
 
 BuiltInBackend::BuiltInBackend() {
     // Keep this list in a reasonable order
@@ -57,6 +58,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<AutoPanEffect>();
 #ifndef __MACAPPSTORE__
     registerEffect<ReverbEffect>();
+    registerEffect<BandpassReverbEffect>();
 #endif
     registerEffect<PhaserEffect>();
     registerEffect<MetronomeEffect>();
