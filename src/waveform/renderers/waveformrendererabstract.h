@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QPoint>
 #include <QtGlobal>
 
 QT_FORWARD_DECLARE_CLASS(QDomNode)
@@ -51,7 +52,7 @@ class WaveformRendererAbstract {
     }
 
     WaveformWidgetRenderer* m_waveformRenderer;
-    float m_lastPlayMarkerPos;
+    QPointF m_lastPlayMarkerPos;
 
   private:
 
