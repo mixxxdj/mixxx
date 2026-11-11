@@ -43,6 +43,9 @@ class VisualPlayPositionData {
     double m_loopStartPos;
     double m_loopEndPos;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
+    // outro end position in seconds, taking the current tempo into account
+    // is same as m_tempoTrackSeconds if outro end is not set
+    double m_tempoOutroEndSeconds;
     double m_audioBufferMicroS;
 };
 
@@ -67,6 +70,7 @@ class VisualPlayPosition : public QObject {
             double loopStartPos,
             double loopEndPos,
             double tempoTrackSeconds,
+            double tempoOutroEndSeconds,
             double audioBufferMicroS);
 
     bool getPlaySlipAtNextVSync(VSyncTimeProvider* pSyncTimeProvider,
@@ -76,6 +80,7 @@ class VisualPlayPosition : public QObject {
             const VisualPlayPositionData& data, const double& offset);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
+    double getTrackEndSeconds() const;
 
     // WARNING: Not thread safe. This function must only be called from the main
     // thread.
