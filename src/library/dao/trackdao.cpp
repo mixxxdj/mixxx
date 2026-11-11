@@ -2019,35 +2019,6 @@ bool TrackDAO::detectMovedTracks(
     return true;
 }
 
-void TrackDAO::hideAllTracks(const QDir& rootDir) const {
-    const QString locationPathPrefix = locationPathPrefixFromRootDir(rootDir);
-    QSqlQuery query(m_database);
-    query.prepare(QStringLiteral(
-            "SELECT library.id FROM library INNER JOIN track_locations "
-            "ON library.location=track_locations.id "
-            "WHERE "
-            "INSTR(track_locations.location,:locationPathPrefix)=1"
-            "locationPathPrefix"));
-    query.bindValue(":locationPathPrefix", locationPathPrefix);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << rootDir;
-        DEBUG_ASSERT(!"Failed query");
-    }
-
-    QStringList trackIds;
-    const int idColumn = query.record().indexOf("id");
-    while (query.next()) {
-        trackIds.append(TrackId(query.value(idColumn)).toString());
-    }
-
-    query.prepare(QString("UPDATE library SET mixxx_deleted=1 "
-                          "WHERE id in (%1)").arg(trackIds.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        DEBUG_ASSERT(!"Failed query");
-    }
-}
-
 bool TrackDAO::verifyRemainingTracks(
         const QList<mixxx::FileInfo>& libraryRootDirs,
         volatile const bool* pCancel) {
