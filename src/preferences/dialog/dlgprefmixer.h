@@ -61,6 +61,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotXFaderReverseControlChanged(double v);
 
     void slotHiEqSliderChanged();
+    void slotMidEqSliderChanged();
     void slotLoEqSliderChanged();
 
     /// Update the Main EQ
@@ -106,8 +107,9 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     parented_ptr<QGraphicsScene> m_pxfScene;
 
     PollingControlProxy m_COLoFreq;
+    PollingControlProxy m_COMidFreq;
     PollingControlProxy m_COHiFreq;
-    double m_lowEqFreq, m_highEqFreq;
+    double m_lowEqFreq, m_midEqFreq, m_highEqFreq;
 
     EffectChainPresetManagerPointer m_pChainPresetManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
