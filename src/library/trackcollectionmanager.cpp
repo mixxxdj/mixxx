@@ -7,6 +7,7 @@
 #include "library/library_prefs.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
+#include "library/trackmetadataexportthread.h"
 #include "moc_trackcollectionmanager.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
@@ -20,8 +21,7 @@ namespace {
 
 const mixxx::Logger kLogger("TrackCollectionManager");
 
-inline
-parented_ptr<TrackCollection> createInternalTrackCollection(
+inline parented_ptr<TrackCollection> createInternalTrackCollection(
         TrackCollectionManager* parent,
         const UserSettingsPointer& pConfig,
         deleteTrackFn_t deleteTrackFn) {
@@ -38,9 +38,9 @@ TrackCollectionManager::TrackCollectionManager(
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
         deleteTrackFn_t /*only-needed-for-testing*/ deleteTrackForTestingFn)
-    : QObject(parent),
-      m_pConfig(pConfig),
-      m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
+        : QObject(parent),
+          m_pConfig(pConfig),
+          m_pInternalCollection(createInternalTrackCollection(this, pConfig, deleteTrackForTestingFn)) {
     const QSqlDatabase dbConnection = mixxx::DbConnectionPooled(pDbConnectionPool);
 
     // TODO(XXX): Add a checkbox in the library preferences for checking
@@ -151,6 +151,18 @@ TrackCollectionManager::TrackCollectionManager(
 
         kLogger.info() << "Starting library scanner thread";
         m_pScanner->start();
+
+        // Writing track metadata into source files may take a
+        // noticeable amount of time on slow storage and is therefore
+        // performed on a dedicated worker thread.
+        m_pExportThread =
+                std::make_unique<TrackMetadataExportThread>(pDbConnectionPool);
+        connect(m_pExportThread.get(),
+                &TrackMetadataExportThread::trackExported,
+                this,
+                &TrackCollectionManager::slotTrackExported,
+                Qt::QueuedConnection);
+        m_pExportThread->start(QThread::LowPriority);
     }
 }
 
@@ -176,6 +188,13 @@ TrackCollectionManager::~TrackCollectionManager() {
     // updating of modified tracks. We assume that no other
     // components are accessing those files at this point.
     GlobalTrackCacheLocker().deactivateCache();
+
+    // Wait until all pending metadata exports have been processed.
+    if (m_pExportThread) {
+        m_pExportThread->stop();
+        m_pExportThread->wait();
+        m_pExportThread.reset();
+    }
 
     for (const auto& externalCollection : std::as_const(m_externalCollections)) {
         kLogger.info()
@@ -345,6 +364,17 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
                                     .toInt() == 1)) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate: {
+            if (m_pExportThread) {
+                // Forward a snapshot of the track to the worker thread
+                // that performs the slow export of metadata into the
+                // source file asynchronously. The updated source
+                // synchronization timestamp is written into the
+                // database by the worker thread.
+                m_pExportThread->enqueueExport(
+                        *pTrack,
+                        SyncTrackMetadataParams::readFromUserSettings(*m_pConfig));
+                return ExportTrackMetadataResult::Queued;
+            }
             // Export track metadata now by saving as file tags.
             const auto result = SoundSourceProxy::exportTrackMetadataBeforeSaving(
                     pTrack,
@@ -378,6 +408,27 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
         }
     }
     return ExportTrackMetadataResult::Skipped;
+}
+
+void TrackCollectionManager::slotTrackExported(
+        TrackPointer pTrack,
+        ExportTrackMetadataResult result) {
+    Q_UNUSED(result);
+    // The temporary track that performed the export is no longer
+    // needed and gets destroyed when leaving this function.
+    const TrackId trackId = pTrack->getId();
+    if (!trackId.isValid()) {
+        return;
+    }
+    // The source synchronization timestamp has already been written
+    // into the database by the worker thread. Update the track object
+    // if it has been reloaded into the cache while the export was
+    // still pending.
+    GlobalTrackCacheLocker cacheLocker;
+    const TrackPointer pCachedTrack = cacheLocker.lookupTrackById(trackId);
+    if (pCachedTrack) {
+        pCachedTrack->setSourceSynchronizedAt(pTrack->getSourceSynchronizedAt());
+    }
 }
 
 DirectoryDAO::AddResult TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
@@ -577,7 +628,8 @@ void TrackCollectionManager::afterTracksUpdated(const QSet<TrackId>& updatedTrac
                 << "track(s) in"
                 << m_externalCollections.size()
                 << "external collection(s)";
-    } else {
+    }
+    else {
         kLogger.debug()
                 << "Updating"
                 << trackRefs.size()
