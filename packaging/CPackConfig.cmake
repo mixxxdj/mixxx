@@ -62,4 +62,13 @@ if(CPACK_GENERATOR STREQUAL "AppImage")
   # CPACK_PACKAGE_ICON must be the bare file name of an installed icon matching
   # the Icon= key in the desktop file (which is "mixxx-512" for the AppImage).
   set(CPACK_PACKAGE_ICON "mixxx-512.png")
+
+  # Sign the AppImage with the release GPG key when CI provides it (release
+  # builds only): the "[AppImage] Import signing GPG key" step in build.yml
+  # imports the key and sets MIXXX_APPIMAGE_SIGN.  The key is the same one the
+  # Flatpak publishing uses (daschuer@mixxx.org).
+  if(DEFINED ENV{MIXXX_APPIMAGE_SIGN})
+    set(CPACK_APPIMAGE_SIGN ON)
+    set(CPACK_APPIMAGE_SIGN_KEY "daschuer@mixxx.org")
+  endif()
 endif()

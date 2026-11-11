@@ -168,6 +168,8 @@ case "$1" in
             # check, which resolves the packaged binary's closure against the
             # build host's system libraries; install the runtime packages so
             # the check runs against the actual glibc-2.28 floor.
+            # gpg signs the release AppImage (appimagetool --sign); the
+            # rockylinux:8 base image does not ship it.
             $SUDO dnf install -y \
                 gcc-toolset-12 \
                 ccache \
@@ -177,6 +179,7 @@ case "$1" in
                 file \
                 desktop-file-utils \
                 appstream \
+                gpg \
                 fuse-libs \
                 unzip \
                 squashfs-tools \
