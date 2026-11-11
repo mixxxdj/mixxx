@@ -15,6 +15,7 @@ const QString LIBRARYTABLE_ARTIST = QStringLiteral("artist");
 const QString LIBRARYTABLE_TITLE = QStringLiteral("title");
 const QString LIBRARYTABLE_ALBUM = QStringLiteral("album");
 const QString LIBRARYTABLE_ALBUMARTIST = QStringLiteral("album_artist");
+const QString LIBRARYTABLE_CATALOGUENUMBER = QStringLiteral("catalogue_number");
 const QString LIBRARYTABLE_YEAR = QStringLiteral("year");
 const QString LIBRARYTABLE_GENRE = QStringLiteral("genre");
 const QString LIBRARYTABLE_COMPOSER = QStringLiteral("composer");

@@ -270,6 +270,12 @@ void importTrackMetadataFromTag(
             resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setRecordLabel(recordLabel);
     }
+    QString catalogueNumber;
+    if (readItem(tag, "CatalogNumber", &catalogueNumber) ||
+            readItem(tag, "CATALOGNUMBER", &catalogueNumber) ||
+            resetMissingTagMetadata) {
+        pTrackMetadata->refAlbumInfo().setCatalogueNumber(catalogueNumber);
+    }
     QString subtitle;
     if (readItem(tag, "Subtitle", &subtitle) ||
             readItem(tag, "SUBTITLE", &subtitle) ||
@@ -344,6 +350,7 @@ bool exportTrackMetadataIntoTag(TagLib::APE::Tag* pTag, const TrackMetadata& tra
     writeItem(pTag, "Copyright", toTString(trackMetadata.getAlbumInfo().getCopyright()));
     writeItem(pTag, "LICENSE", toTString(trackMetadata.getAlbumInfo().getLicense()));
     writeItem(pTag, "Label", toTString(trackMetadata.getAlbumInfo().getRecordLabel()));
+    writeItem(pTag, "CatalogNumber", toTString(trackMetadata.getAlbumInfo().getCatalogueNumber()));
     writeItem(pTag, "MixArtist", toTString(trackMetadata.getTrackInfo().getRemixer()));
     writeItem(pTag, "Subtitle", toTString(trackMetadata.getTrackInfo().getSubtitle()));
     writeItem(pTag, "EncodedBy", toTString(trackMetadata.getTrackInfo().getEncoder()));

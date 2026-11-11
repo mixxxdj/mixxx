@@ -722,6 +722,8 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         pTrack->setAlbum(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) == column) {
         pTrack->setAlbumArtist(value.toString());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_CATALOGUENUMBER) == column) {
+        pTrack->setCatalogueNumber(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         pTrack->setYear(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
