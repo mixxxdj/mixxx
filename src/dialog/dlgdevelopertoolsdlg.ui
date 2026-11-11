@@ -81,6 +81,16 @@
          </attribute>
         </widget>
        </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="oscQuerryDump">
+         <property name="toolTip">
+          <string>Dumps a OSCQuery description to settings path (e.g. ~/.mixxx)</string>
+         </property>
+         <property name="text">
+          <string>Dump OSCQuerry Description</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="logTab">
