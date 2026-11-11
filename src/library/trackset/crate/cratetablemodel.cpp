@@ -49,7 +49,8 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             << "'' AS " + LIBRARYTABLE_PREVIEW
             // For sorting the cover art column we give LIBRARYTABLE_COVERART
             // the same value as the cover digest.
-            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART;
+            << LIBRARYTABLE_COVERART_DIGEST + " AS " + LIBRARYTABLE_COVERART
+            << "'' AS " + LIBRARYTABLE_LOADED_DECK;
     // We hide files that have been explicitly deleted in the library
     // (mixxx_deleted = 0) from the view.
     // They are kept in the database, because we treat crate membership as a
@@ -71,6 +72,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = LIBRARYTABLE_PREVIEW;
     columns[2] = LIBRARYTABLE_COVERART;
+    columns[3] = LIBRARYTABLE_LOADED_DECK;
     setTable(tableName,
             LIBRARYTABLE_ID,
             columns,
