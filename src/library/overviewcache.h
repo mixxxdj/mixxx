@@ -4,6 +4,7 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
+#include "track/cueinfo.h"
 #include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/singleton.h"
@@ -15,6 +16,7 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
     Q_OBJECT
   public:
     void onTrackSummaryChanged(TrackId);
+    void invalidateAll();
 
     QPixmap requestCachedOverview(
             mixxx::OverviewType type,
@@ -25,19 +27,23 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
             TrackId trackId,
+            const QList<mixxx::CueInfo>& cueInfos,
+            double trackDurationMillis,
             const QObject* pRequester,
             QSize desiredSize);
 
     struct FutureResult {
         FutureResult()
-                : requester(nullptr) {
+                : requester(nullptr),
+                  uniformTimeBase(false) {
         }
 
         TrackId trackId;
         mixxx::OverviewType type;
         QImage image;
-        QSize resizedToSize;
+        QSize requestedSize;
         const QObject* requester;
+        bool uniformTimeBase;
     };
 
   public slots:
@@ -64,8 +70,19 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             mixxx::OverviewType type,
             const WaveformSignalColors& signalColors,
             TrackId trackId,
+            const QList<mixxx::CueInfo>& cueInfos,
+            double trackDurationMillis,
             const QObject* pRequester,
             QSize desiredSize);
+
+    static void drawHotcueMarkers(
+            QImage* pImage,
+            const QList<mixxx::CueInfo>& cueInfos,
+            double trackDurationMillis);
+
+    static void drawMinuteMarkers(
+            QImage* pImage,
+            const QList<int>& markerXPositions);
 
   private:
     UserSettingsPointer m_pConfig;
