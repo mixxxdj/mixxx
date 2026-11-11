@@ -1,9 +1,13 @@
 #include "library/trackset/baseplaylistfeature.h"
 
 #include <QAction>
+#include <QCheckBox>
+#include <QDateTime>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QList>
+#include <QMessageBox>
 #include <QSqlTableModel>
 #include <QStandardPaths>
 
@@ -23,6 +27,7 @@
 #include "util/assert.h"
 #include "util/defs.h"
 #include "util/file.h"
+#include "widget/wdlgimportplaylist.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
@@ -134,6 +139,12 @@ void BasePlaylistFeature::initActions() {
             &QAction::triggered,
             this,
             &BasePlaylistFeature::slotCreateImportPlaylist);
+    m_pCreateImportPlaylistFindTracksAction =
+            make_parented<QAction>(tr("Import Playlist - Find Tracks"), this);
+    connect(m_pCreateImportPlaylistFindTracksAction,
+            &QAction::triggered,
+            this,
+            &BasePlaylistFeature::slotCreateImportPlaylistFindTracks);
     m_pExportPlaylistAction = make_parented<QAction>(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction,
             &QAction::triggered,
@@ -590,6 +601,68 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         slotImportPlaylistFile(playlistFile, lastPlaylistId);
     }
     activatePlaylist(lastPlaylistId);
+}
+
+void BasePlaylistFeature::slotCreateImportPlaylistFindTracks() {
+    QMessageBox box(nullptr);
+    box.setWindowTitle(tr("Confirm CSV/TXT-Import"));
+    box.setIcon(QMessageBox::Question);
+    box.setText(tr("Import a playlist from a CSV/TXT file?"));
+    box.setInformativeText(tr(
+            "This action will show a dialog of all results for each entry in "
+            "the importfile, 1 by 1. For each entry you'll be able to select "
+            "0/1/more results from your library.\n\n"
+            "Doubleclick on a result adds the track to the playlist and "
+            "proceeds to the next entry in the importfile.\n\n"
+            "After selecting multiple results you can add all selected tracks "
+            "with the 'Add Selected' button, then press 'Next' to proceed to "
+            "the next entry in the importfile."));
+    box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    box.setDefaultButton(QMessageBox::No);
+    if (box.exec() != QMessageBox::Yes) {
+        return;
+    }
+
+    const QString inputFile = QFileDialog::getOpenFileName(nullptr,
+            "Select the CSV/TXT file to import",
+            QString(),
+            "CSV files (*.csv);; TXT files (*.txt);; All files (*.*)");
+    if (inputFile.isEmpty()) {
+        return;
+    }
+
+    QString error;
+    const auto entries = WDlgImportPlaylist::parseImportFile(inputFile, &error);
+    if (!entries.has_value()) {
+        QMessageBox::warning(nullptr, tr("Import Failed"), error);
+        return;
+    }
+
+    const QFileInfo fileInfo(inputFile);
+    const QString stamp = QDateTime::currentDateTime().toString("yyyyMMdd-hhmmss");
+    const int playlistId = m_playlistDao.createPlaylist(
+            fileInfo.completeBaseName() + "-" + stamp);
+    if (playlistId == kInvalidPlaylistId) {
+        QMessageBox::warning(nullptr, tr("Playlist Creation Failed"), "Invalid playlist");
+        return;
+    }
+
+    QFile reportFile(fileInfo.absolutePath() + "/" +
+            fileInfo.completeBaseName() + "-import-report-" + stamp + ".txt");
+    QTextStream reportStream(&reportFile);
+    if (!reportFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Failed to open report file:" << reportFile.fileName();
+    }
+
+    const QSqlDatabase db = m_pLibrary->trackCollectionManager()
+                                    ->internalCollection()
+                                    ->database();
+
+    WDlgImportPlaylist dialog(entries.value(), db, playlistId, &reportStream, nullptr);
+    dialog.exec();
+
+    reportFile.close();
+    activatePlaylist(playlistId);
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {

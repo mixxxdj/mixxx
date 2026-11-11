@@ -76,6 +76,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotImportPlaylist();
     void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void slotCreateImportPlaylist();
+    void slotCreateImportPlaylistFindTracks();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
@@ -117,6 +118,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pLockPlaylistAction;
     parented_ptr<QAction> m_pImportPlaylistAction;
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
+    parented_ptr<QAction> m_pCreateImportPlaylistFindTracksAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pDuplicatePlaylistAction;
@@ -141,7 +143,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual QString getRootViewHtml() const = 0;
     bool markTreeItem(TreeItem* pTreeItem);
     QString fetchPlaylistLabel(int playlistId);
-
 
     const bool m_keepHiddenTracks;
 };
