@@ -45,6 +45,9 @@ class QmlPlayerManagerProxy : public QObject {
     static void registerPlayerManager(std::shared_ptr<PlayerManager> pPlayerManager) {
         s_pPlayerManager = std::move(pPlayerManager);
     }
+    static PlayerManager* get() {
+        return s_pPlayerManager.get();
+    }
 
   private:
     static inline std::shared_ptr<PlayerManager> s_pPlayerManager;

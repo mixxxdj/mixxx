@@ -406,7 +406,9 @@ class WaveformWidgetFactory : public QObject,
 
     //Debug
     PerformanceTimer m_time;
+    PerformanceTimer m_qmlFrameTime;
     float m_frameCnt;
+    float m_qmlFrameCnt;
     double m_actualFrameRate;
     int m_vSyncType;
     double m_playMarkerPosition;
