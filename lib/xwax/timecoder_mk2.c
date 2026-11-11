@@ -480,3 +480,22 @@ void mk2_process_timecode(struct timecoder *tc, signed int reading)
            tc->lower.valid_counter,
            tc->forwards);
 }
+
+/*
+ * Initialise a subcode decoder for the Traktor MK2
+ */
+
+void mk2_subcode_init(struct mk2_subcode *sc)
+{
+    sc->valid_counter = 0;
+    sc->avg_reading = INT_MAX / 2;
+    sc->avg_slope = INT_MAX / 2;
+    sc->bit = U128_ZERO;
+
+    sc->readings = rb_alloc(3, sizeof(int));
+    assert(sc->readings);
+
+    /* Initialise smoothing filters */
+    ewma_init(&sc->ewma_reading, 0.01);
+    ewma_init(&sc->ewma_slope, 0.01);
+}

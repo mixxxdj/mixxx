@@ -44,6 +44,7 @@ void ewma_init(struct ewma_filter *f, const double alpha)
 
     f->alpha = alpha;
     f->y_old = 0;
+    f->y_old_f = 0.0;
 }
 
 /*
@@ -62,7 +63,8 @@ void ewma_init_adaptive(struct ewma_filter *f, double k, double f_carrier,
 
     double tau = k / f_carrier; /* fraction of carrier frequency */
     f->alpha = 1.0 - exp(-1.0 / (fs * tau));
-    f->y_old = 0.0;
+    f->y_old = 0;
+    f->y_old_f = 0.0;
 }
 
 /*
@@ -82,6 +84,25 @@ int ewma(struct ewma_filter *f, const int x)
     f->y_old = y;
 
     return y;
+}
+
+/*
+ * As ewma(), but for callers that need the double precision (e.g. a
+ * quantity too small to survive rounding to an int) rather than the
+ * scale of the timecode signal.
+ */
+
+double ewmaf(struct ewma_filter *f, const double x)
+{
+    if (!f) {
+        errno = EINVAL;
+        perror(__func__);
+        return -EINVAL;
+    }
+
+    f->y_old_f = f->alpha * x + (1 - f->alpha) * f->y_old_f;
+
+    return f->y_old_f;
 }
 
 /*
