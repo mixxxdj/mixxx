@@ -28,6 +28,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
 #LibraryFeatureControls QPushButton,
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton,
+WPushButton#PinnedTrackToggle,
 WTrackTableViewHeader,
 WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
@@ -51,6 +52,7 @@ WPushButton#GuiToggleButton,
 WLabel#RecFeedback, WLabel#RecDuration,
 WPushButton#BroadcastButton,
 WPushButton#SkinSettingsToggle,
+WPushButton#PinnedTrackToggle,
 #LibraryFeatureControls QPushButton,
 /* Passthrough label on overview waveform */
 WPushButton#EQKillButton,

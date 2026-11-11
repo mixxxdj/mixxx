@@ -1178,10 +1178,15 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
-    if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
-        return nullptr;
+    BaseTrackPlayer* pPlayer = nullptr;
+    if (group != QStringLiteral("[Library]")) {
+        pPlayer = m_pPlayerManager->getPlayer(group);
+        if (!pPlayer) {
+            SKIN_WARNING(node,
+                    *m_pContext,
+                    QStringLiteral("No player found for group: %1").arg(group));
+            return nullptr;
+        }
     }
 
     bool isMainDeck = PlayerManager::isDeckGroup(group);
@@ -1226,26 +1231,33 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
             &Library::slotRestoreCurrentViewState,
             Qt::DirectConnection);
 
-    connect(pPlayer,
-            &BaseTrackPlayer::newTrackLoaded,
-            pTrackProperty,
-            &WTrackProperty::slotTrackLoaded);
-    connect(pPlayer,
-            &BaseTrackPlayer::loadingTrack,
-            pTrackProperty,
-            &WTrackProperty::slotLoadingTrack);
-    connect(pTrackProperty,
-            &WTrackProperty::trackDropped,
-            m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
-    connect(pTrackProperty,
-            &WTrackProperty::cloneDeck,
-            m_pPlayerManager,
-            &PlayerManager::slotCloneDeck);
+    if (pPlayer) { // widget in decks, smaplers etc.
+        connect(pPlayer,
+                &BaseTrackPlayer::newTrackLoaded,
+                pTrackProperty,
+                &WTrackProperty::slotTrackLoaded);
+        connect(pPlayer,
+                &BaseTrackPlayer::loadingTrack,
+                pTrackProperty,
+                &WTrackProperty::slotLoadingTrack);
+        connect(pTrackProperty,
+                &WTrackProperty::trackDropped,
+                m_pPlayerManager,
+                &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+        connect(pTrackProperty,
+                &WTrackProperty::cloneDeck,
+                m_pPlayerManager,
+                &PlayerManager::slotCloneDeck);
 
-    TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (pTrack) {
-        pTrackProperty->slotTrackLoaded(pTrack);
+        TrackPointer pTrack = pPlayer->getLoadedTrack();
+        if (pTrack) {
+            pTrackProperty->slotTrackLoaded(pTrack);
+        }
+    } else { // Pinned track widget in/near the library
+        connect(m_pLibrary,
+                &Library::pinnedTrackChanged,
+                pTrackProperty,
+                &WTrackProperty::slotPinnedTrackChanged);
     }
 
     return pTrackProperty;
