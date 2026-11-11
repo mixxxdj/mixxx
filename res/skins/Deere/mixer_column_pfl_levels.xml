@@ -7,7 +7,7 @@
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <Size>30f,-1me</Size>
+    <SizePolicy>min,me</SizePolicy>
     <Children>
 
       <WidgetGroup>
@@ -33,13 +33,14 @@
 
       <WidgetGroup>
         <ObjectName>Channel_VU_Container</ObjectName>
-        <Size>22me,50me</Size>
+        <SizePolicy>min,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
             <ObjectName>channel_VuMeter_Group</ObjectName>
             <Layout>horizontal</Layout>
-            <MaximumSize>22,150</MaximumSize>
+            <SizePolicy>min,me</SizePolicy>
+            <MinimumSize>22,50</MinimumSize>
             <Children>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
@@ -58,29 +59,6 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <Layout>vertical</Layout>
-        <Children>
-          <WidgetGroup>
-            <Layout>vertical</Layout>
-            <Size>28f,28min</Size>
-            <Children>
-              <Template src="skin:crossfader_orientation_button.xml">
-                <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_xfader</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>

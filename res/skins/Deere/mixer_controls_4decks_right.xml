@@ -92,8 +92,36 @@
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="color">green</SetVariable>
           </Template>
-          <!-- Expanding spacer to push EQ knob to left side -->
-          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+          <!-- mute button for gain stage -->
+          <PushButton>
+            <TooltipId>mute</TooltipId>
+            <Size>15f,20f</Size>
+            <ObjectName>EQKillButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+            </State>
+            <State>
+              <Number>1</Number>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,mute</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </PushButton>
+          <!-- expanding spacer to push gain knob to left side when kill buttons hidden -->
+          <WidgetGroup>
+            <Size>0me,1min</Size>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
 
