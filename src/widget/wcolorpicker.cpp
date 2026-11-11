@@ -45,6 +45,7 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
           m_pCustomColorButton(nullptr) {
     QGridLayout* pLayout = new QGridLayout();
     pLayout->setContentsMargins(0, 0, 0, 0);
+    pLayout->setSpacing(4); // <- Added: Beautiful 4px spacing between color swatches to fix the hover bug!
 
     // Unfortunately, not all styles supported by Qt support setting a
     // background color for QPushButtons (see
@@ -143,9 +144,19 @@ void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, i
         pButton->setStyle(m_pStyle);
     }
 
-    // Set the background color of the button. This can't be overridden in skin stylesheets.
+    // Set the background color of the button and add global hover border feedback.
+    QString highlightColor = palette().color(QPalette::Highlight).name();
     pButton->setStyleSheet(
-            QString("QPushButton { background-color: %1; }").arg(mixxx::RgbColor::toQString(color)));
+            QString("QPushButton {"
+                    "  background-color: %1;"
+                    "  border-image: none;"
+                    "  border: 2px solid transparent;"
+                    "}"
+                    "QPushButton:hover {"
+                    "  border-image: none;"
+                    "  border: 2px solid %2;"
+                    "}")
+                    .arg(mixxx::RgbColor::toQString(color), highlightColor));
     pButton->setToolTip(mixxx::RgbColor::toQString(color));
     pButton->setCheckable(true);
     // Without this the button might shrink when setting the checkmark icon,
@@ -174,6 +185,19 @@ void WColorPicker::addNoColorButton(QGridLayout* pLayout, int row, int column) {
         pButton->setToolTip(tr("No color"));
         pButton->setCheckable(true);
         pButton->setSizePolicy(QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding));
+
+        QString highlightColor = palette().color(QPalette::Highlight).name();
+        pButton->setStyleSheet(
+                QString("QPushButton {"
+                        "  border-image: none;"
+                        "  border: 2px solid transparent;"
+                        "}"
+                        "QPushButton:hover {"
+                        "  border-image: none;"
+                        "  border: 2px solid %1;"
+                        "}").arg(highlightColor));
+
+
         connect(pButton,
                 &QPushButton::clicked,
                 this,
@@ -196,6 +220,18 @@ void WColorPicker::addCustomColorButton(QGridLayout* pLayout, int row, int colum
         pButton->setProperty("customColor", true);
         pButton->setToolTip(tr("Custom color"));
         pButton->setCheckable(true);
+
+        QString highlightColor = palette().color(QPalette::Highlight).name();
+        pButton->setStyleSheet(
+                QString("QPushButton {"
+                        "  border-image: none;"
+                        "  border: 2px solid transparent;"
+                        "}"
+                        "QPushButton:hover {"
+                        "  border-image: none;"
+                        "  border: 2px solid %1;"
+                        "}").arg(highlightColor));
+
         connect(pButton,
                 &QPushButton::clicked,
                 this,
