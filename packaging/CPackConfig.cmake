@@ -55,7 +55,10 @@ endif()
 if(CPACK_GENERATOR STREQUAL "AppImage")
   # The AppImage desktop file regenerates Exec= to "mixxx" (it must refer to the
   # binary by basename only, as CPack matches it against an installed file).
-  set(CPACK_APPIMAGE_DESKTOP_FILE "mixxx-appimage.desktop")
+  # The reverse-DNS name keeps the AppImage's AppStream component self-consistent
+  # (the appdata file name and id are derived from it), which appstreamcli
+  # requires for the metadata to validate.
+  set(CPACK_APPIMAGE_DESKTOP_FILE "org.mixxx.Mixxx.desktop")
   # CPACK_PACKAGE_ICON must be the bare file name of an installed icon matching
   # the Icon= key in the desktop file (which is "mixxx-512" for the AppImage).
   set(CPACK_PACKAGE_ICON "mixxx-512.png")

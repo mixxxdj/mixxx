@@ -176,6 +176,7 @@ case "$1" in
                 patchelf \
                 file \
                 desktop-file-utils \
+                appstream \
                 fuse-libs \
                 unzip \
                 squashfs-tools \
@@ -257,6 +258,7 @@ case "$1" in
                 patchelf \
                 file \
                 desktop-file-utils \
+                appstream \
                 "${FUSE_PKG}" \
                 unzip \
                 squashfs-tools \
