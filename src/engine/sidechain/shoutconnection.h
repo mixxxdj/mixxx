@@ -25,7 +25,9 @@ typedef struct _util_dict shout_metadata_t;
 class QTextCodec;
 
 class ShoutConnection
-        : public QThread, public EncoderCallback, public NetworkOutputStreamWorker {
+        : public QThread,
+          public EncoderCallback,
+          public NetworkOutputStreamWorker {
     Q_OBJECT
   public:
     ShoutConnection(BroadcastProfilePtr profile, UserSettingsPointer pConfig);
@@ -40,8 +42,7 @@ class ShoutConnection
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
-    void write(const unsigned char* header, const unsigned char* body,
-               int headerLen, int bodyLen) override;
+    void write(const unsigned char* header, const unsigned char* body, int headerLen, int bodyLen) override;
     // gets stream position
     int tell() override;
     // sets stream position
@@ -94,26 +95,27 @@ class ShoutConnection
     void errorDialog(const QString& text, const QString& detailedError);
     void infoDialog(const QString& text, const QString& detailedError);
 
-    void serverWrite(unsigned char *header, unsigned char *body,
-               int headerLen, int bodyLen);
+    void serverWrite(unsigned char* header, unsigned char* body, int headerLen, int bodyLen);
 
 #ifndef __WINDOWS__
     void ignoreSigpipe();
 #endif
 
-    bool writeSingle(const unsigned char *data, size_t len);
+    bool writeSingle(const unsigned char* data, size_t len);
 
     QByteArray encodeString(const QString& string);
+    // Creates a new m_pShout. Must not be called while connected.
+    bool resetShout();
 
     bool waitForRetry();
 
     void tryReconnect();
-    void insertMetaData(const char *name, const char *value);
+    void insertMetaData(const char* name, const char* value);
 
     QTextCodec* m_pTextCodec;
     TrackPointer m_pMetaData;
-    shout_t *m_pShout;
-    shout_metadata_t *m_pShoutMetaData;
+    shout_t* m_pShout;
+    shout_metadata_t* m_pShoutMetaData;
     int m_iMetaDataLife;
     long m_iShoutStatus;
     long m_iShoutFailures;

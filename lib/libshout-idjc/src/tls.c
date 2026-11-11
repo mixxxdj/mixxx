@@ -20,49 +20,56 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#   include <config.h>
+#include <config.h>
 #endif
 
 #include <shoutidjc/shout.h>
 #include <string.h>
+
 #include "shout_private.h"
 
 #ifndef XXX_HAVE_X509_check_host
+<<<<<<< HEAD
+#include <ctype.h>
+#else
+#include <openssl/x509v3.h>
+=======
 #   include <ctype.h>
+#else
+#   include <openssl/x509v3.h>
+>>>>>>> 200b11b67231296b41f9676981bc9da5fd5dea36
 #endif
 
 struct _shout_tls {
-    SSL_CTX     *ssl_ctx;
-    SSL         *ssl;
-    int          ssl_ret;
+    SSL_CTX* ssl_ctx;
+    SSL* ssl;
+    int ssl_ret;
     /* only pointers into self, don't need to free them */
-    sock_t       socket;
-    const char  *host;
-    const char  *ca_directory;
-    const char  *ca_file;
-    const char  *allowed_ciphers;
-    const char  *client_certificate;
+    sock_t socket;
+    const char* host;
+    const char* ca_directory;
+    const char* ca_file;
+    const char* allowed_ciphers;
+    const char* client_certificate;
 };
 
-shout_tls_t *shout_tls_new(shout_t *self, sock_t socket)
-{
-    shout_tls_t *tls = calloc(1, sizeof(shout_tls_t));
+shout_tls_t* shout_tls_new(shout_t* self, sock_t socket) {
+    shout_tls_t* tls = calloc(1, sizeof(shout_tls_t));
     if (!tls)
         return NULL;
 
-    tls->socket             = socket;
-    tls->host               = self->host;
-    tls->ca_directory       = self->ca_directory;
-    tls->ca_file            = self->ca_file;
-    tls->allowed_ciphers    = self->allowed_ciphers;
+    tls->socket = socket;
+    tls->host = self->host;
+    tls->ca_directory = self->ca_directory;
+    tls->ca_file = self->ca_file;
+    tls->allowed_ciphers = self->allowed_ciphers;
     tls->client_certificate = self->client_certificate;
 
     return tls;
 }
 
-static inline int tls_setup(shout_tls_t *tls)
-{
-    const SSL_METHOD *meth;
+static inline int tls_setup(shout_tls_t* tls) {
+    const SSL_METHOD* meth;
 #if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
     SSL_library_init();
     SSL_load_error_strings();
@@ -90,7 +97,7 @@ static inline int tls_setup(shout_tls_t *tls)
             goto error;
         if (SSL_CTX_use_PrivateKey_file(tls->ssl_ctx, tls->client_certificate, SSL_FILETYPE_PEM) != 1)
             goto error;
-        }
+    }
 
     if (SSL_CTX_set_cipher_list(tls->ssl_ctx, tls->allowed_ciphers) <= 0)
         goto error;
@@ -120,12 +127,13 @@ error:
 }
 
 #ifndef XXX_HAVE_X509_check_host
-static inline int tls_check_pattern(const char *key, const char *pattern)
-{
+static inline int tls_check_pattern(const char* key, const char* pattern) {
     for (; *key && *pattern; key++) {
         if (*pattern == '*') {
-            for (; *pattern == '*'; pattern++) ;
-            for (; *key && *key != '.'; key++) ;
+            for (; *pattern == '*'; pattern++)
+                ;
+            for (; *key && *key != '.'; key++)
+                ;
             if (!*pattern && !*key)
                 return 1;
             if (!*pattern || !*key)
@@ -139,26 +147,25 @@ static inline int tls_check_pattern(const char *key, const char *pattern)
     return *key == 0 && *pattern == 0;
 }
 
-static inline int tls_check_host(X509 *cert, const char *hostname)
-{
+static inline int tls_check_host(X509* cert, const char* hostname) {
     char common_name[256] = "";
-    X509_NAME *xname = X509_get_subject_name(cert);
-    X509_NAME_ENTRY *xentry;
-    ASN1_STRING *sdata;
+    X509_NAME* xname = X509_get_subject_name(cert);
+    X509_NAME_ENTRY* xentry;
+    ASN1_STRING* sdata;
     int i, j;
     int ret;
 
     ret = X509_NAME_get_text_by_NID(xname, NID_commonName, common_name, sizeof(common_name));
-    if (ret < 1 || (size_t)ret >= (sizeof(common_name)-1))
+    if (ret < 1 || (size_t)ret >= (sizeof(common_name) - 1))
         return SHOUTERR_TLSBADCERT;
 
     if (!tls_check_pattern(hostname, common_name))
         return SHOUTERR_TLSBADCERT;
 
-    /* check for inlined \0, 
-     * see https://www.blackhat.com/html/bh-usa-09/bh-usa-09-archives.html#Marlinspike 
+    /* check for inlined \0,
+     * see https://www.blackhat.com/html/bh-usa-09/bh-usa-09-archives.html#Marlinspike
      */
-    for (i = -1; ; i = j) {
+    for (i = -1;; i = j) {
         j = X509_NAME_get_index_by_NID(xname, NID_commonName, i);
         if (j == -1)
             break;
@@ -174,9 +181,8 @@ static inline int tls_check_host(X509 *cert, const char *hostname)
 }
 #endif
 
-static inline int tls_check_cert(shout_tls_t *tls)
-{
-    X509 *cert = SSL_get_peer_certificate(tls->ssl);
+static inline int tls_check_cert(shout_tls_t* tls) {
+    X509* cert = SSL_get_peer_certificate(tls->ssl);
     int cert_ok = 0;
     if (!cert)
         return SHOUTERR_TLSBADCERT;
@@ -201,8 +207,7 @@ static inline int tls_check_cert(shout_tls_t *tls)
     return cert_ok ? SHOUTERR_SUCCESS : SHOUTERR_TLSBADCERT;
 }
 
-static inline int tls_setup_process(shout_tls_t *tls)
-{
+static inline int tls_setup_process(shout_tls_t* tls) {
     if (SSL_is_init_finished(tls->ssl))
         return tls_check_cert(tls);
     tls->ssl_ret = SSL_connect(tls->ssl);
@@ -211,8 +216,7 @@ static inline int tls_setup_process(shout_tls_t *tls)
     return SHOUTERR_BUSY;
 }
 
-int shout_tls_try_connect(shout_tls_t *tls)
-{
+int shout_tls_try_connect(shout_tls_t* tls) {
     if (!tls->ssl)
         tls_setup(tls);
     if (tls->ssl)
@@ -220,8 +224,7 @@ int shout_tls_try_connect(shout_tls_t *tls)
     return SHOUTERR_UNSUPPORTED;
 }
 
-int shout_tls_close(shout_tls_t *tls)
-{
+int shout_tls_close(shout_tls_t* tls) {
     if (tls->ssl) {
         SSL_shutdown(tls->ssl);
         SSL_free(tls->ssl);
@@ -232,18 +235,15 @@ int shout_tls_close(shout_tls_t *tls)
     return SHOUTERR_SUCCESS;
 }
 
-ssize_t shout_tls_read(shout_tls_t *tls, void *buf, size_t len)
-{
+ssize_t shout_tls_read(shout_tls_t* tls, void* buf, size_t len) {
     return tls->ssl_ret = SSL_read(tls->ssl, buf, (int)len);
 }
 
-ssize_t shout_tls_write(shout_tls_t *tls, const void *buf, size_t len)
-{
+ssize_t shout_tls_write(shout_tls_t* tls, const void* buf, size_t len) {
     return tls->ssl_ret = SSL_write(tls->ssl, buf, (int)len);
 }
 
-int shout_tls_recoverable(shout_tls_t *tls)
-{
+int shout_tls_recoverable(shout_tls_t* tls) {
     int error = SSL_get_error(tls->ssl, tls->ssl_ret);
     if (error == SSL_ERROR_WANT_READ || error == SSL_ERROR_WANT_WRITE)
         return 1;
