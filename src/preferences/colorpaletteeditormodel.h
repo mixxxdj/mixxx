@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QMimeData>
+#include <QModelIndex>
+#include <QModelIndexList>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QVariant>
@@ -14,6 +17,7 @@ class ColorPaletteEditorModel : public QStandardItemModel {
   public:
     ColorPaletteEditorModel(QObject* parent = nullptr);
 
+    QMimeData* mimeData(const QModelIndexList& indexes) const override;
     bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override;
     bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
@@ -44,6 +48,13 @@ class ColorPaletteEditorModel : public QStandardItemModel {
     void dirtyChanged(bool bIsDirty);
 
   private:
+    /// Returns a copy of all items of the given row. The hotcue index cell is
+    /// copied into another HotcueIndexListItem, i.e. the row keeps its type
+    /// information. Empty cells are replaced by a new item of the matching
+    /// type, so that a copied row never contains null items.
+    QList<QStandardItem*> cloneRow(int row) const;
+    QStandardItem* cloneItem(QStandardItem* pSource, int column) const;
+
     bool m_bEmpty;
     bool m_bDirty;
 };
@@ -51,6 +62,8 @@ class ColorPaletteEditorModel : public QStandardItemModel {
 class HotcueIndexListItem : public QStandardItem {
   public:
     HotcueIndexListItem(const QList<int>& hotcueList = {});
+
+    HotcueIndexListItem* clone() const override;
 
     void setData(const QVariant& value, int role = Qt::UserRole + 1) override;
     QVariant data(int role = Qt::UserRole + 1) const override;
