@@ -142,7 +142,8 @@ class TrackCollection : public QObject,
             const QList<QString>& locations);
 
     TrackPointer getTrackById(
-            TrackId trackId) const;
+            TrackId trackId,
+            bool updateTrackFromSource = true) const;
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const;
 
