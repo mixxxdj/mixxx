@@ -22,6 +22,7 @@ class TrackCollectionManager;
 class Library;
 class SkinControls;
 class ControlPushButton;
+class BackupSettings;
 struct LibraryScanResultSummary;
 
 namespace mixxx {
