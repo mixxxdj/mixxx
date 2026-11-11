@@ -125,9 +125,9 @@ void drawWaveformPartRGB(
             max = math_max3(red, green, blue);
             // Draw
             if (max > 0.0) {
-                color.setRgbF(static_cast<float>(low / max),
-                        static_cast<float>(mid / max),
-                        static_cast<float>(high / max));
+                color.setRgbF(static_cast<float>(red / max),
+                        static_cast<float>(green / max),
+                        static_cast<float>(blue / max));
                 pPainter->setPen(color);
                 pPainter->drawLine(x, static_cast<int>(all), x, 0);
             }
@@ -147,9 +147,9 @@ void drawWaveformPartRGB(
             max = math_max3(red, green, blue);
             // Draw
             if (max > 0.0) {
-                color.setRgbF(static_cast<float>(low / max),
-                        static_cast<float>(mid / max),
-                        static_cast<float>(high / max));
+                color.setRgbF(static_cast<float>(red / max),
+                        static_cast<float>(green / max),
+                        static_cast<float>(blue / max));
                 pPainter->setPen(color);
                 pPainter->drawLine(x, static_cast<int>(-all), x, 0);
             }
@@ -167,9 +167,9 @@ void drawWaveformPartRGB(
             max = math_max3(red, green, blue);
 
             if (max > 0.0) {
-                color.setRgbF(static_cast<float>(low / max),
-                        static_cast<float>(mid / max),
-                        static_cast<float>(high / max));
+                color.setRgbF(static_cast<float>(red / max),
+                        static_cast<float>(green / max),
+                        static_cast<float>(blue / max));
                 pPainter->setPen(color);
                 pPainter->drawLine(x, 0, x, static_cast<int>(all));
             }
