@@ -1,0 +1,1360 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.30+" schemaVersion="1">
+    <info>
+        <name>Gemini G4V</name>
+        <author>Javier Vilarroig</author>
+        <description>Gemini G4V Controller</description>
+    </info>
+    <controller id="g4v">
+        <scriptfiles>
+			<file filename="lodash.mixxx.js"/>
+			<file filename="midi-components-0.0.js"/>
+            <file functionprefix="g4v" filename="Gemini-G4V-scripts.js"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>g4v.deck4Mixer.filterMidPot.input</key>
+                <description>Deck 4 Mid EQ</description>
+                <status>0xB3</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad8.input</key>
+                <description>Autoloop 16, Hot Cue 8, Loop Roll 16 with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.cueBtn.input</key>
+                <description>Left Deck Cue Button</description>
+                <status>0x90</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad8.input</key>
+                <description>Autoloop 16, Hot Cue 8, Loop Roll 16 with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.cueBtn.input</key>
+                <description>Right Deck Cue Button</description>
+                <status>0x91</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.deck2Mixer.loadBtn.input</key>
+                <description>Deck 2 Load</description>
+                <status>0x93</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad7.input</key>
+                <description>Autoloop 4, Hot Cue 7, Loop Roll 4 with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>g4v.deck3Mixer.filterMidPot.input</key>
+                <description>Deck 3 Mid EQ</description>
+                <status>0xB3</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad7.input</key>
+                <description>Autoloop 4, Hot Cue 7, Loop Roll 4 with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.playBtn.input</key>
+                <description>Left Deck Play button</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.playBtn.input</key>
+                <description>Right Deck Play button</description>
+                <status>0x91</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.jogEnc.input</key>
+                <description>Left Deck Scratch/Search Wheel</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.deck1Mixer.loadBtn.input</key>
+                <description>Deck 1 Load</description>
+                <status>0x93</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.jogEnc.input</key>
+                <description>Right Deck Scratch/Search Wheel</description>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad6.input</key>
+                <description>Autoloop 4, Hot Cue 6, Loop Roll 4 with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>g4v.deck2Mixer.filterMidPot.input</key>
+                <description>Deck 2 Mid EQ</description>
+                <status>0xB3</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pad6.input</key>
+                <description>Autoloop 4, Hot Cue 6, Loop Roll 4 with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.fxSuperPot.input</key>
+                <description>Left Deck Par 2 knob</description>
+                <status>0xB0</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.fxSuperPot.input</key>
+                <description>Right Deck Par 2 knob</description>
+                <status>0xB1</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>g4v.otherControls.masterVolumePot.input</key>
+                <description>Master volume control</description>
+                <status>0xB3</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>g4v.otherControls.boothVolumePot.input</key>
+                <description>Booth volume control</description>
+                <status>0xB3</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad5.input</key>
+                <description>Autoloop 2, Hot Cue 5, Loop Roll 2 with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>g4v.deck1Mixer.filterMidPot.input</key>
+                <description>Deck 1 Mid EQ</description>
+                <status>0xB3</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad5.input</key>
+                <description>Autoloop 2, Hot Cue 5, Loop Roll 2 with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.fxMixPot.input</key>
+                <description>Left Deck Par 1 knob</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.fxMixPot.input</key>
+                <description>Right Deck Par 1 knob</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>g4v.otherControls.headMixPot.input</key>
+                <description>Cue Mix</description>
+                <status>0xB3</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad4.input</key>
+                <description>Autoloop 1, Sample 4, Hot Cue 4, Loop Roll 1 with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>g4v.deck4Mixer.pregainPot.input</key>
+                <description>Deck 4 Gain</description>
+                <status>0xB3</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad4.input</key>
+                <description>Autoloop 1, Sample 4, Hot Cue 4, Loop Roll 1 with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>g4v.leftDeck.slipBtn.input</key>
+                <description>Left FX Select(Shift)</description>
+                <status>0x90</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>g4v.rightDeck.slipBtn.input</key>
+                <description>Right FX Select(Shift)</description>
+                <status>0x91</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>g4v.leftDeck.sampleVolPot.input</key>
+                <description>Left Sample Volume</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>g4v.rightDeck.sampleVolPot.input</key>
+                <description>Right Sample Volume</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>g4v.otherControls.crossfaderPot.input</key>
+                <description>Master Crossfader</description>
+                <status>0xB3</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>g4v.deck3Mixer.pregainPot.input</key>
+                <description>Deck 3 Gain</description>
+                <status>0xB3</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pad.pad3.input</key>
+                <description>Autoloop 1/2, Sample 3, Hot Cue 3, Loop Roll 1/2 with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad3.input</key>
+                <description>Autoloop 1/2, Sample 3, Hot Cue 3, Loop Roll 1/2 with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.loopMovePot.input</key>
+                <description>Left Deck Loop Move</description>
+                <status>0xB0</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.loopMovePot.input</key>
+                <description>Right Deck Loop Move</description>
+                <status>0xB1</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>g4v.deck4Mixer.volumePot.input</key>
+                <description>Deck 4 Volume</description>
+                <status>0xB3</status>
+                <midino>0x18</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.deck2Mixer.pregainPot.input</key>
+                <description>Deck 2 Gain</description>
+                <status>0xB3</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad2.input</key>
+                <description>Autoloop 1/4, Sample 2, Hot Cue 2, Loop Roll 1/4, Manual Loop Out with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad2.input</key>
+                <description>Autoloop 1/4, Sample 2, Hot Cue 2, Loop Roll 1/4, Manual Loop Out with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.tempoPot.input</key>
+                <description>Left Deck Tempo Slider</description>
+                <status>0xB0</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>g4v.otherControls.libraryBackBtn.input</key>
+                <description>Back button - switches between panels</description>
+                <status>0x93</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.tempoPot.input</key>
+                <description>Right Deck Tempo Slider</description>
+                <status>0xB1</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>g4v.deck3Mixer.volumePot.input</key>
+                <description>Deck 3 Volume</description>
+                <status>0xB3</status>
+                <midino>0x17</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad1.input</key>
+                <description>Autoloop 1/8, Sample 1, Hot Cue 1, Loop Roll 1/8, Manual Loop In with shift button pressed</description>
+                <status>0x90</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.deck1Mixer.pregainPot.input</key>
+                <description>Deck 1 Gain</description>
+                <status>0xB3</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad1.input</key>
+                <description>Autoloop 1/8, Sample 1, Hot Cue 1, Loop Roll 1/8, Manual Loop In with shift button pressed</description>
+                <status>0x91</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>g4v.otherControls.libraryBtn.input</key>
+                <description>Library Knob button</description>
+                <status>0x93</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.deckToggleBtn.input</key>
+                <description>Left Deck selector</description>
+                <status>0x90</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.deck2Mixer.volumePot.input</key>
+                <description>Deck 2 Volume</description>
+                <status>0xB3</status>
+                <midino>0x16</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad8.input</key>
+                <description>Autoloop 16, Hot Cue 8, Loop Roll 16</description>
+                <status>0x90</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.deckToggleBtn.input</key>
+                <description>Right Deck selector</description>
+                <status>0x91</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad8.input</key>
+                <description>Autoloop 16, Hot Cue 8, Loop Roll 16</description>
+                <status>0x91</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>g4v.deck4Mixer.pflBtn.input</key>
+                <description>Deck 4 Headphone</description>
+                <status>0x93</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.jogTopBtn.input</key>
+                <description>Left Deck Wheel Button</description>
+                <status>0x90</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.deck1Mixer.volumePot.input</key>
+                <description>Deck 1 Volume</description>
+                <status>0xB3</status>
+                <midino>0x15</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad7.input</key>
+                <description>Autoloop 8, Hot Cue 7, Loop Roll 8</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.jogTopBtn.input</key>
+                <description>Right Deck Wheel Button</description>
+                <status>0x91</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad7.input</key>
+                <description>Autoloop 8, Hot Cue 7, Loop Roll 8</description>
+                <status>0x91</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>g4v.deck3Mixer.pflBtn.input</key>
+                <description>Deck 3 Headphone</description>
+                <status>0x93</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>g4v.deck4Mixer.filterPot.input</key>
+                <description>Deck 4 Filter</description>
+                <status>0xB3</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- not used
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.evDispatch11</key>
+                <description>Left Deck Search Button</description>
+                <status>0x90</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad6.input</key>
+                <description>Autoloop 4, Hot Cue 6, Loop Roll 4</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- not used
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.evDispatch12</key>
+                <description>Right Deck Search Button</description>
+                <status>0x91</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad6.input</key>
+                <description>Autoloop 4, Hot Cue 6, Loop Roll 4</description>
+                <status>0x91</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.deck2Mixer.pflBtn.input</key>
+                <description>Deck 2 Headphone</description>
+                <status>0x93</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>g4v.deck3Mixer.filterPot.input</key>
+                <description>Deck 3 Filter</description>
+                <status>0xB3</status>
+                <midino>0x13</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- not used
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.evDispatch13</key>
+                <description>Left Deck Scratch Button</description>
+                <status>0x90</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad5.input</key>
+                <description>Autoloop 2, Hot Cue 5, Loop Roll 2</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- not used
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.evDispatch14</key>
+                <description>Right Deck Scratch Button</description>
+                <status>0x91</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad5.input</key>
+                <description>Autoloop 2, Hot Cue 5, Loop Roll 2</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.deck1Mixer.pflBtn.input</key>
+                <description>Deck 1 Headphone</description>
+                <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.padModeBtn.input</key>
+                <description>Manual Loop Toggle Button</description>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.padModeBtn.input</key>
+                <description>Beatjump Toggle Button</description>
+                <status>0x90</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>g4v.deck2Mixer.filterPot.input</key>
+                <description>Deck 2 Filter</description>
+                <status>0xB3</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad4.input</key>
+                <description>Autoloop 1, Sample 4, Hot Cue 4, Loop Roll 1</description>
+                <status>0x90</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.padModeBtn.input</key>
+                <description>Manual Loop Toggle Button</description>
+                <status>0x91</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.padModeBtn.input</key>
+                <description>Beatjump Toggle Button</description>
+                <status>0x91</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad4.input</key>
+                <description>Autoloop 1, Sample 4, Hot Cue 4, Loop Roll 1</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>g4v.deck4Mixer.orientationRightBtn.input</key>
+                <description>Deck 4 Right Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>g4v.deck1Mixer.filterPot.input</key>
+                <description>Deck 1 Filter</description>
+                <status>0xB3</status>
+                <midino>0x11</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad3.input</key>
+                <description>Autoloop 1/2, Sample 3, Hot Cue 3, Loop Roll 1/2</description>
+                <status>0x90</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad3.input</key>
+                <description>Autoloop 1/2, Sample 3, Hot Cue 3, Loop Roll 1/2</description>
+                <status>0x91</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>g4v.deck3Mixer.orientationRightBtn.input</key>
+                <description>Deck 3 Right Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>g4v.deck4Mixer.filterLowPot.input</key>
+                <description>Deck 4 Low EQ</description>
+                <status>0xB3</status>
+                <midino>0x10</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad2.input</key>
+                <description>Autoloop 1/4, Sample 1, Hot Cue 2, Loop Roll 1/4, Manual Loop Out</description>
+                <status>0x90</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad2.input</key>
+                <description>Autoloop 1/4, Sample 1, Hot Cue 2, Loop Roll 1/4, Manual Loop Out</description>
+                <status>0x91</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.deck2Mixer.orientationRightBtn.input</key>
+                <description>Deck 2 Right Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>g4v.deck3Mixer.filterLowPot.input</key>
+                <description>Deck 3 Low EQ</description>
+                <status>0xB3</status>
+                <midino>0x0F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.pads.pad1.input</key>
+                <description>Autoloop 1/8, Sample 1, Hot Cue 1, Loop Roll 1/8, Manual Loop In</description>
+                <status>0x90</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.pads.pad1.input</key>
+                <description>Autoloop 1/8, Sample 1, Hot Cue 1, Loop Roll 1/8, Manual Loop In</description>
+                <status>0x91</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.deck1Mixer.orientationRightBtn.input</key>
+                <description>Deck 1 Right Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>g4v.deck2Mixer.filterLowPot.input</key>
+                <description>Deck 2 Low EQ</description>
+                <status>0xB3</status>
+                <midino>0x0E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.padModeBtn.input</key>
+                <description>Loop Roll Toggle Button</description>
+                <status>0x90</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.padModeBtn.input</key>
+                <description>Loop Roll Toggle Button</description>
+                <status>0x91</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>g4v.deck4Mixer.orientationLeftBtn.input</key>
+                <description>Deck 4 Left Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>g4v.deck1Mixer.filterLowPot.input</key>
+                <description>Deck 1 Low EQ</description>
+                <status>0xB3</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.padModeBtn.input</key>
+                <description>Sample Toggle Button</description>
+                <status>0x90</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.padModeBtn.input</key>
+                <description>Sample Toggle Button</description>
+                <status>0x91</status>
+                <midino>0x1D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>g4v.deck3Mixer.orientationLeftBtn.input</key>
+                <description>Deck 3 Left Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.quantizeBtn.input</key>
+                <description>Left Deck Quatize(printed bank up/down)</description>
+                <status>0x90</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.quantizeBtn.input</key>
+                <description>Right Deck Quatize(printed bank up/down)</description>
+                <status>0x91</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.padModeBtn.input</key>
+                <description>Autoloop Toggle Button</description>
+                <status>0x90</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel4]_Effect1]</group>
+                <key>g4v.deck4Mixer.filterHighPot.input</key>
+                <description>Deck 4 High EQ</description>
+                <status>0xB3</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- not used
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.evDispatch15</key>
+                <description>Range button</description>
+                <status>0x90</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.padModeBtn.input</key>
+                <description>Autoloop Toggle Button</description>
+                <status>0x91</status>
+                <midino>0x1C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!-- not used
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.evDispatch16</key>
+                <description>Range button</description>
+                <status>0x91</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.deck2Mixer.orientationLeftBtn.input</key>
+                <description>Deck 2 Left Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.padModeBtn.input</key>
+                <description>Hot Cue Toggle Button</description>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel3]_Effect1]</group>
+                <key>g4v.deck3Mixer.filterHighPot.input</key>
+                <description>Deck 3 High EQ</description>
+                <status>0xB3</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.padModeBtn.input</key>
+                <description>Hot Cue Toggle Button</description>
+                <status>0x91</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.keyLockBtn.input</key>
+                <description>Left Deck Keylock</description>
+                <status>0x90</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.keyLockBtn.input</key>
+                <description>Right Deck Keylock</description>
+                <status>0x91</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.deck1Mixer.orientationLeftBtn.input</key>
+                <description>Deck 1 Left Orientation Button</description>
+                <status>0x93</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>g4v.deck2Mixer.filterHighPot.input</key>
+                <description>Deck 2 High EQ</description>
+                <status>0xB3</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.fxOnOffBtn.input</key>
+                <description>Left FX on/off</description>
+                <status>0x90</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.syncBtn.input</key>
+                <description>Left Channel Sync button</description>
+                <status>0x90</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.fxOnOffBtn.input</key>
+                <description>Right FX on/off</description>
+                <status>0x91</status>
+                <midino>0x1A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.syncBtn.input</key>
+                <description>Right Channel Sync button</description>
+                <status>0x91</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>g4v.deck4Mixer.loadBtn.input</key>
+                <description>Deck 4 Load</description>
+                <status>0x93</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>g4v.deck1Mixer.filterHighPot.input</key>
+                <description>Deck 1 High EQ</description>
+                <status>0xB3</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.slipBtn.input</key>
+                <description>Left Deck Slip</description>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.slipBtn.input</key>
+                <description>Right Deck Slip</description>
+                <status>0x91</status>
+                <midino>0x19</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>g4v.leftDeck.cupBtn.input</key>
+                <description>Left Deck CUP Button</description>
+                <status>0x90</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>g4v.rightDeck.cupBtn.input</key>
+                <description>Right Deck CUP Button</description>
+                <status>0x91</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>g4v.deck3Mixer.loadBtn.input</key>
+                <description>Deck 3 Load</description>
+                <status>0x93</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>g4v.otherControls.libraryEnc.input</key>
+                <description>Library Encoder</description>
+                <status>0xB3</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>g4v.otherControls.shiftBtn.input</key>
+                <description>Left Shift Button</description>
+                <status>0x90</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Playlist]</group>
+                <key>g4v.otherControls.shiftBtn.input</key>
+                <description>Right Shift Button</description>
+                <status>0x91</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+        </controls>
+        <outputs/>
+    </controller>
+</MixxxControllerPreset>
