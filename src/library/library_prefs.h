@@ -32,6 +32,8 @@ extern const ConfigKey kEnableSearchHistoryShortcutsConfigKey;
 
 extern const ConfigKey kBpmColumnPrecisionConfigKey;
 
+extern const ConfigKey kApplyTrackColorConfigKey;
+
 extern const ConfigKey kApplyPlayedTrackColorConfigKey;
 
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
