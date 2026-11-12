@@ -94,6 +94,20 @@ VestaxVCI380.init = function(_id, _debugging) {
     VestaxVCI380.connections.push(engine.makeConnection("[Channel1]", "slip_enabled", VestaxVCI380.refreshLEDs));
     VestaxVCI380.connections.push(engine.makeConnection("[Channel2]", "slip_enabled", VestaxVCI380.refreshLEDs));
 
+    // turntable speed of each deck (Preferences > Vinyl Control): used for scratching and the jog LED
+    for (let deck = 1; deck <= 2; deck++) {
+        const connection = engine.makeConnection(`[Channel${deck}]`, "vinylcontrol_speed_type", function(value) {
+            VestaxVCI380.rpm[deck-1] = (value > 0) ? value : 33+1/3;
+            if (VestaxVCI380.isScratching[deck-1]) {
+                VestaxVCI380.startScratch(deck); // speed changed while scratching
+            }
+        });
+        if (connection !== undefined) { // undefined if Mixxx is built without vinyl control
+            connection.trigger();
+            VestaxVCI380.connections.push(connection);
+        }
+    }
+
     // turning off all LEDs
     VestaxVCI380.setAllLEDs(false);
 
@@ -293,25 +307,29 @@ VestaxVCI380.onPlay = function(channel, _control, value, _status, group) {
 // WHEELS
 ////
 
+VestaxVCI380.JOG_TICKS_PER_TURN = 3600; // measured ticks for one wheel turn
+VestaxVCI380.JOG_SHIFT_FACTOR = 10;     // SHIFT: scratch 10x faster
+
 VestaxVCI380.isScratching=[false, false];
+VestaxVCI380.rpm=[33+1/3, 33+1/3];
+VestaxVCI380.scratchTpr = [VestaxVCI380.JOG_TICKS_PER_TURN, VestaxVCI380.JOG_TICKS_PER_TURN];
+
+VestaxVCI380.startScratch = function(deck) {
+    const alpha = 1.0/8;
+    const beta = alpha/32;
+    engine.scratchEnable(deck, VestaxVCI380.scratchTpr[deck-1], VestaxVCI380.rpm[deck-1], alpha, beta);
+};
+
 // The button that enables/disables scratching
 VestaxVCI380.wheelTouch = function(channel, _control, value, _status) {
+    const deck=VestaxVCI380.getDeck(channel);
     if (value === 0x7F) {
-
-        // select range according to shift status (shift=fast moving)
-        let tpr;
-        if (VestaxVCI380.shiftStatus) {
-            tpr=353;  // 10x speed
-        } else {
-            tpr=3533; // 1X speed, measured ticks for one wheel turn
-        }
-        const alpha = 1.0/8;
-        const beta = alpha/32;
-        engine.scratchEnable(VestaxVCI380.getDeck(channel), tpr, 33+1/3, alpha, beta);
-        VestaxVCI380.isScratching[VestaxVCI380.getDeck(channel)-1]=true;
+        VestaxVCI380.scratchTpr[deck-1]=VestaxVCI380.shiftStatus ? Math.round(VestaxVCI380.JOG_TICKS_PER_TURN / VestaxVCI380.JOG_SHIFT_FACTOR) : VestaxVCI380.JOG_TICKS_PER_TURN; // SHIFT=fast speed
+        VestaxVCI380.startScratch(deck);
+        VestaxVCI380.isScratching[deck-1]=true;
     } else {    // If button up
-        engine.scratchDisable(VestaxVCI380.getDeck(channel));
-        VestaxVCI380.isScratching[VestaxVCI380.getDeck(channel)-1]=false;
+        engine.scratchDisable(deck);
+        VestaxVCI380.isScratching[deck-1]=false;
     }
 };
 // The wheel that actually controls the scratching
@@ -637,7 +655,7 @@ VestaxVCI380.onPadTap = function(channel, control, value, _status) {
             break;
 
         case 2: // in mode 2 = Beat grid tools
-            VestaxVCI380.setPadColor(deck, padNumber, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
+            VestaxVCI380.setPadColor(deck, padNumber, VestaxVCI380.trackPadColorDim(deck, "padColorBeatInactive", VestaxVCI380.colorBeatInactive));
             break;
 
         case 3:
@@ -887,7 +905,7 @@ VestaxVCI380.onSampler = function(_value, group, _control) {
         let color=VestaxVCI380.colorSamplerEmpty;
         if (engine.getValue(group, "track_loaded")===1) {
             const trackColor=engine.getValue(group, "track_color");
-            const loadedColor=(trackColor < 0) ? VestaxVCI380.colorSamplerLoaded : VestaxVCI380.ColorMapper.getValueForNearestColor(trackColor);
+            const loadedColor=VestaxVCI380.settingPadColor("padColorSamplerLoaded", trackColor, VestaxVCI380.colorSamplerLoaded);
             if (engine.getValue(group, "play")===1) {
                 color=(loadedColor===VestaxVCI380.colorSamplerPlaying) ? VestaxVCI380.padColor.WHITE : VestaxVCI380.colorSamplerPlaying;
             } else {
@@ -913,7 +931,7 @@ VestaxVCI380.onBeatActive = function(value, group, _control) {
             if (VestaxVCI380.beatPos[deck-1]>8) {
                 VestaxVCI380.beatPos[deck-1]=1;
             }
-            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
+            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.trackPadColorDim(deck, "padColorBeatInactive", VestaxVCI380.colorBeatInactive));
             midi.sendShortMsg(0x96+deck, 0x3B+VestaxVCI380.beatPos[deck-1], VestaxVCI380.colorBeatActive);
             break;
         case 2: // Approaching bar - reverse
@@ -922,7 +940,7 @@ VestaxVCI380.onBeatActive = function(value, group, _control) {
             if (VestaxVCI380.beatPos[deck-1]<1) {
                 VestaxVCI380.beatPos[deck-1]=8;
             }
-            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
+            midi.sendShortMsg(0x96+deck, 0x3B+prevBeatPos, VestaxVCI380.trackPadColorDim(deck, "padColorBeatInactive", VestaxVCI380.colorBeatInactive));
             midi.sendShortMsg(0x96+deck, 0x3B+VestaxVCI380.beatPos[deck-1], VestaxVCI380.colorBeatActive);
             break;
         case 0: // Getting away from bar
@@ -1150,21 +1168,27 @@ VestaxVCI380.dimColor = function(color) {
     return color & ~0x08;
 };
 
-// background color of the pads of a deck: the color of the loaded track, dimmed,
-// or the given color if the track has none (track_color = -1)
-VestaxVCI380.trackPadColorDim = function(deck, fallback) {
-    const trackColor = engine.getValue(`[Channel${deck}]`, "track_color");
-    if (trackColor < 0) {
-        return fallback;
+// background color of the pads of a deck, dimmed: the color chosen in the setting,
+// or the color of the loaded track, or the fallback if the track has none (track_color = -1)
+VestaxVCI380.trackPadColorDim = function(deck, setting, fallback) {
+    return VestaxVCI380.dimColor(VestaxVCI380.settingPadColor(setting, engine.getValue(`[Channel${deck}]`, "track_color"), fallback));
+};
+
+// Pad color chosen in the settings: a fixed color, or the track color
+// (the fallback if the track has no color)
+VestaxVCI380.settingPadColor = function(setting, trackColor, fallback) {
+    const choice = engine.getSetting(setting);
+    if (choice in VestaxVCI380.padColor) {
+        return VestaxVCI380.padColor[choice];
     }
-    return VestaxVCI380.dimColor(VestaxVCI380.ColorMapper.getValueForNearestColor(trackColor));
+    return (trackColor < 0) ? fallback : VestaxVCI380.ColorMapper.getValueForNearestColor(trackColor);
 };
 
 // Light up the pads of a deck with colors of the hotcues
 VestaxVCI380.setPadColorHotcuesDeck = function(deck) {
     for (let hotcueNumber=1; hotcueNumber<=8; hotcueNumber++) {
         if (engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_status`) !== 1) {
-            midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorHotcueUnset));
+            midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.trackPadColorDim(deck, "padColorHotcueUnset", VestaxVCI380.colorHotcueUnset));
         } else {
             const hotcueColor=engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_color`);
             midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.ColorMapper.getValueForNearestColor(hotcueColor));
@@ -1177,7 +1201,7 @@ VestaxVCI380.setPadColorHotcuesDeck = function(deck) {
 VestaxVCI380.setPadColorHotcuesOne = function(deck, hotcueNumber) {
     const hotcueStatus=engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_status`);
     if (hotcueStatus === 0) { // unset
-        midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorHotcueUnset));
+        midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.trackPadColorDim(deck, "padColorHotcueUnset", VestaxVCI380.colorHotcueUnset));
     } else if (hotcueStatus === 1) { // set
         const hotcueColor=engine.getValue(`[Channel${  deck  }]`, `hotcue_${  hotcueNumber  }_color`);
         midi.sendShortMsg(0x96+deck, hotcueNumber+0x3B, VestaxVCI380.ColorMapper.getValueForNearestColor(hotcueColor));
@@ -1218,7 +1242,7 @@ VestaxVCI380.setPadColorLoopMode = function(deck) {
 
 // Light up the pads of a deck for Beat Grid mode
 VestaxVCI380.setPadColorBeatGridMode = function(deck) {
-    VestaxVCI380.setPadColorDeck(deck, VestaxVCI380.trackPadColorDim(deck, VestaxVCI380.colorBeatInactive));
+    VestaxVCI380.setPadColorDeck(deck, VestaxVCI380.trackPadColorDim(deck, "padColorBeatInactive", VestaxVCI380.colorBeatInactive));
 };
 
 // Light up the pads of a deck for Sampler mode
@@ -1240,9 +1264,9 @@ VestaxVCI380.setPadColorSplash = function(deck) {
 VestaxVCI380.updatePlayposition = function(value, group, _control) {
     const deck=VestaxVCI380.getDeckFromGroup(group);
     const duration=engine.getValue(group, "duration");
-    const tickPerSecond=71.11111;
+    const tickPerSecond=128 * VestaxVCI380.rpm[deck-1] / 60; // 128 VALUES per LED turn, 64 LEDs
     const elapsedticks=duration*value*tickPerSecond;
-    VestaxVCI380.setWheelLED(deck, Math.floor(elapsedticks%128));
+    VestaxVCI380.setWheelLED(deck, Math.floor(elapsedticks%128) & 0x7E); // the LED only changes on even values
 };
 
 

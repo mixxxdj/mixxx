@@ -25,8 +25,8 @@
         label="Headphone mix by the controller (recommended)">
       <description>
         Recommended when the headphones are plugged into the controller and the Headphones output of Mixxx is the controller (channels 3 - 4).
-        The CUE/MASTER knob of the controller mixes the cue and the master in the headphones, and the headphone mix of Mixxx is set to cue only when the mapping starts.
-        Disable if the headphones are plugged into another sound card: the controller CUE/MASTER knob then sets the headphone mix of Mixxx.
+        The CUE/MASTER knob of the controller mixes PFL and Main in the headphones, and the Headphone Mix knob of Mixxx is set to full PFL when the mapping starts.
+        Disable if the headphones are plugged into another sound card: the controller CUE/MASTER knob then sets the Headphone Mix knob of Mixxx, with soft takeover.
       </description>
     </option>
     <option variable="pcMixerSwitch" type="enum" label="PC / MIXER switches also control Mixxx inputs">
@@ -34,9 +34,49 @@
       <value label="Auxiliary inputs">auxiliary</value>
       <value label="Vinyl control">vinyl</value>
       <description>
-        With Auxiliary inputs: the PC position plays the RCA input of the channel through Mixxx (Auxiliary 1 for the left channel, Auxiliary 2 for the right one), the MIXER position mutes it in Mixxx, so the source isn't heard twice.
-        With Vinyl control: the PC position enables vinyl control on the deck of the channel, the MIXER position disables it.
+        With Auxiliary inputs: the PC position of the left switch enables Auxiliary 1 in Mixxx, and the right switch enables Auxiliary 2. The MIXER position disables it, so the source isn't heard twice.
+        With Vinyl control: the PC position of the left switch enables vinyl control on deck 1, and the right switch on deck 2. The MIXER position disables it.
+        The position of the switches is also applied when the mapping starts.
         The inputs must be set up in Preferences > Sound Hardware > Input.
+      </description>
+    </option>
+    <option variable="padColorHotcueUnset" type="enum" label="Pad color of unset hotcues">
+      <value label="Follow track color" default="true">track</value>
+      <value label="Blue" color="#BFBFFF">BLUE</value>
+      <value label="Green" color="#BFFFBF">GREEN</value>
+      <value label="Cyan" color="#BFFFFF">CYAN</value>
+      <value label="Red" color="#FFBFBF">RED</value>
+      <value label="Magenta" color="#FFBFFF">MAGENTA</value>
+      <value label="Yellow" color="#FFFFBF">YELLOW</value>
+      <value label="White" color="#FFFFFF">WHITE</value>
+      <description>
+        Color of the hotcue pads with no hotcue (dimmed). Follow track color: the color of the track loaded on the deck, or blue if the track has no color.
+      </description>
+    </option>
+    <option variable="padColorBeatInactive" type="enum" label="Pad color of the beat grid">
+      <value label="Follow track color" default="true">track</value>
+      <value label="Blue" color="#BFBFFF">BLUE</value>
+      <value label="Green" color="#BFFFBF">GREEN</value>
+      <value label="Cyan" color="#BFFFFF">CYAN</value>
+      <value label="Red" color="#FFBFBF">RED</value>
+      <value label="Magenta" color="#FFBFFF">MAGENTA</value>
+      <value label="Yellow" color="#FFFFBF">YELLOW</value>
+      <value label="White" color="#FFFFFF">WHITE</value>
+      <description>
+        Color of the pads of the beats that are not playing (dimmed). Follow track color: the color of the track loaded on the deck, or cyan if the track has no color.
+      </description>
+    </option>
+    <option variable="padColorSamplerLoaded" type="enum" label="Pad color of loaded samplers">
+      <value label="Follow track color" default="true">track</value>
+      <value label="Blue" color="#0000FF">BLUE</value>
+      <value label="Green" color="#00FF00">GREEN</value>
+      <value label="Cyan" color="#00FFFF">CYAN</value>
+      <value label="Red" color="#FF0000">RED</value>
+      <value label="Magenta" color="#FF00FF">MAGENTA</value>
+      <value label="Yellow" color="#FFFF00">YELLOW</value>
+      <value label="White" color="#FFFFFF">WHITE</value>
+      <description>
+        Color of the pads of loaded samplers. Follow track color: the color of the sampler track, or green if the track has no color.
       </description>
     </option>
   </settings>
