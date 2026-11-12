@@ -230,13 +230,13 @@ class LegacyControllerMapping {
         return MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX + page + MIXXX_MANUAL_CONTROLLERMANUAL_SUFFIX;
     }
 
-    inline void setWikiLink(const QString& wikilink) {
-        m_wikilink = wikilink;
+    inline void setManualLink(const QString& manuallink) {
+        m_manuallink = manuallink;
         setDirty(true);
     }
 
-    inline QString wikilink() const {
-        return m_wikilink;
+    inline QString manuallink() const {
+        return m_manuallink;
     }
 
     inline void setSchemaVersion(const QString& schemaVersion) {
@@ -285,7 +285,7 @@ class LegacyControllerMapping {
     QString m_description;
     QString m_forumlink;
     QString m_manualPage;
-    QString m_wikilink;
+    QString m_manuallink;
     QString m_schemaVersion;
     QString m_mixxxVersion;
 

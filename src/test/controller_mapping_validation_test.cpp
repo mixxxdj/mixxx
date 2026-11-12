@@ -153,10 +153,10 @@ bool lintMappingInfo(const MappingInfo& mapping) {
         result = false;
     }
 
-    if (mapping.getWikiLink().trimmed().isEmpty()) {
-        qWarning() << "LINT:" << mapping.getPath() << "has no wiki link.";
-    } else if (!checkUrl(mapping.getWikiLink())) {
-        qWarning() << "LINT:" << mapping.getPath() << "has invalid wiki link";
+    if (mapping.getManualLink().trimmed().isEmpty()) {
+        qWarning() << "LINT:" << mapping.getPath() << "has no manual link.";
+    } else if (!checkUrl(mapping.getManualLink())) {
+        qWarning() << "LINT:" << mapping.getPath() << "has invalid manual link";
         result = false;
     }
     return result;
