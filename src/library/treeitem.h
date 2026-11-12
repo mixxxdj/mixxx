@@ -9,6 +9,7 @@
 #include "util/assert.h"
 
 class LibraryFeature;
+class TreeItemModelTest;
 
 class TreeItem final {
     struct PrivateRootTag {};
@@ -125,6 +126,10 @@ class TreeItem final {
     bool isBold() const {
         return m_bold;
     }
+
+    // The unit test manipulates the parent/child structure directly to
+    // simulate a malformed tree.
+    friend class TreeItemModelTest;
 
   private:
     explicit TreeItem(
