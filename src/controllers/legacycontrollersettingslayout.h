@@ -70,10 +70,10 @@ class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsL
         return m_elements;
     }
 
-    /// @brief Return the disposition (orientation) of this container.
+    /// @brief Return the orientation of this container.
     /// @return The disposition value.
-    Disposition getDisposition() const {
-        return m_disposition;
+    Disposition getOrientation() const {
+        return m_widgetOrientation;
     }
 
   protected:

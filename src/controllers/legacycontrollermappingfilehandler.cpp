@@ -565,7 +565,7 @@ void writeSettingsLayoutElement(
             dynamic_cast<const LegacyControllerSettingsLayoutContainer*>(pElement);
     if (pContainer) {
         QString orientation =
-                pContainer->getDisposition() ==
+                pContainer->getOrientation() ==
                         LegacyControllerSettingsLayoutContainer::VERTICAL
                 ? QString("vertical")
                 : QString("horizontal");
