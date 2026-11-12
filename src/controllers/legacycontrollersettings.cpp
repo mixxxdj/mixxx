@@ -276,17 +276,18 @@ QDomElement LegacyControllerRealSetting::toXML(QDomDocument* pDoc) const {
         QString s = QString::number(value,
                 'g',
                 std::numeric_limits<double>::max_digits10);
+        static const QRegularExpression rxTrailingZero = QRegularExpression(QStringLiteral("0+$"));
         if (s.contains(QLatin1Char('.'))) {
-            s = s.remove(QRegularExpression(QStringLiteral("0+$")));
+            s = s.remove(rxTrailingZero);
             if (s.endsWith(QLatin1Char('.'))) {
                 s.chop(1);
             }
         }
-        if (s.contains(QLatin1Char('e')) || s.contains(QLatin1Char('E'))) {
+        if (s.contains(QLatin1Char('e'), Qt::CaseInsensitive)) {
             s = QString::number(value,
                     'f',
                     std::numeric_limits<double>::max_digits10);
-            s = s.remove(QRegularExpression(QStringLiteral("0+$")));
+            s = s.remove(rxTrailingZero);
             if (s.endsWith(QLatin1Char('.'))) {
                 s.chop(1);
             }
