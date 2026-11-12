@@ -65,6 +65,9 @@ class BaseTrackCache : public QObject {
     QString columnSortForFieldIndex(int index) const;
     int fieldIndex(ColumnCache::Column column) const;
     int endFieldIndex() const;
+
+    /// Collect the rows matching the current search query from the database,
+    /// sort them and rebuild the row cache.
     virtual void filterAndSort(const QSet<TrackId>& trackIds,
                                const QString& query,
                                const QString& extraFilter,
@@ -72,6 +75,17 @@ class BaseTrackCache : public QObject {
                                const QList<SortColumn>& sortColumns,
                                const int columnOffset,
                                QHash<TrackId, int>* trackToIndex);
+    /// Sort only. The filter set is not re-evaluated against the search
+    /// query, i.e. neither tracks that no longer match the search are removed
+    /// from the table, nor are tracks added that now match the search.
+    /// This prevents tracks from (dis-)appearing when only the sort column or
+    /// order has changed, e.g. after a track has been rated while the table
+    /// is filtered by rating.
+    virtual void sort(const QString& orderByClause,
+            const QList<SortColumn>& sortColumns,
+            const int columnOffset,
+            QHash<TrackId, int>* trackToIndex);
+
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
 
@@ -118,8 +132,7 @@ class BaseTrackCache : public QObject {
 
     const mixxx::StringCollator m_collator;
 
-    // Temporary storage for filterAndSort()
-
+    // Temporary storage for filterAndSort() and sort()
     QVector<TrackId> m_trackOrder;
 
     // Remember key and value of the most recent cache lookup to avoid querying
