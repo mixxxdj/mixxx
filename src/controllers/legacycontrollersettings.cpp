@@ -11,8 +11,10 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QSpinBox>
 #include <QStringLiteral>
+#include <limits>
 
 #include "moc_legacycontrollersettings.cpp"
 #include "util/assert.h"
@@ -261,6 +263,40 @@ QDomElement LegacyControllerRealSetting::toXML(QDomDocument* pDoc) const {
     QDomElement option = LegacyControllerNumberSetting::toXML(pDoc);
     option.setAttribute(QStringLiteral("type"), QStringLiteral("real"));
     option.setAttribute(QStringLiteral("precision"), QString::number(m_precisionValue));
+
+    // Re-serialize floating-point values with precision-based formatting for
+    // clean output, falling back to full precision for round-trip safety.
+    auto serializeValue = [this](const double& value) {
+        QString precisionStr = QString::number(value, 'f', m_precisionValue);
+        bool ok = false;
+        const double roundTrip = precisionStr.toDouble(&ok);
+        if (ok && roundTrip == value) {
+            return precisionStr;
+        }
+        QString s = QString::number(value,
+                'g',
+                std::numeric_limits<double>::max_digits10);
+        if (s.contains(QLatin1Char('.'))) {
+            s = s.remove(QRegularExpression(QStringLiteral("0+$")));
+            if (s.endsWith(QLatin1Char('.'))) {
+                s.chop(1);
+            }
+        }
+        if (s.contains(QLatin1Char('e')) || s.contains(QLatin1Char('E'))) {
+            s = QString::number(value,
+                    'f',
+                    std::numeric_limits<double>::max_digits10);
+            s = s.remove(QRegularExpression(QStringLiteral("0+$")));
+            if (s.endsWith(QLatin1Char('.'))) {
+                s.chop(1);
+            }
+        }
+        return s;
+    };
+    option.setAttribute(QStringLiteral("default"), serializeValue(m_defaultValue));
+    option.setAttribute(QStringLiteral("min"), serializeValue(m_minValue));
+    option.setAttribute(QStringLiteral("max"), serializeValue(m_maxValue));
+    option.setAttribute(QStringLiteral("step"), serializeValue(m_stepValue));
     return option;
 }
 

@@ -338,11 +338,12 @@ class LegacyControllerNumberSetting
 
     QWidget* buildInputWidget(QWidget* parent) override;
 
-  private:
+  protected:
     SettingType m_minValue;
     SettingType m_maxValue;
     SettingType m_stepValue;
 
+  private:
     FRIEND_TEST(LegacyControllerMappingSettingsTest, integerSettingEditing);
     FRIEND_TEST(LegacyControllerMappingSettingsTest, doubleSettingEditing);
 };
