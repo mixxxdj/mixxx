@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2026-11-10" timestamp="1794339706">
+    <release version="2.6.0" type="development" date="2026-11-12" timestamp="1794465254">
       <description>
  <p>
   STEM File Support
@@ -1055,6 +1055,7 @@
   <li>
    Provide an AppImage build: Supports glibc &gt;= 2.28 (&gt;= Ubuntu Cosmic 18.10)
    #17298
+   #17461
   </li>
   <li>
    Retire Ubuntu 22.04 (Jammy) PPA builds. Use Flatpak instead
@@ -1072,7 +1073,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.7" type="development" date="2026-11-10" timestamp="1794339706">
+    <release version="2.5.7" type="development" date="2026-11-12" timestamp="1794465254">
       <description>
  <p>
   Controller Mappings
@@ -1617,7 +1618,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-11-10" timestamp="1794339706">
+    <release version="2.5.5" type="development" date="2026-11-12" timestamp="1794465254">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.
