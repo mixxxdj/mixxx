@@ -9,6 +9,7 @@
 * Numark DJ2GO2 Touch: fix bug with preview deck [#16844](https://github.com/mixxxdj/mixxx/pull/16844)
 * Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
 * Pioneer DDJ-400: unmap headphones mixing knob [#17121](https://github.com/mixxxdj/mixxx/pull/17121)
+* Reloop Beatpad: Fix typo in group tags for ShiftBtn [#17455](https://github.com/mixxxdj/mixxx/pull/17455)
 * Vestax VCI-400: fix VU meters, midi.sendShortMsg() [#16180](https://github.com/mixxxdj/mixxx/pull/16180)
 
 ### Controller Backend
@@ -56,6 +57,9 @@
   [16846](https://github.com/mixxxdj/mixxx/issues/16846)
 * Track menu > Crates: Enter toggles checkbox [#17320](https://github.com/mixxxdj/mixxx/pull/17320)
 * Track header menu: fix Enter keypress behavior [#17324](https://github.com/mixxxdj/mixxx/pull/17324)
+* Fix hiding tracks when removing a music directory
+  [#17457](https://github.com/mixxxdj/mixxx/pull/17457)
+  [#14790](https://github.com/mixxxdj/mixxx/issues/14790)
 
 ### Engine
 
