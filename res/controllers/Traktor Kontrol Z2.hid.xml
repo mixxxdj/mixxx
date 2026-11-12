@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>Native Instruments Traktor Kontrol Z2</name>
+        <author>Jörg Wartenberg</author>
+        <description>HID Mapping for Native Instruments Traktor Kontrol Z2</description>
+        <manual>native_instruments_traktor_kontrol_z2</manual>
+        <devices>
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1130" usage_page="0xff01" usage="0x1" interface_number="0x4" />
+        </devices>
+    </info>
+    <controller id="Traktor">
+        <scriptfiles>
+            <file filename="common-hid-packet-parser.js" functionprefix=""/>
+            <file filename="Traktor-Kontrol-Z2-hid-scripts.js" functionprefix="TraktorZ2"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
