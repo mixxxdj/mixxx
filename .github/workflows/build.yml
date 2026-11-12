@@ -185,6 +185,10 @@ jobs:
             # suppress it while keeping -Werror for everything else.
             os: ubuntu-24.04-arm
             container: rockylinux:8
+            # -Wl,--allow-shlib-undefined permits a bundled shared library to
+            # reference a symbol that the host's system libraries do not
+            # provide at link time; the AppImage ships its own copy of that
+            # library, which satisfies the reference at runtime.
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -213,6 +217,10 @@ jobs:
             # (glibc 2.28) container and buildenv approach.
             os: ubuntu-24.04
             container: rockylinux:8
+            # -Wl,--allow-shlib-undefined permits a bundled shared library to
+            # reference a symbol that the host's system libraries do not
+            # provide at link time; the AppImage ships its own copy of that
+            # library, which satisfies the reference at runtime.
             cmake_args: >-
               -DQT6=ON
               -DQML=ON
@@ -561,6 +569,24 @@ jobs:
         run: |
           dotnet.exe tool install --global wix --version 6.0.2
           wix extension add --global WixToolset.UI.wixext/6.0.2
+
+      - name: "[AppImage] Import signing GPG key"
+        # Sign the AppImage with the release GPG key, like the Flatpak
+        # publishing.  The secret is only passed on release builds; on develop
+        # and pull-request builds it is empty and the step is a no-op.  The
+        # import and the MIXXX_APPIMAGE_SIGN switch make CPackConfig.cmake pass
+        # --sign to appimagetool.
+        # This job runs in a container, where run blocks use /bin/sh (unlike
+        # the host-runner Ubuntu job below), so feed the key over stdin instead
+        # of bash-only process substitution.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "${GPG_PRIVATE_KEY}" ]; then
+            printf '%s' "${GPG_PRIVATE_KEY}" | gpg --batch --import
+            echo "MIXXX_APPIMAGE_SIGN=ON" >> "${GITHUB_ENV}"
+          fi
 
       - name: "Package"
         id: package
