@@ -7,6 +7,12 @@
 #include <QTest>
 #include <QtDebug>
 
+#ifdef __RUBBERBAND__
+#include <QSemaphore>
+
+#include "engine/bufferscalers/rubberbandworkerpool.h"
+#endif
+
 #include "control/controlobject.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/defs_keylock.h"
@@ -151,6 +157,28 @@ TEST_F(EngineBufferTest, PitchRoundtrip) {
 }
 
 #ifdef __RUBBERBAND__
+TEST(RubberBandWorkerPoolTest, AcceptsTasksUpToWorkerLimit) {
+    struct TestPool : RubberBandWorkerPool {};
+    QSemaphore releaseWorkers;
+    TestPool pool;
+
+    EXPECT_EQ(pool.activeThreadCount(), 0);
+    const int workerLimit = pool.maxThreadCount();
+    int acceptedTasks = 0;
+    for (int worker = 0; worker < workerLimit; ++worker) {
+        auto* task = QRunnable::create([&releaseWorkers] { releaseWorkers.acquire(); });
+        if (pool.tryStart(task)) {
+            ++acceptedTasks;
+        } else {
+            delete task;
+        }
+    }
+    releaseWorkers.release(acceptedTasks);
+    pool.waitForDone();
+
+    EXPECT_EQ(acceptedTasks, workerLimit);
+}
+
 TEST_F(EngineBufferTest, SlowRubberBand) {
     // At very slow speeds, RubberBand needs to reallocate buffers and since
     // this
