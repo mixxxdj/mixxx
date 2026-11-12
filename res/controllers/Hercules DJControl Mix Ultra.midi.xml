@@ -1,0 +1,2380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxMIDIPreset mixxxVersion="2.5.0+" schemaVersion="1">
+    <info>
+        <name>Hercules DJControl Mix Ultra</name>
+        <author>Aayush Kapoor (xeoneux)</author>
+        <description>MIDI Mapping for Hercules DJControl Mix Ultra</description>
+        <forums>https://mixxx.discourse.group/c/controller-mappings/10</forums>
+        <manual>hercules_djcontrol_mix_ultra</manual>
+    </info>
+    <controller id="DJControl Mix Ultra">
+        <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file functionprefix="DJCMixUltra" filename="Hercules-DJControl-Mix-Ultra-scripts.js"/>
+        </scriptfiles>
+        <controls>
+            <control>
+                <group>[Library]</group>
+                <key>MoveFocus</key>
+                <description>Browser push: toggle view focus</description>
+                <status>0x90</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
+                <description>SHIFT + Browser push: maximize library view</description>
+                <status>0x93</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveVertical</key>
+                <description>Browser scroll tracks/tree</description>
+                <status>0xB0</status>
+                <midino>0x01</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveHorizontal</key>
+                <description>SHIFT + Browser scroll tree</description>
+                <status>0xB3</status>
+                <midino>0x01</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+            <control>
+                <group>[AutoDJ]</group>
+                <key>enabled</key>
+                <description>AutoDJ On/Off</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description>Crossfader</description>
+                <status>0xB0</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>gain</key>
+                <description>Master Volume</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <description>Play Deck A</description>
+                <status>0x91</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <description>Cue Deck A</description>
+                <status>0x91</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Sync Deck A</description>
+                <status>0x91</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>PFL / Headphone Deck A</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Load Deck A (double press clones deck if enabled in preferences)</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCMixUltra.shiftButton</key>
+                <description>Shift Deck A</description>
+                <status>0x91</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCMixUltra.wheelTouch</key>
+                <description>Jog Touch Deck A</description>
+                <status>0x91</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>play_stutter</key>
+                <description>SHIFT + Play: Cue Stutter Deck A</description>
+                <status>0x94</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>start</key>
+                <description>SHIFT + Cue: Return to Start Deck A</description>
+                <status>0x94</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>sync_leader</key>
+                <description>SHIFT + Sync: Sync Leader Deck A</description>
+                <status>0x94</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCMixUltra.cueMaster</key>
+                <description>SHIFT + PFL: Headphone Master Cue</description>
+                <status>0x94</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCMixUltra.vinylButton</key>
+                <description>Vinyl Mode toggle</description>
+                <status>0x91</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCMixUltra.wheelTouchShift</key>
+                <description>SHIFT + Jog Touch Deck A</description>
+                <status>0x94</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>volume</key>
+                <description>Volume Deck A</description>
+                <status>0xB1</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>Filter Deck A</description>
+                <status>0xB1</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter1</key>
+                <description>EQ LOW Deck A</description>
+                <status>0xB1</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter2</key>
+                <description>EQ MID Deck A</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+                <key>parameter3</key>
+                <description>EQ HIGH Deck A</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>pregain</key>
+                <description>SHIFT + High EQ: Gain Deck A</description>
+                <status>0xB4</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>rate</key>
+                <description>Pitch Fader MSB Deck A</description>
+                <status>0xB1</status>
+                <midino>0x08</midino>
+                <options>
+                    <fourteen-bit-msb/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>rate</key>
+                <description>Pitch Fader LSB Deck A</description>
+                <status>0xB1</status>
+                <midino>0x28</midino>
+                <options>
+                    <fourteen-bit-lsb/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCMixUltra.bendWheel</key>
+                <description>Pitch Bend Deck A</description>
+                <status>0xB1</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCMixUltra.scratchWheel</key>
+                <description>Scratch Deck A</description>
+                <status>0xB1</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCMixUltra.scratchWheelShift</key>
+                <description>SHIFT + Scratch Seek Deck A</description>
+                <status>0xB4</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <description>Play Deck B</description>
+                <status>0x92</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <description>Cue Deck B</description>
+                <status>0x92</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Sync Deck B</description>
+                <status>0x92</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>PFL / Headphone Deck B</description>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>LoadSelectedTrack</key>
+                <description>Load Deck B (double press clones deck if enabled in preferences)</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCMixUltra.shiftButton</key>
+                <description>Shift Deck B</description>
+                <status>0x92</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCMixUltra.wheelTouch</key>
+                <description>Jog Touch Deck B</description>
+                <status>0x92</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>play_stutter</key>
+                <description>SHIFT + Play: Cue Stutter Deck B</description>
+                <status>0x95</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>start</key>
+                <description>SHIFT + Cue: Return to Start Deck B</description>
+                <status>0x95</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>sync_leader</key>
+                <description>SHIFT + Sync: Sync Leader Deck B</description>
+                <status>0x95</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJCMixUltra.cueSplit</key>
+                <description>SHIFT + PFL: Headphone Split Cue</description>
+                <status>0x95</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCMixUltra.wheelTouchShift</key>
+                <description>SHIFT + Jog Touch Deck B</description>
+                <status>0x95</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>volume</key>
+                <description>Volume Deck B</description>
+                <status>0xB2</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>Filter Deck B</description>
+                <status>0xB2</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter1</key>
+                <description>EQ LOW Deck B</description>
+                <status>0xB2</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter2</key>
+                <description>EQ MID Deck B</description>
+                <status>0xB2</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+                <key>parameter3</key>
+                <description>EQ HIGH Deck B</description>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description>SHIFT + High EQ: Gain Deck B</description>
+                <status>0xB5</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <description>Pitch Fader MSB Deck B</description>
+                <status>0xB2</status>
+                <midino>0x08</midino>
+                <options>
+                    <fourteen-bit-msb/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>rate</key>
+                <description>Pitch Fader LSB Deck B</description>
+                <status>0xB2</status>
+                <midino>0x28</midino>
+                <options>
+                    <fourteen-bit-lsb/>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCMixUltra.bendWheel</key>
+                <description>Pitch Bend Deck B</description>
+                <status>0xB2</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCMixUltra.scratchWheel</key>
+                <description>Scratch Deck B</description>
+                <status>0xB2</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCMixUltra.scratchWheelShift</key>
+                <description>SHIFT + Scratch Seek Deck B</description>
+                <status>0xB5</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_1_activate</key>
+                <description>Hotcue 1 Deck A</description>
+                <status>0x96</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_1_clear</key>
+                <description>SHIFT + Hotcue 1 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_2_activate</key>
+                <description>Hotcue 2 Deck A</description>
+                <status>0x96</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_2_clear</key>
+                <description>SHIFT + Hotcue 2 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_3_activate</key>
+                <description>Hotcue 3 Deck A</description>
+                <status>0x96</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_3_clear</key>
+                <description>SHIFT + Hotcue 3 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x0A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_4_activate</key>
+                <description>Hotcue 4 Deck A</description>
+                <status>0x96</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_4_clear</key>
+                <description>SHIFT + Hotcue 4 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_5_activate</key>
+                <description>Hotcue 5 Deck A</description>
+                <status>0x96</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_5_clear</key>
+                <description>SHIFT + Hotcue 5 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_6_activate</key>
+                <description>Hotcue 6 Deck A</description>
+                <status>0x96</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_6_clear</key>
+                <description>SHIFT + Hotcue 6 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_7_activate</key>
+                <description>Hotcue 7 Deck A</description>
+                <status>0x96</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_7_clear</key>
+                <description>SHIFT + Hotcue 7 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_8_activate</key>
+                <description>Hotcue 8 Deck A</description>
+                <status>0x96</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>hotcue_8_clear</key>
+                <description>SHIFT + Hotcue 8 Clear Deck A</description>
+                <status>0x96</status>
+                <midino>0x0F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatloop_0.5_toggle</key>
+                <description>Beatloop 0.5 Toggle Deck A</description>
+                <status>0x96</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatloop_1_toggle</key>
+                <description>Beatloop 1 Toggle Deck A</description>
+                <status>0x96</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatloop_2_toggle</key>
+                <description>Beatloop 2 Toggle Deck A</description>
+                <status>0x96</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatloop_4_toggle</key>
+                <description>Beatloop 4 Toggle Deck A</description>
+                <status>0x96</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatloop_8_toggle</key>
+                <description>Beatloop 8 Toggle Deck A</description>
+                <status>0x96</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>beatloop_16_toggle</key>
+                <description>Beatloop 16 Toggle Deck A</description>
+                <status>0x96</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_in</key>
+                <description>Loop In Deck A</description>
+                <status>0x96</status>
+                <midino>0x16</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_out</key>
+                <description>Loop Out Deck A</description>
+                <status>0x96</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_halve</key>
+                <description>SHIFT + Loop Halve Deck A</description>
+                <status>0x96</status>
+                <midino>0x1E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>loop_double</key>
+                <description>SHIFT + Loop Double Deck A</description>
+                <status>0x96</status>
+                <midino>0x1F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <description>FX 1 Enable Deck A</description>
+                <status>0x96</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>next_effect</key>
+                <description>FX 1 Next Effect Deck A</description>
+                <status>0x96</status>
+                <midino>0x24</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <description>FX 2 Enable Deck A</description>
+                <status>0x96</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>next_effect</key>
+                <description>FX 2 Next Effect Deck A</description>
+                <status>0x96</status>
+                <midino>0x25</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <description>FX 3 Enable Deck A</description>
+                <status>0x96</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>next_effect</key>
+                <description>FX 3 Next Effect Deck A</description>
+                <status>0x96</status>
+                <midino>0x26</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>FX Unit Channel Route Deck A</description>
+                <status>0x96</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>mix_mode</key>
+                <description>FX Unit Mix Mode Deck A</description>
+                <status>0x96</status>
+                <midino>0x27</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>prev_effect</key>
+                <description>FX 1 Previous Effect (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x28</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>prev_effect</key>
+                <description>FX 2 Previous Effect (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x29</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>prev_effect</key>
+                <description>FX 3 Previous Effect (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x2A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>FX Unit Route Deck B (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x2B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 1 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 1 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 2 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x31</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 2 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x39</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 3 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x32</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 3 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x3A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 4 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x33</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 4 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x3B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler5]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 5 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x34</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler5]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 5 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x3C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler6]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 6 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x35</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler6]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 6 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x3D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler7]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 7 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x36</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler7]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 7 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x3E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler8]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 8 Play Deck A</description>
+                <status>0x96</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler8]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 8 Stop Deck A</description>
+                <status>0x96</status>
+                <midino>0x3F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_1_activate</key>
+                <description>Hotcue 1 Deck B</description>
+                <status>0x97</status>
+                <midino>0x00</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_1_clear</key>
+                <description>SHIFT + Hotcue 1 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x08</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_2_activate</key>
+                <description>Hotcue 2 Deck B</description>
+                <status>0x97</status>
+                <midino>0x01</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_2_clear</key>
+                <description>SHIFT + Hotcue 2 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x09</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_3_activate</key>
+                <description>Hotcue 3 Deck B</description>
+                <status>0x97</status>
+                <midino>0x02</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_3_clear</key>
+                <description>SHIFT + Hotcue 3 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x0A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_4_activate</key>
+                <description>Hotcue 4 Deck B</description>
+                <status>0x97</status>
+                <midino>0x03</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_4_clear</key>
+                <description>SHIFT + Hotcue 4 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_5_activate</key>
+                <description>Hotcue 5 Deck B</description>
+                <status>0x97</status>
+                <midino>0x04</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_5_clear</key>
+                <description>SHIFT + Hotcue 5 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_6_activate</key>
+                <description>Hotcue 6 Deck B</description>
+                <status>0x97</status>
+                <midino>0x05</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_6_clear</key>
+                <description>SHIFT + Hotcue 6 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_7_activate</key>
+                <description>Hotcue 7 Deck B</description>
+                <status>0x97</status>
+                <midino>0x06</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_7_clear</key>
+                <description>SHIFT + Hotcue 7 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_8_activate</key>
+                <description>Hotcue 8 Deck B</description>
+                <status>0x97</status>
+                <midino>0x07</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>hotcue_8_clear</key>
+                <description>SHIFT + Hotcue 8 Clear Deck B</description>
+                <status>0x97</status>
+                <midino>0x0F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatloop_0.5_toggle</key>
+                <description>Beatloop 0.5 Toggle Deck B</description>
+                <status>0x97</status>
+                <midino>0x10</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatloop_1_toggle</key>
+                <description>Beatloop 1 Toggle Deck B</description>
+                <status>0x97</status>
+                <midino>0x11</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatloop_2_toggle</key>
+                <description>Beatloop 2 Toggle Deck B</description>
+                <status>0x97</status>
+                <midino>0x12</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatloop_4_toggle</key>
+                <description>Beatloop 4 Toggle Deck B</description>
+                <status>0x97</status>
+                <midino>0x13</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatloop_8_toggle</key>
+                <description>Beatloop 8 Toggle Deck B</description>
+                <status>0x97</status>
+                <midino>0x14</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>beatloop_16_toggle</key>
+                <description>Beatloop 16 Toggle Deck B</description>
+                <status>0x97</status>
+                <midino>0x15</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_in</key>
+                <description>Loop In Deck B</description>
+                <status>0x97</status>
+                <midino>0x16</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_out</key>
+                <description>Loop Out Deck B</description>
+                <status>0x97</status>
+                <midino>0x17</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_halve</key>
+                <description>SHIFT + Loop Halve Deck B</description>
+                <status>0x97</status>
+                <midino>0x1E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>loop_double</key>
+                <description>SHIFT + Loop Double Deck B</description>
+                <status>0x97</status>
+                <midino>0x1F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <description>FX 1 Enable Deck B</description>
+                <status>0x97</status>
+                <midino>0x20</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>next_effect</key>
+                <description>FX 1 Next Effect Deck B</description>
+                <status>0x97</status>
+                <midino>0x24</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <description>FX 2 Enable Deck B</description>
+                <status>0x97</status>
+                <midino>0x21</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>next_effect</key>
+                <description>FX 2 Next Effect Deck B</description>
+                <status>0x97</status>
+                <midino>0x25</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <description>FX 3 Enable Deck B</description>
+                <status>0x97</status>
+                <midino>0x22</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>next_effect</key>
+                <description>FX 3 Next Effect Deck B</description>
+                <status>0x97</status>
+                <midino>0x26</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>FX Unit Channel Route Deck B</description>
+                <status>0x97</status>
+                <midino>0x23</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>mix_mode</key>
+                <description>FX Unit Mix Mode Deck B</description>
+                <status>0x97</status>
+                <midino>0x27</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>prev_effect</key>
+                <description>FX 1 Previous Effect (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x28</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>prev_effect</key>
+                <description>FX 2 Previous Effect (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x29</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>prev_effect</key>
+                <description>FX 3 Previous Effect (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x2A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>FX Unit Route Deck A (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x2B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler9]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 9 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler9]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 9 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x38</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler10]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 10 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x31</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler10]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 10 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x39</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler11]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 11 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x32</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler11]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 11 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x3A</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler12]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 12 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x33</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler12]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 12 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x3B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler13]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 13 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x34</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler13]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 13 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x3C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler14]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 14 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x35</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler14]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 14 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x3D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler15]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 15 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x36</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler15]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 15 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x3E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler16]</group>
+                <key>cue_gotoandplay</key>
+                <description>Sampler 16 Play Deck B</description>
+                <status>0x97</status>
+                <midino>0x37</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler16]</group>
+                <key>cue_gotoandstop</key>
+                <description>SHIFT + Sampler 16 Stop Deck B</description>
+                <status>0x97</status>
+                <midino>0x3F</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+        </controls>
+        <outputs>
+            <output>
+                <group>[AutoDJ]</group>
+                <key>enabled</key>
+                <description>AutoDJ Center LED</description>
+                <status>0x90</status>
+                <midino>0x01</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <description>Play LED Deck A</description>
+                <status>0x91</status>
+                <midino>0x07</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_indicator</key>
+                <description>Cue LED Deck A</description>
+                <status>0x91</status>
+                <midino>0x06</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>sync_enabled</key>
+                <description>Sync LED Deck A</description>
+                <status>0x91</status>
+                <midino>0x05</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description>PFL LED Deck A</description>
+                <status>0x91</status>
+                <midino>0x0C</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Hotcue 1 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x00</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Hotcue 1 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x08</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Hotcue 2 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x01</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Hotcue 2 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x09</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Hotcue 3 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x02</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Hotcue 3 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x0A</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Hotcue 4 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x03</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Hotcue 4 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x0B</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Hotcue 5 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x04</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Hotcue 5 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x0C</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Hotcue 6 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x05</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Hotcue 6 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x0D</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Hotcue 7 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x06</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Hotcue 7 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x0E</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Hotcue 8 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x07</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Hotcue 8 LED (Shift) Deck A</description>
+                <status>0x96</status>
+                <midino>0x0F</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x10</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x11</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x12</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x13</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x14</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x15</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x16</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x17</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <description>FX 1 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x20</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect2]</group>
+                <key>enabled</key>
+                <description>FX 2 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x21</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1_Effect3]</group>
+                <key>enabled</key>
+                <description>FX 3 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x22</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>group_[Channel1]_enable</key>
+                <description>FX Route LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x23</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler1]</group>
+                <key>play_indicator</key>
+                <description>Sampler 1 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x30</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler2]</group>
+                <key>play_indicator</key>
+                <description>Sampler 2 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x31</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler3]</group>
+                <key>play_indicator</key>
+                <description>Sampler 3 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x32</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler4]</group>
+                <key>play_indicator</key>
+                <description>Sampler 4 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x33</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler5]</group>
+                <key>play_indicator</key>
+                <description>Sampler 5 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x34</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler6]</group>
+                <key>play_indicator</key>
+                <description>Sampler 6 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x35</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler7]</group>
+                <key>play_indicator</key>
+                <description>Sampler 7 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x36</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler8]</group>
+                <key>play_indicator</key>
+                <description>Sampler 8 LED Deck A</description>
+                <status>0x96</status>
+                <midino>0x37</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>play_indicator</key>
+                <description>Play LED Deck B</description>
+                <status>0x92</status>
+                <midino>0x07</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>cue_indicator</key>
+                <description>Cue LED Deck B</description>
+                <status>0x92</status>
+                <midino>0x06</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>sync_enabled</key>
+                <description>Sync LED Deck B</description>
+                <status>0x92</status>
+                <midino>0x05</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <description>PFL LED Deck B</description>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Hotcue 1 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x00</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_1_enabled</key>
+                <description>Hotcue 1 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x08</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Hotcue 2 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x01</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_2_enabled</key>
+                <description>Hotcue 2 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x09</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Hotcue 3 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x02</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_3_enabled</key>
+                <description>Hotcue 3 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x0A</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Hotcue 4 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x03</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_4_enabled</key>
+                <description>Hotcue 4 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x0B</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Hotcue 5 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x04</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_5_enabled</key>
+                <description>Hotcue 5 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x0C</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Hotcue 6 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x05</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_6_enabled</key>
+                <description>Hotcue 6 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x0D</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Hotcue 7 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x06</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_7_enabled</key>
+                <description>Hotcue 7 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x0E</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Hotcue 8 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x07</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>hotcue_8_enabled</key>
+                <description>Hotcue 8 LED (Shift) Deck B</description>
+                <status>0x97</status>
+                <midino>0x0F</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x10</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x11</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x12</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x13</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x14</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x15</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x16</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>loop_enabled</key>
+                <description>Loop LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x17</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <description>FX 1 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x20</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect2]</group>
+                <key>enabled</key>
+                <description>FX 2 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x21</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2_Effect3]</group>
+                <key>enabled</key>
+                <description>FX 3 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x22</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>group_[Channel2]_enable</key>
+                <description>FX Route LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x23</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler9]</group>
+                <key>play_indicator</key>
+                <description>Sampler 9 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x30</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler10]</group>
+                <key>play_indicator</key>
+                <description>Sampler 10 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x31</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler11]</group>
+                <key>play_indicator</key>
+                <description>Sampler 11 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x32</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler12]</group>
+                <key>play_indicator</key>
+                <description>Sampler 12 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x33</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler13]</group>
+                <key>play_indicator</key>
+                <description>Sampler 13 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x34</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler14]</group>
+                <key>play_indicator</key>
+                <description>Sampler 14 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x35</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler15]</group>
+                <key>play_indicator</key>
+                <description>Sampler 15 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x36</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+            <output>
+                <group>[Sampler16]</group>
+                <key>play_indicator</key>
+                <description>Sampler 16 LED Deck B</description>
+                <status>0x97</status>
+                <midino>0x37</midino>
+                <on>0x7F</on>
+                <off>0x00</off>
+            </output>
+        </outputs>
+    </controller>
+</MixxxMIDIPreset>
