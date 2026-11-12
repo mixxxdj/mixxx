@@ -5394,6 +5394,9 @@ if(VINYLCONTROL)
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __VINYLCONTROL__)
   endif()
+  if(BUILD_TESTING)
+    target_sources(mixxx-test PRIVATE src/test/vinylcontrolxwax_test.cpp)
+  endif()
 
   # Internal xwax library
   add_library(mixxx-xwax STATIC EXCLUDE_FROM_ALL)

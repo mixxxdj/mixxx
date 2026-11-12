@@ -26,32 +26,80 @@ class VinylControlXwax : public VinylControl {
     Q_OBJECT
   public:
     VinylControlXwax(UserSettingsPointer pConfig, const QString& group);
-    virtual ~VinylControlXwax();
+    ~VinylControlXwax() override;
 
     static void freeLUTs();
     QString getLutDir();
-    void analyzeSamples(CSAMPLE* pSamples, size_t nFrames);
+    /// Decode the timecode in the samples and update the playback controls.
+    void analyzeSamples(CSAMPLE* pSamples, size_t nFrames) override;
 
-    virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo);
+    bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo) override;
 
   protected:
-    float getAngle();
+    float getAngle() override;
 
   private:
+    /// Convert the samples to shorts with the input gain applied and pass
+    /// them to the xwax timecoder.
+    void submitSamples(const CSAMPLE* pSamples, size_t nFrames);
+    /// Force a resync and leave record end mode when a new track was loaded.
+    void handleTrackChange();
+    /// Apply the requested vinyl control mode, refusing absolute mode while
+    /// playing or looping and disabling cueing in absolute mode.
+    void updateMode(bool playing);
+    /// Enter or leave record end mode and blink the status while in it.
+    void updateRecordEndMode(bool playing, double pitch, double filePosition);
+    /// Follow the decoded timecode position. Returns false if playback was
+    /// stopped at the end of the track.
+    bool followTimecodePosition(double pitch, double filePosition, double fractionalPos);
+    /// Resync to the timecode position if a pending resync, the lead-in or a
+    /// position jump requires it. Returns true if one of these cases applied.
+    bool resyncToTimecode(double pitch, double filePosition);
+    /// Follow the pitch while no timecode position could be decoded. Returns
+    /// false if playback was stopped at the end of the track.
+    bool followTimecodePitch(double pitch, double filePosition, double fractionalPos);
+    /// Stop playback and reset the pitch tracking at the end of the track.
+    void stopAtTrackEnd();
+    /// Set the playback rate to the detected pitch and update the displayed
+    /// rate.
+    void updateRateFromPitch(double pitch, double filePosition);
+    /// Record the pitch while playing, reset the ring otherwise.
+    void updatePitchRing(double pitch, bool playing);
+    /// Stop playback once the signal has been missing for too long.
+    void handleMissingSignal(double filePosition);
+    /// Reset the timecode quality shown in the UI.
+    void resetTimecodeQuality();
+    /// Seek the track to the position of the timecoded vinyl.
     void syncPosition();
+    /// Set the play button, but only while vinyl control is enabled.
     void togglePlayButton(bool on);
+    /// Handle enabling and disabling of vinyl control. Returns whether it is
+    /// enabled now.
     bool checkEnabled(bool was, bool is);
     void doTrackSelection(bool valid_pos, double pitch, double position);
+    /// Restart both steady pitch trackers from the given pitch and time.
     void resetSteadyPitch(double pitch, double time);
+    /// Update the scratching state and return how steady the pitch is, 0 while
+    /// reversed.
     double checkSteadyPitch(double pitch, double time);
+    /// Return the drift accumulated since the last reset of the relative
+    /// drift, resetting it on jumps, passthrough, reverse or scratching.
     double calcDeltaRelativeDriftAmount(double deltaFilePosition);
+    /// Switch to constant mode so the needle can be moved near the record end.
     void enableRecordEndMode();
+    /// Leave record end mode and switch to relative mode.
     void disableRecordEndMode();
+    /// Switch to constant mode, keeping the current vinyl control rate.
     void enableConstantMode();
+    /// Switch to constant mode with the given rate.
     void enableConstantMode(double rate);
+    /// Return true if enough time passed since the last UI update.
     bool uiUpdateTime(double time);
+    /// Update the timecode quality from the position and pitch quality.
     void establishQuality(double& pitch);
+    /// Rate how plausible the change of the timecode position is, in percent.
     int getPositionQuality();
+    /// Rate how stable the pitch is compared to the previous one, in percent.
     int getPitchQuality(double& pitch);
 
     // Cache the position of the end of record
