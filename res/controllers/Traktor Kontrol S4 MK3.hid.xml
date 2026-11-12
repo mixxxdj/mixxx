@@ -235,7 +235,6 @@
                 <value label="Intro/Outro + 4 hotcues" default="true">default</value>
                 <value label="Hotcues">hotcue</value>
                 <value label="Sampler or beatloop">samplerBeatloop</value>
-                <value label="Beatjump">beatjump</value>
                 <value label="Keyboard">keyboard</value>
                 <description>
                     Define the default layout used for the pads.

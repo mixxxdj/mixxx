@@ -41,7 +41,6 @@ const KeyboardColors = [
 // Constant used to define custom default pad layout
 const DefaultPadLayoutHotcue = "hotcue";
 const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
-const DefaultPadLayoutBeatjump = "beatjump";
 const DefaultPadLayoutKeyboard = "keyboard";
 
 /*
@@ -2288,10 +2287,6 @@ class S4Mk3Deck extends Deck {
         case DefaultPadLayoutSamplerBeatloop:
             switchPadLayer(this, samplerOrBeatloopRollPage);
             this.currentPadLayer = this.padLayers.samplerPage;
-            break;
-        case DefaultPadLayoutBeatjump:
-            switchPadLayer(this, beatJumpPage);
-            this.currentPadLayer = this.padLayers.beatJump;
             break;
         case DefaultPadLayoutKeyboard:
             switchPadLayer(this, this.keyboard);
