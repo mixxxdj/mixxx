@@ -47,11 +47,11 @@ LaunchkeyJog.shutdown = function() {
         engine.stopTimer(m.inertiaTimerId);
         m.inertiaTimerId = null;
     }
-    if (m.isScratching || engine.isScratching(m.scratchDeck)) {
+    if (engine.isScratching(m.scratchDeck)) {
         engine.scratchTick(m.scratchDeck, 0);
         engine.scratchDisable(m.scratchDeck, false);
-        m.isScratching = false;
     }
+    m.isScratching = false;
 
     for (const deck in LaunchkeyJog.deckState) {
         const state = LaunchkeyJog.deckState[deck];
@@ -231,20 +231,6 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
         break;
     }
     }
-};
-
-/**
- * Toggles the actively controlled deck between Deck 1 and Deck 2.
- *
- * @param {number} channel The MIDI channel
- * @param {number} control The MIDI control number
- * @param {number} value The button value
- * @param {number} _status The MIDI status byte (unused)
- * @param {string} _group The Mixxx control group (unused)
- */
-LaunchkeyJog.toggleDeck = function(channel, control, value, _status, _group) {
-    if (value === 0) { return; }
-    LaunchkeyJog.activeDeck = LaunchkeyJog.activeDeck === 1 ? 2 : 1;
 };
 
 // ====================================================
