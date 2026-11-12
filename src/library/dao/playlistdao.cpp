@@ -34,7 +34,8 @@ void PlaylistDAO::populatePlaylistMembershipCache() {
 
     // now fetch all Tracks from all playlists and insert them into the hashmap
     query.prepare(QStringLiteral(
-            "SELECT track_id, playlist_id from " PLAYLIST_TRACKS_TABLE));
+            "SELECT track_id, playlist_id from " PLAYLIST_TRACKS_TABLE
+            " WHERE playlist_id IN (SELECT id FROM " PLAYLIST_TABLE ")"));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
