@@ -38,14 +38,14 @@ class BrowseFeature : public LibraryFeature {
     TreeItemModel* sidebarModel() const override;
 
     void releaseBrowseThread();
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
     void slotRefreshDirectoryTree();
-    void activate() override;
-    void activateChild(const QModelIndex& index) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();
@@ -61,7 +61,7 @@ class BrowseFeature : public LibraryFeature {
     QString getRootViewHtml() const;
     QString extractNameFromPath(const QString& spath);
     QStringList getDefaultQuickLinks() const;
-    std::vector<std::unique_ptr<TreeItem>> getChildDirectoryItems(const QString& path) const;
+    std::vector<std::unique_ptr<TreeItem>> createChildDirectoryItems(const QString& path) const;
     void saveQuickLinks();
     void loadQuickLinks();
     QString getLastRightClickedPath() const;

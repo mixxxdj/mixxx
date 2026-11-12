@@ -18,7 +18,8 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
     ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~ITunesFeature();
+    ~ITunesFeature() override;
+
     static bool isSupported();
 
     QVariant title() override;
@@ -31,10 +32,11 @@ class ITunesFeature : public BaseExternalLibraryFeature {
         return m_cancelImport.load();
     }
 
-  public slots:
-    void activate() override;
     void activate(bool forceReload);
+    void activate() override;
     void activateChild(const QModelIndex& index) override;
+
+  public slots:
     void onRightClick(const QPoint& globalPos) override;
     void onTrackCollectionLoaded();
 

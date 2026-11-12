@@ -85,6 +85,13 @@ class LibraryFeature : public QObject {
         return false;
     }
 
+    // called when you single click on the root item
+    virtual void activate() = 0;
+    // called when you single click on a child item, e.g., a concrete playlist or crate
+    virtual void activateChild(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+
   protected:
     QStringList getPlaylistFiles() const {
         return getPlaylistFiles(QFileDialog::ExistingFiles);
@@ -103,12 +110,6 @@ class LibraryFeature : public QObject {
     const UserSettingsPointer m_pConfig;
 
   public slots:
-    // called when you single click on the root item
-    virtual void activate() = 0;
-    // called when you single click on a child item, e.g., a concrete playlist or crate
-    virtual void activateChild(const QModelIndex& index) {
-        Q_UNUSED(index);
-    }
     // called when you right click on the root item
     virtual void onRightClick(const QPoint& globalPos) {
         Q_UNUSED(globalPos);
