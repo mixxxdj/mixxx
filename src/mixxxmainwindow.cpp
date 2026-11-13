@@ -3,9 +3,13 @@
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QLabel>
 #include <QOpenGLContext>
 #include <QUrl>
+#include <QVBoxLayout>
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QGLFormat>
@@ -1275,11 +1279,35 @@ void MixxxMainWindow::slotLibraryScanSummaryDlg(const LibraryScanResultSummary& 
                 tr("%1 tracks in total").arg(QString::number(result.tracksTotal)) +
                 QStringLiteral("</b>");
     }
-    QMessageBox* pMsg = new QMessageBox();
-    pMsg->setTextFormat(Qt::RichText); // required to get bold text with <b> tags
-    pMsg->setWindowTitle(tr("Library scan finished"));
-    pMsg->setText(summary);
-    pMsg->show();
+    auto pDlg = make_parented<QDialog>(this);
+    pDlg->setAttribute(Qt::WA_DeleteOnClose);
+    pDlg->setAttribute(Qt::WA_QuitOnClose, false);
+    pDlg->setWindowTitle(tr("Library scan finished"));
+
+    auto pLayout = make_parented<QVBoxLayout>(pDlg.get());
+
+    auto pLabel = make_parented<QLabel>(summary, pDlg.get());
+    pLabel->setTextFormat(Qt::RichText);
+    pLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    pLayout->addWidget(pLabel.get());
+
+    auto pButtonBox =
+            make_parented<QDialogButtonBox>(QDialogButtonBox::Ok, pDlg.get());
+    connect(pButtonBox.get(),
+            &QDialogButtonBox::accepted,
+            pDlg.get(),
+            &QDialog::accept);
+    pLayout->addWidget(pButtonBox.get());
+
+    // Ensure the dialog is wide enough to display the full window title
+    // including window buttons without truncation.
+    const int contentWidth = pDlg->sizeHint().width();
+    const int titleWidth =
+            pDlg->fontMetrics().horizontalAdvance(pDlg->windowTitle()) + 150;
+    pDlg->setMinimumWidth(qMax(contentWidth, titleWidth));
+    pLabel->setWordWrap(true);
+
+    pDlg->show();
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {
