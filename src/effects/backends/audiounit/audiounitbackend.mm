@@ -38,17 +38,14 @@ class AudioUnitBackend : public EffectsBackend {
         // m_componentsById may not have a corresponding manifest yet, and
         // callers would get a null EffectManifestPointer from getManifest(),
         // which crashes downstream (e.g. EffectManifest::sortLexigraphically).
-        auto locker = lockMutex(&m_mutex);
         return m_manifestsById.keys();
     }
 
     EffectManifestPointer getManifest(const QString& effectId) const override {
-        auto locker = lockMutex(&m_mutex);
         return m_manifestsById.value(effectId);
     }
 
     const QList<EffectManifestPointer> getManifests() const override {
-        auto locker = lockMutex(&m_mutex);
         return m_manifestsById.values();
     }
 
@@ -64,9 +61,19 @@ class AudioUnitBackend : public EffectsBackend {
     }
 
   private:
+    /// State shared between loadAudioUnits() and the GCD blocks loading the
+    /// manifests. The blocks may still be running after loadAudioUnits() has
+    /// timed out, or even after the backend has been destroyed, so they must
+    /// only access this shared state and never `this`.
+    struct ManifestLoadState {
+        QMutex mutex;
+        QHash<QString, EffectManifestPointer> manifestsById;
+        bool loadingFinished = false;
+    };
+
     NSMutableDictionary<NSString*, AVAudioUnitComponent*>* m_componentsById;
+    // Only written in loadAudioUnits(), read-only afterwards.
     QHash<QString, EffectManifestPointer> m_manifestsById;
-    mutable QMutex m_mutex;
 
     void loadAudioUnits() {
         qDebug() << "Loading audio units...";
@@ -105,6 +112,16 @@ class AudioUnitBackend : public EffectsBackend {
         // Apple API-related stuff.
         dispatch_group_t group = dispatch_group_create();
 
+        // Limit concurrent manifest loads to avoid exhausting the GCD thread
+        // pool. Each manifest load blocks its thread in waitForAudioUnit for
+        // up to 2 seconds, so without a limit, having 64+ AUs would hit
+        // the macOS dispatch thread soft limit.
+        const long MAX_CONCURRENT_LOADS = 8;
+        dispatch_semaphore_t semaphore =
+                dispatch_semaphore_create(MAX_CONCURRENT_LOADS);
+
+        auto pLoadState = std::make_shared<ManifestLoadState>();
+
         for (AVAudioUnitComponent* component in allComponents) {
             qDebug() << "Found audio unit" << [component name];
 
@@ -121,26 +138,61 @@ class AudioUnitBackend : public EffectsBackend {
             dispatch_queue_t queue = dispatch_get_global_queue(
                     DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
+            // Note: The block must not capture `this`, see ManifestLoadState
             dispatch_group_async(group, queue, ^{
-                // Load manifest (potentially slow blocking operation)
-                auto manifest = EffectManifestPointer(
-                        new AudioUnitManifest(effectId, component));
+                dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 
-                // Register manifest
-                auto locker = lockMutex(&m_mutex);
-                m_manifestsById[effectId] = manifest;
+                bool loadingFinished;
+                {
+                    auto locker = lockMutex(&pLoadState->mutex);
+                    loadingFinished = pLoadState->loadingFinished;
+                }
+
+                // Don't even start loading if we already timed out
+                if (!loadingFinished) {
+                    // Load manifest (potentially slow blocking operation)
+                    auto pManifest = EffectManifestPointer(
+                            new AudioUnitManifest(effectId, component));
+
+                    // Register manifest, unless we timed out in the meantime
+                    auto locker = lockMutex(&pLoadState->mutex);
+                    if (pLoadState->loadingFinished) {
+                        qWarning() << "Audio Unit" << pManifest->name()
+                                   << "finished loading after the timeout, "
+                                      "ignoring it";
+                    } else {
+                        pLoadState->manifestsById.insert(effectId, pManifest);
+                    }
+                }
+
+                // Every block must signal the semaphore exactly once,
+                // otherwise libdispatch crashes when the semaphore is freed.
+                dispatch_semaphore_signal(semaphore);
             });
         }
 
         const int64_t TIMEOUT_MS = 6000;
 
         qDebug() << "Waiting for audio unit manifests to be loaded...";
-        if (dispatch_group_wait(group,
-                    dispatch_time(DISPATCH_TIME_NOW, TIMEOUT_MS * 1000000)) ==
-                0) {
-            qDebug() << "Successfully loaded audio unit manifests";
+        const dispatch_time_t timeout =
+                dispatch_time(DISPATCH_TIME_NOW, TIMEOUT_MS * NSEC_PER_MSEC);
+        const bool timedOut = dispatch_group_wait(group, timeout) != 0;
+
+        // Take a snapshot of the loaded manifests. Manifests that finish
+        // loading after this point are ignored, so the set of effects
+        // reported by this backend can't change after construction.
+        auto locker = lockMutex(&pLoadState->mutex);
+        pLoadState->loadingFinished = true;
+        m_manifestsById = pLoadState->manifestsById;
+        locker.unlock();
+
+        if (timedOut) {
+            qWarning() << "Timed out while loading audio unit manifests, only"
+                       << m_manifestsById.size() << "of"
+                       << static_cast<int>(allComponents.count)
+                       << "Audio Units are available";
         } else {
-            qWarning() << "Timed out while loading audio unit manifests";
+            qDebug() << "Successfully loaded audio unit manifests";
         }
     }
 };
