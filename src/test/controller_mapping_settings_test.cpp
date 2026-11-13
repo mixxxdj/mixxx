@@ -564,23 +564,43 @@ TEST_F(LegacyControllerMappingSettingsTest, verifySettingsPreservedInSave) {
             doc.documentElement(), "/fake/path-reloaded");
 
     // Verify the reloaded mapping has the same number of settings
-    EXPECT_EQ(pMapping->getSettings().size(),
-            pMappingReloaded->getSettings().size())
+    const auto& settingsOrig = pMapping->getSettings();
+    const auto& settingsReloaded = pMappingReloaded->getSettings();
+    int settCountOrig = settingsOrig.size();
+    int settCountReloaded = settingsReloaded.size();
+    EXPECT_EQ(settCountOrig, settCountReloaded)
             << "Reloaded mapping should have same number of settings";
 
-    // Iterate over original settings and verify each exists in reloaded
-    QList<QString> originalSettingsNames;
-    for (const auto& setting : pMapping->getSettings()) {
-        originalSettingsNames.append(setting->variableName());
-    }
-    QList<QString> reloadedSettingNames;
-    for (const auto& setting : pMappingReloaded->getSettings()) {
-        reloadedSettingNames.append(setting->variableName());
+    // No point in continuing if counts aren't equal
+    if (settCountOrig != settCountReloaded) {
+        return;
     }
 
-    for (const auto& name : originalSettingsNames) {
-        EXPECT_TRUE(reloadedSettingNames.contains(name))
-                << "Setting variable '" << name.toStdString()
-                << "' not found in reloaded mapping";
+    // Now verify parameters of each setting are preserved.
+    // This implicitly also verifies that settings are in the same order.
+    for (qsizetype i = 0; i < settCountOrig; i++) {
+        const auto& settOrig = settingsOrig[i];
+        const auto& settReloaded = settingsReloaded[i];
+        EXPECT_EQ(settOrig->settingType(), settReloaded->settingType());
+        EXPECT_EQ(settOrig->variableName(), settReloaded->variableName());
+        EXPECT_EQ(settOrig->description(), settReloaded->description());
+        if (settOrig->settingType() != settReloaded->settingType()) {
+            continue;
+        }
+
+        EXPECT_EQ(settOrig->defaultValueString(), settReloaded->defaultValueString());
+
+        switch (settOrig->settingType()) {
+        case AbstractLegacyControllerSetting::SettingsType::Number:
+            EXPECT_EQ(settOrig->minValue(), settReloaded->minValue());
+            EXPECT_EQ(settOrig->maxValue(), settReloaded->maxValue());
+            EXPECT_EQ(settOrig->stepValue(), settReloaded->stepValue());
+            break;
+        case AbstractLegacyControllerSetting::SettingsType::Enum:
+            EXPECT_EQ(settOrig->enumOptions(), settReloaded->enumOptions());
+            break;
+        default:
+            break;
+        }
     }
 }

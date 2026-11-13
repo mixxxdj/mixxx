@@ -31,6 +31,31 @@ class AbstractLegacyControllerSetting : public QObject {
   public:
     ~AbstractLegacyControllerSetting() override = default;
 
+    enum class SettingsType {
+        Boolean,
+        Number,
+        Enum,
+        Color,
+        File
+    };
+    virtual SettingsType settingType() const = 0;
+    virtual double minValue() const {
+        return 0.0;
+    }
+    virtual double maxValue() const {
+        return 0.0;
+    }
+    virtual double stepValue() const {
+        return 0.0;
+    }
+    virtual QString defaultValueString() const = 0;
+    // virtual QString defaultValueString() const {
+    //     return {};
+    // }
+    virtual QList<QString> enumOptions() const {
+        return {};
+    }
+
     /// @brief Build a widget that can be used to interact with this setting. It
     /// shouldn't mutate the state of the setting.
     /// @param parent The parent widget for which this widget is being created.
@@ -194,6 +219,14 @@ class LegacyControllerBooleanSetting
                     LegacyControllerSettingsLayoutContainer::HORIZONTAL)
             override;
 
+    AbstractLegacyControllerSetting::SettingsType settingType() const override {
+        return SettingsType::Boolean;
+    }
+
+    QString defaultValueString() const override {
+        return m_defaultValue ? "true" : "false";
+    }
+
     QJSValue value() const override {
         return QJSValue(m_savedValue);
     }
@@ -281,6 +314,18 @@ class LegacyControllerNumberSetting
     }
 
     virtual ~LegacyControllerNumberSetting() = default;
+
+    AbstractLegacyControllerSetting::SettingsType settingType() const override {
+        return AbstractLegacyControllerSetting::SettingsType::Number;
+    }
+
+    QString defaultValueString() const override {
+        return ValueSerializer(m_defaultValue);
+    }
+
+    double stepValue() const override {
+        return m_stepValue;
+    }
 
     QJSValue value() const override {
         return QJSValue(m_savedValue);
@@ -410,6 +455,25 @@ class LegacyControllerEnumSetting
 
     virtual ~LegacyControllerEnumSetting() = default;
 
+    SettingsType settingType() const override {
+        return SettingsType::Enum;
+    }
+
+    QString defaultValueString() const override {
+        if (static_cast<qsizetype>(m_defaultValue) < m_options.size()) {
+            return m_options[static_cast<size_t>(m_defaultValue)].value;
+        }
+        return {};
+    }
+
+    QList<QString> enumOptions() const override {
+        QList<QString> result;
+        for (const auto& item : m_options) {
+            result.append(item.value);
+        }
+        return result;
+    }
+
     QJSValue value() const override {
         return QJSValue(stringify());
     }
@@ -468,6 +532,14 @@ class LegacyControllerColorSetting
 
     ~LegacyControllerColorSetting() override;
 
+    SettingsType settingType() const override {
+        return SettingsType::Color;
+    }
+
+    QString defaultValueString() const override {
+        return m_defaultValue.name(QColor::HexRgb);
+    }
+
     QJSValue value() const override {
         return QJSValue(stringify());
     }
@@ -521,6 +593,14 @@ class LegacyControllerFileSetting
     LegacyControllerFileSetting(const QDomElement& element);
 
     virtual ~LegacyControllerFileSetting();
+
+    SettingsType settingType() const override {
+        return SettingsType::File;
+    }
+
+    QString defaultValueString() const override {
+        return m_defaultValue.filePath();
+    }
 
     QJSValue value() const override {
         return QJSValue(stringify());
