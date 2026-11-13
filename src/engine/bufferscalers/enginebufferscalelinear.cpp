@@ -59,17 +59,6 @@ void EngineBufferScaleLinear::clear() {
     onSignalChanged();
 }
 
-// laurent de soras - punked from musicdsp.org (mad props)
-inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
-{
-    const float c = (x1 - xm1) * 0.5f;
-    const float v = x0 - x1;
-    const float w = c + v;
-    const float a = w + v + (x2 - x0) * 0.5f;
-    const float b_neg = w + a;
-    return ((((a * frac_pos) - b_neg) * frac_pos + c) * frac_pos + x0);
-}
-
 // Determine if we're changing directions (scratching) and then perform
 // a stretch
 double EngineBufferScaleLinear::scaleBuffer(
