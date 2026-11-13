@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 
 #include "control/controlobject.h"
@@ -20,12 +21,15 @@
 namespace {
 constexpr int kRateSensitivityMin = 100;
 constexpr int kRateSensitivityMax = 2500;
-const QString kControlsGroup = QStringLiteral("[Controls]");
+
+using namespace std::chrono_literals;
+
 // Approximate Technics SL-1210 brake time from 33 RPM to standstill.
 // At 45 RPM the platter spins 1.35x faster with the same brake torque,
 // so it takes 1.35x longer to stop.
-constexpr double kSpindownTime33 = 0.8; // seconds
-constexpr double kSpindownTime45 = kSpindownTime33 * 45.0 / (100.0 / 3.0);
+constexpr std::chrono::duration<double> kSpindownTime33 = 800ms;
+constexpr std::chrono::duration<double> kSpindownTime45 =
+        kSpindownTime33 * 45.0 / (100.0 / 3.0);
 // Power cut: no brake, the coasting platter is only slowed by bearing friction
 // (constant) and drag (proportional to speed).
 // kCoastTime33 is the time from 33 RPM to standstill.
@@ -33,9 +37,10 @@ constexpr double kSpindownTime45 = kSpindownTime33 * 45.0 / (100.0 / 3.0);
 // crawls, lower is closer to a straight line.
 // At 45 RPM the platter has more momentum, so the constant
 // friction has less effect and it coasts longer.
-constexpr double kCoastTime33 = 8.0; // seconds
+constexpr std::chrono::duration<double> kCoastTime33 = 8s;
 constexpr double kCoastDragRatio = 2.0;
-const double kCoastDrag = std::log(1.0 + kCoastDragRatio) / kCoastTime33;
+// Drag and friction are rates (speed units per second), not durations
+const double kCoastDrag = std::log(1.0 + kCoastDragRatio) / kCoastTime33.count();
 const double kCoastFriction33 = kCoastDrag / kCoastDragRatio;
 const double kCoastFriction45 = kCoastFriction33 * (100.0 / 3.0) / 45.0;
 // Spin-up: motor torque (speed units per second), then soft saturation
@@ -44,9 +49,23 @@ constexpr double kSpinupTorque33 = 1.42;
 constexpr double kSpinupTorque45 = kSpinupTorque33 * (100.0 / 3.0) / 45.0;
 constexpr double kQuartzLockStart = 0.9;
 constexpr double kQuartzLockGain = 2.0;
-// Range of the spin-up / spin-down time preferences, 1.0 = Technics SL-1210
+// Range of the spin-up / spin-down time settings, 1.0 = Technics SL-1210
 constexpr double kMinRampTimeFactor = 0.25;
 constexpr double kMaxRampTimeFactor = 4.0;
+
+// RampRpmMode::Rpm78 is reserved and uses the 45 RPM values until implemented
+double spinupTorque(RateControl::RampRpmMode rpm) {
+    return rpm == RateControl::RampRpmMode::Rpm33 ? kSpinupTorque33 : kSpinupTorque45;
+}
+
+double coastFriction(RateControl::RampRpmMode rpm) {
+    return rpm == RateControl::RampRpmMode::Rpm33 ? kCoastFriction33 : kCoastFriction45;
+}
+
+double brakeTime(RateControl::RampRpmMode rpm) {
+    return (rpm == RateControl::RampRpmMode::Rpm33 ? kSpindownTime33 : kSpindownTime45)
+            .count();
+}
 } // namespace
 
 // Static default values for rate buttons (percents)
@@ -56,14 +75,6 @@ ControlValueAtomic<double> RateControl::m_dPermanentRateChangeCoarse;
 ControlValueAtomic<double> RateControl::m_dPermanentRateChangeFine;
 int RateControl::m_iRateRampSensitivity;
 RateControl::RampMode RateControl::m_eRateRampMode;
-
-std::atomic<bool> RateControl::m_rampUpEnabled{false};
-std::atomic<bool> RateControl::m_rampDownEnabled{false};
-std::atomic<int> RateControl::m_rampMode{0};
-std::atomic<bool> RateControl::m_rampIncludePitch{true};
-std::atomic<int> RateControl::m_rampDownMode{0};
-std::atomic<double> RateControl::m_rampUpTimeFactor{1.0};
-std::atomic<double> RateControl::m_rampDownTimeFactor{1.0};
 
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
@@ -260,6 +271,26 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
     //     // Set the Sensitivity
     //     m_iRateRampSensitivity =
     //             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+
+    // Physical spin-up / spin-down settings. DlgPrefDeck sets them for all
+    // decks from the preferences, mappings can change them per deck.
+    m_pSpinupEnabled = std::make_unique<ControlPushButton>(
+            ConfigKey(group, QStringLiteral("spinup_enabled")));
+    m_pSpinupEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pSpindownEnabled = std::make_unique<ControlPushButton>(
+            ConfigKey(group, QStringLiteral("spindown_enabled")));
+    m_pSpindownEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pSpindownMode = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("spindown_mode")));
+    m_pPlatterRpm = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("platter_rpm")));
+    m_pSpinupTime = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("spinup_time")), true, false, false, 1.0);
+    m_pSpindownTime = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("spindown_time")), true, false, false, 1.0);
+    m_rampRpm = RampRpmMode::Rpm33;
+    m_rampDownMode = RampDownMode::Brake;
+    m_rampTimeFactor = 1.0;
 }
 
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
@@ -291,45 +322,10 @@ void RateControl::setRateRampSensitivity(int sense) {
 }
 
 // static
-void RateControl::setRampUpEnabled(bool enabled) {
-    m_rampUpEnabled = enabled;
-}
-
-// static
-void RateControl::setRampDownEnabled(bool enabled) {
-    m_rampDownEnabled = enabled;
-}
-
-// static
-void RateControl::setRampDownMode(int mode) {
-    m_rampDownMode = mode;
-}
-
-// static
-void RateControl::setRampRpmMode(int mode) {
-    m_rampMode = mode;
-}
-
-// static
-void RateControl::setRampIncludePitch(bool includePitch) {
-    m_rampIncludePitch = includePitch;
-}
-
-// static
-void RateControl::setRampUpTimeFactor(double factor) {
-    m_rampUpTimeFactor = std::clamp(factor, kMinRampTimeFactor, kMaxRampTimeFactor);
-}
-
-// static
-void RateControl::setRampDownTimeFactor(double factor) {
-    m_rampDownTimeFactor = std::clamp(factor, kMinRampTimeFactor, kMaxRampTimeFactor);
-}
-
-// static
-double RateControl::spinUpTime(int rpmMode, double factor) {
+double RateControl::spinUpTime(RampRpmMode rpm, double factor) {
     // Integrate the spin-up model of calculateSpeed() with a fine time step
     constexpr double kStep = 0.0005; // seconds
-    const double torque = (rpmMode == 0) ? kSpinupTorque33 : kSpinupTorque45;
+    const double torque = spinupTorque(rpm);
     double platterSpeed = 0.0;
     double time = 0.0;
     while (platterSpeed < 1.0 && time < 60.0) {
@@ -343,13 +339,12 @@ double RateControl::spinUpTime(int rpmMode, double factor) {
 }
 
 // static
-double RateControl::spinDownTime(int rpmMode, int rampDownMode, double factor) {
-    if (rampDownMode == 1) {
-        // Power cut: solution of dv/dt = -(friction + drag * v) from 1 to 0
-        const double friction = (rpmMode == 0) ? kCoastFriction33 : kCoastFriction45;
-        return std::log(1.0 + kCoastDrag / friction) / kCoastDrag * factor;
+double RateControl::spinDownTime(RampRpmMode rpm, RampDownMode mode, double factor) {
+    if (mode == RampDownMode::PowerCut) {
+        // Solution of dv/dt = -(friction + drag * v) from 1 to 0
+        return std::log(1.0 + kCoastDrag / coastFriction(rpm)) / kCoastDrag * factor;
     }
-    return ((rpmMode == 0) ? kSpindownTime33 : kSpindownTime45) * factor;
+    return brakeTime(rpm) * factor;
 }
 
 //static
@@ -516,9 +511,6 @@ double RateControl::calculateSpeed(double baserate,
     processTempRate(samplesPerBuffer);
 
     double rate;
-    // Rate slider contribution to rate. The ramp subtracts it when it
-    // targets the nominal 33/45 RPM speed, keeping nudges and pitch bend
-    double sliderOffset = 0.0;
     const double searching = m_pRateSearch->get();
     if (searching != 0) {
         // If searching is in progress, it overrides everything else
@@ -571,7 +563,6 @@ double RateControl::calculateSpeed(double baserate,
                     // add temp rate, but don't go backwards
                     rate = math_max(speed + getTempRate(), 0.0);
                     rate += wheelFactor;
-                    sliderOffset = speed - 1.0;
                 }
                 rate += jogFactor;
             }
@@ -609,8 +600,6 @@ double RateControl::calculateSpeed(double baserate,
                     userTweak = getTempRate() + wheelFactor + jogFactor;
                 }
                 rate = m_pBpmControl->calcSyncedRate(userTweak);
-                // Sync lock dictates the target speed, including during a ramp
-                sliderOffset = 0.0;
             }
             // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
             // Reverse with vinyl is only ok if absolute mode isn't on.
@@ -664,12 +653,13 @@ double RateControl::calculateSpeed(double baserate,
         m_spinningDown = false;
     } else if (!paused) {
         if (m_prevPaused) {
-            if (playLatched && m_rampUpEnabled) {
+            if (playLatched && m_pSpinupEnabled->toBool()) {
                 // Started by a latched Play: spin up. If the platter is still
                 // spinning down, continue from its current speed.
                 if (!m_spinningDown) {
                     m_platterSpeed = 0.0;
                 }
+                latchRampSettings(*m_pSpinupTime);
             } else {
                 // Cue preview, or ramp up disabled: start instantly
                 m_platterSpeed = 1.0;
@@ -682,9 +672,10 @@ double RateControl::calculateSpeed(double baserate,
             m_platterSpeed = 1.0;
         }
     } else {
-        if (m_rampDownEnabled && !m_prevPaused && m_latchedPlay && !seeked) {
+        if (m_pSpindownEnabled->toBool() && !m_prevPaused && m_latchedPlay && !seeked) {
             // A latched play was paused: spin down from the current speed
             m_spinningDown = true;
+            latchRampSettings(*m_pSpindownTime);
         }
         if (seeked) {
             m_spinningDown = false;
@@ -700,56 +691,15 @@ double RateControl::calculateSpeed(double baserate,
 
     const double dt = static_cast<double>(samplesPerBuffer) / m_pSampleRate.get() / 2;
 
-    // if (m_spinningDown) {
-    //     if (m_rampDownMode == 1) {
-    //         // Power cut: the platter coasts without brake
-    //         const double friction = (m_rampMode == 0) ? kCoastFriction33 : kCoastFriction45;
-    //         m_platterSpeed -= (friction + kCoastDrag * m_platterSpeed) * dt;
-    //     } else {
-    //         // Electronic brake: constant deceleration until standstill
-    //         const double spindownTime = (m_rampMode == 0) ? kSpindownTime33 : kSpindownTime45;
-    //         m_platterSpeed -= dt / spindownTime;
-    //     }
-    //     if (m_platterSpeed <= 0.0) {
-    //         m_platterSpeed = 1.0;
-    //         m_spinningDown = false;
-    //         return rate; // paused rate (0 unless jog scrubbing)
-    //     }
-    //     return m_lastTargetRate * m_platterSpeed;
-    // }
-
-    // if (m_platterSpeed < 1.0) {
-    //     // 33 RPM = heavier platter feel, 45 RPM = lighter
-    //     const double torque = (m_rampMode == 0) ? 0.45 : 0.75;
-    //     m_platterSpeed += torque * dt;
-
-    //    // Soft saturation: motor settling into quartz lock
-    //    if (m_platterSpeed > 0.9) {
-    //        m_platterSpeed += (1.0 - m_platterSpeed) * 2.0 * dt;
-    //    }
-    //    if (m_platterSpeed < 1.0) {
-    //        // Ramp to the pitched speed, or to the nominal 33/45 RPM speed
-    //        // without the rate slider. Nudges and pitch bend are kept.
-    //        // rate is already negated for reverse.
-    //        m_lastTargetRate = m_rampIncludePitch
-    //                ? rate
-    //                : rate - (*pReportReverse ? -sliderOffset : sliderOffset);
-    //        return m_lastTargetRate * m_platterSpeed;
-    //    }
-    //    m_platterSpeed = 1.0;
-    //}
-
     if (m_spinningDown) {
-        // Spin-down time preference stretches the curve, 1.0 = SL-1210
-        const double downDt = dt / m_rampDownTimeFactor;
-        if (m_rampDownMode == 1) {
+        // Spin-down time setting stretches the curve, 1.0 = SL-1210
+        const double downDt = dt / m_rampTimeFactor;
+        if (m_rampDownMode == RampDownMode::PowerCut) {
             // Power cut: the platter coasts without brake
-            const double friction = (m_rampMode == 0) ? kCoastFriction33 : kCoastFriction45;
-            m_platterSpeed -= (friction + kCoastDrag * m_platterSpeed) * downDt;
+            m_platterSpeed -= (coastFriction(m_rampRpm) + kCoastDrag * m_platterSpeed) * downDt;
         } else {
             // Electronic brake: constant deceleration until standstill
-            const double spindownTime = (m_rampMode == 0) ? kSpindownTime33 : kSpindownTime45;
-            m_platterSpeed -= downDt / spindownTime;
+            m_platterSpeed -= downDt / brakeTime(m_rampRpm);
         }
         if (m_platterSpeed <= 0.0) {
             m_platterSpeed = 1.0;
@@ -760,24 +710,18 @@ double RateControl::calculateSpeed(double baserate,
     }
 
     if (m_platterSpeed < 1.0) {
-        // Spin-up time preference stretches the curve, 1.0 = SL-1210
-        const double upDt = dt / m_rampUpTimeFactor;
-        // 33 RPM = heavier platter feel, 45 RPM = lighter
-        const double torque = (m_rampMode == 0) ? kSpinupTorque33 : kSpinupTorque45;
-        m_platterSpeed += torque * upDt;
+        // Spin-up time setting stretches the curve, 1.0 = SL-1210
+        const double upDt = dt / m_rampTimeFactor;
+        m_platterSpeed += spinupTorque(m_rampRpm) * upDt;
 
         // Soft saturation: motor settling into quartz lock
         if (m_platterSpeed > kQuartzLockStart) {
             m_platterSpeed += (1.0 - m_platterSpeed) * kQuartzLockGain * upDt;
         }
         if (m_platterSpeed < 1.0) {
-            // Ramp to the pitched speed, or to the nominal 33/45 RPM speed
-            // without the rate slider. Nudges and pitch bend are kept.
-            // rate is already negated for reverse.
-            m_lastTargetRate = m_rampIncludePitch
-                    ? rate
-                    : rate - (*pReportReverse ? -sliderOffset : sliderOffset);
-            return m_lastTargetRate * m_platterSpeed;
+            // Like a real turntable, spin up to the pitched speed
+            m_lastTargetRate = rate;
+            return rate * m_platterSpeed;
         }
         m_platterSpeed = 1.0;
     }
@@ -937,4 +881,11 @@ void RateControl::setEngineMixer(EngineMixer* pEngineMixer) {
 
 void RateControl::requestRampReset() {
     m_resetRampRequested = true;
+}
+
+void RateControl::latchRampSettings(const ControlObject& timeControl) {
+    // A running ramp keeps its settings, changes apply to the next one
+    m_rampRpm = static_cast<RampRpmMode>(static_cast<int>(m_pPlatterRpm->get()));
+    m_rampDownMode = static_cast<RampDownMode>(static_cast<int>(m_pSpindownMode->get()));
+    m_rampTimeFactor = std::clamp(timeControl.get(), kMinRampTimeFactor, kMaxRampTimeFactor);
 }

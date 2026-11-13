@@ -40,6 +40,19 @@ public:
       Linear = 1    // pitch moves up/down in a progressively linear fashion
   };
 
+  enum class RampDownMode {
+      Brake = 0,    // stop button: electronic brake
+      PowerCut = 1, // power switch off: the platter coasts
+  };
+  Q_ENUM(RampDownMode)
+
+  enum class RampRpmMode {
+      Rpm33 = 0,
+      Rpm45 = 1,
+      Rpm78 = 2, // reserved, not selectable yet
+  };
+  Q_ENUM(RampRpmMode)
+
   void setBpmControl(BpmControl* bpmcontrol);
 
   // Returns the current engine rate.  "reportScratching" is used to tell
@@ -83,17 +96,9 @@ public:
   // Thread-safe: request a fresh motor state, applied in calculateSpeed()
   void requestRampReset();
 
-  static void setRampUpEnabled(bool enabled);
-  static void setRampDownEnabled(bool enabled);
-  static void setRampRpmMode(int mode); // 0 = 33 RPM, 1 = 45 RPM
-  static void setRampIncludePitch(bool includePitch);
-  static void setRampDownMode(int mode); // 0 = brake, 1 = power cut
-  // 1.0 = Technics SL-1210, clamped to 0.25 .. 4.0
-  static void setRampUpTimeFactor(double factor);
-  static void setRampDownTimeFactor(double factor);
   // Resulting ramp times in seconds, for the preferences
-  static double spinUpTime(int rpmMode, double factor);
-  static double spinDownTime(int rpmMode, int rampDownMode, double factor);
+  static double spinUpTime(RampRpmMode rpm, double factor);
+  static double spinDownTime(RampRpmMode rpm, RampDownMode mode, double factor);
 
 public slots:
   void slotRateRangeChanged(double);
@@ -194,19 +199,32 @@ private:
   // Physical spin-up / spin-down
   std::unique_ptr<PollingControlProxy> m_pPlayLatched;
   double m_platterSpeed;   // 0.0 = standstill, 1.0 = target speed reached
-  double m_lastTargetRate; // speed the platter was ramping to / running at
+  double m_lastTargetRate; // speed the platter was ramping to or running at
   bool m_spinningDown;
   bool m_seekedSinceLastBuffer;
   bool m_prevPaused;
   bool m_latchedPlay;
-  static std::atomic<bool> m_rampUpEnabled;
-  static std::atomic<bool> m_rampDownEnabled;
-  static std::atomic<int> m_rampMode; // 0 = 33 RPM, 1 = 45 RPM
-  static std::atomic<bool> m_rampIncludePitch;
-  static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
-  // Set on track change (worker thread), applied in calculateSpeed()
+  // static std::atomic<bool> m_rampUpEnabled;
+  // static std::atomic<bool> m_rampDownEnabled;
+  // static std::atomic<int> m_rampMode; // 0 = 33 RPM, 1 = 45 RPM
+  // static std::atomic<bool> m_rampIncludePitch;
+  // static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
+  //// Set on track change (worker thread), applied in calculateSpeed()
   std::atomic<bool> m_resetRampRequested;
-  static std::atomic<double> m_rampUpTimeFactor;
-  static std::atomic<double> m_rampDownTimeFactor;
-  bool m_rampAllowed; // only main decks, not samplers / preview deck
+  // static std::atomic<double> m_rampUpTimeFactor;
+  // static std::atomic<double> m_rampDownTimeFactor;
+
+  bool m_rampAllowed; // only main decks, not samplers or preview deck
+
+  void latchRampSettings(const ControlObject& timeControl);
+  std::unique_ptr<ControlPushButton> m_pSpinupEnabled;
+  std::unique_ptr<ControlPushButton> m_pSpindownEnabled;
+  std::unique_ptr<ControlObject> m_pSpindownMode;
+  std::unique_ptr<ControlObject> m_pPlatterRpm;
+  std::unique_ptr<ControlObject> m_pSpinupTime;   // 1.0 = Technics SL-1210
+  std::unique_ptr<ControlObject> m_pSpindownTime; // 1.0 = Technics SL-1210
+  // Settings of the running ramp
+  RampRpmMode m_rampRpm;
+  RampDownMode m_rampDownMode;
+  double m_rampTimeFactor;
 };

@@ -116,4 +116,5 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     double m_dRatePermCoarse;
     double m_dRatePermFine;
     void updateRampTimeLabels();
+    void setRampSettingsForAllDecks();
 };

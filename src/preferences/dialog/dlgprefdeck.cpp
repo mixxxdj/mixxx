@@ -437,14 +437,12 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             ConfigKey(kControlsGroup, QStringLiteral("RampDownEnabled")), false);
     int rampMode = m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")), 0);
-    bool rampIncludePitch = m_pConfig->getValue(
-            ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")), true);
 
     checkBoxRampUpEnabled->setChecked(rampUpEnabled);
     checkBoxRampDownEnabled->setChecked(rampDownEnabled);
     const int rampDownMode = m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")), 0);
-    if (rampDownMode == 1) {
+    if (rampDownMode == static_cast<int>(RateControl::RampDownMode::PowerCut)) {
         radioButtonRampDownPowerCut->setChecked(true);
     } else {
         radioButtonRampDownBrake->setChecked(true);
@@ -462,7 +460,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     connect(checkBoxRampDownEnabled, &QCheckBox::toggled, this, updateRampDownModeEnabled);
     updateRampDownModeEnabled(checkBoxRampDownEnabled->isChecked());
     comboBoxRampUpMode->setCurrentIndex(rampMode);
-    checkBoxRampUpIncludePitch->setChecked(rampIncludePitch);
 
     sliderRampUpTime->setValue(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("RampUpTime")),
@@ -494,13 +491,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     updateRampUpTimeEnabled(checkBoxRampUpEnabled->isChecked());
     updateRampTimeLabels();
 
-    RateControl::setRampUpEnabled(checkBoxRampUpEnabled->isChecked());
-    RateControl::setRampDownEnabled(checkBoxRampDownEnabled->isChecked());
-    RateControl::setRampDownMode(radioButtonRampDownPowerCut->isChecked() ? 1 : 0);
-    RateControl::setRampRpmMode(comboBoxRampUpMode->currentIndex());
-    RateControl::setRampIncludePitch(checkBoxRampUpIncludePitch->isChecked());
-    RateControl::setRampUpTimeFactor(sliderRampUpTime->value() / 100.0);
-    RateControl::setRampDownTimeFactor(sliderRampDownTime->value() / 100.0);
+    setRampSettingsForAllDecks();
 
     slotUpdate();
 }
@@ -601,8 +592,6 @@ void DlgPrefDeck::slotUpdate() {
             ConfigKey(kControlsGroup, QStringLiteral("RampDownEnabled")), false));
     comboBoxRampUpMode->setCurrentIndex(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")), 0));
-    checkBoxRampUpIncludePitch->setChecked(m_pConfig->getValue(
-            ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")), true));
     if (m_pConfig->getValue(
                 ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")), 0) == 1) {
         radioButtonRampDownPowerCut->setChecked(true);
@@ -664,7 +653,6 @@ void DlgPrefDeck::slotResetToDefaults() {
     checkBoxRampDownEnabled->setChecked(false);
     radioButtonRampDownBrake->setChecked(true);
     comboBoxRampUpMode->setCurrentIndex(0); // 33 RPM
-    checkBoxRampUpIncludePitch->setChecked(true);
     sliderRampUpTime->setValue(kDefaultRampTimePercent);
     sliderRampDownTime->setValue(kDefaultRampTimePercent);
 }
@@ -896,10 +884,11 @@ void DlgPrefDeck::slotApply() {
             ConfigKey(kControlsGroup, QStringLiteral("RatePermRight")),
             m_dRatePermFine);
 
-    const int rampDownMode = radioButtonRampDownPowerCut->isChecked() ? 1 : 0;
+    const int rampDownMode = static_cast<int>(radioButtonRampDownPowerCut->isChecked()
+                    ? RateControl::RampDownMode::PowerCut
+                    : RateControl::RampDownMode::Brake);
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")),
             rampDownMode);
-    RateControl::setRampDownMode(rampDownMode);
 
     // Save Physical Spin-up Spin-Down Ramp settings
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpEnabled")),
@@ -911,19 +900,11 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")),
             comboBoxRampUpMode->currentIndex());
 
-    m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpIncludePitch")),
-            checkBoxRampUpIncludePitch->isChecked());
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampUpTime")),
             sliderRampUpTime->value());
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("RampDownTime")),
             sliderRampDownTime->value());
-
-    RateControl::setRampUpEnabled(checkBoxRampUpEnabled->isChecked());
-    RateControl::setRampDownEnabled(checkBoxRampDownEnabled->isChecked());
-    RateControl::setRampRpmMode(comboBoxRampUpMode->currentIndex());
-    RateControl::setRampIncludePitch(checkBoxRampUpIncludePitch->isChecked());
-    RateControl::setRampUpTimeFactor(sliderRampUpTime->value() / 100.0);
-    RateControl::setRampDownTimeFactor(sliderRampDownTime->value() / 100.0);
+    setRampSettingsForAllDecks();
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
@@ -958,6 +939,9 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
         setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
     }
+
+    // New decks get the saved spin-up / spin-down settings
+    setRampSettingsForAllDecks();
 }
 
 void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
@@ -1013,8 +997,10 @@ int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
 }
 
 void DlgPrefDeck::updateRampTimeLabels() {
-    const int rpmMode = comboBoxRampUpMode->currentIndex();
-    const int rampDownMode = radioButtonRampDownPowerCut->isChecked() ? 1 : 0;
+    const auto rpm = static_cast<RateControl::RampRpmMode>(comboBoxRampUpMode->currentIndex());
+    const auto rampDownMode = radioButtonRampDownPowerCut->isChecked()
+            ? RateControl::RampDownMode::PowerCut
+            : RateControl::RampDownMode::Brake;
     const auto timeText = [](int percent, double seconds) {
         QString text = tr("%1 % (%2 s)").arg(percent).arg(seconds, 0, 'f', 1);
         if (percent == kDefaultRampTimePercent) {
@@ -1024,8 +1010,36 @@ void DlgPrefDeck::updateRampTimeLabels() {
     };
     const int upPercent = sliderRampUpTime->value();
     labelRampUpTimeValue->setText(timeText(upPercent,
-            RateControl::spinUpTime(rpmMode, upPercent / 100.0)));
+            RateControl::spinUpTime(rpm, upPercent / 100.0)));
     const int downPercent = sliderRampDownTime->value();
     labelRampDownTimeValue->setText(timeText(downPercent,
-            RateControl::spinDownTime(rpmMode, rampDownMode, downPercent / 100.0)));
+            RateControl::spinDownTime(rpm, rampDownMode, downPercent / 100.0)));
+}
+
+void DlgPrefDeck::setRampSettingsForAllDecks() {
+    const double spinupEnabled = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpEnabled")), false);
+    const double spindownEnabled = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampDownEnabled")), false);
+    const double spindownMode = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampDownMode")), 0);
+    const double platterRpm = m_pConfig->getValue(
+            ConfigKey(kControlsGroup, QStringLiteral("RampUpMode")), 0);
+    const double spinupTime = m_pConfig->getValue(
+                                      ConfigKey(kControlsGroup, QStringLiteral("RampUpTime")),
+                                      kDefaultRampTimePercent) /
+            100.0;
+    const double spindownTime = m_pConfig->getValue(
+                                        ConfigKey(kControlsGroup, QStringLiteral("RampDownTime")),
+                                        kDefaultRampTimePercent) /
+            100.0;
+    for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
+        const QString group = PlayerManager::groupForDeck(i);
+        ControlObject::set(ConfigKey(group, QStringLiteral("spinup_enabled")), spinupEnabled);
+        ControlObject::set(ConfigKey(group, QStringLiteral("spindown_enabled")), spindownEnabled);
+        ControlObject::set(ConfigKey(group, QStringLiteral("spindown_mode")), spindownMode);
+        ControlObject::set(ConfigKey(group, QStringLiteral("platter_rpm")), platterRpm);
+        ControlObject::set(ConfigKey(group, QStringLiteral("spinup_time")), spinupTime);
+        ControlObject::set(ConfigKey(group, QStringLiteral("spindown_time")), spindownTime);
+    }
 }

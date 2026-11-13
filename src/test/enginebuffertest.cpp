@@ -608,21 +608,14 @@ class RateControlRampTest : public MockedEngineBackendTest {
     }
 
     void TearDown() override {
-        // The ramp settings are static, don't leak them into other tests
+        // The rate ramp mode is static, don't leak it into other tests
         resetRampSettings();
         ControlObject::set(ConfigKey(kAppGroup, "samplerate"), m_oldSampleRate);
         MockedEngineBackendTest::TearDown();
     }
 
     static void resetRampSettings() {
-        RateControl::setRampUpEnabled(false);
-        RateControl::setRampDownEnabled(false);
-        RateControl::setRampRpmMode(0);
-        RateControl::setRampIncludePitch(true);
-        RateControl::setRampDownMode(0);
         RateControl::setRateRampMode(RateControl::RampMode::Stepping);
-        RateControl::setRampUpTimeFactor(1.0);
-        RateControl::setRampDownTimeFactor(1.0);
     }
 
     double speed(const QString& group) const {
@@ -651,7 +644,7 @@ class RateControlRampTest : public MockedEngineBackendTest {
     // Start deck 1 instantly (spin-up disabled) and keep the ramp settings
     void playAtFullSpeed() {
         const bool rampUp = false;
-        RateControl::setRampUpEnabled(rampUp);
+        ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), rampUp);
         ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
         ProcessBuffer();
         ASSERT_EQ(1.0, speed());
@@ -670,7 +663,7 @@ TEST_F(RateControlRampTest, DisabledRampChangesNothing) {
 }
 
 TEST_F(RateControlRampTest, SpinUpReachesFullSpeed) {
-    RateControl::setRampUpEnabled(true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), true);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     const double first = speed();
@@ -688,7 +681,7 @@ TEST_F(RateControlRampTest, BrakeTimeIsSampleRateIndependent) {
         ControlObject::set(ConfigKey(kAppGroup, "samplerate"), sampleRate);
         ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.0);
         playAtFullSpeed();
-        RateControl::setRampDownEnabled(true);
+        ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
         ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
         int buffers = 0;
         do {
@@ -697,14 +690,14 @@ TEST_F(RateControlRampTest, BrakeTimeIsSampleRateIndependent) {
         } while (speed() > 0.0 && buffers < 100000);
         EXPECT_NEAR(kBrakeTime33, buffers * bufferSeconds(), 2 * bufferSeconds())
                 << "sample rate " << sampleRate;
-        RateControl::setRampDownEnabled(false);
+        ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), false);
     }
 }
 
 TEST_F(RateControlRampTest, PowerCutCoastsLongerThanBrake) {
     playAtFullSpeed();
-    RateControl::setRampDownEnabled(true);
-    RateControl::setRampDownMode(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_mode"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     processSeconds(kBrakeTime33);
     // The brake would be at standstill here, the coasting platter is not
@@ -715,9 +708,9 @@ TEST_F(RateControlRampTest, PowerCutCoastsLongerThanBrake) {
 
 TEST_F(RateControlRampTest, PlayDuringCoastContinuesFromCurrentSpeed) {
     playAtFullSpeed();
-    RateControl::setRampUpEnabled(true);
-    RateControl::setRampDownEnabled(true);
-    RateControl::setRampDownMode(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_mode"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     processSeconds(0.5);
     const double coasting = speed();
@@ -730,7 +723,7 @@ TEST_F(RateControlRampTest, PlayDuringCoastContinuesFromCurrentSpeed) {
 
 TEST_F(RateControlRampTest, PauseWithSeekStopsInstantly) {
     playAtFullSpeed();
-    RateControl::setRampDownEnabled(true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.25);
     ProcessBuffer();
@@ -738,7 +731,7 @@ TEST_F(RateControlRampTest, PauseWithSeekStopsInstantly) {
 }
 
 TEST_F(RateControlRampTest, JumpCutsSpinUp) {
-    RateControl::setRampUpEnabled(true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), true);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     processSeconds(0.5);
     ASSERT_LT(speed(), 1.0);
@@ -748,7 +741,7 @@ TEST_F(RateControlRampTest, JumpCutsSpinUp) {
 }
 
 TEST_F(RateControlRampTest, CuePreviewStartsInstantly) {
-    RateControl::setRampUpEnabled(true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), true);
     ControlObject::set(ConfigKey(m_sGroup1, "cue_preview"), 1.0);
     ProcessBuffer();
     EXPECT_EQ(1.0, speed());
@@ -757,8 +750,8 @@ TEST_F(RateControlRampTest, CuePreviewStartsInstantly) {
 
 TEST_F(RateControlRampTest, JogCancelsSpinDown) {
     playAtFullSpeed();
-    RateControl::setRampDownEnabled(true);
-    RateControl::setRampDownMode(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_mode"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     processSeconds(0.2);
     ASSERT_GT(speed(), 0.0);
@@ -770,7 +763,7 @@ TEST_F(RateControlRampTest, JogCancelsSpinDown) {
 
 TEST_F(RateControlRampTest, TrackLoadResetsMotorState) {
     playAtFullSpeed();
-    RateControl::setRampUpEnabled(true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), true);
     // No paused buffer in between: without the reset the deck would still
     // be considered running and skip the spin-up
     m_pMixerDeck1->loadFakeTrack(false, 0.0);
@@ -781,7 +774,7 @@ TEST_F(RateControlRampTest, TrackLoadResetsMotorState) {
 
 TEST_F(RateControlRampTest, PassthroughDoesNotReplaySpinDown) {
     playAtFullSpeed();
-    RateControl::setRampDownEnabled(true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
     // Passthrough is only accepted with a configured input
     ControlObject* pInputConfigured = ControlObject::getControl(
             ConfigKey(m_sGroup1, "input_configured"));
@@ -799,24 +792,17 @@ TEST_F(RateControlRampTest, PassthroughDoesNotReplaySpinDown) {
     pInputConfigured->forceSet(0.0);
 }
 
-TEST_F(RateControlRampTest, SpinUpWithoutSliderKeepsPitchBend) {
-    RateControl::setRampUpEnabled(true);
-    RateControl::setRampIncludePitch(false);
-    RateControl::setTemporaryRateChangeCoarseAmount(4);
-    for (const auto& group : {m_sGroup1, m_sGroup2}) {
-        ControlObject::set(ConfigKey(group, "rate_dir"), 1.0);
-        ControlObject::set(ConfigKey(group, "rateRange"), 0.08);
-        ControlObject::set(ConfigKey(group, "rate"), 0.5); // +4 %
-    }
-    // Deck 2 additionally bends the pitch up by 4 %
-    ControlObject::set(ConfigKey(m_sGroup2, "rate_temp_up"), 1.0);
+TEST_F(RateControlRampTest, SpinUpTargetsPitchedSpeed) {
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_dir"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rateRange"), 0.08);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5); // +4 %
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
-    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
-    processSeconds(0.5);
-    ASSERT_LT(speed(m_sGroup1), 1.0);
-    // The slider is excluded on both decks, the pitch bend is kept
-    EXPECT_NEAR(1.04, speed(m_sGroup2) / speed(m_sGroup1), 1e-6);
-    ControlObject::set(ConfigKey(m_sGroup2, "rate_temp_up"), 0.0);
+    processSeconds(0.2);
+    ASSERT_LT(speed(), 1.04);
+    // Like a real turntable, the platter spins up to the pitched speed
+    processSeconds(3.0);
+    EXPECT_NEAR(1.04, speed(), 1e-9);
 }
 
 TEST_F(RateControlRampTest, HotcueCutsSpinUp) {
@@ -829,7 +815,7 @@ TEST_F(RateControlRampTest, HotcueCutsSpinUp) {
     ProcessBuffer();
     ASSERT_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "hotcue_1_status")) > 0);
 
-    RateControl::setRampUpEnabled(true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), true);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     processSeconds(0.5);
     ASSERT_LT(speed(), 1.0);
@@ -841,23 +827,23 @@ TEST_F(RateControlRampTest, HotcueCutsSpinUp) {
 }
 
 TEST_F(RateControlRampTest, SpinUpTimeFollowsPreference) {
-    RateControl::setRampUpEnabled(true);
-    RateControl::setRampUpTimeFactor(0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spinup_time"), 0.5);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     int buffers = 0;
     do {
         ProcessBuffer();
         ++buffers;
     } while (speed() < 1.0 && buffers < 100000);
-    EXPECT_NEAR(RateControl::spinUpTime(0, 0.5),
+    EXPECT_NEAR(RateControl::spinUpTime(RateControl::RampRpmMode::Rpm33, 0.5),
             buffers * bufferSeconds(),
             2 * bufferSeconds());
 }
 
 TEST_F(RateControlRampTest, BrakeTimeFollowsPreference) {
     playAtFullSpeed();
-    RateControl::setRampDownEnabled(true);
-    RateControl::setRampDownTimeFactor(2.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_time"), 2.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     int buffers = 0;
     do {
@@ -865,35 +851,41 @@ TEST_F(RateControlRampTest, BrakeTimeFollowsPreference) {
         ++buffers;
     } while (speed() > 0.0 && buffers < 100000);
     EXPECT_NEAR(2.0 * kBrakeTime33, buffers * bufferSeconds(), 2 * bufferSeconds());
-    EXPECT_NEAR(RateControl::spinDownTime(0, 0, 2.0), 2.0 * kBrakeTime33, 1e-9);
+    EXPECT_NEAR(RateControl::spinDownTime(RateControl::RampRpmMode::Rpm33,
+                        RateControl::RampDownMode::Brake,
+                        2.0),
+            2.0 * kBrakeTime33,
+            1e-9);
 }
 
 TEST_F(RateControlRampTest, PowerCutTimeFollowsPreference) {
     playAtFullSpeed();
-    RateControl::setRampDownEnabled(true);
-    RateControl::setRampDownMode(1);
-    RateControl::setRampDownTimeFactor(0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_mode"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_time"), 0.5);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     int buffers = 0;
     do {
         ProcessBuffer();
         ++buffers;
     } while (speed() > 0.0 && buffers < 100000);
-    EXPECT_NEAR(RateControl::spinDownTime(0, 1, 0.5),
+    EXPECT_NEAR(RateControl::spinDownTime(RateControl::RampRpmMode::Rpm33,
+                        RateControl::RampDownMode::PowerCut,
+                        0.5),
             buffers * bufferSeconds(),
             2 * bufferSeconds());
 }
 
 TEST_F(RateControlRampTest, DisablingRampLetsRunningRampFinish) {
     playAtFullSpeed();
-    RateControl::setRampDownEnabled(true);
-    RateControl::setRampDownMode(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), true);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_mode"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     processSeconds(0.2);
     const double coasting = speed();
     ASSERT_GT(coasting, 0.0);
     // Switching spin-down off does not cut the audible coast
-    RateControl::setRampDownEnabled(false);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), false);
     ProcessBuffer();
     EXPECT_GT(speed(), 0.0);
     EXPECT_LT(speed(), coasting);
@@ -903,5 +895,18 @@ TEST_F(RateControlRampTest, DisablingRampLetsRunningRampFinish) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ProcessBuffer();
+    EXPECT_EQ(0.0, speed());
+}
+
+TEST_F(RateControlRampTest, ChangingSettingsDoesNotAlterRunningRamp) {
+    playAtFullSpeed();
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_enabled"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    processSeconds(0.2);
+    ASSERT_GT(speed(), 0.0);
+    // Switching to a 4x longer power cut while braking changes nothing
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_mode"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "spindown_time"), 4.0);
+    processSeconds(kBrakeTime33);
     EXPECT_EQ(0.0, speed());
 }
