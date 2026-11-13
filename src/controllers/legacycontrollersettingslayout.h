@@ -17,7 +17,7 @@ class LegacyControllerSettingsLayoutElement {
 
     virtual std::unique_ptr<LegacyControllerSettingsLayoutElement> clone() const = 0;
 
-    virtual QWidget* build(QWidget* parent) = 0;
+    virtual QWidget* build(QWidget* parent) const = 0;
 };
 
 /// @brief This layout element can hold others element. It is also the one used
@@ -61,7 +61,20 @@ class LegacyControllerSettingsLayoutContainer : public LegacyControllerSettingsL
         m_elements.push_back(std::move(container));
     }
 
-    virtual QWidget* build(QWidget* parent) override;
+    virtual QWidget* build(QWidget* parent) const override;
+
+    /// @brief Return the child layout elements contained in this container.
+    /// @return A const reference to the vector of child elements.
+    const std::vector<std::unique_ptr<LegacyControllerSettingsLayoutElement>>&
+    getElements() const {
+        return m_elements;
+    }
+
+    /// @brief Return the orientation of this container.
+    /// @return The disposition value.
+    Disposition getOrientation() const {
+        return m_widgetOrientation;
+    }
 
   protected:
     QBoxLayout* buildLayout(QWidget* parent) const;
@@ -85,7 +98,13 @@ class LegacyControllerSettingsGroup : public LegacyControllerSettingsLayoutConta
         return std::make_unique<LegacyControllerSettingsGroup>(*this);
     }
 
-    QWidget* build(QWidget* parent) override;
+    QWidget* build(QWidget* parent) const override;
+
+    /// @brief Return the group's label.
+    /// @return The label string.
+    const QString& label() const {
+        return m_label;
+    }
 
   private:
     QString m_label;
@@ -107,7 +126,13 @@ class LegacyControllerSettingsLayoutItem : public LegacyControllerSettingsLayout
         return std::make_unique<LegacyControllerSettingsLayoutItem>(*this);
     }
 
-    QWidget* build(QWidget* parent) override;
+    QWidget* build(QWidget* parent) const override;
+
+    /// @brief Return the setting wrapped by this layout item.
+    /// @return A shared pointer to the setting, or nullptr if none.
+    std::shared_ptr<AbstractLegacyControllerSetting> getSetting() const {
+        return m_setting;
+    }
 
   private:
     std::shared_ptr<AbstractLegacyControllerSetting> m_setting;

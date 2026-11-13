@@ -180,7 +180,7 @@ class LegacyControllerMapping {
         return false;
     }
 
-    LegacyControllerSettingsLayoutElement* getSettingsLayout() {
+    const LegacyControllerSettingsLayoutElement* getSettingsLayout() const {
         return m_settingsLayout.get();
     }
 

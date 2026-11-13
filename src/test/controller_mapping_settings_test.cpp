@@ -2,6 +2,9 @@
 #include <gtest/gtest.h>
 
 #include <QDomDocument>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
 
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
@@ -389,6 +392,16 @@ class LegacyDummyMappingFileHandler : public LegacyControllerMappingFileHandler 
         return handler.load(root, filePath, QDir());
     }
 
+    /// Serialize a mapping's settings to a QDomDocument (no file I/O).
+    /// Calls the protected buildRootWithScripts() + addSettingsToDocument()
+    /// to produce the same XML that save() would write to disk.
+    static QDomDocument mapToDocument(const LegacyControllerMapping& mapping) {
+        LegacyDummyMappingFileHandler handler;
+        QDomDocument doc = handler.buildRootWithScripts(mapping);
+        handler.addSettingsToDocument(mapping, &doc);
+        return doc;
+    }
+
   private:
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
@@ -514,4 +527,80 @@ TEST_F(LegacyControllerMappingSettingsTest, handleNumberWithNegativeRange) {
     ASSERT_EQ(pMapping->getSettings().size(), 1);
     ASSERT_EQ(pMapping->getSettings().at(0)->variableName(), "myInteger1");
     ASSERT_EQ(pMapping->getSettings().at(0)->value().toNumber(), 20);
+}
+
+/// Verify that all settings are preserved when saving a mapping, eg. after
+/// learning inputs or altering I/O controls manually.
+/// Note that this does not verify the layout (groups, rows, columns).
+TEST_F(LegacyControllerMappingSettingsTest, verifySettingsPreservedInSave) {
+    QFileInfo mappingFile(getTestDir(), "controllers/test_mapping_settings.xml");
+    QFile file(mappingFile.absoluteFilePath());
+    QDomDocument origDoc;
+
+    EXPECT_TRUE(file.open(QIODevice::ReadOnly));
+    EXPECT_TRUE(origDoc.setContent(&file));
+    file.close();
+
+    auto pMapping = LegacyDummyMappingFileHandler::loadDummyMapping(
+            origDoc.documentElement(), mappingFile.absoluteFilePath());
+
+    // Verify the mapping has settings loaded from the XML
+    EXPECT_TRUE(pMapping->getSettings().size() > 0)
+            << "Mapping should have settings loaded from test_mapping_settings.xml";
+
+    // Save the mapping to QDomDocument directly (no temp file).
+    QDomDocument doc = LegacyDummyMappingFileHandler::mapToDocument(*pMapping);
+
+    // Verify the <settings> element exists in the exported XML
+    QDomElement root = doc.documentElement();
+    EXPECT_FALSE(root.isNull());
+
+    QDomElement settings = root.firstChildElement("settings");
+    EXPECT_FALSE(settings.isNull())
+            << "mapToDocument() should write <settings> element";
+
+    // Reload the exported XML into a new mapping and compare settings.
+    auto pMappingReloaded = LegacyDummyMappingFileHandler::loadDummyMapping(
+            doc.documentElement(), "/fake/path-reloaded");
+
+    // Verify the reloaded mapping has the same number of settings
+    const auto& settingsOrig = pMapping->getSettings();
+    const auto& settingsReloaded = pMappingReloaded->getSettings();
+    int settCountOrig = settingsOrig.size();
+    int settCountReloaded = settingsReloaded.size();
+    EXPECT_EQ(settCountOrig, settCountReloaded)
+            << "Reloaded mapping should have same number of settings";
+
+    // No point in continuing if counts aren't equal
+    if (settCountOrig != settCountReloaded) {
+        return;
+    }
+
+    // Now verify parameters of each setting are preserved.
+    // This implicitly also verifies that settings are in the same order.
+    for (qsizetype i = 0; i < settCountOrig; i++) {
+        const auto& settOrig = settingsOrig[i];
+        const auto& settReloaded = settingsReloaded[i];
+        EXPECT_EQ(settOrig->settingType(), settReloaded->settingType());
+        EXPECT_EQ(settOrig->variableName(), settReloaded->variableName());
+        EXPECT_EQ(settOrig->description(), settReloaded->description());
+        if (settOrig->settingType() != settReloaded->settingType()) {
+            continue;
+        }
+
+        EXPECT_EQ(settOrig->defaultValueString(), settReloaded->defaultValueString());
+
+        switch (settOrig->settingType()) {
+        case AbstractLegacyControllerSetting::SettingsType::Number:
+            EXPECT_EQ(settOrig->minValue(), settReloaded->minValue());
+            EXPECT_EQ(settOrig->maxValue(), settReloaded->maxValue());
+            EXPECT_EQ(settOrig->stepValue(), settReloaded->stepValue());
+            break;
+        case AbstractLegacyControllerSetting::SettingsType::Enum:
+            EXPECT_EQ(settOrig->enumOptions(), settReloaded->enumOptions());
+            break;
+        default:
+            break;
+        }
+    }
 }
