@@ -294,9 +294,9 @@ QDomElement LegacyControllerRealSetting::toXML(QDomDocument* pDoc) const {
         }
         return s;
     };
-    option.setAttribute(QStringLiteral("default"), serializeValue(m_defaultValue));
     option.setAttribute(QStringLiteral("min"), serializeValue(m_minValue));
     option.setAttribute(QStringLiteral("max"), serializeValue(m_maxValue));
+    option.setAttribute(QStringLiteral("default"), serializeValue(m_defaultValue));
     option.setAttribute(QStringLiteral("step"), serializeValue(m_stepValue));
     return option;
 }
