@@ -209,8 +209,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
 
 QNetworkReply* JsonWebTask::doStartNetworkRequest(
         QNetworkAccessManager* networkAccessManager,
-        int parentTimeoutMillis) {
-    Q_UNUSED(parentTimeoutMillis);
+        int) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(networkAccessManager);
 

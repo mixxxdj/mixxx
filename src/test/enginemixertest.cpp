@@ -31,9 +31,7 @@ class EngineChannelMock : public EngineChannel {
                       /*isPrimarydeck*/ true) {
     }
 
-    void applyVolume(CSAMPLE* pBuff, const std::size_t bufferSize) {
-        Q_UNUSED(pBuff);
-        Q_UNUSED(bufferSize);
+    void applyVolume(CSAMPLE*, const std::size_t) {
     }
 
     MOCK_METHOD(ActiveState, updateActiveState, (), (override));

@@ -232,7 +232,8 @@ void sqliteLikeUtf8(sqlite3_context* context,
 
 #endif // __SQLITE3__
 
-bool initDatabase(const QSqlDatabase& database, mixxx::StringCollator* pCollator) {
+bool initDatabase([[maybe_unused]] const QSqlDatabase& database,
+        [[maybe_unused]] mixxx::StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();
@@ -304,9 +305,6 @@ bool initDatabase(const QSqlDatabase& database, mixxx::StringCollator* pCollator
                 << "Failed to install custom 3-arg LIKE function for SQLite3:"
                 << result;
     }
-#else
-    Q_UNUSED(database);
-    Q_UNUSED(pCollator);
 #endif // __SQLITE3__
     return true;
 }

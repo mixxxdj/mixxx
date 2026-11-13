@@ -33,8 +33,7 @@ void GLRGBWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void GLRGBWaveformWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void GLRGBWaveformWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration GLRGBWaveformWidget::render() {

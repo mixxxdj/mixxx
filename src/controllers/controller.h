@@ -226,8 +226,7 @@ class ControllerJSProxy : public QObject {
 
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    Q_INVOKABLE virtual void send(const QList<int>& data, unsigned int length = 0) {
-        Q_UNUSED(length);
+    Q_INVOKABLE virtual void send(const QList<int>& data, unsigned int = 0) {
         m_pController->send(data, data.length());
     }
 

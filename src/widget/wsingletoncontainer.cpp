@@ -34,8 +34,7 @@ void WSingletonContainer::setup(const QDomNode& node, const SkinContext& context
     }
 }
 
-void WSingletonContainer::showEvent(QShowEvent* event) {
-    Q_UNUSED(event);
+void WSingletonContainer::showEvent(QShowEvent*) {
     if (m_pWidget) {
         // The widget's current parent is some other SingletonContainer,
         // or some other widget in the skin if the widget has been newly

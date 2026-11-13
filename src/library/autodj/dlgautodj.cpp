@@ -247,10 +247,9 @@ void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::onSearch(const QString& text) {
+void DlgAutoDJ::onSearch(const QString&) {
     // Do not allow filtering the Auto DJ playlist, because
     // Auto DJ will work from the filtered table
-    Q_UNUSED(text);
 }
 
 void DlgAutoDJ::shufflePlaylistButton(bool) {

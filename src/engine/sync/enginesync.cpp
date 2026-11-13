@@ -450,8 +450,7 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     }
 }
 
-void EngineSync::notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position) {
-    Q_UNUSED(position);
+void EngineSync::notifySeek(Syncable* pSyncable, mixxx::audio::FramePos) {
     if (isLeader(pSyncable->getSyncMode())) {
         // This relies on the bpmcontrol being notified about the seek before
         // the sync control, but that's ok because that's intrinsic to how the

@@ -31,8 +31,7 @@ void GLVSyncTestWidget::castToQWidget() {
     m_widget = this;
 }
 
-void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void GLVSyncTestWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration GLVSyncTestWidget::render() {

@@ -154,8 +154,7 @@ int WDisplay::getPixmapForParameter(double dParameter) const {
     return static_cast<int>(dParameter * numPixmaps() - 0.00001);
 }
 
-void WDisplay::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dValue);
+void WDisplay::onConnectedControlChanged(double dParameter, double) {
     int pixmap = getPixmapForParameter(dParameter);
     if (pixmap != m_iCurrentPixmap) {
         // paintEvent updates m_iCurrentPixmap.

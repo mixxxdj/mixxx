@@ -29,9 +29,8 @@ void StarDelegate::paintItem(
     starRating.paint(painter, option.rect);
 }
 
-QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,
-                             const QModelIndex& index) const {
-    Q_UNUSED(option);
+QSize StarDelegate::sizeHint(const QStyleOptionViewItem&,
+        const QModelIndex& index) const {
     StarRating starRating = index.data().value<StarRating>();
     return starRating.sizeHint();
 }

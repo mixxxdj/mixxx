@@ -40,12 +40,9 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
 }
 
 bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
-        mixxx::audio::SampleRate sampleRate,
+        mixxx::audio::SampleRate,
         mixxx::audio::ChannelCount channelCount,
-        SINT frameLength) {
-    Q_UNUSED(sampleRate);
-    Q_UNUSED(frameLength);
-
+        SINT) {
     if (!shouldAnalyze(track.getTrack())) {
         return false;
     }

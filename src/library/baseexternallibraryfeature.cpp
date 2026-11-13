@@ -60,8 +60,7 @@ void BaseExternalLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidg
     m_pSidebarWidget = pSidebarWidget;
 }
 
-void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
+void BaseExternalLibraryFeature::onRightClick(const QPoint&) {
     m_lastRightClickedIndex = QModelIndex();
 }
 

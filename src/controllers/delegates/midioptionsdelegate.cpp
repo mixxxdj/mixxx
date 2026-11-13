@@ -46,11 +46,8 @@ MidiOptionsDelegate::~MidiOptionsDelegate() {
 }
 
 QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
-                                           const QStyleOptionViewItem& option,
-                                           const QModelIndex& index) const {
-    Q_UNUSED(option);
-    Q_UNUSED(index);
-
+        const QStyleOptionViewItem&,
+        const QModelIndex&) const {
     // Create, populate and connect the box.
     QComboBox* pComboBox = make_parented<QComboBox>(parent);
     auto* pModel = static_cast<QStandardItemModel*>(pComboBox->model());
@@ -101,8 +98,7 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
 }
 
 QString MidiOptionsDelegate::displayText(const QVariant& value,
-                                         const QLocale& locale) const {
-    Q_UNUSED(locale);
+        const QLocale&) const {
     MidiOptions options = value.value<MidiOptions>();
     QStringList optionStrs;
     for (const MidiOption option : kMidiOptions) {

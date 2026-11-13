@@ -19,9 +19,7 @@ QtWaveformRendererSimpleSignal::QtWaveformRendererSimpleSignal(WaveformWidgetRen
 QtWaveformRendererSimpleSignal::~QtWaveformRendererSimpleSignal() {
 }
 
-void QtWaveformRendererSimpleSignal::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
-
+void QtWaveformRendererSimpleSignal::onSetup(const QDomNode&) {
     const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
     QColor borderColor = pColors->getSignalColor().lighter(125);
     borderColor.setAlphaF(0.5f);

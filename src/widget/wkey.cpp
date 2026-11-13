@@ -26,9 +26,7 @@ WKey::WKey(const QString& group, UserSettingsPointer pConfig, QWidget* pParent)
     m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
 }
 
-void WKey::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dParameter);
-    Q_UNUSED(dValue);
+void WKey::onConnectedControlChanged(double, double) {
     // Enums are not currently represented using parameter space so it doesn't
     // make sense to use the parameter here yet.
     setValue();
@@ -70,8 +68,7 @@ void WKey::setCents() {
     setValue();
 }
 
-void WKey::keyNotationChanged(double dKeyNotationValue) {
-    Q_UNUSED(dKeyNotationValue);
+void WKey::keyNotationChanged(double) {
     // NOTE: dKeyNotationValue is the index of the key notation type, NOT the
     // key itself, so we intentionally set the old value again to update the UI.
     setValue();

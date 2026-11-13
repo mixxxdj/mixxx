@@ -81,9 +81,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST), Qt::AscendingOrder);
 }
 
-bool CrateTableModel::addTrack(const QModelIndex& index, const QString& location) {
-    Q_UNUSED(index);
-
+bool CrateTableModel::addTrack(const QModelIndex&, const QString& location) {
     // This will only succeed if the file actually exist.
     mixxx::FileInfo fileInfo(location);
     if (!fileInfo.checkFileExists()) {
@@ -154,9 +152,7 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
 }
 
 int CrateTableModel::addTracksWithTrackIds(
-        const QModelIndex& index, const QList<TrackId>& trackIds, int* pOutInsertionPos) {
-    Q_UNUSED(index);
-
+        const QModelIndex&, const QList<TrackId>& trackIds, int* pOutInsertionPos) {
     if (pOutInsertionPos != nullptr) {
         // crate insertion is not done by position, and no duplicates will be added,.
         // 0 indicates this to the caller.

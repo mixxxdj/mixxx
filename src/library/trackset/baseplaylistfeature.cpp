@@ -755,8 +755,7 @@ TreeItemModel* BasePlaylistFeature::sidebarModel() const {
 }
 
 void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
-        KeyboardEventFilter* pKeyboard) {
-    Q_UNUSED(pKeyboard);
+        KeyboardEventFilter*) {
     WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pLibraryWidget);
     pEdit->setHtml(getRootViewHtml());
     pEdit->setOpenLinks(false);

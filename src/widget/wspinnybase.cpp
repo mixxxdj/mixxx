@@ -24,7 +24,7 @@ WSpinnyBase::WSpinnyBase(
         QWidget* pParent,
         const QString& group,
         UserSettingsPointer pConfig,
-        VinylControlManager* pVCMan,
+        [[maybe_unused]] VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
         : WGLWidget(pParent),
           WBaseWidget(this),
@@ -66,8 +66,6 @@ WSpinnyBase::WSpinnyBase(
           m_pDlgCoverArt(make_parented<DlgCoverArtFullSize>(this, pPlayer, m_pCoverMenu)) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
-#else
-    Q_UNUSED(pVCMan);
 #endif // __VINYLCONTROL__
     // Drag and drop
     setAcceptDrops(true);
@@ -110,7 +108,8 @@ bool WSpinnyBase::shouldDrawVinylQuality() const {
 #endif
 }
 
-void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
+void WSpinnyBase::onVinylSignalQualityUpdate(
+        [[maybe_unused]] const VinylSignalQualityReport& report) {
 #ifdef __VINYLCONTROL__
     if (!m_bVinylActive || !m_bSignalActive) {
         return;
@@ -130,8 +129,6 @@ void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& rep
 
     updateVinylSignalQualityImage(qual_color, report.scope);
     m_bDrawVinylSignalQuality = true;
-#else
-    Q_UNUSED(report);
 #endif
 }
 
@@ -250,8 +247,7 @@ void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
     slotTrackCoverArtUpdated();
 }
 
-void WSpinnyBase::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
+void WSpinnyBase::slotLoadingTrack(TrackPointer, TrackPointer pOldTrack) {
     if (m_pLoadedTrack && pOldTrack == m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
@@ -294,13 +290,11 @@ void WSpinnyBase::slotReloadCoverArt() {
     if (!m_pLoadedTrack) {
         return;
     }
-    const auto future = guessTrackCoverInfoConcurrently(m_pLoadedTrack);
+    [[maybe_unused]] const auto future = guessTrackCoverInfoConcurrently(m_pLoadedTrack);
     // Don't wait for the result and keep running in the background
-    Q_UNUSED(future)
 }
 
-void WSpinnyBase::paintEvent(QPaintEvent* e) {
-    Q_UNUSED(e);
+void WSpinnyBase::paintEvent(QPaintEvent*) {
 }
 
 void WSpinnyBase::render(VSyncThread* vSyncThread) {
@@ -463,7 +457,7 @@ void WSpinnyBase::updateVinylControlSpeed(double rpm) {
     m_dRotationsPerSecond = rpm / 60.;
 }
 
-void WSpinnyBase::updateVinylControlSignalEnabled(double enabled) {
+void WSpinnyBase::updateVinylControlSignalEnabled([[maybe_unused]] double enabled) {
 #ifdef __VINYLCONTROL__
     if (m_pVCManager == nullptr) {
         return;
@@ -476,8 +470,6 @@ void WSpinnyBase::updateVinylControlSignalEnabled(double enabled) {
         m_pVCManager->removeSignalQualityListener(this);
         m_bDrawVinylSignalQuality = false;
     }
-#else
-    Q_UNUSED(enabled);
 #endif
 }
 
@@ -589,7 +581,6 @@ void WSpinnyBase::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void WSpinnyBase::showEvent(QShowEvent* event) {
-    Q_UNUSED(event);
     WGLWidget::showEvent(event);
 #ifdef __VINYLCONTROL__
     // If we want to draw the VC signal on this widget then register for
@@ -601,8 +592,7 @@ void WSpinnyBase::showEvent(QShowEvent* event) {
     WGLWidget::showEvent(event);
 }
 
-void WSpinnyBase::hideEvent(QHideEvent* event) {
-    Q_UNUSED(event);
+void WSpinnyBase::hideEvent(QHideEvent*) {
 #ifdef __VINYLCONTROL__
     // When we are hidden we do not want signal quality updates.
     if (m_pVCManager) {

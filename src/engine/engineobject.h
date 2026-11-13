@@ -16,8 +16,7 @@ class EngineObject : public QObject {
 
     // Sub-classes re-implement and populate GroupFeatureState with the features
     // they extract.
-    virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const {
-        Q_UNUSED(pGroupFeatures);
+    virtual void collectFeatures(GroupFeatureState*) const {
     }
 };
 

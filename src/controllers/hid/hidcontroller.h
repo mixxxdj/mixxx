@@ -146,9 +146,8 @@ class HidControllerJSProxy : public ControllerJSProxy {
     ///        This function only works with HID devices, which don't use ReportIDs
     /// @param dataList Data to send as list of bytes
     /// @param length Unused optional argument
-    Q_INVOKABLE void send(const QList<int>& dataList, unsigned int length = 0) override {
+    Q_INVOKABLE void send(const QList<int>& dataList, unsigned int = 0) override {
         // This function is only for class compatibility with the (midi)controller
-        Q_UNUSED(length);
         send(dataList, 0, 0);
     }
 
@@ -161,10 +160,9 @@ class HidControllerJSProxy : public ControllerJSProxy {
     ///  Same as argument useNonSkippingFIFO of the sendOutputReport function,
     ///  which is documented below
     Q_INVOKABLE void send(const QList<int>& dataList,
-            unsigned int length,
+            unsigned int,
             quint8 reportID,
             bool useNonSkippingFIFO = false) {
-        Q_UNUSED(length);
         QByteArray dataArray;
         dataArray.reserve(dataList.size());
         for (int datum : dataList) {

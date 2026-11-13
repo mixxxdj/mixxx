@@ -101,8 +101,7 @@ void WKnobComposed::setPixmapKnob(const PixmapSource& source,
     }
 }
 
-void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dValue);
+void WKnobComposed::onConnectedControlChanged(double dParameter, double) {
     // dParameter is in the range [0, 1].
     double angle = std::lerp(m_dMinAngle, m_dMaxAngle, dParameter);
 
@@ -124,8 +123,7 @@ void WKnobComposed::setDefaultAngleFromParameterOrReset(std::optional<double> pa
     }
 }
 
-void WKnobComposed::resizeEvent(QResizeEvent* re) {
-    Q_UNUSED(re);
+void WKnobComposed::resizeEvent(QResizeEvent*) {
     // In order to always draw the arcs undistorted we set up
     // a quadratic target rectangle regardless of the widget's
     // width-to-height ratio.
@@ -136,8 +134,7 @@ void WKnobComposed::resizeEvent(QResizeEvent* re) {
     m_rect = QRectF(topLeft, bottomRight);
 }
 
-void WKnobComposed::paintEvent(QPaintEvent* e) {
-    Q_UNUSED(e);
+void WKnobComposed::paintEvent(QPaintEvent*) {
     QStyleOption option;
     option.initFrom(this);
     QStylePainter p(this);

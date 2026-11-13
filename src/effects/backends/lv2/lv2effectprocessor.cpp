@@ -45,9 +45,7 @@ void LV2EffectProcessor::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     for (int i = 0; i < m_engineEffectParameters.size(); i++) {
         m_LV2parameters[i] = static_cast<float>(m_engineEffectParameters[i]->value());
     }

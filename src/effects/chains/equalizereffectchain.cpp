@@ -24,8 +24,7 @@ EqualizerEffectChain::EqualizerEffectChain(
     QObject::connect(this,
             &EffectChain::chainPresetChanged,
             this,
-            [this](const QString& presetname) {
-                Q_UNUSED(presetname);
+            [this](const QString&) {
                 setFilterWaveform(
                         m_effectSlots.at(0)->getManifest()->isMixingEQ());
             });

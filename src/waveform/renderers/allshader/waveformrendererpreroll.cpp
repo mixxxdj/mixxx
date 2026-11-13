@@ -85,9 +85,7 @@ void WaveformRendererPreroll::setup(
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
-void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void WaveformRendererPreroll::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 

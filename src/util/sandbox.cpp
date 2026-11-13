@@ -370,8 +370,8 @@ SecurityTokenPointer Sandbox::openSecurityTokenForDir(const QDir& dir, bool crea
     return nullptr;
 }
 
-SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
-        const QString& bookmarkBase64) {
+SecurityTokenPointer Sandbox::openTokenFromBookmark([[maybe_unused]] const QString& canonicalPath,
+        [[maybe_unused]] const QString& bookmarkBase64) {
 #ifdef __APPLE__
     QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
     if (!bookmarkBA.isEmpty()) {
@@ -411,9 +411,6 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
             }
         }
     }
-#else
-    Q_UNUSED(canonicalPath);
-    Q_UNUSED(bookmarkBase64);
 #endif
 
     return nullptr;

@@ -42,8 +42,7 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
     m_valueControl.connectValueChanged(this, &WBeatSpinBox::slotControlValueChanged);
 }
 
-void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {
-    Q_UNUSED(node);
+void WBeatSpinBox::setup(const QDomNode&, const SkinContext& context) {
     m_scaleFactor = context.getScaleFactor();
     qobject_cast<WBeatLineEdit*>(lineEdit())->setScaleFactor(m_scaleFactor);
 }
@@ -192,8 +191,7 @@ double WBeatSpinBox::valueFromText(const QString& text) const {
             + locale().toDouble(sNumerator) / locale().toDouble(sDenominator);
 }
 
-QValidator::State WBeatSpinBox::validate(QString& input, int& pos) const {
-    Q_UNUSED(pos);
+QValidator::State WBeatSpinBox::validate(QString& input, int&) const {
     QRegularExpressionMatch blockListMatch = kBlockListRegex.match(input);
     if (blockListMatch.hasMatch()) {
         return QValidator::Invalid;

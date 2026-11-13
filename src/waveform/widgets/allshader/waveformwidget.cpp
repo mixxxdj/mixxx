@@ -188,8 +188,7 @@ void WaveformWidget::resizeGL(int w, int h) {
     m_pEngine->resize(w, h);
 }
 
-void WaveformWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void WaveformWidget::paintEvent(QPaintEvent*) {
 }
 
 void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {

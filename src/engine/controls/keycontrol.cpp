@@ -357,8 +357,7 @@ void KeyControl::setEngineKey(double key, double key_distance) {
 /// This is called when pitch is changed either by user interaction,
 /// or when BaseTrackPlayerImpl resets the pitch on track load per configuration
 /// AND key is locked with KeylockMode::LockCurrentKey
-void KeyControl::slotPitchChanged(double pitch) {
-    Q_UNUSED(pitch)
+void KeyControl::slotPitchChanged(double) {
     m_updatePitchRequest = 1;
     updatePitch();
 }
@@ -399,8 +398,7 @@ void KeyControl::updatePitch() {
 /// This is called when pitch_adjust is changed either by user interaction,
 /// or when BaseTrackPlayerImpl resets the pitch on track load per configuration
 /// AND key is unlocked or locked with LockOriginalKey
-void KeyControl::slotPitchAdjustChanged(double pitchAdjust) {
-    Q_UNUSED(pitchAdjust);
+void KeyControl::slotPitchAdjustChanged(double) {
     m_updatePitchAdjustRequest = 1;
     updatePitchAdjust();
 }

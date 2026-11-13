@@ -708,8 +708,7 @@ int ShoutConnection::tell() {
     return -1;
 }
 // These are not used for streaming, but the interface requires them
-void ShoutConnection::seek(int pos) {
-    Q_UNUSED(pos)
+void ShoutConnection::seek(int) {
     return;
 }
 // These are not used for streaming, but the interface requires them

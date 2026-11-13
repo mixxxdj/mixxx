@@ -109,8 +109,7 @@ void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
     DEBUG_ASSERT(pChunk);
     DEBUG_ASSERT(pChunk->getState() != CachingReaderChunkForOwner::READ_PENDING);
 
-    const int removed = m_allocatedCachingReaderChunks.remove(pChunk->getIndex());
-    Q_UNUSED(removed); // only used in DEBUG_ASSERT
+    [[maybe_unused]] const int removed = m_allocatedCachingReaderChunks.remove(pChunk->getIndex());
     // We'll tolerate not being in allocatedCachingReaderChunks,
     // because sometime you free a chunk right after you allocated it.
     DEBUG_ASSERT(removed <= 1);

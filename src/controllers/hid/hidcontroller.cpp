@@ -434,7 +434,5 @@ void HidController::fetchReportDescriptorInBackground() {
         }
         hid_close(pHidDevice);
     });
-#else
-    Q_UNUSED(m_reportDescriptorFuture);
 #endif
 }

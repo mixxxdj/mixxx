@@ -294,9 +294,8 @@ void WOverview::initWithTrack(TrackPointer pTrack) {
     }
 }
 
-void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
+void WOverview::onConnectedControlChanged(double dParameter, double) {
     // this is connected via skin to "playposition"
-    Q_UNUSED(dValue);
 
     // Calculate handle position. Clamp the value within 0-1 because that's
     // all we represent with this widget.
@@ -369,9 +368,8 @@ void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyz
     }
 }
 
-void WOverview::slotTrackLoaded(TrackPointer pTrack) {
-    Q_UNUSED(pTrack); // only used in DEBUG_ASSERT
-    //qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
+void WOverview::slotTrackLoaded([[maybe_unused]] TrackPointer pTrack) {
+    // qDebug() << "WOverview::slotTrackLoaded()" << m_pCurrentTrack.get() << pTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
     m_trackLoaded = true;
     if (m_pCurrentTrack) {
@@ -380,9 +378,8 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     update();
 }
 
-void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack); // only used in DEBUG_ASSERT
-    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
+void WOverview::slotLoadingTrack(TrackPointer pNewTrack, [[maybe_unused]] TrackPointer pOldTrack) {
+    // qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(),
@@ -436,8 +433,7 @@ void WOverview::onEndOfTrackChange(double v) {
     update();
 }
 
-void WOverview::onMarkChanged(double v) {
-    Q_UNUSED(v);
+void WOverview::onMarkChanged(double) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
     if (m_pCurrentTrack) {
         updateCues(m_pCurrentTrack->getCuePoints());
@@ -445,14 +441,12 @@ void WOverview::onMarkChanged(double v) {
     }
 }
 
-void WOverview::onMarkRangeChange(double v) {
-    Q_UNUSED(v);
+void WOverview::onMarkRangeChange(double) {
     //qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
 }
 
-void WOverview::onRateRatioChange(double v) {
-    Q_UNUSED(v);
+void WOverview::onRateRatioChange(double) {
     update();
 }
 
@@ -699,8 +693,7 @@ void WOverview::slotCueMenuPopupAboutToHide() {
     update();
 }
 
-void WOverview::leaveEvent(QEvent* pEvent) {
-    Q_UNUSED(pEvent);
+void WOverview::leaveEvent(QEvent*) {
     // Reset our dragging only if the left button is not pressed.
     // This works around a Qt mouse event change after Qt 6.5 which causes
     // leaveEvents to be emitted when we hover another widget which has set the
@@ -721,8 +714,7 @@ void WOverview::leaveEvent(QEvent* pEvent) {
     update();
 }
 
-void WOverview::paintEvent(QPaintEvent* pEvent) {
-    Q_UNUSED(pEvent);
+void WOverview::paintEvent(QPaintEvent*) {
     ScopedTimer t(QStringLiteral("WOverview::paintEvent"));
 
     QPainter painter(this);
@@ -1591,8 +1583,7 @@ double WOverview::samplePositionToSeconds(double sample) {
     return trackTime / rate;
 }
 
-void WOverview::resizeEvent(QResizeEvent* pEvent) {
-    Q_UNUSED(pEvent);
+void WOverview::resizeEvent(QResizeEvent*) {
     m_maxPixelPos = length() - 1;
 
     m_devicePixelRatio = devicePixelRatioF();

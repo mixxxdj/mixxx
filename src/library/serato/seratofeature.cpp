@@ -928,8 +928,7 @@ SeratoFeature::~SeratoFeature() {
 }
 
 void SeratoFeature::bindLibraryWidget(WLibrary* libraryWidget,
-        KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
+        KeyboardEventFilter*) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);

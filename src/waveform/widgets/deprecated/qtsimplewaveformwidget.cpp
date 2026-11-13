@@ -36,9 +36,8 @@ void QtSimpleWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void QtSimpleWaveformWidget::paintEvent(QPaintEvent* event) {
+void QtSimpleWaveformWidget::paintEvent(QPaintEvent*) {
     // qDebug() << "paintEvent()";
-    Q_UNUSED(event);
 }
 
 mixxx::Duration QtSimpleWaveformWidget::render() {

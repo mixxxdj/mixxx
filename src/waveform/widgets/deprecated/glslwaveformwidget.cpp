@@ -33,9 +33,8 @@ GLSLRGBStackedWaveformWidget::GLSLRGBStackedWaveformWidget(
 GLSLWaveformWidget::GLSLWaveformWidget(
         const QString& group,
         QWidget* parent,
-        GlslType type)
+        [[maybe_unused]] GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
-
     makeCurrentIfNeeded();
 
     addRenderer<GLWaveformRenderBackground>();
@@ -50,8 +49,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     } else if (type == GlslType::RGBStacked) {
         addRenderer<GLSLWaveformRendererStackedSignal>();
     }
-#else
-    Q_UNUSED(type);
 #endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
@@ -65,8 +62,7 @@ void GLSLWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void GLSLWaveformWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration GLSLWaveformWidget::render() {

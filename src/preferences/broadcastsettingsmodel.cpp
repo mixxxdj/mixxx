@@ -88,13 +88,11 @@ BroadcastProfilePtr BroadcastSettingsModel::getProfileByName(
     return m_profiles.value(profileName, BroadcastProfilePtr());
 }
 
-int BroadcastSettingsModel::rowCount(const QModelIndex& parent) const {
-    Q_UNUSED(parent);
+int BroadcastSettingsModel::rowCount(const QModelIndex&) const {
     return m_profiles.size();
 }
 
-int BroadcastSettingsModel::columnCount(const QModelIndex& parent) const {
-    Q_UNUSED(parent);
+int BroadcastSettingsModel::columnCount(const QModelIndex&) const {
     return 3;
 }
 
@@ -184,9 +182,7 @@ bool BroadcastSettingsModel::setData(const QModelIndex& index, const QVariant& v
     return true;
 }
 
-QAbstractItemDelegate* BroadcastSettingsModel::delegateForColumn(const int i, QObject* parent) {
-    Q_UNUSED(i);
-    Q_UNUSED(parent);
+QAbstractItemDelegate* BroadcastSettingsModel::delegateForColumn(const int, QObject*) {
     return nullptr;
 }
 
@@ -239,8 +235,7 @@ void BroadcastSettingsModel::onProfileNameChanged(const QString& oldName, const 
     emit dataChanged(start, end);
 }
 
-void BroadcastSettingsModel::onConnectionStatusChanged(int newStatus) {
-    Q_UNUSED(newStatus);
+void BroadcastSettingsModel::onConnectionStatusChanged(int) {
     // Refresh the whole status column
     QModelIndex start = this->index(0, kColumnStatus);
     QModelIndex end = this->index(this->rowCount()-1, kColumnStatus);

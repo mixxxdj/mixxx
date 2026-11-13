@@ -120,8 +120,7 @@ void WVuMeterBase::setPixmaps(const PixmapSource& source,
     }
 }
 
-void WVuMeterBase::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dValue);
+void WVuMeterBase::onConnectedControlChanged(double dParameter, double) {
     m_dParameter = math_clamp(dParameter, 0.0, 1.0);
 
     if (dParameter > 0.0) {
@@ -158,8 +157,7 @@ void WVuMeterBase::updateState(mixxx::Duration elapsed) {
     m_dPeakParameter = math_clamp(m_dPeakParameter, 0.0, 1.0);
 }
 
-void WVuMeterBase::paintEvent(QPaintEvent* e) {
-    Q_UNUSED(e);
+void WVuMeterBase::paintEvent(QPaintEvent*) {
     // Force rerendering when render is called from the vsync thread, e.g. to
     // git rid artifacts after hiding and showing the mixer or incomplete
     // initial drawing. Use 2 passes, in case triple buffering is used.
@@ -167,7 +165,6 @@ void WVuMeterBase::paintEvent(QPaintEvent* e) {
 }
 
 void WVuMeterBase::showEvent(QShowEvent* e) {
-    Q_UNUSED(e);
     WGLWidget::showEvent(e);
     // Find the base color recursively in parent widget.
     m_qBgColor = mixxx::widgethelper::findBaseColor(this);

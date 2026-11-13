@@ -137,7 +137,6 @@ void InternalClock::updateInstantaneousBpm(mixxx::Bpm bpm) {
         kLogger.trace() << "setInstantaneousBpm" << bpm;
     }
     // Do nothing.
-    Q_UNUSED(bpm);
 }
 
 void InternalClock::notifyLeaderParamSource() {
@@ -210,9 +209,7 @@ void InternalClock::updateBeatLength(mixxx::audio::SampleRate sampleRate, mixxx:
     updateLeaderBeatDistance(oldBeatDistance);
 }
 
-void InternalClock::onCallbackStart(mixxx::audio::SampleRate sampleRate, std::size_t bufferSize) {
-    Q_UNUSED(sampleRate)
-    Q_UNUSED(bufferSize)
+void InternalClock::onCallbackStart(mixxx::audio::SampleRate, std::size_t) {
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }
 

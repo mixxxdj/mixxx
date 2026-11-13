@@ -2,8 +2,7 @@
 #include "control/control.h"
 #include "util/math.h"
 
-bool ControlNumericBehavior::setFilter(double* dValue) {
-    Q_UNUSED(dValue);
+bool ControlNumericBehavior::setFilter(double*) {
     return true;
 }
 
@@ -25,8 +24,7 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
 }
 
 void ControlNumericBehavior::setValueFromMidi(
-        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
-    Q_UNUSED(o);
+        MidiOpCode, double dParam, ControlDoublePrivate* pControl) {
     double dNorm = midiToParameter(dParam);
     pControl->set(parameterToValue(dNorm), nullptr);
 }
@@ -266,8 +264,7 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
 }
 
 void ControlAudioTaperPotBehavior::setValueFromMidi(
-        MidiOpCode o, double dMidiParam, ControlDoublePrivate* pControl) {
-    Q_UNUSED(o);
+        MidiOpCode, double dMidiParam, ControlDoublePrivate* pControl) {
     double dParam = midiToParameter(dMidiParam);
     pControl->set(parameterToValue(dParam), nullptr);
 }

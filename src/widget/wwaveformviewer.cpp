@@ -54,8 +54,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     }
 }
 
-void WWaveformViewer::resizeEvent(QResizeEvent* event) {
-    Q_UNUSED(event);
+void WWaveformViewer::resizeEvent(QResizeEvent*) {
     if (m_waveformWidget) {
         // Note m_waveformWidget is a WaveformWidgetAbstract,
         // so this calls the method of WaveformWidgetAbstract,
@@ -65,8 +64,7 @@ void WWaveformViewer::resizeEvent(QResizeEvent* event) {
     }
 }
 
-void WWaveformViewer::showEvent(QShowEvent* event) {
-    Q_UNUSED(event);
+void WWaveformViewer::showEvent(QShowEvent*) {
     if (m_waveformWidget) {
         // We leave it up to Qt to set the size of the derived
         // waveform widget, but we still need to set the size
@@ -236,9 +234,7 @@ void WWaveformViewer::slotTrackUnloaded(TrackPointer pOldTrack) {
     slotLoadingTrack(pOldTrack, TrackPointer());
 }
 
-void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
+void WWaveformViewer::slotLoadingTrack(TrackPointer, TrackPointer) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(TrackPointer());
     }

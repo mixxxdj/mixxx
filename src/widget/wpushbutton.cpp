@@ -299,8 +299,7 @@ void WPushButton::restyleAndRepaint() {
     repaint();
 }
 
-void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dParameter);
+void WPushButton::onConnectedControlChanged(double, double dValue) {
     // Enums are not currently represented using parameter space so it doesn't
     // make sense to use the parameter here yet.
     if (m_iNoStates == 1) {
@@ -316,8 +315,7 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     restyleAndRepaint();
 }
 
-void WPushButton::paintEvent(QPaintEvent* e) {
-    Q_UNUSED(e);
+void WPushButton::paintEvent(QPaintEvent*) {
     paintOnDevice(nullptr, readDisplayValue());
 }
 

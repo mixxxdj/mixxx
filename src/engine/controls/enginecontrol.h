@@ -74,14 +74,11 @@ class EngineControl : public QObject {
             bool enabled);
 
     /// Collect player features for effects processing.
-    virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
-        Q_UNUSED(pGroupFeatures);
+    virtual void collectFeatureState(GroupFeatureState*) const {
     }
 
     /// Called whenever a seek occurs to allow the EngineControl to respond.
-    virtual void notifySeek(mixxx::audio::FramePos position) {
-        Q_UNUSED(position);
-    };
+    virtual void notifySeek(mixxx::audio::FramePos){};
 
     virtual void trackLoaded(TrackPointer pNewTrack);
     virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);

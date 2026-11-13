@@ -22,9 +22,7 @@ void WaveformRendererPreroll::setup(
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
-void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(event);
-
+void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent*) {
     const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
