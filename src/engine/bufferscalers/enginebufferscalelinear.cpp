@@ -42,13 +42,13 @@ void EngineBufferScaleLinear::onSignalChanged() {
     }
 }
 
-void EngineBufferScaleLinear::setScaleParameters(double base_rate,
-                                                 double* pTempoRatio,
-                                                 double* pPitchRatio) {
+void EngineBufferScaleLinear::setScaleParameters(double baseRate,
+        double* pTempoRatio,
+        double* pPitchRatio) {
     Q_UNUSED(pPitchRatio);
 
     m_dOldRate = m_dRate;
-    m_dRate = base_rate * *pTempoRatio;
+    m_dRate = baseRate * *pTempoRatio;
 }
 
 void EngineBufferScaleLinear::clear() {
@@ -72,19 +72,19 @@ double EngineBufferScaleLinear::scaleBuffer(
         m_dOldRate = m_dRate;  // If cleared, don't interpolate rate.
         m_bClear = false;
     }
-    double rate_add_old = m_dOldRate; // Smoothly interpolate to new playback rate
-    double rate_add_new = m_dRate;
-    double frames_read = 0;
+    double rateAddOld = m_dOldRate; // Smoothly interpolate to new playback rate
+    double rateAddNew = m_dRate;
+    double framesRead = 0;
 
-    if (rate_add_new * rate_add_old < 0) {
+    if (rateAddNew * rateAddOld < 0) {
         // Direction has changed!
         // calculate half buffer going one way, and half buffer going
         // the other way.
 
         // first half: rate goes from old rate to zero
-        m_dOldRate = rate_add_old;
+        m_dOldRate = rateAddOld;
         m_dRate = 0.0;
-        frames_read += do_scale(pOutputBuffer, getOutputSignal().samples2frames(iOutputBufferSize));
+        framesRead += do_scale(pOutputBuffer, getOutputSignal().samples2frames(iOutputBufferSize));
 
         // reset m_floorSampleOld in a way as we were coming from
         // the other direction
@@ -109,8 +109,8 @@ double EngineBufferScaleLinear::scaleBuffer(
             //qDebug() << "extra samples" << extra_samples;
 
             SINT next_samples_read = m_pReadAheadManager->getNextSamples(
-                    rate_add_new, m_bufferInt, extra_samples, getOutputSignal().getChannelCount());
-            frames_read += getOutputSignal().samples2frames(next_samples_read);
+                    rateAddNew, m_bufferInt, extra_samples, getOutputSignal().getChannelCount());
+            framesRead += getOutputSignal().samples2frames(next_samples_read);
         }
         // force a buffer read:
         m_bufferIntSize = 0;
@@ -120,28 +120,28 @@ double EngineBufferScaleLinear::scaleBuffer(
 
         // second half: rate goes from zero to new rate
         m_dOldRate = 0.0;
-        m_dRate = rate_add_new;
+        m_dRate = rateAddNew;
         // pass the address of the frame at the halfway point
         SINT frameOffset =  getOutputSignal().samples2frames(iOutputBufferSize) / 2;
         SINT sampleOffset = getOutputSignal().frames2samples(frameOffset);
-        frames_read += do_scale(pOutputBuffer + sampleOffset, iOutputBufferSize - sampleOffset);
+        framesRead += do_scale(pOutputBuffer + sampleOffset, iOutputBufferSize - sampleOffset);
     } else {
-        frames_read += do_scale(pOutputBuffer, iOutputBufferSize);
+        framesRead += do_scale(pOutputBuffer, iOutputBufferSize);
     }
-    return frames_read;
+    return framesRead;
 }
 
-SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
-    SINT samples_needed = buf_size;
-    CSAMPLE* write_buf = buf;
+SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT bufSize) {
+    SINT samplesNeeded = bufSize;
+    CSAMPLE* writeBuf = buf;
     // Use up what's left of the internal buffer.
     SINT iNextFrame = static_cast<SINT>(ceil(m_dNextFrame));
     SINT iNextSample = math_max<SINT>(getOutputSignal().frames2samples(iNextFrame), 0);
-    SINT readSize = math_min<SINT>(m_bufferIntSize - iNextSample, samples_needed);
+    SINT readSize = math_min<SINT>(m_bufferIntSize - iNextSample, samplesNeeded);
     if (readSize > 0) {
-        SampleUtil::copy(write_buf, &m_bufferInt[iNextSample], readSize);
-        samples_needed -= readSize;
-        write_buf += readSize;
+        SampleUtil::copy(writeBuf, &m_bufferInt[iNextSample], readSize);
+        samplesNeeded -= readSize;
+        writeBuf += readSize;
     }
     // Protection against infinite read loops when (for example) we are
     // reading from a broken file.
@@ -150,44 +150,44 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
     // over backwards to satisfy our request. It assumes you will continue
     // to call getNextSamples until you receive the number of samples you
     // wanted.
-    while (samples_needed > 0) {
-        SINT read_size = m_pReadAheadManager->getNextSamples(m_dRate,
-                write_buf,
-                samples_needed,
+    while (samplesNeeded > 0) {
+        SINT readSize = m_pReadAheadManager->getNextSamples(m_dRate,
+                writeBuf,
+                samplesNeeded,
                 getOutputSignal().getChannelCount());
-        if (read_size == 0) {
+        if (readSize == 0) {
             if (++read_failed_count > 1) {
                 break;
             } else {
                 continue;
             }
         }
-        samples_needed -= read_size;
-        write_buf += read_size;
+        samplesNeeded -= readSize;
+        writeBuf += readSize;
     }
 
     // Instead of counting how many samples we got from the internal buffer
     // and the RAMAN calls, just measure the difference between what we
     // requested and what we still need.
-    SINT read_samples = buf_size - samples_needed;
+    SINT readSamples = bufSize - samplesNeeded;
     // Zero the remaining samples if we didn't fill them.
-    SampleUtil::clear(write_buf, samples_needed);
+    SampleUtil::clear(writeBuf, samplesNeeded);
     // update our class members so next time we need to scale it's ok. we do
     // blow away the fractional sample position here
     m_bufferIntSize = 0; // force buffer read
     m_dNextFrame = 0;
     int chCount = getOutputSignal().getChannelCount();
-    if (read_samples > chCount - 1) {
-        SampleUtil::copy(m_floorSampleOld.data(), &buf[read_samples - chCount], chCount);
+    if (readSamples > chCount - 1) {
+        SampleUtil::copy(m_floorSampleOld.data(), &buf[readSamples - chCount], chCount);
     }
-    return read_samples;
+    return readSamples;
 }
 
 // Stretch a specified buffer worth of audio using linear interpolation
-double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
-    double rate_old = m_dOldRate;
-    const double rate_new = m_dRate;
-    const double rate_diff = rate_new - rate_old;
+double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
+    double rateOld = m_dOldRate;
+    const double rateNew = m_dRate;
+    const double rateDiff = rateNew - rateOld;
 
     // Update the old base rate because we only need to
     // interpolate/ramp up the pitch changes once.
@@ -198,33 +198,33 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
     // We special case direction change in the calling function, so this
     // shouldn't happen
-    VERIFY_OR_DEBUG_ASSERT(rate_new * rate_old >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(rateNew * rateOld >= 0) {
         // We cannot change direction here.
         qDebug() << "EBSL::do_scale() can't change direction";
-        rate_old = 0;
+        rateOld = 0;
     }
 
     // Special case -- no scaling needed!
-    if (rate_diff == 0 && (rate_new == 1.0 || rate_new == -1.0)) {
-        return do_copy(buf, buf_size);
+    if (rateDiff == 0 && (rateNew == 1.0 || rateNew == -1.0)) {
+        return do_copy(buf, bufSize);
     }
 
     // Simulate the loop to estimate how many frames we need
     double frames = 0;
-    const SINT bufferSizeFrames = getOutputSignal().samples2frames(buf_size);
-    const double rate_delta = rate_diff / bufferSizeFrames;
+    const SINT bufferSizeFrames = getOutputSignal().samples2frames(bufSize);
+    const double rateDelta = rateDiff / bufferSizeFrames;
     // use Gaussian sum formula (n(n+1))/2 for
     //for (int j = 0; j < bufferSizeFrames; ++j) {
     //    frames += (j * rate_delta) + rate_old;
     //}
     frames = (bufferSizeFrames - 1) * bufferSizeFrames / 2.0;
-    frames *= rate_delta;
-    frames += rate_old * bufferSizeFrames;
+    frames *= rateDelta;
+    frames += rateOld * bufferSizeFrames;
     frames = fabs(frames);
 
     // Intentional integer rounding: increases by one if the fractional part of
     // m_dNextFrame and frames are greater than one"
-    SINT unscaled_frames_needed = static_cast<SINT>(frames +
+    SINT unscaledFramesNeeded = static_cast<SINT>(frames +
             m_dNextFrame - floor(m_dNextFrame));
 
     int chCount = getOutputSignal().getChannelCount();
@@ -234,12 +234,12 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     double startFrame = m_dNextFrame;
     SINT i = 0;
 
-    double rate_add = fabs(rate_old);
-    const double rate_delta_abs =
-            rate_old < 0 || rate_new < 0 ? -rate_delta : rate_delta;
+    double rateAdd = fabs(rateOld);
+    const double rateDeltaAbs =
+            rateOld < 0 || rateNew < 0 ? -rateDelta : rateDelta;
 
     // Hot frame loop
-    while (i < buf_size) {
+    while (i < bufSize) {
         // shift indices
         m_dCurrentFrame = m_dNextFrame;
 
@@ -273,26 +273,26 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
             do {
                 SINT oldBufferFrames = getOutputSignal().samples2frames(m_bufferIntSize);
-                if (unscaled_frames_needed == 0) {
+                if (unscaledFramesNeeded == 0) {
                     // protection against infinite loop
                     // This may happen due to double precision issues
-                    ++unscaled_frames_needed;
+                    ++unscaledFramesNeeded;
                 }
 
-                SINT samples_to_read = math_min<SINT>(
+                SINT samplesToRead = math_min<SINT>(
                         kiLinearScaleReadAheadLength,
-                        getOutputSignal().frames2samples(unscaled_frames_needed));
+                        getOutputSignal().frames2samples(unscaledFramesNeeded));
 
                 m_bufferIntSize = m_pReadAheadManager->getNextSamples(
-                        rate_new == 0 ? rate_old : rate_new,
+                        rateNew == 0 ? rateOld : rateNew,
                         m_bufferInt,
-                        samples_to_read,
+                        samplesToRead,
                         getOutputSignal().getChannelCount());
                 // Note we may get 0 samples once if we just hit a loop trigger,
                 // e.g. when reloop_toggle jumps back to loop_in, or when
                 // moving a loop causes the play position to be moved along.
 
-                unscaled_frames_needed -= getOutputSignal().samples2frames(m_bufferIntSize);
+                unscaledFramesNeeded -= getOutputSignal().samples2frames(m_bufferIntSize);
 
                 // adapt the frames values that are still relative to the old buffer for the new one
                 m_dCurrentFrame -= oldBufferFrames;
@@ -324,16 +324,16 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
         m_floorSampleOld.swap(m_floorSample);
 
         // increment the index for the next loop
-        m_dNextFrame = m_dCurrentFrame + rate_add;
+        m_dNextFrame = m_dCurrentFrame + rateAdd;
 
         // Smooth any changes in the playback rate over one buf_size
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        rate_add += rate_delta_abs;
+        rateAdd += rateDeltaAbs;
         i += chCount;
     }
 
-    SampleUtil::clear(&buf[i], buf_size - i);
+    SampleUtil::clear(&buf[i], bufSize - i);
 
     return m_dNextFrame - startFrame;
 }
