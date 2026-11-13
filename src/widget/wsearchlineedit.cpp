@@ -459,6 +459,10 @@ void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     QComboBox::focusInEvent(event);
     updateCompleter();
     updateClearAndDropdownButton(currentText());
+    // Reset emitted flag so Enter always triggers the search, regardless of
+    // unchanged text. Ie. force-search to refresh view, for example to clean
+    // the view from tracks that don't match the query anymore
+    m_queryEmitted = false;
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
