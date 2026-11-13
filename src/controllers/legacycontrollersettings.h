@@ -49,9 +49,6 @@ class AbstractLegacyControllerSetting : public QObject {
         return 0.0;
     }
     virtual QString defaultValueString() const = 0;
-    // virtual QString defaultValueString() const {
-    //     return {};
-    // }
     virtual QList<QString> enumOptions() const {
         return {};
     }
