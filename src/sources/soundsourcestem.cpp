@@ -241,8 +241,14 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
         return ReadableSampleFrames();
     };
 
-    SINT stemSampleLength = m_pStereoStreams.front()->getSignalInfo().frames2samples(
-            globalSampleFrames.frameLength());
+    const std::size_t stemCount = m_pStereoStreams.size();
+    if (stemCount == 1) {
+        return m_pStereoStreams.front()->readSampleFrames(globalSampleFrames);
+    }
+
+    const auto frameRange = globalSampleFrames.frameIndexRange();
+    const auto& stemSignal = m_pStereoStreams.front()->getSignalInfo();
+    const SINT stemSampleLength = stemSignal.frames2samples(frameRange.length());
 
     // The same buffer is reused between requests tp prevent reallocation, but
     // it will be reallocated if a larger chunk is requested and will keep the
@@ -251,37 +257,45 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
         m_buffer = SampleBuffer(stemSampleLength);
     }
 
-    ReadableSampleFrames read(globalSampleFrames.frameIndexRange(),
-            SampleBuffer::ReadableSlice(
-                    globalSampleFrames.writableData(),
-                    globalSampleFrames.writableLength()));
-    std::size_t stemCount = m_pStereoStreams.size();
     CSAMPLE* pBuffer = globalSampleFrames.writableData();
+    const bool mixToStereo = m_requestedChannelCount == audio::ChannelCount::stereo();
 
-    if (m_requestedChannelCount == mixxx::audio::ChannelCount::stereo() && stemCount != 1) {
+    if (mixToStereo) {
         SampleUtil::clear(pBuffer, globalSampleFrames.writableLength());
     } else {
         DEBUG_ASSERT(stemSampleLength * static_cast<SINT>(stemCount) ==
                 globalSampleFrames.writableLength());
     }
 
-    if (stemCount == 1) {
-        m_pStereoStreams[0]->readSampleFrames(globalSampleFrames);
-        return read;
-    }
-
+    bool decodedAnyStem = false;
     for (std::size_t streamIdx = 0; streamIdx < stemCount; streamIdx++) {
-        WritableSampleFrames currentStemFrame = WritableSampleFrames(
-                globalSampleFrames.frameIndexRange(),
-                SampleBuffer::WritableSlice(
-                        m_buffer.data(),
-                        stemSampleLength));
-        m_pStereoStreams[streamIdx]->readSampleFrames(currentStemFrame);
+        const auto decoded = m_pStereoStreams[streamIdx]->readSampleFrames(
+                WritableSampleFrames(frameRange,
+                        SampleBuffer::WritableSlice(m_buffer.data(), stemSampleLength)));
+        const auto decodedRange = decoded.frameIndexRange();
+        if (decodedRange.empty()) {
+            if (mixToStereo) {
+                continue;
+            }
+            SampleUtil::clear(m_buffer.data(), stemSampleLength);
+        } else {
+            decodedAnyStem = true;
+            const SINT prefix = stemSignal.frames2samples(
+                    decodedRange.start() - frameRange.start());
+            const SINT end = stemSignal.frames2samples(
+                    decodedRange.end() - frameRange.start());
+            if (prefix > 0) {
+                SampleUtil::clear(m_buffer.data(), prefix);
+            }
+            if (end < stemSampleLength) {
+                SampleUtil::clear(m_buffer.data(end), stemSampleLength - end);
+            }
+        }
 
         // Each m_pStereoStreams[streamIdx] provides a standard stereo signal (L/R).
         // in stem mode we need to transform the data to an interleaved layout:
         // 1L1R2L2R3L3R4L4R, 1L1R2L2R3L3R4L4R ...
-        if (m_requestedChannelCount != mixxx::audio::ChannelCount::stereo()) {
+        if (!mixToStereo) {
             // Change the sample layout to interleave all channels together
             for (SINT i = 0; i < stemSampleLength / 2; i++) {
                 pBuffer[2 * stemCount * i + 2 * streamIdx] = m_buffer[2 * i];
@@ -292,7 +306,11 @@ ReadableSampleFrames SoundSourceSTEM::readSampleFramesClamped(
             SampleUtil::add(pBuffer, m_buffer.data(), stemSampleLength);
         }
     }
-    return read;
+    if (!decodedAnyStem) {
+        return ReadableSampleFrames();
+    }
+    return ReadableSampleFrames(frameRange,
+            SampleBuffer::ReadableSlice(pBuffer, globalSampleFrames.writableLength()));
 }
 
 } // namespace mixxx
