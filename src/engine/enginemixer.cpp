@@ -362,7 +362,7 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
 void EngineMixer::process(const std::size_t bufferSize) {
     DEBUG_ASSERT(bufferSize <= static_cast<int>(kMaxEngineSamples));
 
-    static bool haveSetName = false;
+    static thread_local bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
         haveSetName = true;
