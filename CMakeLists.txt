@@ -2889,9 +2889,9 @@ if(BUILD_TESTING)
     src/test/directorydaotest.cpp
     src/test/duration_test.cpp
     src/test/durationutiltest.cpp
+    src/test/echoeffecttest.cpp
     #TODO: write useful tests for refactored effects system
     #src/test/effectchainslottest.cpp
-    src/test/echoeffecttest.cpp
     src/test/enginebufferscalelineartest.cpp
     src/test/enginebuffertest.cpp
     src/test/enginefilterbiquadtest.cpp
