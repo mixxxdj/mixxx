@@ -20,6 +20,8 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
   private slots:
     void slotSpinboxValueChanged(double newValue);
     void slotControlValueChanged(double newValue);
+    void slotDebounceTimeout();
+    void slotLineTextChanged(const QString& text);
 
   private:
     QString textFromValue(double value) const override;
@@ -35,6 +37,8 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     bool event(QEvent* pEvent) override;
     void keyPressEvent(QKeyEvent* pEvent) override;
     double m_scaleFactor;
+
+    QTimer m_debouncingTimer;
 };
 
 // This is an inherited class that supports font scaling
