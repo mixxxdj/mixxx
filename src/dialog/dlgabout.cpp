@@ -47,7 +47,6 @@ DlgAbout::DlgAbout()
 
     QStringList thisReleaseDevelopers;
     thisReleaseDevelopers
-            << "RJ Skerry-Ryan"
             << "Owen Williams"
             << "Daniel Sch&uuml;rmann"
             << "S&eacute;bastien Blaisot"
@@ -66,52 +65,30 @@ DlgAbout::DlgAbout()
     // New Contributors are added at the end.
     QStringList recentContributors;
     recentContributors
-            << "Be"
             << "Uwe Klotz"
             << "D&aacute;vid Szak&aacute;llas"
             << "Christian"
-            << "Geraldo Nascimento"
-            << "Allen Wittenauer"
-            << "Raphael Bigal"
             << "Filok"
-            << "Tobias Oszlanyi (OsZ)"
-            << "Neil Naveen"
             << "David Chocholat&yacute;"
             << "Jakob Leifhelm"
             << "Jakub Kopa&nacute;ko"
-            << "Saksham Hans"
-            << "Robbert van der Helm"
-            << "Andrew Burns"
-            << "Michael Wigard"
             << "Alexandre Bique"
             << "Milkii Brewster"
             << "djantti"
             << "Eugene Erokhin"
-            << "Ben Duval"
             << "Nicolau Leal Werneck"
-            << "David Guglielmi"
-            << "Chris H. Meyer"
-            << "Mariano Ntrougkas"
             << "Daniel Fernandes"
             << "Gr&eacute;goire Locqueville"
             << "grizeldi"
             << "codingspiderfox"
             << "Ashnidh Khandelwal"
             << "Sergey"
-            << "Raphael Quast"
             << "Christophe Henry"
             << "Lukas Waslowski"
-            << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
-            << "HorstBaerbel"
-            << "gqzomer"
-            << "Bacadam"
             << "Leon Eckardt"
             << "Th&eacute;odore Noel"
-            << "Aquassaut"
             << "Morgan Nunan"
             << "FrankwaP"
-            << "Markus Kohlhase"
-            << "Frank Grimy"
             << "Al Hadebe"
             << "Emilien Colombier"
             << "DJ aK"
@@ -244,7 +221,9 @@ DlgAbout::DlgAbout()
             << "Marcos Cardinot"
             << "Nicu Badescu"
             << "Sean Pappalardo"
-            << "S. Brandt";
+            << "S. Brandt"
+            << "RJ Skerry-Ryan"
+            << "Be";
 
     QStringList pastContributors;
     pastContributors
@@ -480,7 +459,28 @@ DlgAbout::DlgAbout()
             << "Alice Psykose"
             << "Florian Goth"
             << "Chase Durand"
-            << "John Last";
+            << "John Last"
+            << "Geraldo Nascimento"
+            << "Allen Wittenauer"
+            << "Raphael Bigal"
+            << "Tobias Oszlanyi (OsZ)"
+            << "Neil Naveen"
+            << "Saksham Hans"
+            << "Robbert van der Helm"
+            << "Andrew Burns"
+            << "Michael Wigard"
+            << "Ben Duval"
+            << "David Guglielmi"
+            << "Chris H. Meyer"
+            << "Mariano Ntrougkas"
+            << "Raphael Quast"
+            << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
+            << "HorstBaerbel"
+            << "gqzomer"
+            << "Bacadam"
+            << "Aquassaut"
+            << "Markus Kohlhase"
+            << "Frank Grimy";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
