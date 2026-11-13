@@ -110,11 +110,14 @@
 * Flatpak: generate public key from Github secrets.
   [#17239](https://github.com/mixxxdj/mixxx/pull/17239)
   [#17257](https://github.com/mixxxdj/mixxx/pull/17257)
-* Fix Upload PPA issues
+* Ubuntu: fix upload to PPA
   [#16990](https://github.com/mixxxdj/mixxx/pull/16990)
   [#16981](https://github.com/mixxxdj/mixxx/pull/16981)
   [#17107](https://github.com/mixxxdj/mixxx/pull/17107)
   [#17124](https://github.com/mixxxdj/mixxx/pull/17124)
+* Fix Linux X11 dock integration
+  [#17422](https://github.com/mixxxdj/mixxx/pull/17422)
+  [#16090](https://github.com/mixxxdj/mixxx/issues/16090)
 
 ### Miscellaneous
 
