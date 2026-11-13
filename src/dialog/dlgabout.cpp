@@ -187,6 +187,7 @@ DlgAbout::DlgAbout()
             << "Ram&oacute;n Arnau"
             << "Kameron Markham"
             << "Samarth Deshpande"
+            << "rishipadalwar"
             << "Nicolas Predella"
             << "JCCoynel"
             << "Konstantin Smirnov"
@@ -213,7 +214,8 @@ DlgAbout::DlgAbout()
             << "Pau Arum&iacute;"
             << "David Garcia"
             << "Seb Ruiz"
-            << "Joseph Mattiello";
+            << "Joseph Mattiello"
+            << "timklop";
 
     QStringList pastDevelopers;
     pastDevelopers

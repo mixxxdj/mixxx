@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2026-11-12" timestamp="1794465254">
+    <release version="2.6.0" type="development" date="2026-11-13" timestamp="1794553058">
       <description>
  <p>
   STEM File Support
@@ -1073,7 +1073,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.7" type="development" date="2026-11-12" timestamp="1794465254">
+    <release version="2.5.7" type="development" date="2026-11-13" timestamp="1794553058">
       <description>
  <p>
   Controller Mappings
@@ -1100,6 +1100,10 @@
   <li>
    Pioneer DDJ-400: unmap headphones mixing knob
    #17121
+  </li>
+  <li>
+   Reloop Beatpad: Fix typo in group tags for ShiftBtn
+   #17455
   </li>
   <li>
    Vestax VCI-400: fix VU meters, midi.sendShortMsg()
@@ -1162,6 +1166,11 @@
    #16894
   </li>
   <li>
+   Rekordbox: fix empty USB device and first-open crash in the macOS sandbox
+   #17441
+   #13624
+  </li>
+  <li>
    Track table header: throw warning when storing the state fails
    #17072
   </li>
@@ -1193,6 +1202,11 @@
   <li>
    Track header menu: fix Enter keypress behavior
    #17324
+  </li>
+  <li>
+   Fix hiding tracks when removing a music directory
+   #17457
+   #14790
   </li>
  </ul>
  <p>
@@ -1303,11 +1317,16 @@
    #17257
   </li>
   <li>
-   Fix Upload PPA issues
+   Ubuntu: fix upload to PPA
    #16990
    #16981
    #17107
    #17124
+  </li>
+  <li>
+   Fix Linux X11 dock integration
+   #17422
+   #16090
   </li>
  </ul>
  <p>
@@ -1618,7 +1637,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-11-12" timestamp="1794465254">
+    <release version="2.5.5" type="development" date="2026-11-13" timestamp="1794553058">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.
