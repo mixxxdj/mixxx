@@ -159,25 +159,30 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
-    void loadTrack(Deck* pDeck, TrackPointer pTrack) {
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+    void requestTrackLoad(Deck* pDeck, const TrackPointer& pTrack) {
         pDeck->slotEjectTrack(1.0);
-        DEBUG_ASSERT(!pEngineDeck->getEngineBuffer()->isTrackLoaded());
+        DEBUG_ASSERT(!pDeck->getEngineDeck()->getEngineBuffer()->isTrackLoaded());
         pDeck->slotLoadTrack(pTrack,
 #ifdef __STEM__
                 mixxx::StemChannelSelection(),
 #endif
                 false);
 
-        // Wait for the track to load.
         ProcessBuffer();
+    }
+
+    void loadTrack(Deck* pDeck, TrackPointer pTrack) {
+        auto* pEngineBuffer = pDeck->getEngineDeck()->getEngineBuffer();
+        requestTrackLoad(pDeck, pTrack);
+
+        // Wait for the track to load.
         for (int i = 0; i < 2000; ++i) {
-            if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+            if (pEngineBuffer->isTrackLoaded()) {
                 break;
             }
             QTest::qSleep(1); // sleep 1 ms for waiting 2 s at max
         }
-        DEBUG_ASSERT(pEngineDeck->getEngineBuffer()->isTrackLoaded());
+        DEBUG_ASSERT(pEngineBuffer->isTrackLoaded());
     }
 
     // Asserts that the contents of the output buffer matches a reference
