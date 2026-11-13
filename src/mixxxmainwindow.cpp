@@ -1223,7 +1223,8 @@ void MixxxMainWindow::slotNoAuxiliaryInputConfigured() {
 }
 
 void MixxxMainWindow::slotHelpAbout() {
-    DlgAbout* about = new DlgAbout;
+    DlgAbout* about = new DlgAbout(
+            m_pCoreServices->getSettings(), m_pSkinLoader.get());
     about->show();
 }
 
