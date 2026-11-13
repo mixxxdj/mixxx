@@ -391,7 +391,7 @@ PioneerDDJSX.init = function(id) {
         '[Channel4]_enabled': 1
     };
 
-    // set 4 decks as default
+    // set 4 decks as default:
     if (engine.getValue("[App]", "num_decks") < 4) {
         engine.setValue("[App]", "num_decks", 4);
     }
