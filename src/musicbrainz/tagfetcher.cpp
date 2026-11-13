@@ -358,13 +358,10 @@ void TagFetcher::slotCoverArtArchiveLinksTaskAborted() {
 }
 
 void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
-        QNetworkReply::NetworkError errorCode,
-        const QString& errorString,
-        const mixxx::network::WebResponseWithContent& responseWithContent) {
+        QNetworkReply::NetworkError,
+        const QString&,
+        const mixxx::network::WebResponseWithContent&) {
     // TODO(XXX) Handle the error better for Cover Art Archive Links.
-    Q_UNUSED(errorCode);
-    Q_UNUSED(errorString);
-    Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_pCoverArtArchiveLinksTask.get() != sender()) {
         // stray call from an already aborted try
@@ -482,8 +479,7 @@ void TagFetcher::slotCoverArtArchiveImageTaskFailed(
 void TagFetcher::slotCoverArtArchiveImageTaskNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
-        const mixxx::network::WebResponseWithContent& responseWithContent) {
-    Q_UNUSED(responseWithContent);
+        const mixxx::network::WebResponseWithContent&) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_pCoverArtArchiveImageTask.get() != sender()) {
         // stray call from an already aborted try

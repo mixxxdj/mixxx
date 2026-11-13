@@ -27,8 +27,7 @@ QDir MixxxTest::s_TestDir;
 
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     CmdlineArgs args;
-    const bool argsParsed = args.parse(argc, argv);
-    Q_UNUSED(argsParsed);
+    [[maybe_unused]] const bool argsParsed = args.parse(argc, argv);
     DEBUG_ASSERT(argsParsed);
 
     mixxx::LogLevel logLevel = args.getLogLevel();

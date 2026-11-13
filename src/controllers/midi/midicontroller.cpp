@@ -96,9 +96,8 @@ int MidiController::close() {
     return 0;
 }
 
-bool MidiController::matchMapping(const MappingInfo& mapping) {
+bool MidiController::matchMapping(const MappingInfo&) {
     // Product info mapping not implemented for MIDI devices yet
-    Q_UNUSED(mapping);
     return false;
 }
 
@@ -236,8 +235,7 @@ void MidiController::learnTemporaryInputMappings(const MidiInputMappings& mappin
                             qDebug() << "Set mapping for" << message << "to"
                                      << control.group << control.item;
                         },
-                        [message](const std::shared_ptr<QJSValue>& control) {
-                            Q_UNUSED(control);
+                        [message](const std::shared_ptr<QJSValue>&) {
                             qDebug() << "Set mapping for" << message << "to anonymous JS function";
                         }},
                 mapping.control);
@@ -324,8 +322,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         unsigned char status,
         unsigned char control,
         unsigned char value,
-        mixxx::Duration timestamp) {
-    Q_UNUSED(timestamp)
+        mixxx::Duration) {
     unsigned char channel = MidiUtils::channelFromStatus(status);
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
 

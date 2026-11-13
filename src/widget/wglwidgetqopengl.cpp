@@ -78,9 +78,7 @@ void WGLWidget::initializeGL() {
     // to be implemented in derived widgets if needed
 }
 
-void WGLWidget::resizeGL(int w, int h) {
-    Q_UNUSED(w);
-    Q_UNUSED(h);
+void WGLWidget::resizeGL(int, int) {
     // to be implemented in derived widgets if needed
 }
 

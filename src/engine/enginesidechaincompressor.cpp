@@ -4,7 +4,7 @@
 
 #include "util/assert.h"
 
-EngineSideChainCompressor::EngineSideChainCompressor(const QString& group)
+EngineSideChainCompressor::EngineSideChainCompressor(const QString&)
         : m_compressRatio(1.0),
           m_bAboveThreshold(false),
           m_threshold(1.0),
@@ -13,7 +13,6 @@ EngineSideChainCompressor::EngineSideChainCompressor(const QString& group)
           m_decayTime(0),
           m_attackPerFrame(0.0),
           m_decayPerFrame(0.0) {
-    Q_UNUSED(group);
 }
 
 void EngineSideChainCompressor::calculateRates() {

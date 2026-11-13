@@ -15,8 +15,7 @@ WaveformRendererHSV::WaveformRendererHSV(
 WaveformRendererHSV::~WaveformRendererHSV() {
 }
 
-void WaveformRendererHSV::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererHSV::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererHSV::draw(

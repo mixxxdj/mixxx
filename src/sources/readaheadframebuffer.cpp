@@ -422,13 +422,12 @@ WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
 
     // Fill internal buffer
     if (!inputRange.empty()) {
-        bool success = fillBuffer(
+        [[maybe_unused]] bool success = fillBuffer(
                 ReadableSampleFrames(
                         inputRange,
                         SampleBuffer::ReadableSlice(
                                 pInputSampleData,
                                 m_signalInfo.frames2samples(inputRange.length()))));
-        Q_UNUSED(success)
         DEBUG_ASSERT(success);
     }
 

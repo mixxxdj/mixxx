@@ -462,15 +462,13 @@ class OggTagSaver : public TagSaver {
     }
 
   private:
-    static bool exportTrackMetadata(TagLib::Ogg::Vorbis::File* pFile,
-            const TrackMetadata& trackMetadata) {
+    static bool exportTrackMetadata([[maybe_unused]] TagLib::Ogg::Vorbis::File* pFile,
+            [[maybe_unused]] const TrackMetadata& trackMetadata) {
 #if (TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && \
         (TAGLIB_PATCH_VERSION == 1)
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
         // Launchpad issue: https://github.com/mixxxdj/mixxx/issues/9680
-        Q_UNUSED(pFile);
-        Q_UNUSED(trackMetadata);
         kLogger.warning() << "Skipping export of metadata into Ogg file due to "
                              "serious bug in TagLib 1.11.1 "
                              "(https://github.com/taglib/taglib/issues/864)";

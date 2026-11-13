@@ -293,9 +293,7 @@ void ControllerScriptEngineBase::scriptErrorDialog(
 }
 
 void ControllerScriptEngineBase::errorDialogButton(
-        const QString& key, QMessageBox::StandardButton clickedButton) {
-    Q_UNUSED(key);
-
+        const QString&, QMessageBox::StandardButton clickedButton) {
     m_bDisplayingExceptionDialog = false;
     // Something was clicked, so disable this signal now
     disconnect(ErrorDialogHandler::instance(),

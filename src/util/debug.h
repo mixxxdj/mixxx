@@ -19,13 +19,11 @@
 #endif
 
 template<typename T>
-QString toDebugString(const T& object) {
+QString toDebugString([[maybe_unused]] const T& object) {
     QString output;
 #ifndef QT_NO_DEBUG_OUTPUT
     QDebug deb(&output);
     deb << object;
-#else
-    Q_UNUSED(object);
 #endif
     return output;
 }

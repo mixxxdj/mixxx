@@ -692,7 +692,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
 
             faad2::FrameInfo decFrameInfo;
             DEBUG_ASSERT(m_inputBufferLength >= m_inputBufferOffset);
-            void* pDecodeResult = m_pFaad->Decode2(m_hDecoder,
+            [[maybe_unused]] void* pDecodeResult = m_pFaad->Decode2(m_hDecoder,
                     &decFrameInfo,
                     &m_inputBuffer[m_inputBufferOffset],
                     m_inputBufferLength - m_inputBufferOffset,
@@ -755,7 +755,6 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             // we must never get to this point.
             DEBUG_ASSERT(!retryAfterReopeningDecoder);
 
-            Q_UNUSED(pDecodeResult); // only used in DEBUG_ASSERT
             DEBUG_ASSERT(pDecodeResult ==
                     pDecodeBuffer); // verify the in/out parameter
 

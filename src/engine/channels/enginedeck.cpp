@@ -318,9 +318,7 @@ EngineChannel::ActiveState EngineDeck::updateActiveState() {
 }
 
 void EngineDeck::receiveBuffer(
-        const AudioInput& input, const CSAMPLE* pBuffer, unsigned int nFrames) {
-    Q_UNUSED(input);
-    Q_UNUSED(nFrames);
+        const AudioInput&, const CSAMPLE* pBuffer, unsigned int) {
     // Skip receiving audio input if passthrough is not active
     if (!m_bPassthroughIsActive) {
         m_sampleBuffer = nullptr;

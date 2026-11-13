@@ -55,12 +55,10 @@ CoverArtArchiveLinksTask::CoverArtArchiveLinksTask(
 
 QNetworkReply* CoverArtArchiveLinksTask::sendNetworkRequest(
         QNetworkAccessManager* pNetworkAccessManager,
-        network::HttpRequestMethod method,
+        [[maybe_unused]] network::HttpRequestMethod method,
         const QUrl& url,
-        const QJsonDocument& content) {
+        const QJsonDocument&) {
     DEBUG_ASSERT(pNetworkAccessManager);
-    Q_UNUSED(method);
-    Q_UNUSED(content);
     DEBUG_ASSERT(method == network::HttpRequestMethod::Get);
     pNetworkAccessManager->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
 

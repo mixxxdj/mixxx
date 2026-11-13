@@ -367,9 +367,7 @@ void LoopingControl::slotLoopDouble(double pressed) {
 
 void LoopingControl::process(const double rate,
         mixxx::audio::FramePos currentPosition,
-        const std::size_t bufferSize) {
-    Q_UNUSED(bufferSize);
-
+        const std::size_t) {
     const auto previousPosition = m_currentPosition.getValue();
 
     if (previousPosition != currentPosition) {
@@ -1345,8 +1343,7 @@ void LoopingControl::slotBeatLoopActivateRoll(
     m_activeLoopRolls.push(pBeatLoopControl->getSize());
 }
 
-void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
-    Q_UNUSED(pBeatLoopControl);
+void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl*) {
     setLoopingEnabled(false);
 }
 

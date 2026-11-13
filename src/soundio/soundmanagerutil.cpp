@@ -224,8 +224,7 @@ mixxx::audio::ChannelCount AudioPath::minChannelsForType(AudioPathType type) {
 }
 
 // static
-mixxx::audio::ChannelCount AudioPath::maxChannelsForType(AudioPathType type) {
-    Q_UNUSED(type);
+mixxx::audio::ChannelCount AudioPath::maxChannelsForType(AudioPathType) {
     return mixxx::audio::ChannelCount::stereo();
 }
 

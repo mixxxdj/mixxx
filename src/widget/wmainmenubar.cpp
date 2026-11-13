@@ -787,8 +787,7 @@ void WMainMenuBar::initialize() {
 #endif
 }
 
-void WMainMenuBar::onKeywheelChange(int state) {
-    Q_UNUSED(state);
+void WMainMenuBar::onKeywheelChange(int) {
     m_pViewKeywheel->setChecked(false);
 }
 

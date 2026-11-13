@@ -43,11 +43,7 @@ static sf_count_t  sf_f_seek (sf_count_t offset, int whence, void *user_data)
 }
 // The virtual file context must copy ("read") "count" bytes into the buffer
 // provided by ptr and return the count of actually copied bytes.
-static sf_count_t  sf_f_read (void *ptr, sf_count_t count, void *user_data)
-{
-    Q_UNUSED(ptr);
-    Q_UNUSED(count);
-    Q_UNUSED(user_data);
+static sf_count_t sf_f_read(void*, sf_count_t, void*) {
     qWarning() << "sf_f_read called for EncoderWave. Call not implemented!";
     return 0;
 }
@@ -254,8 +250,7 @@ void EncoderWave::initStream() {
 }
 
 int EncoderWave::initEncoder(mixxx::audio::SampleRate sampleRate,
-        QString* pUserErrorMessage) {
-    Q_UNUSED(pUserErrorMessage);
+        QString*) {
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = sampleRate;

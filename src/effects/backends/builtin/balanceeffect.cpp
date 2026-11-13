@@ -99,9 +99,7 @@ void BalanceEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     CSAMPLE_GAIN balance = 0;
     CSAMPLE_GAIN midSide = 0;
     if (enableState != EffectEnableState::Disabling) {

@@ -74,10 +74,9 @@ void WStatusLight::setPixmap(int iState,
     }
 }
 
-void WStatusLight::onConnectedControlChanged(double dParameter, double dValue) {
+void WStatusLight::onConnectedControlChanged(double, double dValue) {
     // Enums are not currently represented using parameter space so it doesn't
     // make sense to use the parameter here yet.
-    Q_UNUSED(dParameter);
     int newPos = static_cast<int>(dValue);
 
     if (m_pixmaps.size() == 2) {

@@ -149,9 +149,7 @@ void GraphicEQEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
     if (m_oldSampleRate != engineParameters.sampleRate()) {

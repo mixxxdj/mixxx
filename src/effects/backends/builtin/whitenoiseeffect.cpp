@@ -47,9 +47,7 @@ void WhiteNoiseEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     WhiteNoiseGroupState& gs = *pState;
 
     CSAMPLE drywet = static_cast<CSAMPLE>(m_pDryWetParameter->value());

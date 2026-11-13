@@ -17,22 +17,18 @@ class EncoderRecordingSettings : public EncoderSettings {
         return false;
     }
 
-    virtual void setQualityByIndex(int qualityIndex) {
-        Q_UNUSED(qualityIndex);
+    virtual void setQualityByIndex([[maybe_unused]] int qualityIndex) {
         DEBUG_ASSERT(!"unimplemented");
     }
 
     // Sets the compression level
-    void setCompression(int compression) override {
-        Q_UNUSED(compression);
+    void setCompression([[maybe_unused]] int compression) override {
         DEBUG_ASSERT(!"unimplemented");
     }
 
     // Selects the option by its index. If it is a single-element option,
     // index 0 means disabled and 1 enabled.
-    virtual void setGroupOption(const QString& groupCode, int optionIndex) {
-        Q_UNUSED(groupCode);
-        Q_UNUSED(optionIndex);
+    virtual void setGroupOption(const QString&, int) {
         DEBUG_ASSERT(!"unimplemented");
     }
 

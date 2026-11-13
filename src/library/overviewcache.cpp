@@ -67,9 +67,8 @@ void OverviewCache::onTrackSummaryChanged(TrackId trackId) {
 QPixmap OverviewCache::requestCachedOverview(
         mixxx::OverviewType type,
         TrackId trackId,
-        const QObject* pRequester,
+        const QObject*,
         QSize desiredSize) {
-    Q_UNUSED(pRequester);
     if (!trackId.isValid()) {
         return QPixmap();
     }

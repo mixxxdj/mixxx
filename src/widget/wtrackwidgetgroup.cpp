@@ -56,9 +56,7 @@ void WTrackWidgetGroup::slotTrackLoaded(TrackPointer pTrack) {
     updateColor();
 }
 
-void WTrackWidgetGroup::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
+void WTrackWidgetGroup::slotLoadingTrack(TrackPointer, TrackPointer) {
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
@@ -66,8 +64,7 @@ void WTrackWidgetGroup::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pO
     updateColor();
 }
 
-void WTrackWidgetGroup::slotTrackChanged(TrackId trackId) {
-    Q_UNUSED(trackId);
+void WTrackWidgetGroup::slotTrackChanged(TrackId) {
     updateColor();
 }
 

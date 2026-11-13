@@ -155,8 +155,7 @@ class SliderEventHandler {
         }
     }
 
-    void resizeEvent(T* pWidget, QResizeEvent* pEvent) {
-        Q_UNUSED(pEvent);
+    void resizeEvent(T* pWidget, QResizeEvent*) {
         // m_dSliderLength and m_dHandleLength are explicitly updated.
         m_dPos = parameterToPosition(pWidget->getControlParameter());
         m_dOldParameter = -1;

@@ -164,9 +164,8 @@ class FakeController : public Controller {
 
     bool isMappable() const override;
 
-    bool matchMapping(const MappingInfo& mapping) override {
+    bool matchMapping([[maybe_unused]] const MappingInfo& mapping) override {
         // We're not testing product info matching in this test.
-        Q_UNUSED(mapping);
         return false;
     }
     QString getVendorString() const override {
@@ -195,13 +194,11 @@ class FakeController : public Controller {
     }
 
   protected:
-    void send(const QList<int>& data, unsigned int length) override {
-        Q_UNUSED(data);
-        Q_UNUSED(length);
+    void send([[maybe_unused]] const QList<int>& data,
+            [[maybe_unused]] unsigned int length) override {
     }
 
-    bool sendBytes(const QByteArray& data) override {
-        Q_UNUSED(data);
+    bool sendBytes([[maybe_unused]] const QByteArray& data) override {
         return true;
     }
 

@@ -430,8 +430,7 @@ void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlist
     updateChildModel(idsToBeUpdated);
 }
 
-void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
-    Q_UNUSED(newName);
+void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString&) {
     // qDebug() << "PlaylistFeature::slotPlaylistTableRenamed() playlistId:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
         // Maybe we need to re-sort the sidebar items, so call slotPlaylistTableChanged()

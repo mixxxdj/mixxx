@@ -139,9 +139,7 @@ inline bool operator!=(const SeratoTags& lhs, const SeratoTags& rhs) {
     return !(lhs == rhs);
 }
 
-inline QDebug operator<<(QDebug dbg, const SeratoTags& arg) {
-    Q_UNUSED(arg);
-
+inline QDebug operator<<(QDebug dbg, [[maybe_unused]] const SeratoTags& arg) {
     // TODO
     return dbg << "SeratoTags";
 }

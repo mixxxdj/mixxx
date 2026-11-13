@@ -18,7 +18,6 @@ BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("banshee")),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_cancelImport(false) {
-    Q_UNUSED(pConfig);
     m_pBansheePlaylistModel = new BansheePlaylistModel(
             this, m_pLibrary->trackCollectionManager(), &m_connection);
     m_isActivated = false;

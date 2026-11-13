@@ -97,9 +97,7 @@ void LinkwitzRiley8EQEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     float fLow = 0.f, fMid = 0.f, fHigh = 0.f;
     if (!m_pKillLow->toBool()) {
         fLow = static_cast<float>(m_pPotLow->value());

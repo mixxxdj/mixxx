@@ -422,10 +422,8 @@ QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
 
 void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         const audio::SignalInfo& signalInfo,
-        const Duration& duration,
+        const Duration&,
         double timingOffsetMillis) {
-    Q_UNUSED(duration);
-
     if (!pBeats) {
         setTerminalMarker(nullptr);
         setNonTerminalMarkers({});

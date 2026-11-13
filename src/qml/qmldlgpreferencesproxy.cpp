@@ -19,10 +19,8 @@ void QmlDlgPreferencesProxy::show() {
 
 // static
 QmlDlgPreferencesProxy* QmlDlgPreferencesProxy::create(
-        QQmlEngine* pQmlEngine,
+        QQmlEngine*,
         QJSEngine* pJsEngine) {
-    Q_UNUSED(pQmlEngine);
-
     // The implementation of this method is mostly taken from the code example
     // that shows the replacement for `qmlRegisterSingletonInstance()` when
     // using `QML_SINGLETON`.

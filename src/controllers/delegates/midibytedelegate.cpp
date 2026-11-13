@@ -12,10 +12,8 @@ MidiByteDelegate::~MidiByteDelegate() {
 }
 
 QWidget* MidiByteDelegate::createEditor(QWidget* parent,
-                                        const QStyleOptionViewItem& option,
-                                        const QModelIndex& index) const {
-    Q_UNUSED(option);
-    Q_UNUSED(index);
+        const QStyleOptionViewItem&,
+        const QModelIndex& index) const {
     if (!index.data(Qt::EditRole).isNull()) {
         HexSpinBox* pSpinBox = new HexSpinBox(parent);
         pSpinBox->setRange(0x00, 0x7F);
@@ -25,8 +23,7 @@ QWidget* MidiByteDelegate::createEditor(QWidget* parent,
 }
 
 QString MidiByteDelegate::displayText(const QVariant& value,
-                                      const QLocale& locale) const {
-    Q_UNUSED(locale);
+        const QLocale&) const {
     unsigned char control = static_cast<unsigned char>(value.toInt());
     return MidiUtils::formatByteAsHex(control);
 }
