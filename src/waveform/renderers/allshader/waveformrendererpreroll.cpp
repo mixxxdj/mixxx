@@ -128,10 +128,14 @@ bool WaveformRendererPreroll::preprocessInner() {
         return false;
     }
 
+#ifdef __STEM__
     const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
     const bool splitStemTracks = isStemTrack &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
+#else
+    constexpr bool splitStemTracks = false;
+#endif
 
     const double playMarkerPosition = m_pWaveformRenderer->getPlayMarkerPosition();
     const double vSamplesPerPixel = m_pWaveformRenderer->getVisualSamplePerPixel();

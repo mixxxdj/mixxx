@@ -329,11 +329,15 @@ void allshader::WaveformRenderMark::update() {
                                          : ::WaveformRendererAbstract::Play;
     bool slipActive = m_pWaveformRenderer->isSlipActive();
 
+#ifdef __STEM__
     const TrackPointer trackInfo = m_pWaveformRenderer->getTrackInfo();
     const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
     const bool splitStemTracks = isStemTrack &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
+#else
+    constexpr bool splitStemTracks = false;
+#endif
 
     const float breadth = m_pWaveformRenderer->getBreadth();
     const int numBoxes = (splitStemTracks && slipActive) ? mixxx::kMaxSupportedStems : 1;

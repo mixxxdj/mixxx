@@ -90,9 +90,6 @@ DlgPrefWaveform::DlgPrefWaveform(
     untilMarkTextHeightLimitComboBox->addItem(tr("1/3 of waveform viewer"));
     untilMarkTextHeightLimitComboBox->addItem(tr("Entire waveform viewer"));
 
-    stemDisplayModeComboBox->addItem(tr("Overlapping"));
-    stemDisplayModeComboBox->addItem(tr("Stacked"));
-
     // Adopt tr string from first GLSL hint
     requiresGLSLLabel2->setText(requiresGLSLLabel->text());
 
@@ -230,6 +227,8 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefWaveform::slotSetUntilMarkTextHeightLimit);
+
+#ifdef __STEM__
     connect(stemReorderLayerOnChangedCheckBox,
             &QCheckBox::clicked,
             this,
@@ -242,10 +241,23 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QDoubleSpinBox::valueChanged,
             this,
             &DlgPrefWaveform::slotStemOutlineOpacity);
+    stemDisplayModeComboBox->addItem(tr("Overlapping"));
+    stemDisplayModeComboBox->addItem(tr("Stacked"));
     connect(stemDisplayModeComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefWaveform::slotStemDisplayMode);
+#else
+    stemOpacityLabel->hide();
+    stemOpacityMainLabel->hide();
+    stemOpacityOutlineLabel->hide();
+    stemDisplayModeLabel->hide();
+    requiresGLSLLabel2->hide();
+    stemReorderLayerOnChangedCheckBox->hide();
+    stemOpacitySpinBox->hide();
+    stemOutlineOpacitySpinBox->hide();
+    stemDisplayModeComboBox->hide();
+#endif
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -324,10 +336,12 @@ void DlgPrefWaveform::slotUpdate() {
             WaveformWidgetFactory::toUntilMarkTextHeightLimitIndex(
                     pFactory->getUntilMarkTextHeightLimit()));
 
+#ifdef __STEM__
     stemReorderLayerOnChangedCheckBox->setChecked(pFactory->isStemReorderOnChange());
     stemOpacitySpinBox->setValue(pFactory->getStemOpacity());
     stemOutlineOpacitySpinBox->setValue(pFactory->getStemOutlineOpacity());
     stemDisplayModeComboBox->setCurrentIndex(pFactory->isStemSplitTracks() ? 1 : 0);
+#endif
 
     OverviewType cfgOverviewType =
             m_pConfig->getValue<OverviewType>(kOverviewTypeCfgKey, OverviewType::RGB);
@@ -432,8 +446,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
             WaveformWidgetFactory::kUntilMarkTextPointSizeDefault);
     untilMarkTextHeightLimitComboBox->setCurrentIndex(
             WaveformWidgetFactory::kUntilMarkTextHeightLimitDefaultIndex);
-
-    // Stem options
+#ifdef __STEM__
     stemOpacitySpinBox->setValue(WaveformWidgetFactory::kStemOpacityDefault);
     stemOutlineOpacitySpinBox->setValue(
             WaveformWidgetFactory::kStemOutlineOpacityDefault);
@@ -443,6 +456,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
             WaveformWidgetFactory::kStemReorderOnChangeDefault);
     slotStemReorderOnChange(WaveformWidgetFactory::kStemReorderOnChangeDefault);
     stemDisplayModeComboBox->setCurrentIndex(0);
+#endif
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -600,14 +614,12 @@ void DlgPrefWaveform::updateWaveformGeneralOptionsEnabled() {
 }
 
 void DlgPrefWaveform::updateStemOptionsEnabled() {
-#ifndef MIXXX_USE_QOPENGL
-    const bool stemsSupported = false;
-#else
+#if defined(MIXXX_USE_QOPENGL) && defined(__STEM__)
     auto* pFactory = WaveformWidgetFactory::instance();
     const bool stemsSupported =
             pFactory->widgetTypeSupportsStems() &&
             pFactory->getBackendFromConfig() == WaveformWidgetBackend::AllShader;
-#endif
+
     bool enabled = useWaveformCheckBox->isChecked();
     stemOpacityMainLabel->setEnabled(stemsSupported && enabled);
     stemOpacityOutlineLabel->setEnabled(stemsSupported && enabled);
@@ -617,6 +629,7 @@ void DlgPrefWaveform::updateStemOptionsEnabled() {
     stemOutlineOpacitySpinBox->setEnabled(stemsSupported && enabled);
     stemDisplayModeComboBox->setEnabled(stemsSupported && enabled);
     requiresGLSLLabel2->setVisible(!stemsSupported && enabled);
+#endif
 }
 
 void DlgPrefWaveform::updateWaveformGainEnabled() {
@@ -723,6 +736,7 @@ void DlgPrefWaveform::slotSetUntilMarkTextHeightLimit(int index) {
             WaveformWidgetFactory::toUntilMarkTextHeightLimit(index));
 }
 
+#ifdef __STEM__
 void DlgPrefWaveform::slotStemOpacity(float value) {
     WaveformWidgetFactory::instance()->setStemOpacity(value);
 }
@@ -738,6 +752,7 @@ void DlgPrefWaveform::slotStemOutlineOpacity(float value) {
 void DlgPrefWaveform::slotStemDisplayMode(int index) {
     WaveformWidgetFactory::instance()->setStemSplitTracks(index == 1);
 }
+#endif
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {
     AnalysisDao analysisDao(m_pConfig);
