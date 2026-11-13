@@ -204,15 +204,7 @@ private:
   bool m_seekedSinceLastBuffer;
   bool m_prevPaused;
   bool m_latchedPlay;
-  // static std::atomic<bool> m_rampUpEnabled;
-  // static std::atomic<bool> m_rampDownEnabled;
-  // static std::atomic<int> m_rampMode; // 0 = 33 RPM, 1 = 45 RPM
-  // static std::atomic<bool> m_rampIncludePitch;
-  // static std::atomic<int> m_rampDownMode; // 0 = brake, 1 = power cut
-  //// Set on track change (worker thread), applied in calculateSpeed()
   std::atomic<bool> m_resetRampRequested;
-  // static std::atomic<double> m_rampUpTimeFactor;
-  // static std::atomic<double> m_rampDownTimeFactor;
 
   bool m_rampAllowed; // only main decks, not samplers or preview deck
 

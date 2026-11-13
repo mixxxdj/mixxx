@@ -262,16 +262,6 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
     // this control.
     m_pScratch2Scratching->set(1.0);
 
-    //     // Update Internal Settings
-    //     // Set Pitchbend Mode
-    //     m_eRateRampMode = static_cast<RampMode>(
-    //         getConfig()->getValue(ConfigKey("[Controls]","RateRamp"),
-    //                               static_cast<int>(RampMode::Stepping)));
-
-    //     // Set the Sensitivity
-    //     m_iRateRampSensitivity =
-    //             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
-
     // Physical spin-up / spin-down settings. DlgPrefDeck sets them for all
     // decks from the preferences, mappings can change them per deck.
     m_pSpinupEnabled = std::make_unique<ControlPushButton>(
