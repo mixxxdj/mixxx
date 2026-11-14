@@ -246,6 +246,24 @@ static inline double estimateFramesNeeded(const SINT bufferSizeFrames,
     return fabs(frames);
 }
 
+struct RateRamp {
+    double rateDelta;
+    double rateAdd;
+    double rateDeltaAbs;
+};
+
+static inline RateRamp setupRateRamp(const double rateOld,
+        const double rateNew,
+        const double rateDiff,
+        const SINT bufferSizeFrames) {
+    const double rateDelta = rateDiff / static_cast<double>(bufferSizeFrames);
+    const double rateAdd = fabs(rateOld);
+    const double rateDeltaAbs =
+            rateOld < 0 || rateNew < 0 ? -rateDelta : rateDelta;
+
+    return {rateDelta, rateAdd, rateDeltaAbs};
+}
+
 void EngineBufferScaleLinear::do_refill_buffer(double rate,
         SINT* pUnscaledFramesNeeded,
         double* pStartFrame,
@@ -366,10 +384,10 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
     }
 
     const SINT bufferSizeFrames = getOutputSignal().samples2frames(bufSize);
-    const double rateDelta = rateDiff / static_cast<double>(bufferSizeFrames);
+    const RateRamp ramp = setupRateRamp(rateOld, rateNew, rateDiff, bufferSizeFrames);
 
     // Simulate the loop to estimate how many frames we need
-    const double frames = estimateFramesNeeded(bufferSizeFrames, rateOld, rateDelta);
+    const double frames = estimateFramesNeeded(bufferSizeFrames, rateOld, ramp.rateDelta);
 
     // Intentional integer rounding: increases by one if the fractional part of
     // m_dNextFrame and frames are greater than one"
@@ -383,9 +401,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
     double startFrame = m_dNextFrame;
     SINT i = 0;
 
-    double rateAdd = fabs(rateOld);
-    const double rateDeltaAbs =
-            rateOld < 0 || rateNew < 0 ? -rateDelta : rateDelta;
+    double rateAdd = ramp.rateAdd;
     const double readRate = rateNew == 0 ? rateOld : rateNew;
 
     // Hot frame loop
@@ -412,7 +428,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
         // Smooth any changes in the playback rate over one buf_size
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        rateAdd += rateDeltaAbs;
+        rateAdd += ramp.rateDeltaAbs;
         i += chCount;
     }
 
