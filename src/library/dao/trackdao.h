@@ -173,8 +173,6 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 
     bool updateTrack(const Track& track) const;
 
-    void hideAllTracks(const QDir& rootDir) const;
-
     bool hideTracks(
             const QList<TrackId>& trackIds) const;
     void afterHidingTracks(
