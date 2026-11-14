@@ -292,6 +292,11 @@ class EngineMixer : public QObject, public AudioSource {
     mixxx::SampleBuffer m_talkover;
     mixxx::SampleBuffer m_talkoverHeadphones;
     mixxx::SampleBuffer m_sidechainMix;
+    // Temporary buffers for ChannelMixer, used to rebuild the
+    // post-fader mix of channels with sub-channels (stem decks): two areas of
+    // kMaxEngineSamples samples, the first as a per-sub-channel work buffer
+    // and the second as the mix buffer of the headphone pass.
+    mixxx::SampleBuffer m_channelMixerTempBuffer;
 
     parented_ptr<EngineWorkerScheduler> m_pWorkerScheduler;
     std::unique_ptr<EngineSync> m_pEngineSync;
