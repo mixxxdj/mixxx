@@ -33,9 +33,9 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     // Enable short window if available (only for R3)
     void useOptionWindowShort(bool enable);
 
-    void setScaleParameters(double base_rate,
-                            double* pTempoRatio,
-                            double* pPitchRatio) override;
+    void setScaleParameters(double baseRate,
+            double* pTempoRatio,
+            double* pPitchRatio) override;
 
     double scaleBuffer(
             CSAMPLE* pOutputBuffer,
