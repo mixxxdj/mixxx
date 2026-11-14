@@ -99,17 +99,17 @@ double EngineBufferScaleLinear::scaleBuffer(
         // if the buffer has extra samples, do a read so RAMAN ends up back where
         // it should be
         SINT iCurSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dCurrentFrame)));
-        SINT extra_samples = m_bufferIntSize - iCurSample - getOutputSignal().getChannelCount();
-        if (extra_samples > 0) {
-            if (extra_samples % getOutputSignal().getChannelCount() != 0) {
+        SINT extraSamples = m_bufferIntSize - iCurSample - getOutputSignal().getChannelCount();
+        if (extraSamples > 0) {
+            if (extraSamples % getOutputSignal().getChannelCount() != 0) {
                 // extra samples should include the whole frame
-                extra_samples -= extra_samples % getOutputSignal().getChannelCount();
-                extra_samples += getOutputSignal().getChannelCount();
+                extraSamples -= extraSamples % getOutputSignal().getChannelCount();
+                extraSamples += getOutputSignal().getChannelCount();
             }
             //qDebug() << "extra samples" << extra_samples;
 
             SINT next_samples_read = m_pReadAheadManager->getNextSamples(
-                    rateAddNew, m_bufferInt, extra_samples, getOutputSignal().getChannelCount());
+                    rateAddNew, m_bufferInt, extraSamples, getOutputSignal().getChannelCount());
             framesRead += static_cast<double>(getOutputSignal().samples2frames(next_samples_read));
         }
         // force a buffer read:
@@ -145,7 +145,7 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT bufSize) {
     }
     // Protection against infinite read loops when (for example) we are
     // reading from a broken file.
-    int read_failed_count = 0;
+    int readFailedCount = 0;
     // We need to repeatedly call the RAMAN because the RAMAN does not bend
     // over backwards to satisfy our request. It assumes you will continue
     // to call getNextSamples until you receive the number of samples you
@@ -156,7 +156,7 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT bufSize) {
                 samplesNeeded,
                 getOutputSignal().getChannelCount());
         if (readSize == 0) {
-            if (++read_failed_count > 1) {
+            if (++readFailedCount > 1) {
                 break;
             } else {
                 continue;
@@ -213,10 +213,10 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
     double frames = 0;
     const SINT bufferSizeFrames = getOutputSignal().samples2frames(bufSize);
     const double rateDelta = rateDiff / static_cast<double>(bufferSizeFrames);
-    // use Gaussian sum formula (n(n+1))/2 for
-    //for (int j = 0; j < bufferSizeFrames; ++j) {
-    //    frames += (j * rate_delta) + rate_old;
-    //}
+    // Use Gaussian sum formula (n(n+1))/2 for
+    // for (int j = 0; j < bufferSizeFrames; ++j) {
+    //     frames += (j * rateDelta) + rateOld;
+    // }
     frames = static_cast<double>(bufferSizeFrames - 1) *
             static_cast<double>(bufferSizeFrames) / 2.0;
     frames *= rateDelta;

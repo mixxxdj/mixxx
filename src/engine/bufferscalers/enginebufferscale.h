@@ -36,10 +36,10 @@ class EngineBufferScale : public QObject {
     //
     // If parameter settings are outside of acceptable limits, each setting will
     // be set to the value it was clamped to.
-    virtual void setScaleParameters(double base_rate,
-                                    double* pTempoRatio,
-                                    double* pPitchRatio) {
-        m_dBaseRate = base_rate;
+    virtual void setScaleParameters(double baseRate,
+            double* pTempoRatio,
+            double* pPitchRatio) {
+        m_dBaseRate = baseRate;
         m_dTempoRatio = *pTempoRatio;
         m_dPitchRatio = *pPitchRatio;
     }
