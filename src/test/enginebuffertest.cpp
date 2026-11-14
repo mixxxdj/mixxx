@@ -591,3 +591,137 @@ TEST_F(EngineBufferTest, RatePermTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up_small"), 0);
     EXPECT_EQ(1.06, m_pChannel1->getEngineBuffer()->m_speed_old);
 }
+
+// In relative vinyl mode the deck position is the integral of
+// vinylcontrol_rate. Drive the rate per callback like VinylControlXwax does
+// and check that the engine moves exactly by sum(rate * buffer duration).
+class EngineBufferVinylRateTest : public SignalPathTest {
+  protected:
+    void SetUp() override {
+        SignalPathTest::SetUp();
+        // input_configured is read only, it is set when a vinyl input is
+        // configured in the sound hardware preferences
+        ControlObject::getControl(ConfigKey(m_sGroup1, "input_configured"))->forceSet(1.0);
+        ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_enabled"), 1.0);
+        ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_mode"), 1.0); // relative
+        ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.5);
+        ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+        m_baseRate = ControlObject::get(ConfigKey(m_sGroup1, "track_samplerate")) /
+                ControlObject::get(ConfigKey(kAppGroup, "samplerate"));
+        run(std::vector<double>(50, 1.0));
+    }
+
+    double position() const {
+        return m_pChannel1->getEngineBuffer()->getExactPlayPos().value();
+    }
+
+    // Processes one callback per rate and returns the expected movement in
+    // frames
+    double run(const std::vector<double>& rates) {
+        const double framesPerBuffer = kProcessBufferSize / 2.0;
+        double expected = 0.0;
+        for (double rate : rates) {
+            ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_rate"), rate);
+            ProcessBuffer();
+            expected += rate * framesPerBuffer * m_baseRate;
+        }
+        return expected;
+    }
+
+    // Returns the drift in frames after the move, which must start and end
+    // at rate 1.0 so that the ramping inside the buffers cancels out
+    double measure(const std::vector<double>& move) {
+        const double start = position();
+        double expected = run(move);
+        expected += run(std::vector<double>(50, 1.0));
+        const double drift = (position() - start) - expected;
+        std::cout << "ENGINE DRIFT " << drift << " frames ("
+                  << drift / ControlObject::get(ConfigKey(m_sGroup1, "track_samplerate")) *
+                        1000.0
+                  << " ms)" << std::endl;
+        return drift;
+    }
+
+    static void ramp(std::vector<double>* pRates, double from, double to, int buffers) {
+        for (int i = 1; i <= buffers; ++i) {
+            pRates->push_back(from + (to - from) * i / buffers);
+        }
+    }
+
+    double m_baseRate = 1.0;
+};
+
+TEST_F(EngineBufferVinylRateTest, ConstantRate) {
+    EXPECT_NEAR(0.0, measure(std::vector<double>(100, 1.0)), 1.0);
+}
+
+TEST_F(EngineBufferVinylRateTest, AsymmetricDirectionChanges) {
+    // Fast forward and slow backward strokes that reverse direction within
+    // a buffer, like a scratch with a moving record
+    std::vector<double> rates;
+    ramp(&rates, 1.0, 2.0, 2);
+    for (int stroke = 0; stroke < 10; ++stroke) {
+        rates.insert(rates.end(), 2, -0.5);
+        rates.insert(rates.end(), 2, 2.0);
+    }
+    ramp(&rates, 2.0, 1.0, 2);
+    EXPECT_NEAR(0.0, measure(rates), 20.0);
+}
+
+TEST_F(EngineBufferVinylRateTest, PositionFollowsManyDirectionChanges) {
+    // Back and forth movement that changes direction in the middle of a
+    // buffer, so that the scaler holds unplayed frames at each reversal.
+    // The play position must follow the audio during the whole scratch,
+    // because a stop or seek re-anchors the reader at the play position.
+    const double start = position();
+    double expected = 0.0;
+    double previous = 1.0;
+    double maxError = 0.0;
+    for (int stroke = 0; stroke < 30; ++stroke) {
+        for (int i = 1; i <= 16; ++i) {
+            const double rate = 3.0 * std::sin(2 * M_PI * (i - 0.5) / 16);
+            ControlObject::set(ConfigKey(m_sGroup1, "vinylcontrol_rate"), rate);
+            ProcessBuffer();
+            // The linear scaler ramps from the previous to the new rate
+            expected += (previous + rate) / 2 * kProcessBufferSize / 2 * m_baseRate;
+            previous = rate;
+            maxError = std::max(maxError, std::fabs((position() - start) - expected));
+        }
+    }
+    EXPECT_LT(maxError, 3.0);
+}
+
+TEST_F(EngineBufferVinylRateTest, ScratchStrokes) {
+    std::vector<double> rates;
+    ramp(&rates, 1.0, 0.0, 4);
+    for (int stroke = 0; stroke < 20; ++stroke) {
+        for (int i = 1; i <= 16; ++i) {
+            rates.push_back(3.0 * std::sin(2 * M_PI * i / 16));
+        }
+    }
+    ramp(&rates, 0.0, 1.0, 4);
+    measure(rates);
+}
+
+TEST_F(EngineBufferVinylRateTest, BackspinWithStop) {
+    std::vector<double> rates;
+    ramp(&rates, 1.0, -4.0, 5);
+    rates.insert(rates.end(), 100, -4.0);
+    ramp(&rates, -4.0, 0.0, 3);
+    rates.insert(rates.end(), 20, 0.0);
+    ramp(&rates, 0.0, 2.0, 8);
+    rates.insert(rates.end(), 200, 2.0);
+    ramp(&rates, 2.0, 1.0, 4);
+    measure(rates);
+}
+
+TEST_F(EngineBufferVinylRateTest, StopAndRestart) {
+    std::vector<double> rates;
+    for (int i = 0; i < 10; ++i) {
+        ramp(&rates, 1.0, 0.0, 2);
+        rates.insert(rates.end(), 10, 0.0);
+        ramp(&rates, 0.0, 1.0, 2);
+        rates.insert(rates.end(), 10, 1.0);
+    }
+    measure(rates);
+}

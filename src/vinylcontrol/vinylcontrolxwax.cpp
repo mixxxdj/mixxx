@@ -11,6 +11,7 @@
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
+#include "vinylcontrol/vinylcontroldebug.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "waveform/visualplayposition.h"
 
@@ -20,8 +21,8 @@
    2) Tons of cleanup
    3) Speed up needle dropping
    4) Extrapolate small dropouts and keep track of "dynamics"
- ********************/
 
+ ********************/
 namespace {
 constexpr int kChannels = 2;
 } // namespace
@@ -60,6 +61,9 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dDriftAmt(0.0),
           m_initialRelativeDriftAmt(0.0),
           m_deltaRelativeDriftAmount(0.0),
+          m_dPositionAge(0.0),
+          m_dOldDriftVinylPos(0.0),
+          m_bDriftUpdated(false),
           m_dUiUpdateTime(-1.0) {
     // TODO(rryan): Should probably live in VinylControlManager since it's not
     // specific to a VC deck.
@@ -254,10 +258,25 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     if(bHaveSignal) {
         // Always analyze the input samples
-        m_iPosition = timecoder_get_position(&timecoder, nullptr);
+        m_iPosition = timecoder_get_position(&timecoder, &m_dPositionAge);
         //Notify the UI if the timecode quality is good
         establishQuality(dVinylPitch);
     }
+
+    // Shows the drift of the previous buffer, or n/a if it was not calculated.
+    // While scratching the play button may be off, so a moving record counts
+    // as playing too.
+
+    if (playButton->toBool() || std::fabs(dVinylPitch) > 0.01) {
+        if (m_bDriftUpdated) {
+            qInfo().noquote() << m_group << "drift: " << colorDrift(m_dDriftAmt)
+                              << ", relative drift: " << colorDrift(m_deltaRelativeDriftAmount);
+        } else {
+            qInfo().noquote() << m_group << "drift: n/a";
+        }
+    }
+
+    m_bDriftUpdated = false;
 
     //are we even playing and enabled at all?
     if (!m_bIsEnabled) {
@@ -290,7 +309,10 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     // make sure m_dVinylPosition only has good values
     if (m_iPosition != -1) {
-        m_dVinylPosition = static_cast<double>(m_iPosition) / 1000.0 - m_iLeadInTime;
+        // The position belongs to the last decoded timecode bit. Extrapolate it
+        // by the time elapsed since then to the end of this buffer.
+        m_dVinylPosition = static_cast<double>(m_iPosition) / 1000.0 +
+                m_dPositionAge * dVinylPitch - m_iLeadInTime;
     }
 
     // Get the playback position in the file in seconds.
@@ -407,13 +429,14 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
             //save the absolute amount of drift for when we need to estimate vinyl position
             m_dDriftAmt = m_dVinylPosition - filePosition;
+            m_bDriftUpdated = true;
 
             if (m_iVCMode == MIXXX_VCMODE_RELATIVE) {
                 m_deltaFilePos = filePosition - m_dOldFilePos;
-                m_deltaRelativeDriftAmount = calcDeltaRelativeDriftAmount(m_deltaFilePos);
+                m_deltaRelativeDriftAmount = calcDeltaRelativeDriftAmount(
+                        m_deltaFilePos, m_dVinylPosition - m_dOldDriftVinylPos);
             }
-
-            //qDebug() << "drift" << m_dDriftAmt;
+            m_dOldDriftVinylPos = m_dVinylPosition;
 
             if (m_bForceResync) {
                 //if forceresync was set but we're no longer absolute,
@@ -566,11 +589,12 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 }
 
 // returns the delta between the current drift amount and the last reset value of the drift amount.
-double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
+double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos, double deltaVinylPos) {
     // Reset m_relativeDriftAmtMem in case of needle drop, file position change (hotcue, loop etc.),
     // when passthrough is enabled or is playing in reverse
     if (std::fabs(m_deltaRelativeDriftAmount) > 1.5 ||
             std::fabs(deltaFilePos) > 0.03 || // TODO: thresholds to adjust probably
+            std::fabs(deltaVinylPos) > 0.03 ||
             m_passthroughEnabled.toBool() || reverseButton->toBool() ||
             m_scratchPositionEnabled.toBool()) {
         m_initialRelativeDriftAmt = m_dDriftAmt;
