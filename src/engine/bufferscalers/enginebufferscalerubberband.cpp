@@ -319,7 +319,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         SINT receivedFrames = retrieveAndDeinterleave(
                 read, remainingFrames);
         remainingFrames -= receivedFrames;
-        readFramesProcessed += m_effectiveRate * receivedFrames;
+        readFramesProcessed += m_effectiveRate * static_cast<double>(receivedFrames);
         read += getOutputSignal().frames2samples(receivedFrames);
 
         const SINT nextBlockFramesRequired =
