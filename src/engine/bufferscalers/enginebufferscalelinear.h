@@ -34,6 +34,9 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
             SINT* pUnscaledFramesNeeded,
             double* pStartFrame,
             SINT* pCurrentFrameFloor);
+    SINT do_fetch_samples(double rate,
+            SINT* pUnscaledFramesNeeded,
+            double* pStartFrame);
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;

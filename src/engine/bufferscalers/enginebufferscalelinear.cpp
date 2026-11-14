@@ -270,6 +270,59 @@ void EngineBufferScaleLinear::do_refill_buffer(double rate,
     } while (sampleCount + 2 * chCount - 1 >= m_bufferIntSize);
 }
 
+SINT EngineBufferScaleLinear::do_fetch_samples(double rate,
+        SINT* pUnscaledFramesNeeded,
+        double* pStartFrame) {
+    const int chCount = getOutputSignal().getChannelCount();
+
+    // Because our index is a float value, we're going to be interpolating
+    // between two samples, a lower (prev) and upper (cur) sample.
+    // If the lower sample is off the end of the buffer (values between
+    // -.999 and 0), load it from the saved globals.
+
+    // The first bounds check (< m_bufferIntSize) is probably not needed.
+
+    auto currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
+
+    auto sampleCount = static_cast<int>(getOutputSignal().frames2samples(currentFrameFloor));
+    if (currentFrameFloor < 0) {
+        // we have advanced to a new buffer in the previous run,
+        // but the floor still points to the old buffer
+        // so take the cached sample, this happens on slow rates
+        SampleUtil::copy(m_floorSample.data(), m_floorSampleOld.data(), chCount);
+        SampleUtil::copy(m_ceilSample.data(), m_bufferInt, chCount);
+    } else if (sampleCount + 2 * chCount - 1 < m_bufferIntSize) {
+        // take floorSample form the buffer of the previous run
+        SampleUtil::copy(m_floorSample.data(), &m_bufferInt[sampleCount], chCount);
+        SampleUtil::copy(m_ceilSample.data(), &m_bufferInt[sampleCount + chCount], chCount);
+    } else {
+        // if we don't have the ceilSample in buffer, load some more
+
+        if (sampleCount + chCount - 1 < m_bufferIntSize) {
+            // take floorSample form the buffer of the previous run
+            SampleUtil::copy(m_floorSample.data(), &m_bufferInt[sampleCount], chCount);
+        }
+
+        do_refill_buffer(rate,
+                pUnscaledFramesNeeded,
+                pStartFrame,
+                &currentFrameFloor);
+
+        sampleCount = static_cast<int>(getOutputSignal().frames2samples(currentFrameFloor));
+
+        // Now that the buffer is up to date, we can get the value of the sample
+        // at the floor of our position.
+        if (currentFrameFloor >= 0) {
+            // the previous position is in the new buffer
+            SampleUtil::copy(m_floorSample.data(), &m_bufferInt[sampleCount], chCount);
+        }
+
+        SampleUtil::copy(m_ceilSample.data(), &m_bufferInt[sampleCount + chCount], chCount);
+    }
+
+    return currentFrameFloor;
+}
+
 // Stretch a specified buffer worth of audio using linear interpolation
 double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
     double rateOld = m_dOldRate;
@@ -327,56 +380,15 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
     double rateAdd = fabs(rateOld);
     const double rateDeltaAbs =
             rateOld < 0 || rateNew < 0 ? -rateDelta : rateDelta;
+    const double readRate = rateNew == 0 ? rateOld : rateNew;
 
     // Hot frame loop
     while (i < bufSize) {
         // shift indices
         m_dCurrentFrame = m_dNextFrame;
 
-        // Because our index is a float value, we're going to be interpolating
-        // between two samples, a lower (prev) and upper (cur) sample.
-        // If the lower sample is off the end of the buffer (values between
-        // -.999 and 0), load it from the saved globals.
-
-        // The first bounds check (< m_bufferIntSize) is probably not needed.
-
-        auto currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
-
-        auto sampleCount = static_cast<int>(getOutputSignal().frames2samples(currentFrameFloor));
-        if (currentFrameFloor < 0) {
-            // we have advanced to a new buffer in the previous run,
-            // but the floor still points to the old buffer
-            // so take the cached sample, this happens on slow rates
-            SampleUtil::copy(m_floorSample.data(), m_floorSampleOld.data(), chCount);
-            SampleUtil::copy(m_ceilSample.data(), m_bufferInt, chCount);
-        } else if (sampleCount + 2 * chCount - 1 < m_bufferIntSize) {
-            // take floorSample form the buffer of the previous run
-            SampleUtil::copy(m_floorSample.data(), &m_bufferInt[sampleCount], chCount);
-            SampleUtil::copy(m_ceilSample.data(), &m_bufferInt[sampleCount + chCount], chCount);
-        } else {
-            // if we don't have the ceilSample in buffer, load some more
-
-            if (sampleCount + chCount - 1 < m_bufferIntSize) {
-                // take floorSample form the buffer of the previous run
-                SampleUtil::copy(m_floorSample.data(), &m_bufferInt[sampleCount], chCount);
-            }
-
-            do_refill_buffer(rateNew == 0 ? rateOld : rateNew,
-                    &unscaledFramesNeeded,
-                    &startFrame,
-                    &currentFrameFloor);
-
-            sampleCount = static_cast<int>(getOutputSignal().frames2samples(currentFrameFloor));
-
-            // Now that the buffer is up to date, we can get the value of the sample
-            // at the floor of our position.
-            if (currentFrameFloor >= 0) {
-                // the previous position is in the new buffer
-                SampleUtil::copy(m_floorSample.data(), &m_bufferInt[sampleCount], chCount);
-            }
-
-            SampleUtil::copy(m_ceilSample.data(), &m_bufferInt[sampleCount + chCount], chCount);
-        }
+        const SINT currentFrameFloor = do_fetch_samples(
+                readRate, &unscaledFramesNeeded, &startFrame);
 
         // For the current index, what percentage is it
         // between the previous and the next?
