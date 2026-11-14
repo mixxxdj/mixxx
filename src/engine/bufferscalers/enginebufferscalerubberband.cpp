@@ -48,8 +48,8 @@ void EngineBufferScaleRubberBand::setScaleParameters(double base_rate,
 
     double speed_abs = fabs(*pTempoRatio);
     if (runningEngineVersion() == 2) {
-        constexpr double kMinSeekSpeed = 1.0 / 128.0;
-        if (speed_abs < kMinSeekSpeed) {
+        constexpr double kLowerRateLimit = 1.0 / 128.0;
+        if (speed_abs < kLowerRateLimit) {
             // Let the caller know we ignored their speed.
             speed_abs = *pTempoRatio = 0;
         }
