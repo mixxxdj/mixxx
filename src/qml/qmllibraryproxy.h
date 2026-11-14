@@ -96,6 +96,8 @@ class QmlLibraryProxy : public QObject {
     Q_PROPERTY(mixxx::qml::QmlLibraryScannerProxy* scanner MEMBER m_pScanner CONSTANT)
     Q_PROPERTY(bool libraryScanActive READ libraryScanActive NOTIFY libraryScanActiveChanged)
     Q_PROPERTY(bool enginePrimeExportAvailable READ enginePrimeExportAvailable CONSTANT)
+    Q_PROPERTY(QString waveformCacheDiskUsage READ waveformCacheDiskUsage NOTIFY
+                    waveformCacheDiskUsageChanged)
     QML_NAMED_ELEMENT(Library)
     QML_SINGLETON
 
@@ -145,6 +147,12 @@ class QmlLibraryProxy : public QObject {
     static Library* get() {
         return s_pLibrary.get();
     }
+
+    QString waveformCacheDiskUsage() const {
+        return m_waveformCacheDiskUsage;
+    }
+    Q_INVOKABLE void refreshWaveformCacheDiskUsage();
+    Q_INVOKABLE bool clearCachedWaveforms();
 
     QQmlListProperty<QmlLibrarySource> sources() {
         return {this,
@@ -207,6 +215,7 @@ class QmlLibraryProxy : public QObject {
 
   signals:
     void libraryScanActiveChanged();
+    void waveformCacheDiskUsageChanged();
     void libraryScanSummaryAvailable(
             const QString& title,
             const QString& text,
@@ -215,6 +224,8 @@ class QmlLibraryProxy : public QObject {
   private:
     void deliverPendingLibraryScanSummary();
     static inline std::shared_ptr<Library> s_pLibrary;
+
+    QString m_waveformCacheDiskUsage;
 
     /// This needs to be a plain pointer because it's used as a `Q_PROPERTY` member variable.
     QmlLibraryTrackListModel* m_pModelProperty;

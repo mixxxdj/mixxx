@@ -16,7 +16,6 @@
 #include "moc_woverview.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
-#include "util/colorcomponents.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
@@ -195,8 +194,6 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
 
-    m_marks.connectSamplePositionChanged(this, &WOverview::onMarkChanged);
-    m_marks.connectSampleEndPositionChanged(this, &WOverview::onMarkChanged);
     m_marks.connectVisibleChanged(this, &WOverview::onMarkChanged);
 
     QDomNode child = node.firstChild();
@@ -418,7 +415,14 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 this,
                 &WOverview::slotWaveformSummaryUpdated);
         slotWaveformSummaryUpdated();
-        connect(pNewTrack.get(), &Track::cuesUpdated, this, &WOverview::receiveCuesUpdated);
+        // IMPORTANT: make this a QueuedConnection so the slot is called AFTER
+        // objects with DirectConnection (eg. CueControl, which updates the
+        // position COs we need when we iterate over the cues and update marks)
+        connect(pNewTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WOverview::receiveCuesUpdated,
+                Qt::QueuedConnection);
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -683,11 +687,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
                     leaveEvent(nullptr);
                     auto* pCueMenuPopup = getMenu();
                     pCueMenuPopup->setTrackCueGroup(m_pCurrentTrack, pHoveredCue, m_group);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                     pCueMenuPopup->popup(e->globalPosition().toPoint());
-#else
-                    pCueMenuPopup->popup(e->globalPos());
-#endif
                 }
             }
         }
@@ -1295,11 +1295,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    shadowFont.setWeight(99);
-#else
     shadowFont.setWeight(QFont::Black);
-#endif
     shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 

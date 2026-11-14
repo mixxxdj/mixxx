@@ -148,6 +148,23 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     EXPECT_EQ(coverInfoBefore, coverInfoAfter);
 }
 
+TEST_F(TrackUpdateTest, importBpmWithoutValidSampleRate) {
+    // Importing metadata that carries a valid BPM while the audio
+    // properties are unknown must neither crash nor create a beat grid.
+    // Seen with STEM files whose audio properties cannot be parsed
+    // (https://github.com/mixxxdj/mixxx/issues/16846).
+    auto pTrack = Track::newTemporary();
+    ASSERT_FALSE(pTrack->getSampleRate().isValid());
+
+    mixxx::TrackMetadata importedMetadata;
+    importedMetadata.refTrackInfo().setBpm(mixxx::Bpm(128.0));
+    pTrack->replaceMetadataFromSource(
+            std::move(importedMetadata),
+            QDateTime::currentDateTimeUtc());
+
+    EXPECT_EQ(nullptr, pTrack->getBeats());
+}
+
 TEST_F(TrackUpdateTest, partialImportKeepsExistingMixxxRating) {
     QTemporaryDir tempDir;
     ASSERT_TRUE(tempDir.isValid());

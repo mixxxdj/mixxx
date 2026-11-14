@@ -23,6 +23,7 @@ Item {
     property bool pressAndHoldTriggered: false
     property bool longPressAnimationRunning: false
     property real longPressProgress: 0
+    property bool powerWindowLatched: false
     property real pressStartValue: 0
     property real pressTargetValue: 0
     readonly property real displayValue: displayControl.value
@@ -69,6 +70,7 @@ Item {
         root.pressAndHoldTriggered = false;
         root.primaryPressed(displayControl.value);
         if (root.powerWindow) {
+            root.powerWindowLatched = false;
             root.pressStartValue = displayControl.value;
             root.pressTargetValue = root.nextState(root.pressStartValue);
             powerWindowTimer.stop();
@@ -98,8 +100,9 @@ Item {
 
     function releasePrimary() {
         if (root.powerWindow) {
-            if (!powerWindowTimer.running) {
-                control.value = 0;
+            if (!powerWindowTimer.running && !root.powerWindowLatched &&
+                    !(interactionArea.pressedButtons & Qt.RightButton)) {
+                control.value = root.pressStartValue;
             }
             powerWindowTimer.stop();
         } else if (root.longPressLatching) {
@@ -124,6 +127,9 @@ Item {
     }
 
     function releaseSecondary() {
+        if (root.powerWindow && (interactionArea.pressedButtons & Qt.LeftButton)) {
+            root.powerWindowLatched = true;
+        }
         if (root.rightClickKey.length > 0) {
             rightControl.value = 0;
         }

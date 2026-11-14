@@ -24,6 +24,11 @@ Item {
     implicitHeight: 15
     implicitWidth: 33
 
+    Rectangle {
+        anchors.fill: parent
+        color: LateNightTheme.isClassic ? LateNightTheme.darkGray : "transparent"
+    }
+
     Image {
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit

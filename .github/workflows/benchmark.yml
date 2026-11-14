@@ -158,17 +158,6 @@ jobs:
         run: |
           brew install ccache
 
-      - name: "[macOS/Windows] Get build environment name"
-        if: runner.os != 'Linux'
-        run: ${{ matrix.buildenv_script }} name
-
-      - name: "[macOS/Windows] Set up build environment cache"
-        if: runner.os != 'Linux'
-        uses: actions/cache@v4
-        with:
-          path: ${{ matrix.buildenv_basepath }}
-          key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
-
       - name: "[macOS/Linux] Set up build environment"
         if: matrix.buildenv_script != null && runner.os != 'Windows'
         run: ${{ matrix.buildenv_script }} setup
@@ -184,14 +173,18 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
           BUILDENV_RELEASE: TRUE
 
-      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
+      - name: "[Ubuntu/macOS] Restore ccache cache"
+        # Reuse the ccache saved by build.yml, which compiles the same sources
+        # with the same flags. Never save: the benchmark would only store a
+        # duplicate of the build cache.
         if: runner.os != 'windows'
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-${{ github.run_number }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.base_ref }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "[Ubuntu/macOS] Set up ccache"

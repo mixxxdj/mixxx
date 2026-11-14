@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Layouts
+import "../LateNightTheme"
 
 Item {
     id: root
@@ -11,7 +12,7 @@ Item {
     required property string expandKey
     readonly property bool expanded: expandControl.value > 0.5
     readonly property bool expandedContentReady: expandedContent.status === Loader.Ready
-    readonly property int expandedHeight: count === 4 ? 98 : 200
+    readonly property int expandedHeight: count === 4 ? 98 : 196 + LateNightTheme.deckRowGutter
     required property int firstSampler
     property bool preloadExpandedContent: true
     property bool show8Hotcues: true
@@ -120,7 +121,7 @@ Item {
         id: expandedEight
 
         ColumnLayout {
-            spacing: 4
+            spacing: LateNightTheme.deckRowGutter
 
             RowLayout {
                 Layout.fillWidth: true

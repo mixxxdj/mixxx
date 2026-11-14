@@ -28,7 +28,7 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     const auto seekPosition = mixxx::audio::FramePos{1111.0};
     m_pChannel1->getEngineBuffer()->seekAbs(seekPosition);
     ProcessBuffer();
-    EXPECT_TRUE(m_pChannel1->getEngineBuffer()->getVisualPlayPos() > 0);
+    EXPECT_TRUE(m_pChannel1->getEngineBuffer()->getExactPlayPos() > mixxx::audio::kStartFramePos);
 
     // Make both decks playing.
     ControlObject::getControl(m_sGroup1, "play")->set(1.0);

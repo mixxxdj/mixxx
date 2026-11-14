@@ -8,7 +8,7 @@ Item {
 
     required property string group
 
-    implicitWidth: 111
+    implicitWidth: 76
     implicitHeight: 20
 
     Mixxx.ControlProxy {

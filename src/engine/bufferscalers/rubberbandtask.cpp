@@ -2,7 +2,6 @@
 
 #include "engine/engine.h"
 #include "util/assert.h"
-#include "util/compatibility/qmutex.h"
 
 RubberBandTask::RubberBandTask(
         size_t sampleRate, size_t channels, Options options)

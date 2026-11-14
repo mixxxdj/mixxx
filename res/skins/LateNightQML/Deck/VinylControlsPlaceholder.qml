@@ -35,10 +35,19 @@ Item {
         anchors.fill: parent
         spacing: 0
 
+        Item {
+            Layout.minimumWidth: 3
+            Layout.preferredWidth: 3
+            Layout.maximumWidth: 3
+            Layout.fillHeight: true
+        }
+
         // Vinyl enable/disable toggle with status display.
         // The click requests vinylcontrol_enabled; the fill displays vinylcontrol_status.
         Item {
+            Layout.minimumWidth: 40
             Layout.preferredWidth: 40
+            Layout.maximumWidth: 40
             Layout.preferredHeight: 20
 
             LateNightIconButton {
@@ -72,7 +81,9 @@ Item {
 
         // Vinyl mode: cycles ABS(0) → REL(1) → CONST(2) → ABS(0)
         LateNightCycleButton {
+            Layout.minimumWidth: 46
             Layout.preferredWidth: 46
+            Layout.maximumWidth: 46
             Layout.preferredHeight: 20
             backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
             inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
@@ -94,7 +105,9 @@ Item {
 
         // Vinyl cueing: cycles CUE(0) → CUE(1) → HOT(2) → CUE(0)
         LateNightCycleButton {
+            Layout.minimumWidth: 32
             Layout.preferredWidth: 32
+            Layout.maximumWidth: 32
             Layout.preferredHeight: 20
             backgroundSource: LateNightTheme.lateNightButton("btn_embedded_grid.svg")
             activeBackgroundSuffix: "active"
@@ -119,7 +132,9 @@ Item {
 
         // Passthrough toggle
         Item {
+            Layout.minimumWidth: 35
             Layout.preferredWidth: 35
+            Layout.maximumWidth: 35
             Layout.preferredHeight: 20
 
             property bool targetEnabled: false
@@ -184,6 +199,13 @@ Item {
                     passthroughPowerWindowTimer.stop();
                 }
             }
+        }
+
+        Item {
+            Layout.minimumWidth: 2
+            Layout.preferredWidth: 2
+            Layout.maximumWidth: 2
+            Layout.fillHeight: true
         }
     }
 }

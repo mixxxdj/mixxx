@@ -8,7 +8,8 @@ sudo pacman -S --needed --noconfirm protobuf vamp-plugin-sdk \
     libshout libsndfile portmidi portaudio \
     sqlite upower lilv libebur128 libmodplug \
     qt6-declarative qtkeychain-qt6 qt6-svg qt6-shadertools \
-    qt6-5compat qt6-multimedia-ffmpeg qt6-scxml microsoft-gsl
+    qt6-5compat qt6-multimedia-ffmpeg qt6-scxml microsoft-gsl \
+    benchmark ccache
 
 # Checking if taglib is installed and build it from the AUR if this
 # is not the case

@@ -20,7 +20,6 @@
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
 #include "util/desktophelper.h"
-#include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -52,6 +51,7 @@
 #ifdef Q_OS_MACOS
 #include "util/darkappearance.h"
 #endif
+#include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
@@ -171,9 +171,9 @@ DlgPreferences::DlgPreferences(
                 "ic_preferences_interface.svg");
     }
 
-    // QML has its own waveform settings page. Do not construct the native
-    // Waveforms page there while the QML preferences implementation is in
-    // progress; the QML waveform factory is still required by the renderer.
+    // The shared native page is used by both legacy and LateNightQML. In QML
+    // mode QmlApplication initializes the factory as the preferences backend
+    // before constructing this dialog.
     if (includeWaveformPreferences && WaveformWidgetFactory::isCreated()) {
         addPageWidget(PreferencesPage(
                               new DlgPrefWaveform(this, m_pConfig, pLibrary),
