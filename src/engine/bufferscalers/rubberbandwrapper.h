@@ -19,8 +19,8 @@ class RubberBandWrapper {
     size_t getPreferredStartPad() const;
     size_t getStartDelay() const;
     void process(const float* const* input, size_t samples, bool final);
-    void setPitchScale(double scale);
-    void reset();
+    void setPitchScale(double scale) const;
+    void reset() const;
 
     // The following method are helper function and do not wrap any RubberBand calls
     void clear();

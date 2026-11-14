@@ -43,7 +43,7 @@ namespace {
 ///  | 8        | 1      | 1    |
 
 mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
-    RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
+    const RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
     // There should always be a pool set, even if multi threading isn't enabled.
     // This is because multi threading will always be used for stem when
     // possible.
@@ -85,7 +85,7 @@ int RubberBandWrapper::getEngineVersion() const {
 }
 
 void RubberBandWrapper::setTimeRatio(double ratio) {
-    for (auto& stretcher : m_pInstances) {
+    for (const auto& stretcher : m_pInstances) {
         stretcher->setTimeRatio(ratio);
     }
 }
@@ -211,7 +211,7 @@ void RubberBandWrapper::process(const float* const* input, size_t samples, bool 
         return m_pInstances[0]->process(input, samples, isFinal);
     } else {
         RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
-        for (auto& pInstance : m_pInstances) {
+        for (const auto& pInstance : m_pInstances) {
             pInstance->set(input, samples, isFinal);
 
             // We try to get the stretching job ran by the RBPool if there is a
@@ -226,13 +226,13 @@ void RubberBandWrapper::process(const float* const* input, size_t samples, bool 
 
         // We always perform a wait, even for task that were ran in the main
         // thread, so it resets the semaphore
-        for (auto& pInstance : m_pInstances) {
+        for (const auto& pInstance : m_pInstances) {
             pInstance->waitReady();
         }
     }
 }
-void RubberBandWrapper::reset() {
-    for (auto& stretcher : m_pInstances) {
+void RubberBandWrapper::reset() const {
+    for (const auto& stretcher : m_pInstances) {
         stretcher->reset();
     }
 }
@@ -270,8 +270,8 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
     }
 }
 
-void RubberBandWrapper::setPitchScale(double scale) {
-    for (auto& stretcher : m_pInstances) {
+void RubberBandWrapper::setPitchScale(double scale) const {
+    for (const auto& stretcher : m_pInstances) {
         stretcher->setPitchScale(scale);
     }
 }
