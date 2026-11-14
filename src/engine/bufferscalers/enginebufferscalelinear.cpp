@@ -66,6 +66,17 @@ static inline bool directionChanged(const double rate1, const double rate2) {
     return (rate1 * rate2 < 0);
 }
 
+static inline void interpolateFrame(CSAMPLE* pOutput,
+        const CSAMPLE* pFloorSample,
+        const CSAMPLE* pCeilSample,
+        const CSAMPLE frac,
+        const int chCount) {
+    for (int chIdx = 0; chIdx < chCount; chIdx++) {
+        pOutput[chIdx] = pFloorSample[chIdx] +
+                frac * (pCeilSample[chIdx] - pFloorSample[chIdx]);
+    }
+}
+
 // Determine if we're changing directions (scratching) and then perform
 // a stretch
 double EngineBufferScaleLinear::scaleBuffer(
@@ -219,6 +230,17 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT bufSize) {
     return readSamples;
 }
 
+static inline void interpolateFrame(CSAMPLE* pOutput,
+        const CSAMPLE* pFloorSample,
+        const CSAMPLE* pCeilSample,
+        const CSAMPLE frac,
+        const int chCount) {
+    for (int chIdx = 0; chIdx < chCount; chIdx++) {
+        pOutput[chIdx] = pFloorSample[chIdx] +
+                frac * (pCeilSample[chIdx] - pFloorSample[chIdx]);
+    }
+}
+
 // Stretch a specified buffer worth of audio using linear interpolation
 double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
     double rateOld = m_dOldRate;
@@ -358,10 +380,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
                 static_cast<CSAMPLE>(currentFrameFloor);
 
         // Perform linear interpolation
-        for (int chIdx = 0; chIdx < chCount; chIdx++) {
-            buf[i + chIdx] = m_floorSample[chIdx] +
-                    frac * (m_ceilSample[chIdx] - m_floorSample[chIdx]);
-        }
+        interpolateFrame(&buf[i], m_floorSample.data(), m_ceilSample.data(), frac, chCount);
 
         m_floorSampleOld.swap(m_floorSample);
 
