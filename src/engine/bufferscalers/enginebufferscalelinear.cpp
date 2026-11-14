@@ -230,6 +230,22 @@ static inline void interpolateFrame(CSAMPLE* pOutput,
     }
 }
 
+static inline double estimateFramesNeeded(const SINT bufferSizeFrames,
+        const double rateOld,
+        const double rateDelta) {
+    // Use Gaussian sum formula (n(n+1))/2 for
+    // for (int j = 0; j < bufferSizeFrames; ++j) {
+    //     frames += (j * rateDelta) + rateOld;
+    // }
+
+    double frames = static_cast<double>(bufferSizeFrames - 1) *
+            static_cast<double>(bufferSizeFrames) / 2.0;
+    frames *= rateDelta;
+    frames += rateOld * static_cast<double>(bufferSizeFrames);
+
+    return fabs(frames);
+}
+
 void EngineBufferScaleLinear::do_refill_buffer(double rate,
         SINT* pUnscaledFramesNeeded,
         double* pStartFrame,
@@ -349,21 +365,11 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
         return static_cast<double>(do_copy(buf, bufSize));
     }
 
-    // Simulate the loop to estimate how many frames we need
-    double frames = 0;
     const SINT bufferSizeFrames = getOutputSignal().samples2frames(bufSize);
     const double rateDelta = rateDiff / static_cast<double>(bufferSizeFrames);
 
-    // Use Gaussian sum formula (n(n+1))/2 for
-    // for (int j = 0; j < bufferSizeFrames; ++j) {
-    //     frames += (j * rateDelta) + rateOld;
-    // }
-
-    frames = static_cast<double>(bufferSizeFrames - 1) *
-            static_cast<double>(bufferSizeFrames) / 2.0;
-    frames *= rateDelta;
-    frames += rateOld * static_cast<double>(bufferSizeFrames);
-    frames = fabs(frames);
+    // Simulate the loop to estimate how many frames we need
+    const double frames = estimateFramesNeeded(bufferSizeFrames, rateOld, rateDelta);
 
     // Intentional integer rounding: increases by one if the fractional part of
     // m_dNextFrame and frames are greater than one"
