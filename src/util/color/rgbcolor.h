@@ -146,9 +146,15 @@ class RgbColor {
         return QVariant(toQString(color));
     }
 
+    // Denotes "no color". Unlike an invalid QVariant, which commonly signals
+    // that no value is available at all, this is a valid (typed) null that
+    // also matches NULL values read from the database.
+    static inline const QVariant kNoColorVariant =
+            QVariant(QMetaType::fromType<code_t>());
+
     static QVariant toQVariant(
             optional_t optional,
-            const QVariant& defaultVariant = QVariant()) {
+            const QVariant& defaultVariant = kNoColorVariant) {
         if (optional) {
             return toQVariant(*optional);
         } else {

@@ -143,16 +143,20 @@ void ColorPaletteEditor::initialize(
         const QString& paletteName) {
     DEBUG_ASSERT(!m_pConfig);
     m_pConfig = pConfig;
+    // Always edit the palette that was passed in. A previously saved
+    // "<palette> (Edited)" copy must not be loaded here, otherwise selecting a
+    // predefined palette and clicking [Edit] would silently open that copy
+    // instead of the selected palette. The copy is still reachable by selecting
+    // it explicitly in the combo box of DlgPrefColors.
     m_resetPalette = paletteName;
     QString saveName = paletteName;
 
     for (const ColorPalette& palette : mixxx::PredefinedColorPalettes::kPalettes) {
         if (paletteName == palette.getName()) {
+            // Predefined palettes cannot be overwritten, so suggest saving
+            // under a new name. This updates the existing "<palette> (Edited)"
+            // copy if there already is one.
             saveName = paletteName + QStringLiteral(" (") + tr("Edited") + QChar(')');
-            ColorPaletteSettings colorPaletteSettings(m_pConfig);
-            if (colorPaletteSettings.getColorPaletteNames().contains(saveName)) {
-                m_resetPalette = saveName;
-            }
             break;
         }
     }

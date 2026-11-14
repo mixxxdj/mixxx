@@ -405,6 +405,7 @@ jobs:
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
           ${{ matrix.compiler_cache }} --max-size=2G
+          echo "CCACHE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -478,6 +479,15 @@ jobs:
         run: |
           ${{ matrix.compiler_cache }} --show-stats
           ${{ matrix.compiler_cache }} --cleanup
+
+      - name: "[Ubuntu/macOS] Drop ccache entries not used by this build"
+        # The saved cache would otherwise keep every object it ever held and
+        # grow to --max-size on each branch. Entries this build used have a
+        # fresh timestamp; everything else is stale.
+        if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
+        run: |
+          ${{ matrix.compiler_cache }} --evict-older-than "$(( $(date +%s) - CCACHE_BUILD_START ))s"
+          ${{ matrix.compiler_cache }} --show-stats
 
       - name: "[Ubuntu/macOS] Save ccache cache"
         id: ccache_save
@@ -814,7 +824,7 @@ jobs:
         # The AppImage is uploaded by the dedicated "[AppImage] Upload AppImage"
         # step with a stable name used by the publish workflow.
         if: matrix.artifacts_path != null && matrix.cpack_generator != 'AppImage'
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           archive: "false"
           path: ${{ matrix.artifacts_path }}
@@ -886,13 +896,13 @@ jobs:
             --runtime Mixxx-${GIT_DESC}-${{ matrix.variant.arch }}.Debug.flatpak org.mixxx.Mixxx.Debug
 
       - name: "Upload Flatpak bundle"
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           archive: "false"
           path: Mixxx-${{ env.GIT_DESC }}-${{ matrix.variant.arch }}.flatpak
 
       - name: "Upload Debug extension"
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           archive: "false"
           path: Mixxx-${{ env.GIT_DESC }}-${{ matrix.variant.arch }}.Debug.flatpak

@@ -1,0 +1,8 @@
+[Flatpak Repo]
+Title=Mixxx
+Url=https://downloads.mixxx.org/flatpak/
+Homepage=https://mixxx.org/
+Comment=Flatpak repo for Mixxx releases and snapshots
+Description=Flatpak repo for Mixxx releases and snapshots
+Icon=https://mixxx.org/theme/images/mixxx-logo.svg
+GPGKey=$GPG_PUBLIC_KEY
