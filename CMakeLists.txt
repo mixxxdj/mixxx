@@ -1480,7 +1480,6 @@ add_library(
   src/library/searchqueryparser.cpp
   src/library/serato/seratofeature.cpp
   src/library/serato/seratoplaylistmodel.cpp
-  src/library/sidebarmodel.cpp
   src/library/starrating.cpp
   src/library/tabledelegates/bpmdelegate.cpp
   src/library/tabledelegates/checkboxdelegate.cpp
@@ -2463,6 +2462,7 @@ if(NOT QML)
       # main target
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
+      src/library/sidebarmodel.cpp
   )
 else()
   target_sources(
@@ -4051,6 +4051,7 @@ if(QML)
       # The following sources need to be in this target to get QML_ELEMENT properly interpreted
       src/control/controlmodel.cpp
       src/control/controlsortfiltermodel.cpp
+      src/library/sidebarmodel.cpp
       # needed for qml/qmlautoreload.cpp
       src/util/autofilereloader.cpp
   )
