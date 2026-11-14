@@ -432,6 +432,9 @@ PioneerDDJSX.init = function(id) {
         this.inSetParameter(this.inGetParameter() + PioneerDDJSX.getRotaryDelta(value) / 30);
     };
     PioneerDDJSX.effectUnit[2].init();
+
+    // request MIDI values from controller using standard Serato Status SysEx:
+    midi.send([0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7]);
 };
 
 PioneerDDJSX.shutdown = function() {
