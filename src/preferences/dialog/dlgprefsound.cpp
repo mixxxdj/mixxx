@@ -1001,9 +1001,9 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
         double sampleRate = sampleRateComboBox->itemData(sampleRateIndex)
                                     .value<mixxx::audio::SampleRate>()
                                     .toDouble();
-        unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
-        // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
-        // don't right now!), so we iterate over all the buffer sizes until we
+        unsigned int framesPerBuffer = 0.1; // start this at 0 and inf loop happens
+        // we don't want to display any sub-1ms buffer sizes (well maybe we do therefore
+        // use 0.1 instead of 1), so we iterate over all the buffer sizes until we
         // find the first that gives us a buffer size >= 1 ms -- bkgood
         // no div-by-0 in the next line because we don't allow srates of 0 in our
         // srate list when we construct it in the ctor -- bkgood
