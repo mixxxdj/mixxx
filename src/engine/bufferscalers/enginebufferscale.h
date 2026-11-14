@@ -55,6 +55,7 @@ class EngineBufferScale : public QObject {
 
     // Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
+
     // Scale buffer
     // Returns the number of frames that have bean read from the unscaled
     // input buffer The number of frames copied to the output buffer is always
@@ -76,6 +77,7 @@ class EngineBufferScale : public QObject {
     bool m_bSpeedAffectsPitch;
     double m_dTempoRatio;
     double m_dPitchRatio;
+
     // Due to the scaler latency, tempo and pitch changes are not immediately effective.
     double m_effectiveRate;
 };

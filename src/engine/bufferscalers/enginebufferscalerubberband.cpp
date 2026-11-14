@@ -84,10 +84,12 @@ void EngineBufferScaleRubberBand::setScaleParameters(double baseRate,
                 timeRatioInverse += 0.001;
                 m_rubberBand.setTimeRatio(1.0 / timeRatioInverse);
             }
+
             speedAbs = timeRatioInverse / baseRate;
             *pTempoRatio = m_bBackwards ? -speedAbs : speedAbs;
         }
     }
+
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = baseRate;
     m_dTempoRatio = speedAbs;
@@ -121,6 +123,7 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
         if (m_buffers[chIdx].size() == MAX_BUFFER_LEN) {
             continue;
         }
+
         m_buffers[chIdx] = mixxx::SampleBuffer(MAX_BUFFER_LEN);
         m_bufferPtrs[chIdx] = m_buffers[chIdx].data();
     }
@@ -134,6 +137,7 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
                 // Process Channels Together. otherwise the result is not
                 // mono-compatible. See #11361
                 RubberBandStretcher::OptionChannelsTogether;
+
         if (m_useOptionWindowShort) {
             rubberbandOptions |= RubberBandStretcher::OptionWindowShort;
         }
@@ -144,6 +148,7 @@ void EngineBufferScaleRubberBand::onSignalChanged() {
             getOutputSignal().getSampleRate(),
             getOutputSignal().getChannelCount(),
             rubberbandOptions);
+
     // Setting the time ratio to a very high value will cause RubberBand
     // to preallocate buffers large enough to (almost certainly)
     // avoid memory reallocations during playback.
@@ -164,15 +169,18 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
     VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
         return 0;
     }
+
     // NOTE: If we still need to throw away padding, then we can also
     //       immediately read those frames in addition to the frames we actually
     //       need for the output
     SINT receivedFrames;
+
     {
         ScopedTimer t(QStringLiteral("RubberBand::retrieve"));
         receivedFrames = static_cast<SINT>(m_rubberBand.retrieve(
                 m_bufferPtrs.data(), frames + m_remainingPaddingInOutput, m_buffers[0].size()));
     }
+
     SINT frameOffset = 0;
 
     // As explained below in `reset()`, the first time this is called we need to
@@ -296,7 +304,9 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     VERIFY_OR_DEBUG_ASSERT(m_rubberBand.isValid()) {
         return 0.0;
     }
+
     ScopedTimer t(QStringLiteral("EngineBufferScaleRubberBand::scaleBuffer"));
+
     if (m_dBaseRate == 0.0 || m_dTempoRatio == 0.0) {
         SampleUtil::clear(pOutputBuffer, iOutputBufferSize);
         // No actual samples/frames have been read from the
@@ -308,6 +318,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     SINT remainingFrames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool lastReadFailed = false;
+
     while (remainingFrames > 0) {
         // ReadAheadManager will eventually read the requested frames with
         // enough calls to retrieveAndDeinterleave because CachingReader returns
@@ -316,17 +327,18 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         // If the time stretcher has just been reset then this will throw away
         // the first `m_remainingPaddingInOutput` samples of silence padding
         // from the output.
-        SINT receivedFrames = retrieveAndDeinterleave(
-                read, remainingFrames);
+        SINT receivedFrames = retrieveAndDeinterleave(read, remainingFrames);
         remainingFrames -= receivedFrames;
         readFramesProcessed += m_effectiveRate * static_cast<double>(receivedFrames);
         read += getOutputSignal().frames2samples(receivedFrames);
 
         const SINT nextBlockFramesRequired =
                 static_cast<SINT>(m_rubberBand.getSamplesRequired());
+
         if (remainingFrames > 0 && nextBlockFramesRequired > 0) {
             // The requested setting becomes effective after all previous frames have been processed
             m_effectiveRate = m_dBaseRate * m_dTempoRatio;
+
             const SINT available_samples = m_pReadAheadManager->getNextSamples(
                     // The value doesn't matter here. All that matters is we
                     // are going forward or backward.
@@ -334,6 +346,7 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                     m_interleavedReadBuffer.data(),
                     getOutputSignal().frames2samples(nextBlockFramesRequired),
                     getOutputSignal().getChannelCount());
+
             const SINT availableFrames = getOutputSignal().samples2frames(available_samples);
 
             if (availableFrames > 0) {
@@ -349,12 +362,15 @@ double EngineBufferScaleRubberBand::scaleBuffer(
                     // the last samples out of RubberBand.
                     qDebug() << "ReadAheadManager::getNextSamples() returned "
                                 "zero samples repeatedly. Padding with silence.";
+
                     SampleUtil::clear(
                             m_interleavedReadBuffer.data(),
                             getOutputSignal().frames2samples(nextBlockFramesRequired));
+
                     deinterleaveAndProcess(m_interleavedReadBuffer.data(),
                             nextBlockFramesRequired);
                 }
+
                 lastReadFailed = true;
             }
         }
@@ -416,11 +432,14 @@ void EngineBufferScaleRubberBand::reset() {
     // for more information.
     size_t remainingFrames = getPreferredStartPad();
     const size_t blockSize = std::min<size_t>(remainingFrames, m_buffers[0].size());
+
     for (auto& buffer : m_buffers) {
         buffer.clear();
     }
+
     while (remainingFrames > 0) {
         const size_t padSamples = std::min<size_t>(remainingFrames, blockSize);
+
         {
             ScopedTimer t(QStringLiteral("RubberBand::process"));
             m_rubberBand.process(m_bufferPtrs.data(), padSamples, false);
