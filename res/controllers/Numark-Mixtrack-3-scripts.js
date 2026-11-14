@@ -807,8 +807,9 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs.meter = new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + j);
 
     for (var led in this.LEDs) {
-        if (led.hasOwnProperty("onOff")) {
-            led.onOff(OFF);
+        var ledToTurnOff = this.LEDs[led];
+        if (typeof ledToTurnOff.onOff === "function") {
+            ledToTurnOff.onOff(OFF);
         }
     }
 
@@ -942,6 +943,16 @@ NumarkMixtrack3.init = function(id, debug) {
     // Turn ON all the lights: the only way PADMode Leds light up
     NumarkMixtrack3.AllLeds.onOff(ON);
 
+    // The all-lights flash above lights the hardware directly, bypassing the
+    // per-deck LED objects. Force the steady states of the two LEDs whose
+    // update callbacks skip redundant sends (meter, wheel button); every other
+    // LED is re-sent unconditionally by its engine connection when the decks
+    // are initialized below.
+    for (var i = 1; i <= 4; i++) {
+        NumarkMixtrack3.decks["D" + i].LEDs.meter.onOff(OFF);
+        NumarkMixtrack3.decks["D" + i].LEDs.jogWheelsInScratchMode.onOff(OFF);
+    }
+
     NumarkMixtrack3.initDeck("[Channel1]", false); //Initial load, "remove" is set to false
     NumarkMixtrack3.initDeck("[Channel2]", false);
 
@@ -992,11 +1003,21 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         offDeck.shiftKey = false;
         onDeck.shiftKey = false;
 
+        // Turn off the outgoing deck's LEDs. This also stops any flash timers
+        // they are running (e.g. an end-of-track warning flash), which would
+        // otherwise keep flashing LED notes that this deck shares with the
+        // incoming deck when the hardware is switched to control other decks.
         for (var led in offDeck.LEDs) {
-            if (led.hasOwnProperty("onOff")) {
-                led.onOff(OFF);
+            var ledToTurnOff = offDeck.LEDs[led];
+            if (typeof ledToTurnOff.onOff === "function") {
+                ledToTurnOff.onOff(OFF);
             }
         }
+
+        // The wheel button LED is not driven by any engine connection, so
+        // re-assert the incoming deck's steady state after the reset above.
+        onDeck.LEDs.jogWheelsInScratchMode.onOff(
+            onDeck.jogWheelsInScratchMode ? ON : OFF);
 
         for (var i = 1; i <= 4; i++) {
             onDeck.LEDs["padLoop" + i].onOff(PADcolors.yellow);
@@ -2023,7 +2044,28 @@ NumarkMixtrack3.OnVolumeChange = function(value, group, control) {
 
 NumarkMixtrack3.OnVuMeterChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    deck.LEDs.meter.onOff(82 * value);
+    var meterLevel = Math.round(82 * value);
+
+    // This callback fires nonstop for every playing deck, so skip redundant
+    // sends of an unchanged level.
+    if (meterLevel !== deck.LEDs.meter.lit) {
+        deck.LEDs.meter.onOff(meterLevel);
+    }
+};
+
+// Restore the steady state of the wheel button LED (and stop an obsolete
+// end-of-track warning flash if one is running). Called on every
+// playposition update of every playing deck, so redundant sends are skipped.
+NumarkMixtrack3.setWheelLedSteady = function(deck) {
+    var wheelLed = deck.LEDs.jogWheelsInScratchMode;
+    var steadyValue = deck.jogWheelsInScratchMode ? ON : OFF;
+
+    if (wheelLed.flashDuration !== 0) {
+        // stops all timers of the running flash on its way
+        wheelLed.onOff(steadyValue);
+    } else if (wheelLed.lit !== steadyValue) {
+        wheelLed.onOff(steadyValue);
+    }
 };
 
 NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
@@ -2033,25 +2075,39 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
     if (deck.trackLoaded() && TrackEndWarning) {
         var timeRemaining = duration * (1 - value);
 
-        if (timeRemaining <= 30) {
-            // flashing slowly
-            if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 1000) {
-                deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
-            }
-        } else if (timeRemaining <= 10) {
+        // Only start the warning flash while the deck is playing. While paused
+        // there are no further playposition updates, so a flash started from a
+        // stale position or duration (which happens when playposition updates
+        // race with track loading) would flash until something else writes the
+        // LED - e.g. right after loading a track.
+        var isPlaying = engine.getValue(group, "play");
+
+        if (timeRemaining <= 10 && isPlaying) {
             // flashing fast
             if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 300) {
                 deck.LEDs.jogWheelsInScratchMode.flashOn(300, ON, 300);
             }
+        } else if (timeRemaining <= 30 && isPlaying) {
+            // flashing slowly
+            if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 1000) {
+                deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
+            }
         } else {
-            deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
+            NumarkMixtrack3.setWheelLedSteady(deck);
         }
     } else {
-        deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
+        NumarkMixtrack3.setWheelLedSteady(deck);
     }
 };
 
 NumarkMixtrack3.OnPlayIndicatorChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     deck.LEDs.play.onOff((value) ? ON : OFF);
+
+    // Stop an end-of-track warning flash when playback stops: a paused deck
+    // emits no further playposition updates, so the flash would otherwise
+    // keep running (e.g. after pausing near the end of a track).
+    if (!value) {
+        NumarkMixtrack3.setWheelLedSteady(deck);
+    }
 };
