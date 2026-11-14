@@ -1649,7 +1649,11 @@ bool MixxxMainWindow::confirmCloseOpenWindows() {
 
     while (!windowsToClose.isEmpty()) {
         auto* pWidget = windowsToClose.takeFirst();
-        pWidget->close();
+        if (!pWidget->close()) {
+            // The window ignored the close event. Don't quit, otherwise Mixxx
+            // would keep running in the background without a main window.
+            return false;
+        }
     }
 
     return true;
