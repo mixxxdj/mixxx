@@ -89,58 +89,70 @@ double EngineBufferScaleLinear::scaleBuffer(
         // the other way.
 
         // first half: rate goes from old rate to zero
-        m_dOldRate = rateOld;
-        m_dRate = 0.0;
-        framesRead += do_scale(pOutputBuffer, getOutputSignal().samples2frames(iOutputBufferSize));
-
-        // reset m_floorSampleOld in a way as we were coming from
-        // the other direction
-        SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
-        int chCount = getOutputSignal().getChannelCount();
-
-        if (iNextSample >= 0 && iNextSample + chCount <= m_bufferIntSize) {
-            SampleUtil::copy(m_floorSampleOld.data(), &m_bufferInt[iNextSample], chCount);
-        } else {
-            SampleUtil::clear(m_floorSampleOld.data(), chCount);
-        }
-
-        // if the buffer has extra samples, do a read so RAMAN ends up back where
-        // it should be
-        SINT iCurSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dCurrentFrame)));
-        SINT extraSamples = m_bufferIntSize - iCurSample - getOutputSignal().getChannelCount();
-
-        if (extraSamples > 0) {
-            if (extraSamples % getOutputSignal().getChannelCount() != 0) {
-                // extra samples should include the whole frame
-                extraSamples -= extraSamples % getOutputSignal().getChannelCount();
-                extraSamples += getOutputSignal().getChannelCount();
-            }
-
-            //qDebug() << "extra samples" << extra_samples;
-
-            SINT next_samples_read = m_pReadAheadManager->getNextSamples(
-                    rateNew, m_bufferInt, extraSamples, getOutputSignal().getChannelCount());
-            framesRead += static_cast<double>(getOutputSignal().samples2frames(next_samples_read));
-        }
-
-        // force a buffer read:
-        m_bufferIntSize = 0;
-
-        // make sure the indexes stay correct for interpolation
-        m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
-        m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
+        framesRead += do_direction_change(pOutputBuffer, iOutputBufferSize, rateOld, rateNew);
 
         // second half: rate goes from zero to new rate
-        m_dOldRate = 0.0;
-        m_dRate = rateNew;
-
         // pass the address of the frame at the halfway point
-        SINT frameOffset =  getOutputSignal().samples2frames(iOutputBufferSize) / 2;
-        SINT sampleOffset = getOutputSignal().frames2samples(frameOffset);
+        const SINT frameOffset = getOutputSignal().samples2frames(iOutputBufferSize) / 2;
+        const SINT sampleOffset = getOutputSignal().frames2samples(frameOffset);
+
         framesRead += do_scale(pOutputBuffer + sampleOffset, iOutputBufferSize - sampleOffset);
     } else {
         framesRead += do_scale(pOutputBuffer, iOutputBufferSize);
     }
+
+    return framesRead;
+}
+
+double EngineBufferScaleLinear::do_direction_change(
+        CSAMPLE* buf, SINT bufSize, double rateOld, double rateNew) {
+    double framesRead = 0;
+
+    // first half: rate goes from old rate to zero
+    m_dOldRate = rateOld;
+    m_dRate = 0.0;
+    framesRead += do_scale(buf, getOutputSignal().samples2frames(bufSize));
+
+    // reset m_floorSampleOld in a way as we were coming from
+    // the other direction
+    SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
+    int chCount = getOutputSignal().getChannelCount();
+
+    if (iNextSample >= 0 && iNextSample + chCount <= m_bufferIntSize) {
+        SampleUtil::copy(m_floorSampleOld.data(), &m_bufferInt[iNextSample], chCount);
+    } else {
+        SampleUtil::clear(m_floorSampleOld.data(), chCount);
+    }
+
+    // if the buffer has extra samples, do a read so RAMAN ends up back where
+    // it should be
+    SINT iCurSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dCurrentFrame)));
+    SINT extraSamples = m_bufferIntSize - iCurSample - getOutputSignal().getChannelCount();
+
+    if (extraSamples > 0) {
+        if (extraSamples % getOutputSignal().getChannelCount() != 0) {
+            // extra samples should include the whole frame
+            extraSamples -= extraSamples % getOutputSignal().getChannelCount();
+            extraSamples += getOutputSignal().getChannelCount();
+        }
+
+        // qDebug() << "extra samples" << extra_samples;
+
+        SINT next_samples_read = m_pReadAheadManager->getNextSamples(
+                rateNew, m_bufferInt, extraSamples, getOutputSignal().getChannelCount());
+        framesRead += static_cast<double>(getOutputSignal().samples2frames(next_samples_read));
+    }
+
+    // force a buffer read:
+    m_bufferIntSize = 0;
+
+    // make sure the indexes stay correct for interpolation
+    m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
+    m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
+
+    // second half: rate goes from zero to new rate
+    m_dOldRate = 0.0;
+    m_dRate = rateNew;
 
     return framesRead;
 }
