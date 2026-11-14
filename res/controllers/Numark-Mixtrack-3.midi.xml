@@ -51,6 +51,18 @@
             </description>
         </option>
         <option
+            variable="traditionalPFL"
+            label="Traditional Headphone Cue"
+            type="boolean"
+            default="false">
+            <description>
+                Keep each channel’s headphone cue (PFL) latched until its own button is pressed again,
+                like a traditional DJ mixer, instead of automatically turning off the cue of the other
+                channels when a headphone button is pressed. Also disables the “Smart PFL” auto switching
+                on track load.
+            </description>
+        </option>
+        <option
             variable="noPlayOnSyncDoublePress"
             label="Disable Play on Sync Double-Press"
             type="boolean"

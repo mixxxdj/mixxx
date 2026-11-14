@@ -13,6 +13,11 @@ const iCutEnabled = engine.getSetting("iCutEnabled") === true;
 //activate PFL of deck on track load
 const smartPFL = engine.getSetting("smartPFL") === true;
 
+//traditionalPFL: "true": headphone cue (PFL) buttons latch independently per
+// channel, like a traditional DJ mixer, instead of switching the cue between
+// channels automatically (also skips the smartPFL switch on track load)
+const traditionalPFL = engine.getSetting("traditionalPFL") === true;
+
 //Disable Play on Sync button Double Press
 const noPlayOnSyncDoublePress = engine.getSetting("noPlayOnSyncDoublePress") === true;
 
@@ -1220,7 +1225,7 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
     if (value === DOWN) {
         deck.faderstart = false;
 
-        if (smartPFL) {
+        if (smartPFL && !traditionalPFL) {
             for (var i = 1; i <= 4; i++) {
                 //Change headphone cue (pfl) to the deck on which the song loaded.
                 engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
@@ -1259,9 +1264,11 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
     var trackDuration = engine.getValue(deck.group, "duration");
 
     if (smartPFL && deck.duration !== trackDuration && trackDuration !== 0) {
-        for (var i = 1; i <= 4; i++) {
-            // change headphone cue (pfl) to the deck on which the song loaded.
-            engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
+        if (!traditionalPFL) {
+            for (var i = 1; i <= 4; i++) {
+                // change headphone cue (pfl) to the deck on which the song loaded.
+                engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
+            }
         }
 
         // update the jog light
@@ -1763,9 +1770,12 @@ NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
             script.toggleControl(group, "quantize");
         } else {
             script.toggleControl(deck.group, "pfl");
-            for (var i = 1; i <= 4; i++) {
-                if (i !== deck.decknum) {
-                    engine.setValue("[Channel" + i + "]", "pfl", false);
+
+            if (!traditionalPFL) {
+                for (var i = 1; i <= 4; i++) {
+                    if (i !== deck.decknum) {
+                        engine.setValue("[Channel" + i + "]", "pfl", false);
+                    }
                 }
             }
         }
