@@ -228,6 +228,42 @@ function parameterSoftTakeOver(group, control, value) {
 }
 
 // =====================================================================
+// Engine connections
+// =====================================================================
+// `engine.connectControl` is deprecated. These wrappers around `engine.makeConnection`
+// keep track of the connection objects they create so that they can be replaced or
+// removed later (e.g. when the hardware is switched to control different decks).
+NumarkMixtrack3.connections = {};
+
+NumarkMixtrack3.connectControl = function(group, control, callback) {
+    var key = group + "|" + control;
+    var existing = NumarkMixtrack3.connections[key];
+
+    if (existing !== undefined && existing.isConnected) {
+        existing.disconnect();
+    }
+
+    var connection = engine.makeConnection(group, control, callback);
+
+    if (connection !== undefined && connection.isConnected) {
+        NumarkMixtrack3.connections[key] = connection;
+    }
+
+    return connection;
+};
+
+NumarkMixtrack3.disconnectControl = function(group, control) {
+    var key = group + "|" + control;
+    var existing = NumarkMixtrack3.connections[key];
+
+    if (existing !== undefined && existing.isConnected) {
+        existing.disconnect();
+    }
+
+    delete NumarkMixtrack3.connections[key];
+};
+
+// =====================================================================
 // Reusable Objects (special buttons handling, LEDs, iCUT and Jog wheels)
 // =====================================================================
 
@@ -811,7 +847,7 @@ NumarkMixtrack3.sampler = function(decknum) {
 
     this.PADSampleButtonHold = new LongShortBtn(NumarkMixtrack3.onPADSampleButtonHold);
 
-    engine.connectControl(this.group, "play", "NumarkMixtrack3.OnSamplePlayStop");
+    NumarkMixtrack3.connectControl(this.group, "play", NumarkMixtrack3.OnSamplePlayStop);
 
     // sampler LED, first 4 are 0x91, next 4 are 0x92
     this.led = new LED(0x91 + Math.round(decknum / 9), leds["padSampler" + decknum]);
@@ -967,33 +1003,36 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     print("");
 
     var controlsToFunctions = {
-        "hotcue_1_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "hotcue_2_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "hotcue_3_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "hotcue_4_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "vu_meter": "NumarkMixtrack3.OnVuMeterChange",
-        "playposition": "NumarkMixtrack3.OnPlaypositionChange",
-        "volume": "NumarkMixtrack3.OnVolumeChange",
-        "pfl": "NumarkMixtrack3.OnPFLStatusChange",
-        "duration": "NumarkMixtrack3.OnLoadSelectedTrack",
-        "play_indicator": "NumarkMixtrack3.OnPlayIndicatorChange",
-        "cue_indicator": "NumarkMixtrack3.OnCuePointChange",
-        "loop_start_position": "NumarkMixtrack3.OnLoopInOutChange",
-        "loop_end_position": "NumarkMixtrack3.OnLoopInOutChange",
-        "loop_enabled": "NumarkMixtrack3.OnLoopInOutChange",
-        "sync_enabled": "NumarkMixtrack3.OnSyncButtonChange"
+        "hotcue_1_status": NumarkMixtrack3.OnHotcueChange,
+        "hotcue_2_status": NumarkMixtrack3.OnHotcueChange,
+        "hotcue_3_status": NumarkMixtrack3.OnHotcueChange,
+        "hotcue_4_status": NumarkMixtrack3.OnHotcueChange,
+        "vu_meter": NumarkMixtrack3.OnVuMeterChange,
+        "playposition": NumarkMixtrack3.OnPlaypositionChange,
+        "volume": NumarkMixtrack3.OnVolumeChange,
+        "pfl": NumarkMixtrack3.OnPFLStatusChange,
+        "duration": NumarkMixtrack3.OnLoadSelectedTrack,
+        "play_indicator": NumarkMixtrack3.OnPlayIndicatorChange,
+        "cue_indicator": NumarkMixtrack3.OnCuePointChange,
+        "loop_start_position": NumarkMixtrack3.OnLoopInOutChange,
+        "loop_end_position": NumarkMixtrack3.OnLoopInOutChange,
+        "loop_enabled": NumarkMixtrack3.OnLoopInOutChange,
+        "sync_enabled": NumarkMixtrack3.OnSyncButtonChange
     };
 
     for (var i = 0, n = loopsize.length; i < n; i ++) {
-        controlsToFunctions["beatloop_" + loopsize[i] + "_enabled"] = "NumarkMixtrack3.OnPADLoopButtonChange";
+        controlsToFunctions["beatloop_" + loopsize[i] + "_enabled"] = NumarkMixtrack3.OnPADLoopButtonChange;
     }
 
-    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
+    NumarkMixtrack3.connectControl(
+        "[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled",
+        NumarkMixtrack3.OnEffectEnabled);
+    NumarkMixtrack3.connectControl(
+        "[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled",
+        NumarkMixtrack3.OnEffectEnabled);
+    NumarkMixtrack3.connectControl(
+        "[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled",
+        NumarkMixtrack3.OnEffectEnabled);
 
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled");
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled");
@@ -1011,9 +1050,9 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     for (var control in controlsToFunctions) {
         if (controlsToFunctions.hasOwnProperty(control)) {
             if (remove) {
-                engine.connectControl(offDeck.group, control, controlsToFunctions[control], true);
+                NumarkMixtrack3.disconnectControl(offDeck.group, control);
             }
-            engine.connectControl(group, control, controlsToFunctions[control]);
+            NumarkMixtrack3.connectControl(group, control, controlsToFunctions[control]);
             engine.trigger(group, control);
         }
     }
