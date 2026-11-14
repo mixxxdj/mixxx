@@ -113,6 +113,7 @@ class MixxxMainWindow : public QMainWindow {
     void tryParseAndSetDefaultStyleSheet();
 
     bool confirmExit();
+    bool confirmCloseOpenWindows();
 #ifndef __APPLE__
     void alwaysHideMenuBarDlg();
 #endif
