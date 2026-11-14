@@ -63,7 +63,7 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
     // Let the caller know if we clamped their value.
     *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
 
-    // Include baserate in rate_abs so that we do samplerate conversion as part
+    // Include base rate in rate_abs so that we do samplerate conversion as part
     // of rate adjustment.
     if (speed_abs != m_dTempoRatio) {
         // Note: A rate of zero would make Soundtouch crash,
