@@ -951,9 +951,9 @@ NumarkMixtrack3.init = function(id, debug) {
     // update callbacks skip redundant sends (meter, wheel button); every other
     // LED is re-sent unconditionally by its engine connection when the decks
     // are initialized below.
-    for (var i = 1; i <= 4; i++) {
-        NumarkMixtrack3.decks["D" + i].LEDs.meter.onOff(OFF);
-        NumarkMixtrack3.decks["D" + i].LEDs.jogWheelsInScratchMode.onOff(OFF);
+    for (let deckNum = 1; deckNum <= 4; deckNum++) {
+        NumarkMixtrack3.decks["D" + deckNum].LEDs.meter.onOff(OFF);
+        NumarkMixtrack3.decks["D" + deckNum].LEDs.jogWheelsInScratchMode.onOff(OFF);
     }
 
     NumarkMixtrack3.initDeck("[Channel1]", false); //Initial load, "remove" is set to false
@@ -1960,7 +1960,7 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
 
 // Master gain knob; mapped 1:1 exactly like the previous direct [Master] gain
 // binding, so behavior is unchanged unless the option disables it
-NumarkMixtrack3.MasterGainKnob = function(channel, control, value, status, group) {
+NumarkMixtrack3.MasterGainKnob = function(channel, control, value, _status, _group) {
     if (DisableMasterGainKnob) {
         return;
     }
