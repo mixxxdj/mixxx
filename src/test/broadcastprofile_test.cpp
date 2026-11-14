@@ -1,12 +1,13 @@
 #ifdef __BROADCAST__
 
+#include "preferences/broadcastprofile.h"
+
 #include <QFile>
 #include <QString>
 
-#include "test/mixxxtest.h"
-#include "preferences/broadcastprofile.h"
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "test/mixxxtest.h"
 
 namespace {
 
@@ -54,7 +55,8 @@ TEST(BroadcastProfileTest, ForbiddenChars) {
 
     // Test if forbidden chars are properly stripped
     ASSERT_FALSE(BroadcastProfile::stripForbiddenChars(
-                        "This is an invalid profile name: ?/").contains("?"));
+            "This is an invalid profile name: ?/")
+                         .contains("?"));
 }
 
 TEST(BroadcastProfileTest, SaveAndLoadXML) {
@@ -63,6 +65,7 @@ TEST(BroadcastProfileTest, SaveAndLoadXML) {
 
     BroadcastProfile profile("Broadcast Profile test");
     profile.setStreamName(streamName);
+    profile.setTlsMode(BROADCAST_TLS_REQUIRED);
 
     QTemporaryDir tempDir;
     ASSERT_TRUE(tempDir.isValid());
@@ -76,6 +79,7 @@ TEST(BroadcastProfileTest, SaveAndLoadXML) {
     BroadcastProfilePtr savedProfile = BroadcastProfile::loadFromFile(filename);
     EXPECT_NE(savedProfile, nullptr);
     EXPECT_TRUE(savedProfile->getStreamName() == streamName);
+    EXPECT_EQ(savedProfile->getTlsMode(), QString(BROADCAST_TLS_REQUIRED));
 }
 
 TEST(BroadcastProfileTest, SaveAndLoadXMLDotName) {
@@ -127,6 +131,15 @@ TEST(BroadcastProfileTest, SetGetValues) {
     QString servertype("Shoutcast 1");
     profile.setServertype(servertype);
     ASSERT_TRUE(profile.getServertype() == servertype);
+
+    ASSERT_EQ(profile.getTlsMode(), QString(BROADCAST_TLS_DISABLED));
+    profile.setTlsMode(BROADCAST_TLS_REQUIRED);
+    ASSERT_EQ(profile.getTlsMode(), QString(BROADCAST_TLS_REQUIRED));
+    profile.setTlsMode(BROADCAST_TLS_UPGRADE);
+    ASSERT_EQ(profile.getTlsMode(), QString(BROADCAST_TLS_UPGRADE));
+    // Test if invalid values fall back to disabled
+    profile.setTlsMode("bogus");
+    ASSERT_EQ(profile.getTlsMode(), QString(BROADCAST_TLS_DISABLED));
 
     QString login("myusername");
     profile.setLogin(login);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QSharedPointer>
 #include <QObject>
+#include <QSharedPointer>
 #include <QString>
 
 class BroadcastProfile;
@@ -11,18 +11,18 @@ typedef QSharedPointer<BroadcastProfile> BroadcastProfilePtr;
 Q_DECLARE_METATYPE(BroadcastProfilePtr)
 
 class BroadcastProfile : public QObject {
-  Q_OBJECT
+    Q_OBJECT
 
   public:
     enum StatusStates {
-          STATUS_UNCONNECTED = 0, // IDLE state, no error
-          STATUS_CONNECTING = 1, // 30 s max
-          STATUS_CONNECTED = 2, // On Air
-          STATUS_FAILURE = 3 // Happens when disconnected by an error
+        STATUS_UNCONNECTED = 0, // IDLE state, no error
+        STATUS_CONNECTING = 1,  // 30 s max
+        STATUS_CONNECTED = 2,   // On Air
+        STATUS_FAILURE = 3      // Happens when disconnected by an error
     };
 
     explicit BroadcastProfile(const QString& profileName,
-                              QObject* parent = nullptr);
+            QObject* parent = nullptr);
     bool save(const QString& filename);
     bool equals(BroadcastProfilePtr other);
     bool valuesEquals(BroadcastProfilePtr other);
@@ -66,6 +66,10 @@ class BroadcastProfile : public QObject {
 
     QString getServertype() const;
     void setServertype(const QString& value);
+
+    // BROADCAST_TLS_* from defs_broadcast.h
+    QString getTlsMode() const;
+    void setTlsMode(const QString& value);
 
     QString getLogin() const;
     void setLogin(const QString& value);
@@ -173,6 +177,7 @@ class BroadcastProfile : public QObject {
     QString m_host;
     int m_port;
     QString m_serverType;
+    QString m_tlsMode;
     QString m_login;
     QString m_password;
 
