@@ -2635,11 +2635,15 @@ endif()
 
 # Additional Linux-only files
 if(UNIX AND NOT APPLE)
-  # .desktop file for KDE/GNOME menu
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
-    DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
-  )
+  # .desktop file for KDE/GNOME menu.  The AppImage ships its own AppImage-
+  # adjusted desktop file (Exec=mixxx, Icon=mixxx-512), so skip this one there
+  # to avoid installing two desktop files with the same name.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
+      DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+    )
+  endif()
 
   # AppImage-specific install rules (desktop file, shared libraries).
   if(MIXXX_APPIMAGE)
@@ -2654,11 +2658,15 @@ if(UNIX AND NOT APPLE)
     PATTERN ic_mixxx.ico EXCLUDE
   )
 
-  # .metainfo.xml file for KDE/GNOME AppStream initiative
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
-  )
+  # .metainfo.xml file for KDE/GNOME AppStream initiative.  The AppImage ships
+  # the same metadata as org.mixxx.Mixxx.appdata.xml (see appimage.cmake), so
+  # skip this copy there to avoid a duplicate install.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
+      DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
+    )
+  endif()
 
   option(
     INSTALL_USER_UDEV_RULES
@@ -3861,6 +3869,7 @@ endif()
 find_package(
   Qt${QT_VERSION_MAJOR}
   COMPONENTS ${QT_COMPONENTS} ${QT_EXTRA_COMPONENTS}
+  OPTIONAL_COMPONENTS QuickShapes
   REQUIRED
 )
 # PUBLIC is required below to find included headers
@@ -3871,6 +3880,15 @@ if(QT_EXTRA_COMPONENTS)
   foreach(component ${QT_EXTRA_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${component})
   endforeach()
+endif()
+
+# The QuickShapes module carries the static QML plugin registration used
+# by qt_finalize_target(), while QuickShapesPrivate only provides the
+# C++ API.  Link the module where it exists (the vcpkg buildenvs) so the
+# plugin import does not depend on the Qt flavor; system Qts without the
+# module keep linking QuickShapesPrivate alone.
+if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes)
 endif()
 
 if(QT_KNOWN_POLICY_QTP0002 AND ANDROID)
@@ -3921,6 +3939,12 @@ if(QML)
         PUBLIC Qt${QT_VERSION_MAJOR}::${component}
       )
     endforeach()
+  endif()
+  if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+    target_link_libraries(
+      mixxx-qml-lib
+      PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes
+    )
   endif()
   set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
   set_source_files_properties(
@@ -4328,14 +4352,31 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+      # Bundle the QuickShapes module runtime libraries where they are shared; a
+      # static build links them into the binary and has nothing to install.
+      foreach(_qtmodule QuickShapes QuickShapesPrivate)
+        if(TARGET Qt${QT_VERSION_MAJOR}::${_qtmodule})
+          get_target_property(
+            _qtmodule_type
+            Qt${QT_VERSION_MAJOR}::${_qtmodule}
+            TYPE
+          )
+          if(
+            _qtmodule_type STREQUAL "SHARED_LIBRARY"
+            OR _qtmodule_type STREQUAL "MODULE_LIBRARY"
+            OR _qtmodule_type STREQUAL "EXECUTABLE"
+          )
+            install(
+              IMPORTED_RUNTIME_ARTIFACTS
+                Qt${QT_VERSION_MAJOR}::${_qtmodule}
+                DESTINATION
+                "${MIXXX_INSTALL_DATADIR}"
+                COMPONENT
+                applocal
+            )
+          endif()
+        endif()
+      endforeach()
 
       if(QT_VERSION VERSION_LESS 6.4)
         # From Qt 6.4 integrated in QuickControls2
