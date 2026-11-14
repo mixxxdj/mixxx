@@ -27,8 +27,7 @@
 class LegacyControllerMapping {
   protected:
     LegacyControllerMapping()
-            : m_bDirty(false),
-              m_deviceDirection(DeviceDirection::Bidirectionnal) {
+            : m_bDirty(false) {
     }
     LegacyControllerMapping(const LegacyControllerMapping& other)
             : m_bDirty(other.m_bDirty),
@@ -51,8 +50,7 @@ class LegacyControllerMapping {
               m_modules(other.m_modules),
               m_screens(other.m_screens),
 #endif
-              m_scripts(other.m_scripts),
-              m_deviceDirection(other.m_deviceDirection) {
+              m_scripts(other.m_scripts) {
     }
     LegacyControllerMapping& operator=(const LegacyControllerMapping&) = delete;
     LegacyControllerMapping(LegacyControllerMapping&&) = delete;
@@ -76,19 +74,6 @@ class LegacyControllerMapping {
         Type type;          // A ScriptFileInfo::Type the specify script file type.
         bool builtin;       // If this is true, the script won't be written to the XML.
     };
-
-    // TODO (xxx): this is a temporary solution to address devices that don't
-    // support and need bidirectional communication and lead to
-    // polling/performance issues. The proper solution would involve refactoring
-    // the bulk integration to perform a better endpoint capability discovery
-    // and let Mixxx decide communication direction depending of the hardware
-    // capabilities
-    enum class DeviceDirection : uint8_t {
-        Outgoing = 0x1,
-        Incoming = 0x2,
-        Bidirectionnal = 0x3
-    };
-    Q_DECLARE_FLAGS(DeviceDirections, DeviceDirection)
 
 #ifdef MIXXX_USE_QML
     struct QMLModuleInfo {
@@ -183,14 +168,6 @@ class LegacyControllerMapping {
 
     LegacyControllerSettingsLayoutElement* getSettingsLayout() const {
         return m_settingsLayout.get();
-    }
-
-    void setDeviceDirection(DeviceDirections aDeviceDirection) {
-        m_deviceDirection = aDeviceDirection;
-    }
-
-    DeviceDirections getDeviceDirection() const {
-        return m_deviceDirection;
     }
 
 #ifdef MIXXX_USE_QML
@@ -389,7 +366,6 @@ class LegacyControllerMapping {
     QList<ScreenInfo> m_screens;
 #endif
     QList<ScriptFileInfo> m_scripts;
-    DeviceDirections m_deviceDirection;
 
     friend class LegacyControllerMappingFileHandlerTest;
 
