@@ -66,17 +66,6 @@ static inline bool directionChanged(const double rate1, const double rate2) {
     return (rate1 * rate2 < 0);
 }
 
-static inline void interpolateFrame(CSAMPLE* pOutput,
-        const CSAMPLE* pFloorSample,
-        const CSAMPLE* pCeilSample,
-        const CSAMPLE frac,
-        const int chCount) {
-    for (int chIdx = 0; chIdx < chCount; chIdx++) {
-        pOutput[chIdx] = pFloorSample[chIdx] +
-                frac * (pCeilSample[chIdx] - pFloorSample[chIdx]);
-    }
-}
-
 // Determine if we're changing directions (scratching) and then perform
 // a stretch
 double EngineBufferScaleLinear::scaleBuffer(
@@ -241,6 +230,46 @@ static inline void interpolateFrame(CSAMPLE* pOutput,
     }
 }
 
+void EngineBufferScaleLinear::do_refill_buffer(double rate,
+        SINT* pUnscaledFramesNeeded,
+        double* pStartFrame,
+        SINT* pCurrentFrameFloor) {
+    const int chCount = getOutputSignal().getChannelCount();
+    SINT sampleCount = 0;
+
+    do {
+        SINT oldBufferFrames = getOutputSignal().samples2frames(m_bufferIntSize);
+
+        if (*pUnscaledFramesNeeded == 0) {
+            // protection against infinite loop
+            // This may happen due to double precision issues
+            ++(*pUnscaledFramesNeeded);
+        }
+
+        SINT samplesToRead = math_min<SINT>(
+                kiLinearScaleReadAheadLength,
+                getOutputSignal().frames2samples(*pUnscaledFramesNeeded));
+
+        m_bufferIntSize = m_pReadAheadManager->getNextSamples(
+                rate,
+                m_bufferInt,
+                samplesToRead,
+                getOutputSignal().getChannelCount());
+        // Note we may get 0 samples once if we just hit a loop trigger,
+        // e.g. when reloop_toggle jumps back to loop_in, or when
+        // moving a loop causes the play position to be moved along.
+
+        *pUnscaledFramesNeeded -= getOutputSignal().samples2frames(m_bufferIntSize);
+
+        // adapt the frames values that are still relative to the old buffer for the new one
+        m_dCurrentFrame -= static_cast<double>(oldBufferFrames);
+        *pStartFrame -= static_cast<double>(oldBufferFrames);
+        *pCurrentFrameFloor -= oldBufferFrames;
+
+        sampleCount = getOutputSignal().frames2samples(*pCurrentFrameFloor);
+    } while (sampleCount + 2 * chCount - 1 >= m_bufferIntSize);
+}
+
 // Stretch a specified buffer worth of audio using linear interpolation
 double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
     double rateOld = m_dOldRate;
@@ -332,37 +361,12 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
                 SampleUtil::copy(m_floorSample.data(), &m_bufferInt[sampleCount], chCount);
             }
 
-            do {
-                SINT oldBufferFrames = getOutputSignal().samples2frames(m_bufferIntSize);
+            do_refill_buffer(rateNew == 0 ? rateOld : rateNew,
+                    &unscaledFramesNeeded,
+                    &startFrame,
+                    &currentFrameFloor);
 
-                if (unscaledFramesNeeded == 0) {
-                    // protection against infinite loop
-                    // This may happen due to double precision issues
-                    ++unscaledFramesNeeded;
-                }
-
-                SINT samplesToRead = math_min<SINT>(
-                        kiLinearScaleReadAheadLength,
-                        getOutputSignal().frames2samples(unscaledFramesNeeded));
-
-                m_bufferIntSize = m_pReadAheadManager->getNextSamples(
-                        rateNew == 0 ? rateOld : rateNew,
-                        m_bufferInt,
-                        samplesToRead,
-                        getOutputSignal().getChannelCount());
-                // Note we may get 0 samples once if we just hit a loop trigger,
-                // e.g. when reloop_toggle jumps back to loop_in, or when
-                // moving a loop causes the play position to be moved along.
-
-                unscaledFramesNeeded -= getOutputSignal().samples2frames(m_bufferIntSize);
-
-                // adapt the frames values that are still relative to the old buffer for the new one
-                m_dCurrentFrame -= static_cast<double>(oldBufferFrames);
-                startFrame -= static_cast<double>(oldBufferFrames);
-                currentFrameFloor -= oldBufferFrames;
-
-                sampleCount = static_cast<int>(getOutputSignal().frames2samples(currentFrameFloor));
-            } while (sampleCount + 2 * chCount - 1 >= m_bufferIntSize);
+            sampleCount = static_cast<int>(getOutputSignal().frames2samples(currentFrameFloor));
 
             // Now that the buffer is up to date, we can get the value of the sample
             // at the floor of our position.

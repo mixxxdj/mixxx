@@ -30,6 +30,10 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     double do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);
     double do_direction_change(CSAMPLE* buf, SINT bufSize, double rateOld, double rateNew);
+    void do_refill_buffer(double rate,
+            SINT* pUnscaledFramesNeeded,
+            double* pStartFrame,
+            SINT* pCurrentFrameFloor);
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
