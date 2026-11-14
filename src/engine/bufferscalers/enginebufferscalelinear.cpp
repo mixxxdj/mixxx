@@ -80,16 +80,16 @@ double EngineBufferScaleLinear::scaleBuffer(
         m_bClear = false;
     }
 
-    double rateAddOld = m_dOldRate; // Smoothly interpolate to new playback rate
-    double rateAddNew = m_dRate;
+    double rateOld = m_dOldRate; // Smoothly interpolate to new playback rate
+    double rateNew = m_dRate;
     double framesRead = 0;
 
-    if (directionChanged(rateAddNew, rateAddOld)) {
+    if (directionChanged(rateNew, rateOld)) {
         // calculate half buffer going one way, and half buffer going
         // the other way.
 
         // first half: rate goes from old rate to zero
-        m_dOldRate = rateAddOld;
+        m_dOldRate = rateOld;
         m_dRate = 0.0;
         framesRead += do_scale(pOutputBuffer, getOutputSignal().samples2frames(iOutputBufferSize));
 
@@ -119,7 +119,7 @@ double EngineBufferScaleLinear::scaleBuffer(
             //qDebug() << "extra samples" << extra_samples;
 
             SINT next_samples_read = m_pReadAheadManager->getNextSamples(
-                    rateAddNew, m_bufferInt, extraSamples, getOutputSignal().getChannelCount());
+                    rateNew, m_bufferInt, extraSamples, getOutputSignal().getChannelCount());
             framesRead += static_cast<double>(getOutputSignal().samples2frames(next_samples_read));
         }
 
@@ -132,7 +132,7 @@ double EngineBufferScaleLinear::scaleBuffer(
 
         // second half: rate goes from zero to new rate
         m_dOldRate = 0.0;
-        m_dRate = rateAddNew;
+        m_dRate = rateNew;
 
         // pass the address of the frame at the halfway point
         SINT frameOffset =  getOutputSignal().samples2frames(iOutputBufferSize) / 2;
