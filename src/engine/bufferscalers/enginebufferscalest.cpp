@@ -138,10 +138,10 @@ double EngineBufferScaleST::scaleBuffer(
     bool lastReadFailed = false;
     while (remainingFrames > 0) {
         SINT receivedFrames = m_pSoundTouch->receiveSamples(
-                read, remainingFrames);
+                read, static_cast<unsigned int>(remainingFrames));
         DEBUG_ASSERT(remainingFrames >= receivedFrames);
         remainingFrames -= receivedFrames;
-        readFramesProcessed += m_effectiveRate * receivedFrames;
+        readFramesProcessed += m_effectiveRate * static_cast<double>(receivedFrames);
         read += getOutputSignal().frames2samples(receivedFrames);
 
         if (remainingFrames > 0) {
@@ -158,7 +158,8 @@ double EngineBufferScaleST::scaleBuffer(
 
             if (iAvailFrames > 0) {
                 lastReadFailed = false;
-                m_pSoundTouch->putSamples(m_bufferBack.data(), iAvailFrames);
+                m_pSoundTouch->putSamples(m_bufferBack.data(),
+                        static_cast<unsigned int>(iAvailFrames));
             } else {
                 // We may get 0 samples once if we just hit a loop trigger, e.g.
                 // when reloop_toggle jumps back to loop_in, or when moving a
@@ -171,7 +172,8 @@ double EngineBufferScaleST::scaleBuffer(
                     qDebug() << "ReadAheadManager::getNextSamples() returned "
                                 "zero samples repeatedly. Padding with silence.";
                     SampleUtil::clear(m_bufferBack.data(), m_bufferBack.size());
-                    m_pSoundTouch->putSamples(m_bufferBack.data(), m_bufferBack.size());
+                    m_pSoundTouch->putSamples(m_bufferBack.data(),
+                            static_cast<unsigned int>(m_bufferBack.size()));
                 }
                 lastReadFailed = true;
             }
