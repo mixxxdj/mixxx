@@ -43,37 +43,36 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager* pReadAheadManager)
 EngineBufferScaleST::~EngineBufferScaleST() {
 }
 
-void EngineBufferScaleST::setScaleParameters(double base_rate,
-                                             double* pTempoRatio,
-                                             double* pPitchRatio) {
-
+void EngineBufferScaleST::setScaleParameters(double baseRate,
+        double* pTempoRatio,
+        double* pPitchRatio) {
     // Negative speed means we are going backwards. pitch does not affect
     // the playback direction.
     m_bBackwards = *pTempoRatio < 0;
 
-    // It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to
-    // SoundTouch (see definition of MIN_SEEK_SPEED for more details).
-    double speed_abs = fabs(*pTempoRatio);
-    if (speed_abs > MAX_SEEK_SPEED) {
-        speed_abs = MAX_SEEK_SPEED;
-    } else if (speed_abs < MIN_SEEK_SPEED) {
-        speed_abs = 0;
+    // It's an error to pass a rate or tempo smaller than kMaxSeekSpeed to
+    // SoundTouch (see definition of kMinSeekSpeed for more details).
+    double speedAbs = fabs(*pTempoRatio);
+    if (speedAbs > kMaxSeekSpeed) {
+        speedAbs = kMaxSeekSpeed;
+    } else if (speedAbs < kMinSeekSpeed) {
+        speedAbs = 0;
     }
 
     // Let the caller know if we clamped their value.
-    *pTempoRatio = m_bBackwards ? -speed_abs : speed_abs;
+    *pTempoRatio = m_bBackwards ? -speedAbs : speedAbs;
 
-    // Include baserate in rate_abs so that we do samplerate conversion as part
+    // Include base rate in rate_abs so that we do samplerate conversion as part
     // of rate adjustment.
-    if (speed_abs != m_dTempoRatio) {
+    if (speedAbs != m_dTempoRatio) {
         // Note: A rate of zero would make Soundtouch crash,
         // this is caught in scaleBuffer()
-        m_pSoundTouch->setTempo(speed_abs);
-        m_dTempoRatio = speed_abs;
+        m_pSoundTouch->setTempo(speedAbs);
+        m_dTempoRatio = speedAbs;
     }
-    if (base_rate != m_dBaseRate) {
-        m_pSoundTouch->setRate(base_rate);
-        m_dBaseRate = base_rate;
+    if (baseRate != m_dBaseRate) {
+        m_pSoundTouch->setRate(baseRate);
+        m_dBaseRate = baseRate;
     }
 
     if (*pPitchRatio != m_dPitchRatio) {
@@ -134,18 +133,18 @@ double EngineBufferScaleST::scaleBuffer(
     }
 
     double readFramesProcessed = 0;
-    SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
+    SINT remainingFrames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
-    bool last_read_failed = false;
-    while (remaining_frames > 0) {
-        SINT received_frames = m_pSoundTouch->receiveSamples(
-                read, remaining_frames);
-        DEBUG_ASSERT(remaining_frames >= received_frames);
-        remaining_frames -= received_frames;
-        readFramesProcessed += m_effectiveRate * received_frames;
-        read += getOutputSignal().frames2samples(received_frames);
+    bool lastReadFailed = false;
+    while (remainingFrames > 0) {
+        SINT receivedFrames = m_pSoundTouch->receiveSamples(
+                read, static_cast<unsigned int>(remainingFrames));
+        DEBUG_ASSERT(remainingFrames >= receivedFrames);
+        remainingFrames -= receivedFrames;
+        readFramesProcessed += m_effectiveRate * static_cast<double>(receivedFrames);
+        read += getOutputSignal().frames2samples(receivedFrames);
 
-        if (remaining_frames > 0) {
+        if (remainingFrames > 0) {
             // The requested setting becomes effective after all previous frames have been processed
             m_effectiveRate = m_dBaseRate * m_dTempoRatio;
             SINT iAvailSamples = m_pReadAheadManager->getNextSamples(
@@ -158,13 +157,14 @@ double EngineBufferScaleST::scaleBuffer(
             SINT iAvailFrames = getOutputSignal().samples2frames(iAvailSamples);
 
             if (iAvailFrames > 0) {
-                last_read_failed = false;
-                m_pSoundTouch->putSamples(m_bufferBack.data(), iAvailFrames);
+                lastReadFailed = false;
+                m_pSoundTouch->putSamples(m_bufferBack.data(),
+                        static_cast<unsigned int>(iAvailFrames));
             } else {
                 // We may get 0 samples once if we just hit a loop trigger, e.g.
                 // when reloop_toggle jumps back to loop_in, or when moving a
                 // loop causes the play position to be moved along.
-                if (last_read_failed) {
+                if (lastReadFailed) {
                     // If we get 0 samples repeatedly, add silence that allows
                     // to flush the last samples out of Soundtouch.
                     // m_pSoundTouch->flush() must not be used, because it allocates
@@ -172,9 +172,10 @@ double EngineBufferScaleST::scaleBuffer(
                     qDebug() << "ReadAheadManager::getNextSamples() returned "
                                 "zero samples repeatedly. Padding with silence.";
                     SampleUtil::clear(m_bufferBack.data(), m_bufferBack.size());
-                    m_pSoundTouch->putSamples(m_bufferBack.data(), m_bufferBack.size());
+                    m_pSoundTouch->putSamples(m_bufferBack.data(),
+                            static_cast<unsigned int>(m_bufferBack.size()));
                 }
-                last_read_failed = true;
+                lastReadFailed = true;
             }
         }
     }
