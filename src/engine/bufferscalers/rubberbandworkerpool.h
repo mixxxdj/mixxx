@@ -19,7 +19,6 @@ class RubberBandWorkerPool : public QThreadPool, public Singleton<RubberBandWork
     RubberBandWorkerPool(UserSettingsPointer pConfig = nullptr);
 
   private:
-    ;
     mixxx::audio::ChannelCount m_channelPerWorker;
 
     friend class Singleton<RubberBandWorkerPool>;

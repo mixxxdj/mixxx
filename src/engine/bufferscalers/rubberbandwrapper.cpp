@@ -44,28 +44,33 @@ namespace {
 
 mixxx::audio::ChannelCount getChannelPerWorker(mixxx::audio::ChannelCount chCount) {
     RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
-
     // There should always be a pool set, even if multi threading isn't enabled.
     // This is because multi threading will always be used for stem when
     // possible.
     VERIFY_OR_DEBUG_ASSERT(pPool) {
         return mixxx::kMaxEngineChannelInputCount;
     }
+
     auto channelPerWorker = pPool->channelPerWorker();
-    // The task count includes all the thread in the pool + the engine thread
-    auto maxThreadCount = pPool->maxThreadCount() + 1;
     VERIFY_OR_DEBUG_ASSERT(chCount % channelPerWorker == 0) {
         return mixxx::kEngineChannelOutputCount;
     }
+
+    // The task count includes all the thread in the pool + the engine thread
+    auto maxThreadCount = pPool->maxThreadCount() + 1;
     auto numTasks = chCount / channelPerWorker;
+
     if (numTasks > maxThreadCount) {
         VERIFY_OR_DEBUG_ASSERT(numTasks % maxThreadCount == 0) {
             return mixxx::kEngineChannelOutputCount;
         }
+
         return mixxx::audio::ChannelCount(chCount / maxThreadCount);
     }
+
     return channelPerWorker;
 }
+
 } // namespace
 
 int RubberBandWrapper::getEngineVersion() const {
@@ -78,32 +83,42 @@ int RubberBandWrapper::getEngineVersion() const {
     return 2;
 #endif
 }
+
 void RubberBandWrapper::setTimeRatio(double ratio) {
     for (auto& stretcher : m_pInstances) {
         stretcher->setTimeRatio(ratio);
     }
 }
+
 size_t RubberBandWrapper::getSamplesRequired() const {
     size_t require = 0;
+
     for (const auto& stretcher : m_pInstances) {
         require = qMax(require, stretcher->getSamplesRequired());
     }
+
     return require;
 }
+
 int RubberBandWrapper::available() const {
     int available = std::numeric_limits<int>::max();
+
     for (const auto& stretcher : m_pInstances) {
         available = qMin(available, stretcher->available());
     }
+
     return available == std::numeric_limits<int>::max() ? 0 : available;
 }
+
 size_t RubberBandWrapper::retrieve(
         float* const* output, size_t samples, SINT channelBufferSize) const {
     // ensure we don't fetch more samples than we really have available.
     samples = std::min(static_cast<size_t>(available()), samples);
+
     VERIFY_OR_DEBUG_ASSERT(samples <= static_cast<size_t>(channelBufferSize)) {
         samples = channelBufferSize;
     }
+
     if (m_pInstances.size() == 1) {
         return m_pInstances[0]->retrieve(output, samples);
     } else {
@@ -122,29 +137,37 @@ size_t RubberBandWrapper::retrieve(
                     }
                 }
             }
+
             output += m_channelPerWorker;
         }
+
         return samples;
     }
 }
+
 size_t RubberBandWrapper::getInputIncrement() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return {};
     }
+
     return m_pInstances[0]->getInputIncrement();
 }
+
 size_t RubberBandWrapper::getLatency() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return {};
     }
+
     return m_pInstances[0]->getLatency();
 }
+
 double RubberBandWrapper::getPitchScale() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return {};
     }
     return m_pInstances[0]->getPitchScale();
 }
+
 // See
 // https://github.com/breakfastquay/rubberband/commit/72654b04ea4f0707e214377515119e933efbdd6c
 // for how these two functions were implemented within librubberband itself
@@ -152,9 +175,11 @@ size_t RubberBandWrapper::getPreferredStartPad() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return {};
     }
+
 #if RUBBERBANDV3
     return m_pInstances[0]->getPreferredStartPad();
 #else
+
     // `getPreferredStartPad()` returns `window_size / 2`, while with
     // `getLatency()` both time stretching engines return `window_size / 2 /
     // pitch_scale`
@@ -162,13 +187,16 @@ size_t RubberBandWrapper::getPreferredStartPad() const {
             m_pInstances[0]->getLatency() * m_pInstances[0]->getPitchScale()));
 #endif
 }
+
 size_t RubberBandWrapper::getStartDelay() const {
     VERIFY_OR_DEBUG_ASSERT(isValid()) {
         return {};
     }
+
 #if RUBBERBANDV3
     return m_pInstances[0]->getStartDelay();
 #else
+
     // In newer Rubber Band versions `getLatency()` is a deprecated alias for
     // `getStartDelay()`, so they should behave the same. In the commit linked
     // above the behavior was different for the R3 stretcher, but that was only
@@ -177,6 +205,7 @@ size_t RubberBandWrapper::getStartDelay() const {
     return m_pInstances[0]->getLatency();
 #endif
 }
+
 void RubberBandWrapper::process(const float* const* input, size_t samples, bool isFinal) {
     if (m_pInstances.size() == 1) {
         return m_pInstances[0]->process(input, samples, isFinal);
@@ -184,14 +213,17 @@ void RubberBandWrapper::process(const float* const* input, size_t samples, bool 
         RubberBandWorkerPool* pPool = RubberBandWorkerPool::instance();
         for (auto& pInstance : m_pInstances) {
             pInstance->set(input, samples, isFinal);
+
             // We try to get the stretching job ran by the RBPool if there is a
             // worker slot available
             if (!pPool->tryStart(pInstance.get())) {
                 // Otherwise, it means the main thread should take care of the stretching
                 pInstance->run();
             }
+
             input += m_channelPerWorker;
         }
+
         // We always perform a wait, even for task that were ran in the main
         // thread, so it resets the semaphore
         for (auto& pInstance : m_pInstances) {
@@ -204,16 +236,18 @@ void RubberBandWrapper::reset() {
         stretcher->reset();
     }
 }
+
 void RubberBandWrapper::clear() {
     m_pInstances.clear();
 }
+
 void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
         mixxx::audio::ChannelCount chCount,
         const RubberBandStretcher::Options& opt) {
     // The instance should have been cleared, or not set before
     VERIFY_OR_DEBUG_ASSERT(m_pInstances.size() == 0) {
         m_pInstances.clear();
-    };
+    }
 
     m_channelPerWorker = getChannelPerWorker(chCount);
     qDebug() << "RubberBandWrapper::setup - using" << m_channelPerWorker << "channel(s) per task";
@@ -235,6 +269,7 @@ void RubberBandWrapper::setup(mixxx::audio::SampleRate sampleRate,
                         sampleRate, m_channelPerWorker, opt));
     }
 }
+
 void RubberBandWrapper::setPitchScale(double scale) {
     for (auto& stretcher : m_pInstances) {
         stretcher->setPitchScale(scale);
