@@ -244,14 +244,14 @@ function parameterSoftTakeOver(group, control, value) {
 NumarkMixtrack3.connections = {};
 
 NumarkMixtrack3.connectControl = function(group, control, callback) {
-    var key = group + "|" + control;
-    var existing = NumarkMixtrack3.connections[key];
+    const key = `${group  }|${  control}`;
+    const existing = NumarkMixtrack3.connections[key];
 
     if (existing !== undefined && existing.isConnected) {
         existing.disconnect();
     }
 
-    var connection = engine.makeConnection(group, control, callback);
+    const connection = engine.makeConnection(group, control, callback);
 
     if (connection !== undefined && connection.isConnected) {
         NumarkMixtrack3.connections[key] = connection;
@@ -261,8 +261,8 @@ NumarkMixtrack3.connectControl = function(group, control, callback) {
 };
 
 NumarkMixtrack3.disconnectControl = function(group, control) {
-    var key = group + "|" + control;
-    var existing = NumarkMixtrack3.connections[key];
+    const key = `${group  }|${  control}`;
+    const existing = NumarkMixtrack3.connections[key];
 
     if (existing !== undefined && existing.isConnected) {
         existing.disconnect();
@@ -810,7 +810,7 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs.meter = new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + j);
 
     for (var led in this.LEDs) {
-        var ledToTurnOff = this.LEDs[led];
+        const ledToTurnOff = this.LEDs[led];
         if (typeof ledToTurnOff.onOff === "function") {
             ledToTurnOff.onOff(OFF);
         }
@@ -952,8 +952,8 @@ NumarkMixtrack3.init = function(id, debug) {
     // LED is re-sent unconditionally by its engine connection when the decks
     // are initialized below.
     for (let deckNum = 1; deckNum <= 4; deckNum++) {
-        NumarkMixtrack3.decks["D" + deckNum].LEDs.meter.onOff(OFF);
-        NumarkMixtrack3.decks["D" + deckNum].LEDs.jogWheelsInScratchMode.onOff(OFF);
+        NumarkMixtrack3.decks[`D${  deckNum}`].LEDs.meter.onOff(OFF);
+        NumarkMixtrack3.decks[`D${  deckNum}`].LEDs.jogWheelsInScratchMode.onOff(OFF);
     }
 
     NumarkMixtrack3.initDeck("[Channel1]", false); //Initial load, "remove" is set to false
@@ -1011,7 +1011,7 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         // otherwise keep flashing LED notes that this deck shares with the
         // incoming deck when the hardware is switched to control other decks.
         for (var led in offDeck.LEDs) {
-            var ledToTurnOff = offDeck.LEDs[led];
+            const ledToTurnOff = offDeck.LEDs[led];
             if (typeof ledToTurnOff.onOff === "function") {
                 ledToTurnOff.onOff(OFF);
             }
@@ -1050,17 +1050,17 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     };
 
     for (var i = 0, n = loopsize.length; i < n; i ++) {
-        controlsToFunctions["beatloop_" + loopsize[i] + "_enabled"] = NumarkMixtrack3.OnPADLoopButtonChange;
+        controlsToFunctions[`beatloop_${  loopsize[i]  }_enabled`] = NumarkMixtrack3.OnPADLoopButtonChange;
     }
 
     NumarkMixtrack3.connectControl(
-        "[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled",
+        `[EffectRack1_EffectUnit${  onDeckNum  }_Effect1]`, "enabled",
         NumarkMixtrack3.OnEffectEnabled);
     NumarkMixtrack3.connectControl(
-        "[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled",
+        `[EffectRack1_EffectUnit${  onDeckNum  }_Effect2]`, "enabled",
         NumarkMixtrack3.OnEffectEnabled);
     NumarkMixtrack3.connectControl(
-        "[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled",
+        `[EffectRack1_EffectUnit${  onDeckNum  }_Effect3]`, "enabled",
         NumarkMixtrack3.OnEffectEnabled);
 
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled");
@@ -1289,9 +1289,9 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
 
     if (smartPFL && deck.duration !== trackDuration && trackDuration !== 0) {
         if (!traditionalPFL) {
-            for (var i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 4; i++) {
                 // change headphone cue (pfl) to the deck on which the song loaded.
-                engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
+                engine.setValue(`[Channel${  i  }]`, "pfl", deck.decknum === i);
             }
         }
 
@@ -1796,9 +1796,9 @@ NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
             script.toggleControl(deck.group, "pfl");
 
             if (!traditionalPFL) {
-                for (var i = 1; i <= 4; i++) {
+                for (let i = 1; i <= 4; i++) {
                     if (i !== deck.decknum) {
-                        engine.setValue("[Channel" + i + "]", "pfl", false);
+                        engine.setValue(`[Channel${  i  }]`, "pfl", false);
                     }
                 }
             }
@@ -2056,7 +2056,7 @@ NumarkMixtrack3.OnVolumeChange = function(value, group, control) {
 
 NumarkMixtrack3.OnVuMeterChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    var meterLevel = Math.round(82 * value);
+    const meterLevel = Math.round(82 * value);
 
     // This callback fires nonstop for every playing deck, so skip redundant
     // sends of an unchanged level.
@@ -2069,8 +2069,8 @@ NumarkMixtrack3.OnVuMeterChange = function(value, group, control) {
 // end-of-track warning flash if one is running). Called on every
 // playposition update of every playing deck, so redundant sends are skipped.
 NumarkMixtrack3.setWheelLedSteady = function(deck) {
-    var wheelLed = deck.LEDs.jogWheelsInScratchMode;
-    var steadyValue = deck.jogWheelsInScratchMode ? ON : OFF;
+    const wheelLed = deck.LEDs.jogWheelsInScratchMode;
+    const steadyValue = deck.jogWheelsInScratchMode ? ON : OFF;
 
     if (wheelLed.flashDuration !== 0) {
         // stops all timers of the running flash on its way
@@ -2092,7 +2092,7 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
         // stale position or duration (which happens when playposition updates
         // race with track loading) would flash until something else writes the
         // LED - e.g. right after loading a track.
-        var isPlaying = engine.getValue(group, "play");
+        const isPlaying = engine.getValue(group, "play");
 
         if (timeRemaining <= 10 && isPlaying) {
             // flashing fast
