@@ -1604,9 +1604,13 @@ bool MixxxMainWindow::confirmExit() {
         }
     }
 
+    return confirmCloseOpenWindows();
+}
+
+bool MixxxMainWindow::confirmCloseOpenWindows() {
+    QList<QWidget*> windowsToClose;
     bool requireWarning = false;
     bool prefDlgOpen = false;
-    QList<QWidget*> windowsToClose;
 
     const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
     for (QWidget* pWidget : topLevelWidgets) {
@@ -1623,6 +1627,7 @@ bool MixxxMainWindow::confirmExit() {
                 !qobject_cast<QMessageBox*>(pWidget)) {
             requireWarning = true;
         }
+
         windowsToClose.append(pWidget);
     }
 
@@ -1630,6 +1635,7 @@ bool MixxxMainWindow::confirmExit() {
         const QString reason = prefDlgOpen
                 ? tr("The preferences window is still open.")
                 : tr("Another window is still open.");
+
         QMessageBox::StandardButton btn = QMessageBox::question(this,
                 tr("Confirm Exit"),
                 reason + "<br>" + tr("Discard any changes and exit Mixxx?"),
