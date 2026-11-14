@@ -124,9 +124,7 @@ qint64 MockNetworkReply::readData(char* data, qint64 size) {
     return bytes_to_read;
 }
 
-qint64 MockNetworkReply::writeData(const char* data, qint64 len) {
-    Q_UNUSED(data);
-    Q_UNUSED(len);
+qint64 MockNetworkReply::writeData(const char*, qint64) {
     ADD_FAILURE() << "Something tried to write to a QNetworkReply";
     return -1;
 }

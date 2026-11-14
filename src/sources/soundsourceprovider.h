@@ -47,8 +47,7 @@ class SoundSourceProvider {
     /// The priority may vary with the file type that is currently
     /// represented by the file extension.
     virtual SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileType) const {
-        Q_UNUSED(supportedFileType)
+            const QString&) const {
         return SoundSourceProviderPriority::Default;
     }
 

@@ -124,9 +124,8 @@ void DlgHidden::activateButtons(bool enable) {
     btnDelete->setEnabled(enable);
 }
 
-void DlgHidden::selectionChanged(const QItemSelection &selected,
-                                 const QItemSelection &deselected) {
-    Q_UNUSED(deselected);
+void DlgHidden::selectionChanged(const QItemSelection& selected,
+        const QItemSelection&) {
     activateButtons(!selected.indexes().isEmpty());
 }
 

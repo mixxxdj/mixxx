@@ -36,8 +36,7 @@ class MockScaler : public EngineBufferScale {
               m_processedPitch(-1) {
     }
     void clear() override { }
-    double scaleBuffer(CSAMPLE* pOutput, SINT buf_size) override {
-        Q_UNUSED(pOutput);
+    double scaleBuffer(CSAMPLE*, SINT buf_size) override {
         m_processedTempo = m_dTempoRatio;
         m_processedPitch = m_dPitchRatio;
         DEBUG_ASSERT((buf_size % 2) == 0); // 2 channels

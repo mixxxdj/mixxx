@@ -1132,8 +1132,7 @@ QMimeData* BaseTrackTableModel::mimeData(
 void BaseTrackTableModel::slotTrackChanged(
         const QString& group,
         TrackPointer pNewTrack,
-        TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+        TrackPointer) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
         // preview state will update.
@@ -1262,8 +1261,7 @@ bool BaseTrackTableModel::updateTrackMood(
 void BaseTrackTableModel::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap) {
-    Q_UNUSED(pixmap);
+        const QPixmap&) {
     if (pRequester != this ||
             getTrackLocation(m_toolTipIndex) != coverInfo.trackLocation) {
         return;

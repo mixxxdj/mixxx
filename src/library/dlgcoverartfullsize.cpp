@@ -284,8 +284,7 @@ void DlgCoverArtFullSize::slotCoverMenu(const QPoint& pos) {
     }
 }
 
-void DlgCoverArtFullSize::resizeEvent(QResizeEvent* event) {
-    Q_UNUSED(event);
+void DlgCoverArtFullSize::resizeEvent(QResizeEvent*) {
     if (m_pixmap.isNull()) {
         return;
     }

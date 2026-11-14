@@ -72,8 +72,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     installEventFilter(this);
 }
 
-void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
-    Q_UNUSED(pEvent);
+void DlgDeveloperTools::timerEvent(QTimerEvent*) {
     if (!isVisible()) {
         // nothing to do if we are not visible
         return;

@@ -44,8 +44,7 @@ bool WComboBox::event(QEvent* pEvent) {
     return QComboBox::event(pEvent);
 }
 
-void WComboBox::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dParameter);
+void WComboBox::onConnectedControlChanged(double, double dValue) {
     // Enums are not currently represented using parameter space so it doesn't
     // make sense to use the parameter here yet.
     int index = findData(static_cast<int>(dValue));

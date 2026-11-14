@@ -261,10 +261,9 @@ class SqlNode : public QueryNode {
             : m_sql(sqlExpression) {
     }
 
-    bool match(const TrackPointer& pTrack) const override {
+    bool match(const TrackPointer&) const override {
         // We are usually embedded in an AND node so if we don't match
         // everything then we block everything.
-        Q_UNUSED(pTrack);
         return true;
     }
 

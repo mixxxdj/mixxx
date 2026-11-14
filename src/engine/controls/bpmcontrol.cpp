@@ -1250,8 +1250,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     }
 }
 
-void BpmControl::slotToggleBpmLock(double v) {
-    Q_UNUSED(v);
+void BpmControl::slotToggleBpmLock(double) {
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;

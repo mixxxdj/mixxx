@@ -106,8 +106,7 @@ void WVuMeterLegacy::setPixmaps(const PixmapSource& source,
     }
 }
 
-void WVuMeterLegacy::onConnectedControlChanged(double dParameter, double dValue) {
-    Q_UNUSED(dValue);
+void WVuMeterLegacy::onConnectedControlChanged(double dParameter, double) {
     m_dParameter = math_clamp(dParameter, 0.0, 1.0);
 
     if (dParameter > 0.0) {
@@ -153,7 +152,6 @@ void WVuMeterLegacy::maybeUpdate() {
 }
 
 void WVuMeterLegacy::showEvent(QShowEvent* e) {
-    Q_UNUSED(e);
     WWidget::showEvent(e);
     // Find the base color recursively in parent widget.
     const auto bgColor = mixxx::widgethelper::findBaseColor(this);

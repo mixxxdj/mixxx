@@ -53,9 +53,8 @@
 /// relatively small compared to the additional code complexity.)
 class EffectState {
   public:
-    EffectState(const mixxx::EngineParameters& engineParameters) {
+    EffectState(const mixxx::EngineParameters&) {
         // Subclasses should call engineParametersChanged here.
-        Q_UNUSED(engineParameters);
     };
     virtual ~EffectState(){};
 };

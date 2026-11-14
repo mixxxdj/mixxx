@@ -33,8 +33,7 @@ void QtHSVWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void QtHSVWaveformWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void QtHSVWaveformWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration QtHSVWaveformWidget::render() {

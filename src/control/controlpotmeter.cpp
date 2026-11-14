@@ -60,8 +60,7 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
 }
 
 // slot
-void ControlPotmeter::privateValueChanged(double dValue, QObject* pSender) {
-    Q_UNUSED(pSender);
+void ControlPotmeter::privateValueChanged(double dValue, QObject*) {
     m_controls.setIsDefault(dValue == defaultValue());
 }
 

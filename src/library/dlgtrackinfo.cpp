@@ -783,8 +783,7 @@ void DlgTrackInfo::slotBpmConstChanged(int state) {
     slotSpinBpmValueChanged(spinBpm->value());
 }
 
-void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
-    Q_UNUSED(numSamples);
+void DlgTrackInfo::slotBpmTap(double averageLength, int) {
     if (averageLength == 0) {
         return;
     }

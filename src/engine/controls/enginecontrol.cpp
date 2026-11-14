@@ -19,20 +19,15 @@ EngineControl::EngineControl(const QString& group,
 EngineControl::~EngineControl() {
 }
 
-void EngineControl::process(const double rate,
-        mixxx::audio::FramePos currentPosition,
-        const std::size_t bufferSize) {
-    Q_UNUSED(rate);
-    Q_UNUSED(currentPosition);
-    Q_UNUSED(bufferSize);
+void EngineControl::process(const double,
+        mixxx::audio::FramePos,
+        const std::size_t) {
 }
 
-void EngineControl::trackLoaded(TrackPointer pNewTrack) {
-    Q_UNUSED(pNewTrack);
+void EngineControl::trackLoaded(TrackPointer) {
 }
 
-void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
-    Q_UNUSED(pBeats);
+void EngineControl::trackBeatsUpdated(mixxx::BeatsPointer) {
 }
 
 void EngineControl::hintReader(gsl::not_null<HintVector*>) {

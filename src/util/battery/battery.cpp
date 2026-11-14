@@ -31,7 +31,7 @@ Battery::Battery(QObject* parent)
     m_timer.start(kBatteryUpdateInterval);
 }
 
-Battery* Battery::getBattery(QObject* parent) {
+Battery* Battery::getBattery([[maybe_unused]] QObject* parent) {
 #ifdef __BATTERY__
 #if defined(Q_OS_WIN)
     return new BatteryWindows(parent);
@@ -40,11 +40,9 @@ Battery* Battery::getBattery(QObject* parent) {
 #elif __LINUX__
     return new BatteryLinux(parent);
 #else
-    Q_UNUSED(parent);
     return nullptr;
 #endif
 #else
-    Q_UNUSED(parent);
     return nullptr;
 #endif
 }

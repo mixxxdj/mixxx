@@ -15,6 +15,5 @@ WAnalysisLibraryTableView::WAnalysisLibraryTableView(
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }
 
-void WAnalysisLibraryTableView::onSearch(const QString& text) {
-    Q_UNUSED(text);
+void WAnalysisLibraryTableView::onSearch(const QString&) {
 }

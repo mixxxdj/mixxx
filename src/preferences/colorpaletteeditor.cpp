@@ -284,7 +284,6 @@ void ColorPaletteEditor::slotResetButtonClicked() {
 
 void ColorPaletteEditor::slotSelectionChanged(
         const QItemSelection& selected,
-        const QItemSelection& deselected) {
-    Q_UNUSED(deselected);
+        const QItemSelection&) {
     m_pRemoveColorButton->setDisabled(selected.isEmpty());
 }

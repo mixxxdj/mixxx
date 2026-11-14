@@ -207,8 +207,7 @@ ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePt
     return ShoutConnectionPtr();
 }
 
-void BroadcastManager::slotConnectionStatusChanged(int newState) {
-    Q_UNUSED(newState);
+void BroadcastManager::slotConnectionStatusChanged(int) {
     int enabledCount = 0, connectingCount = 0,
         connectedCount = 0, failedCount = 0;
 

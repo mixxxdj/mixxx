@@ -271,8 +271,7 @@ TreeItemModel* BrowseFeature::sidebarModel() const {
 }
 
 void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
-                               KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
+        KeyboardEventFilter*) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     libraryWidget->registerView(kViewName, edit);

@@ -311,8 +311,6 @@ void WSliderComposed::drawBar(QPainter* pPainter) {
 }
 
 void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
-    Q_UNUSED(pEvent);
-
     m_dHandleLength = calculateHandleLength();
     m_handler.setHandleLength(m_dHandleLength);
     m_dSliderLength = m_bHorizontal ? width() : height();

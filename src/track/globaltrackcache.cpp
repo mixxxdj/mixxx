@@ -42,8 +42,7 @@ class EvictAndSaveFunctor {
         : m_cacheEntryPtr(std::move(cacheEntryPtr)) {
     }
 
-    void operator()(Track* plainPtr) {
-        Q_UNUSED(plainPtr); // only used in DEBUG_ASSERT
+    void operator()([[maybe_unused]] Track* plainPtr) {
         DEBUG_ASSERT(m_cacheEntryPtr);
         DEBUG_ASSERT(plainPtr == m_cacheEntryPtr->getPlainPtr());
         // Here we move m_cacheEntryPtr and the owned track out of the
@@ -863,7 +862,7 @@ bool GlobalTrackCache::tryEvict(Track* plainPtr) {
     // pointers to avoid evicting a new cached track object instead
     // of the given plainPtr!!
     bool evicted = false;
-    bool notEvicted = false;
+    [[maybe_unused]] bool notEvicted = false;
     const auto trackRef = createTrackRef(*plainPtr);
     if (debugLogEnabled()) {
         kLogger.debug()
@@ -896,7 +895,6 @@ bool GlobalTrackCache::tryEvict(Track* plainPtr) {
         }
     }
     DEBUG_ASSERT(!isCached(plainPtr));
-    Q_UNUSED(notEvicted); // only used in debug assertion
     DEBUG_ASSERT(!(evicted && notEvicted));
     return evicted;
 }

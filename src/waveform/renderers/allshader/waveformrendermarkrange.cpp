@@ -31,9 +31,7 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& ski
     }
 }
 
-void WaveformRenderMarkRange::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void WaveformRenderMarkRange::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 

@@ -80,12 +80,10 @@ AcoustIdLookupTask::AcoustIdLookupTask(
 
 QNetworkReply* AcoustIdLookupTask::sendNetworkRequest(
         QNetworkAccessManager* networkAccessManager,
-        network::HttpRequestMethod method,
+        [[maybe_unused]] network::HttpRequestMethod method,
         const QUrl& url,
-        const QJsonDocument& content) {
-    Q_UNUSED(method);
+        [[maybe_unused]] const QJsonDocument& content) {
     DEBUG_ASSERT(method == network::HttpRequestMethod::Post);
-    Q_UNUSED(content);
     DEBUG_ASSERT(content.isEmpty());
 
     DEBUG_ASSERT(url.isValid());

@@ -27,8 +27,7 @@ void QtVSyncTestWidget::castToQWidget() {
     m_widget = this;
 }
 
-void QtVSyncTestWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void QtVSyncTestWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration QtVSyncTestWidget::render() {

@@ -9,11 +9,9 @@
 // clang-format on
 
 bool WindowsEventHandler::nativeEventFilter(
-        const QByteArray& eventType,
+        const QByteArray&,
         void* message,
-        qintptr* result) {
-    Q_UNUSED(eventType);
-    Q_UNUSED(result);
+        qintptr*) {
     MSG* msg = reinterpret_cast<MSG*>(message);
     if (msg && msg->message == WM_NCLBUTTONDOWN) {
         // Trigger the modal loop to prevent 500ms wait in Event Loop

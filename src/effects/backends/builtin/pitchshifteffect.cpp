@@ -131,11 +131,8 @@ void PitchShiftEffect::processChannel(
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
-        const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-    Q_UNUSED(enableState);
-
+        const EffectEnableState,
+        const GroupFeatureState&) {
     DEBUG_ASSERT(engineParameters.framesPerBuffer() <= pState->m_retrieveBuffer[0].size());
 
     if (const bool formantPreserving = m_pFormantPreservingParameter->toBool();

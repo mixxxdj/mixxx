@@ -63,11 +63,9 @@ void BitCrusherEffect::processChannel(
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
-        const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-    Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
-
+        const EffectEnableState,
+        const GroupFeatureState&) {
+    // enableState is ignored: no need to ramp, it is just a bitcrusher ;-)
     const auto downsample = static_cast<CSAMPLE>(
             m_pDownsampleParameter ? m_pDownsampleParameter->value() : 0.0);
 

@@ -27,8 +27,7 @@ class TestSoundSourceProvider : public SoundSourceProvider {
     }
 
     SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileSuffix) const override {
-        Q_UNUSED(supportedFileSuffix);
+            const QString&) const override {
         return m_priorityHint;
     }
 

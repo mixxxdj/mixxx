@@ -48,26 +48,18 @@ class LibraryFeature : public QObject {
         return m_icon;
     }
 
-    virtual bool dropAccept(const QList<QUrl>& urls, QObject* pSource) {
-        Q_UNUSED(urls);
-        Q_UNUSED(pSource);
+    virtual bool dropAccept(const QList<QUrl>&, QObject*) {
         return false;
     }
-    virtual bool dropAcceptChild(const QModelIndex& index,
-            const QList<QUrl>& urls,
-            QObject* pSource) {
-        Q_UNUSED(index);
-        Q_UNUSED(urls);
-        Q_UNUSED(pSource);
+    virtual bool dropAcceptChild(const QModelIndex&,
+            const QList<QUrl>&,
+            QObject*) {
         return false;
     }
-    virtual bool dragMoveAccept(const QList<QUrl>& urls) {
-        Q_UNUSED(urls);
+    virtual bool dragMoveAccept(const QList<QUrl>&) {
         return false;
     }
-    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QList<QUrl>& urls) {
-        Q_UNUSED(index);
-        Q_UNUSED(urls);
+    virtual bool dragMoveAcceptChild(const QModelIndex&, const QList<QUrl>&) {
         return false;
     }
 
@@ -75,8 +67,7 @@ class LibraryFeature : public QObject {
     }
     virtual void paste() {
     }
-    virtual void pasteChild(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual void pasteChild(const QModelIndex&) {
     }
     // Reimplement this to register custom views with the library widget.
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
@@ -113,30 +104,23 @@ class LibraryFeature : public QObject {
     // called when you single click on the root item
     virtual void activate() = 0;
     // called when you single click on a child item, e.g., a concrete playlist or crate
-    virtual void activateChild(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual void activateChild(const QModelIndex&) {
     }
     // called when you right click on the root item
-    virtual void onRightClick(const QPoint& globalPos) {
-        Q_UNUSED(globalPos);
+    virtual void onRightClick(const QPoint&) {
     }
     // called when you right click on a child item, e.g., a concrete playlist or crate
-    virtual void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
-        Q_UNUSED(globalPos);
-        Q_UNUSED(index);
+    virtual void onRightClickChild(const QPoint&, const QModelIndex&) {
     }
     // called when F2 key is pressed in WLibrarySidebar
-    virtual void renameItem(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual void renameItem(const QModelIndex&) {
     }
     // called when Del or Backspace key is pressed in WLibrarySidebar
-    virtual void deleteItem(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual void deleteItem(const QModelIndex&) {
     }
     // Only implement this, if using incremental or lazy childmodels, see BrowseFeature.
     // This method is executed whenever you **double** click child items
-    virtual void onLazyChildExpandation(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual void onLazyChildExpandation(const QModelIndex&) {
     }
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);

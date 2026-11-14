@@ -28,12 +28,10 @@ class ReadAheadManagerMock : public ReadAheadManager {
               m_iSamplesRead(0) {
     }
 
-    SINT getNextSamplesFake(double dRate,
+    SINT getNextSamplesFake(double,
             CSAMPLE* buffer,
             SINT requested_samples,
-            mixxx::audio::ChannelCount channelCount) {
-        Q_UNUSED(dRate);
-        Q_UNUSED(channelCount);
+            mixxx::audio::ChannelCount) {
         bool hasBuffer = m_pBuffer != NULL;
         // You forgot to set the mock read buffer.
         EXPECT_TRUE(hasBuffer);

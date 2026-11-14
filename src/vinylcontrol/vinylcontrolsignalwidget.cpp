@@ -80,8 +80,7 @@ void VinylControlSignalWidget::resetWidget()
     std::fill(std::begin(m_imageData), std::end(m_imageData), 0);
 }
 
-void VinylControlSignalWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void VinylControlSignalWidget::paintEvent(QPaintEvent*) {
     int sizeX = this->width();
     int sizeY = this->height();
 

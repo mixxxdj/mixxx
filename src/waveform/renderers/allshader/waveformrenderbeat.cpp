@@ -31,9 +31,7 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinCont
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
-void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void WaveformRenderBeat::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 

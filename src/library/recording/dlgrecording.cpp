@@ -129,8 +129,7 @@ void DlgRecording::slotRestoreSearch() {
     emit restoreSearch(currentSearch());
 }
 
-void DlgRecording::slotRecButtonClicked(bool toggle) {
-    Q_UNUSED(toggle);
+void DlgRecording::slotRecButtonClicked(bool) {
     m_pRecordingManager->slotToggleRecording(1);
 }
 

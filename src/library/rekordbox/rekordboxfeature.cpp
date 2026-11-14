@@ -1405,8 +1405,7 @@ RekordboxFeature::~RekordboxFeature() {
 }
 
 void RekordboxFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
-        KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
+        KeyboardEventFilter*) {
     parented_ptr<WLibraryTextBrowser> pEdit = make_parented<WLibraryTextBrowser>(pLibraryWidget);
     pEdit->setHtml(formatRootViewHtml());
     pEdit->setOpenLinks(false);

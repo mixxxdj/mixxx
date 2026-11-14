@@ -160,8 +160,6 @@ WBpmEditor::WBpmEditor(const QString& group, QWidget* pParent)
 }
 
 void WBpmEditor::setup(const QDomNode& node, const SkinContext& context) {
-    Q_UNUSED(context);
-
     // Number of digits after the decimal.
     context.hasNodeSelectInt(node, "NumberOfDigits", &m_spinboxDecimals);
     m_pEditBox->setDecimals(m_spinboxDecimals);

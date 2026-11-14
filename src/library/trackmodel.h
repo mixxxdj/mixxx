@@ -132,13 +132,11 @@ class TrackModel {
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
-    virtual int getTrackRowByPosition(int position) const {
-        Q_UNUSED(position);
+    virtual int getTrackRowByPosition(int) const {
         return -1;
     }
 
-    virtual const QList<int> getSelectedPositions(const QModelIndexList& indices) const {
-        Q_UNUSED(indices);
+    virtual const QList<int> getSelectedPositions(const QModelIndexList&) const {
         return {};
     }
 
@@ -150,52 +148,36 @@ class TrackModel {
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
 
-    virtual void removeTracks(const QModelIndexList& indices) {
-        Q_UNUSED(indices);
+    virtual void removeTracks(const QModelIndexList&) {
     }
-    virtual void cutTracks(const QModelIndexList& indices) {
-        Q_UNUSED(indices);
+    virtual void cutTracks(const QModelIndexList&) {
     }
-    virtual void copyTracks(const QModelIndexList& indices) const {
-        Q_UNUSED(indices);
+    virtual void copyTracks(const QModelIndexList&) const {
     }
-    virtual QList<int> pasteTracks(const QModelIndex& index) {
-        Q_UNUSED(index);
+    virtual QList<int> pasteTracks(const QModelIndex&) {
         return QList<int>();
     }
-    virtual void hideTracks(const QModelIndexList& indices) {
-        Q_UNUSED(indices);
+    virtual void hideTracks(const QModelIndexList&) {
     }
-    virtual void unhideTracks(const QModelIndexList& indices) {
-        Q_UNUSED(indices);
+    virtual void unhideTracks(const QModelIndexList&) {
     }
-    virtual void purgeTracks(const QModelIndexList& indices) {
-        Q_UNUSED(indices);
+    virtual void purgeTracks(const QModelIndexList&) {
     }
-    virtual int addTracks(const QModelIndex& index, const QList<QString>& locations) {
-        Q_UNUSED(index);
-        Q_UNUSED(locations);
+    virtual int addTracks(const QModelIndex&, const QList<QString>&) {
         return 0;
     }
-    virtual int addTracksWithTrackIds(const QModelIndex& index,
-            const QList<TrackId>& tracks,
-            int* pOutInsertionPos) {
-        Q_UNUSED(index);
-        Q_UNUSED(tracks);
-        Q_UNUSED(pOutInsertionPos);
+    virtual int addTracksWithTrackIds(const QModelIndex&,
+            const QList<TrackId>&,
+            int*) {
         return 0;
     }
-    virtual void moveTrack(const QModelIndex& sourceIndex,
-                           const QModelIndex& destIndex) {
-        Q_UNUSED(sourceIndex);
-        Q_UNUSED(destIndex);
+    virtual void moveTrack(const QModelIndex&,
+            const QModelIndex&) {
     }
     virtual bool isLocked() {
         return false;
     }
-    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) {
-        Q_UNUSED(i);
-        Q_UNUSED(pParent);
+    virtual QAbstractItemDelegate* delegateForColumn(const int, QObject*) {
         return NULL;
     }
     virtual Capabilities getCapabilities() const {
@@ -229,8 +211,7 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
-    virtual bool isColumnSortable(int column) const {
-        Q_UNUSED(column);
+    virtual bool isColumnSortable(int) const {
         return true;
     }
 
@@ -238,8 +219,7 @@ class TrackModel {
 
     virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const = 0;
 
-    virtual int fieldIndex(const QString& fieldName) const {
-        Q_UNUSED(fieldName);
+    virtual int fieldIndex(const QString&) const {
         return -1;
     }
 

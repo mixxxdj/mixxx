@@ -274,8 +274,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QList<QUr
 }
 
 void CrateFeature::bindLibraryWidget(
-        WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
+        WLibrary* libraryWidget, KeyboardEventFilter*) {
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
@@ -881,8 +880,7 @@ void CrateFeature::storePrevSiblingCrateId(CrateId crateId) {
     }
 }
 
-void CrateFeature::slotCrateTableChanged(CrateId crateId) {
-    Q_UNUSED(crateId);
+void CrateFeature::slotCrateTableChanged(CrateId) {
     if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
         // If the previously selected crate was loaded to the tracks table and
         // selected in the sidebar try to activate that or a sibling

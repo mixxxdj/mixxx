@@ -236,7 +236,6 @@ int SidebarModel::rowCount(const QModelIndex& parent) const {
 }
 
 int SidebarModel::columnCount(const QModelIndex& parent) const {
-    Q_UNUSED(parent);
     if constexpr (kDebug) {
         qDebug() << "SidebarModel::columnCount parent=" << parent;
     }
@@ -565,19 +564,13 @@ void SidebarModel::slotRowsAboutToBeRemoved(const QModelIndex& parent, int start
     beginRemoveRows(newParent, start, end);
 }
 
-void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int end) {
-    Q_UNUSED(parent);
-    Q_UNUSED(start);
-    Q_UNUSED(end);
+void SidebarModel::slotRowsInserted(const QModelIndex&, int, int) {
     // qDebug() << "slotRowsInserted" << parent << start << end;
     // QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 
-void SidebarModel::slotRowsRemoved(const QModelIndex& parent, int start, int end) {
-    Q_UNUSED(parent);
-    Q_UNUSED(start);
-    Q_UNUSED(end);
+void SidebarModel::slotRowsRemoved(const QModelIndex&, int, int) {
     //qDebug() << "slotRowsRemoved" << parent << start << end;
     //QModelIndex newParent = translateSourceIndex(parent);
     endRemoveRows();

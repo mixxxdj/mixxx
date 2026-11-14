@@ -519,7 +519,8 @@ bool BroadcastProfile::secureCredentialStorage() {
     return m_secureCredentials;
 }
 
-bool BroadcastProfile::setSecurePassword(const QString& login, const QString& password) {
+bool BroadcastProfile::setSecurePassword(
+        [[maybe_unused]] const QString& login, const QString& password) {
     if (!validPassword(password)) {
         qWarning() << "BroadcastProfile::setSecurePassword: password contains invalid characters!";
     }
@@ -547,13 +548,11 @@ bool BroadcastProfile::setSecurePassword(const QString& login, const QString& pa
         return false;
     }
 #else
-    Q_UNUSED(login);
-    Q_UNUSED(password);
     return false;
 #endif
 }
 
-QString BroadcastProfile::getSecurePassword(const QString& login) {
+QString BroadcastProfile::getSecurePassword([[maybe_unused]] const QString& login) {
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -582,8 +581,6 @@ QString BroadcastProfile::getSecurePassword(const QString& login) {
         errorDialog(tr("Secure password retrieval unsuccessful: keychain access failed."),
                         readJob.errorString());
     }
-#else
-    Q_UNUSED(login);
 #endif
     return QString();
 }

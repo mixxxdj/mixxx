@@ -34,9 +34,7 @@ WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
     setUsePreprocess(true);
 }
 
-void WaveformRendererEndOfTrack::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void WaveformRendererEndOfTrack::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 

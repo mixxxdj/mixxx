@@ -776,11 +776,11 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
     }
 }
 
-int SoundDevicePortAudio::callbackProcessDrift(
-        const SINT framesPerBuffer, CSAMPLE *out, const CSAMPLE *in,
-        const PaStreamCallbackTimeInfo *timeInfo,
+int SoundDevicePortAudio::callbackProcessDrift(const SINT framesPerBuffer,
+        CSAMPLE* out,
+        const CSAMPLE* in,
+        const PaStreamCallbackTimeInfo*,
         PaStreamCallbackFlags statusFlags) {
-    Q_UNUSED(timeInfo);
     Trace trace("SoundDevicePortAudio::callbackProcessDrift %1",
             m_deviceId.debugName());
 
@@ -989,10 +989,10 @@ int SoundDevicePortAudio::callbackProcessDrift(
 }
 
 int SoundDevicePortAudio::callbackProcess(const SINT framesPerBuffer,
-        CSAMPLE *out, const CSAMPLE *in,
-        const PaStreamCallbackTimeInfo *timeInfo,
+        CSAMPLE* out,
+        const CSAMPLE* in,
+        const PaStreamCallbackTimeInfo*,
         PaStreamCallbackFlags statusFlags) {
-    Q_UNUSED(timeInfo);
     Trace trace("SoundDevicePortAudio::callbackProcess %1", m_deviceId.debugName());
 
     if (statusFlags & (paOutputUnderflow | paInputOverflow)) {

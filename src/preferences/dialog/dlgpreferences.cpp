@@ -618,15 +618,14 @@ void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
     contentsTreeWidget->expandItem(pItem);
 }
 
-void DlgPreferences::switchToPage(const QString& pageTitle, DlgPreferencePage* pWidget) {
+void DlgPreferences::switchToPage(
+        [[maybe_unused]] const QString& pageTitle, DlgPreferencePage* pWidget) {
 #ifdef __APPLE__
     // According to Apple's Human Interface Guidelines, settings dialogs have to
     // "Update the window’s title to reflect the currently visible pane."
     // This also solves the problem of the changed in terminology, Settings instead
     // of Preferences, since macOS Ventura.
     setWindowTitle(pageTitle);
-#else
-    Q_UNUSED(pageTitle);
 #endif
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
 
@@ -642,10 +641,9 @@ void DlgPreferences::switchToPage(const QString& pageTitle, DlgPreferencePage* p
     }
 }
 
-void DlgPreferences::moveEvent(QMoveEvent* e) {
+void DlgPreferences::moveEvent([[maybe_unused]] QMoveEvent* e) {
     if (m_geometry.length() == 4) {
 #ifdef __WINDOWS__
-        Q_UNUSED(e);
         m_geometry[0] = QString::number(frameGeometry().left());
         m_geometry[1] = QString::number(frameGeometry().top());
 #else

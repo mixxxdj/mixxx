@@ -74,7 +74,7 @@ namespace mixxx {
 double SeratoTags::guessTimingOffsetMillis(
         const QString& filePath,
         const QString& fileType,
-        const audio::SignalInfo& signalInfo) {
+        [[maybe_unused]] const audio::SignalInfo& signalInfo) {
     // The following code accounts for timing offsets required to
     // correctly align timing information (e.g. cue points) exported from
     // Serato. This is caused by different MP3 decoders treating MP3s encoded
@@ -96,7 +96,6 @@ double SeratoTags::guessTimingOffsetMillis(
             DEBUG_ASSERT(!timingOffsetGuessed);
             DEBUG_ASSERT(timingOffset == 0);
 
-            Q_UNUSED(signalInfo)
             int timingShiftCase = mp3guessenc_timing_shift_case(filePath.toStdString().c_str());
 
             // TODO: Find missing timing offsets

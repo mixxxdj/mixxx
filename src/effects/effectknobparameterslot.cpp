@@ -130,7 +130,6 @@ void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
 }
 
 void EffectKnobParameterSlot::slotLinkInverseChanged(double v) {
-    Q_UNUSED(v);
     m_metaknobSoftTakeover.ignoreNext();
     m_pEffectParameter->setLinkInversion(
             static_cast<EffectManifestParameter::LinkInversion>(

@@ -246,15 +246,13 @@ class AudioSource {
     /// This is called by SoundManager whenever an output is connected for this
     /// source. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onOutputConnected(const AudioOutput& output) {
-        Q_UNUSED(output);
+    virtual void onOutputConnected(const AudioOutput&) {
     };
 
     /// This is called by SoundManager whenever an output is disconnected for
     /// this source. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onOutputDisconnected(const AudioOutput& output) {
-        Q_UNUSED(output);
+    virtual void onOutputDisconnected(const AudioOutput&) {
     };
 };
 
@@ -272,15 +270,13 @@ class AudioDestination {
     /// This is called by SoundManager whenever an input is configured for this
     /// destination. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onInputConfigured(const AudioInput& input) {
-        Q_UNUSED(input);
+    virtual void onInputConfigured(const AudioInput&) {
     };
 
     /// This is called by SoundManager whenever an input is unconfigured for this
     /// destination. When this is called it is guaranteed that no callback is
     /// active.
-    virtual void onInputUnconfigured(const AudioInput& input) {
-        Q_UNUSED(input);
+    virtual void onInputUnconfigured(const AudioInput&) {
     };
 };
 

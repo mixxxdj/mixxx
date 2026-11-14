@@ -95,9 +95,7 @@ void MoogLadder4FilterEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     double resonance = m_pResonance->value();
     double hpf;
     double lpf;

@@ -220,8 +220,7 @@ void GLSLWaveformRendererSignal::initializeGL() {
     }
 }
 
-void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void GLSLWaveformRendererSignal::onSetup(const QDomNode&) {
 }
 
 void GLSLWaveformRendererSignal::onSetTrack() {

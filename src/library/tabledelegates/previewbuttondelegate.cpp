@@ -94,9 +94,8 @@ bool PreviewButtonDelegate::isTrackLoadedInPreviewDeck(
 }
 
 QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
-                                             const QStyleOptionViewItem& option,
-                                             const QModelIndex& index) const {
-    Q_UNUSED(option);
+        const QStyleOptionViewItem&,
+        const QModelIndex& index) const {
     QPushButton* btn = new LibraryPreviewButton(parent);
     // Prevent being focused by Tab key or emulated Tab sent by library controls
     // Avoids a Tab loop caused by setLibraryFocus() when the mouse pointer
@@ -116,23 +115,18 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
     return btn;
 }
 
-void PreviewButtonDelegate::setEditorData(QWidget* editor,
-                                          const QModelIndex& index) const {
-    Q_UNUSED(editor);
-    Q_UNUSED(index);
+void PreviewButtonDelegate::setEditorData(QWidget*,
+        const QModelIndex&) const {
 }
 
-void PreviewButtonDelegate::setModelData(QWidget* editor,
-                                         QAbstractItemModel* model,
-                                         const QModelIndex& index) const {
-    Q_UNUSED(editor);
-    Q_UNUSED(model);
-    Q_UNUSED(index);
+void PreviewButtonDelegate::setModelData(QWidget*,
+        QAbstractItemModel*,
+        const QModelIndex&) const {
 }
 
 void PreviewButtonDelegate::paintItem(QPainter* painter,
-                                      const QStyleOptionViewItem& option,
-                                      const QModelIndex& index) const {
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
     paintItemBackground(painter, option, index);
 
     // Let the editor paint in this case
@@ -164,16 +158,13 @@ void PreviewButtonDelegate::paintItem(QPainter* painter,
 }
 
 void PreviewButtonDelegate::updateEditorGeometry(QWidget* editor,
-                                                 const QStyleOptionViewItem& option,
-                                                 const QModelIndex& index) const {
-    Q_UNUSED(index);
+        const QStyleOptionViewItem& option,
+        const QModelIndex&) const {
     editor->setGeometry(option.rect);
 }
 
-QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem& option,
-                                      const QModelIndex& index) const {
-    Q_UNUSED(option);
-    Q_UNUSED(index);
+QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem&,
+        const QModelIndex&) const {
     if (!m_pButton) {
         return QSize();
     }
