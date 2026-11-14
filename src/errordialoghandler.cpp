@@ -1,11 +1,14 @@
 #include "errordialoghandler.h"
 
 #include <QCoreApplication>
+#include <QEvent>
 #include <QGuiApplication>
 #include <QScopedPointer>
 #include <QScreen>
+#include <QTextEdit>
 #include <QThread>
 #include <QtDebug>
+#include <memory>
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
@@ -14,6 +17,26 @@
 #include "util/widgethelper.h"
 
 namespace {
+class ResizableMessageBox : public QMessageBox {
+  public:
+    ResizableMessageBox() {
+        setWindowFlag(Qt::MSWindowsFixedSizeDialogHint, false);
+        setSizeGripEnabled(true);
+    }
+
+  protected:
+    bool event(QEvent* pEvent) override {
+        const bool handled = QMessageBox::event(pEvent);
+        if (pEvent->type() == QEvent::Show ||
+                pEvent->type() == QEvent::Resize ||
+                pEvent->type() == QEvent::LayoutRequest) {
+            setMinimumSize(minimumSizeHint());
+            setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        }
+        return handled;
+    }
+};
+
 // Gross estimated dimensions for the size of the error dialog,
 // with Show Details expanded.
 constexpr int kEstimatedShowDetailedDialogWidth = 1000; // px
@@ -152,7 +175,13 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         return;
     }
 
-    QMessageBox* pMsgBox = new QMessageBox();
+    std::unique_ptr<QMessageBox> pMessageBox;
+    if (props->m_detailsUseMonospaceFont && !props->m_details.isEmpty()) {
+        pMessageBox = std::make_unique<ResizableMessageBox>();
+    } else {
+        pMessageBox = std::make_unique<QMessageBox>();
+    }
+    auto* pMsgBox = pMessageBox.get();
     pMsgBox->setIcon(props->m_icon);
     pMsgBox->setWindowTitle(props->m_title);
     pMsgBox->setText(props->m_text);
@@ -188,10 +217,12 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
                     QSize(dialogWidth, dialogHeight),
                     pScreen->geometry()));
             pMsgBox->setStyleSheet(
-                    QString("QTextEdit { min-width: %1px ; max-height: %2px; "
+                    QString("QTextEdit { min-width: %1px; "
                             "font-family: monospace;}")
-                            .arg(dialogWidth - kEstimatedDialogPadding)
-                            .arg(dialogHeight));
+                            .arg(dialogWidth - kEstimatedDialogPadding));
+            if (auto* pDetails = pMsgBox->findChild<QTextEdit*>()) {
+                pDetails->setMaximumHeight(QWIDGETSIZE_MAX);
+            }
         }
     }
 
@@ -223,6 +254,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     locker.unlock();
 
+    pMessageBox.release();
     if (props->m_modal) {
         // Blocks so the user has a chance to read it before application exit
         pMsgBox->exec();
