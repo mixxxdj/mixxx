@@ -25,12 +25,4 @@ RubberBandWorkerPool::RubberBandWorkerPool(UserSettingsPointer pConfig)
     // The RB pool will only be used to scale n-1 buffer sample, so the engine
     // thread takes care of the last buffer and doesn't have to be idle.
     setMaxThreadCount(numRBTasks - 1);
-
-    // We allocate one runner less than the total of maximum supported channel,
-    // so the engine thread will also perform a stretching operation, instead of
-    // waiting all workers to complete. During performance testing, this ahas
-    // show better results
-    for (int w = 0; w < maxThreadCount(); w++) {
-        reserveThread();
-    }
 }
