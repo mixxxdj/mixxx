@@ -1,10 +1,15 @@
 #include "widget/wmainmenubar.h"
 
-#ifndef __APPLE__
 #include <QApplication>
-#include <QWindow>
-#endif
+#include <QCursor>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QStyle>
+#include <QTimer>
+#include <QToolButton>
 #include <QUrl>
+#include <QWindow>
 
 #include "config.h"
 #include "control/controlproxy.h"
@@ -1006,4 +1011,127 @@ void VisibilityControlConnection::slotActionToggled(bool toggle) {
     if (m_pControl) {
         m_pControl->set(toggle ? 1.0 : 0.0);
     }
+}
+
+void WMainMenuBar::addWindowControls() {
+    // segoe fluent icons (win 11) and mdl2 assets (win 10) share code points
+    QFont glyphs(QStringList{QStringLiteral("Segoe Fluent Icons"),
+            QStringLiteral("Segoe MDL2 Assets")});
+    glyphs.setPixelSize(10);
+    auto* pButtons = new QWidget(this);
+    auto* pLayout = new QHBoxLayout(pButtons);
+    pLayout->setContentsMargins(0, 0, 0, 0);
+    pLayout->setSpacing(0);
+    const auto addButton = [&](const QString& name, char16_t glyph, auto onClick) {
+        auto* pButton = new QToolButton(pButtons);
+        pButton->setObjectName(name);
+        pButton->setText(QChar(glyph));
+        pButton->setFont(glyphs);
+        pButton->setFocusPolicy(Qt::NoFocus);
+        pButton->setFixedSize(46, 32); // windows 11 caption button
+        connect(pButton, &QToolButton::clicked, this, onClick);
+        // state changes and animations settle after the click
+        connect(pButton, &QToolButton::clicked, this, [this] {
+            QTimer::singleShot(300, this, &WMainMenuBar::updateWindowControls);
+        });
+        pLayout->addWidget(pButton);
+        return pButton;
+    };
+    addButton(QStringLiteral("WindowMinimize"), 0xE921, [this] {
+        window()->showMinimized();
+    });
+    m_hoverCheck.setInterval(100);
+    connect(&m_hoverCheck, &QTimer::timeout, this, &WMainMenuBar::updateWindowControls);
+    m_pMaximizeButton = addButton(QStringLiteral("WindowMaximize"), 0xE922, [this] {
+        window()->isMaximized() ? window()->showNormal() : window()->showMaximized();
+    });
+    addButton(QStringLiteral("WindowClose"), 0xE8BB, [this] {
+        window()->close();
+    });
+    setCornerWidget(pButtons, Qt::TopRightCorner);
+    styleWindowControls();
+
+    auto* pLogo = new QLabel(this);
+    pLogo->setPixmap(window()->windowIcon().pixmap(QSize(16, 16), devicePixelRatioF()));
+    pLogo->setContentsMargins(8, 0, 6, 0);
+    pLogo->setAttribute(Qt::WA_TransparentForMouseEvents); // drags like the bar
+    setCornerWidget(pLogo, Qt::TopLeftCorner);
+    updateWindowControls();
+}
+
+void WMainMenuBar::setSkinStyleSheet(const QString& style) {
+    // items are top-aligned, pad them to the 32 px buttons
+    setStyleSheet(m_pMaximizeButton
+                    ? style + QStringLiteral("#MainMenu::item { padding: 6px 10px; }")
+                    : style);
+    styleWindowControls();
+}
+
+void WMainMenuBar::styleWindowControls() {
+    if (!m_pMaximizeButton) {
+        return;
+    }
+    // glyphs in the skin's menu text color, light and dark bars alike
+    ensurePolished();
+    const QColor text = palette().color(foregroundRole());
+    m_pMaximizeButton->parentWidget()->setStyleSheet(
+            QStringLiteral("QToolButton { border: none; background: transparent; color: %1; }"
+                           "QToolButton[hovered=true] { background: rgba(%2, %3, %4, 40); }"
+                           "QToolButton#WindowClose[hovered=true] { "
+                           "background: #c42b1c; color: #fff; }")
+                    .arg(text.name())
+                    .arg(text.red())
+                    .arg(text.green())
+                    .arg(text.blue()));
+}
+
+void WMainMenuBar::updateWindowControls() {
+    if (!m_pMaximizeButton) {
+        return;
+    }
+    m_pMaximizeButton->setText(QChar(window()->isMaximized() ? 0xE923 : 0xE922));
+    // hover from the cursor, qt enter/leave go stale when the buttons move,
+    // the window minimizes or a system move/resize grabs the mouse
+    QWidget* pButtons = m_pMaximizeButton->parentWidget();
+    const QPoint cursor = QCursor::pos();
+    const QWidget* pUnder =
+            pButtons->rect().contains(pButtons->mapFromGlobal(cursor))
+            ? QApplication::widgetAt(cursor) // also false under other windows
+            : nullptr;
+    // background windows may get no leave event: recheck while hovered
+    if (pUnder && pUnder->parentWidget() == pButtons) {
+        m_hoverCheck.start();
+    } else {
+        m_hoverCheck.stop();
+    }
+    for (auto* pButton : pButtons->findChildren<QToolButton*>()) {
+        const bool hovered = pButton == pUnder;
+        if (pButton->property("hovered").toBool() != hovered) {
+            pButton->setProperty("hovered", hovered);
+            pButton->style()->unpolish(pButton);
+            pButton->style()->polish(pButton);
+            pButton->update(); // polish alone keeps the old paint, e.g. on leave
+        }
+    }
+}
+
+bool WMainMenuBar::isDragArea(QPoint pos) const {
+    return m_pMaximizeButton && !actionAt(pos);
+}
+
+void WMainMenuBar::mousePressEvent(QMouseEvent* pEvent) {
+    if (pEvent->button() == Qt::LeftButton && isDragArea(pEvent->position().toPoint()) &&
+            window()->windowHandle()) {
+        window()->windowHandle()->startSystemMove();
+        return;
+    }
+    QMenuBar::mousePressEvent(pEvent);
+}
+
+void WMainMenuBar::mouseDoubleClickEvent(QMouseEvent* pEvent) {
+    if (pEvent->button() == Qt::LeftButton && isDragArea(pEvent->position().toPoint())) {
+        m_pMaximizeButton->click();
+        return;
+    }
+    QMenuBar::mouseDoubleClickEvent(pEvent);
 }

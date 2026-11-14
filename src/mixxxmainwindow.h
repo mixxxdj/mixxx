@@ -103,9 +103,14 @@ class MixxxMainWindow : public QMainWindow {
     /// Event filter to block certain events (eg. tooltips if tooltips are disabled)
     bool eventFilter(QObject *obj, QEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
+#ifdef __WINDOWS__
+    bool nativeEvent(const QByteArray& eventType, void* pMessage, qintptr* pResult) override;
+#endif
 
   private:
     void initializeWindow();
+    /// resize from the edges of the frameless window
+    bool handleWindowEdge(QObject* pObj, QEvent* pEvent);
     void checkDirectRendering();
 
     /// Load skin to a QWidget that we set as the central widget.
@@ -146,6 +151,8 @@ class MixxxMainWindow : public QMainWindow {
     const bool m_supportsGlobalMenuBar;
 #endif
     bool m_inRebootMixxxView;
+    bool m_frameless = false;
+    bool m_edgeCursor = false;
 
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 

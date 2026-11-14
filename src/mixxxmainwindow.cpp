@@ -2,6 +2,11 @@
 
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QMouseEvent>
+#include <QWindow>
+#ifdef __WINDOWS__
+#include <windows.h>
+#endif
 #include <QDebug>
 #include <QFileDialog>
 #include <QOpenGLContext>
@@ -115,7 +120,26 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     createMenuBar();
     m_pMenuBar->hide();
 
+#ifdef __WINDOWS__
+    // menu bar doubles as title bar, keep the frame if it auto-hides
+    m_frameless = !m_pCoreServices->getSettings()->getValue<bool>(kHideMenuBarConfigKey, false);
+    setWindowFlag(Qt::FramelessWindowHint, m_frameless);
+#endif
+
     initializeWindow();
+    if (m_frameless) {
+        m_pMenuBar->addWindowControls();
+#ifdef __WINDOWS__
+        // thick frame for snap, edge resize and min/max animations,
+        // drawn as client area in nativeEvent()
+        const auto hwnd = reinterpret_cast<HWND>(winId());
+        SetWindowLongPtr(hwnd,
+                GWL_STYLE,
+                GetWindowLongPtr(hwnd, GWL_STYLE) | WS_THICKFRAME | WS_MINIMIZEBOX |
+                        WS_MAXIMIZEBOX);
+        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER);
+#endif
+    }
 
     // Show launch image immediately so the user knows Mixxx is starting
     m_pSkinLoader = std::make_unique<mixxx::skin::SkinLoader>(m_pCoreServices->getSettings());
@@ -331,7 +355,7 @@ void MixxxMainWindow::initialize() {
         m_pCentralWidget = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
     } else {
-        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+        m_pMenuBar->setSkinStyleSheet(m_pCentralWidget->styleSheet());
     }
 
     // Check direct rendering and warn user if they don't have it
@@ -801,7 +825,7 @@ void MixxxMainWindow::createMenuBar() {
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardEventFilter());
     if (m_pCentralWidget) {
-        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+        m_pMenuBar->setSkinStyleSheet(m_pCentralWidget->styleSheet());
     }
     setMenuBar(m_pMenuBar);
 }
@@ -1363,7 +1387,7 @@ void MixxxMainWindow::rebootMixxxView() {
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
-    m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+    m_pMenuBar->setSkinStyleSheet(m_pCentralWidget->styleSheet());
 
     setCentralWidget(m_pCentralWidget);
 #ifdef __LINUX__
@@ -1418,7 +1442,88 @@ void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
 }
 
 /// Catch ToolTip and WindowStateChange events
+#ifdef __WINDOWS__
+bool MixxxMainWindow::nativeEvent(
+        const QByteArray& eventType, void* pMessage, qintptr* pResult) {
+    const auto* pMsg = static_cast<MSG*>(pMessage);
+    if (m_frameless && pMsg->message == WM_NCCALCSIZE && pMsg->wParam) {
+        // whole window is client area, no frame drawn
+        if (IsZoomed(pMsg->hwnd)) {
+            // maximized windows overhang the screen by the frame, clip to work area
+            MONITORINFO monitor{sizeof(MONITORINFO)};
+            GetMonitorInfo(MonitorFromWindow(pMsg->hwnd, MONITOR_DEFAULTTONEAREST), &monitor);
+            auto& rect = reinterpret_cast<NCCALCSIZE_PARAMS*>(pMsg->lParam)->rgrc[0];
+            IntersectRect(&rect, &rect, &monitor.rcWork);
+        }
+        *pResult = 0;
+        return true;
+    }
+    return QMainWindow::nativeEvent(eventType, pMessage, pResult);
+}
+#endif
+
+bool MixxxMainWindow::handleWindowEdge(QObject* pObj, QEvent* pEvent) {
+    if (((pEvent->type() == QEvent::Leave && pObj == windowHandle()) ||
+                (pEvent->type() == QEvent::WindowDeactivate && pObj == this)) &&
+            m_pMenuBar) {
+        m_pMenuBar->updateWindowControls(); // e.g. left over a native waveform window
+        if (m_edgeCursor) {
+            QApplication::restoreOverrideCursor();
+            m_edgeCursor = false;
+        }
+        return false;
+    }
+    const bool press = pEvent->type() == QEvent::MouseButtonPress;
+    if ((!press && pEvent->type() != QEvent::MouseMove) || pObj != windowHandle()) {
+        return false;
+    }
+    if (!press && m_pMenuBar) {
+        m_pMenuBar->updateWindowControls();
+    }
+    // window-level events see every move, widgets only with mouse tracking
+    const auto* pMouse = static_cast<QMouseEvent*>(pEvent);
+    const QPoint pos = pMouse->position().toPoint();
+    constexpr int kBorder = 5;
+    constexpr int kTopBorder = 2; // window buttons sit at the top
+    Qt::Edges edges;
+    if (!isMaximized() && !isFullScreen()) {
+        edges.setFlag(Qt::LeftEdge, pos.x() < kBorder);
+        edges.setFlag(Qt::RightEdge, pos.x() >= width() - kBorder);
+        edges.setFlag(Qt::TopEdge, pos.y() < kTopBorder);
+        edges.setFlag(Qt::BottomEdge, pos.y() >= height() - kBorder);
+    }
+    if (!edges) {
+        if (m_edgeCursor) {
+            QApplication::restoreOverrideCursor();
+            m_edgeCursor = false;
+        }
+        return false;
+    }
+    const bool diagonal = (edges & (Qt::LeftEdge | Qt::RightEdge)) &&
+            (edges & (Qt::TopEdge | Qt::BottomEdge));
+    const bool mainDiagonal = edges == (Qt::LeftEdge | Qt::TopEdge) ||
+            edges == (Qt::RightEdge | Qt::BottomEdge);
+    const Qt::CursorShape shape = diagonal
+            ? (mainDiagonal ? Qt::SizeFDiagCursor : Qt::SizeBDiagCursor)
+            : (edges & (Qt::LeftEdge | Qt::RightEdge) ? Qt::SizeHorCursor
+                                                      : Qt::SizeVerCursor);
+    if (m_edgeCursor) {
+        QApplication::changeOverrideCursor(shape);
+    } else {
+        QApplication::setOverrideCursor(shape);
+        m_edgeCursor = true;
+    }
+    if (press && pMouse->button() == Qt::LeftButton) {
+        windowHandle()->startSystemResize(edges);
+        return true;
+    }
+    return false;
+}
+
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
+    if (m_frameless && handleWindowEdge(obj, event)) {
+        return true;
+    }
     if (event->type() == QEvent::ToolTip) {
         // Always show tooltips if Ctrl is held down
         if (QApplication::keyboardModifiers().testFlag(Qt::ControlModifier)) {
@@ -1459,6 +1564,9 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             return true;
         }
     } else if (event->type() == QEvent::WindowStateChange) {
+        if (m_frameless && obj == this && m_pMenuBar) {
+            m_pMenuBar->updateWindowControls();
+        }
 #ifndef __APPLE__
         if (windowState() == m_prevState) {
             // Ignore no-op. This happens if another window is raised above
