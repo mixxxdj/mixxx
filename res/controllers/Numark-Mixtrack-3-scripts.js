@@ -29,6 +29,9 @@ const ShiftFilterFX4 = engine.getSetting("ShiftFilterFX4") === true;
 // allow pitch bend with wheel when wheel is not active
 const PitchBendOnWheelOff = engine.getSetting("PitchBendOnWheelOff") === true;
 
+// DisableMasterGainKnob: "true" disables the physical master gain knob
+const DisableMasterGainKnob = engine.getSetting("DisableMasterGainKnob") === true;
+
 /**************************
  *  scriptpause
  * ---------------
@@ -1953,6 +1956,15 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
     } else {
         parameterSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
     }
+};
+
+// Master gain knob; mapped 1:1 exactly like the previous direct [Master] gain
+// binding, so behavior is unchanged unless the option disables it
+NumarkMixtrack3.MasterGainKnob = function(channel, control, value, status, group) {
+    if (DisableMasterGainKnob) {
+        return;
+    }
+    engine.setParameter("[Master]", "gain", value / 127);
 };
 
 NumarkMixtrack3.loop_in = function(channel, control, value, status, group) {

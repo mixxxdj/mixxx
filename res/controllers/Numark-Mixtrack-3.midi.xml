@@ -89,6 +89,17 @@
                 Allows pitch-bend using the jog wheel even when scratch mode is disabled.
             </description>
         </option>
+        <option
+            variable="DisableMasterGainKnob"
+            label="Disable Master Gain Knob"
+            type="boolean"
+            default="false">
+            <description>
+                Lets the physical Master gain knob do nothing, so the Mixxx master gain can only
+                be changed from the software. The crossfader, cue mix and cue gain knobs are
+                not affected.
+            </description>
+        </option>
     </settings>
     <controller id="Mixtrack3">
         <scriptfiles>
@@ -127,12 +138,12 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>gain</key>
+                <key>NumarkMixtrack3.MasterGainKnob</key>
                 <description>Master gain knob</description>
                 <status>0xB0</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
