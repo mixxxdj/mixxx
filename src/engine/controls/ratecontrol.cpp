@@ -1,6 +1,9 @@
 #include "engine/controls/ratecontrol.h"
 
 #include <QtDebug>
+#include <algorithm>
+#include <chrono>
+#include <cmath>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
@@ -18,6 +21,51 @@
 namespace {
 constexpr int kRateSensitivityMin = 100;
 constexpr int kRateSensitivityMax = 2500;
+
+using namespace std::chrono_literals;
+
+// Approximate Technics SL-1210 brake time from 33 RPM to standstill.
+// At 45 RPM the platter spins 1.35x faster with the same brake torque,
+// so it takes 1.35x longer to stop.
+constexpr std::chrono::duration<double> kSpindownTime33 = 800ms;
+constexpr std::chrono::duration<double> kSpindownTime45 =
+        kSpindownTime33 * 45.0 / (100.0 / 3.0);
+// Power cut: no brake, the coasting platter is only slowed by bearing friction
+// (constant) and drag (proportional to speed).
+// kCoastTime33 is the time from 33 RPM to standstill.
+// kCoastDragRatio = drag / friction: higher drops fast first and then
+// crawls, lower is closer to a straight line.
+// At 45 RPM the platter has more momentum, so the constant
+// friction has less effect and it coasts longer.
+constexpr std::chrono::duration<double> kCoastTime33 = 8s;
+constexpr double kCoastDragRatio = 2.0;
+// Drag and friction are rates (speed units per second), not durations
+const double kCoastDrag = std::log(1.0 + kCoastDragRatio) / kCoastTime33.count();
+const double kCoastFriction33 = kCoastDrag / kCoastDragRatio;
+const double kCoastFriction45 = kCoastFriction33 * (100.0 / 3.0) / 45.0;
+// Spin-up: motor torque (speed units per second), then soft saturation
+// when the platter settles into quartz lock
+constexpr double kSpinupTorque33 = 1.42;
+constexpr double kSpinupTorque45 = kSpinupTorque33 * (100.0 / 3.0) / 45.0;
+constexpr double kQuartzLockStart = 0.9;
+constexpr double kQuartzLockGain = 2.0;
+// Range of the spin-up / spin-down time settings, 1.0 = Technics SL-1210
+constexpr double kMinRampTimeFactor = 0.25;
+constexpr double kMaxRampTimeFactor = 4.0;
+
+// RampRpmMode::Rpm78 is reserved and uses the 45 RPM values until implemented
+double spinupTorque(RateControl::RampRpmMode rpm) {
+    return rpm == RateControl::RampRpmMode::Rpm33 ? kSpinupTorque33 : kSpinupTorque45;
+}
+
+double coastFriction(RateControl::RampRpmMode rpm) {
+    return rpm == RateControl::RampRpmMode::Rpm33 ? kCoastFriction33 : kCoastFriction45;
+}
+
+double brakeTime(RateControl::RampRpmMode rpm) {
+    return (rpm == RateControl::RampRpmMode::Rpm33 ? kSpindownTime33 : kSpindownTime45)
+            .count();
+}
 } // namespace
 
 // Static default values for rate buttons (percents)
@@ -110,7 +158,15 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_targetPos(mixxx::audio::FramePos()),
           m_bTempStarted(false),
           m_tempRateRatio(0.0),
-          m_dRateTempRampChange(0.0) {
+          m_dRateTempRampChange(0.0),
+          m_platterSpeed(1.0),
+          m_lastTargetRate(0.0),
+          m_spinningDown(false),
+          m_seekedSinceLastBuffer(false),
+          m_prevPaused(true),
+          m_latchedPlay(false),
+          m_resetRampRequested(false),
+          m_rampAllowed(PlayerManager::isDeckGroup(group)) {
     // Vinyl control COs are only created for main decks
     if (PlayerManager::isDeckGroup(getGroup())) {
         m_pVCEnabled = ControlObject::getControl(
@@ -206,15 +262,25 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
     // this control.
     m_pScratch2Scratching->set(1.0);
 
-    //     // Update Internal Settings
-    //     // Set Pitchbend Mode
-    //     m_eRateRampMode = static_cast<RampMode>(
-    //         getConfig()->getValue(ConfigKey("[Controls]","RateRamp"),
-    //                               static_cast<int>(RampMode::Stepping)));
-
-    //     // Set the Sensitivity
-    //     m_iRateRampSensitivity =
-    //             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
+    // Physical spin-up / spin-down settings. DlgPrefDeck sets them for all
+    // decks from the preferences, mappings can change them per deck.
+    m_pSpinupEnabled = std::make_unique<ControlPushButton>(
+            ConfigKey(group, QStringLiteral("spinup_enabled")));
+    m_pSpinupEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pSpindownEnabled = std::make_unique<ControlPushButton>(
+            ConfigKey(group, QStringLiteral("spindown_enabled")));
+    m_pSpindownEnabled->setButtonMode(mixxx::control::ButtonMode::Toggle);
+    m_pSpindownMode = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("spindown_mode")));
+    m_pPlatterRpm = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("platter_rpm")));
+    m_pSpinupTime = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("spinup_time")), true, false, false, 1.0);
+    m_pSpindownTime = std::make_unique<ControlObject>(
+            ConfigKey(group, QStringLiteral("spindown_time")), true, false, false, 1.0);
+    m_rampRpm = RampRpmMode::Rpm33;
+    m_rampDownMode = RampDownMode::Brake;
+    m_rampTimeFactor = 1.0;
 }
 
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
@@ -243,6 +309,32 @@ void RateControl::setRateRampSensitivity(int sense) {
     } else {
         m_iRateRampSensitivity = sense;
     }
+}
+
+// static
+double RateControl::spinUpTime(RampRpmMode rpm, double factor) {
+    // Integrate the spin-up model of calculateSpeed() with a fine time step
+    constexpr double kStep = 0.0005; // seconds
+    const double torque = spinupTorque(rpm);
+    double platterSpeed = 0.0;
+    double time = 0.0;
+    while (platterSpeed < 1.0 && time < 60.0) {
+        platterSpeed += torque * kStep;
+        if (platterSpeed > kQuartzLockStart) {
+            platterSpeed += (1.0 - platterSpeed) * kQuartzLockGain * kStep;
+        }
+        time += kStep;
+    }
+    return time * factor;
+}
+
+// static
+double RateControl::spinDownTime(RampRpmMode rpm, RampDownMode mode, double factor) {
+    if (mode == RampDownMode::PowerCut) {
+        // Solution of dv/dt = -(friction + drag * v) from 1 to 0
+        return std::log(1.0 + kCoastDrag / coastFriction(rpm)) / kCoastDrag * factor;
+    }
+    return brakeTime(rpm) * factor;
 }
 
 //static
@@ -512,6 +604,121 @@ double RateControl::calculateSpeed(double baserate,
             }
         }
     }
+
+    if (!m_rampAllowed) {
+        return rate;
+    }
+
+    if (m_resetRampRequested.exchange(false)) {
+        m_platterSpeed = 1.0;
+        m_spinningDown = false;
+        m_latchedPlay = false;
+        m_prevPaused = true;
+    }
+
+    // Physical SL-1210 spin-up / spin-down ramp
+    // EngineBuffer passes paused = !play, and play is also 1 during cue
+    // preview, so play can't tell a Play press from a cue preview.
+    // play_latched (owned by CueControl) is 1 only for a latched play.
+    const bool playLatched = m_pPlayLatched && m_pPlayLatched->toBool();
+    const bool seeked = m_seekedSinceLastBuffer;
+    m_seekedSinceLastBuffer = false;
+
+    // Speed set by hand: scratching (spinny, waveform, controller platter),
+    // jog/wheel scrubbing while paused, searching or vinyl control
+    const bool manualSpeed = searching != 0 || *pReportScratching ||
+            (paused && rate != 0.0) ||
+            m_pScratch2Enable->toBool() ||
+            (m_pVCEnabled && m_pVCEnabled->toBool());
+
+    // play_latched drops to 0 slightly before play when pausing, so the
+    // last playing buffer may already see 0. Remember it per play period.
+    if (!paused && playLatched) {
+        m_latchedPlay = true;
+    }
+
+    if (manualSpeed) {
+        // Speed set by hand: cancel a running ramp
+        m_platterSpeed = 1.0;
+        m_spinningDown = false;
+    } else if (!paused) {
+        if (m_prevPaused) {
+            if (playLatched && m_pSpinupEnabled->toBool()) {
+                // Started by a latched Play: spin up. If the platter is still
+                // spinning down, continue from its current speed.
+                if (!m_spinningDown) {
+                    m_platterSpeed = 0.0;
+                }
+                latchRampSettings(*m_pSpinupTime);
+            } else {
+                // Cue preview, or ramp up disabled: start instantly
+                m_platterSpeed = 1.0;
+            }
+            m_spinningDown = false;
+        } else if (seeked) {
+            // qDebug() << "RateControl -> spin-up cut by seek, platter was" << m_platterSpeed;
+            // Jump while playing (hotcue, cue preview, beatjump, ...):
+            // a running spin-up is cut, playback continues at full speed
+            m_platterSpeed = 1.0;
+        }
+    } else {
+        if (m_pSpindownEnabled->toBool() && !m_prevPaused && m_latchedPlay && !seeked) {
+            // A latched play was paused: spin down from the current speed
+            m_spinningDown = true;
+            latchRampSettings(*m_pSpindownTime);
+        }
+        if (seeked) {
+            m_spinningDown = false;
+        }
+        if (!m_spinningDown) {
+            m_platterSpeed = 1.0;
+        }
+    }
+    if (paused) {
+        m_latchedPlay = false;
+    }
+    m_prevPaused = paused;
+
+    const double dt = static_cast<double>(samplesPerBuffer) / m_pSampleRate.get() / 2;
+
+    if (m_spinningDown) {
+        // Spin-down time setting stretches the curve, 1.0 = SL-1210
+        const double downDt = dt / m_rampTimeFactor;
+        if (m_rampDownMode == RampDownMode::PowerCut) {
+            // Power cut: the platter coasts without brake
+            m_platterSpeed -= (coastFriction(m_rampRpm) + kCoastDrag * m_platterSpeed) * downDt;
+        } else {
+            // Electronic brake: constant deceleration until standstill
+            m_platterSpeed -= downDt / brakeTime(m_rampRpm);
+        }
+        if (m_platterSpeed <= 0.0) {
+            m_platterSpeed = 1.0;
+            m_spinningDown = false;
+            return rate; // paused rate (0 unless jog scrubbing)
+        }
+        return m_lastTargetRate * m_platterSpeed;
+    }
+
+    if (m_platterSpeed < 1.0) {
+        // Spin-up time setting stretches the curve, 1.0 = SL-1210
+        const double upDt = dt / m_rampTimeFactor;
+        m_platterSpeed += spinupTorque(m_rampRpm) * upDt;
+
+        // Soft saturation: motor settling into quartz lock
+        if (m_platterSpeed > kQuartzLockStart) {
+            m_platterSpeed += (1.0 - m_platterSpeed) * kQuartzLockGain * upDt;
+        }
+        if (m_platterSpeed < 1.0) {
+            // Like a real turntable, spin up to the pitched speed
+            m_lastTargetRate = rate;
+            return rate * m_platterSpeed;
+        }
+        m_platterSpeed = 1.0;
+    }
+
+    if (!paused) {
+        m_lastTargetRate = rate;
+    }
     return rate;
 }
 
@@ -635,7 +842,11 @@ void RateControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
 }
 
 void RateControl::notifySeek(mixxx::audio::FramePos position) {
+    // qDebug() << "RateControl::notifySeek" << getGroup() << position;
     m_pScratchController->notifySeek(position);
+    // A pause combined with a jump (cue, start_stop, track load) must not
+    // spin down from the new position
+    m_seekedSinceLastBuffer = true;
 }
 
 void RateControl::resetPositionScratchController() {
@@ -643,4 +854,28 @@ void RateControl::resetPositionScratchController() {
     // reported on track load while scratching.
     // https://github.com/mixxxdj/mixxx/issues/15082
     m_pScratchController->reset();
+    // Track changed: start the next track with a fresh motor state.
+    // This runs in a worker thread, so calculateSpeed() applies it.
+    requestRampReset();
+}
+
+void RateControl::setEngineMixer(EngineMixer* pEngineMixer) {
+    EngineControl::setEngineMixer(pEngineMixer);
+    // play_latched is owned by CueControl, which EngineBuffer creates after
+    // RateControl. EngineBuffer calls setEngineMixer() once all controls
+    // exist, outside the audio callback.
+    m_pPlayLatched = std::make_unique<PollingControlProxy>(getGroup(),
+            QStringLiteral("play_latched"),
+            ControlFlag::AllowMissingOrInvalid);
+}
+
+void RateControl::requestRampReset() {
+    m_resetRampRequested = true;
+}
+
+void RateControl::latchRampSettings(const ControlObject& timeControl) {
+    // A running ramp keeps its settings, changes apply to the next one
+    m_rampRpm = static_cast<RampRpmMode>(static_cast<int>(m_pPlatterRpm->get()));
+    m_rampDownMode = static_cast<RampDownMode>(static_cast<int>(m_pSpindownMode->get()));
+    m_rampTimeFactor = std::clamp(timeControl.get(), kMinRampTimeFactor, kMaxRampTimeFactor);
 }

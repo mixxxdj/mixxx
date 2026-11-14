@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <atomic>
 
 #include "control/pollingcontrolproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -38,6 +39,19 @@ public:
       Stepping = 0, // pitch takes a temporary step up/down a certain amount
       Linear = 1    // pitch moves up/down in a progressively linear fashion
   };
+
+  enum class RampDownMode {
+      Brake = 0,    // stop button: electronic brake
+      PowerCut = 1, // power switch off: the platter coasts
+  };
+  Q_ENUM(RampDownMode)
+
+  enum class RampRpmMode {
+      Rpm33 = 0,
+      Rpm45 = 1,
+      Rpm78 = 2, // reserved, not selectable yet
+  };
+  Q_ENUM(RampRpmMode)
 
   void setBpmControl(BpmControl* bpmcontrol);
 
@@ -77,7 +91,14 @@ public:
   void notifyWrapAround(mixxx::audio::FramePos triggerPos,
           mixxx::audio::FramePos targetPos);
   void notifySeek(mixxx::audio::FramePos position) override;
+  void setEngineMixer(EngineMixer* pEngineMixer) override;
   void resetPositionScratchController();
+  // Thread-safe: request a fresh motor state, applied in calculateSpeed()
+  void requestRampReset();
+
+  // Resulting ramp times in seconds, for the preferences
+  static double spinUpTime(RampRpmMode rpm, double factor);
+  static double spinDownTime(RampRpmMode rpm, RampDownMode mode, double factor);
 
 public slots:
   void slotRateRangeChanged(double);
@@ -174,4 +195,28 @@ private:
   double m_tempRateRatio;
   // Speed for temporary rate change
   double m_dRateTempRampChange;
+
+  // Physical spin-up / spin-down
+  std::unique_ptr<PollingControlProxy> m_pPlayLatched;
+  double m_platterSpeed;   // 0.0 = standstill, 1.0 = target speed reached
+  double m_lastTargetRate; // speed the platter was ramping to or running at
+  bool m_spinningDown;
+  bool m_seekedSinceLastBuffer;
+  bool m_prevPaused;
+  bool m_latchedPlay;
+  std::atomic<bool> m_resetRampRequested;
+
+  bool m_rampAllowed; // only main decks, not samplers or preview deck
+
+  void latchRampSettings(const ControlObject& timeControl);
+  std::unique_ptr<ControlPushButton> m_pSpinupEnabled;
+  std::unique_ptr<ControlPushButton> m_pSpindownEnabled;
+  std::unique_ptr<ControlObject> m_pSpindownMode;
+  std::unique_ptr<ControlObject> m_pPlatterRpm;
+  std::unique_ptr<ControlObject> m_pSpinupTime;   // 1.0 = Technics SL-1210
+  std::unique_ptr<ControlObject> m_pSpindownTime; // 1.0 = Technics SL-1210
+  // Settings of the running ramp
+  RampRpmMode m_rampRpm;
+  RampDownMode m_rampDownMode;
+  double m_rampTimeFactor;
 };
