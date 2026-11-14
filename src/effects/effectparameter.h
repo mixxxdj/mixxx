@@ -41,6 +41,13 @@ class EffectParameter {
         return m_linkInversion;
     }
 
+    int displayOrder() const {
+        return m_displayOrder;
+    }
+    void setDisplayOrder(int order) {
+        m_displayOrder = order;
+    }
+
     double getValue() const;
     void setValue(double value);
 
@@ -60,6 +67,7 @@ class EffectParameter {
     EffectsMessengerPointer m_pMessenger;
     EffectManifestParameterPointer m_pParameterManifest;
     double m_value;
+    int m_displayOrder = -1;
     // Hidden parameters cannot be linked to the metaknob, but EffectParameter
     // needs to maintain their state in case they are loaded into an EffectParameterSlot.
     EffectManifestParameter::LinkType m_linkType;
