@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <QScopedPointer>
-#include <QtDebug>
+#include <QTest>
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
@@ -72,8 +71,8 @@ class StemControlFixture : public BaseSignalPathTest,
         const QString sourceStemPath = GetStemFilePath();
         TrackPointer pStemFile(Track::newTemporary(sourceStemPath));
 
-        loadTrack(m_pMixerDeck1.get(), pStemFile);
-        loadTrack(m_pMixerDeck3.get(), pStemFile);
+        ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pStemFile));
+        ASSERT_TRUE(loadTrack(m_pMixerDeck3.get(), pStemFile));
 
         m_pPlay = std::make_unique<PollingControlProxy>(m_sGroup1, "play");
 
@@ -119,35 +118,29 @@ class StemControlFixture : public BaseSignalPathTest,
         ProcessBuffer();
     }
 
-    void loadTrack(Deck* pDeck, TrackPointer pTrack) {
-        // Because there is connection across the main thread in caching reader
-        // thread, we need to manually process the Qt event loop to trigger
-        // `BaseTrackPlayerImpl::slotTrackLoaded` Here is the chain of
-        // connections (Symbol (thread)) EngineDeck::slotLoadTrack (main) ->
-        // EngineBuffer::loadTrack (main) -> CachingReader*::newTrack (main) ->
-        // CachingReaderWorker::trackLoaded (CachingReader) ->
-        // EngineBuffer::loaded (CachingReader, direct) ->
-        // BaseTrackPlayerImpl::slotTrackLoaded  (main)
-
-        TrackPointer pLoadedTrack;
-        QMetaObject::Connection connection = QObject::connect(pDeck,
+    testing::AssertionResult loadTrack(Deck* pDeck, const TrackPointer& pTrack) {
+        auto* pEngineBuffer = pDeck->getEngineDeck()->getEngineBuffer();
+        bool trackControlsUpdated = false;
+        QObject observer;
+        QObject::connect(pDeck,
                 &BaseTrackPlayerImpl::newTrackLoaded,
-                [&pLoadedTrack]( // clazy:exclude=lambda-in-connect
-                        TrackPointer pNewTrack) { pLoadedTrack = pNewTrack; });
-        BaseSignalPathTest::loadTrack(pDeck, pTrack);
+                &observer,
+                [&](TrackPointer pLoadedTrack) {
+                    if (pLoadedTrack == pTrack) {
+                        trackControlsUpdated = true;
+                    }
+                });
 
-        for (int i = 0; i < 10000; ++i) {
-            if (pLoadedTrack == pTrack) {
-                break;
-            }
-            int maxtime = 1; // ms
-            QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, maxtime);
-            // 1 ms for waiting 10 s at max
+        requestTrackLoad(pDeck, pTrack);
+        constexpr int kLoadTimeoutMs = 5000;
+        if (QTest::qWaitFor(
+                    [&] { return trackControlsUpdated && pEngineBuffer->isTrackLoaded(); },
+                    kLoadTimeoutMs)) {
+            return testing::AssertionSuccess();
         }
-        QObject::disconnect(connection);
-        if (pLoadedTrack != pTrack) {
-            qWarning() << "Timeout: failed loading track" << pTrack->getLocation();
-        }
+        return testing::AssertionFailure()
+                << "Timed out loading " << qPrintable(pTrack->getLocation())
+                << " on " << qPrintable(pDeck->getGroup());
     }
 
     std::unique_ptr<PollingControlProxy> m_pPlay;
@@ -175,14 +168,14 @@ TEST_P(StemControlFixture, StemCount) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1.get(), pTrack);
+    ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pTrack));
 
     EXPECT_EQ(m_pStemCount->get(), 0.0);
 
     auto sourceStemPath = GetStemFilePath();
     kTrackLocationTest = getTestDir().filePath(sourceStemPath);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1.get(), pTrack);
+    ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pTrack));
 
     EXPECT_EQ(m_pStemCount->get(), 4.0);
 }
@@ -196,7 +189,7 @@ TEST_P(StemControlFixture, StemColor) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1.get(), pTrack);
+    ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pTrack));
 
     EXPECT_EQ(m_pStem1Color->get(), -1.0);
     EXPECT_EQ(m_pStem2Color->get(), -1.0);
@@ -205,7 +198,7 @@ TEST_P(StemControlFixture, StemColor) {
 
     kTrackLocationTest = getTestDir().filePath(sourceStemPath);
     pTrack = Track::newTemporary(kTrackLocationTest);
-    loadTrack(m_pMixerDeck1.get(), pTrack);
+    ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pTrack));
 
     EXPECT_EQ(m_pStem1Color->get(), 0xfd << 16 | 0x4a << 8 | 0x4a);
     EXPECT_EQ(m_pStem2Color->get(), 0xff << 16 | 0xff << 8 | 0x00);
@@ -275,7 +268,7 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
 
     QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    loadTrack(m_pMixerDeck1.get(), pTrack);
+    ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pTrack));
 
     EXPECT_EQ(m_pStem1Volume->get(), 0.1);
     EXPECT_EQ(m_pStem2Volume->get(), 0.2);
@@ -288,7 +281,7 @@ TEST_P(StemControlFixture, VolumeResetOnLoad) {
 
     m_pConfig->setValue(
             ConfigKey("[Mixer Profile]", "stem_auto_reset"), true);
-    loadTrack(m_pMixerDeck1.get(), pTrack);
+    ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pTrack));
 
     EXPECT_EQ(m_pStem1Volume->get(), 1.0);
     EXPECT_EQ(m_pStem2Volume->get(), 1.0);
