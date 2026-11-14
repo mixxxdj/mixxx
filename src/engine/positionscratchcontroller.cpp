@@ -3,7 +3,7 @@
 #include "audio/frame.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "engine/bufferscalers/enginebufferscale.h" // for MIN_SEEK_SPEED
+#include "engine/bufferscalers/enginebufferscale.h" // for kMinSeekSpeed
 #include "moc_positionscratchcontroller.cpp"
 #include "preferences/configobject.h" // for ConfigKey
 #include "util/math.h"
@@ -165,8 +165,8 @@ void PositionScratchController::process(double currentSamplePos,
             // If we're playing, then do not decay rate below 1. If we're not playing,
             // then we want to decay all the way down to below 0.01
             double decayThreshold = fabs(releaseRate);
-            if (decayThreshold < MIN_SEEK_SPEED) {
-                decayThreshold = MIN_SEEK_SPEED;
+            if (decayThreshold < kMinSeekSpeed) {
+                decayThreshold = kMinSeekSpeed;
             }
 
             // We calculate the exponential decay constant based on the above
@@ -268,7 +268,7 @@ void PositionScratchController::process(double currentSamplePos,
                             scratchTargetDelta - m_samplePosDeltaSum);
                     m_rate = m_pVelocityController->observation(ctrlError);
                     m_rate /= m_callsPerDt;
-                    if (fabs(m_rate) < MIN_SEEK_SPEED) {
+                    if (fabs(m_rate) < kMinSeekSpeed) {
                         // we cannot get closer
                         m_rate = 0;
                     }
