@@ -62,6 +62,10 @@ void EngineBufferScaleLinear::clear() {
     onSignalChanged();
 }
 
+static inline bool directionChanged(const double rate1, const double rate2) {
+    return (rate1 * rate2 < 0);
+}
+
 // Determine if we're changing directions (scratching) and then perform
 // a stretch
 double EngineBufferScaleLinear::scaleBuffer(
@@ -80,8 +84,7 @@ double EngineBufferScaleLinear::scaleBuffer(
     double rateAddNew = m_dRate;
     double framesRead = 0;
 
-    if (rateAddNew * rateAddOld < 0) {
-        // Direction has changed!
+    if (directionChanged(rateAddNew, rateAddOld)) {
         // calculate half buffer going one way, and half buffer going
         // the other way.
 
@@ -219,7 +222,7 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT bufSize) {
 
     // We special case direction change in the calling function, so this
     // shouldn't happen
-    VERIFY_OR_DEBUG_ASSERT(rateNew * rateOld >= 0) {
+    VERIFY_OR_DEBUG_ASSERT(!directionChanged(rateNew, rateOld)) {
         // We cannot change direction here.
         qDebug() << "EBSL::do_scale() can't change direction";
         rateOld = 0;
