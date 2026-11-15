@@ -93,6 +93,10 @@ var DDJFLX2 = {
     // Accumulates jog movement while browsing the library.
     jogCounter: 0,
 
+    // Accumulated jog movement (in jog ticks) required to move one library row.
+    // Higher = slower, more deliberate scrolling.
+    browseJogThreshold: 20,
+
     // Loop state: keeps track of currently active loop for each virtual deck.
     activeLoopSize: {},
 
@@ -577,27 +581,29 @@ DDJFLX2.fxSelect = function(channel, control, value, status, group) {
 };
 
 DDJFLX2.browseTracks = function(value) {
-    // Convert relative MIDI encoder values into signed movement.
-    const delta = value > 64 ? value - 128 : value;
+    // Jog messages are offset-binary relative values centered on 0x40
+    // (Pioneer MIDI message list: clockwise increases from 0x41,
+    // counterclockwise decreases from 0x3F).
+    const delta = value - 0x40;
 
-    // Ignore micro-movements to filter out accidental touches
-    // and mechanical noise from the jog wheel.
-    // Threshold of 15 filters out all but deliberate movements.
-    if (Math.abs(delta) < 15) {
-        return;
+    // Reset the accumulator on direction change so that small mechanical
+    // jitter in the opposite direction does not build up.
+    if ((delta > 0 && DDJFLX2.jogCounter < 0) ||
+        (delta < 0 && DDJFLX2.jogCounter > 0)) {
+        DDJFLX2.jogCounter = 0;
     }
-
-    // Accumulate intentional movements only.
     DDJFLX2.jogCounter += delta;
 
-    // Threshold of 350 requires a firm, deliberate wheel turn
-    // before triggering a single row move in the library.
-    if (DDJFLX2.jogCounter > 350) {
-        engine.setValue("[Library]", "MoveUp", true);
-        DDJFLX2.jogCounter = 0;
-    } else if (DDJFLX2.jogCounter < -350) {
+    // Move one row each time the accumulated movement exceeds the threshold.
+    // Clockwise moves down the list, counterclockwise moves up.
+    const threshold = DDJFLX2.browseJogThreshold;
+    while (DDJFLX2.jogCounter >= threshold) {
         engine.setValue("[Library]", "MoveDown", true);
-        DDJFLX2.jogCounter = 0;
+        DDJFLX2.jogCounter -= threshold;
+    }
+    while (DDJFLX2.jogCounter <= -threshold) {
+        engine.setValue("[Library]", "MoveUp", true);
+        DDJFLX2.jogCounter += threshold;
     }
 };
 
