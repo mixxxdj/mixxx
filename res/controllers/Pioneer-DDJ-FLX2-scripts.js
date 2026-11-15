@@ -124,7 +124,7 @@ var DDJFLX2 = {
         return {
             physicalDeck: physicalDeck,
             virtualDeck: virtualDeck,
-            group: `[Channel${  virtualDeck  }]`
+            group: `[Channel${virtualDeck}]`
         };
     },
 
@@ -232,16 +232,16 @@ DDJFLX2.init = function() {
     DDJFLX2.beatJumpPadMode = engine.getSetting("beatJumpPadMode") || "off";
     DDJFLX2.padFxMode = engine.getSetting("padFxMode") || "override";
     DDJFLX2.padFxMeta = Number(engine.getSetting("padFxMeta") ?? 0.75);
-    DDJFLX2.cfxKnobBehavior = engine.getSetting("cfxKnobBehavior") || "filter";
+    DDJFLX2.cfxKnobBehavior = engine.getSetting("cfxKnobBehavior") || "dual";
 
     for (let i = 1; i <= 4; i++) {
-    // Create runtime storage for each virtual deck.
+        // Create runtime storage for each virtual deck.
         this.vDeck[i] = {
             volMSB: 0,
             rateMSB: 0,
         };
 
-        const vgroup = `[Channel${  i  }]`;
+        const vgroup = `[Channel${i}]`;
 
         // Enable built-in soft takeover for the script-bound continuous controls.
         // The first value received after enabling is ignored, so controls do not
@@ -307,7 +307,7 @@ DDJFLX2.init = function() {
         for (let j = 1; j <= 8; j++) {
             engine.makeConnection(
                 vgroup,
-                `hotcue_${  j  }_enabled`,
+                `hotcue_${j}_status`,
                 function(ch, vgroup, control) {
                     const pad = Number(control.split("_")[1]);
                     const vDeckNo = script.deckFromGroup(vgroup);
@@ -483,14 +483,14 @@ DDJFLX2.loadEject = function(channel, control, value, status, group) {
         ? {
             physicalDeck: selectedPhysicalDeck,
             virtualDeck: DDJFLX2.vDeckNo[selectedPhysicalDeck],
-            group: `[Channel${  DDJFLX2.vDeckNo[selectedPhysicalDeck]  }]`
+            group: `[Channel${DDJFLX2.vDeckNo[selectedPhysicalDeck]}]`
         }
         : DDJFLX2.resolveDeck(group);
 
     const side = DDJFLX2.deckSide(deck.physicalDeck);
 
     if (value) {
-    // Button pressed: start long-press timer.
+        // Button pressed: start long-press timer.
         if (DDJFLX2.loadTimer[side] !== 0) {
             engine.stopTimer(DDJFLX2.loadTimer[side]);
         }
@@ -504,7 +504,7 @@ DDJFLX2.loadEject = function(channel, control, value, status, group) {
             true
         );
     } else {
-    // Button released: decide action based on press duration.
+        // Button released: decide action based on press duration.
         if (DDJFLX2.loadTimer[side] !== 0) {
             engine.stopTimer(DDJFLX2.loadTimer[side]);
             DDJFLX2.loadTimer[side] = 0;
@@ -528,7 +528,7 @@ DDJFLX2.fxSelect = function(channel, control, value, status, group) {
     const deck = DDJFLX2.resolveDeck(group);
     // Cycle effects in the first slot of the primary unit for this deck.
     engine.setValue(
-        `[EffectRack1_EffectUnit${  deck.virtualDeck  }_Effect1]`,
+        `[EffectRack1_EffectUnit${deck.virtualDeck}_Effect1]`,
         "next_effect",
         1
     );
@@ -630,19 +630,6 @@ DDJFLX2.platterJogShift = function(
     DDJFLX2.platterJog(channel, control, value, status, group);
 };
 
-// Additional scratch input path exposed by the controller.
-DDJFLX2.scratch = function(
-    channel,
-    control,
-    value,
-    _status,
-    group
-) {
-    const deck = DDJFLX2.resolveDeck(group);
-
-    DDJFLX2.doScratchTick(deck.virtualDeck, value);
-};
-
 // Touch sensor enables or disables scratching mode.
 //
 // NOTE: Scratching is inhibited if Shift is pressed to prevent the track
@@ -729,7 +716,7 @@ DDJFLX2.toggleFourDeckMode = function(
     DDJFLX2.LEDsOff();
 
     if (DDJFLX2.fourDeckMode) {
-    // Reassign physical decks to virtual decks 3 and 4.
+        // Reassign physical decks to virtual decks 3 and 4.
         DDJFLX2.vDeckNo[1] = 3;
         DDJFLX2.vDeckNo[2] = 4;
 
@@ -750,7 +737,7 @@ DDJFLX2.toggleFourDeckMode = function(
             engine.getValue("[Channel4]", "track_loaded")
         );
     } else {
-    // Restore default mapping.
+        // Restore default mapping.
         DDJFLX2.vDeckNo[1] = 1;
         DDJFLX2.vDeckNo[2] = 2;
 
@@ -789,7 +776,7 @@ DDJFLX2.play = function(
         const playing = engine.getValue(deck.group, "play");
 
         engine.setValue(deck.group, "play", !playing);
-    // LED update is handled by the makeConnection callback in init().
+        // LED update is handled by the makeConnection callback in init().
     }
 };
 
@@ -961,8 +948,8 @@ DDJFLX2.eqMSB = function(channel, control, value, status, _group) {
 DDJFLX2.eqLSB = function(channel, control, value, status, _group) {
     const physicalDeck = (status & 0x0F) + 1;
     const virtualDeck = DDJFLX2.vDeckNo[physicalDeck];
-    const vgroup = `[Channel${  virtualDeck  }]`;
-    const eqGroup = `[EqualizerRack1_${  vgroup  }_Effect1]`;
+    const vgroup = `[Channel${virtualDeck}]`;
+    const eqGroup = `[EqualizerRack1_${vgroup}_Effect1]`;
 
     const msb = (DDJFLX2.vDeck[virtualDeck].eqMSB || {})[control - 0x20] || 0;
     const rawValue = (msb << 7) + value;
@@ -985,22 +972,19 @@ DDJFLX2.eqLSB = function(channel, control, value, status, _group) {
 
 // Store CFX MSB for 14-bit reconstruction.
 DDJFLX2.super1MSB = function(channel, control, value, _status, _group) {
-    const physicalDeck = (control === 0x17 || control === 0x37) ? 1 : 2;
+    // 0xB6 0x17 = CFX CH1 MSB, 0xB6 0x18 = CFX CH2 MSB.
+    const physicalDeck = control === 0x17 ? 1 : 2;
     const virtualDeck = DDJFLX2.vDeckNo[physicalDeck];
-    if (!DDJFLX2.vDeck[virtualDeck].cfxMSB) {
-        DDJFLX2.vDeck[virtualDeck].cfxMSB = 0;
-    }
     DDJFLX2.vDeck[virtualDeck].cfxMSB = value;
 };
 
 // Combine MSB and LSB to reconstruct full 14-bit CFX value.
 DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
-    const physicalDeck = (control === 0x37 || control === 0x38) ?
-        (control === 0x37 ? 1 : 2) :
-        (control === 0x17 ? 1 : 2);
+    // 0xB6 0x37 = CFX CH1 LSB, 0xB6 0x38 = CFX CH2 LSB.
+    const physicalDeck = control === 0x37 ? 1 : 2;
     const virtualDeck = DDJFLX2.vDeckNo[physicalDeck];
-    const vgroup = `[Channel${  virtualDeck  }]`;
-    const qfxGroup = `[QuickEffectRack1_${  vgroup  }]`;
+    const vgroup = `[Channel${virtualDeck}]`;
+    const qfxGroup = `[QuickEffectRack1_${vgroup}]`;
 
     const msb = DDJFLX2.vDeck[virtualDeck].cfxMSB || 0;
     const rawValue = (msb << 7) + value;
@@ -1080,11 +1064,11 @@ DDJFLX2.hotcueNActivate = function(
 ) {
     const deck = DDJFLX2.resolveDeck(group);
     const hotcueNum = DDJFLX2.hotcuePadFromControl(control);
-    const hotcue = `hotcue_${  hotcueNum}`;
+    const hotcue = `hotcue_${hotcueNum}`;
 
     // Pass both press (1) and release (0) so Mixxx can manage the
     // preview-while-held behavior when the deck is paused.
-    engine.setValue(deck.group, `${hotcue  }_activate`, value ? 1 : 0);
+    engine.setValue(deck.group, `${hotcue}_activate`, value ? 1 : 0);
 
     if (value) {
         // Update play LED immediately for responsiveness.
@@ -1094,7 +1078,7 @@ DDJFLX2.hotcueNActivate = function(
             0x7f * engine.getValue(deck.group, "play")
         );
     }
-    // NOTE: hotcue pad LED is handled by the makeConnection on hotcue_X_enabled.
+    // NOTE: hotcue pad LED is handled by the makeConnection on hotcue_X_status.
 };
 
 // Clear hotcues.
@@ -1114,7 +1098,7 @@ DDJFLX2.hotcueNClear = function(
 
     engine.setValue(
         deck.group,
-        `hotcue_${  hotcueNum  }_clear`,
+        `hotcue_${hotcueNum}_clear`,
         true
     );
 
@@ -1182,9 +1166,9 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
         unit = unitOffset === 0 ? 2 : 4;
     }
 
-    const fxGroup = `[EffectRack1_EffectUnit${  unit  }]`;
-    const effectGroup = `[EffectRack1_EffectUnit${  unit  }_Effect${  slot  }]`;
-    const stateKey = `${deck.group  }:${  unit  }:${  slot}`;
+    const fxGroup = `[EffectRack1_EffectUnit${unit}]`;
+    const effectGroup = `[EffectRack1_EffectUnit${unit}_Effect${slot}]`;
+    const stateKey = `${deck.group}:${unit}:${slot}`;
 
     const ledStatus = DDJFLX2.getPadLedStatus(deck.physicalDeck, shifted);
 
@@ -1226,7 +1210,7 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
                 engine.setValue(fxGroup, "enabled", unitSaved.enabled);
                 engine.setValue(fxGroup, "mix", unitSaved.mix);
                 for (let i = 1; i <= 4; i++) {
-                    engine.setValue(fxGroup, `group_[Channel${  i  }]_enable`, unitSaved.routing[i]);
+                    engine.setValue(fxGroup, `group_[Channel${i}]_enable`, unitSaved.routing[i]);
                 }
                 delete DDJFLX2.padFxUnitState[fxGroup];
             }
@@ -1243,7 +1227,7 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
     if (!DDJFLX2.padFxUnitState[fxGroup]) {
         const routing = {};
         for (let i = 1; i <= 4; i++) {
-            routing[i] = engine.getValue(fxGroup, `group_[Channel${  i  }]_enable`);
+            routing[i] = engine.getValue(fxGroup, `group_[Channel${i}]_enable`);
         }
         DDJFLX2.padFxUnitState[fxGroup] = {
             enabled: engine.getValue(fxGroup, "enabled"),
@@ -1264,9 +1248,9 @@ DDJFLX2.applyPadFx = function(control, value, status, group, shifted) {
 
     // Force-route the effect unit to the current deck and maximize its presence.
     for (let i = 1; i <= 4; i++) {
-        engine.setValue(fxGroup, `group_[Channel${  i  }]_enable`, 0);
+        engine.setValue(fxGroup, `group_[Channel${i}]_enable`, 0);
     }
-    engine.setValue(fxGroup, `group_${  deck.group  }_enable`, 1);
+    engine.setValue(fxGroup, `group_${deck.group}_enable`, 1);
     engine.setValue(fxGroup, "enabled", 1);
     engine.setValue(fxGroup, "mix", 1);
     engine.setValue(effectGroup, "meta", DDJFLX2.padFxMeta);
@@ -1316,7 +1300,7 @@ DDJFLX2.loopRollPad = function(
 
     engine.setValue(
         deck.group,
-        `beatlooproll_${  size  }_activate`,
+        `beatlooproll_${size}_activate`,
         value ? 1 : 0
     );
 
@@ -1453,7 +1437,7 @@ DDJFLX2.samplerPad = function(
     if (!DDJFLX2.samplerExists(samplerNo)) {
         return;
     }
-    const samplerGroup = `[Sampler${  samplerNo  }]`;
+    const samplerGroup = `[Sampler${samplerNo}]`;
 
     script.triggerControl(samplerGroup, "cue_gotoandplay");
     // LED update is handled by the global sampler timer.
@@ -1481,7 +1465,7 @@ DDJFLX2.samplerStopPad = function(
     if (!DDJFLX2.samplerExists(samplerNo)) {
         return;
     }
-    const samplerGroup = `[Sampler${  samplerNo  }]`;
+    const samplerGroup = `[Sampler${samplerNo}]`;
 
     script.triggerControl(samplerGroup, "stop");
     // LED update is handled by the global sampler timer.
@@ -1514,7 +1498,7 @@ DDJFLX2.switchLEDs = function(vDeckNo) {
 
     const d = DDJFLX2.virtualToLedIndex(vDeckNo);
     const physicalDeck = DDJFLX2.virtualToPhysicalDeck(vDeckNo);
-    const vgroup = `[Channel${  vDeckNo  }]`;
+    const vgroup = `[Channel${vDeckNo}]`;
 
     DDJFLX2.switchPlayLED(
         d,
@@ -1540,7 +1524,7 @@ DDJFLX2.switchLEDs = function(vDeckNo) {
     for (let i = 1; i <= 8; i++) {
         const isButtonEnabled = engine.getValue(
             vgroup,
-            `hotcue_${  i  }_enabled`
+            `hotcue_${i}_status`
         );
 
         // Use physicalDeck (not ledIndex) and correct MIDI-OUT pad channel.

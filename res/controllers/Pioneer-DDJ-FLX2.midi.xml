@@ -366,6 +366,9 @@
                 </options>
             </control>
 
+            <!-- Smart Fader: toggles software fader start. When enabled,
+                 channel fader movements trigger play/sync and cue/stop via
+                 volumeLSB monitoring in JS. -->
             <control>
                 <group>[Master]</group>
                 <key>DDJFLX2.smartFader</key>
@@ -622,9 +625,7 @@
                 </options>
             </control>
 
-            <!-- Smart Fader Controls -->
-            <!-- Active only when Smart Fader is enabled (smartFaderEnabled = true). -->
-            <!-- Channel fader movements trigger play/pause/sync via volumeLSB monitoring in JS. -->
+            <!-- Transport Controls -->
             <control>
                 <group>[Channel1]</group>
                 <key>DDJFLX2.play</key>
