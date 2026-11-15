@@ -55,7 +55,8 @@
 
             Implemented from the Pioneer DDJ-FLX2 MIDI message list:
             - Deck transport: play/pause, cue, Shift, Beat Sync short press,
-              Beat Sync long press, Shift + Sync pad-mode selection, tempo,
+              Beat Sync long press (Shift + Sync pad-mode selection is
+              handled by the firmware), tempo,
               platter/outer jog rotation, platter touch and Shift + touch.
             - Mixer: channel faders, crossfader, EQ high/mid/low, CFX,
               headphone cue master/channel, master level and headphones level.
@@ -257,10 +258,16 @@
             </control>
 
 
+            <!--
+                BEAT SYNC: short press 0x58, long press 0x5C, Shift + press 0x2A.
+                The Pioneer MIDI message list swaps 0x5C and 0x2A; these values
+                were verified on the hardware (same as DDJ-400 / DDJ-FLX4).
+                Shift + BEAT SYNC (pad mode selection) is handled by the firmware.
+            -->
             <control>
                 <group>[Channel1]</group>
                 <key>DDJFLX2.syncShort</key>
-                <description>Deck 1: Tap to sync tempo</description>
+                <description>Deck 1: BEAT SYNC short press: one-time beat sync, or disable sync lock</description>
                 <status>0x90</status>
                 <midino>0x58</midino>
                 <options>
@@ -270,7 +277,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DDJFLX2.syncShort</key>
-                <description>Deck 2: Tap to sync tempo</description>
+                <description>Deck 2: BEAT SYNC short press: one-time beat sync, or disable sync lock</description>
                 <status>0x91</status>
                 <midino>0x58</midino>
                 <options>
@@ -280,27 +287,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DDJFLX2.syncLong</key>
-                <description>Deck 1: Hold to enable permanent sync</description>
-                <status>0x90</status>
-                <midino>0x2A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DDJFLX2.syncLong</key>
-                <description>Deck 2: Hold to enable permanent sync</description>
-                <status>0x91</status>
-                <midino>0x2A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>DDJFLX2.padModeSelect</key>
-                <description>Deck 1: Pad mode selection with Shift + Sync</description>
+                <description>Deck 1: BEAT SYNC long press: enable sync lock</description>
                 <status>0x90</status>
                 <midino>0x5C</midino>
                 <options>
@@ -309,8 +296,8 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DDJFLX2.padModeSelect</key>
-                <description>Deck 2: Pad mode selection with Shift + Sync</description>
+                <key>DDJFLX2.syncLong</key>
+                <description>Deck 2: BEAT SYNC long press: enable sync lock</description>
                 <status>0x91</status>
                 <midino>0x5C</midino>
                 <options>

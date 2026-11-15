@@ -794,6 +794,19 @@ DDJFLX2.play = function(
     }
 };
 
+// BEAT SYNC
+//
+// The firmware decides between short and long press itself and sends a
+// different note for each (press and release arrive together):
+//   short press 0x58, long press 0x5C, Shift + press 0x2A.
+// NOTE: the Pioneer MIDI message list swaps 0x5C and 0x2A; the values above
+// were verified on the hardware and match the DDJ-400 / DDJ-FLX4.
+// Shift + BEAT SYNC (pad mode selection) is handled by the firmware.
+//
+// Behavior follows the Mixxx sync button convention (as in the DDJ-400 and
+// DDJ-FLX4 mappings):
+// - short press: one-time beat sync, or disable sync lock if it is enabled
+// - long press:  enable sync lock
 DDJFLX2.syncShort = function(
     channel,
     control,
@@ -801,13 +814,11 @@ DDJFLX2.syncShort = function(
     status,
     group
 ) {
-    if (DDJFLX2.isShiftPressed(group)) {
-        return;
-    }
-    if (value) {
-        const deck = DDJFLX2.resolveDeck(group);
-        const enabled = engine.getValue(deck.group, "sync_enabled");
-        engine.setValue(deck.group, "sync_enabled", enabled ? 0 : 1);
+    const deck = DDJFLX2.resolveDeck(group);
+    if (engine.getValue(deck.group, "sync_enabled") && value > 0) {
+        engine.setValue(deck.group, "sync_enabled", 0);
+    } else {
+        engine.setValue(deck.group, "beatsync", value);
     }
 };
 
@@ -857,6 +868,7 @@ DDJFLX2.handleSmartFaderVolume = function(deck, volume) {
     DDJFLX2.faderDown[deck.physicalDeck] = isDown;
 };
 
+// BEAT SYNC long press: enable sync lock. See syncShort for details.
 DDJFLX2.syncLong = function(
     channel,
     control,
@@ -864,30 +876,10 @@ DDJFLX2.syncLong = function(
     status,
     group
 ) {
-    if (DDJFLX2.isShiftPressed(group)) {
-        return;
-    }
-
     if (value) {
         const deck = DDJFLX2.resolveDeck(group);
-        const enabled = engine.getValue(deck.group, "sync_enabled");
-        engine.setValue(deck.group, "sync_enabled", enabled ? 0 : 1);
+        engine.setValue(deck.group, "sync_enabled", 1);
     }
-};
-
-// Pad mode selection: Shift + Sync cycles through pad modes on the controller firmware.
-// Only the press event is relevant; the release is ignored.
-// Actual pad presses are handled by the mode-specific MIDI note ranges.
-DDJFLX2.padModeSelect = function(
-    channel,
-    control,
-    value,
-    status
-) {
-    if (!value) {
-        return;
-    }
-    midi.sendShortMsg(status, control, 0x7f);
 };
 
 // Store pitch fader MSB for 14-bit MIDI reconstruction.
