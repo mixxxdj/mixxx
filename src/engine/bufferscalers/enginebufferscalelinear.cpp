@@ -233,11 +233,6 @@ static inline void interpolateFrame(CSAMPLE* pOutput,
 static inline double estimateFramesNeeded(const SINT bufferSizeFrames,
         const double rateOld,
         const double rateDelta) {
-    // Use Gaussian sum formula (n(n+1))/2 for
-    // for (int j = 0; j < bufferSizeFrames; ++j) {
-    //     frames += (j * rateDelta) + rateOld;
-    // }
-
     double frames = static_cast<double>(bufferSizeFrames - 1) *
             static_cast<double>(bufferSizeFrames) / 2.0;
     frames *= rateDelta;
