@@ -292,6 +292,15 @@ DDJFLX2.init = function() {
             midi.sendShortMsg(0x90 + DDJFLX2.virtualToLedIndex(vDeckNo), 0x54, enabled ? 0x7f : 0x00);
         });
 
+        // Keep cue LED synchronized with Mixxx's cue indicator, which follows
+        // the cue mode selected in Preferences (including blinking).
+        engine.makeConnection(vgroup, "cue_indicator", function(value, vgroup) {
+            const vDeckNo = script.deckFromGroup(vgroup);
+            if (!DDJFLX2.isVirtualDeckVisible(vDeckNo)) { return; }
+
+            DDJFLX2.switchCueLED(DDJFLX2.virtualToLedIndex(vDeckNo), value ? 1 : 0);
+        });
+
         // Keep pad LEDs synchronized with hotcue state.
         // This is the single source of truth for hotcue LED updates;
         // hotcueNActivate must NOT send its own LED echo.
@@ -1039,6 +1048,10 @@ DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
     }
 };
 
+// CUE button: forwards press and release to cue_default, so the behavior
+// follows the cue mode selected in Preferences (Mixxx, Pioneer, Denon, ...),
+// including cue preview while held. Same approach as the DDJ-400 / DDJ-FLX4.
+// Cue and play LEDs are updated by the makeConnection callbacks in init().
 DDJFLX2.cueDefault = function(
     channel,
     control,
@@ -1046,26 +1059,8 @@ DDJFLX2.cueDefault = function(
     status,
     group
 ) {
-    if (value) {
-        const deck = DDJFLX2.resolveDeck(group);
-
-        // Match Pioneer CDJ cue behavior.
-        if (engine.isScratching(deck.virtualDeck)) {
-            engine.setValue(deck.group, "cue_set", true);
-        } else {
-            engine.setValue(deck.group, "cue_gotoandplay", true);
-        }
-
-        const cueSet = engine.getValue(deck.group, "cue_point") !== -1;
-
-        midi.sendShortMsg(status, 0x0c, 0x7f * cueSet);
-
-        midi.sendShortMsg(
-            status,
-            0x0b,
-            0x7f * engine.getValue(deck.group, "play")
-        );
-    }
+    const deck = DDJFLX2.resolveDeck(group);
+    engine.setValue(deck.group, "cue_default", value ? 1 : 0);
 };
 
 DDJFLX2.cueGotoandstop = function(
@@ -1079,12 +1074,7 @@ DDJFLX2.cueGotoandstop = function(
         const deck = DDJFLX2.resolveDeck(group);
 
         engine.setValue(deck.group, "cue_gotoandstop", true);
-
-        midi.sendShortMsg(
-            status,
-            0x0b,
-            0x7f * engine.getValue(deck.group, "play")
-        );
+        // Play LED update is handled by the makeConnection callback in init().
     }
 };
 
@@ -1516,10 +1506,9 @@ DDJFLX2.switchLEDs = function(vDeckNo) {
         engine.getValue(vgroup, "play")
     );
 
-    midi.sendShortMsg(
-        0x90 + d,
-        0x0c,
-        0x7f * (engine.getValue(vgroup, "cue_point") !== -1)
+    DDJFLX2.switchCueLED(
+        d,
+        engine.getValue(vgroup, "cue_indicator") ? 1 : 0
     );
 
     DDJFLX2.switchSyncLED(
