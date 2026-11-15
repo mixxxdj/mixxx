@@ -1263,15 +1263,25 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
             }
 
             let pitchBendValue;
+            let scratchValue;
             if (value === 127) {
-                pitchBendValue = -1 * pitchBendSharpnessSetting;
-            } else { //0x01
-                pitchBendValue = pitchBendSharpnessSetting;
+                if (engine.getValue(group, "play") === 0) {
+                    pitchBendValue = -1;
+                } else {
+                    pitchBendValue = -1 * pitchBendSharpnessSetting;
+                }
+                scratchValue = -1;
+            } else { // value === 0x01
+                if (engine.getValue(group, "play") === 0) {
+                    pitchBendValue = 1;
+                } else {
+                    pitchBendValue = pitchBendSharpnessSetting;
+                }
+                scratchValue = 1;
             }
 
-            value = this.inValueScale(value);
             if (engine.isScratching(this.deck)) {
-                engine.scratchTick(this.deck, value);
+                engine.scratchTick(this.deck, scratchValue);
             } else {
                 this.inSetValue(pitchBendValue);
             }
