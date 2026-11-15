@@ -752,22 +752,22 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>cue_set</key>
-                <description>Deck 2: Set cue point</description>
+                <key>DDJFLX2.cueSet</key>
+                <description>Deck 2: Shift + Play: set cue point</description>
                 <status>0x91</status>
                 <midino>0x47</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>cue_set</key>
-                <description>Deck 1: Set cue point</description>
+                <key>DDJFLX2.cueSet</key>
+                <description>Deck 1: Shift + Play: set cue point</description>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
 

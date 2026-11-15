@@ -1037,6 +1037,21 @@ DDJFLX2.cueDefault = function(
     engine.setValue(deck.group, "cue_default", value ? 1 : 0);
 };
 
+// Shift + PLAY: set the cue point at the current position of the virtual deck
+// assigned to this side.
+DDJFLX2.cueSet = function(
+    channel,
+    control,
+    value,
+    status,
+    group
+) {
+    if (value) {
+        const deck = DDJFLX2.resolveDeck(group);
+        engine.setValue(deck.group, "cue_set", 1);
+    }
+};
+
 DDJFLX2.cueGotoandstop = function(
     channel,
     control,
