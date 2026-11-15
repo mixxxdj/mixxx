@@ -800,9 +800,6 @@ DDJFLX2.toggleFourDeckMode = function(
             4,
             engine.getValue("[Channel4]", "track_loaded")
         );
-
-        midi.sendShortMsg(0x90, 0x54, 0x00);
-        midi.sendShortMsg(0x91, 0x54, 0x00);
     } else {
     // Restore default mapping.
         DDJFLX2.vDeckNo[1] = 1;
