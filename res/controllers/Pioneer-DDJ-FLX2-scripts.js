@@ -693,6 +693,11 @@ DDJFLX2.scratch = function(
 //
 // NOTE: Scratching is inhibited if Shift is pressed to prevent the track
 // from stopping when the user touches the platter to browse the library.
+// Releasing the platter always disables scratching, even if Shift is held.
+// Observed firmware behavior: when Shift is pressed while touching, the
+// controller sends 0x67 ON; lifting the hand sends 0x67 OFF, while the
+// pending 0x36 OFF is only sent when Shift is released. Ignoring the 0x67 OFF
+// would keep the deck in scratch mode (track stopped) until Shift is released.
 DDJFLX2.touch = function(
     channel,
     control,
@@ -700,23 +705,24 @@ DDJFLX2.touch = function(
     status,
     group
 ) {
+    const deck = DDJFLX2.resolveDeck(group);
+
+    if (!value) {
+        engine.scratchDisable(deck.virtualDeck);
+        return;
+    }
+
     if (DDJFLX2.isShiftPressed(group)) {
         return;
     }
 
-    const deck = DDJFLX2.resolveDeck(group);
-
-    if (value) {
-        engine.scratchEnable(
-            deck.virtualDeck,
-            460,
-            33 + 1 / 3,
-            0.125,
-            0.003
-        );
-    } else {
-        engine.scratchDisable(deck.virtualDeck);
-    }
+    engine.scratchEnable(
+        deck.virtualDeck,
+        460,
+        33 + 1 / 3,
+        0.125,
+        0.003
+    );
 };
 
 DDJFLX2.touchShift = function(
