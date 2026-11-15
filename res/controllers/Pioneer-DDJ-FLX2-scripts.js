@@ -102,9 +102,6 @@ var DDJFLX2 = {
     // Higher = slower, more deliberate scrolling.
     browseJogThreshold: 20,
 
-    // Loop state: keeps track of currently active loop for each virtual deck.
-    activeLoopSize: {},
-
     // Helper: check if shift is pressed for a specific deck group.
     // Accepts both physical ([Channel1]/[Channel2]) and virtual
     // ([Channel3]/[Channel4]) groups: virtual decks 1/3 are on the left side,
@@ -238,9 +235,6 @@ DDJFLX2.init = function() {
             rateMSB: 0,
         };
 
-        // Initialize active loop size for each virtual deck.
-        this.activeLoopSize[i] = null;
-
         const vgroup = `[Channel${  i  }]`;
 
         // Enable built-in soft takeover for the script-bound continuous controls.
@@ -322,22 +316,6 @@ DDJFLX2.init = function() {
                 }
             );
         }
-
-        // Keep loop LEDs synchronized with actual loop state.
-        engine.makeConnection(
-            vgroup,
-            "loop_enabled",
-            function(enabled, vgroup) {
-                const vDeckNo = script.deckFromGroup(vgroup);
-
-                // Loop disabled externally
-                if (!enabled) {
-                    DDJFLX2.activeLoopSize[vDeckNo] = null;
-                }
-
-                DDJFLX2.updateLoopPadLEDs(vDeckNo);
-            }
-        );
     }
 
     DDJFLX2.allLEDsOff();
@@ -1382,15 +1360,16 @@ DDJFLX2.updateAllSamplerLEDs = function() {
 };
 
 // Update loop pad LEDs for all visible virtual decks.
-// Active loop pad blinks with blinkPhase; all others are off.
+// The pad of the active beatloop size blinks with blinkPhase; all others are off.
+// Loop state is read from Mixxx (beatloop_X_enabled), so loops activated or
+// resized from the GUI are shown as well.
 DDJFLX2.updateAllLoopBlinkLEDs = function() {
     for (let physicalDeck = 1; physicalDeck <= 2; physicalDeck++) {
-        const vDeckNo = DDJFLX2.vDeckNo[physicalDeck];
-        const activeSize = DDJFLX2.activeLoopSize[vDeckNo];
+        const vgroup = `[Channel${DDJFLX2.vDeckNo[physicalDeck]}]`;
 
         for (let pad = 1; pad <= 8; pad++) {
             const size = DDJFLX2.loopPadSizes[pad - 1];
-            const isActive = (activeSize === size);
+            const isActive = engine.getValue(vgroup, `beatloop_${size}_enabled`);
             const ledValue = isActive ? (DDJFLX2.blinkPhase ? 0x7f : 0x00) : 0x00;
             // Loop pads use control bytes 0x60–0x67 (pad 1 = 0x60).
             midi.sendShortMsg(
@@ -1596,36 +1575,8 @@ DDJFLX2.loopPad = function(
     const size = DDJFLX2.loopPadSizes[pad - 1];
     const deck = DDJFLX2.resolveDeck(group);
 
-    const loopEnabled = engine.getValue(
-        deck.group,
-        "loop_enabled"
-    );
-
-    const currentSize =
-    DDJFLX2.activeLoopSize[deck.virtualDeck];
-
-    // Pressing same active loop disables it.
-    if (loopEnabled && currentSize === size) {
-
-        engine.setValue(
-            deck.group,
-            "reloop_toggle",
-            1
-        );
-
-        DDJFLX2.activeLoopSize[deck.virtualDeck] = null;
-
-    } else {
-
-        DDJFLX2.activeLoopSize[deck.virtualDeck] = size;
-
-        script.triggerControl(
-            deck.group,
-            `beatloop_${  size  }_activate`
-        );
-    }
-
-    DDJFLX2.updateLoopPadLEDs(
-        deck.virtualDeck
-    );
+    // beatloop_X_toggle activates a beatloop of this size, or disables it if
+    // a loop of this size is already active. LEDs are repainted by the
+    // global blink timer from beatloop_X_enabled.
+    script.triggerControl(deck.group, `beatloop_${size}_toggle`);
 };
