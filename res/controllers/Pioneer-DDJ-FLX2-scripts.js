@@ -100,30 +100,6 @@ var DDJFLX2 = {
     // Loop state: keeps track of currently active loop for each virtual deck.
     activeLoopSize: {},
 
-    // Manual soft takeover state for script-bound controls (rate, volume, EQ, CFX).
-    //
-    // WHY THIS IS NEEDED:
-    // When switching between deck layers (e.g., Deck 1 to Deck 3), physical faders
-    // stay at their current position while the virtual deck in Mixxx might have
-    // a completely different value. Since these controls are updated via
-    // engine.setValue() in JavaScript, Mixxx's built-in <soft-takeover/> XML
-    // option is bypassed.
-    //
-    // THE SOLUTION:
-    // We implement a manual "catch-up" logic. On every layer switch, we "lock"
-    // the control and snapshot the current engine value. The physical fader must
-    // "cross" or reach this snapshot value (within SOFT_TAKEOVER_TOLERANCE)
-    // before the script starts sending updates to Mixxx again. This prevents
-    // sudden, immersion-breaking jumps in volume or pitch during a transition.
-    //
-    // softTakeover[physicalDeck][controlKey] = { locked: bool, target: 0..1 }
-    softTakeover: {1: {}, 2: {}},
-
-    // Fractional tolerance (0..1 scale) within which a hardware position is
-    // considered "close enough" to unlock soft takeover immediately.
-    // 0.04 corresponds to roughly 5 units on a 0..127 7-bit scale.
-    SOFT_TAKEOVER_TOLERANCE: 0.04,
-
     // Helper: check if shift is pressed for a specific deck group.
     // Accepts both physical ([Channel1]/[Channel2]) and virtual
     // ([Channel3]/[Channel4]) groups: virtual decks 1/3 are on the left side,
@@ -149,79 +125,35 @@ var DDJFLX2 = {
         return physicalDeck === 1 ? "left" : "right";
     },
 
-    // Helper: snapshot soft takeover targets for one physical deck side after a
-    // layer switch. Called by toggleFourDeckMode after vDeckNo[] is updated.
+    // Helper: list the [group, key] pairs of the script-bound continuous
+    // controls of one virtual deck (rate, volume, gain, EQ, CFX).
     //
-    // For each scripted control we read the current engine value on the newly
-    // active virtual deck and store it as the target the hardware must reach
-    // before updates are applied. If the hardware position is already within
-    // SOFT_TAKEOVER_TOLERANCE the lock is released immediately so that controls
-    // already near their target do not feel sticky.
-    //
-    // physicalDeck : 1 (left) or 2 (right)
-    // hwRaw        : object with current hardware raw values for this side,
-    //                { rate, volume, eqHigh, eqMid, eqLow, cfx } all in 0..1.
-    //                Pass null to skip immediate-release optimisation (unknown
-    //                hardware position).
-    snapshotSoftTakeover: function(physicalDeck, hwRaw) {
-        const vDeckNo  = this.vDeckNo[physicalDeck];
-        const vgroup   = `[Channel${  vDeckNo  }]`;
-        const eqGroup  = `[EqualizerRack1_${  vgroup  }_Effect1]`;
-        const qfxGroup = `[QuickEffectRack1_${  vgroup  }]`;
-
-        // EQ engine values are on the absoluteNonLin 0..4 scale (where 1.0 is unity).
-        // Normalise this to a linear 0..1 scale for soft takeover comparison:
-        // - 0.0 engine maps to 0.0 normalised
-        // - 1.0 engine (unity) maps to 0.5 normalised
-        // - 4.0 engine (max) maps to 1.0 normalised
-        const eqNorm = function(v) {
-            return script.absoluteNonLinInverse(v, 0, 1, 4, 0, 1);
-        };
-        // CFX engine value is already 0..1 from super1LSB.
-        const cfxNorm = function(v) { return v; };
-        // Gain engine value maps to absoluteNonLin 0..4 scale (where 1.0 is unity).
-        const gainNorm = function(v) {
-            return script.absoluteNonLinInverse(v, 0, 1, 4, 0, 1);
-        };
-
-        const targets = {
-            rate: 0.5 - engine.getValue(vgroup, "rate") * 0.5, // rate +1..-1 → 0..1
-            volume: engine.getValue(vgroup,   "volume"),
-            eqHigh: eqNorm(engine.getValue(eqGroup, "parameter3")),
-            eqMid: eqNorm(engine.getValue(eqGroup, "parameter2")),
-            eqLow: eqNorm(engine.getValue(eqGroup, "parameter1")),
-            cfx: cfxNorm(engine.getValue(qfxGroup, "super1")),
-            gain: gainNorm(engine.getValue(vgroup, "pregain")),
-        };
-
-        const tol = this.SOFT_TAKEOVER_TOLERANCE;
-        const st  = this.softTakeover[physicalDeck];
-
-        for (const key in targets) {
-            const target  = targets[key];
-            const hw      = hwRaw ? hwRaw[key] : null;
-            const already = hw !== null && Math.abs(hw - target) <= tol;
-            st[key] = {locked: !already, target: target};
-        }
+    // These controls use Mixxx's built-in soft takeover (engine.softTakeover),
+    // which also applies to values written by scripts with engine.setParameter().
+    // It is enabled for all four virtual decks in init() and re-armed on every
+    // layer switch, so physical controls do not cause jumps when the newly
+    // active virtual deck has different values.
+    softTakeoverControls: function(vDeckNo) {
+        const vgroup = `[Channel${vDeckNo}]`;
+        const eqGroup = `[EqualizerRack1_${vgroup}_Effect1]`;
+        return [
+            [vgroup, "rate"],
+            [vgroup, "volume"],
+            [vgroup, "pregain"],
+            [eqGroup, "parameter1"],
+            [eqGroup, "parameter2"],
+            [eqGroup, "parameter3"],
+            [`[QuickEffectRack1_${vgroup}]`, "super1"],
+        ];
     },
 
-    // Helper: check and update soft takeover gate for one scripted control.
-    // Returns true if the value should be applied, false if it is still locked.
-    //
-    // physicalDeck : 1 or 2
-    // controlKey   : one of the keys used in snapshotSoftTakeover
-    // hwValue      : current hardware value, normalised to 0..1
-    checkSoftTakeover: function(physicalDeck, controlKey, hwValue) {
-        const st = this.softTakeover[physicalDeck][controlKey];
-        if (!st || !st.locked) {
-            return true; // no lock active, apply normally
+    // Helper: after a layer switch, ignore the next hardware value of every
+    // soft takeover control of the given virtual deck, so the physical control
+    // has to reach (or cross) the deck's current value before it takes over.
+    rearmSoftTakeover: function(vDeckNo) {
+        for (const [group, key] of this.softTakeoverControls(vDeckNo)) {
+            engine.softTakeoverIgnoreNextValue(group, key);
         }
-        // Release once the physical position reaches the target.
-        if (Math.abs(hwValue - st.target) <= this.SOFT_TAKEOVER_TOLERANCE) {
-            st.locked = false;
-            return true;
-        }
-        return false; // still locked, discard this update
     },
 
     // Helper: map a virtual deck number to its physical deck (1-based).
@@ -306,6 +238,13 @@ DDJFLX2.init = function() {
         this.activeLoopSize[i] = null;
 
         const vgroup = `[Channel${  i  }]`;
+
+        // Enable built-in soft takeover for the script-bound continuous controls.
+        // The first value received after enabling is ignored, so controls do not
+        // jump to the hardware position when the mapping starts.
+        for (const [group, key] of DDJFLX2.softTakeoverControls(i)) {
+            engine.softTakeover(group, key, true);
+        }
 
         // Keep LEDs synchronized with track loading state.
         engine.makeConnection(vgroup, "track_loaded", function(loaded, vgroup) {
@@ -791,11 +730,9 @@ DDJFLX2.toggleFourDeckMode = function(
         DDJFLX2.vDeckNo[1] = 3;
         DDJFLX2.vDeckNo[2] = 4;
 
-        // Snapshot soft takeover targets for the newly active virtual decks.
-        // Hardware positions are unknown at switch time, so we pass null and let
-        // the first incoming MIDI value trigger the cross-check.
-        DDJFLX2.snapshotSoftTakeover(1, null);
-        DDJFLX2.snapshotSoftTakeover(2, null);
+        // Re-arm soft takeover for the newly active virtual decks.
+        DDJFLX2.rearmSoftTakeover(3);
+        DDJFLX2.rearmSoftTakeover(4);
 
         DDJFLX2.switchLEDs(3);
         DDJFLX2.switchLEDs(4);
@@ -814,9 +751,9 @@ DDJFLX2.toggleFourDeckMode = function(
         DDJFLX2.vDeckNo[1] = 1;
         DDJFLX2.vDeckNo[2] = 2;
 
-        // Snapshot soft takeover targets for the restored virtual decks.
-        DDJFLX2.snapshotSoftTakeover(1, null);
-        DDJFLX2.snapshotSoftTakeover(2, null);
+        // Re-arm soft takeover for the restored virtual decks.
+        DDJFLX2.rearmSoftTakeover(1);
+        DDJFLX2.rearmSoftTakeover(2);
 
         DDJFLX2.switchLEDs(1);
         DDJFLX2.switchLEDs(2);
@@ -972,15 +909,11 @@ DDJFLX2.rateLSB = function(
     const rateMSB = DDJFLX2.vDeck[deck.virtualDeck].rateMSB;
     // Hardware encodes rate as 0x0000 (top, +max) → 0x3FFE (bottom, -max).
     // 0x3FFE is 16382, the maximum 14-bit value sent by the FLX2 pitch fader.
-    // Normalise to 0..1 for the soft takeover check, then convert to -1..1 for engine.
-    const raw14  = (rateMSB << 7) + value;
-    const hw01   = raw14 / 0x3ffe;   // 0 = pitch slider at top (+), 1 = bottom (-)
-    const rate   = 1 - hw01 * 2;     // maps 0..1 → +1..-1
-
-    if (!DDJFLX2.checkSoftTakeover(deck.physicalDeck, "rate", hw01)) {
-        return;
-    }
-    engine.setValue(deck.group, "rate", rate);
+    // The rate parameter maps 0..1 to rate -1..+1, so the slider top (+max)
+    // corresponds to parameter 1. Soft takeover is applied by Mixxx.
+    const raw14 = (rateMSB << 7) + value;
+    const hw01 = raw14 / 0x3ffe;   // 0 = pitch slider at top (+), 1 = bottom (-)
+    engine.setParameter(deck.group, "rate", 1 - hw01);
 };
 
 // Store volume fader MSB for 14-bit MIDI reconstruction.
@@ -1008,13 +941,11 @@ DDJFLX2.volumeLSB = function(
     const volMSB = DDJFLX2.vDeck[deck.virtualDeck].volMSB;
     const vol = ((volMSB << 7) + value) / 0x3fff;
 
-    // Apply volume unconditionally for Smart Fader position tracking,
-    // but gate the engine write behind soft takeover.
+    // Track the physical fader position for Smart Fader regardless of soft
+    // takeover. setParameter applies the volume control's audio taper curve,
+    // matching the on-screen fader. Soft takeover is applied by Mixxx.
     DDJFLX2.handleSmartFaderVolume(deck, vol);
-    if (!DDJFLX2.checkSoftTakeover(deck.physicalDeck, "volume", vol)) {
-        return;
-    }
-    engine.setValue(deck.group, "volume", vol);
+    engine.setParameter(deck.group, "volume", vol);
 };
 
 // Store EQ MSB for 14-bit reconstruction.
@@ -1039,17 +970,20 @@ DDJFLX2.eqLSB = function(channel, control, value, status, _group) {
     const msb = (DDJFLX2.vDeck[virtualDeck].eqMSB || {})[control - 0x20] || 0;
     const rawValue = (msb << 7) + value;
     const combined = rawValue / 0x3fff;
-    const val = script.absoluteNonLin(rawValue, 0, 1, 4, 0, 0x3fff);
 
+    // 0x27 = High (parameter3), 0x2B = Mid (parameter2), 0x2F = Low (parameter1).
     let eq;
-    let controlKey;
-    if (control === 0x27) { eq = 3; controlKey = "eqHigh"; } else if (control === 0x2B) { eq = 2; controlKey = "eqMid"; } else { eq = 1; controlKey = "eqLow"; }
-
-    // combined is already normalised 0..1; use it for the soft takeover check.
-    if (!DDJFLX2.checkSoftTakeover(physicalDeck, controlKey, combined)) {
-        return;
+    if (control === 0x27) {
+        eq = 3;
+    } else if (control === 0x2B) {
+        eq = 2;
+    } else {
+        eq = 1;
     }
-    engine.setValue(eqGroup, `parameter${  eq}`, val);
+
+    // setParameter applies the EQ parameter's own scaling, matching the
+    // on-screen knob. Soft takeover is applied by Mixxx.
+    engine.setParameter(eqGroup, `parameter${eq}`, combined);
 };
 
 // Store CFX MSB for 14-bit reconstruction.
@@ -1086,34 +1020,24 @@ DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
 
     const lastMode = DDJFLX2.vDeck[virtualDeck].cfxLastMode || "cfx";
 
-    const cfxNorm = function(v) { return v; };
-    const gainNorm = function(v) {
-        return script.absoluteNonLinInverse(v, 0, 1, 4, 0, 1);
-    };
-
-    // Detect transition of mode or deck layer to lock soft takeover
+    // When the knob switches between filter and gain (Dual mode + Shift),
+    // re-arm soft takeover on the newly targeted control so the knob has to
+    // reach (or cross) its current value before taking over.
     if (mode !== lastMode) {
         DDJFLX2.vDeck[virtualDeck].cfxLastMode = mode;
-        const currentEngineVal = (mode === "gain")
-            ? gainNorm(engine.getValue(vgroup, "pregain"))
-            : cfxNorm(engine.getValue(qfxGroup, "super1"));
-
-        const alreadyClose = Math.abs(combined - currentEngineVal) <= DDJFLX2.SOFT_TAKEOVER_TOLERANCE;
-        DDJFLX2.softTakeover[physicalDeck][mode] = {
-            locked: !alreadyClose,
-            target: currentEngineVal
-        };
+        if (mode === "gain") {
+            engine.softTakeoverIgnoreNextValue(vgroup, "pregain");
+        } else {
+            engine.softTakeoverIgnoreNextValue(qfxGroup, "super1");
+        }
     }
 
-    if (!DDJFLX2.checkSoftTakeover(physicalDeck, mode, combined)) {
-        return;
-    }
-
+    // setParameter applies each control's own curve (audio taper for gain),
+    // matching the on-screen knobs. Soft takeover is applied by Mixxx.
     if (mode === "gain") {
-        const val = script.absoluteNonLin(rawValue, 0, 1, 4, 0, 0x3fff);
-        engine.setValue(vgroup, "pregain", val);
+        engine.setParameter(vgroup, "pregain", combined);
     } else {
-        engine.setValue(qfxGroup, "super1", combined);
+        engine.setParameter(qfxGroup, "super1", combined);
     }
 };
 

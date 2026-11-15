@@ -3,7 +3,7 @@
     <info>
         <name>Pioneer DDJ-FLX2</name>
         <author>CupoMeridio, RaduTek</author>
-        <description>2-deck USB and Bluetooth MIDI controller. This mapping implements a custom 4-deck layer mode, manual soft takeover for faders, and asymmetric shift functions.</description>
+        <description>2-deck USB and Bluetooth MIDI controller. This mapping implements a custom 4-deck layer mode, soft takeover for faders and knobs, and asymmetric shift functions.</description>
         <forums>https://mixxx.discourse.group/t/ddj-flx2-mapping/31083</forums>
         <manual>pioneer_ddj_flx2</manual>
     </info>
@@ -70,10 +70,9 @@
             - Custom 4-Deck Layer: The mapping adds a virtual 4-deck mode
               (Shift + Headphones Master) that reuses the physical decks
               for virtual decks 3 and 4.
-            - Manual Soft Takeover: Since Mixxx's XML soft-takeover is
-              bypassed for script-bound controls, a custom "catch-up" logic
-              is implemented for volume, rate, EQ, and CFX to prevent jumps
-              when switching deck layers.
+            - Soft Takeover: script-bound volume, rate, gain, EQ, and CFX
+              controls use Mixxx's built-in soft takeover (engine.softTakeover),
+              re-armed on every deck layer switch to prevent jumps.
             - Shift + Jog/Platter: Navigates the library (MoveUp/MoveDown)
               without affecting track playback or scratch/pitch-bend.
             - Smart Fader (0x96/0x01): Claims the button to implement
@@ -136,7 +135,7 @@
                 </options>
             </control>
 
-            <!-- 
+            <!--
                 Audio Output Level Controls
 
                 The FLX2 controller has two knobs to adjust the output levels
@@ -147,7 +146,7 @@
                 two volume adjustments will occur and this ruins the linearity
                 of the control. Thus these have been disabled.
             -->
-            
+
             <!-- <control>
                 <group>[Master]</group>
                 <key>gain</key>
@@ -709,7 +708,6 @@
                 <midino>0x00</midino>
                 <options>
                     <script-binding/>
-                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -719,7 +717,6 @@
                 <status>0xB0</status>
                 <midino>0x20</midino>
                 <options>
-                    <soft-takeover/>
                     <script-binding/>
                 </options>
             </control>
