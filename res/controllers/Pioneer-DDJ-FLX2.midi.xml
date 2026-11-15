@@ -59,7 +59,7 @@
               handled by the firmware), tempo,
               platter/outer jog rotation, platter touch and Shift + touch.
             - Mixer: channel faders, crossfader, EQ high/mid/low, CFX,
-              headphone cue master/channel, master level and headphones level.
+              headphone cue master/channel.
             - Performance pads: pad mode 1 hotcues, pad mode 2 Pad FX,
               pad mode 3 beat loops / loop rolls, pad mode 4 samplers /
               sampler stop, including shifted pad MIDI channels (0x97-0x9A).
@@ -81,14 +81,18 @@
               Hardware fader-start messages (0x66/0x5D/0x52) are ignored.
             - Asymmetric Shift + Headphone (CUE):
                Left button: Universal Load (Short) / Eject (Long). Cross-Shift
-               logic allows targeting Deck 1 (Left Shift) or Deck 2 (Right Shift).
-               Right button: Cycles effects in the primary FX unit.
+               logic targets the active deck of the side whose Shift is held
+               (Left Shift: Deck 1/3, Right Shift: Deck 2/4).
+               Right button: Cycles the effect in Effect Unit 2, slot 1
+               (the effect of Pad FX pad 1 on the right side).
             - Synchronized Blinking: A global timer ensures all blinking LEDs
               (playing samplers, active loops) pulse in perfect unison.
 
             Deliberately not mapped:
             - No BPM TAP control is assigned to 0x60 (Pad 1 in pad mode 3).
             - Smart CFX (0x96/0x09) is unused as Mixxx lacks a direct equivalent.
+            - Master level and headphones level knobs: they adjust the output
+              level in hardware (see the commented-out controls below).
         -->
         <controls>
             <!-- Master Controls -->
@@ -118,7 +122,7 @@
             <control>
                 <group>[Master]</group>
                 <key>DDJFLX2.headmix</key>
-                <description>Headphones master as headMix knob</description>
+                <description>Headphones cue (master): toggle headphone mix between cue and master</description>
                 <status>0x96</status>
                 <midino>0x63</midino>
                 <options>

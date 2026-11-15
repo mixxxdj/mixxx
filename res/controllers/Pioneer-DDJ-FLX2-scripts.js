@@ -96,8 +96,9 @@ var DDJFLX2 = {
     padLedCache: {},
 
     // Smart Fader state.
-    // When true, channel fader movements trigger play/pause on the corresponding
-    // deck via software-side volume fader monitoring (handleSmartFaderVolume).
+    // When true, raising a channel fader from the bottom starts the deck with
+    // sync lock, and lowering it to the bottom jumps to the cue point and stops
+    // it, via software-side volume fader monitoring (handleSmartFaderVolume).
     //
     // NOTE: Dedicated hardware fader-start messages (0x66/0x5D/0x52) are
     // intentionally ignored. This prevents "double triggers" and unpredictable
@@ -845,8 +846,8 @@ DDJFLX2.syncShort = function(
 };
 
 // Smart Fader button: toggles Fader Start on/off.
-// When enabled, channel fader movements trigger play/pause
-// on the corresponding deck via handleSmartFaderVolume().
+// When enabled, channel fader movements start/stop the corresponding
+// deck via handleSmartFaderVolume().
 DDJFLX2.smartFader = function(
     channel,
     control,
