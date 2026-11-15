@@ -24,8 +24,12 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     //Type is use by the factory to safely up-cast waveform widgets
     virtual WaveformWidgetType::Type getType() const = 0;
 
-    bool isValid() const { return (m_widget && m_initSuccess); }
-    QWidget* getWidget() { return m_widget; }
+    bool isValid() const {
+        return (m_pWidget && m_initSuccess);
+    }
+    QWidget* getWidget() {
+        return m_pWidget;
+    }
 
     virtual WGLWidget* getGLWidget() {
         return nullptr;
@@ -34,12 +38,11 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     void hold();
     void release();
 
-    virtual void preRender(VSyncThread* vsyncThread);
     virtual mixxx::Duration render();
     virtual void resize(int width, int height);
 
   protected:
-    QWidget* m_widget;
+    QWidget* m_pWidget;
     bool m_initSuccess;
 
     //this is the factory resposability to trigger QWidget casting after constructor

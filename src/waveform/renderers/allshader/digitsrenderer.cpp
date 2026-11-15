@@ -75,7 +75,7 @@ float allshader::DigitsRenderNode::height() const {
 void allshader::DigitsRenderNode::updateTexture(rendergraph::Context* pContext,
         float fontPointSize,
         float maxHeight,
-        float devicePixelRatio) {
+        qreal devicePixelRatio) {
     if (fontPointSize == m_fontPointSize && maxHeight == m_maxHeight) {
         return;
     }
@@ -144,9 +144,8 @@ void allshader::DigitsRenderNode::updateTexture(rendergraph::Context* pContext,
     // determine x position and with of each of the chars in the texture image.
     for (int i = 0; i < NUM_CHARS; i++) {
         xs[i] = totalTextWidth;
-        float w = roundToPixel(static_cast<float>(
-                          metrics.horizontalAdvance(indexToChar(i)))) +
-                space + space + 1.f;
+        float w = static_cast<float>(roundToPixel(metrics.horizontalAdvance(indexToChar(i))) +
+                space + space + 1.0);
         totalTextWidth += w;
         m_width[i] = static_cast<float>(w);
     }

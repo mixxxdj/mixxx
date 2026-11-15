@@ -7,6 +7,7 @@
 #include "library/library.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
+#include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpooled.h"
 #include "waveform/overviewtype.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -268,7 +269,15 @@ void DlgPrefWaveform::slotUpdate() {
                 pFactory->getBackendFromConfig() != WaveformWidgetBackend::None;
         useAccelerationCheckBox->setChecked(isAccelerationEnabled);
     } else {
-        openGlStatusData->setText(tr("OpenGL not available") + ": " + pFactory->getOpenGLVersion());
+        const QString openGlVersion = pFactory->getOpenGLVersion();
+        if (CmdlineArgs::Instance().getSafeMode()) {
+            openGlStatusData->setText(tr("OpenGL disabled in safe mode"));
+        } else if (openGlVersion.isEmpty()) {
+            openGlStatusData->setText(tr("OpenGL not available"));
+        } else {
+            openGlStatusData->setText(
+                    tr("OpenGL version not supported: %1").arg(openGlVersion));
+        }
         useAccelerationCheckBox->setEnabled(false);
         useAccelerationCheckBox->setChecked(false);
     }
@@ -411,6 +420,28 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
 
+    // Beats/time until next marker. The widgets are connected to the
+    // slotSetUntilMark*() slots, so this applies the defaults instantly.
+    untilMarkShowBeatsCheckBox->setChecked(
+            WaveformWidgetFactory::kUntilMarkShowBeatsDefault);
+    untilMarkShowTimeCheckBox->setChecked(
+            WaveformWidgetFactory::kUntilMarkShowTimeDefault);
+    untilMarkAlignComboBox->setCurrentIndex(
+            WaveformWidgetFactory::kUntilMarkAlignDefaultIndex);
+    untilMarkTextPointSizeSpinBox->setValue(
+            WaveformWidgetFactory::kUntilMarkTextPointSizeDefault);
+    untilMarkTextHeightLimitComboBox->setCurrentIndex(
+            WaveformWidgetFactory::kUntilMarkTextHeightLimitDefaultIndex);
+
+    // Stem options
+    stemOpacitySpinBox->setValue(WaveformWidgetFactory::kStemOpacityDefault);
+    stemOutlineOpacitySpinBox->setValue(
+            WaveformWidgetFactory::kStemOutlineOpacityDefault);
+    // The checkbox is connected to clicked(), which is not emitted when it is
+    // changed programmatically. Apply the default explicitly.
+    stemReorderLayerOnChangedCheckBox->setChecked(
+            WaveformWidgetFactory::kStemReorderOnChangeDefault);
+    slotStemReorderOnChange(WaveformWidgetFactory::kStemReorderOnChangeDefault);
     stemDisplayModeComboBox->setCurrentIndex(0);
 }
 

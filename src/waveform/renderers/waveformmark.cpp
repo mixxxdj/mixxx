@@ -377,7 +377,7 @@ class MarkerGeometry {
             m_labelRect.moveTop(0.5f + level * increment);
         }
     }
-    QSize getImageSize(float devicePixelRatio) const {
+    QSize getImageSize(qreal devicePixelRatio) const {
         return QSize{static_cast<int>(std::lround(m_imageSize.width() * devicePixelRatio)),
                 static_cast<int>(std::lround(m_imageSize.height() * devicePixelRatio))};
     }
@@ -406,7 +406,7 @@ class MarkerGeometry {
     QSizeF m_imageSize;
 };
 
-QImage WaveformMark::generateImage(float devicePixelRatio) {
+QImage WaveformMark::generateImage(qreal devicePixelRatio) {
     DEBUG_ASSERT(needsImageUpdate());
 
     if (m_breadth == 0.0f) {

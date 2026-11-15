@@ -503,8 +503,12 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
+    // Access to the device was requested on the main thread before this
+    // worker started (see RekordboxFeature::activateChild()); no dialogs can
+    // be shown here. Keep the security token open while the database is read.
     mixxx::FileInfo fileInfo(dbPath);
-    if (!Sandbox::askForAccess(&fileInfo)) {
+    const auto securityToken = Sandbox::openSecurityToken(&fileInfo, true);
+    if (!Sandbox::canAccess(&fileInfo)) {
         return QString();
     }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
@@ -893,6 +897,9 @@ void readAnalyze(TrackPointer track,
 
     qDebug() << "Rekordbox ANLZ path:" << anlzPath << " for: " << track->getTitle();
 
+    // Hold sandbox access for the ANLZ file while it is read.
+    mixxx::FileInfo anlzFileInfo(anlzPath);
+    const auto securityToken = Sandbox::openSecurityToken(&anlzFileInfo, true);
     std::ifstream ifs(anlzPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
@@ -1536,6 +1543,15 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 
     if (doParseDeviceDB) {
         qDebug() << "Parse Rekordbox Device DB: " << playlist;
+
+        // parseDeviceDB() runs on a worker thread, which must not show the
+        // sandbox permission dialogs, so ask for access here. Ask for the
+        // whole device (playlist holds its path): that also covers the ANLZ
+        // files and the tracks, so loading a track from it doesn't ask again.
+        mixxx::FileInfo deviceInfo(playlist);
+        if (!Sandbox::askForAccess(&deviceInfo)) {
+            return;
+        }
 
         // Let a worker thread do the XML parsing
         m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library*>(parent())->dbConnectionPool(), item);

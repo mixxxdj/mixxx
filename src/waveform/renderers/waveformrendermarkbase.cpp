@@ -12,15 +12,15 @@ WaveformRenderMarkBase::WaveformRenderMarkBase(
 }
 
 void WaveformRenderMarkBase::setup(const QDomNode& node, const SkinContext& context) {
-    WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
-    m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
+    WaveformSignalColors signalColors = *m_pWaveformRenderer->getWaveformSignalColors();
+    m_marks.setup(m_pWaveformRenderer->getGroup(), node, context, signalColors);
     m_marks.connectVisibleChanged(this, &WaveformRenderMarkBase::onMarkChanged);
 }
 
 void WaveformRenderMarkBase::onSetTrack() {
     updateMarksFromCues();
 
-    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    const TrackPointer pTrackInfo = m_pWaveformRenderer->getTrackInfo();
     if (!pTrackInfo) {
         return;
     }
@@ -36,7 +36,7 @@ void WaveformRenderMarkBase::onSetTrack() {
 }
 
 void WaveformRenderMarkBase::onResize() {
-    m_marks.setBreadth(m_waveformRenderer->getBreadth());
+    m_marks.setBreadth(m_pWaveformRenderer->getBreadth());
     if (m_updateImagesImmediately) {
         updateMarkImages();
     }
@@ -53,12 +53,12 @@ void WaveformRenderMarkBase::slotCuesUpdated() {
 }
 
 void WaveformRenderMarkBase::updateMarksFromCues() {
-    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
+    const TrackPointer pTrackInfo = m_pWaveformRenderer->getTrackInfo();
     if (!pTrackInfo) {
         return;
     }
 
-    const int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
+    const int dimBrightThreshold = m_pWaveformRenderer->getDimBrightThreshold();
     const QList<CuePointer> loadedCues = pTrackInfo->getCuePoints();
     for (const CuePointer& pCue : loadedCues) {
         const int hotCue = pCue->getHotCue();

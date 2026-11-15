@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# The desktop file must use Exec=mixxx (CPack AppImage requires a plain
+# basename), so the pasuspender convenience is reproduced here instead.
+set -e
+
+this_dir="$(readlink -f "$(dirname "$0")")"
+
+# Probe pasuspender's suspend ability directly: "pasuspender -- true" only
+# exits 0 when it can actually suspend PulseAudio.  Do not use the exit
+# status of the launched command as a retry signal — pasuspender propagates
+# it, so a Mixxx crash would relaunch Mixxx.  Falling back to a plain launch
+# covers hosts where PulseAudio cannot be suspended (e.g. PipeWire-pulse).
+if command -v pasuspender >/dev/null 2>&1 && pasuspender -- true >/dev/null 2>&1; then
+  exec pasuspender -- "$this_dir/bin/mixxx" "$@"
+fi
+
+exec "$this_dir/bin/mixxx" "$@"

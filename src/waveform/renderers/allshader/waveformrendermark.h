@@ -94,7 +94,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     rendergraph::GeometryNode* m_pPlayPosNode;
     float m_playPosHeight;
-    float m_playPosDevicePixelRatio;
+    qreal m_playPosDevicePixelRatio;
 
     DigitsRenderNode* m_pDigitsRenderNode{};
 

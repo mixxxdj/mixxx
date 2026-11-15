@@ -48,7 +48,10 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
-if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
+if(
+  (DEFINED ENV{BUILDENV_URL} OR (APPLE AND NOT IOS) OR WIN32)
+  AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}"
+)
   if(NOT DEFINED BUILDENV_BASEPATH)
     if(DEFINED ENV{BUILDENV_BASEPATH})
       set(BUILDENV_BASEPATH "$ENV{BUILDENV_BASEPATH}")
@@ -70,8 +73,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
 
   # Remove the extension from the filename (note that our buildenv names contain two dots)
   string(
-    REGEX REPLACE
-    "\\.[^.]*$"
+    REGEX REPLACE "\\.[^.]*$"
     ""
     BUILDENV_NAME
     "${FILENAME_WITH_EXTENSION}"
@@ -92,15 +94,64 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
     endif()
 
     if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+      set(
+        BUILDENV_DOWNLOAD_MAX_ATTEMPTS
+        3
+        CACHE STRING
+        "Maximum number of attempts to download the build environment archive"
+      )
       message(
         STATUS
         "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
       )
-      file(
-        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
-        SHOW_PROGRESS
-        TLS_VERIFY ON
+
+      set(BUILDENV_DOWNLOAD_WAIT_SECONDS 1)
+      foreach(
+        BUILDENV_DOWNLOAD_ATTEMPT
+        RANGE 1 ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}
       )
+        file(
+          DOWNLOAD ${BUILDENV_URL}
+          "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+          STATUS BUILDENV_DOWNLOAD_STATUS
+          SHOW_PROGRESS
+          TLS_VERIFY ON
+        )
+
+        # Extract status code and status message from file(DOWNLOAD ... STATUS ...)
+        list(GET BUILDENV_DOWNLOAD_STATUS 0 BUILDENV_DOWNLOAD_STATUS_CODE)
+        list(GET BUILDENV_DOWNLOAD_STATUS 1 BUILDENV_DOWNLOAD_STATUS_MESSAGE)
+
+        if(BUILDENV_DOWNLOAD_STATUS_CODE EQUAL 0)
+          break()
+        endif()
+
+        if(BUILDENV_DOWNLOAD_ATTEMPT LESS BUILDENV_DOWNLOAD_MAX_ATTEMPTS)
+          math(
+            EXPR
+            BUILDENV_DOWNLOAD_NEXT_ATTEMPT
+            "${BUILDENV_DOWNLOAD_ATTEMPT} + 1"
+          )
+          message(
+            STATUS
+            "Retrying download of file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
+          )
+          execute_process(
+            COMMAND ${CMAKE_COMMAND} -E sleep ${BUILDENV_DOWNLOAD_WAIT_SECONDS}
+          )
+          # Exponential backoff: 1s, 2s, 4s, ...
+          math(
+            EXPR
+            BUILDENV_DOWNLOAD_WAIT_SECONDS
+            "${BUILDENV_DOWNLOAD_WAIT_SECONDS} * 2"
+          )
+        else()
+          message(
+            FATAL_ERROR
+            "Failed to download ${BUILDENV_URL} to ${BUILDENV_BASEPATH} after ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS} attempts: ${BUILDENV_DOWNLOAD_STATUS_MESSAGE}"
+          )
+        endif()
+      endforeach()
     else()
       # Reference to suppress intentionally unused variable warnings
       set(_dummy "${BUILDENV_URL}")
@@ -109,7 +160,7 @@ if(((APPLE AND NOT IOS) OR WIN32) AND NOT IS_DIRECTORY "${MIXXX_VCPKG_ROOT}")
     if(NOT ${BUILDENV_SHA256} STREQUAL "")
       message(
         STATUS
-        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+        "Verifying  SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
       )
       file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
 
@@ -174,7 +225,16 @@ function(fatal_error_missing_env)
     endif()
   elseif(UNIX AND NOT APPLE)
     # Linux, BSD, Solaris, Minix
-    if(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
+    if(DEFINED MIXXX_VCPKG_ROOT)
+      # On Linux a vcpkg build environment is currently only used for the
+      # AppImage build.  Point the user at the right setup script instead of
+      # the generic distro dev-package hint below.
+      message(
+        FATAL_ERROR
+        "The Mixxx vcpkg build environment is not set up correctly. Download and\n"
+        "set it up via `source ${CMAKE_SOURCE_DIR}/tools/appimage_buildenv.sh setup`"
+      )
+    elseif(EXISTS "/etc/debian_version") # exists also on Ubuntu and Mint
       message(
         FATAL_ERROR
         "Did you install the required Debian dev packages via `${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh setup`?"
@@ -297,6 +357,36 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   endif()
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND DEFINED MIXXX_VCPKG_ROOT)
+  # The Linux buildenvs are built on the glibc-2.28 Rocky 8 floor.  A host with
+  # an older glibc cannot run them, so fail at configure time with a clear
+  # message instead of a confusing link or load error.  A newer host is fine:
+  # the glibc __exp_finite shims below cover the known case of linking the
+  # 2.28-built SoundTouch on a newer glibc.
+  set(MIXXX_BUILDENV_GLIBC_FLOOR 2.28)
+  execute_process(
+    COMMAND ldd --version
+    OUTPUT_VARIABLE MIXXX_LDD_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(MIXXX_LDD_VERSION MATCHES "GLIBC ([0-9]+\\.[0-9]+)")
+    set(MIXXX_HOST_GLIBC "${CMAKE_MATCH_1}")
+    if(MIXXX_HOST_GLIBC VERSION_LESS MIXXX_BUILDENV_GLIBC_FLOOR)
+      message(
+        FATAL_ERROR
+        "The vcpkg buildenv requires glibc ${MIXXX_BUILDENV_GLIBC_FLOOR}, "
+        "but the host provides ${MIXXX_HOST_GLIBC}. Build inside a container "
+        "matching the buildenv base (rockylinux:8) instead."
+      )
+    else()
+      message(
+        STATUS
+        "Host glibc ${MIXXX_HOST_GLIBC} >= buildenv floor ${MIXXX_BUILDENV_GLIBC_FLOOR}"
+      )
+    endif()
+  endif()
+endif()
+
 if(NOT DEFINED VCPKG_TARGET_TRIPLET)
   if(DEFINED ENV{VCPKG_TARGET_TRIPLET})
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}")
@@ -304,13 +394,21 @@ if(NOT DEFINED VCPKG_TARGET_TRIPLET)
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
   endif()
 endif()
-set(
-  X_VCPKG_APPLOCAL_DEPS_INSTALL
-  ON
-  CACHE BOOL
-  "Automatically copy dependencies into the install target directory for executables."
-  FORCE
-)
+# vcpkg's applocal dependency copying is a Windows mechanism (it walks the
+# DLL dependency graph of installed executables).  It only does something on
+# Windows/uwp/xbox platforms, but vcpkg's toolchain hijacks the install()
+# command whenever this variable is ON, so keep it OFF elsewhere (in
+# particular on Linux, where the AppImage packaging uses install(...)
+# RUNTIME_DEPENDENCY_SET).
+if(WIN32)
+  set(
+    X_VCPKG_APPLOCAL_DEPS_INSTALL
+    ON
+    CACHE BOOL
+    "Automatically copy dependencies into the install target directory for executables."
+    FORCE
+  )
+endif()
 
 # Set a default build type if none was specified
 # See https://blog.kitware.com/cmake-and-the-default-build-type/ for details.
@@ -350,6 +448,28 @@ endif()
 include(CMakeDependentOption)
 
 option(QT6 "Build with Qt6" ON)
+option(
+  MIXXX_APPIMAGE
+  "Build for AppImage distribution (install AppImage-specific desktop file)"
+  OFF
+)
+# Auto-detect AppImage builds in both directions, so the two flags do not
+# need to be passed independently:
+#   cmake -DCPACK_GENERATOR=AppImage  -> enables the AppImage install rules
+#   cmake -DMIXXX_APPIMAGE=ON         -> cpack defaults to the AppImage generator
+if(CPACK_GENERATOR MATCHES "AppImage")
+  set(MIXXX_APPIMAGE ON CACHE BOOL "" FORCE)
+endif()
+if(MIXXX_APPIMAGE AND NOT DEFINED CPACK_GENERATOR)
+  set(CPACK_GENERATOR "AppImage" CACHE STRING "Package generator")
+endif()
+# mold 1.0.3 emits a .rela.dyn layout the dynamic loader cannot process,
+# which made the AppImage fail to start (verified fixed in mold 2.42).
+# Use the default linker for AppImage builds; users can still opt in
+# explicitly with -DMOLD_SUPPORT=ON.
+if(MIXXX_APPIMAGE OR CPACK_GENERATOR MATCHES "AppImage")
+  set(MOLD_SUPPORT OFF CACHE BOOL "Use 'mold' for linking")
+endif()
 
 # Because of multiple concurrent definition of symbols caused by the rendergraph
 # compile definition we need to disable QML by default. This avoids the risk of
@@ -645,8 +765,7 @@ if(MSVC)
     string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
   elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     string(
-      REPLACE
-      "/Zi"
+      REPLACE "/Zi"
       "/Z7"
       CMAKE_CXX_FLAGS_RELEASE
       "${CMAKE_CXX_FLAGS_RELEASE}"
@@ -654,15 +773,13 @@ if(MSVC)
     string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
   elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     string(
-      REPLACE
-      "/Zi"
+      REPLACE "/Zi"
       "/Z7"
       CMAKE_CXX_FLAGS_RELWITHDEBINFO
       "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
     )
     string(
-      REPLACE
-      "/Zi"
+      REPLACE "/Zi"
       "/Z7"
       CMAKE_C_FLAGS_RELWITHDEBINFO
       "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
@@ -694,8 +811,7 @@ if(MSVC)
       add_compile_options(/O2) # this implies /Od2
       # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
       string(
-        REPLACE
-        "/RTC1"
+        REPLACE "/RTC1"
         ""
         CMAKE_CXX_FLAGS_DEBUG
         "${CMAKE_CXX_FLAGS_DEBUG}"
@@ -705,15 +821,13 @@ if(MSVC)
       # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
       # /O2 is applied by CMake and this implies /Od2
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_CXX_FLAGS_RELWITHDEBINFO
         "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
       )
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
@@ -728,8 +842,7 @@ if(MSVC)
       # The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the GUI or in CMakeSettings.json,
       # therefore we can't rely on the default.
       string(
-        FIND
-        CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
+        FIND CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
         "/INCREMENTAL:NO"
         INCREMENTAL_NO_POSITION
       )
@@ -739,8 +852,7 @@ if(MSVC)
           "Overwriting /INCREMENTAL by /INCREMENTAL:NO to allow link time code optimization"
         )
         string(
-          REPLACE
-          "/INCREMENTAL"
+          REPLACE "/INCREMENTAL"
           "/INCREMENTAL:NO"
           CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
           "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}"
@@ -796,16 +908,14 @@ if(MSVC)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
       # Remove optimize flags set by cmake defaults
       string(
-        REPLACE
-        "/O2"
+        REPLACE "/O2"
         ""
         CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE}"
       )
       string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
       string(
-        REPLACE
-        "/Ob2"
+        REPLACE "/Ob2"
         ""
         CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE}"
@@ -816,30 +926,26 @@ if(MSVC)
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
       # Remove optimize flags set by cmake defaults
       string(
-        REPLACE
-        "/O2"
+        REPLACE "/O2"
         ""
         CMAKE_CXX_FLAGS_RELWITHDEBINFO
         "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
       )
       string(
-        REPLACE
-        "/O2"
+        REPLACE "/O2"
         ""
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
       )
       # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_CXX_FLAGS_RELWITHDEBINFO
         "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
       )
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
@@ -962,7 +1068,11 @@ if(MSVC)
   else()
     message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE;CMAKE_DISABLE_PRECOMPILE_HEADERS")
+  default_option(
+    SCCACHE_SUPPORT
+    "Enable sccache support"
+    "SCCACHE_EXECUTABLE;CMAKE_DISABLE_PRECOMPILE_HEADERS"
+  )
   message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
   if(SCCACHE_SUPPORT)
     if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
@@ -1048,7 +1158,11 @@ if(NOT MSVC)
   if(MOLD_SYMLINK)
     set(MOLD_SYMLINK_FOUND TRUE)
   endif()
-  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_FUSE_FOUND OR MOLD_SYMLINK_FOUND")
+  default_option(
+    MOLD_SUPPORT
+    "Use 'mold' for linking"
+    "MOLD_FUSE_FOUND OR MOLD_SYMLINK_FOUND"
+  )
   if(MOLD_SUPPORT)
     if(MOLD_FUSE_FOUND)
       message(STATUS "Selecting mold as linker")
@@ -1072,8 +1186,7 @@ if(NOT MSVC)
     )
     if(LLD_VERSION_STRING)
       string(
-        REGEX MATCH
-        "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)"
+        REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)"
         LLD_VERSION_MATCH
         "${LLD_VERSION_STRING}"
       )
@@ -1088,7 +1201,11 @@ if(NOT MSVC)
       endif()
     endif()
     # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
-    default_option(LLD_SUPPORT "Use 'ld.lld' for linking" "LLD_VERSION VERSION_GREATER 10.0.0")
+    default_option(
+      LLD_SUPPORT
+      "Use 'ld.lld' for linking"
+      "LLD_VERSION VERSION_GREATER 10.0.0"
+    )
     if(LLD_SUPPORT)
       if(LLD_VERSION_STRING)
         if(LLD_VERSION VERSION_GREATER 10.0.0)
@@ -1994,6 +2111,13 @@ else()
   )
 endif()
 
+# This can be uses to not optimize single files for better debugging
+# set_source_files_properties(
+#   src/...
+#   src/...
+#   PROPERTIES COMPILE_OPTIONS "-O0;-g;-fno-inline;-fno-omit-frame-pointer"
+# )
+
 set_source_files_properties(
   src/util/moc_included_test.cpp
   PROPERTIES SKIP_PRECOMPILE_HEADERS ON
@@ -2469,11 +2593,20 @@ endif()
 
 # Additional Linux-only files
 if(UNIX AND NOT APPLE)
-  # .desktop file for KDE/GNOME menu
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
-    DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
-  )
+  # .desktop file for KDE/GNOME menu.  The AppImage ships its own AppImage-
+  # adjusted desktop file (Exec=mixxx, Icon=mixxx-512), so skip this one there
+  # to avoid installing two desktop files with the same name.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
+      DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+    )
+  endif()
+
+  # AppImage-specific install rules (desktop file, shared libraries).
+  if(MIXXX_APPIMAGE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/appimage/appimage.cmake")
+  endif()
 
   # Icon files for menu entry
   install(
@@ -2483,11 +2616,15 @@ if(UNIX AND NOT APPLE)
     PATTERN ic_mixxx.ico EXCLUDE
   )
 
-  # .metainfo.xml file for KDE/GNOME AppStream initiative
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
-  )
+  # .metainfo.xml file for KDE/GNOME AppStream initiative.  The AppImage ships
+  # the same metadata as org.mixxx.Mixxx.appdata.xml (see appimage.cmake), so
+  # skip this copy there to avoid a duplicate install.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
+      DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
+    )
+  endif()
 
   option(
     INSTALL_USER_UDEV_RULES
@@ -2557,8 +2694,7 @@ if(MSVC)
     FILES $<TARGET_PDB_FILE:mixxx>
     CONFIGURATIONS Debug RelWithDebInfo
     DESTINATION "${MIXXX_INSTALL_BINDIR}"
-    COMPONENT
-      PDB # No spaces allowed
+    COMPONENT PDB # No spaces allowed
   )
 endif()
 
@@ -2667,7 +2803,20 @@ if(FFMPEG)
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  # Static FFmpeg libraries have circular cross-references (e.g. libavformat
+  # references libavcodec); wrap the resolved library paths in a single
+  # LINK_GROUP:RESCAN so the GNU linker resolves them.  fdk-aac (for a
+  # static libavcodec built with --enable-libfdk-aac) is added by
+  # FindFFMPEG.cmake above; a static libavcodec built with --enable-libopus
+  # is resolved via the Opus targets linked below.
+  if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE "$<LINK_GROUP:RESCAN,${FFMPEG_LIBRARIES}>"
+    )
+  else()
+    target_link_libraries(mixxx-lib PRIVATE "${FFMPEG_LIBRARIES}")
+  endif()
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
@@ -2838,7 +2987,11 @@ if(BUILD_TESTING)
     )
   endif()
 
-  add_executable(mixxx-test ${src-mixxx-test})
+  if(QT6 AND QML)
+    qt_add_executable(mixxx-test ${src-mixxx-test} MANUAL_FINALIZATION)
+  else()
+    add_executable(mixxx-test ${src-mixxx-test})
+  endif()
   target_compile_definitions(
     mixxx-test
     PUBLIC RESOURCE_FOLDER="${CMAKE_CURRENT_SOURCE_DIR}/res"
@@ -2931,7 +3084,8 @@ if(
   )
   message(STATUS "Downloading manual from ${MANUAL_URL}...")
   file(
-    DOWNLOAD "${MANUAL_URL}" "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
+    DOWNLOAD "${MANUAL_URL}"
+    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
     SHOW_PROGRESS
     STATUS MANUAL_PDF_DOWNLOAD
     TLS_VERIFY ON
@@ -2950,8 +3104,7 @@ if(
     )
   endif()
   file(
-    RENAME
-    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
+    RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
     "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
   )
 endif()
@@ -3138,8 +3291,7 @@ if(ENGINEPRIME)
     # CMake does not pass lists of paths properly to external projects.
     # This is worked around by changing the list separator.
     string(
-      REPLACE
-      ";"
+      REPLACE ";"
       "|"
       PIPE_DELIMITED_CMAKE_PREFIX_PATH
       "${CMAKE_PREFIX_PATH}"
@@ -3153,8 +3305,7 @@ if(ENGINEPRIME)
     set(DJINTEROP_EXTRA_CMAKE_ARGS "")
     if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
       list(
-        APPEND
-        DJINTEROP_EXTRA_CMAKE_ARGS
+        APPEND DJINTEROP_EXTRA_CMAKE_ARGS
         -DCMAKE_CXX_FLAGS=-Wno-error=deprecated-literal-operator
       )
     endif()
@@ -3316,8 +3467,7 @@ if(KEYFINDER)
     # CMake does not pass lists of paths properly to external projects.
     # This is worked around by changing the list separator.
     string(
-      REPLACE
-      ";"
+      REPLACE ";"
       "|"
       PIPE_DELIMITED_CMAKE_PREFIX_PATH
       "${CMAKE_PREFIX_PATH}"
@@ -3632,6 +3782,15 @@ if(QT_EXTRA_COMPONENTS)
   endforeach()
 endif()
 
+# The QuickShapes module carries the static QML plugin registration used
+# by qt_finalize_target(), while QuickShapesPrivate only provides the
+# C++ API.  Link the module where it exists (the vcpkg buildenvs) so the
+# plugin import does not depend on the Qt flavor; system Qts without the
+# module keep linking QuickShapesPrivate alone.
+if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes)
+endif()
+
 if(QML)
   if(QT_KNOWN_POLICY_QTP0004)
     # See: https://doc.qt.io/qt-6/qt-cmake-policy-qtp0004.html
@@ -3661,15 +3820,20 @@ if(QML)
       )
     endforeach()
   endif()
+  if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+    target_link_libraries(
+      mixxx-qml-lib
+      PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes
+    )
+  endif()
   set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
-  qt_add_qml_module(mixxx-qml-lib
+  qt_add_qml_module(
+    mixxx-qml-lib
     URI Mixxx
     VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
     IMPORTS QtQuick
-    QML_FILES
-      res/qml/Mixxx/MathUtils.mjs
-      res/qml/Mixxx/PlayerDropArea.qml
+    QML_FILES res/qml/Mixxx/MathUtils.mjs res/qml/Mixxx/PlayerDropArea.qml
   )
   target_link_libraries(mixxx-lib PRIVATE mixxx-qml-lib)
 
@@ -3696,7 +3860,8 @@ if(QML)
 
   qt_add_library(mixxx-qml-mixxxcontrols STATIC)
   set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES AUTOMOC ON)
-  qt_add_qml_module(mixxx-qml-mixxxcontrols
+  qt_add_qml_module(
+    mixxx-qml-mixxxcontrols
     URI Mixxx.Controls
     VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
@@ -4010,14 +4175,48 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
+      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+        get_target_property(
+          _QuickShapes_Type
+          Qt${QT_VERSION_MAJOR}::QuickShapes
+          TYPE
+        )
+        if(
+          _QuickShapes_Type STREQUAL "SHARED_LIBRARY"
+          OR _QuickShapes_Type STREQUAL "MODULE_LIBRARY"
+          OR _QuickShapes_Type STREQUAL "EXECUTABLE"
+        )
+          install(
+            IMPORTED_RUNTIME_ARTIFACTS
+              Qt${QT_VERSION_MAJOR}::QuickShapes
+              DESTINATION
+              "${MIXXX_INSTALL_DATADIR}"
+              COMPONENT
+              applocal
+          )
+        endif()
+      endif()
+      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapesPrivate)
+        get_target_property(
+          _QuickShapesPrivate_Type
           Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+          TYPE
+        )
+        if(
+          _QuickShapesPrivate_Type STREQUAL "SHARED_LIBRARY"
+          OR _QuickShapesPrivate_Type STREQUAL "MODULE_LIBRARY"
+          OR _QuickShapesPrivate_Type STREQUAL "EXECUTABLE"
+        )
+          install(
+            IMPORTED_RUNTIME_ARTIFACTS
+              Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
+              DESTINATION
+              "${MIXXX_INSTALL_DATADIR}"
+              COMPONENT
+              applocal
+          )
+        endif()
+      endif()
 
       if(QT_VERSION VERSION_LESS 6.4)
         # From Qt 6.4 integrated in QuickControls2
@@ -4053,6 +4252,13 @@ else()
         DIRECTORY
           "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQml/WorkerScript"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQml"
+        COMPONENT applocal
+      )
+
+      install(
+        DIRECTORY
+          "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtCore"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml"
         COMPONENT applocal
       )
 
@@ -4318,7 +4524,7 @@ if(APPLE OR WIN32)
     # contain just shortcuts to load the qtbase, qtmultimedia etc files.
     FILES_MATCHING
     REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
   )
 endif()
 
@@ -4445,6 +4651,25 @@ endif()
 # SoundTouch
 find_package(SoundTouch 2.1.2 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND DEFINED MIXXX_VCPKG_ROOT)
+  # The Linux buildenv links SoundTouch built on the glibc-2.28 floor with
+  # -ffast-math, whose __exp_finite/__exp2_finite symbols glibc >= 2.31 hides.
+  # Provide them in the executables that pull SoundTouch in, as object files so
+  # they are always in the link regardless of static archive order (mixxx-lib.a
+  # is scanned before libSoundTouch.a, so an archive member would be missed).
+  # Skip the precompiled header, a C++ header that would break the C source's
+  # build rule.  Gate on the buildenv so this can be removed once the buildenv
+  # is retired.
+  set_source_files_properties(
+    src/util/compatibility/glibc_compat.c
+    PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+  )
+  target_sources(mixxx PRIVATE src/util/compatibility/glibc_compat.c)
+  if(TARGET mixxx-test)
+    target_sources(mixxx-test PRIVATE src/util/compatibility/glibc_compat.c)
+  endif()
+endif()
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
@@ -4586,7 +4811,11 @@ find_package(MP4)
 find_package(MP4v2)
 # It is enabled by default on Linux only, because other targets have other
 # solutions. It requires MP4 or MP4v2.
-default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;MP4_FOUND OR MP4v2_FOUND")
+default_option(
+  FAAD
+  "FAAD AAC audio file decoder support"
+  "UNIX;NOT APPLE;MP4_FOUND OR MP4v2_FOUND"
+)
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(
@@ -4789,7 +5018,18 @@ if(OPUS)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
   if(BUILD_TESTING)
-    target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    # The static buildenv links libsndfile (whose ogg_opus encoder pulls in
+    # libopus), libopusfile and libopus; wrap them in a rescan group so the
+    # single-pass link resolves the order dependency.
+    if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+      target_link_libraries(
+        mixxx-test
+        PRIVATE
+          "$<LINK_GROUP:RESCAN,SndFile::sndfile;OpusFile::OpusFile;Opus::Opus>"
+      )
+    else()
+      target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    endif()
   endif()
 endif()
 
@@ -5034,6 +5274,10 @@ if(BUILD_TESTING AND NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
   target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 endif()
 
+if(BUILD_TESTING AND QT6 AND QML)
+  qt_finalize_target(mixxx-test)
+endif()
+
 # Configure file with build options
 file(
   RELATIVE_PATH
@@ -5108,8 +5352,7 @@ if(QT6)
   endif()
   if(QML)
     list(
-      APPEND
-      CPACK_DEBIAN_PACKAGE_DEPENDS
+      APPEND CPACK_DEBIAN_PACKAGE_DEPENDS
       "qml6-module-qt5compat-graphicaleffects"
     )
     list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtquick-controls")
@@ -5140,21 +5383,18 @@ set(
   "${CPACK_DEBIAN_PACKAGE_DESCRIPTION}"
 )
 string(
-  PREPEND
-  CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
+  PREPEND CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
   "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}"
   "\n"
 )
 string(
-  REPLACE
-  "\n\n"
+  REPLACE "\n\n"
   "\n.\n"
   CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
   "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}"
 )
 string(
-  REPLACE
-  "\n"
+  REPLACE "\n"
   "\n "
   CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
   "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}"
@@ -5227,7 +5467,7 @@ if(WIN32)
   set(CPACK_WIX_INSTALL_SCOPE "perMachine")
   file(
     GENERATE OUTPUT
-    "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
+      "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
     INPUT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/MixxxUpgradePatch.xml.in"
   )
   set(

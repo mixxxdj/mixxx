@@ -45,9 +45,9 @@ bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
     m_pEndOfTrackControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), "end_of_track");
+            m_pWaveformRenderer->getGroup(), "end_of_track");
     m_pTimeRemainingControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), "time_remaining");
+            m_pWaveformRenderer->getGroup(), "time_remaining");
 
     return true;
 }
@@ -87,7 +87,7 @@ bool WaveformRendererEndOfTrack::preprocessInner() {
 
     const double alpha = std::clamp(criticalIntensity * blinkIntensity, 0.0, 1.0);
 
-    QSizeF size(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+    QSizeF size(m_pWaveformRenderer->getWidth(), m_pWaveformRenderer->getHeight());
     float r, g, b, a;
     getRgbF(m_color, &r, &g, &b, &a);
 

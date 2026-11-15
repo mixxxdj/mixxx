@@ -92,13 +92,13 @@ class WaveformWidgetHolder {
     WaveformWidgetHolder& operator=(WaveformWidgetHolder&&) = default;
   private:
     WaveformWidgetHolder(
-            WaveformWidgetAbstract* waveformWidget,
-            WWaveformViewer* waveformViewer,
+            WaveformWidgetAbstract* pWaveformWidget,
+            WWaveformViewer* pWaveformViewer,
             const QDomNode& skinNode,
             const SkinContext& parentContext);
 
-    WaveformWidgetAbstract* m_waveformWidget;
-    WWaveformViewer* m_waveformViewer;
+    WaveformWidgetAbstract* m_pWaveformWidget;
+    WWaveformViewer* m_pWaveformViewer;
     QDomNode m_skinNodeCache;
     SkinContext m_skinContextCache;
 
@@ -167,6 +167,20 @@ class WaveformWidgetFactory : public QObject,
     bool widgetTypeSupportsSoftware(WaveformWidgetType::Type type);
     bool widgetTypeSupportsUntilMark() const;
     bool widgetTypeSupportsStems() const;
+
+    // Defaults of the "beats/time until next marker" waveform options.
+    // Align and height limit are stored as combobox indices, see
+    // toUntilMarkAlign() and toUntilMarkTextHeightLimit().
+    static constexpr bool kUntilMarkShowBeatsDefault = false;
+    static constexpr bool kUntilMarkShowTimeDefault = false;
+    static constexpr int kUntilMarkAlignDefaultIndex = 1; // Center
+    static constexpr int kUntilMarkTextPointSizeDefault = 24;
+    static constexpr int kUntilMarkTextHeightLimitDefaultIndex = 0; // 1/3 of viewer
+
+    // Defaults of the stem waveform options.
+    static constexpr bool kStemReorderOnChangeDefault = true;
+    static constexpr double kStemOpacityDefault = 0.75;
+    static constexpr double kStemOutlineOpacityDefault = 0.15;
 
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
@@ -362,7 +376,7 @@ class WaveformWidgetFactory : public QObject,
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
 
-    VSyncThread* m_vsyncThread;
+    VSyncThread* m_pVsyncThread;
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
 

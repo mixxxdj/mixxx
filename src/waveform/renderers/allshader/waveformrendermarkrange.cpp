@@ -22,10 +22,10 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& ski
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
             addRange(WaveformMarkRange(
-                    m_waveformRenderer->getGroup(),
+                    m_pWaveformRenderer->getGroup(),
                     child,
                     skinContext,
-                    *m_waveformRenderer->getWaveformSignalColors()));
+                    *m_pWaveformRenderer->getWaveformSignalColors()));
         }
         child = child.nextSibling();
     }
@@ -58,15 +58,15 @@ void WaveformRenderMarkRange::update() {
         double endSample = markRange.end();
 
         double startPosition =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                m_pWaveformRenderer->transformSamplePositionInRendererWorld(
                         startSample);
-        double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
+        double endPosition = m_pWaveformRenderer->transformSamplePositionInRendererWorld(endSample);
 
         startPosition = std::floor(startPosition);
         endPosition = std::floor(endPosition);
 
         // range not in the current display
-        if (startPosition > m_waveformRenderer->getLength() || endPosition < 0) {
+        if (startPosition > m_pWaveformRenderer->getLength() || endPosition < 0) {
             continue;
         }
 
@@ -85,7 +85,7 @@ void WaveformRenderMarkRange::update() {
                 color,
                 {static_cast<float>(startPosition), 0.f},
                 {static_cast<float>(endPosition) + 1.f,
-                        static_cast<float>(m_waveformRenderer->getBreadth())});
+                        static_cast<float>(m_pWaveformRenderer->getBreadth())});
 
         pChild = static_cast<GeometryNode*>(pChild->nextSibling());
     }

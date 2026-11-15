@@ -51,9 +51,9 @@ void WaveformRendererRGB::preprocess() {
 }
 
 bool WaveformRendererRGB::preprocessInner() {
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
 
-    if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+    if (!pTrack || (m_isSlipRenderer && !m_pWaveformRenderer->isSlipActive())) {
         return false;
     }
 
@@ -82,18 +82,18 @@ bool WaveformRendererRGB::preprocessInner() {
     }
 #endif
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength());
-    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
-    const float invDevicePixelRatio = 1.f / devicePixelRatio;
-    const float halfPixelSize = 0.5f / devicePixelRatio;
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const int length = static_cast<int>(m_pWaveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
+    const qreal invDevicePixelRatio = 1.0 / devicePixelRatio;
+    const qreal halfPixelSize = 0.5 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
     const double firstVisualFrame =
-            m_waveformRenderer->getFirstDisplayedPosition(positionType) * visualFramesSize;
+            m_pWaveformRenderer->getFirstDisplayedPosition(positionType) * visualFramesSize;
     const double lastVisualFrame =
-            m_waveformRenderer->getLastDisplayedPosition(positionType) * visualFramesSize;
+            m_pWaveformRenderer->getLastDisplayedPosition(positionType) * visualFramesSize;
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
@@ -111,7 +111,7 @@ bool WaveformRendererRGB::preprocessInner() {
     float highGain = 1.0f;
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float breadth = static_cast<float>(m_pWaveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
     const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
@@ -161,7 +161,7 @@ bool WaveformRendererRGB::preprocessInner() {
         const int visualIndexStop =
                 std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-        const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
+        const qreal rPos = pos * invDevicePixelRatio;
 
         // Find the max values for low, mid, high and all in the waveform data.
         // - Max of left and right
@@ -232,11 +232,11 @@ bool WaveformRendererRGB::preprocessInner() {
             // Lines are thin rectangles
             if (!splitLeftRight) {
                 vertexUpdater.addRectangle(
-                        {fpos - halfPixelSize,
+                        {static_cast<float>(rPos - halfPixelSize),
                                 halfBreadth -
                                         heightFactorAbs * eqGain *
                                                 maxAllChn[chn]},
-                        {fpos + halfPixelSize,
+                        {static_cast<float>(rPos + halfPixelSize),
                                 m_isSlipRenderer ? halfBreadth
                                                  : halfBreadth +
                                                 heightFactorAbs * eqGain *
@@ -245,9 +245,10 @@ bool WaveformRendererRGB::preprocessInner() {
             } else {
                 // note: heightFactor is the same for left and right,
                 // but negative for left (chn 0) and positive for right (chn 1)
-                vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                                   halfBreadth},
-                        {fpos + halfPixelSize,
+                vertexUpdater.addRectangle(
+                        {static_cast<float>(rPos - halfPixelSize),
+                                halfBreadth},
+                        {static_cast<float>(rPos + halfPixelSize),
                                 halfBreadth + heightFactor[chn] * eqGain * maxAllChn[chn]},
                         {red,
                                 green,
