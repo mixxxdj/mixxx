@@ -90,6 +90,11 @@ var DDJFLX2 = {
     // software-controlled behavior.
     smartFaderEnabled: false,
 
+    // Whether each physical channel fader is at its bottom position.
+    // Tracked per physical deck (not per virtual deck) because it describes
+    // the hardware fader, which stays where it is across deck layer switches.
+    faderDown: {1: true, 2: true},
+
     // Accumulates jog movement while browsing the library.
     jogCounter: 0,
 
@@ -231,7 +236,6 @@ DDJFLX2.init = function() {
         this.vDeck[i] = {
             volMSB: 0,
             rateMSB: 0,
-            volumeFaderDown: true,
         };
 
         // Initialize active loop size for each virtual deck.
@@ -836,19 +840,21 @@ DDJFLX2.smartFaderStop = function(deck) {
     engine.setValue(deck.group, "cue_gotoandstop", 1);
 };
 
+// Start/stop the deck currently assigned to the physical side only when its
+// physical fader actually leaves or reaches the bottom position.
 DDJFLX2.handleSmartFaderVolume = function(deck, volume) {
-    const deckState = DDJFLX2.vDeck[deck.virtualDeck];
+    const wasDown = DDJFLX2.faderDown[deck.physicalDeck];
     const isDown = volume <= 0;
 
     if (DDJFLX2.smartFaderEnabled) {
-        if (deckState.volumeFaderDown && !isDown) {
+        if (wasDown && !isDown) {
             DDJFLX2.smartFaderStart(deck);
-        } else if (!deckState.volumeFaderDown && isDown) {
+        } else if (!wasDown && isDown) {
             DDJFLX2.smartFaderStop(deck);
         }
     }
 
-    deckState.volumeFaderDown = isDown;
+    DDJFLX2.faderDown[deck.physicalDeck] = isDown;
 };
 
 DDJFLX2.syncLong = function(
