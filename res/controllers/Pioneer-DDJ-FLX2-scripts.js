@@ -56,6 +56,11 @@ var DDJFLX2 = {
     padFxState: {},
     padFxUnitState: {},
 
+    // Virtual deck targeted by held press/release actions (scratch, cue,
+    // hotcue preview, loop roll), keyed by "<physicalDeck>:<action>".
+    // See resolveHeldDeck().
+    heldDeck: {},
+
     // Which pad mode (if any) is replaced by Beat Jump.
     // Values: "off" | "sampler" | "padfx" — loaded from Mixxx preferences.
     beatJumpPadMode: "off",
@@ -126,6 +131,27 @@ var DDJFLX2 = {
             virtualDeck: virtualDeck,
             group: `[Channel${virtualDeck}]`
         };
+    },
+
+    // Helper: resolve the deck for a held press/release action.
+    // On press, the virtual deck currently assigned to the side is remembered;
+    // on release, the remembered deck is returned even if the deck layer was
+    // switched while the control was held. This prevents actions from getting
+    // stuck on the previous deck (e.g. scratch mode, loop roll, cue preview).
+    //
+    // group   : physical group from the XML binding
+    // action  : identifier of the held control (unique per side)
+    // pressed : true on press, false on release
+    resolveHeldDeck: function(group, action, pressed) {
+        const deck = this.resolveDeck(group);
+        const key = `${deck.physicalDeck}:${action}`;
+        if (pressed) {
+            this.heldDeck[key] = deck;
+            return deck;
+        }
+        const held = this.heldDeck[key];
+        delete this.heldDeck[key];
+        return held || deck;
     },
 
     // Helper: return stable side key for per-physical-deck state.
@@ -616,8 +642,11 @@ DDJFLX2.platterJog = function(
         return;
     }
 
+    // While the platter is touched, keep scratching the deck where the touch
+    // started, even if the deck layer was switched in the meantime.
     const deck = DDJFLX2.resolveDeck(group);
-    DDJFLX2.doScratchTick(deck.virtualDeck, value);
+    const touchedDeck = DDJFLX2.heldDeck[`${deck.physicalDeck}:touch`] || deck;
+    DDJFLX2.doScratchTick(touchedDeck.virtualDeck, value);
 };
 
 DDJFLX2.platterJogShift = function(
@@ -639,6 +668,7 @@ DDJFLX2.platterJogShift = function(
 // controller sends 0x67 ON; lifting the hand sends 0x67 OFF, while the
 // pending 0x36 OFF is only sent when Shift is released. Ignoring the 0x67 OFF
 // would keep the deck in scratch mode (track stopped) until Shift is released.
+// Release goes to the deck where scratching started (see resolveHeldDeck).
 DDJFLX2.touch = function(
     channel,
     control,
@@ -646,9 +676,8 @@ DDJFLX2.touch = function(
     status,
     group
 ) {
-    const deck = DDJFLX2.resolveDeck(group);
-
     if (!value) {
+        const deck = DDJFLX2.resolveHeldDeck(group, "touch", false);
         engine.scratchDisable(deck.virtualDeck);
         return;
     }
@@ -657,6 +686,7 @@ DDJFLX2.touch = function(
         return;
     }
 
+    const deck = DDJFLX2.resolveHeldDeck(group, "touch", true);
     engine.scratchEnable(
         deck.virtualDeck,
         460,
@@ -1026,6 +1056,7 @@ DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
 // follows the cue mode selected in Preferences (Mixxx, Pioneer, Denon, ...),
 // including cue preview while held. Same approach as the DDJ-400 / DDJ-FLX4.
 // Cue and play LEDs are updated by the makeConnection callbacks in init().
+// Release goes to the deck where the press started (see resolveHeldDeck).
 DDJFLX2.cueDefault = function(
     channel,
     control,
@@ -1033,7 +1064,7 @@ DDJFLX2.cueDefault = function(
     status,
     group
 ) {
-    const deck = DDJFLX2.resolveDeck(group);
+    const deck = DDJFLX2.resolveHeldDeck(group, "cue", value > 0);
     engine.setValue(deck.group, "cue_default", value ? 1 : 0);
 };
 
@@ -1077,9 +1108,10 @@ DDJFLX2.hotcueNActivate = function(
     status,
     group
 ) {
-    const deck = DDJFLX2.resolveDeck(group);
     const hotcueNum = DDJFLX2.hotcuePadFromControl(control);
     const hotcue = `hotcue_${hotcueNum}`;
+    // Release goes to the deck where the press started (see resolveHeldDeck).
+    const deck = DDJFLX2.resolveHeldDeck(group, hotcue, value > 0);
 
     // Pass both press (1) and release (0) so Mixxx can manage the
     // preview-while-held behavior when the deck is paused.
@@ -1311,7 +1343,8 @@ DDJFLX2.loopRollPad = function(
 ) {
     const pad = DDJFLX2.loopPadFromControl(control);
     const size = DDJFLX2.loopPadSizes[pad - 1];
-    const deck = DDJFLX2.resolveDeck(group);
+    // Release goes to the deck where the roll started (see resolveHeldDeck).
+    const deck = DDJFLX2.resolveHeldDeck(group, `roll${pad}`, value > 0);
 
     engine.setValue(
         deck.group,
