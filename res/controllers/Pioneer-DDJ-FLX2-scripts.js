@@ -35,9 +35,14 @@ var DDJFLX2 = {
     // Index 0 is unused so deck numbers can be used directly.
     vDeckNo: [0, 1, 2],
 
-    // Per-deck runtime storage.
-    // Used for temporary values such as 14-bit MIDI reconstruction.
+    // Per-virtual-deck runtime storage (e.g. last CFX knob mode).
     vDeck: {},
+
+    // Last received MSB of each 14-bit hardware control, per physical deck.
+    // Stored per physical side (not per virtual deck) because it describes the
+    // hardware control, which stays where it is across deck layer switches.
+    // Keys: "rate", "volume", "cfx", and the EQ MSB control number.
+    hwMSB: {1: {}, 2: {}},
 
     // Pitch bend factor for jog wheel side movement.
     pitchShiftFactor: 0.5,
@@ -262,10 +267,7 @@ DDJFLX2.init = function() {
 
     for (let i = 1; i <= 4; i++) {
         // Create runtime storage for each virtual deck.
-        this.vDeck[i] = {
-            volMSB: 0,
-            rateMSB: 0,
-        };
+        this.vDeck[i] = {};
 
         const vgroup = `[Channel${i}]`;
 
@@ -907,7 +909,7 @@ DDJFLX2.rateMSB = function(
     group
 ) {
     const deck = DDJFLX2.resolveDeck(group);
-    DDJFLX2.vDeck[deck.virtualDeck].rateMSB = value;
+    DDJFLX2.hwMSB[deck.physicalDeck].rate = value;
 };
 
 // Combine MSB and LSB to reconstruct full 14-bit pitch value.
@@ -920,7 +922,7 @@ DDJFLX2.rateLSB = function(
 ) {
     const deck = DDJFLX2.resolveDeck(group);
 
-    const rateMSB = DDJFLX2.vDeck[deck.virtualDeck].rateMSB;
+    const rateMSB = DDJFLX2.hwMSB[deck.physicalDeck].rate || 0;
     // Hardware encodes rate as 0x0000 (top, +max) → 0x3FFE (bottom, -max).
     // 0x3FFE is 16382, the maximum 14-bit value sent by the FLX2 pitch fader.
     // The rate parameter maps 0..1 to rate -1..+1, so the slider top (+max)
@@ -939,7 +941,7 @@ DDJFLX2.volumeMSB = function(
     group
 ) {
     const deck = DDJFLX2.resolveDeck(group);
-    DDJFLX2.vDeck[deck.virtualDeck].volMSB = value;
+    DDJFLX2.hwMSB[deck.physicalDeck].volume = value;
 };
 
 // Combine MSB and LSB to reconstruct full 14-bit volume value.
@@ -952,7 +954,7 @@ DDJFLX2.volumeLSB = function(
 ) {
     const deck = DDJFLX2.resolveDeck(group);
 
-    const volMSB = DDJFLX2.vDeck[deck.virtualDeck].volMSB;
+    const volMSB = DDJFLX2.hwMSB[deck.physicalDeck].volume || 0;
     const vol = ((volMSB << 7) + value) / 0x3fff;
 
     // Track the physical fader position for Smart Fader regardless of soft
@@ -967,11 +969,7 @@ DDJFLX2.volumeLSB = function(
 // because script.deckFromGroup() does not work with EQ rack group names.
 DDJFLX2.eqMSB = function(channel, control, value, status, _group) {
     const physicalDeck = (status & 0x0F) + 1;
-    const virtualDeck = DDJFLX2.vDeckNo[physicalDeck];
-    if (!DDJFLX2.vDeck[virtualDeck].eqMSB) {
-        DDJFLX2.vDeck[virtualDeck].eqMSB = {};
-    }
-    DDJFLX2.vDeck[virtualDeck].eqMSB[control] = value;
+    DDJFLX2.hwMSB[physicalDeck][control] = value;
 };
 
 // Combine MSB and LSB to reconstruct full 14-bit EQ value.
@@ -981,7 +979,7 @@ DDJFLX2.eqLSB = function(channel, control, value, status, _group) {
     const vgroup = `[Channel${virtualDeck}]`;
     const eqGroup = `[EqualizerRack1_${vgroup}_Effect1]`;
 
-    const msb = (DDJFLX2.vDeck[virtualDeck].eqMSB || {})[control - 0x20] || 0;
+    const msb = DDJFLX2.hwMSB[physicalDeck][control - 0x20] || 0;
     const rawValue = (msb << 7) + value;
     const combined = rawValue / 0x3fff;
 
@@ -1004,8 +1002,7 @@ DDJFLX2.eqLSB = function(channel, control, value, status, _group) {
 DDJFLX2.super1MSB = function(channel, control, value, _status, _group) {
     // 0xB6 0x17 = CFX CH1 MSB, 0xB6 0x18 = CFX CH2 MSB.
     const physicalDeck = control === 0x17 ? 1 : 2;
-    const virtualDeck = DDJFLX2.vDeckNo[physicalDeck];
-    DDJFLX2.vDeck[virtualDeck].cfxMSB = value;
+    DDJFLX2.hwMSB[physicalDeck].cfx = value;
 };
 
 // Combine MSB and LSB to reconstruct full 14-bit CFX value.
@@ -1016,7 +1013,7 @@ DDJFLX2.super1LSB = function(channel, control, value, _status, _group) {
     const vgroup = `[Channel${virtualDeck}]`;
     const qfxGroup = `[QuickEffectRack1_${vgroup}]`;
 
-    const msb = DDJFLX2.vDeck[virtualDeck].cfxMSB || 0;
+    const msb = DDJFLX2.hwMSB[physicalDeck].cfx || 0;
     const rawValue = (msb << 7) + value;
     const combined = rawValue / 0x3fff;
 
