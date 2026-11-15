@@ -354,6 +354,14 @@ DDJFLX2.init = function() {
 
     DDJFLX2.allLEDsOff();
 
+    // Keep the headphone cue (master) LED synchronized with the headphone mix,
+    // including changes made with the Cue/Mix knob in the GUI. The LED is lit
+    // when the mix is on the master side. Triggered once so the LED matches the
+    // current state when the mapping starts.
+    engine.makeConnection("[Master]", "headMix", function(value) {
+        midi.sendShortMsg(0x96, 0x63, value > 0.5 ? 0x7f : 0x00);
+    }).trigger();
+
     // Per the Pioneer MIDI reference, Vinyl mode cannot be changed from the
     // hardware. It is controlled by software with MIDI OUT 9n 17 hh.
     // Keep it enabled so platter rotation uses the scratch-capable 0x22 path.
@@ -723,12 +731,7 @@ DDJFLX2.headmix = function(channel, control, value) {
         "headMix",
         masterMixEnabled ? -1 : 1
     );
-
-    midi.sendShortMsg(
-        0x96,
-        0x63,
-        masterMixEnabled ? 0 : 0x7f
-    );
+    // LED update is handled by the makeConnection callback in init().
 };
 
 DDJFLX2.toggleFourDeckMode = function(
