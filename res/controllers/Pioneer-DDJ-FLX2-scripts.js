@@ -340,6 +340,15 @@ DDJFLX2.init = function() {
             DDJFLX2.switchSyncLED(DDJFLX2.virtualToLedIndex(vDeckNo), ch);
         });
 
+        // Keep headphone cue (PFL) LED synchronized with Mixxx PFL state,
+        // including changes made from the GUI.
+        engine.makeConnection(vgroup, "pfl", function(enabled, vgroup) {
+            const vDeckNo = script.deckFromGroup(vgroup);
+            if (!DDJFLX2.isVirtualDeckVisible(vDeckNo)) { return; }
+
+            midi.sendShortMsg(0x90 + DDJFLX2.virtualToLedIndex(vDeckNo), 0x54, enabled ? 0x7f : 0x00);
+        });
+
         // Keep pad LEDs synchronized with hotcue state.
         // This is the single source of truth for hotcue LED updates;
         // hotcueNActivate must NOT send its own LED echo.
@@ -1564,8 +1573,7 @@ DDJFLX2.pfl = function(
         const pfl = !engine.getValue(deck.group, "pfl");
 
         engine.setValue(deck.group, "pfl", pfl);
-
-        midi.sendShortMsg(status, 0x54, 0x7f * pfl);
+        // LED update is handled by the makeConnection callback in init().
     }
 };
 
