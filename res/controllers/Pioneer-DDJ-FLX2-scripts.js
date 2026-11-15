@@ -79,6 +79,12 @@ var DDJFLX2 = {
     blinkPhase: false,
     blinkTimerID: 0,
 
+    // Last value sent to each pad LED repainted by the blink timer
+    // (loop and sampler pads), keyed by (status << 8) | control.
+    // The timer only sends a message when a LED value changes; the cache is
+    // cleared whenever LEDs are switched off in bulk so they are repainted.
+    padLedCache: {},
+
     // Smart Fader state.
     // When true, channel fader movements trigger play/pause on the corresponding
     // deck via software-side volume fader monitoring (handleSmartFaderVolume).
@@ -387,6 +393,9 @@ DDJFLX2.LEDsOff = function() {
             }
         }
     }
+
+    // Force the blink timer to repaint loop and sampler pads.
+    DDJFLX2.padLedCache = {};
 };
 
 DDJFLX2.allLEDsOff = function() {
@@ -412,6 +421,9 @@ DDJFLX2.allLEDsOff = function() {
     for (let deck = 0; deck <= 3; deck++) {
         midi.sendShortMsg(0x9f, deck, 0x00);
     }
+
+    // Force the blink timer to repaint loop and sampler pads.
+    DDJFLX2.padLedCache = {};
 };
 
 DDJFLX2.updateSmartFaderLED = function() {
@@ -1323,6 +1335,23 @@ DDJFLX2.updateAllBlinkingLEDs = function() {
     DDJFLX2.updateAllLoopBlinkLEDs();
 };
 
+// Send a pad LED value only if it differs from the last value sent.
+// Used by the blink timer to avoid flooding the controller with MIDI messages.
+DDJFLX2.sendPadLedCached = function(status, control, value) {
+    const key = (status << 8) | control;
+    if (DDJFLX2.padLedCache[key] === value) {
+        return;
+    }
+    DDJFLX2.padLedCache[key] = value;
+    midi.sendShortMsg(status, control, value);
+};
+
+// Helper: return true if the sampler exists in the current Mixxx setup.
+// Reading controls of a missing sampler logs "Unknown control" warnings.
+DDJFLX2.samplerExists = function(samplerNo) {
+    return samplerNo <= engine.getValue("[App]", "num_samplers");
+};
+
 // Update all 16 sampler pad LEDs.
 // Physical deck 1 (left)  → samplers 1–8,  pad MIDI-OUT channel 0x97
 // Physical deck 2 (right) → samplers 9–16, pad MIDI-OUT channel 0x99
@@ -1330,6 +1359,7 @@ DDJFLX2.updateAllBlinkingLEDs = function() {
 //   empty   → LED off
 //   loaded  → LED on (steady)
 //   playing → LED blinks with blinkPhase
+// Pads of samplers that do not exist stay off.
 DDJFLX2.updateAllSamplerLEDs = function() {
     // Beat jump owns the sampler pad LEDs when it replaces that mode.
     if (DDJFLX2.beatJumpPadMode === "sampler") {
@@ -1340,21 +1370,21 @@ DDJFLX2.updateAllSamplerLEDs = function() {
         const ledStatus = DDJFLX2.getPadLedStatus(physicalDeck, false);
         for (let pad = 1; pad <= 8; pad++) {
             const samplerNo = pad + (physicalDeck - 1) * 8;
-            const samplerGroup = `[Sampler${  samplerNo  }]`;
-            const loaded = engine.getValue(samplerGroup, "track_loaded");
-            const playing = engine.getValue(samplerGroup, "play");
 
-            let ledValue;
-            if (!loaded) {
-                ledValue = 0x00;
-            } else if (playing) {
-                ledValue = DDJFLX2.blinkPhase ? 0x7f : 0x00;
-            } else {
-                ledValue = 0x7f;
+            let ledValue = 0x00;
+            if (DDJFLX2.samplerExists(samplerNo)) {
+                const samplerGroup = `[Sampler${samplerNo}]`;
+                if (engine.getValue(samplerGroup, "track_loaded")) {
+                    if (engine.getValue(samplerGroup, "play")) {
+                        ledValue = DDJFLX2.blinkPhase ? 0x7f : 0x00;
+                    } else {
+                        ledValue = 0x7f;
+                    }
+                }
             }
 
             // Sampler pads use control bytes 0x30–0x37 (pad 1 = 0x30).
-            midi.sendShortMsg(ledStatus, 0x30 + (pad - 1), ledValue);
+            DDJFLX2.sendPadLedCached(ledStatus, 0x30 + (pad - 1), ledValue);
         }
     }
 };
@@ -1372,7 +1402,7 @@ DDJFLX2.updateAllLoopBlinkLEDs = function() {
             const isActive = engine.getValue(vgroup, `beatloop_${size}_enabled`);
             const ledValue = isActive ? (DDJFLX2.blinkPhase ? 0x7f : 0x00) : 0x00;
             // Loop pads use control bytes 0x60–0x67 (pad 1 = 0x60).
-            midi.sendShortMsg(
+            DDJFLX2.sendPadLedCached(
                 DDJFLX2.getPadLedStatus(physicalDeck, false),
                 0x60 + (pad - 1),
                 ledValue
@@ -1420,6 +1450,9 @@ DDJFLX2.samplerPad = function(
     const pad = DDJFLX2.samplerPadFromControl(control);
     const deck = DDJFLX2.resolveDeck(group);
     const samplerNo = pad + (deck.physicalDeck - 1) * 8;
+    if (!DDJFLX2.samplerExists(samplerNo)) {
+        return;
+    }
     const samplerGroup = `[Sampler${  samplerNo  }]`;
 
     script.triggerControl(samplerGroup, "cue_gotoandplay");
@@ -1445,6 +1478,9 @@ DDJFLX2.samplerStopPad = function(
     const pad = DDJFLX2.samplerPadFromControl(control);
     const deck = DDJFLX2.resolveDeck(group);
     const samplerNo = pad + (deck.physicalDeck - 1) * 8;
+    if (!DDJFLX2.samplerExists(samplerNo)) {
+        return;
+    }
     const samplerGroup = `[Sampler${  samplerNo  }]`;
 
     script.triggerControl(samplerGroup, "stop");
@@ -1544,6 +1580,9 @@ DDJFLX2.turnOffAllLoopPadLEDs = function(physicalDeck) {
     for (let pad = 1; pad <= 8; pad++) {
         midi.sendShortMsg(ledStatus, 0x60 + (pad - 1), 0x00);
     }
+
+    // Force the blink timer to repaint loop and sampler pads.
+    DDJFLX2.padLedCache = {};
 };
 
 // Update all loop pad LEDs for a specific virtual deck (single source of truth).
