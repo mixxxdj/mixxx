@@ -547,16 +547,17 @@ DDJFLX2.loadEject = function(channel, control, value, status, group) {
 };
 
 // Shift + Headphone Cue (Deck 2 / Right):
-// Cycles through available effects in the primary effect unit for this deck.
-// Deck 2 -> Unit 2, Deck 4 -> Unit 4.
+// Cycles through available effects in slot 1 of the side's primary effect unit,
+// i.e. the effect triggered by Pad FX pad 1 on this side.
+// Like the Pad FX pads, the unit follows the physical side (left = Unit 1,
+// right = Unit 2) in both deck layers.
 DDJFLX2.fxSelect = function(channel, control, value, status, group) {
     if (!value) {
         return;
     }
     const deck = DDJFLX2.resolveDeck(group);
-    // Cycle effects in the first slot of the primary unit for this deck.
     engine.setValue(
-        `[EffectRack1_EffectUnit${deck.virtualDeck}_Effect1]`,
+        `[EffectRack1_EffectUnit${deck.physicalDeck}_Effect1]`,
         "next_effect",
         1
     );

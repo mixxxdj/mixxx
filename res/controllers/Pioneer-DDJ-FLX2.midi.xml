@@ -249,7 +249,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DDJFLX2.fxSelect</key>
-                <description>Deck 2: Shift + Headphone: cycle effects in the primary FX unit</description>
+                <description>Deck 2: Shift + Headphone: cycle the effect of Pad FX pad 1 (Effect Unit 2, slot 1)</description>
                 <status>0x91</status>
                 <midino>0x08</midino>
                 <options>
