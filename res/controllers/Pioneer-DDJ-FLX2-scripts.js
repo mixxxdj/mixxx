@@ -125,9 +125,12 @@ var DDJFLX2 = {
     SOFT_TAKEOVER_TOLERANCE: 0.04,
 
     // Helper: check if shift is pressed for a specific deck group.
+    // Accepts both physical ([Channel1]/[Channel2]) and virtual
+    // ([Channel3]/[Channel4]) groups: virtual decks 1/3 are on the left side,
+    // 2/4 on the right side.
     isShiftPressed: function(group) {
-        const deck = script.deckFromGroup(group);
-        return deck === 1 ? this.shiftPressed.left : this.shiftPressed.right;
+        const physicalDeck = this.virtualToPhysicalDeck(script.deckFromGroup(group));
+        return this.shiftPressed[this.deckSide(physicalDeck)];
     },
 
     // Helper: resolve physical deck, virtual deck, and virtual deck group from a group.
