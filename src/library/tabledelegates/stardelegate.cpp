@@ -5,6 +5,7 @@
 #include "library/starrating.h"
 #include "library/tabledelegates/stareditor.h"
 #include "library/tabledelegates/tableitemdelegate.h"
+#include "util/assert.h"
 #include "moc_stardelegate.cpp"
 
 StarDelegate::StarDelegate(QTableView* pTableView)
@@ -59,23 +60,36 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     return editor;
 }
 
-void StarDelegate::setEditorData(QWidget* editor,
+void StarDelegate::setEditorData(QWidget* pEditor,
                                  const QModelIndex& index) const {
+    StarEditor* pStarEditor = qobject_cast<StarEditor*>(pEditor);
+    VERIFY_OR_DEBUG_ASSERT(pStarEditor) {
+        return;
+    }
     StarRating starRating = index.data().value<StarRating>();
-    StarEditor* starEditor = qobject_cast<StarEditor*>(editor);
-    starEditor->setStarRating(starRating);
+    pStarEditor->setStarRating(starRating);
 }
 
-void StarDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
+void StarDelegate::setModelData(QWidget* pEditor,
+                                QAbstractItemModel* pModel,
                                 const QModelIndex& index) const {
-    StarEditor* starEditor = qobject_cast<StarEditor*>(editor);
-    model->setData(index, QVariant::fromValue(starEditor->starRating()));
+    StarEditor* pStarEditor = qobject_cast<StarEditor*>(pEditor);
+    VERIFY_OR_DEBUG_ASSERT(pStarEditor) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pModel) {
+        return;
+    }
+    pModel->setData(index, QVariant::fromValue(pStarEditor->starRating()));
 }
 
 void StarDelegate::commitAndCloseEditor() {
-    StarEditor* editor = qobject_cast<StarEditor*>(sender());
-    emit commitData(editor);
-    emit closeEditor(editor);
+    StarEditor* pEditor = qobject_cast<StarEditor*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pEditor) {
+        return;
+    }
+    emit commitData(pEditor);
+    emit closeEditor(pEditor);
 }
 
 void StarDelegate::cellEntered(const QModelIndex& index) {
