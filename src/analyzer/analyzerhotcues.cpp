@@ -5,6 +5,7 @@
 #include <cmath>
 #include <numbers>
 
+#include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzertrack.h"
 #include "track/track.h"
 
@@ -127,8 +128,10 @@ double toDb(double meanSquare) {
 
 } // namespace
 
-AnalyzerHotcues::AnalyzerHotcues(UserSettingsPointer pConfig)
+AnalyzerHotcues::AnalyzerHotcues(UserSettingsPointer pConfig,
+        const AnalyzerBeats* pAnalyzerBeats)
         : m_pConfig(pConfig),
+          m_pAnalyzerBeats(pAnalyzerBeats),
           m_channels(0),
           m_lowpass(0),
           m_low1(0),
@@ -142,8 +145,11 @@ bool AnalyzerHotcues::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         mixxx::audio::ChannelCount channelCount,
         SINT frameLength) {
+    // only with freshly detected beats (first analysis, Reanalyze), so
+    // deleted cues stay deleted and loading a track never starts an analysis
     if (frameLength <= 0 ||
-            !m_pConfig->getValue(ConfigKey("[Library]", "AutoHotcues"), true) ||
+            !m_pConfig->getValue(ConfigKey("[Library]", "AutoHotcues"), false) ||
+            !m_pAnalyzerBeats->isAnalyzing() ||
             hasHotcues(*track.getTrack())) {
         return false;
     }

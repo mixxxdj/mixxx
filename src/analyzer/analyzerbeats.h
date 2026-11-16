@@ -27,6 +27,11 @@ class AnalyzerBeats : public Analyzer {
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
 
+    /// true from initialize() to cleanup() if this run detects beats
+    bool isAnalyzing() const {
+        return m_pPlugin != nullptr;
+    }
+
   private:
     bool shouldAnalyze(TrackPointer pTrack) const;
     static QHash<QString, QString> getExtraVersionInfo(

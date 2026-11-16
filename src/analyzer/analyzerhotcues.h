@@ -21,10 +21,13 @@ std::vector<AutoCue> placeCues(const std::vector<double>& loudDb,
 
 } // namespace mixxx::hotcues
 
-/// hot cues at section changes on tracks without any, off with [Library] AutoHotcues 0
+class AnalyzerBeats;
+
+/// hot cues at section changes on tracks without any, when their beats are
+/// detected. opt-in with [Library] AutoHotcues 1
 class AnalyzerHotcues : public Analyzer {
   public:
-    explicit AnalyzerHotcues(UserSettingsPointer pConfig);
+    AnalyzerHotcues(UserSettingsPointer pConfig, const AnalyzerBeats* pAnalyzerBeats);
     ~AnalyzerHotcues() override = default;
 
     bool initialize(const AnalyzerTrack& track,
@@ -38,6 +41,7 @@ class AnalyzerHotcues : public Analyzer {
 
   private:
     UserSettingsPointer m_pConfig;
+    const AnalyzerBeats* m_pAnalyzerBeats;
     int m_channels;
     double m_lowpass;
     double m_low1;
