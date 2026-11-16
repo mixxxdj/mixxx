@@ -46,7 +46,7 @@ const QString kDarkDialogsKey = QStringLiteral("DarkDialogs");
 // TODO move these to a common *_defs.h file, some are also used by e.g. MixxxMainWindow
 const bool kStartInFullscreenDefault = false;
 const bool kHideMenuBarDefault = true;
-const bool kDarkDialogsDefault = true;
+const bool kDarkDialogsDefault = false;
 
 } // namespace
 

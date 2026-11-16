@@ -115,7 +115,7 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
             &MixxxMainWindow::slotLibraryScanSummaryDlg);
 
     MixxxApplication::setDarkDialogs(
-            m_pCoreServices->getSettings()->getValue<bool>(kDarkDialogsConfigKey, true));
+            m_pCoreServices->getSettings()->getValue<bool>(kDarkDialogsConfigKey, false));
 
     createMenuBar();
     m_pMenuBar->hide();
