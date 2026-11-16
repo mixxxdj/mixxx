@@ -52,23 +52,23 @@ void EngineBufferScaleST::setScaleParameters(double baseRate,
 
     // It's an error to pass a rate or tempo smaller than kMinTempoRatio to
     // SoundTouch (see definition of kMinTempoRatio for more details).
-    double speedAbs = fabs(*pTempoRatio);
-    if (speedAbs > kMaxTempoRatio) {
-        speedAbs = kMaxTempoRatio;
-    } else if (speedAbs < kMinTempoRatio) {
-        speedAbs = 0;
+    double tempoRatioAbs = fabs(*pTempoRatio);
+    if (tempoRatioAbs > kMaxTempoRatio) {
+        tempoRatioAbs = kMaxTempoRatio;
+    } else if (tempoRatioAbs < kMinTempoRatio) {
+        tempoRatioAbs = 0;
     }
 
     // Let the caller know if we clamped their value.
-    *pTempoRatio = m_bBackwards ? -speedAbs : speedAbs;
+    *pTempoRatio = m_bBackwards ? -tempoRatioAbs : tempoRatioAbs;
 
-    // Include base rate in rate_abs so that we do samplerate conversion as part
-    // of rate adjustment.
-    if (speedAbs != m_dTempoRatio) {
+    // The base rate is set separately via setRate() below, so that SoundTouch
+    // does the samplerate conversion as part of its rate adjustment.
+    if (tempoRatioAbs != m_dTempoRatio) {
         // Note: A rate of zero would make Soundtouch crash,
         // this is caught in scaleBuffer()
-        m_pSoundTouch->setTempo(speedAbs);
-        m_dTempoRatio = speedAbs;
+        m_pSoundTouch->setTempo(tempoRatioAbs);
+        m_dTempoRatio = tempoRatioAbs;
     }
     if (baseRate != m_dBaseRate) {
         m_pSoundTouch->setRate(baseRate);

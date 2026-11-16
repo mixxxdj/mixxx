@@ -46,12 +46,12 @@ void EngineBufferScaleRubberBand::setScaleParameters(double baseRate,
     // https://bugs.launchpad.net/ubuntu/+bug/1263233
     // https://todo.sr.ht/~breakfastquay/rubberband/5
 
-    double speedAbs = fabs(*pTempoRatio);
+    double tempoRatioAbs = fabs(*pTempoRatio);
     if (runningEngineVersion() == 2) {
         constexpr double kLowerRateLimit = 1.0 / 128.0;
-        if (speedAbs < kLowerRateLimit) {
+        if (tempoRatioAbs < kLowerRateLimit) {
             // Let the caller know we ignored their speed.
-            speedAbs = *pTempoRatio = 0;
+            tempoRatioAbs = *pTempoRatio = 0;
         }
     }
     // RubberBand handles checking for whether the change in pitchScale is a
@@ -67,7 +67,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double baseRate,
     // no-op. Time ratio is the ratio of stretched to unstretched duration. So 1
     // second in real duration is 0.5 seconds in stretched duration if tempo is
     // 2.
-    double timeRatioInverse = baseRate * speedAbs;
+    double timeRatioInverse = baseRate * tempoRatioAbs;
     if (timeRatioInverse > 0) {
         //qDebug() << "EngineBufferScaleRubberBand setTimeRatio" << 1 / timeRatioInverse;
         m_rubberBand.setTimeRatio(1.0 / timeRatioInverse);
@@ -86,14 +86,14 @@ void EngineBufferScaleRubberBand::setScaleParameters(double baseRate,
                 m_rubberBand.setTimeRatio(1.0 / timeRatioInverse);
             }
 
-            speedAbs = timeRatioInverse / baseRate;
-            *pTempoRatio = m_bBackwards ? -speedAbs : speedAbs;
+            tempoRatioAbs = timeRatioInverse / baseRate;
+            *pTempoRatio = m_bBackwards ? -tempoRatioAbs : tempoRatioAbs;
         }
     }
 
     // Used by other methods so we need to keep them up to date.
     m_dBaseRate = baseRate;
-    m_dTempoRatio = speedAbs;
+    m_dTempoRatio = tempoRatioAbs;
     m_dPitchRatio = *pPitchRatio;
 }
 
