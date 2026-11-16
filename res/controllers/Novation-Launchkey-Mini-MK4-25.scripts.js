@@ -22,6 +22,18 @@ LaunchkeyJog.deckState = {
 };
 
 /**
+ * Presses and immediately releases a Mixxx push button control, so it does
+ * not stay at 1 (and highlighted in the skin) after a one-shot action.
+ *
+ * @param {string} group The Mixxx control group
+ * @param {string} key The Mixxx control key
+ */
+LaunchkeyJog.pressButton = function(group, key) {
+    engine.setValue(group, key, 1);
+    engine.setValue(group, key, 0);
+};
+
+/**
  * Initializes the controller mapping.
  *
  * @param {string} _id The controller ID
@@ -136,8 +148,7 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
 
         // Shift + Play triggers a 1-bar delayed pause
         if (state.shiftActive && currentPlay === 1) {
-            let bpm = engine.getValue(groupTarget, "file_bpm");
-            if (bpm <= 0) { bpm = engine.getValue(groupTarget, "bpm"); }
+            let bpm = engine.getValue(groupTarget, "bpm");
             if (bpm <= 0) { bpm = 120; }
 
             const oneBarMs = (60000 / bpm) * 4;
@@ -158,7 +169,7 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
                 true,
             );
         } else {
-            engine.setValue(groupTarget, "play", !currentPlay);
+            script.toggleControl(groupTarget, "play");
         }
         break;
     }
@@ -166,14 +177,12 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
     // Hotcue 1
     case 0x3e:
     case 0x45: {
-        if (isPress) {
-            engine.setValue(
-                groupTarget,
-                state.shiftActive ? "hotcue_1_clear" : "hotcue_1_activate",
-                1,
-            );
-        } else {
+        if (!isPress) {
             engine.setValue(groupTarget, "hotcue_1_activate", 0);
+        } else if (state.shiftActive) {
+            LaunchkeyJog.pressButton(groupTarget, "hotcue_1_clear");
+        } else {
+            engine.setValue(groupTarget, "hotcue_1_activate", 1);
         }
         break;
     }
@@ -181,14 +190,12 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
     // Hotcue 2
     case 0x40:
     case 0x47: {
-        if (isPress) {
-            engine.setValue(
-                groupTarget,
-                state.shiftActive ? "hotcue_2_clear" : "hotcue_2_activate",
-                1,
-            );
-        } else {
+        if (!isPress) {
             engine.setValue(groupTarget, "hotcue_2_activate", 0);
+        } else if (state.shiftActive) {
+            LaunchkeyJog.pressButton(groupTarget, "hotcue_2_clear");
+        } else {
+            engine.setValue(groupTarget, "hotcue_2_activate", 1);
         }
         break;
     }
@@ -198,15 +205,15 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
     case 0x49: {
         if (!isPress) { return; }
         if (state.shiftActive) {
-            engine.setValue(groupTarget, "loop_exit", 1);
+            LaunchkeyJog.pressButton(groupTarget, "loop_exit");
         } else {
             const isLooping = engine.getValue(groupTarget, "loop_enabled");
             if (!isLooping) {
                 engine.setValue(groupTarget, "beatloop_size", 1);
-                engine.setValue(groupTarget, "beatloop_activate", 1);
+                LaunchkeyJog.pressButton(groupTarget, "beatloop_activate");
             } else {
                 const cmdLeft = deck === 1 ? "loop_double" : "loop_halve";
-                engine.setValue(groupTarget, cmdLeft, 1);
+                LaunchkeyJog.pressButton(groupTarget, cmdLeft);
             }
         }
         break;
@@ -217,15 +224,15 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
     case 0x4b: {
         if (!isPress) { return; }
         if (state.shiftActive) {
-            engine.setValue(groupTarget, "loop_exit", 1);
+            LaunchkeyJog.pressButton(groupTarget, "loop_exit");
         } else {
             const isLooping = engine.getValue(groupTarget, "loop_enabled");
             if (!isLooping) {
                 engine.setValue(groupTarget, "beatloop_size", 1);
-                engine.setValue(groupTarget, "beatloop_activate", 1);
+                LaunchkeyJog.pressButton(groupTarget, "beatloop_activate");
             } else {
                 const cmdRight = deck === 1 ? "loop_halve" : "loop_double";
-                engine.setValue(groupTarget, cmdRight, 1);
+                LaunchkeyJog.pressButton(groupTarget, cmdRight);
             }
         }
         break;
@@ -490,16 +497,12 @@ LaunchkeyJog.handleLoadTrack = function(
     const groupTarget = `[Channel${deck}]`;
 
     if (state.shiftActive) {
-        engine.setValue(groupTarget, "LoadSelectedTrack", 1);
+        LaunchkeyJog.pressButton(groupTarget, "LoadSelectedTrack");
         if (LaunchkeyJog.debug) {
             console.log(`>>> Loading track on Deck ${  deck  } <<<`);
         }
     } else {
-        engine.setValue(
-            groupTarget,
-            "sync_enabled",
-            !engine.getValue(groupTarget, "sync_enabled"),
-        );
+        script.toggleControl(groupTarget, "sync_enabled");
     }
 };
 
@@ -590,6 +593,15 @@ LaunchkeyJog.updateModStripTarget = function() {
         m.lastRawPos = rawPos;
         m.emaVelocity = 0;
         m.isScratching = true;
+
+        // Release the previous deck if its inertia was interrupted by a
+        // touch targeting the other deck, otherwise it stays in scratch mode
+        if (
+            m.scratchDeck !== LaunchkeyJog.activeDeck &&
+            engine.isScratching(m.scratchDeck)
+        ) {
+            engine.scratchDisable(m.scratchDeck, false);
+        }
         m.scratchDeck = LaunchkeyJog.activeDeck;
 
         engine.scratchEnable(m.scratchDeck, 128, 33 + 1 / 3, 0.25, 1.0 / 256);
