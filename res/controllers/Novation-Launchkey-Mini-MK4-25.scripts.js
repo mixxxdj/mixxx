@@ -174,9 +174,9 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
         break;
     }
 
-    // Hotcue 1
+    // Hotcue 1 (Deck 2 pads are mirrored)
     case 0x3e:
-    case 0x45: {
+    case 0x47: {
         if (!isPress) {
             engine.setValue(groupTarget, "hotcue_1_activate", 0);
         } else if (state.shiftActive) {
@@ -187,9 +187,9 @@ LaunchkeyJog.padHandler = function(channel, control, value, _status, _group) {
         break;
     }
 
-    // Hotcue 2
+    // Hotcue 2 (Deck 2 pads are mirrored)
     case 0x40:
-    case 0x47: {
+    case 0x45: {
         if (!isPress) {
             engine.setValue(groupTarget, "hotcue_2_activate", 0);
         } else if (state.shiftActive) {
