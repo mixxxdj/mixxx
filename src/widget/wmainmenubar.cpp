@@ -897,7 +897,8 @@ void WMainMenuBar::showMenuBar() {
 }
 
 void WMainMenuBar::hideMenuBar() {
-    if (isNativeMenuBar()) {
+    // with window buttons the bar is the title bar, auto-hide applies after a restart
+    if (isNativeMenuBar() || m_pMaximizeButton) {
         return;
     }
     if (m_pConfig->getValue<bool>(kHideMenuCfgKey, false)) {
