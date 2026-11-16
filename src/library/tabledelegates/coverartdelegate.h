@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QList>
+#include <QSet>
 
 #include "library/coverart.h"
 #include "library/tabledelegates/tableitemdelegate.h"
@@ -28,21 +29,6 @@ class CoverArtDelegate : public TableItemDelegate {
     // Sent when rows need to be refreshed
     void rowsChanged(const QList<int>& rows);
 
-  public slots:
-    // Advise the delegate to temporarily inhibit lazy loading
-    // of cover images and to only display those cover images
-    // that have already been cached. Otherwise only the solid
-    // (background) color is painted.
-    //
-    // It is useful to handle cases when the user scroll down
-    // very fast or when they hold an arrow key. In this case
-    // it is NOT desirable to start multiple expensive file
-    // system operations in worker threads for loading and
-    // scaling cover images that are not even displayed after
-    // scrolling beyond them.
-    void slotInhibitLazyLoading(
-            bool inhibitLazyLoading);
-
   private slots:
     void slotCoverFound(
             const QObject* pRequester,
@@ -55,18 +41,30 @@ class CoverArtDelegate : public TableItemDelegate {
   private:
     void emitRowsChanged(
             QList<int>&& rows);
-    void cleanCacheMissRows() const;
-    void requestUncachedCover(
+    // Returns false if no coverFound() will arrive for coverInfo.cacheKey()
+    bool requestUncachedCover(
             const CoverInfo& coverInfo,
-            int width,
-            int row) const;
+            int width);
+
+    // Loads covers around the viewport into QPixmapCache
+    void prefetchWindow() override;
+    void prefetchRowsReplaced() override;
+    void pumpPrefetchQueue();
+
+    struct PrefetchItem {
+        CoverInfo coverInfo;
+        QList<int> rows;
+        bool visible;
+    };
+    mutable int m_cellWidth; // device pixels
+    QList<PrefetchItem> m_prefetchQueue;
+    QSet<mixxx::cache_key_t> m_prefetchInFlight;
+    // Covers that were expected but not found, e.g. on a missing drive.
+    // CoverArtCache doesn't cache them, so we must not retry on every pass.
+    QSet<mixxx::cache_key_t> m_noImageKeys;
 
     CoverArtCache* const m_pCache;
-    bool m_inhibitLazyLoading;
     int m_column;
 
-    // We need to record rows in paint() (which is const) so
-    // these are marked mutable.
-    mutable QSet<int> m_cacheMissRows;
-    mutable QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
+    QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
 };

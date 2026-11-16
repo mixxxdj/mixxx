@@ -28,6 +28,13 @@ class OverviewCache : public QObject, public Singleton<OverviewCache> {
             const QObject* pRequester,
             QSize desiredSize);
 
+    bool isLoading(TrackId trackId) const {
+        return m_currentlyLoading.contains(trackId);
+    }
+    bool hasNoOverview(TrackId trackId) const {
+        return m_tracksWithoutOverview.contains(trackId);
+    }
+
     struct FutureResult {
         FutureResult()
                 : requester(nullptr) {
