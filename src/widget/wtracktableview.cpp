@@ -56,7 +56,7 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_dropIndicatorColor(kDefaultDropIndicatorColor),
           m_sorting(false),
           m_selectionChangedSinceLastGuiTick(true),
-          m_loadCachedOnly(false),
+          m_userActionPending(false),
           m_dropRow(-1) {
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
@@ -111,24 +111,19 @@ void WTrackTableView::currentChanged(
 }
 #endif
 
-void WTrackTableView::enableCachedOnly() {
-    if (!m_loadCachedOnly) {
-        // don't try to load and search covers, drawing only
-        // covers which are already in the QPixmapCache.
-        emit onlyCachedCoversAndOverviews(true);
-        m_loadCachedOnly = true;
-    }
+void WTrackTableView::noteUserAction() {
+    m_userActionPending = true;
     m_lastUserAction = mixxx::Time::elapsed();
 }
 
 void WTrackTableView::slotScrollValueChanged(int /*unused*/) {
-    enableCachedOnly();
+    noteUserAction();
 }
 
 void WTrackTableView::selectionChanged(
         const QItemSelection& selected, const QItemSelection& deselected) {
     m_selectionChangedSinceLastGuiTick = true;
-    enableCachedOnly();
+    noteUserAction();
     // Workaround for Qt6 bug https://bugreports.qt.io/browse/QTBUG-108595:
     // If 'selectedClick' is enabled Ctrl+click opens the editor instead of
     // toggling the clicked item.
@@ -150,9 +145,9 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     }
 
     // if the user is stopped in the same row for more than 0.1 s,
-    // we load un-cached cover arts as well.
+    // we emit the selected track.
     mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
-    if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
+    if (m_userActionPending && timeDelta > mixxx::Duration::fromMillis(100)) {
         // Show the currently selected track in the large cover art view and
         // highlights crate and playlists. Doing this in selectionChanged
         // slows down scrolling performance so we wait until the user has
@@ -175,10 +170,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
             m_selectionChangedSinceLastGuiTick = false;
         }
 
-        // This allows CoverArtDelegate to request that we load covers from disk
-        // (as opposed to only serving them from cache).
-        emit onlyCachedCoversAndOverviews(false);
-        m_loadCachedOnly = false;
+        m_userActionPending = false;
     }
 }
 

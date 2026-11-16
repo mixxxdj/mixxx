@@ -172,7 +172,7 @@ class WTrackTableView : public WLibraryTableView {
 
     void paintEvent(QPaintEvent* e) override;
 
-    void enableCachedOnly();
+    void noteUserAction();
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected) override;
 
@@ -210,7 +210,7 @@ class WTrackTableView : public WLibraryTableView {
     // Control the delay to load a cover art.
     mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
-    bool m_loadCachedOnly;
+    bool m_userActionPending;
 
     ControlProxy* m_pCOTGuiTick;
     ControlProxy* m_pKeyNotation;

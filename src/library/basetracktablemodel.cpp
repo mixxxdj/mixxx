@@ -413,11 +413,6 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         auto* pCoverArtDelegate =
                 new CoverArtDelegate(pTableView);
-        // WLibraryTableView -> CoverArtDelegate
-        connect(pTableView,
-                &WLibraryTableView::onlyCachedCoversAndOverviews,
-                pCoverArtDelegate,
-                &CoverArtDelegate::slotInhibitLazyLoading);
         // CoverArtDelegate -> BaseTrackTableModel
         connect(pCoverArtDelegate,
                 &CoverArtDelegate::rowsChanged,
@@ -432,10 +427,6 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 &OverviewDelegate::overviewRowsChanged,
                 this,
                 &BaseTrackTableModel::slotRefreshOverviewRows);
-        connect(pTableView,
-                &WLibraryTableView::onlyCachedCoversAndOverviews,
-                pOverviewDelegate,
-                &OverviewDelegate::slotInhibitLazyLoading);
         return pOverviewDelegate;
     }
     return new DefaultDelegate(pTableView);

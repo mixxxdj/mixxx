@@ -15,6 +15,9 @@ namespace {
 
 const mixxx::Logger kLogger("OverviewDelegate");
 
+// Visible overviews are requested regardless
+constexpr int kMaxPrefetchInFlight = 4;
+
 inline TrackModel* asTrackModel(
         QTableView* pTableView) {
     auto* pTrackModel =
@@ -42,8 +45,7 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
           m_pTrackModel(asTrackModel(pTableView)),
           m_pCache(OverviewCache::instance()),
-          m_type(mixxx::OverviewType::RGB),
-          m_inhibitLazyLoading(false) {
+          m_type(mixxx::OverviewType::RGB) {
     WLibrary* pLibrary = findLibraryWidgetParent(pTableView);
     if (pLibrary) {
         m_signalColors = pLibrary->getOverviewSignalColors();
@@ -65,6 +67,53 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
             this);
     m_pTypeControl->connectValueChanged(this, &OverviewDelegate::slotTypeControlChanged);
     slotTypeControlChanged(m_pTypeControl->get());
+
+    enablePrefetch();
+}
+
+void OverviewDelegate::prefetchWindow() {
+    // The queue is rebuilt on every pass, so rows that were
+    // scrolled past are never rendered.
+    if (m_cellSize.isEmpty()) {
+        return;
+    }
+    QSet<TrackId> queued;
+    m_prefetchQueue.clear();
+    const qint64 bytesPerRow = qint64{m_cellSize.width()} * m_cellSize.height() * 4;
+    int visibleCount = 0;
+    const QList<int> rows = prefetchRows(bytesPerRow, &visibleCount);
+    for (qsizetype i = 0; i < rows.size(); ++i) {
+        const TrackId trackId = m_pTrackModel->getTrackId(
+                m_pTableView->model()->index(rows[i], 0));
+        if (!trackId.isValid() || queued.contains(trackId) ||
+                m_pCache->hasNoOverview(trackId)) {
+            continue;
+        }
+        if (!m_pCache->requestCachedOverview(m_type, trackId, this, m_cellSize).isNull()) {
+            continue;
+        }
+        queued.insert(trackId);
+        m_prefetchQueue.append({trackId, i < visibleCount});
+    }
+    pumpPrefetchQueue();
+}
+
+void OverviewDelegate::pumpPrefetchQueue() {
+    if (!isPrefetchActive()) {
+        m_prefetchQueue.clear();
+        return;
+    }
+    // Visible items are at the front of the queue
+    while (!m_prefetchQueue.isEmpty() &&
+            (m_prefetchQueue.first().visible ||
+                    m_prefetchInFlight.size() < kMaxPrefetchInFlight)) {
+        const TrackId trackId = m_prefetchQueue.takeFirst().trackId;
+        m_pCache->requestUncachedOverview(
+                m_type, m_signalColors, trackId, this, m_cellSize);
+        if (m_pCache->isLoading(trackId)) {
+            m_prefetchInFlight.insert(trackId);
+        }
+    }
 }
 
 void OverviewDelegate::slotTypeControlChanged(double v) {
@@ -76,6 +125,7 @@ void OverviewDelegate::slotTypeControlChanged(double v) {
     }
 
     m_type = type;
+    schedulePrefetch(true);
     // Instantly update visible overviews so we get a live preview
     // when changing the type in the preferences.
     m_pTableView->update();
@@ -108,29 +158,18 @@ void OverviewDelegate::emitOverviewRowsChanged(QSet<TrackId>&& trackIds) {
     emit overviewRowsChanged(std::move(rows));
 }
 
-void OverviewDelegate::slotInhibitLazyLoading(bool inhibitLazyLoading) {
-    m_inhibitLazyLoading = inhibitLazyLoading;
-    if (m_inhibitLazyLoading || m_cacheMissIds.isEmpty()) {
-        return;
-    }
-    // If we can request non-cache covers now, request updates
-    // for all rows that were cache misses since the last time.
-    // Reset the member variable before mutating the aggregated
-    // rows list (-> implicit sharing) and emitting a signal that
-    // in turn may trigger new signals for CoverArtDelegate!
-    QSet<TrackId> staleIds = std::move(m_cacheMissIds);
-    DEBUG_ASSERT(m_cacheMissIds.isEmpty());
-    emitOverviewRowsChanged(std::move(staleIds));
-}
-
 /// Maybe request repaint via dataChanged() by BaseTrackTableModel
 void OverviewDelegate::slotOverviewReady(const QObject* pRequester,
         const TrackId trackId,
         bool pixmapValid) {
     // kLogger.info() << "slotOverviewReady()" << trackId << "pixmap valid:" << pixmapValid;
+    const bool wasPrefetching = m_prefetchInFlight.remove(trackId);
 
     if (pRequester == this && pixmapValid) {
         emitOverviewRowsChanged(QSet<TrackId>{trackId});
+    }
+    if (wasPrefetching) {
+        pumpPrefetchQueue();
     }
 }
 
@@ -145,24 +184,16 @@ void OverviewDelegate::paintItem(QPainter* painter,
         const QModelIndex& index) const {
     const TrackId trackId(m_pTrackModel->getTrackId(index));
     const double scaleFactor = m_pTableView->devicePixelRatioF();
+    const QSize cellSize = option.rect.size() * scaleFactor;
+    m_cellSize = cellSize;
+    // Cache misses are rendered by prefetchWindow()
     QPixmap pixmap = m_pCache->requestCachedOverview(m_type,
             trackId,
             this,
-            option.rect.size() * scaleFactor);
+            cellSize);
+    schedulePrefetch(pixmap.isNull() && !m_pCache->isLoading(trackId) &&
+            !m_pCache->hasNoOverview(trackId));
     if (pixmap.isNull()) {
-        // Cache miss
-        if (m_inhibitLazyLoading) {
-            // We are requesting cache-only covers and got a cache
-            // miss. Record this row so that when we switch to requesting
-            // non-cache we can request an update.
-            m_cacheMissIds.insert(trackId);
-        } else {
-            pixmap = m_pCache->requestUncachedOverview(m_type,
-                    m_signalColors,
-                    trackId,
-                    this,
-                    option.rect.size() * scaleFactor);
-        }
         paintItemBackground(painter, option, index);
     } else {
         // We have a cached pixmap, paint it
