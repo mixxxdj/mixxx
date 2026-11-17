@@ -1,6 +1,7 @@
 #include "engine/enginebuffer.h"
 
 #include <QtDebug>
+#include <utility>
 
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
@@ -1404,7 +1405,14 @@ void EngineBuffer::processSeek(bool paused) {
                 return;
             }
             position = pOtherChannel->getEngineBuffer()->getExactPlayPos();
+
+            // Let EngineControls, in particular RateControl know this start is a
+            // clone to avoid a spin-up ramp.
+            for (const auto& pControl : std::as_const(m_engineControls)) {
+                pControl->notifyCloneSeek();
+            }
         } break;
+
         default:
             DEBUG_ASSERT(!"Unhandled seek request type");
             m_queuedSeek.setValue(kNoQueuedSeek);

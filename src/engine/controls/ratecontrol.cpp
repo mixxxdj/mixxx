@@ -163,6 +163,7 @@ RateControl::RateControl(const QString& group, UserSettingsPointer pConfig)
           m_lastTargetRate(0.0),
           m_spinningDown(false),
           m_seekedSinceLastBuffer(false),
+          m_cloneSeekPending(false),
           m_prevPaused(true),
           m_latchedPlay(false),
           m_resetRampRequested(false),
@@ -623,6 +624,7 @@ double RateControl::calculateSpeed(double baserate,
     const bool playLatched = m_pPlayLatched && m_pPlayLatched->toBool();
     const bool seeked = m_seekedSinceLastBuffer;
     m_seekedSinceLastBuffer = false;
+    const bool cloneSeek = m_cloneSeekPending.exchange(false);
 
     // Speed set by hand: scratching (spinny, waveform, controller platter),
     // jog/wheel scrubbing while paused, searching or vinyl control
@@ -643,7 +645,12 @@ double RateControl::calculateSpeed(double baserate,
         m_spinningDown = false;
     } else if (!paused) {
         if (m_prevPaused) {
-            if (playLatched && m_pSpinupEnabled->toBool()) {
+            if (cloneSeek) {
+                // Cloned start: no ramp, start at full speed
+                m_platterSpeed = 1.0;
+                m_spinningDown = false;
+                m_latchedPlay = false;
+            } else if (playLatched && m_pSpinupEnabled->toBool()) {
                 // Started by a latched Play: spin up. If the platter is still
                 // spinning down, continue from its current speed.
                 if (!m_spinningDown) {
@@ -847,6 +854,10 @@ void RateControl::notifySeek(mixxx::audio::FramePos position) {
     // A pause combined with a jump (cue, start_stop, track load) must not
     // spin down from the new position
     m_seekedSinceLastBuffer = true;
+}
+
+void RateControl::notifyCloneSeek() {
+    m_cloneSeekPending.store(true);
 }
 
 void RateControl::resetPositionScratchController() {

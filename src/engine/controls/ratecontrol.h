@@ -91,6 +91,7 @@ public:
   void notifyWrapAround(mixxx::audio::FramePos triggerPos,
           mixxx::audio::FramePos targetPos);
   void notifySeek(mixxx::audio::FramePos position) override;
+  void notifyCloneSeek() override;
   void setEngineMixer(EngineMixer* pEngineMixer) override;
   void resetPositionScratchController();
   // Thread-safe: request a fresh motor state, applied in calculateSpeed()
@@ -202,6 +203,7 @@ private:
   double m_lastTargetRate; // speed the platter was ramping to or running at
   bool m_spinningDown;
   bool m_seekedSinceLastBuffer;
+  std::atomic<bool> m_cloneSeekPending;
   bool m_prevPaused;
   bool m_latchedPlay;
   std::atomic<bool> m_resetRampRequested;
