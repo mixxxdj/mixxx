@@ -19,6 +19,10 @@ RING = re.compile(r'(<path [^>]*?d="[^"]*z *m[^"]*"[^>]*? fill=")#00000[01](")',
 # palemoon separates dark greys with darker or lighter lines and bevels. on
 # black these all vanish, so every line and frame gets the same visible grey
 FRAME = (0x5a, 0x5a, 0x5a)
+# bevel with black top and left (search box, sidebar, track table): only the
+# bottom right corner would get a frame, so the lighter half goes black as well
+HALF_BEVEL = re.compile(r"(border-top:[^;{}]*#000;\s*border-left:[^;{}]*#000;\s*border-bottom:[^;{}#]*)"
+                        r"#[0-9a-f]+(;\s*border-right:[^;{}#]*)#[0-9a-f]+;", re.I)
 ORANGE_TO_BLUE = {(0xb2, 0x4c, 0x12): (0x1e, 0x64, 0xc8),  # active
                   (0xb2, 0x42, 0x1c): (0x1e, 0x64, 0xc8),
                   (0x7d, 0x35, 0x0d): (0x15, 0x46, 0x8c)}  # dim, momentary
@@ -81,6 +85,7 @@ def remap(prop, c):
 
 def convert(text):
     text = text.replace("LateNight/palemoon/", "LateNight/highcontrast/")
+    text = HALF_BEVEL.sub(lambda m: m.group(1) + "#000" + m.group(2) + "#000;", text)
     return DECL.sub(lambda m: m.group(1) + m.group(2)
                     + COLOR.sub(lambda c: remap(m.group(1), c.group(0)), m.group(3)) + m.group(4), text)
 
@@ -163,6 +168,9 @@ if __name__ == "__main__":
     assert remap("border", "#0c0c0c") == remap("border-top", "#333") == "#5a5a5a"
     assert remap("border", "#000") == "#000" and remap("border", "#585858") == "#5a5a5a"
     assert remap("border", "#fff") == "#fff" and remap("border", "#257b82") == "#257b82"
+    assert "5a5a5a" not in convert("a {\n  border-top: 1px solid #000;\n  border-left: 1px solid #000;\n"
+                                   "  border-bottom: 1px solid #1e1e1e;\n  border-right: 1px solid #222;\n}")
+    assert "5a5a5a" in convert("a { border-top: 1px solid #000; border-bottom: 1px solid #333; }")  # separator
     assert remap("background-color", "#b24c12") == "#1e64c8"
     assert remap("background-color", "#777") == "#1e64c8" and remap("color", "#000") == "#ffffff"
     assert remap_svg("#a89a8c", "icon") == "#f4f4f4"

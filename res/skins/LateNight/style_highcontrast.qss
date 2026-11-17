@@ -1244,8 +1244,8 @@ WLibrarySidebar,
 WSearchLineEdit {
   border-top: 1px solid #000;
   border-left: 1px solid #000;
-  border-bottom: 1px solid #5a5a5a;
-  border-right: 1px solid #5a5a5a;
+  border-bottom: 1px solid #000;
+  border-right: 1px solid #000;
   }
   WLibraryTextBrowser {
     margin-top: 1px;
