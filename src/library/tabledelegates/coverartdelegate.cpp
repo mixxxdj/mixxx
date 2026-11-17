@@ -16,9 +16,6 @@ namespace {
 
 const mixxx::Logger kLogger("CoverArtDelegate");
 
-// Visible covers are requested regardless
-constexpr int kMaxPrefetchInFlight = 4;
-
 inline TrackModel* asTrackModel(
         QTableView* pTableView) {
     auto* pTrackModel =
@@ -30,11 +27,10 @@ inline TrackModel* asTrackModel(
 } // anonymous namespace
 
 CoverArtDelegate::CoverArtDelegate(QTableView* parent)
-        : TableItemDelegate(parent),
+        : CachedTableItemDelegate(parent,
+                  asTrackModel(parent)->fieldIndex(LIBRARYTABLE_COVERART)),
           m_pTrackModel(asTrackModel(parent)),
-          m_cellWidth(0),
-          m_pCache(CoverArtCache::instance()),
-          m_column(m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART)) {
+          m_pCache(CoverArtCache::instance()) {
     if (m_pCache) {
         connect(m_pCache,
                 &CoverArtCache::coverFound,
@@ -44,76 +40,56 @@ CoverArtDelegate::CoverArtDelegate(QTableView* parent)
         kLogger.warning()
                 << "Caching of cover art is not available";
     }
-    if (m_pCache) {
-        enablePrefetch();
-    }
 }
 
-void CoverArtDelegate::prefetchWindow() {
-    if (m_cellWidth <= 0) {
+qint64 CoverArtDelegate::prefetchBytesPerRow() const {
+    if (!m_pCache) {
+        return 0;
+    }
+    // Most covers are square
+    return qint64{m_cellWidth} * m_cellWidth * 4;
+}
+
+void CoverArtDelegate::prefetchRow(int row, bool visible) {
+    const QModelIndex index = m_pTableView->model()->index(row, m_column);
+    const CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
+    const mixxx::cache_key_t key = coverInfo.cacheKey();
+    if (!coverInfo.hasImage() || m_noImageKeys.contains(key)) {
         return;
     }
-    QHash<mixxx::cache_key_t, qsizetype> queued;
-    m_prefetchQueue.clear();
-    // Most covers are square
-    const qint64 bytesPerRow = qint64{m_cellWidth} * m_cellWidth * 4;
-    int visibleCount = 0;
-    const QList<int> rows = prefetchRows(bytesPerRow, &visibleCount);
-    for (qsizetype i = 0; i < rows.size(); ++i) {
-        const int row = rows[i];
-        const QModelIndex index = m_pTableView->model()->index(row, m_column);
-        const CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
-        const mixxx::cache_key_t key = coverInfo.cacheKey();
-        if (!coverInfo.hasImage() || m_noImageKeys.contains(key)) {
-            continue;
-        }
-        // Legacy covers load the track and may update its metadata,
-        // so only do that for visible rows
-        if (i >= visibleCount && coverInfo.imageDigest().isEmpty()) {
-            continue;
-        }
-        const auto it = queued.constFind(key);
-        if (it != queued.constEnd()) {
-            m_prefetchQueue[*it].rows.append(row);
-        } else if (CoverArtCache::getCachedCover(coverInfo, m_cellWidth).isNull()) {
-            queued.insert(key, m_prefetchQueue.size());
-            m_prefetchQueue.append({coverInfo, {row}, i < visibleCount});
-        }
+    if (m_prefetchInFlight.contains(key)) {
+        // paintItem() records visible rows that wait for it
+        return;
     }
-    pumpPrefetchQueue();
+    // Legacy covers load the track and may update its metadata,
+    // so only do that for visible rows
+    if (!visible && coverInfo.imageDigest().isEmpty()) {
+        return;
+    }
+    if (!CoverArtCache::getCachedCover(coverInfo, m_cellWidth).isNull()) {
+        return;
+    }
+    // Insert first, coverFound() may be emitted synchronously. Only visible
+    // rows are refreshed, each refresh makes the QML library render.
+    if (visible) {
+        m_pendingCacheRows.insert(key, row);
+    }
+    m_prefetchInFlight.insert(key);
+    if (!requestUncachedCover(coverInfo, m_cellWidth)) {
+        m_prefetchInFlight.remove(key);
+        m_pendingCacheRows.remove(key);
+        // Don't retry on every pass
+        m_noImageKeys.insert(key);
+    }
 }
 
 void CoverArtDelegate::prefetchRowsReplaced() {
-    // Retry missing covers, e.g. after the drive was mounted again
+    // Retry missing covers, e.g. after the drive was mounted again. Rows
+    // and keys may have changed (legacy covers), so forget the requests,
+    // CoverArtCache merges repeated ones.
     m_noImageKeys.clear();
-}
-
-void CoverArtDelegate::pumpPrefetchQueue() {
-    if (!isPrefetchActive()) {
-        m_prefetchQueue.clear();
-        return;
-    }
-    // Visible items are at the front of the queue
-    while (!m_prefetchQueue.isEmpty() &&
-            (m_prefetchQueue.first().visible ||
-                    m_prefetchInFlight.size() < kMaxPrefetchInFlight)) {
-        const PrefetchItem item = m_prefetchQueue.takeFirst();
-        const mixxx::cache_key_t key = item.coverInfo.cacheKey();
-        // Rows may have moved since the request (sorting), so
-        // also refresh the current ones when it finishes
-        for (int row : item.rows) {
-            m_pendingCacheRows.insert(key, row);
-        }
-        if (m_prefetchInFlight.contains(key)) {
-            continue;
-        }
-        // Insert before requesting, coverFound() may be emitted synchronously
-        m_prefetchInFlight.insert(key);
-        if (!requestUncachedCover(item.coverInfo, m_cellWidth)) {
-            m_prefetchInFlight.remove(key);
-            m_pendingCacheRows.remove(key);
-        }
-    }
+    m_pendingCacheRows.clear();
+    m_prefetchInFlight.clear();
 }
 
 void CoverArtDelegate::emitRowsChanged(
@@ -145,10 +121,12 @@ bool CoverArtDelegate::requestUncachedCover(
         if (!pTrack) {
             return false;
         }
-        CoverArtCache::requestUncachedCover(this, pTrack, width);
         // The result is reported with the track's key, which differs
-        // from ours if the model is stale
-        return pTrack->getCoverInfo().cacheKey() == coverInfo.cacheKey();
+        // from ours if the model is stale. Compare before requesting,
+        // the request may update the track's cover from another thread.
+        const bool sameKey = pTrack->getCoverInfo().cacheKey() == coverInfo.cacheKey();
+        CoverArtCache::requestUncachedCover(this, pTrack, width);
+        return sameKey;
     } else {
         // This is the fast path with an internal temporary track
         CoverArtCache::requestUncachedCover(this, coverInfo, width);
@@ -166,9 +144,6 @@ void CoverArtDelegate::slotCoverFound(
     mixxx::cache_key_t requestedImageHash = coverInfo.cacheKey();
     QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
     m_pendingCacheRows.remove(requestedImageHash);
-    if (m_prefetchInFlight.remove(requestedImageHash)) {
-        pumpPrefetchQueue();
-    }
     if (pixmap.isNull()) {
         // CoverArtCache already logged a warning
         kLogger.debug() << "Failed to load cover" << coverInfo;
@@ -177,6 +152,9 @@ void CoverArtDelegate::slotCoverFound(
         // Only refresh the rows if loading succeeded, otherwise
         // we would enter an infinite repaint loop and churn CPU.
         emitRowsChanged(std::move(refreshRows));
+    }
+    if (m_prefetchInFlight.remove(requestedImageHash)) {
+        processPrefetchQueue();
     }
 }
 
@@ -192,19 +170,23 @@ void CoverArtDelegate::paintItem(
     const int width = static_cast<int>(option.rect.width() * scaleFactor);
     m_cellWidth = width;
     bool drewPixmap = false;
-    if (!coverInfo.hasImage()) {
-        // Rows further down may have covers
-        schedulePrefetch();
-    } else {
+    bool loadNow = false;
+    if (coverInfo.hasImage()) {
         VERIFY_OR_DEBUG_ASSERT(m_pCache) {
             return;
         }
-        // Cache misses are loaded by prefetchWindow()
+        // Cache misses are loaded by prefetchRow()
         QPixmap pixmap = CoverArtCache::getCachedCover(coverInfo, width);
         const mixxx::cache_key_t key = coverInfo.cacheKey();
-        schedulePrefetch(pixmap.isNull() &&
-                !m_prefetchInFlight.contains(key) &&
-                !m_noImageKeys.contains(key));
+        if (pixmap.isNull() && m_prefetchInFlight.contains(key)) {
+            // Requested for another row with the same cover, or this row
+            // moved since the request (sorting)
+            if (!m_pendingCacheRows.contains(key, index.row())) {
+                m_pendingCacheRows.insert(key, index.row());
+            }
+        } else {
+            loadNow = pixmap.isNull() && !m_noImageKeys.contains(key);
+        }
         if (!pixmap.isNull()) {
             // Cache hit
             pixmap.setDevicePixelRatio(scaleFactor);
@@ -212,6 +194,8 @@ void CoverArtDelegate::paintItem(
             drewPixmap = true;
         }
     }
+    // Also without an image, rows further down may have one
+    schedulePrefetch(loadNow);
     // Fallback: Use the (background) color as a placeholder:
     //  - while the cover art is loaded asynchronously in the background
     //  - if the audio file with embedded cover art is missing

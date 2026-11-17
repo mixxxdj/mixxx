@@ -4,7 +4,7 @@
 #include <QSet>
 
 #include "library/coverart.h"
-#include "library/tabledelegates/tableitemdelegate.h"
+#include "library/tabledelegates/cachedtableitemdelegate.h"
 #include "track/track_decl.h"
 #include "util/cache.h"
 
@@ -12,7 +12,7 @@ class CoverArtCache;
 class TrackModel;
 class QTableView;
 
-class CoverArtDelegate : public TableItemDelegate {
+class CoverArtDelegate : public CachedTableItemDelegate {
     Q_OBJECT
 
   public:
@@ -46,25 +46,22 @@ class CoverArtDelegate : public TableItemDelegate {
             const CoverInfo& coverInfo,
             int width);
 
-    // Loads covers around the viewport into QPixmapCache
-    void prefetchWindow() override;
+    // Load covers around the viewport into QPixmapCache
+    void prefetchRow(int row, bool visible) override;
+    int prefetchInFlightCount() const override {
+        return static_cast<int>(m_prefetchInFlight.size());
+    }
+    qint64 prefetchBytesPerRow() const override;
     void prefetchRowsReplaced() override;
-    void pumpPrefetchQueue();
 
-    struct PrefetchItem {
-        CoverInfo coverInfo;
-        QList<int> rows;
-        bool visible;
-    };
-    mutable int m_cellWidth; // device pixels
-    QList<PrefetchItem> m_prefetchQueue;
+    mutable int m_cellWidth = 0; // device pixels
     QSet<mixxx::cache_key_t> m_prefetchInFlight;
     // Covers that were expected but not found, e.g. on a missing drive.
     // CoverArtCache doesn't cache them, so we must not retry on every pass.
     QSet<mixxx::cache_key_t> m_noImageKeys;
 
     CoverArtCache* const m_pCache;
-    int m_column;
 
-    QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
+    // Rows to refresh when a cover is loaded, also recorded in paint
+    mutable QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
 };

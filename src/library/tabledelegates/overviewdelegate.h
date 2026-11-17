@@ -4,7 +4,7 @@
 #include <QStyledItemDelegate>
 #include <QTableView>
 
-#include "library/tabledelegates/tableitemdelegate.h"
+#include "library/tabledelegates/cachedtableitemdelegate.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
 #include "waveform/overviewtype.h"
@@ -14,7 +14,7 @@ class ControlProxy;
 class OverviewCache;
 class TrackModel;
 
-class OverviewDelegate : public TableItemDelegate {
+class OverviewDelegate : public CachedTableItemDelegate {
     Q_OBJECT
 
   public:
@@ -39,20 +39,18 @@ class OverviewDelegate : public TableItemDelegate {
     TrackModel* const m_pTrackModel;
 
   private:
-    void emitOverviewRowsChanged(QSet<TrackId>&& trackIds);
+    void emitOverviewRowsChanged(QSet<TrackId>&& trackIds, bool visibleOnly = false);
+    // Renders overviews around the viewport into QPixmapCache
+    void prefetchRow(int row, bool visible) override;
+    int prefetchInFlightCount() const override {
+        return static_cast<int>(m_prefetchInFlight.size());
+    }
+    qint64 prefetchBytesPerRow() const override;
+
     OverviewCache* const m_pCache;
     mixxx::OverviewType m_type;
     parented_ptr<ControlProxy> m_pTypeControl;
     WaveformSignalColors m_signalColors;
-
-    // Renders overviews around the viewport into QPixmapCache
-    void prefetchWindow() override;
-    void pumpPrefetchQueue();
     mutable QSize m_cellSize; // device pixels
-    struct PrefetchItem {
-        TrackId trackId;
-        bool visible;
-    };
-    QList<PrefetchItem> m_prefetchQueue;
     QSet<TrackId> m_prefetchInFlight;
 };
