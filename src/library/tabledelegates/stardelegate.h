@@ -26,8 +26,7 @@ class StarDelegate : public TableItemDelegate {
 
     // called when editing is finished, to commit data from the editor to the
     // model
-    void setModelData(QWidget* pEditor, QAbstractItemModel* pModel,
-                      const QModelIndex& index) const;
+    void setModelData(QWidget* pEditor, QAbstractItemModel* pModel, const QModelIndex& index) const;
 
   private slots:
     void commitAndCloseEditor();
