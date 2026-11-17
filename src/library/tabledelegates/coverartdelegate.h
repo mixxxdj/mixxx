@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QHash>
 #include <QList>
 #include <QSet>
 
@@ -7,6 +8,7 @@
 #include "library/tabledelegates/cachedtableitemdelegate.h"
 #include "track/track_decl.h"
 #include "util/cache.h"
+#include "util/duration.h"
 
 class CoverArtCache;
 class TrackModel;
@@ -39,26 +41,25 @@ class CoverArtDelegate : public CachedTableItemDelegate {
     TrackModel* const m_pTrackModel;
 
   private:
-    void emitRowsChanged(
-            QList<int>&& rows);
     // Returns false if no coverFound() will arrive for coverInfo.cacheKey()
     bool requestUncachedCover(
             const CoverInfo& coverInfo,
             int width);
 
     // Load covers around the viewport into QPixmapCache
-    void prefetchRow(int row, bool visible) override;
+    bool prefetchRow(int row, bool visible) override;
     int prefetchInFlightCount() const override {
         return static_cast<int>(m_prefetchInFlight.size());
     }
     qint64 prefetchBytesPerRow() const override;
     void prefetchRowsReplaced() override;
+    bool isKnownMissing(mixxx::cache_key_t key) const;
 
     mutable int m_cellWidth = 0; // device pixels
     QSet<mixxx::cache_key_t> m_prefetchInFlight;
     // Covers that were expected but not found, e.g. on a missing drive.
     // CoverArtCache doesn't cache them, so we must not retry on every pass.
-    QSet<mixxx::cache_key_t> m_noImageKeys;
+    QHash<mixxx::cache_key_t, mixxx::Duration> m_missingSince;
 
     CoverArtCache* const m_pCache;
 

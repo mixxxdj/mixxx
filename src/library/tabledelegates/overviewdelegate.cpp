@@ -9,7 +9,6 @@
 #include "library/trackmodel.h"
 #include "moc_overviewdelegate.cpp"
 #include "util/logger.h"
-#include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
 
 namespace {
@@ -75,19 +74,26 @@ qint64 OverviewDelegate::prefetchBytesPerRow() const {
     return qint64{m_cellSize.width()} * m_cellSize.height() * 4;
 }
 
-void OverviewDelegate::prefetchRow(int row, bool /*visible*/) {
+bool OverviewDelegate::prefetchRow(int row, bool /*visible*/) {
     const TrackId trackId = m_pTrackModel->getTrackId(
             m_pTableView->model()->index(row, 0));
-    if (!trackId.isValid() || m_prefetchInFlight.contains(trackId)) {
-        return;
+    if (!trackId.isValid() || m_pCache->hasNoOverview(trackId)) {
+        return true;
     }
-    // Does nothing if it is cached, loading or has no overview
-    m_pCache->requestUncachedOverview(
+    if (m_prefetchInFlight.contains(trackId)) {
+        return false;
+    }
+    // Returns the overview if it is cached, does nothing if it is loading
+    const QPixmap pixmap = m_pCache->requestUncachedOverview(
             m_type, m_signalColors, trackId, this, m_cellSize);
+    if (!pixmap.isNull()) {
+        return true;
+    }
     // Also if another view requested it, so we repaint when it's ready
     if (m_pCache->isLoading(trackId)) {
         m_prefetchInFlight.insert(trackId);
     }
+    return false;
 }
 
 void OverviewDelegate::slotTypeControlChanged(double v) {
@@ -115,28 +121,12 @@ void OverviewDelegate::emitOverviewRowsChanged(
         const QList<int> idRows = m_pTrackModel->getTrackRows(id);
         rows.append(idRows);
     }
-    if (visibleOnly) {
-        const int first = m_pTableView->rowAt(0);
-        const int last = m_pTableView->rowAt(m_pTableView->viewport()->height() - 1);
-        rows.removeIf([first, last](int row) {
-            return row < first || (last >= 0 && row > last);
-        });
-    }
+    rows = rowsToRefresh(std::move(rows), visibleOnly);
     if (rows.isEmpty()) {
-        // For some reason this can happen during startup
+        // None visible, or none found, which happens during startup
         return;
     }
-    // Sort in ascending order...
-    std::sort(rows.begin(), rows.end());
-    // ...and then deduplicate...
-    constErase(
-            &rows,
-            make_const_iterator(
-                    rows, std::unique(rows.begin(), rows.end())),
-            rows.constEnd());
-    // ...before emitting the signal.
-    DEBUG_ASSERT(!rows.isEmpty());
-    emit overviewRowsChanged(std::move(rows));
+    emit overviewRowsChanged(rows);
 }
 
 /// Maybe request repaint via dataChanged() by BaseTrackTableModel

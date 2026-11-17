@@ -2,7 +2,6 @@
 
 #include <QPainter>
 #include <QTableView>
-#include <algorithm>
 
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
@@ -10,11 +9,14 @@
 #include "moc_coverartdelegate.cpp"
 #include "track/track.h"
 #include "util/logger.h"
-#include "util/make_const_iterator.h"
+#include "util/time.h"
 
 namespace {
 
 const mixxx::Logger kLogger("CoverArtDelegate");
+
+// E.g. the drive may be mounted again
+const mixxx::Duration kMissingCoverRetryDelay = mixxx::Duration::fromSeconds(10);
 
 inline TrackModel* asTrackModel(
         QTableView* pTableView) {
@@ -50,64 +52,47 @@ qint64 CoverArtDelegate::prefetchBytesPerRow() const {
     return qint64{m_cellWidth} * m_cellWidth * 4;
 }
 
-void CoverArtDelegate::prefetchRow(int row, bool visible) {
+bool CoverArtDelegate::prefetchRow(int row, bool visible) {
     const QModelIndex index = m_pTableView->model()->index(row, m_column);
     const CoverInfo coverInfo = m_pTrackModel->getCoverInfo(index);
     const mixxx::cache_key_t key = coverInfo.cacheKey();
-    if (!coverInfo.hasImage() || m_noImageKeys.contains(key)) {
-        return;
+    if (!coverInfo.hasImage() || isKnownMissing(key)) {
+        return true;
     }
     if (m_prefetchInFlight.contains(key)) {
         // paintItem() records visible rows that wait for it
-        return;
+        return false;
     }
     // Legacy covers load the track and may update its metadata,
     // so only do that for visible rows
     if (!visible && coverInfo.imageDigest().isEmpty()) {
-        return;
+        return true;
     }
     if (!CoverArtCache::getCachedCover(coverInfo, m_cellWidth).isNull()) {
-        return;
+        return true;
     }
-    // Insert first, coverFound() may be emitted synchronously. Only visible
-    // rows are refreshed, each refresh makes the QML library render.
-    if (visible) {
-        m_pendingCacheRows.insert(key, row);
-    }
+    // Insert first, coverFound() may be emitted synchronously
+    m_pendingCacheRows.insert(key, row);
     m_prefetchInFlight.insert(key);
     if (!requestUncachedCover(coverInfo, m_cellWidth)) {
         m_prefetchInFlight.remove(key);
         m_pendingCacheRows.remove(key);
-        // Don't retry on every pass
-        m_noImageKeys.insert(key);
+        m_missingSince.insert(key, mixxx::Time::elapsed());
+        return true;
     }
+    return false;
 }
 
 void CoverArtDelegate::prefetchRowsReplaced() {
-    // Retry missing covers, e.g. after the drive was mounted again. Rows
-    // and keys may have changed (legacy covers), so forget the requests,
-    // CoverArtCache merges repeated ones.
-    m_noImageKeys.clear();
+    // Retry missing covers. Rows moved, they are recorded again when painted.
+    m_missingSince.clear();
     m_pendingCacheRows.clear();
-    m_prefetchInFlight.clear();
 }
 
-void CoverArtDelegate::emitRowsChanged(
-        QList<int>&& rows) {
-    if (rows.isEmpty()) {
-        return;
-    }
-    // Sort in ascending order...
-    std::sort(rows.begin(), rows.end());
-    // ...and then deduplicate...
-    constErase(
-            &rows,
-            make_const_iterator(
-                    rows, std::unique(rows.begin(), rows.end())),
-            rows.constEnd());
-    // ...before emitting the signal.
-    DEBUG_ASSERT(!rows.isEmpty());
-    emit rowsChanged(std::move(rows));
+bool CoverArtDelegate::isKnownMissing(mixxx::cache_key_t key) const {
+    const auto it = m_missingSince.constFind(key);
+    return it != m_missingSince.constEnd() &&
+            mixxx::Time::elapsed() - it.value() < kMissingCoverRetryDelay;
 }
 
 bool CoverArtDelegate::requestUncachedCover(
@@ -121,12 +106,13 @@ bool CoverArtDelegate::requestUncachedCover(
         if (!pTrack) {
             return false;
         }
-        // The result is reported with the track's key, which differs
-        // from ours if the model is stale. Compare before requesting,
-        // the request may update the track's cover from another thread.
-        const bool sameKey = pTrack->getCoverInfo().cacheKey() == coverInfo.cacheKey();
+        // The result is reported with the track's key, which differs from
+        // ours if the model is stale. The request may change it once, from
+        // the legacy hash to the digest, from another thread.
+        const auto key = coverInfo.cacheKey();
+        const bool keyBefore = pTrack->getCoverInfo().cacheKey() == key;
         CoverArtCache::requestUncachedCover(this, pTrack, width);
-        return sameKey;
+        return keyBefore && pTrack->getCoverInfo().cacheKey() == key;
     } else {
         // This is the fast path with an internal temporary track
         CoverArtCache::requestUncachedCover(this, coverInfo, width);
@@ -147,11 +133,15 @@ void CoverArtDelegate::slotCoverFound(
     if (pixmap.isNull()) {
         // CoverArtCache already logged a warning
         kLogger.debug() << "Failed to load cover" << coverInfo;
-        m_noImageKeys.insert(requestedImageHash);
+        m_missingSince.insert(requestedImageHash, mixxx::Time::elapsed());
     } else {
         // Only refresh the rows if loading succeeded, otherwise
         // we would enter an infinite repaint loop and churn CPU.
-        emitRowsChanged(std::move(refreshRows));
+        // Only visible rows, each refresh makes the QML library render.
+        refreshRows = rowsToRefresh(std::move(refreshRows), true);
+        if (!refreshRows.isEmpty()) {
+            emit rowsChanged(refreshRows);
+        }
     }
     if (m_prefetchInFlight.remove(requestedImageHash)) {
         processPrefetchQueue();
@@ -185,7 +175,7 @@ void CoverArtDelegate::paintItem(
                 m_pendingCacheRows.insert(key, index.row());
             }
         } else {
-            loadNow = pixmap.isNull() && !m_noImageKeys.contains(key);
+            loadNow = pixmap.isNull() && !isKnownMissing(key);
         }
         if (!pixmap.isNull()) {
             // Cache hit
