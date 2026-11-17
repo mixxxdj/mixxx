@@ -17,6 +17,11 @@
           Select the sharpness of the pitch bend.
         </description>
       </option>
+      <option variable="stripSearchSpeed" label="Seek Speed (top touch when deck is stopped)" type="integer" min="1" max="10" step="1" default="1">
+        <description>
+          Select a seek speed for when the deck is not playing.
+        </description>
+      </option>
       <option variable="vinylModeDefaultStateOn" label="Vinyl Mode Default State On" type="boolean" default="true">
         <description>
           Check this box for the Vinyl Mode to be activated from the start.
