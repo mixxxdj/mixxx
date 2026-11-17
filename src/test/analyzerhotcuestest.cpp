@@ -9,7 +9,11 @@ namespace {
 using mixxx::hotcues::placeCues;
 
 // beats at a loudness and bass level in db
-void section(std::vector<double>* pLoud, std::vector<double>* pBass, int beats, double loud, double bass) {
+void section(std::vector<double>* pLoud,
+        std::vector<double>* pBass,
+        int beats,
+        double loud,
+        double bass) {
     pLoud->insert(pLoud->end(), beats, loud);
     pBass->insert(pBass->end(), beats, bass);
 }
