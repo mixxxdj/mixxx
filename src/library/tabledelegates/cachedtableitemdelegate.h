@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QBitArray>
 #include <QElapsedTimer>
 #include <QList>
 #include <QPointer>
@@ -27,11 +28,15 @@ class CachedTableItemDelegate : public TableItemDelegate {
     void schedulePrefetch(bool immediately = false) const;
     /// Continue with the queued rows, call this when a request finished
     void processPrefetchQueue();
+    /// Sorted and deduplicated, optionally only the visible ones
+    QList<int> rowsToRefresh(QList<int> rows, bool visibleOnly) const;
 
     /// Request the image for `row` unless it is cached, loading or known
     /// to be missing. Rows that are not visible, and all rows while
     /// scrolling, are only passed while few requests are in flight.
-    virtual void prefetchRow(int row, bool visible) = 0;
+    /// Returns true if nothing is left to do, i.e. the image is cached
+    /// or missing. Such rows are skipped until they are visible.
+    virtual bool prefetchRow(int row, bool visible) = 0;
     virtual int prefetchInFlightCount() const = 0;
     /// Size of an image in the column, 0 while unknown
     virtual qint64 prefetchBytesPerRow() const = 0;
@@ -58,6 +63,7 @@ class CachedTableItemDelegate : public TableItemDelegate {
         int direction = 0; // 1 down, -1 up, 0 not scrolling
         bool operator==(const Viewport&) const = default;
     };
+    Viewport visibleRows() const;
     Viewport m_viewport;
     const QPointer<const QAbstractItemModel> m_pModel;
     const parented_ptr<QTimer> m_pPrefetchTimer;
@@ -72,4 +78,7 @@ class CachedTableItemDelegate : public TableItemDelegate {
     QList<int> m_prefetchQueue;
     int m_prefetchVisibleCount = 0;
     qsizetype m_prefetchNext = 0;
+    // Rows that prefetchRow() found done. Immediate passes reset it, they
+    // run when a visible row misses the cache, e.g. after an eviction.
+    QBitArray m_prefetchDone;
 };

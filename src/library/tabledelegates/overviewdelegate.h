@@ -41,7 +41,7 @@ class OverviewDelegate : public CachedTableItemDelegate {
   private:
     void emitOverviewRowsChanged(QSet<TrackId>&& trackIds, bool visibleOnly = false);
     // Renders overviews around the viewport into QPixmapCache
-    void prefetchRow(int row, bool visible) override;
+    bool prefetchRow(int row, bool visible) override;
     int prefetchInFlightCount() const override {
         return static_cast<int>(m_prefetchInFlight.size());
     }

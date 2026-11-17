@@ -44,6 +44,8 @@ CachedTableItemDelegate::CachedTableItemDelegate(QTableView* pTableView, int col
     const auto rowsReplaced = [this]() {
         suspendPrefetch();
         prefetchRowsReplaced();
+        // The view may not repaint the column
+        schedulePrefetch();
     };
     connect(m_pModel, &QAbstractItemModel::modelReset, this, rowsReplaced);
     connect(m_pModel, &QAbstractItemModel::layoutChanged, this, rowsReplaced);
@@ -86,16 +88,7 @@ void CachedTableItemDelegate::prefetchViewport() {
     if (bytesPerRow <= 0) {
         return;
     }
-    Viewport viewport;
-    const int rowCount = m_pTableView->model()->rowCount();
-    const int height = m_pTableView->viewport()->height();
-    if (rowCount > 0 && height > 0) {
-        viewport.first = std::max(0, m_pTableView->rowAt(0));
-        viewport.last = m_pTableView->rowAt(height - 1);
-        if (viewport.last < 0) {
-            viewport.last = rowCount - 1;
-        }
-    }
+    Viewport viewport = visibleRows();
     if (m_viewport.first >= 0 && viewport.first != m_viewport.first) {
         viewport.direction = viewport.first > m_viewport.first ? 1 : -1;
         m_lastScroll.start();
@@ -109,6 +102,10 @@ void CachedTableItemDelegate::prefetchViewport() {
         return;
     }
     m_viewport = viewport;
+    if (forced) {
+        // Images may have been evicted or resized
+        m_prefetchDone.clear();
+    }
     // Rebuilt on every pass, so rows that were scrolled past are dropped
     queuePrefetchRows(bytesPerRow);
     processPrefetchQueue();
@@ -128,8 +125,37 @@ void CachedTableItemDelegate::processPrefetchQueue() {
         // Advance first, prefetchRow() may get here again if
         // a request finishes synchronously
         const int row = m_prefetchQueue[m_prefetchNext++];
-        prefetchRow(row, visible);
+        if (prefetchRow(row, visible) && row < m_prefetchDone.size()) {
+            m_prefetchDone.setBit(row);
+        }
     }
+}
+
+CachedTableItemDelegate::Viewport CachedTableItemDelegate::visibleRows() const {
+    Viewport viewport;
+    const int rowCount = m_pTableView->model()->rowCount();
+    const int height = m_pTableView->viewport()->height();
+    if (rowCount > 0 && height > 0) {
+        viewport.first = std::max(0, m_pTableView->rowAt(0));
+        viewport.last = m_pTableView->rowAt(height - 1);
+        if (viewport.last < 0) {
+            viewport.last = rowCount - 1;
+        }
+    }
+    return viewport;
+}
+
+QList<int> CachedTableItemDelegate::rowsToRefresh(
+        QList<int> rows, bool visibleOnly) const {
+    if (visibleOnly) {
+        const Viewport viewport = visibleRows();
+        rows.removeIf([&viewport](int row) {
+            return row < viewport.first || row > viewport.last;
+        });
+    }
+    std::sort(rows.begin(), rows.end());
+    rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+    return rows;
 }
 
 void CachedTableItemDelegate::clearPrefetchQueue() {
@@ -140,6 +166,8 @@ void CachedTableItemDelegate::clearPrefetchQueue() {
 
 void CachedTableItemDelegate::suspendPrefetch() {
     clearPrefetchQueue();
+    // Rows may have moved, or images been evicted meanwhile
+    m_prefetchDone.clear();
     // The next pass runs and centers the window
     m_viewport = Viewport{};
 }
@@ -179,19 +207,29 @@ void CachedTableItemDelegate::queuePrefetchRows(qint64 bytesPerRow) {
     const int below = vp.direction < 0 ? behind : ahead;
     const int above = vp.direction < 0 ? ahead : behind;
     const int lo = std::max(0, vp.first - above);
-    const int hi = std::min(m_pTableView->model()->rowCount() - 1, vp.last + below);
+    const int rowCount = m_pTableView->model()->rowCount();
+    const int hi = std::min(rowCount - 1, vp.last + below);
+    if (m_prefetchDone.size() != rowCount) {
+        m_prefetchDone.fill(false, rowCount);
+    }
 
     m_prefetchQueue.reserve(hi - lo + 1);
+    // Visible rows are always checked, they may have been evicted
     for (int r = vp.first; r <= vp.last; ++r) {
         m_prefetchQueue.append(r);
     }
     m_prefetchVisibleCount = static_cast<int>(m_prefetchQueue.size());
+    const auto queue = [this](int row) {
+        if (!m_prefetchDone.testBit(row)) {
+            m_prefetchQueue.append(row);
+        }
+    };
     for (int d = 1; vp.last + d <= hi || vp.first - d >= lo; ++d) {
         if (vp.last + d <= hi) {
-            m_prefetchQueue.append(vp.last + d);
+            queue(vp.last + d);
         }
         if (vp.first - d >= lo) {
-            m_prefetchQueue.append(vp.first - d);
+            queue(vp.first - d);
         }
     }
 }
