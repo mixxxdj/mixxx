@@ -625,7 +625,7 @@ const ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
 //settings
 const pitchBendSharpnessSetting = engine.getSetting("pitchBendSharpness");
 const stripSearchSpeedSetting = engine.getSetting("stripSearchSpeed");
-const isVinylModeInitiallyActivated = engine.getSetting("vinylModeDefaultState");
+const isVinylModeInitiallyActivated = engine.getSetting("vinylModeDefaultStateOn");
 const initialLEDSettingDelay = engine.getSetting("initialLEDSettingDelay");
 
 // Fade fx blinking
