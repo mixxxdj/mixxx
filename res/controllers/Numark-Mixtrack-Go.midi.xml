@@ -8,7 +8,7 @@
   <settings>
     <group label="Jog Wheel">
       <option variable="pitchBendSharpness" label="Pitch Bend Sharpness" type="enum">
-        <value label="Very Fine" default="true">0.1</value>
+        <value label="Very Fine">0.1</value>
         <value label="Fine (good with aligned beatgrips and sync enabled)">0.2</value>
         <value label="Normal" default="true">0.6</value>
         <value label="Coarse (better for manual beatmatching)">0.8</value>
@@ -29,7 +29,7 @@
       </option>
     </group>
     <group label="Initial LEDs state">
-      <option variable="initialLEDSettingDelay" label="Initial LEDs Setting Delay" type="integer" min="1" max="10" step="1" default="2">
+      <option variable="initialLEDSettingDelay" label="Initial LEDs Setting Delay" type="integer" min="1" max="5" step="1" default="1">
         <description>
           Select the delay of the initial setting of LEDs. It should happen after the lightshow is finished.
         </description>
