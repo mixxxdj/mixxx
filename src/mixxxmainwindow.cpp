@@ -137,7 +137,13 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
                 GWL_STYLE,
                 GetWindowLongPtr(hwnd, GWL_STYLE) | WS_THICKFRAME | WS_MINIMIZEBOX |
                         WS_MAXIMIZEBOX);
-        SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER);
+        SetWindowPos(hwnd,
+                nullptr,
+                0,
+                0,
+                0,
+                0,
+                SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER);
 #endif
     }
 
