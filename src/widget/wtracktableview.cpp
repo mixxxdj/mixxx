@@ -55,8 +55,7 @@ WTrackTableView::WTrackTableView(QWidget* pParent,
           m_trackMissingColor(kDefaultTrackMissingColor),
           m_dropIndicatorColor(kDefaultDropIndicatorColor),
           m_sorting(false),
-          m_selectionChangedSinceLastGuiTick(true),
-          m_userActionPending(false),
+          m_selectionChangedSinceLastGuiTick(false),
           m_dropRow(-1) {
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
@@ -111,19 +110,14 @@ void WTrackTableView::currentChanged(
 }
 #endif
 
-void WTrackTableView::noteUserAction() {
-    m_userActionPending = true;
-    m_lastUserAction = mixxx::Time::elapsed();
-}
-
 void WTrackTableView::slotScrollValueChanged(int /*unused*/) {
-    noteUserAction();
+    m_lastUserAction = mixxx::Time::elapsed();
 }
 
 void WTrackTableView::selectionChanged(
         const QItemSelection& selected, const QItemSelection& deselected) {
     m_selectionChangedSinceLastGuiTick = true;
-    noteUserAction();
+    m_lastUserAction = mixxx::Time::elapsed();
     // Workaround for Qt6 bug https://bugreports.qt.io/browse/QTBUG-108595:
     // If 'selectedClick' is enabled Ctrl+click opens the editor instead of
     // toggling the clicked item.
@@ -139,39 +133,33 @@ void WTrackTableView::selectionChanged(
 }
 
 void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
-    if (!isVisible()) {
-        // Don't proceed if this isn't visible.
+    if (!isVisible() || !m_selectionChangedSinceLastGuiTick) {
         return;
     }
 
-    // if the user is stopped in the same row for more than 0.1 s,
-    // we emit the selected track.
+    // Show the currently selected track in the large cover art view and
+    // highlights crate and playlists. Doing this in selectionChanged
+    // slows down scrolling performance so we wait until the user has
+    // stopped interacting for more than 0.1 s.
     mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
-    if (m_userActionPending && timeDelta > mixxx::Duration::fromMillis(100)) {
-        // Show the currently selected track in the large cover art view and
-        // highlights crate and playlists. Doing this in selectionChanged
-        // slows down scrolling performance so we wait until the user has
-        // stopped interacting first.
-        if (m_selectionChangedSinceLastGuiTick) {
-            const QModelIndexList indices = getSelectedRows();
-            if (indices.size() == 1 && indices.first().isValid()) {
-                // A single track has been selected
-                TrackModel* pTrackModel = getTrackModel();
-                if (pTrackModel) {
-                    TrackPointer pTrack = pTrackModel->getTrack(indices.first());
-                    if (pTrack) {
-                        emit trackSelected(pTrack);
-                    }
-                }
-            } else {
-                // None or multiple tracks have been selected
-                emit trackSelected(TrackPointer());
-            }
-            m_selectionChangedSinceLastGuiTick = false;
-        }
-
-        m_userActionPending = false;
+    if (timeDelta <= mixxx::Duration::fromMillis(100)) {
+        return;
     }
+    const QModelIndexList indices = getSelectedRows();
+    if (indices.size() == 1 && indices.first().isValid()) {
+        // A single track has been selected
+        TrackModel* pTrackModel = getTrackModel();
+        if (pTrackModel) {
+            TrackPointer pTrack = pTrackModel->getTrack(indices.first());
+            if (pTrack) {
+                emit trackSelected(pTrack);
+            }
+        }
+    } else {
+        // None or multiple tracks have been selected
+        emit trackSelected(TrackPointer());
+    }
+    m_selectionChangedSinceLastGuiTick = false;
 }
 
 // slot
