@@ -188,10 +188,12 @@ class WaveformWidgetFactory : public QObject,
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
 
+#ifdef __STEM__
     void setStemReorderOnChange(bool value);
     void setStemOutlineOpacity(float value);
     void setStemOpacity(float value);
     void setStemSplitTracks(bool value);
+#endif
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -208,6 +210,7 @@ class WaveformWidgetFactory : public QObject,
     float getUntilMarkTextHeightLimit() const {
         return m_untilMarkTextHeightLimit;
     }
+#ifdef __STEM__
     bool isStemReorderOnChange() const {
         return m_stemReorderOnChange;
     }
@@ -220,6 +223,7 @@ class WaveformWidgetFactory : public QObject,
     bool isStemSplitTracks() const {
         return m_stemSplitTracks;
     }
+#endif
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
     static float toUntilMarkTextHeightLimit(int index);
@@ -296,10 +300,12 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
 
+#ifdef __STEM__
     void stemReorderOnChangeChanged(bool value);
     void stemOutlineOpacityChanged(float value);
     void stemOpacityChanged(float value);
     void stemSplitTracksChanged(bool value);
+#endif
 
   public slots:
     void slotSkinLoaded();
@@ -362,12 +368,13 @@ class WaveformWidgetFactory : public QObject,
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;
 
+#ifdef __STEM__
     bool m_stemReorderOnChange;
     float m_stemOutlineOpacity;
     float m_stemOpacity;
     bool m_stemSplitTracks;
     std::unique_ptr<ControlObject> m_pStemSplitTracksControl;
-
+#endif
     bool m_openGlAvailable;
 #ifdef MIXXX_USE_QOPENGL
     bool m_openGlesAvailable;

@@ -138,7 +138,9 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_untilMarkTextPointSize(kUntilMarkTextPointSizeDefault),
           m_untilMarkTextHeightLimit(toUntilMarkTextHeightLimit(
                   kUntilMarkTextHeightLimitDefaultIndex)),
+#ifdef __STEM__
           m_stemSplitTracks(false),
+#endif
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
@@ -149,8 +151,10 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameCnt(0),
           m_actualFrameRate(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
+#ifdef __STEM__
     m_pStemSplitTracksControl = std::make_unique<ControlObject>(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")));
+#endif
     m_visualGain[AllBand] = kVisualGainDefault[AllBand];
     m_visualGain[Low] = kVisualGainDefault[Low];
     m_visualGain[Mid] = kVisualGainDefault[Mid];
@@ -468,6 +472,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setUntilMarkTextHeightLimit(toUntilMarkTextHeightLimit(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("UntilMarkTextHeightLimit")),
             toUntilMarkTextHeightLimitIndex(m_untilMarkTextHeightLimit))));
+#ifdef __STEM__
     setStemReorderOnChange(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_reorder_on_change")),
             kStemReorderOnChangeDefault));
@@ -480,6 +485,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setStemSplitTracks(m_config->getValue(
             ConfigKey(kWaveformGroup, QStringLiteral("stem_split_tracks")),
             false));
+#endif
 
     return true;
 }
@@ -1606,6 +1612,7 @@ void WaveformWidgetFactory::setUntilMarkTextHeightLimit(float value) {
     emit untilMarkTextHeightLimitChanged(value);
 }
 
+#ifdef __STEM__
 void WaveformWidgetFactory::setStemReorderOnChange(bool value) {
     m_stemReorderOnChange = value;
     if (m_config) {
@@ -1642,6 +1649,7 @@ void WaveformWidgetFactory::setStemSplitTracks(bool value) {
     m_pStemSplitTracksControl->set(value ? 1.0 : 0.0);
     emit stemSplitTracksChanged(value);
 }
+#endif
 
 // static
 Qt::Alignment WaveformWidgetFactory::toUntilMarkAlign(int index) {
