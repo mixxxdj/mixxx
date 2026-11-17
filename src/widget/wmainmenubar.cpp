@@ -1105,7 +1105,8 @@ void WMainMenuBar::updateWindowControls() {
     } else {
         m_hoverCheck.stop();
     }
-    for (auto* pButton : pButtons->findChildren<QToolButton*>()) {
+    const QList<QToolButton*> buttons = pButtons->findChildren<QToolButton*>();
+    for (auto* pButton : buttons) {
         const bool hovered = pButton == pUnder;
         if (pButton->property("hovered").toBool() != hovered) {
             pButton->setProperty("hovered", hovered);
