@@ -196,6 +196,12 @@ QList<QMimeType> mimeTypesForFileType(const QString& fileType) {
 
 // static
 bool SoundSourceProxy::registerProviders() {
+    // The static registry is never torn down, e.g. between tests
+    if (!s_soundSourceProviders.getRegisteredFileTypes().isEmpty()) {
+        kLogger.debug()
+                << "SoundSource providers have already been registered";
+        return true;
+    }
     // Initialize built-in file types.
     // Fallback providers should be registered before specialized
     // providers to ensure that they are only after the specialized
