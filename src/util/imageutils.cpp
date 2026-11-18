@@ -14,27 +14,33 @@ constexpr int kBlurRadius = 5;
 constexpr int kBlurPasses = 3;
 
 // [AI-generated] Averages every pixel with its neighbors along one axis. The
-// step is (1, 0) for the horizontal and (0, 1) for the vertical axis.
-// [/AI-generated]
+// step is (1, 0) for the horizontal and (0, 1) for the vertical axis. The
+// image must have the format RGB32. Its pixels are accessed directly, which
+// is much faster than QImage::pixel(). [/AI-generated]
 QImage boxBlurred(const QImage& source, int stepX, int stepY) {
     constexpr int kKernelSize = 2 * kBlurRadius + 1;
+    const int width = source.width();
+    const int height = source.height();
     QImage blurred(source.size(), QImage::Format_RGB32);
-    for (int y = 0; y < source.height(); ++y) {
-        for (int x = 0; x < source.width(); ++x) {
+    const int sourceStride = static_cast<int>(source.bytesPerLine() / sizeof(QRgb));
+    const int blurredStride = static_cast<int>(blurred.bytesPerLine() / sizeof(QRgb));
+    const QRgb* pSource = reinterpret_cast<const QRgb*>(source.constBits());
+    QRgb* pBlurred = reinterpret_cast<QRgb*>(blurred.bits());
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
             int red = 0;
             int green = 0;
             int blue = 0;
             for (int offset = -kBlurRadius; offset <= kBlurRadius; ++offset) {
-                const QRgb sample = source.pixel(
-                        std::clamp(x + offset * stepX, 0, source.width() - 1),
-                        std::clamp(y + offset * stepY, 0, source.height() - 1));
+                const int sampleX = std::clamp(x + offset * stepX, 0, width - 1);
+                const int sampleY = std::clamp(y + offset * stepY, 0, height - 1);
+                const QRgb sample = pSource[sampleY * sourceStride + sampleX];
                 red += qRed(sample);
                 green += qGreen(sample);
                 blue += qBlue(sample);
             }
-            blurred.setPixel(x,
-                    y,
-                    qRgb(red / kKernelSize, green / kKernelSize, blue / kKernelSize));
+            pBlurred[y * blurredStride + x] =
+                    qRgb(red / kKernelSize, green / kKernelSize, blue / kKernelSize);
         }
     }
     return blurred;

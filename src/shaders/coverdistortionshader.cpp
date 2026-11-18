@@ -35,7 +35,6 @@ uniform highp float windowAspect;
 uniform highp vec3 amounts;
 uniform highp vec2 phases;
 uniform highp float flowPhase;
-uniform highp float alpha;
 varying highp vec2 vTexcoord;
 
 highp vec2 mirrored(highp vec2 uv)
@@ -49,6 +48,11 @@ highp vec2 coverCoord(highp vec2 centered)
     return centered / vec2(coverAspect, 1.0) + 0.5;
 }
 
+highp vec3 color(highp vec4 texel)
+{
+    return texel.rgb / max(texel.a, 0.001);
+}
+
 highp vec3 background()
 {
     highp vec2 q = (vTexcoord - 0.5) * vec2(windowAspect, 1.0);
@@ -57,7 +61,7 @@ highp vec3 background()
             cos(q.x * 2.7 - flowPhase) + 0.5 * cos(q.x * 4.6 - q.y * 2.3 + 2.0 * flowPhase));
     q += 0.08 * flow;
     highp vec2 uv = q / vec2(windowAspect, 1.0) * backgroundFit + 0.5;
-    return texture2D(blurredTexture, mirrored(uv)).rgb * 0.6;
+    return color(texture2D(blurredTexture, mirrored(uv))) * 0.6;
 }
 
 void main()
@@ -84,15 +88,15 @@ void main()
 
     highp vec2 uv = coverCoord(c);
     highp vec3 foreground = vec3(
-            texture2D(texture, coverCoord(c * (1.0 + fringe))).r,
-            texture2D(texture, uv).g,
-            texture2D(texture, coverCoord(c * (1.0 - fringe))).b);
+            color(texture2D(texture, coverCoord(c * (1.0 + fringe)))).r,
+            color(texture2D(texture, uv)).g,
+            color(texture2D(texture, coverCoord(c * (1.0 - fringe)))).b);
 
     highp vec2 feather = vec2(0.004);
     highp vec2 inside = smoothstep(vec2(0.0), feather, uv) *
             (1.0 - smoothstep(1.0 - feather, vec2(1.0), uv));
 
-    gl_FragColor = vec4(mix(background(), foreground, inside.x * inside.y), 1.0) * alpha;
+    gl_FragColor = vec4(mix(background(), foreground, inside.x * inside.y), 1.0);
 }
 )--");
 
@@ -109,5 +113,4 @@ void main()
     m_coverAspectLocation = uniformLocation("coverAspect");
     m_amountsLocation = uniformLocation("amounts");
     m_phasesLocation = uniformLocation("phases");
-    m_alphaLocation = uniformLocation("alpha");
 }

@@ -6,14 +6,17 @@
 #include <vector>
 
 #include "control/pollingcontrolproxy.h"
+#include "shaders/covercombineshader.h"
 #include "shaders/coverdistortionshader.h"
 #include "util/opengltexture2d.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
+#include "visualizer/visualizerlayout.h"
 #include "widget/wglwidget.h"
 
 class PlayerManager;
 class VSyncThread;
+QT_FORWARD_DECLARE_CLASS(QOpenGLFramebufferObject);
 
 namespace mixxx {
 
@@ -54,8 +57,6 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
         OpenGLTexture2D m_coverTexture;
         OpenGLTexture2D m_blurredCoverTexture;
         int m_uploadedCoverRevision;
-        QVector3D m_amounts;
-        float m_weight;
     };
 
     void initializeGL() override;
@@ -63,10 +64,15 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
 
     void updateAnimation(double elapsedSeconds);
     void paintCoverDistortion();
+    void combineCovers(QOpenGLFramebufferObject* pTarget, bool blurred);
     void setFullScreen(bool fullScreen);
+    void setDecksActive(bool active);
+    bool shouldDraw() const;
 
     std::shared_ptr<PlayerManager> m_pPlayerManager;
     std::vector<std::unique_ptr<DeckVisual>> m_decks;
+    VisualizerLayout m_layout;
+    VisualizerLayout::PerDeck m_shares;
 
     PollingControlProxy m_bassIntensity;
     PollingControlProxy m_midIntensity;
@@ -75,10 +81,15 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     PollingControlProxy m_showWindow;
     PollingControlProxy m_bandMetersEnabled;
 
+    CoverCombineShader m_coverCombineShader;
     CoverDistortionShader m_coverDistortionShader;
+    std::unique_ptr<QOpenGLFramebufferObject> m_pCombinedCover;
+    std::unique_ptr<QOpenGLFramebufferObject> m_pCombinedBlurredCover;
+    QVector3D m_amounts;
     PerformanceTimer m_frameTimer;
     float m_slowPhase;
     float m_fastPhase;
+    float m_flowPhase;
 };
 
 } // namespace mixxx

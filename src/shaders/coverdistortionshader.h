@@ -11,7 +11,9 @@ class CoverDistortionShader;
 /// the bass, a swirl for the mids and a shimmer with color fringes for the
 /// highs. With all amounts at zero the cover is drawn undistorted. The
 /// blurred copy fills the viewport and flows slowly, driven by a phase that
-/// the caller advances with the tempo of the music. [/AI-generated]
+/// the caller advances with the tempo of the music. The colors of both
+/// textures are divided by their alpha channel, as CoverCombineShader
+/// requires for the pictures it produces. [/AI-generated]
 class mixxx::CoverDistortionShader final : public mixxx::Shader {
   public:
     CoverDistortionShader() = default;
@@ -72,11 +74,6 @@ class mixxx::CoverDistortionShader final : public mixxx::Shader {
     int phasesLocation() const {
         return m_phasesLocation;
     }
-    /// [AI-generated] float: the brightness of the cover, 0..1.
-    /// [/AI-generated]
-    int alphaLocation() const {
-        return m_alphaLocation;
-    }
 
   private:
     int m_positionLocation;
@@ -90,7 +87,6 @@ class mixxx::CoverDistortionShader final : public mixxx::Shader {
     int m_coverAspectLocation;
     int m_amountsLocation;
     int m_phasesLocation;
-    int m_alphaLocation;
 
     DISALLOW_COPY_AND_ASSIGN(CoverDistortionShader)
 };

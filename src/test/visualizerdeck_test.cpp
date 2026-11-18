@@ -36,22 +36,6 @@ TEST(VisualizerDeckTest, bandAmountStaysInRange) {
     EXPECT_FLOAT_EQ(0.0f, VisualizerDeck::bandAmount(-1.0, 1.0f));
 }
 
-TEST(VisualizerDeckTest, mixWeightOfSingleDeckIsFull) {
-    EXPECT_FLOAT_EQ(1.0f, VisualizerDeck::mixWeight(0.2f, 0.2f));
-}
-
-TEST(VisualizerDeckTest, mixWeightsFollowLoudness) {
-    EXPECT_FLOAT_EQ(0.5f, VisualizerDeck::mixWeight(0.2f, 0.4f));
-    EXPECT_FLOAT_EQ(0.75f, VisualizerDeck::mixWeight(0.3f, 0.4f));
-    EXPECT_FLOAT_EQ(0.25f, VisualizerDeck::mixWeight(0.1f, 0.4f));
-}
-
-TEST(VisualizerDeckTest, mixWeightFadesOutWithSilence) {
-    EXPECT_FLOAT_EQ(0.0f, VisualizerDeck::mixWeight(0.0f, 0.0f));
-    EXPECT_FLOAT_EQ(0.0f, VisualizerDeck::mixWeight(0.0f, 0.3f));
-    EXPECT_LT(VisualizerDeck::mixWeight(0.001f, 0.001f), 1.0f);
-}
-
 TEST(VisualizerDeckTest, flowPhaseAdvancesWithTempo) {
     // [AI-generated] A flow cycle takes 8 beats, which is 4 s at 120 BPM.
     // [/AI-generated]
