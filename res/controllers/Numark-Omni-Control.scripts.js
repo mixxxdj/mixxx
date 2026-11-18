@@ -1,12 +1,34 @@
+/* eslint-disable func-style -- Mixxx's controller mapping loader requires a function declaration so the constructor is visible to the engine */
 /**
  *
  */
 function NumarkOmniControl() {}
+
+NumarkOmniControl.init = function(id) { // called when the MIDI device is opened & set up
+    NumarkOmniControl.id = id; // Store the ID of this device for later use
+
+    NumarkOmniControl.scratchTimer = [-1, -1, -1]; // Master0 (unused), Deck1, Deck2  // -1 for not set
+    NumarkOmniControl.SetAllLED(true); // check LED health
+
+    engine.beginTimer(500, function() {
+        NumarkOmniControl.SetAllLED(false);
+    }, 1);
+
+    engine.beginTimer(1000, function() { // loading user defaults from Settings -> Controller and give MIXXX some time to react to ReadAllContollerValues()
+        NumarkOmniControl.LoadUserSettings();
+    }, 1);
+};
+
 NumarkOmniControl.LoadUserSettings = function() {
 
-    // Autostart values for functions with buttons
-    NumarkOmniControl.toggleExtendedLooping(null, null, engine.getSetting("extendedLooping"), null, null);
-    NumarkOmniControl.toggleScratchMode(null, null, engine.getSetting("scratchMode"), null, null);
+    // Autostart values for functions with buttons // used PreviewDeck1 as LED-Indicator
+    if (engine.getSetting("quantizeMode")) {
+        engine.setValue("[PreviewDeck1]", "quantize", false);
+        NumarkOmniControl.toggleQuantize(null, null, true, null, "[PreviewDeck1]");
+    }
+
+    // PreviewDeck1.repeat doesn't do any harm or interruption, so it's used to indicate LED, because MIDI-mapping doesn't read engine.getSetting("scratchMode")
+    engine.setValue("[PreviewDeck1]", "repeat", engine.getSetting("scratchMode"));
 
     // QuickEffects for both channels
     engine.setValue("[QuickEffectRack1_[Channel1]]", "enabled", engine.getSetting("enableQuickEffects"));
@@ -27,76 +49,6 @@ NumarkOmniControl.LoadUserSettings = function() {
 
     // get all current positions from controller
     NumarkOmniControl.ReadAllControllerValues();
-};
-
-NumarkOmniControl.init = function(id) { // called when the MIDI device is opened & set up
-    NumarkOmniControl.id = id; // Store the ID of this device for later use
-
-    NumarkOmniControl.scratchTimer = [-1, -1, -1]; // Master (unused yet), left channel, right channel  // -1 for not set
-
-    // LED-mapping
-    NumarkOmniControl.leds = [
-        // Common
-        {
-            "scratchMode": 0x32, // button: left channel: ON/OFF
-            "extendedLooping": 0x46, // button: right channel: ON/OFF
-            "directoryMode": 0x56 // button: master: directory
-        },
-        // Deck 1
-        {
-            "tap": 0x30,
-            "filter_onoff": 0x31,
-            "par_onoff": 0x32, // already used for customising (see common)
-            "fx_select": 0x33,
-            "rate": 0x34,
-            "pfl": 0x35,
-            "key": 0x36,
-            "sync": 0x37,
-            "pitchbend-": 0x38,
-            "pitchbend+": 0x39,
-            "loopIn": 0x3a,
-            "loopOut": 0x3b,
-            "cue": 0x3c,
-            "set_cue": 0x3d,
-            "play": 0x3e,
-            "load_track": 0x3f,
-            "treble_kill": 0x50,
-            "mid_kill": 0x51,
-            "bass_kill": 0x52
-        },
-        // Deck 2
-        {
-            "pfl": 0x40,
-            "key": 0x41,
-            "sync": 0x42,
-            "rate": 0x43,
-            "fx_select": 0x44,
-            "filter_onoff": 0x45,
-            "par_onoff": 0x46, // already used for customising (see common)
-            "tap": 0x47,
-            "pitchbend-": 0x48,
-            "pitchbend+": 0x49,
-            "loopIn": 0x4a,
-            "loopOut": 0x4b,
-            "cue": 0x4c,
-            "set_cue": 0x4d,
-            "play": 0x4e,
-            "load_track": 0x4f,
-            "treble_kill": 0x53,
-            "mid_kill": 0x54,
-            "bass_kill": 0x55
-        }
-    ];
-
-    NumarkOmniControl.SetAllLED(true); // check LED health
-
-    engine.beginTimer(500, function() {
-        NumarkOmniControl.SetAllLED(false);
-    }, 1);
-
-    engine.beginTimer(2000, function() { // loading user defaults from Settings -> Controller and give MIXXX some time to react to ReadAllContollerValues()
-        NumarkOmniControl.LoadUserSettings();
-    }, 1);
 };
 
 NumarkOmniControl.ReadAllControllerValues = function() { // just send; OmniControl sends back state of all buttons and faders and MIXXX applies to engine itself
@@ -172,7 +124,7 @@ NumarkOmniControl.loopOut = function(channel, control, value, status, group) {
 };
 
 NumarkOmniControl.leftFunction = function(channel, control, value, status, group) {
-    if (engine.getValue(group, "loop_enabled") && NumarkOmniControl.extendedLooping) {
+    if (engine.getValue(group, "loop_enabled") && engine.getValue("[PreviewDeck1]", "quantize")) {
         engine.setValue(group, "loop_halve", value);
     } else {
         engine.setValue(group, "rate_temp_down", value);
@@ -180,7 +132,7 @@ NumarkOmniControl.leftFunction = function(channel, control, value, status, group
 };
 
 NumarkOmniControl.rightFunction = function(channel, control, value, status, group) {
-    if (engine.getValue(group, "loop_enabled") && NumarkOmniControl.extendedLooping) {
+    if (engine.getValue(group, "loop_enabled") && engine.getValue("[PreviewDeck1]", "quantize")) {
         engine.setValue(group, "loop_double", value);
     } else {
         engine.setValue(group, "rate_temp_up", value);
@@ -195,7 +147,7 @@ NumarkOmniControl.finePitch = function(channel, control, value, status, group) {
 };
 
 NumarkOmniControl.playFromCue = function(channel, control, value, status, group) { // If playing, stutters from cuepoint; otherwise jumps to cuepoint and stops
-    if (engine.getSetting("simpleCue")) {
+    if (NumarkOmniControl.simpleCue) {
         if (value) {
             if (engine.getValue(group, "play")) {
                 engine.setValue(group, "cue_goto", 1);
@@ -228,7 +180,7 @@ NumarkOmniControl.jogWheel = function(channel, control, value, status, group) {
         adjustedJog = value - 128;
     }
 
-    if (NumarkOmniControl.scratchMode) {
+    if (engine.getValue("[PreviewDeck1]", "repeat")) { // aka CUSTOM:ScratchMode
         if (NumarkOmniControl.scratchTimer[deck] === -1) {
             engine.scratchEnable(deck, 128, 33 + 1 / 3, NumarkOmniControl.jogScratchAdjustment, NumarkOmniControl.jogScratchAdjustment / 32);
         } else {
@@ -262,22 +214,13 @@ NumarkOmniControl.toggleDirectoryMode = function(channel, control, value, status
     }
 };
 
-NumarkOmniControl.toggleScratchMode = function(_channel, _control, value, _status, _group) {
-    // Toggle setting and light
+NumarkOmniControl.toggleQuantize = function(_channel, _control, value, _status, _group) { // Toggle setting; light is set via XML mapping
+    // PreviewDeck1 doesn't really use quantize, so it's used to indicate LED, because MIDI-mapping doesn't read engine.getSetting("quantizeMode")
     if (value) {
-        NumarkOmniControl.scratchMode = !NumarkOmniControl.scratchMode;
-        NumarkOmniControl.setLED(NumarkOmniControl.leds[0].scratchMode, NumarkOmniControl.scratchMode);
-    }
-};
-
-NumarkOmniControl.toggleExtendedLooping = function(_channel, _control, value, _status, _group) {
-    // Toggle setting and light
-    if (value) {
-        NumarkOmniControl.extendedLooping = !NumarkOmniControl.extendedLooping;
-        NumarkOmniControl.setLED(NumarkOmniControl.leds[0].extendedLooping, NumarkOmniControl.extendedLooping);
-        // Extended Looping rely on quantize
-        engine.setValue("[Channel1]", "quantize", NumarkOmniControl.extendedLooping);
-        engine.setValue("[Channel2]", "quantize", NumarkOmniControl.extendedLooping);
+        const newValue = !engine.getValue("[PreviewDeck1]", "quantize");
+        engine.setValue("[PreviewDeck1]", "quantize", newValue);
+        engine.setValue("[Channel1]", "quantize", newValue);
+        engine.setValue("[Channel2]", "quantize", newValue);
     }
 };
 
@@ -298,7 +241,7 @@ NumarkOmniControl.toggleQuickEffect = function(channel, control, value, status, 
     }
 };
 
-NumarkOmniControl.tooglePFL = function(channel, control, value, status, group) {
+NumarkOmniControl.togglePFL = function(channel, control, value, status, group) {
     if (NumarkOmniControl.simplePFL && !engine.getValue(group, "pfl") && value) {
         const opposite = (group === "[Channel1]") ? "[Channel2]" : "[Channel1]";
         engine.setValue(group, "pfl", 1);
