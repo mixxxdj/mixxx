@@ -1,5 +1,6 @@
 #include "controllers/controllermanager.h"
 
+#include <QMutexLocker>
 #include <QSet>
 #include <QThread>
 
@@ -11,7 +12,6 @@
 #include "moc_controllermanager.cpp"
 #include "preferences/usersettings.h"
 #include "util/cmdlineargs.h"
-#include "util/compatibility/qmutex.h"
 #include "util/duration.h"
 #include "util/thread_affinity.h"
 #include "util/time.h"
@@ -169,7 +169,7 @@ void ControllerManager::slotInitialize() {
     // Instantiate all enumerators. Enumerators can take a long time to
     // construct since they interact with host MIDI APIs.
     {
-        auto locker = lockMutex(&m_mutex);
+        auto locker = QMutexLocker(&m_mutex);
 #ifdef __PORTMIDI__
         m_enumerators.push_back(std::make_unique<PortMidiEnumerator>(m_pConfig));
 #endif
@@ -192,7 +192,7 @@ void ControllerManager::slotShutdown() {
 
     // Clear m_enumerators before deleting the enumerators to prevent other code
     // paths from accessing them during teardown.
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
     std::vector<std::unique_ptr<ControllerEnumerator>> enumerators =
             std::move(m_enumerators); // m_enumerators is guaranteed empty after move
     locker.unlock();
@@ -211,7 +211,7 @@ void ControllerManager::updateControllerList() {
     // NOTE: Currently this function is only called on startup. If hotplug is added, changes to the
     // controller list must be synchronized with dlgprefcontrollers to avoid dangling connections
     // and possible crashes.
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
     if (m_enumerators.empty()) {
         qWarning() << "updateControllerList called but no enumerators have been added!";
         return;
@@ -239,14 +239,14 @@ void ControllerManager::updateControllerList() {
 }
 
 QList<Controller*> ControllerManager::getControllers() const {
-    const auto locker = lockMutex(&m_mutex);
+    const auto locker = QMutexLocker(&m_mutex);
     return m_controllers;
 }
 
 QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, bool bInputDevices) {
     qDebug() << "ControllerManager::getControllerList";
 
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 
@@ -338,7 +338,7 @@ void ControllerManager::slotSetUpDevices() {
 void ControllerManager::pollIfAnyControllersOpen() {
     // Not Thread-Safe because calls startPolling()/stopPolling()
     DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
-    auto locker = lockMutex(&m_mutex);
+    auto locker = QMutexLocker(&m_mutex);
     QList<Controller*> controllers = m_controllers;
     locker.unlock();
 

@@ -1,7 +1,7 @@
 import Mixxx 1.0 as Mixxx
-import QtQml 2.12
-import QtQuick 2.12
-import QtQuick.Shapes 1.12
+import QtQml
+import QtQuick
+import QtQuick.Shapes
 
 Item {
     id: root
@@ -34,6 +34,8 @@ Item {
     property alias arcWidth: arcPath.strokeWidth
     property alias background: background.data
     property alias foreground: foreground.data
+    property bool hideCursorWhileDragging: true
+    property bool inputEnabled: true
     property real knobCenterOffsetX: 0
     property real knobCenterOffsetY: 0
     property real max: 1
@@ -103,6 +105,8 @@ Item {
         property vector2d lastTranslation: Qt.vector2d(0, 0)
         property real value
 
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        enabled: root.inputEnabled
         target: null
 
         onActiveChanged: {
@@ -134,28 +138,50 @@ Item {
         value: dragHandler.value
         when: dragHandler.active
     }
+    PointHandler {
+        id: pointerHandler
 
-    // TODO: Replace this with a WheelHandler once we switch to Qt >= 5.14.
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        enabled: root.inputEnabled && root.hideCursorWhileDragging && root.Window.active
+    }
     MouseArea {
-        id: wheelHandler
-
-        property real value
-
         acceptedButtons: Qt.NoButton
         anchors.fill: parent
+        anchors.margins: -Math.max(Screen.desktopAvailableWidth, Screen.desktopAvailableHeight)
+        cursorShape: Qt.BlankCursor
+        enabled: root.enabled && root.visible && pointerHandler.enabled && pointerHandler.active
+        hoverEnabled: true
+        parent: root.Window.window ? root.Window.window.contentItem : null
+        visible: enabled
+        z: 2147483647
+    }
+    WheelHandler {
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+        enabled: root.inputEnabled
+        target: null
 
         onWheel: event => {
             const wheelAdjustment = event.angleDelta.y / root.wheelDeltaStep * root.wheelStepSize;
             const value = Mixxx.MathUtils.clamp(root.value + wheelAdjustment, root.min, root.max);
             root.turned(value);
+            wheelCursorTimer.restart();
             event.accepted = true;
-            wheelHandler.value = value;
         }
     }
-    Binding {
-        property: "value"
-        target: root
-        value: wheelHandler.value
-        when: wheelHandler.drag.active
+    Timer {
+        id: wheelCursorTimer
+
+        interval: 800
+    }
+    HoverHandler {
+        cursorShape: wheelCursorTimer.running ? Qt.BlankCursor : undefined
+        enabled: root.inputEnabled && root.Window.active
+
+        onHoveredChanged: {
+            if (!hovered) {
+                wheelCursorTimer.stop();
+            }
+        }
     }
 }

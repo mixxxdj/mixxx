@@ -27,6 +27,9 @@ jobs:
       MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT: ${{ secrets.MIXXXBOT_CHANGELOG_AUTOUPDATER_PAT }}
 
   build:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches
     uses: ./.github/workflows/build.yml
     with:
       publish: true
@@ -52,7 +55,7 @@ jobs:
     with:
       branch: ${{ github.head_ref || github.ref_name }}
 
-  publish:
+  publish-flatpak:
     needs:
       - build
     uses: ./.github/workflows/flatpak.yml

@@ -300,9 +300,6 @@ class WTrackMenu : public QMenu {
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<QMenu> m_pFindOnWebMenu;
     parented_ptr<FindOnWebLast> m_pFindOnWebLastAct;
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
-    QMenu* m_pRemoveFromDiskMenu{};
-#endif
 
     // Update ReplayGain from Track
     parented_ptr<QAction> m_pUpdateReplayGainAct;

@@ -151,6 +151,56 @@ inline void avTrace(const QString& preamble, const AVFrame& avFrame) {
 }
 #endif // VERBOSE_DEBUG_LOG
 
+// Checks if the loaded libavcodec shared library contains the fix from
+// https://code.ffmpeg.org/FFmpeg/FFmpeg/pulls/24528
+// fixing the seeking issues with Fraunhofer FDK AAC
+bool isAvcodecPatchedForPr24528() {
+    const unsigned int version = avcodec_version();
+    const unsigned int major = AV_VERSION_MAJOR(version);
+    const unsigned int minor = AV_VERSION_MINOR(version);
+
+    if (major > 63) {
+        return true; // Future major release
+    }
+
+    switch (major) {
+    case 63: // FFmpeg 9.x
+        if (version > AV_VERSION_INT(63, 14, 102)) {
+            return true;
+        }
+        if (minor == 1 && version >= AV_VERSION_INT(63, 1, 102)) {
+            return true;
+        }
+        break;
+    case 62: // FFmpeg 8.x
+        if (version > AV_VERSION_INT(62, 28, 103)) {
+            return true;
+        }
+        if (minor == 11 && version >= AV_VERSION_INT(62, 11, 103)) {
+            return true;
+        }
+        break;
+    case 61: // FFmpeg 7.1
+        if (version > AV_VERSION_INT(61, 19, 101)) {
+            return true;
+        }
+        break;
+    case 60: // FFmpeg 6.1
+        if (version > AV_VERSION_INT(60, 31, 102)) {
+            return true;
+        }
+        break;
+    case 59: // FFmpeg 5.1
+        if (version > AV_VERSION_INT(59, 37, 100)) {
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    return false;
+}
+
 } // anonymous namespace
 
 // FFmpeg API Changes:
@@ -496,8 +546,7 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url, int wantedStreamIndex)
           m_pavPacket(av_packet_alloc()),
           m_pavResampledFrame(nullptr),
           m_avutilVersion(avutil_version()),
-          m_wantedStreamIndex(wantedStreamIndex),
-          m_isLibfdk_aac(false) {
+          m_wantedStreamIndex(wantedStreamIndex) {
     DEBUG_ASSERT(m_pavPacket);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     av_channel_layout_default(&m_avStreamChannelLayout, 0);
@@ -611,8 +660,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     if (pDecoder->id == AV_CODEC_ID_AAC ||
             pDecoder->id == AV_CODEC_ID_AAC_LATM) {
         if (std::strcmp(pDecoder->name, "libfdk_aac") == 0) {
-            // Fraunhofer FDK AAC has an issue with flushing memory in the lead-in
-            m_isLibfdk_aac = true;
+            if (!isAvcodecPatchedForPr24528()) {
+                qWarning()
+                        << "Using libfdk_aac without FFmpeg fix #24528. This "
+                           "may cause crackling and timing offsets after seek.";
+            }
         }
     }
 
@@ -1032,22 +1084,7 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     }
 
     // Flush internal decoder state before seeking
-    if (!m_isLibfdk_aac || seekIndex >= 0) {
-        // Fast: 0.6 us (Core Ultra 5 125U)
-        avcodec_flush_buffers(m_pavCodecContext);
-    } else {
-        // In case of libfdk_aac, we can't seek far enough into the lead in
-        // (to -m_seekPrerollFrameCount) to have a settled filter from silence.
-        // In the test SoundSourceProxyTest.seekBoundaries and  FFmpeg 4.4.2 it
-        // was limited to -661 instead of -2111. The workaround here is to reopen
-        // the codec which initializes all buffers with zero.
-        // Slow: 43 us (Core Ultra 5 125U)
-        if (!deepFlushBuffers()) {
-            kLogger.warning() << "deepFlushBuffers failed";
-            m_frameBuffer.invalidate();
-            return false;
-        }
-    }
+    avcodec_flush_buffers(m_pavCodecContext);
 
     // Seek to new position
     const int64_t seekTimestamp =

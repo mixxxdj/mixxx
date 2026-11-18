@@ -47,6 +47,9 @@ permissions:
 
 jobs:
   build:
+    permissions:
+      contents: read #  to fetch code (actions/checkout)
+      actions: write # to delete outdated caches (gh cache delete)
     strategy:
       fail-fast: false
       matrix:
@@ -220,10 +223,6 @@ jobs:
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
-            # The AppImage build is fully static and produces far more ccache
-            # data than the default 2G; give it the actions/cache per-entry
-            # maximum so repeated runs can reuse the compiled objects.
-            compiler_cache_max_size: 10G
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/appimage_release_buildenv.sh
             artifacts_name: AppImage Linux x86_64
@@ -405,7 +404,7 @@ jobs:
         # build with debug info exceeds 2G and evicts its own objects.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=${{ matrix.compiler_cache_max_size || '2G' }}
+          ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
 
       # Remove unused pre-installed software as the runner runs out of space otherwise
@@ -481,11 +480,34 @@ jobs:
           ${{ matrix.compiler_cache }} --cleanup
 
       - name: "[Ubuntu/macOS] Save ccache cache"
+        id: ccache_save
         if: runner.os != 'windows' && steps.ccache_cache.outputs.cache-hit != 'true' && github.event_name == 'push' && github.ref_type == 'branch'
         uses: actions/cache/save@v6
         with:
           path: ${{ matrix.compiler_cache_path }}
           key: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+
+      - name: "[Ubuntu/macOS] Delete outdated ccache caches"
+        # Every source change creates a new cache entry for this branch. Drop
+        # the older ones so they don't evict the caches of other branches.
+        if: steps.ccache_save.outcome == 'success'
+        run: |
+          # A build of a newer commit may have saved its cache already
+          if [ "$(gh api "repos/$GH_REPO/commits/$GITHUB_REF" --jq .sha)" != "$GITHUB_SHA" ]; then
+            echo "$GITHUB_REF has newer commits, not deleting any caches"
+            exit 0
+          fi
+          gh cache list --ref "$GITHUB_REF" --key "$KEY_PREFIX" --limit 100 --json id,key \
+            --jq ".[] | select(.key != \"$KEY\") | .id" |
+          while read -r id; do
+            gh cache delete "$id"
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          KEY: ${{ steps.ccache_cache.outputs.cache-primary-key }}
+          # Also matches caches made with an outdated build environment
+          KEY_PREFIX: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-
 
       - name: "Test"
         if: matrix.crosscompile != true
@@ -845,10 +867,10 @@ jobs:
           arch: ${{ matrix.variant.arch }}
           build-bundle: false
           upload-artifact: false
-          # The Flatpak caches (~1.4 GB per arch) are only saved on main to stay
-          # within the 10 GB quota. Other branches and pull requests can still
-          # restore the main cache.
-          save-cache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          # The Flatpak caches (~1.4 GB per arch) are only saved by branch pushes
+          # (main and the release branches) to stay within the 10 GB quota.
+          # Pull requests can still restore the cache of their base branch.
+          save-cache: ${{ github.event_name == 'push' && github.ref_type == 'branch' }}
 
       - name: "Create Flatpak bundle"
         run: |
