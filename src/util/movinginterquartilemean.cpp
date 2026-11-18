@@ -26,14 +26,14 @@ double MovingInterquartileMean::insert(double value) {
 
     DEBUG_ASSERT(std::is_sorted(m_list.cbegin(), m_list.cend()));
 
-    // no need to set m_bChanged and check m_list.empty().
-    // we know the preconditions are satisfied so call `calcMean()` directly
     m_dMean = calcMean();
+    m_bChanged = false;
     return m_dMean;
 }
 
 void MovingInterquartileMean::clear() {
     m_bChanged = true;
+    m_dMean = 0.0;
     // std::queue has no .clear(), so creating a temporary and std::swap is the
     // next most elegant solution
     std::queue<double>().swap(m_queue);
@@ -41,7 +41,10 @@ void MovingInterquartileMean::clear() {
 }
 
 double MovingInterquartileMean::mean() {
-    if (!m_bChanged || m_list.empty()) {
+    if (m_list.empty()) {
+        return m_dMean;
+    }
+    if (!m_bChanged) {
         return m_dMean;
     }
     m_dMean = calcMean();
