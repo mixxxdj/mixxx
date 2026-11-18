@@ -239,6 +239,29 @@
        </property>
       </widget>
      </item>
+     <item row="15" column="0">
+      <widget class="QLabel" name="jackAutoConnectPrefixLabel">
+       <property name="text">
+        <string>JACK Auto-Connect Prefix</string>
+       </property>
+       <property name="buddy">
+        <cstring>jackAutoConnectPrefixLineEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="15" column="1">
+      <widget class="QLineEdit" name="jackAutoConnectPrefixLineEdit"/>
+     </item>
+     <item row="16" column="0" colspan="2">
+      <widget class="QLabel" name="jackAutoConnectPrefixHint">
+       <property name="text">
+        <string>Match destination JACK input port names that start with this prefix (case-sensitive). Leave empty to disable automatic matching without disconnecting existing routes.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="5" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
@@ -468,6 +491,7 @@
   <tabstop>apiComboBox</tabstop>
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>audioBufferComboBox</tabstop>
+  <tabstop>jackAutoConnectPrefixLineEdit</tabstop>
   <tabstop>deviceSyncComboBox</tabstop>
   <tabstop>engineClockComboBox</tabstop>
   <tabstop>mainMixComboBox</tabstop>

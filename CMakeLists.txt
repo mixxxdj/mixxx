@@ -1596,11 +1596,13 @@ add_library(
   src/skin/legacy/tooltips.cpp
   src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
+  src/soundio/jackautoconnector.cpp
   src/soundio/portaudioenumerator.cpp
   src/soundio/sounddeviceenumerator.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
   src/soundio/sounddeviceportaudio.cpp
+  src/soundio/sounddevicejack.h
   src/soundio/soundmanager.cpp
   src/soundio/soundmanagerconfig.cpp
   src/soundio/soundmanagerutil.cpp
@@ -2925,6 +2927,7 @@ if(BUILD_TESTING)
     src/test/hotcueorderbyposition_test.cpp
     src/test/imageutils_test.cpp
     src/test/indexrange_test.cpp
+    src/test/jackautoconnector_test.cpp
     src/test/itunesxmlimportertest.cpp
     src/test/keyfactorytest.cpp
     src/test/keyutilstest.cpp
@@ -3751,6 +3754,19 @@ target_link_libraries(
 # PortAudio
 find_package(PortAudio REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC PortAudio::PortAudio)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  find_path(MIXXX_JACK_INCLUDE_DIR jack/jack.h)
+  if(MIXXX_JACK_INCLUDE_DIR)
+    target_include_directories(
+      mixxx-lib
+      SYSTEM
+      PRIVATE ${MIXXX_JACK_INCLUDE_DIR}
+    )
+    target_sources(mixxx-lib PRIVATE src/soundio/sounddevicejack.cpp)
+    target_compile_definitions(mixxx-lib PRIVATE MIXXX_HAVE_JACK)
+  endif()
+endif()
 
 if(ANDROID)
   target_link_libraries(mixxx-lib PUBLIC OpenSLES android)
