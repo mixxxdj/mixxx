@@ -926,6 +926,11 @@ PROPERTY_IMPL(kConfigGroup,
         bool,
         configStartInFullscreenKey,
         false);
+PROPERTY_IMPL(QStringLiteral("[Auto DJ]"),
+        QStringLiteral("StartOnLaunch"),
+        bool,
+        autoDJStartOnLaunch,
+        false);
 PROPERTY_IMPL(kConfigGroup,
         kSchemeKey,
         QString,
