@@ -16,6 +16,7 @@
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefmixer.cpp"
+#include "util/assert.h"
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 #include "util/rescaler.h"
@@ -243,7 +244,9 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         // Update the combobox when the effect was changed in WEffectChainPresetSelector
         // or with controllers. This will wipe pending QuickEffect changes.
         EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(deckGroup);
-        DEBUG_ASSERT(pChain);
+        VERIFY_OR_DEBUG_ASSERT(pChain) {
+            return;
+        }
         connect(pChain.data(),
                 &EffectChain::chainPresetChanged,
                 this,
@@ -284,9 +287,13 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
         // Get currently loaded EQ effect
         auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(
                 PlayerManager::groupForDeck(deck));
-        DEBUG_ASSERT(pChainSlot);
+        VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+            continue;
+        }
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
-        DEBUG_ASSERT(pEffectSlot);
+        VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+            continue;
+        }
         const EffectManifestPointer pLoadedManifest =
                 pEffectSlot->getManifest();
 
@@ -326,9 +333,15 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
             // Deactivate item to hopefully clarify the item is not an EQ
             const QStandardItemModel* pModel =
                     qobject_cast<QStandardItemModel*>(pBox->model());
-            DEBUG_ASSERT(pModel);
+            VERIFY_OR_DEBUG_ASSERT(pModel) {
+                pBox->setCurrentIndex(currentIndex);
+                continue;
+            }
             auto* pItem = pModel->item(currentIndex);
-            DEBUG_ASSERT(pItem);
+            VERIFY_OR_DEBUG_ASSERT(pItem) {
+                pBox->setCurrentIndex(currentIndex);
+                continue;
+            }
             pItem->setEnabled(false);
         }
         pBox->setCurrentIndex(currentIndex);
@@ -352,7 +365,9 @@ void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
 
         EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(
                 PlayerManager::groupForDeck(deck));
-        DEBUG_ASSERT(pChain);
+        VERIFY_OR_DEBUG_ASSERT(pChain) {
+            continue;
+        }
         for (const auto& pChainPreset : presetList) {
             pBox->addItem(pChainPreset->name());
             if (pChain->presetName() == pChainPreset->name()) {
@@ -407,9 +422,17 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
                 // Deactivate item to hopefully clarify the item is not an EQ
                 const QStandardItemModel* pModel =
                         qobject_cast<QStandardItemModel*>(eqBox->model());
-                DEBUG_ASSERT(pModel);
+                VERIFY_OR_DEBUG_ASSERT(pModel) {
+                    eqBox->setCurrentIndex(newIndex);
+                    eqBox->setDisabled(true);
+                    continue;
+                }
                 auto* pItem = pModel->item(newIndex);
-                DEBUG_ASSERT(pItem);
+                VERIFY_OR_DEBUG_ASSERT(pItem) {
+                    eqBox->setCurrentIndex(newIndex);
+                    eqBox->setDisabled(true);
+                    continue;
+                }
                 pItem->setEnabled(false);
             }
             eqBox->setCurrentIndex(newIndex);
@@ -475,9 +498,9 @@ void DlgPrefMixer::slotResetToDefaults() {
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
     Q_UNUSED(effectIndex);
-    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
-    if (!c || m_ignoreEqQuickEffectBoxSignals) {
+    if (!pComboBox || m_ignoreEqQuickEffectBoxSignals) {
         return;
     }
 
@@ -492,9 +515,9 @@ void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
 
 void DlgPrefMixer::slotQuickEffectSelectionChanged(int effectIndex) {
     Q_UNUSED(effectIndex);
-    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
-    if (!c || m_ignoreEqQuickEffectBoxSignals) {
+    if (!pComboBox || m_ignoreEqQuickEffectBoxSignals) {
         return;
     }
 
@@ -521,9 +544,13 @@ void DlgPrefMixer::applyDeckEQs() {
 
         auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(
                 PlayerManager::groupForDeck(deck));
-        DEBUG_ASSERT(pChainSlot);
+        VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+            continue;
+        }
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
-        DEBUG_ASSERT(pEffectSlot);
+        VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+            continue;
+        }
         pEffectSlot->setEnabled(!m_eqBypass);
 
         const EffectManifestPointer pManifest =
@@ -566,7 +593,9 @@ void DlgPrefMixer::applyQuickEffects() {
         if (needLoad) {
             EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(
                     PlayerManager::groupForDeck(deck));
-            DEBUG_ASSERT(pChain);
+            VERIFY_OR_DEBUG_ASSERT(pChain) {
+                continue;
+            }
             const QList<EffectChainPresetPointer> presetList =
                     m_pChainPresetManager->getQuickEffectPresetsSorted();
             if (effectIndex >= 0 && effectIndex < presetList.size()) {
@@ -929,9 +958,13 @@ void DlgPrefMixer::slotBypassEqToggled(bool checked) {
 
 void DlgPrefMixer::setUpMainEQ() {
     auto pChainSlot = m_pEffectsManager->getOutputEffectChain();
-    DEBUG_ASSERT(pChainSlot);
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return;
+    }
     auto pEffectSlot = pChainSlot->getEffectSlot(0);
-    DEBUG_ASSERT(pEffectSlot);
+    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
+        return;
+    }
     m_pEffectMainEQ = pEffectSlot;
 
     // Populate the effect combobox and connect widgets
