@@ -1555,6 +1555,9 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConf
             ? pConfig->getValue(kVSyncKey, VSyncThread::ST_DEFAULT)
             : VSyncThread::ST_DEFAULT;
 
+    const bool isWayland =
+            QGuiApplication::platformName().startsWith(QLatin1String("wayland"));
+
     // QOpenGLWindow inside createWindowContainer causes synchronous Wayland
     // compositor buffer reallocation on every resize event, making splitter
     // drag and UI resizing extremely slow. This affects both waveforms and spinny
@@ -1564,8 +1567,7 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConf
     // https://github.com/mixxxdj/mixxx/issues/13814
     // This function is called per OpenGLWindow, so warn only once.
     static bool waylandWarningShown = false;
-    if (!waylandWarningShown &&
-            QGuiApplication::platformName().startsWith(QLatin1String("wayland"))) {
+    if (!waylandWarningShown && isWayland) {
         waylandWarningShown = true;
         qWarning() << "Wayland detected with OpenGL waveforms: waveforms and "
                       "spinnies may suffer from rendering issues (slow resize, "
@@ -1576,6 +1578,10 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer pConf
     }
 
     QSurfaceFormat format;
+    if (isWayland) {
+        format.setRenderableType(QSurfaceFormat::OpenGL);
+    }
+
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
     // format.setVersion(2, 1);
     // Core and Compatibility contexts have been introduced in openGL 3.2

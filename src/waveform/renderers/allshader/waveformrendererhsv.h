@@ -22,6 +22,7 @@ class allshader::WaveformRendererHSV final
     void preprocess() override;
 
   private:
+    const ::WaveformRendererSignalBase::Options m_options;
     bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererHSV);

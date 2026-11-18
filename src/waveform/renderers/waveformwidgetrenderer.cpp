@@ -178,10 +178,11 @@ void WaveformWidgetRenderer::onPreRender(VSyncTimeProvider* vsyncThread) {
     }
 
     double truePos[2]{0};
-    m_visualPlayPosition->getPlaySlipAtNextVSync(vsyncThread,
-            truePos + ::WaveformRendererAbstract::Play,
-            truePos + ::WaveformRendererAbstract::Slip);
-    // truePlayPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
+    if (!m_visualPlayPosition->getPlaySlipAtNextVSync(vsyncThread,
+                truePos + ::WaveformRendererAbstract::Play,
+                truePos + ::WaveformRendererAbstract::Slip)) {
+        return;
+    }
 
     if (m_audioSamplePerPixel > 0) {
         // Track length in pixels.

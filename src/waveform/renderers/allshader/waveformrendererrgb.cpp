@@ -147,25 +147,39 @@ bool WaveformRendererRGB::preprocessInner() {
         const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
 
         // Find the max values for low, mid, high and all in the waveform data.
-        // - Max of left and right
+        // For mono or single-channel renderers, only the combined signal is used,
+        // so scanning both stereo channels redundantly would waste work in the
+        // hot path without changing the rendered envelope.
         uchar u8maxLow[2]{};
         uchar u8maxMid[2]{};
         uchar u8maxHigh[2]{};
-        // - Per channel
         uchar u8maxAllChn[2]{};
-        for (int chn = 0; chn < 2; chn++) {
-            // In case we don't render individual color per channel, we use only
-            // the first field of the arrays to perform signal max
-            int signalChn = splitLeftRight ? chn : 0;
-            // data is interleaved left / right
-            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+
+        const bool useSingleStereoMax = !splitLeftRight || m_isSlipRenderer;
+        if (useSingleStereoMax) {
+            for (int i = visualIndexStart; i <= visualIndexStop; ++i) {
                 const WaveformData& waveformData = data[i];
 
-                u8maxLow[signalChn] = math_max(u8maxLow[signalChn], waveformData.filtered.low);
-                u8maxMid[signalChn] = math_max(u8maxMid[signalChn], waveformData.filtered.mid);
-                u8maxHigh[signalChn] = math_max(u8maxHigh[signalChn], waveformData.filtered.high);
-                u8maxAllChn[signalChn] = math_max(
-                        u8maxAllChn[signalChn], waveformData.filtered.all);
+                u8maxLow[0] = math_max(u8maxLow[0], waveformData.filtered.low);
+                u8maxMid[0] = math_max(u8maxMid[0], waveformData.filtered.mid);
+                u8maxHigh[0] = math_max(u8maxHigh[0], waveformData.filtered.high);
+                u8maxAllChn[0] = math_max(u8maxAllChn[0], waveformData.filtered.all);
+            }
+            u8maxLow[1] = u8maxLow[0];
+            u8maxMid[1] = u8maxMid[0];
+            u8maxHigh[1] = u8maxHigh[0];
+            u8maxAllChn[1] = u8maxAllChn[0];
+        } else {
+            for (int chn = 0; chn < 2; chn++) {
+                // data is interleaved left / right
+                for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                    const WaveformData& waveformData = data[i];
+
+                    u8maxLow[chn] = math_max(u8maxLow[chn], waveformData.filtered.low);
+                    u8maxMid[chn] = math_max(u8maxMid[chn], waveformData.filtered.mid);
+                    u8maxHigh[chn] = math_max(u8maxHigh[chn], waveformData.filtered.high);
+                    u8maxAllChn[chn] = math_max(u8maxAllChn[chn], waveformData.filtered.all);
+                }
             }
         }
         float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
