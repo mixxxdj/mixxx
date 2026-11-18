@@ -85,8 +85,11 @@ bool WaveformRendererHSV::preprocessInner() {
     float highGain = 1.0f;
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
-    // Get base color of waveform in the HSV format (s and v isn't use)
-    float h = m_signalColor_h;
+    // The waveform's hue comes from the low color, as in the legacy HSV
+    // renderer; its saturation and value are not used. (m_signalColor_h is
+    // only set by the QML renderers.)
+    float h, s, v;
+    QColor::fromRgbF(m_lowColor_r, m_lowColor_g, m_lowColor_b).getHsvF(&h, &s, &v);
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
     const float halfBreadth = breadth / 2.0f;
 
