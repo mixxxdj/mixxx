@@ -9,6 +9,8 @@
 #include <QSharedPointer>
 #include <QStringList>
 
+#include "library/coverartutils.h"
+#include "sources/soundsourceproxy.h"
 #include "util/cache.h"
 #include "util/fileaccess.h"
 #include "util/performancetimer.h"
@@ -31,6 +33,12 @@ class ScannerGlobal {
               m_shouldCancel(false),
               m_numScannedDirectories(0),
               m_numRelocatedTracks(0) {
+        for (const auto& extension : SoundSourceProxy::getSupportedFileSuffixes()) {
+            m_supportedExtensions.insert(extension.toLower());
+        }
+        for (const auto& extension : CoverArtUtils::supportedCoverArtExtensions()) {
+            m_supportedCoverExtensions.insert(extension.toLower());
+        }
     }
 
     TaskWatcher& getTaskWatcher() {
@@ -77,22 +85,26 @@ class ScannerGlobal {
         return m_directoriesUnhashed;
     }
 
-    // TODO(rryan) test whether tasks should create their own QRegularExpression.
     bool isAudioFileSupported(const QString& fileName) const {
-        const auto locker = QMutexLocker(&m_supportedExtensionsMatcherMutex);
-        QRegularExpressionMatch match = m_supportedCoverExtensionsMatcher.match(fileName);
-        return match.hasMatch();
+        const int extensionSeparator = fileName.lastIndexOf('.');
+        if (extensionSeparator < 0 || extensionSeparator == fileName.size() - 1) {
+            return false;
+        }
+        const auto extension = fileName.mid(extensionSeparator + 1).toLower();
+        return m_supportedExtensions.contains(extension);
     }
 
     const QRegularExpression& supportedCoverExtensionsRegex() const {
         return m_supportedCoverExtensionsMatcher;
     }
 
-    // TODO(rryan) test whether tasks should create their own QRegularExpression.
     bool isCoverFileSupported(const QString& fileName) const {
-        const auto locker = QMutexLocker(&m_supportedCoverExtensionsMatcherMutex);
-        QRegularExpressionMatch match = m_supportedCoverExtensionsMatcher.match(fileName);
-        return match.hasMatch();
+        const int extensionSeparator = fileName.lastIndexOf('.');
+        if (extensionSeparator < 0 || extensionSeparator == fileName.size() - 1) {
+            return false;
+        }
+        const auto extension = fileName.mid(extensionSeparator + 1).toLower();
+        return m_supportedCoverExtensions.contains(extension);
     }
 
     bool shouldCancel() const {
@@ -169,9 +181,11 @@ class ScannerGlobal {
 
     mutable QMutex m_supportedExtensionsMatcherMutex;
     QRegularExpression m_supportedExtensionsMatcher;
+    QSet<QString> m_supportedExtensions;
 
     mutable QMutex m_supportedCoverExtensionsMatcherMutex;
     QRegularExpression m_supportedCoverExtensionsMatcher;
+    QSet<QString> m_supportedCoverExtensions;
 
     // This set will grow during a scan by successively
     // inserting the canonical paths of directories that
