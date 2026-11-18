@@ -1,6 +1,9 @@
 #include "qml/qmleffectslotparametersmodel.h"
 
+#include <QFontMetrics>
+#include <QGuiApplication>
 #include <QModelIndex>
+#include <algorithm>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/effectparameter.h"
@@ -19,6 +22,9 @@ const QHash<int, QByteArray> kRoleNames = {
         {QmlEffectSlotParametersModel::ControlKeyRole, "controlKey"},
         {QmlEffectSlotParametersModel::LoadedRole, "loaded"},
         {QmlEffectSlotParametersModel::UnitStringRole, "unitString"},
+        {QmlEffectSlotParametersModel::MaximumRole, "maximum"},
+        {QmlEffectSlotParametersModel::NeutralPointRole, "neutralPoint"},
+        {QmlEffectSlotParametersModel::DisplayOrderRole, "displayOrder"},
 };
 }
 
@@ -27,6 +33,9 @@ QmlEffectSlotParametersModel::QmlEffectSlotParametersModel(
         QObject* parent)
         : QAbstractListModel(parent),
           m_pEffectSlot(std::move(pEffectSlot)) {
+    m_orderedModel.setSourceModel(this);
+    m_orderedModel.setSortRole(DisplayOrderRole);
+    m_orderedModel.sort(0);
     connect(m_pEffectSlot.get(),
             &EffectSlot::effectChanged,
             this,
@@ -49,7 +58,7 @@ void QmlEffectSlotParametersModel::updateParameterState() {
     }
     emit dataChanged(index(0, 0),
             index(parameterCount - 1, 0),
-            {ControlKeyRole, LoadedRole});
+            {ControlKeyRole, LoadedRole, DisplayOrderRole});
 }
 
 EffectParameterPointer QmlEffectSlotParametersModel::loadedParameterForRow(
@@ -107,10 +116,18 @@ QVariant QmlEffectSlotParametersModel::data(const QModelIndex& index, int role) 
                          : QStringLiteral("parameter%1"))
                 .arg(QString::number(keyNumber));
     }
+    case QmlEffectSlotParametersModel::DisplayOrderRole: {
+        const auto parameter = loadedParameterForRow(index.row());
+        return parameter ? parameter->displayOrder() : rowCount({});
+    }
     case QmlEffectSlotParametersModel::LoadedRole:
         return static_cast<bool>(loadedParameterForRow(index.row()));
     case QmlEffectSlotParametersModel::UnitStringRole:
         return pParameter->unitString();
+    case QmlEffectSlotParametersModel::MaximumRole:
+        return pParameter->getMaximum();
+    case QmlEffectSlotParametersModel::NeutralPointRole:
+        return pParameter->neutralPointOnScale();
     default:
         return QVariant();
     }
@@ -125,6 +142,22 @@ int QmlEffectSlotParametersModel::rowCount(const QModelIndex& parent) const {
 
 QHash<int, QByteArray> QmlEffectSlotParametersModel::roleNames() const {
     return kRoleNames;
+}
+
+QString QmlEffectSlotParametersModel::formatNumber(double value) const {
+    return QString::number(value);
+}
+
+int QmlEffectSlotParametersModel::labelWidth(const QString& label,
+        double maximum,
+        const QString& unitString,
+        const QFont& font,
+        bool useApplicationFont) const {
+    const QFontMetrics metrics(useApplicationFont ? QGuiApplication::font() : font);
+    const QString suffix = unitString.isEmpty() ? QString() : QStringLiteral(" ") + unitString;
+    return std::max({metrics.size(0, label).width(),
+            metrics.size(0, QString::number(maximum - 0.01) + suffix).width(),
+            metrics.size(0, QString::number(maximum + 0.01) + suffix).width()});
 }
 
 QVariant QmlEffectSlotParametersModel::get(int row) const {
