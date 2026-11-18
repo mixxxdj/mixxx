@@ -5,7 +5,6 @@
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLWindow>
 #include <QVector2D>
-#include <QWindow>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -426,17 +425,12 @@ void VisualizerWindow::setDecksActive(bool active) {
 }
 
 bool VisualizerWindow::shouldDraw() const {
-    // [AI-generated] Nobody can see the picture while the window is hidden,
-    // minimized or, as far as the window system tells, completely covered.
-    // The window itself is asked for this and not the OpenGL window inside
-    // of it, whose state is not reliable, see WGLWidget::shouldRender().
-    // [/AI-generated]
-    const QWindow* pWindow = windowHandle();
-    return shouldRender() &&
-            isVisible() &&
-            !isMinimized() &&
-            pWindow &&
-            pWindow->isExposed();
+    // [AI-generated] Nobody can see the picture while the window is hidden
+    // or minimized. Whether the window system reports the window as exposed
+    // must not be used here: a full screen window on a second screen is
+    // reported as not exposed when it loses the focus, although it is still
+    // in plain sight. [/AI-generated]
+    return shouldRender() && isVisible() && !isMinimized();
 }
 
 void VisualizerWindow::setFullScreen(bool fullScreen) {
