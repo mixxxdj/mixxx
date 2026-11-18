@@ -1,10 +1,10 @@
-#include "effects/backends/builtin/echoeffect.h"
-
 #include <gtest/gtest.h>
 
 #include <QMap>
 #include <QString>
 
+#include "effects/backends/builtin/echoeffect.h"
+#include "effects/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/engine.h"
