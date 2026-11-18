@@ -5,8 +5,8 @@
 #include "library/starrating.h"
 #include "library/tabledelegates/stareditor.h"
 #include "library/tabledelegates/tableitemdelegate.h"
-#include "util/assert.h"
 #include "moc_stardelegate.cpp"
+#include "util/assert.h"
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
@@ -61,7 +61,7 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
 }
 
 void StarDelegate::setEditorData(QWidget* pEditor,
-                                 const QModelIndex& index) const {
+        const QModelIndex& index) const {
     StarEditor* pStarEditor = qobject_cast<StarEditor*>(pEditor);
     VERIFY_OR_DEBUG_ASSERT(pStarEditor) {
         return;
@@ -71,8 +71,8 @@ void StarDelegate::setEditorData(QWidget* pEditor,
 }
 
 void StarDelegate::setModelData(QWidget* pEditor,
-                                QAbstractItemModel* pModel,
-                                const QModelIndex& index) const {
+        QAbstractItemModel* pModel,
+        const QModelIndex& index) const {
     StarEditor* pStarEditor = qobject_cast<StarEditor*>(pEditor);
     VERIFY_OR_DEBUG_ASSERT(pStarEditor) {
         return;
