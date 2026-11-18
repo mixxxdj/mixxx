@@ -532,7 +532,7 @@ Description:
 
               <WidgetGroup>
                 <Layout>horizontal</Layout>
-                <Size>0me,20f</Size>
+                <Size>0me,31f</Size>
                 <Children>
                   <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
                   <Label>
@@ -541,12 +541,18 @@ Description:
                     <Text>Style: </Text>
                     <Alignment>left</Alignment>
                   </Label>
-                  <Template src="skins:LateNight/helpers/skin_settings_numToggle.xml">
-                    <SetVariable name="Text">Cover Distortion</SetVariable>
-                    <SetVariable name="Setting">[Visualizer],style</SetVariable>
-                    <SetVariable name="IsEqual">0</SetVariable>
-                    <SetVariable name="Width">120f</SetVariable>
-                  </Template>
+                  <ComboBox>
+                    <ObjectName>VisualizerStyleSelector</ObjectName>
+                    <TooltipId>visualizer_style</TooltipId>
+                    <Size>130f,27f</Size>
+                    <State>
+                      <Number>0</Number>
+                      <Text>Cover Distortion</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Visualizer],style</ConfigKey>
+                    </Connection>
+                  </ComboBox>
                   <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>

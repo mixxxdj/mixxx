@@ -261,6 +261,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Visualizer Window")
             << tr("Show/hide the separate window with visuals that react to the music.");
 
+    add("visualizer_style")
+            << tr("Visualizer Style")
+            << tr("Select the style of the visuals.");
+
     add("visualizer_bass_intensity")
             << tr("Visualizer Bass Intensity")
             << tr("Adjusts how strongly the bass of the decks distorts the visuals.")
