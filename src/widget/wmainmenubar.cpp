@@ -369,6 +369,18 @@ void WMainMenuBar::initialize() {
     connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
     pViewMenu->addAction(m_pViewKeywheel);
 
+    //: menu title
+    QString visualizerTitle = tr("Show Visualizer");
+    //: tooltip text
+    QString visualizerText = tr("Show a separate window with visuals that react to the music");
+    auto* pViewVisualizer = new QAction(visualizerTitle, this);
+    pViewVisualizer->setCheckable(true);
+    pViewVisualizer->setStatusTip(visualizerText);
+    pViewVisualizer->setWhatsThis(buildWhatsThis(visualizerTitle, visualizerText));
+    createVisibilityControl(pViewVisualizer,
+            ConfigKey(QStringLiteral("[Visualizer]"), QStringLiteral("show_window")));
+    pViewMenu->addAction(pViewVisualizer);
+
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +
             " " + mayNotBeSupported;

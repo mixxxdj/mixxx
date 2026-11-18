@@ -506,6 +506,70 @@ Description:
             </Children>
           </WidgetGroup><!-- /Library -->
 
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,12f</Size>
+          </WidgetGroup>
+
+          <!-- Visualizer -->
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Visualizer</Text>
+            <Size>180min,23f</Size>
+          </Label>
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">visualizer_show_window</SetVariable>
+                <SetVariable name="Text">Visualizer Window</SetVariable>
+                <SetVariable name="Setting">[Visualizer],show_window</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>0me,20f</Size>
+                <Children>
+                  <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+                  <Label>
+                    <ObjectName>SkinSettingsText</ObjectName>
+                    <Size>64f,18f</Size>
+                    <Text>Style: </Text>
+                    <Alignment>left</Alignment>
+                  </Label>
+                  <Template src="skins:LateNight/helpers/skin_settings_numToggle.xml">
+                    <SetVariable name="Text">Cover Distortion</SetVariable>
+                    <SetVariable name="Setting">[Visualizer],style</SetVariable>
+                    <SetVariable name="IsEqual">0</SetVariable>
+                    <SetVariable name="Width">120f</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <Template src="skins:LateNight/helpers/skin_settings_visualizer_slider.xml">
+                <SetVariable name="Text">Bass: </SetVariable>
+                <SetVariable name="Control">bass_intensity</SetVariable>
+                <SetVariable name="TooltipId">visualizer_bass_intensity</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/helpers/skin_settings_visualizer_slider.xml">
+                <SetVariable name="Text">Mids: </SetVariable>
+                <SetVariable name="Control">mid_intensity</SetVariable>
+                <SetVariable name="TooltipId">visualizer_mid_intensity</SetVariable>
+              </Template>
+              <Template src="skins:LateNight/helpers/skin_settings_visualizer_slider.xml">
+                <SetVariable name="Text">Highs: </SetVariable>
+                <SetVariable name="Control">high_intensity</SetVariable>
+                <SetVariable name="TooltipId">visualizer_high_intensity</SetVariable>
+              </Template>
+
+            </Children>
+          </WidgetGroup><!-- /Visualizer -->
+
           <!-- push the settings up, required with Qt6 -->
           <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
 

@@ -13,6 +13,7 @@
 #include "engine/channelhandle.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/effects/groupfeaturestate.h"
+#include "engine/enginebandmeter.h"
 #include "engine/engineobject.h"
 #include "preferences/usersettings.h"
 #include "recording/recordingmanager.h"
@@ -124,6 +125,7 @@ class EngineMixer : public QObject, public AudioSource {
         mixxx::SampleBuffer m_pBuffer;
         std::unique_ptr<ControlObject> m_pVolumeControl;
         std::unique_ptr<ControlPushButton> m_pMuteControl;
+        std::unique_ptr<mixxx::EngineBandMeter> m_pBandMeter;
         GroupFeatureState m_features;
         int m_index;
     };
@@ -260,6 +262,7 @@ class EngineMixer : public QObject, public AudioSource {
     // m_activeTalkoverChannels with each channel that is active for the
     // respective output.
     void processChannels(std::size_t bufferSize);
+    void processBandMeters(std::size_t bufferSize);
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMainEffects(std::size_t bufferSize);
@@ -348,6 +351,10 @@ class EngineMixer : public QObject, public AudioSource {
     // Mix two Mono channels. This is useful for outdoor gigs
     std::unique_ptr<ControlObject> m_pMainMonoMixdown;
     std::unique_ptr<ControlObject> m_pMicMonitorMode;
+
+    // [AI-generated] The band meters of the decks only run while this is set.
+    // [/AI-generated]
+    std::unique_ptr<ControlObject> m_pBandMetersEnabled;
 
     // TODO (Swiftb0y): remove volatile (probably supposed to be std::atomic instead).
     volatile bool m_bBusOutputConnected[3];

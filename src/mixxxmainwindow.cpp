@@ -31,6 +31,7 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
+#include "control/controlproxy.h"
 #include "library/library.h"
 #include "library/library_decl.h"
 #include "library/library_prefs.h"
@@ -54,6 +55,7 @@
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
 #include "util/versionstore.h"
+#include "visualizer/visualizerwindow.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
@@ -278,6 +280,10 @@ void MixxxMainWindow::initialize() {
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
+
+    m_pShowVisualizer = make_parented<ControlProxy>(
+            QStringLiteral("[Visualizer]"), QStringLiteral("show_window"), this);
+    m_pShowVisualizer->connectValueChanged(this, &MixxxMainWindow::slotShowVisualizer);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,
@@ -523,6 +529,9 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DeveloperToolsDlg";
     delete m_pDeveloperToolsDlg;
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting VisualizerWindow";
+    m_pVisualizerWindow.reset();
 
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
@@ -1306,6 +1315,27 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
     } else {
         m_pKeywheel->hide();
     }
+}
+
+void MixxxMainWindow::slotShowVisualizer(double show) {
+    if (show <= 0.0) {
+        if (m_pVisualizerWindow) {
+            m_pVisualizerWindow->hide();
+        }
+        return;
+    }
+    if (!m_pVisualizerWindow) {
+        if (!WaveformWidgetFactory::instance()->isOpenGlShaderAvailable()) {
+            qWarning() << "The visualizer window requires OpenGL shaders";
+            m_pShowVisualizer->set(0.0);
+            return;
+        }
+        m_pVisualizerWindow = std::make_unique<mixxx::VisualizerWindow>(
+                m_pCoreServices->getPlayerManager());
+        m_pVisualizerWindow->setWindowIcon(QIcon(MIXXX_ICON_PATH));
+    }
+    m_pVisualizerWindow->show();
+    m_pVisualizerWindow->raise();
 }
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {

@@ -1514,6 +1514,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     pGuiMenu->addSeparator();
 
+    addControl("[Visualizer]",
+            "show_window",
+            tr("Visualizer Window Show/Hide"),
+            tr("Show/hide the separate window with visuals that react to the music"),
+            pGuiMenu);
+    addControl("[Visualizer]",
+            "bass_intensity",
+            tr("Visualizer Bass Intensity"),
+            tr("Adjust how strongly the bass distorts the visuals"),
+            pGuiMenu,
+            true);
+    addControl("[Visualizer]",
+            "mid_intensity",
+            tr("Visualizer Mids Intensity"),
+            tr("Adjust how strongly the mids distort the visuals"),
+            pGuiMenu,
+            true);
+    addControl("[Visualizer]",
+            "high_intensity",
+            tr("Visualizer Highs Intensity"),
+            tr("Adjust how strongly the highs distort the visuals"),
+            pGuiMenu,
+            true);
+    addControl("[Visualizer]",
+            "style",
+            tr("Visualizer Style"),
+            tr("Select the next style of the visuals"),
+            pGuiMenu);
+
+    pGuiMenu->addSeparator();
+
     addControl("[Skin]",
             "show_4decks",
             tr("Toggle 4 Decks"),

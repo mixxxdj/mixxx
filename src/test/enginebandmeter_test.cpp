@@ -1,0 +1,117 @@
+#include "engine/enginebandmeter.h"
+
+#include <gtest/gtest.h>
+
+#include <QString>
+#include <cmath>
+#include <numbers>
+
+#include "control/controlobject.h"
+#include "test/mixxxtest.h"
+#include "util/samplebuffer.h"
+
+namespace {
+
+const QString kGroup = QStringLiteral("[Test]");
+constexpr mixxx::audio::SampleRate kSampleRate = mixxx::audio::SampleRate(44100);
+constexpr std::size_t kBufferFrames = 1024;
+constexpr std::size_t kBufferSamples = kBufferFrames * 2;
+constexpr CSAMPLE kAmplitude = 0.5f;
+// [AI-generated] The mean absolute value of a sine is 2/pi of its amplitude.
+// The tolerance allows for the attenuation near the edges of a band.
+// [/AI-generated]
+constexpr double kPassedLevel = kAmplitude * 2 / std::numbers::pi;
+constexpr double kPassedTolerance = 0.05;
+constexpr double kRejectedLevel = 0.005;
+
+class EngineBandMeterTest : public MixxxTest {
+  protected:
+    EngineBandMeterTest()
+            : m_meter(kGroup),
+              m_buffer(kBufferSamples),
+              m_frame(0) {
+    }
+
+    // [AI-generated] Feeds one second of a stereo sine into the meter.
+    // [/AI-generated]
+    void processSine(double frequencyHz) {
+        const std::size_t numBuffers = kSampleRate.value() / kBufferFrames;
+        for (std::size_t bufferIndex = 0; bufferIndex < numBuffers; ++bufferIndex) {
+            for (std::size_t frame = 0; frame < kBufferFrames; ++frame) {
+                const double phase = 2 * std::numbers::pi * frequencyHz *
+                        static_cast<double>(m_frame) / kSampleRate.value();
+                const CSAMPLE sample = kAmplitude * static_cast<CSAMPLE>(std::sin(phase));
+                m_buffer[static_cast<SINT>(frame * 2)] = sample;
+                m_buffer[static_cast<SINT>(frame * 2 + 1)] = sample;
+                ++m_frame;
+            }
+            m_meter.process(m_buffer.data(), kBufferSamples, kSampleRate);
+        }
+    }
+
+    double level(const QString& item) const {
+        return ControlObject::get(ConfigKey(kGroup, item));
+    }
+
+    mixxx::EngineBandMeter m_meter;
+    mixxx::SampleBuffer m_buffer;
+    std::size_t m_frame;
+};
+
+TEST_F(EngineBandMeterTest, bassOnlyRaisesLowBand) {
+    processSine(60);
+    EXPECT_NEAR(kPassedLevel, level(QStringLiteral("band_meter_low")), kPassedTolerance);
+    EXPECT_LT(level(QStringLiteral("band_meter_mid")), kRejectedLevel);
+    EXPECT_LT(level(QStringLiteral("band_meter_high")), kRejectedLevel);
+}
+
+TEST_F(EngineBandMeterTest, midsOnlyRaiseMidBand) {
+    processSine(800);
+    EXPECT_LT(level(QStringLiteral("band_meter_low")), kRejectedLevel);
+    EXPECT_NEAR(kPassedLevel, level(QStringLiteral("band_meter_mid")), kPassedTolerance);
+    EXPECT_LT(level(QStringLiteral("band_meter_high")), kRejectedLevel);
+}
+
+TEST_F(EngineBandMeterTest, highsOnlyRaiseHighBand) {
+    processSine(10000);
+    EXPECT_LT(level(QStringLiteral("band_meter_low")), kRejectedLevel);
+    EXPECT_LT(level(QStringLiteral("band_meter_mid")), kRejectedLevel);
+    EXPECT_NEAR(kPassedLevel, level(QStringLiteral("band_meter_high")), kPassedTolerance);
+}
+
+TEST_F(EngineBandMeterTest, silenceReadsZero) {
+    processSine(60);
+    m_buffer.clear();
+    for (int bufferIndex = 0; bufferIndex < 50; ++bufferIndex) {
+        m_meter.process(m_buffer.data(), kBufferSamples, kSampleRate);
+    }
+    EXPECT_LT(level(QStringLiteral("band_meter_low")), kRejectedLevel);
+}
+
+TEST_F(EngineBandMeterTest, resetReadsZero) {
+    processSine(60);
+    processSine(800);
+    processSine(10000);
+    m_meter.reset();
+    EXPECT_DOUBLE_EQ(0.0, level(QStringLiteral("band_meter_low")));
+    EXPECT_DOUBLE_EQ(0.0, level(QStringLiteral("band_meter_mid")));
+    EXPECT_DOUBLE_EQ(0.0, level(QStringLiteral("band_meter_high")));
+}
+
+TEST_F(EngineBandMeterTest, shortBuffersAreAccumulated) {
+    // [AI-generated] 64 frames are shorter than one update period, so the
+    // level must still be published after several buffers. [/AI-generated]
+    constexpr std::size_t kShortBufferSamples = 64 * 2;
+    for (SINT sampleIndex = 0; sampleIndex < static_cast<SINT>(kShortBufferSamples);
+            ++sampleIndex) {
+        // [AI-generated] A 11025 Hz square wave passes the high band only.
+        // [/AI-generated]
+        m_buffer[sampleIndex] = (sampleIndex / 4) % 2 == 0 ? kAmplitude : -kAmplitude;
+    }
+    for (int bufferIndex = 0; bufferIndex < 200; ++bufferIndex) {
+        m_meter.process(m_buffer.data(), kShortBufferSamples, kSampleRate);
+    }
+    EXPECT_GT(level(QStringLiteral("band_meter_high")), 0.1);
+}
+
+} // namespace

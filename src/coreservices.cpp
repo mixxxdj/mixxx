@@ -62,6 +62,7 @@
 #include "util/translations.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#include "visualizer/visualizercontrols.h"
 
 #ifdef __APPLE__
 #include "util/sandbox.h"
@@ -722,6 +723,7 @@ void CoreServices::initialize() {
     // The UI controls must be created here so that controllers can bind to
     // them on startup.
     m_pSkinControls = std::make_unique<SkinControls>();
+    m_pVisualizerControls = std::make_unique<VisualizerControls>();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -952,6 +954,7 @@ void CoreServices::finalize() {
 
     m_pTouchShift.reset();
 
+    m_pVisualizerControls.reset();
     m_pSkinControls.reset();
 
     m_pControlIndicatorTimer.reset();
