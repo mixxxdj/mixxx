@@ -28,6 +28,162 @@
             <option type="boolean" variable="useFadercutsAsStems" label="Control stems with Fader Cuts pads" default="false" description="When enabled, the 'Fader Cuts' pad mode is replaced with a mode to control Stems (mute, volume, and quick effects)."/>
             <option type="boolean" variable="useAdditionalHotcues" label="Add hotcues 5-8 to the second row of pads" default="false" description="When enabled, the bottom row of transport pads (CUE, START, BACK, FWD) will function as hotcues 5-8 when the pad mode is set to 'Hot Cue'."/>
         </group>
+        <group label="Fader Cuts">
+            <option label="Use transport pads as fadercuts in Fader Cuts mode" variable="useAdditionalFadercuts" type="boolean" default="false"
+                description="When enabled, transport pads (CUE, START, BACK, FWD) will function as fadercuts 5-8 when the pad mode is set to 'Fader Cuts'."/>
+            <option label="Pad 1 pattern" variable="fadercutsPad1" type="enum">
+                <value label="Side cuts" default="true">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 1 duration (beats)" variable="fadercutsPad1Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 2 pattern" variable="fadercutsPad2" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst" default="true">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 2 duration (beats)" variable="fadercutsPad2Duration" type="enum">
+                <value label="1 beat">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats" default="true">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 3 pattern" variable="fadercutsPad3" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse" default="true">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 3 duration (beats)" variable="fadercutsPad3Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 4 pattern" variable="fadercutsPad4" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation" default="true">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 4 duration (beats)" variable="fadercutsPad4Duration" type="enum">
+                <value label="1 beat">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats" default="true">4</value>
+            </option>
+            <option label="Pad 5 pattern" variable="fadercutsPad5" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull" default="true">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 5 duration (beats)" variable="fadercutsPad5Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 6 pattern" variable="fadercutsPad6" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating" default="true">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 6 duration (beats)" variable="fadercutsPad6Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 7 pattern" variable="fadercutsPad7" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating" default="true">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 7 duration (beats)" variable="fadercutsPad7Duration" type="enum">
+                <value label="1 beat" default="true">1</value>
+                <value label="2 beats">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+            <option label="Pad 8 pattern" variable="fadercutsPad8" type="enum">
+                <value label="Side cuts">side_cuts</value>
+                <value label="Triplet burst">triplet_burst</value>
+                <value label="Half-beat pulse">half_beat_pulse</value>
+                <value label="1-2-1 syncopation">syncopation_1_2_1</value>
+                <value label="Push-pull">push_pull</value>
+                <value label="Alternating">alternating</value>
+                <value label="Reverse alternating">reverse_alternating</value>
+                <value label="Five-and-three">five_and_three</value>
+                <value label="Two-step drive">two_step_drive</value>
+                <value label="Syncopated bounce" default="true">syncopated_bounce</value>
+                <value label="Final cut">final_cut</value>
+            </option>
+            <option label="Pad 8 duration (beats)" variable="fadercutsPad8Duration" type="enum">
+                <value label="1 beat">1</value>
+                <value label="2 beats" default="true">2</value>
+                <value label="3 beats">3</value>
+                <value label="4 beats">4</value>
+            </option>
+        </group>
     </settings>
     <controller id="NS4FX">
         <scriptfiles>
