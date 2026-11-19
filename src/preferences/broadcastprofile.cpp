@@ -51,6 +51,7 @@ constexpr const char* kProfileName = "ProfileName";
 constexpr const char* kReconnectFirstDelay = "ReconnectFirstDelay";
 constexpr const char* kReconnectPeriod = "ReconnectPeriod";
 constexpr const char* kServertype = "Servertype";
+constexpr const char* kEncryptionMode = "EncryptionMode";
 constexpr const char* kStreamDesc = "StreamDesc";
 constexpr const char* kStreamGenre = "StreamGenre";
 constexpr const char* kStreamName = "StreamName";
@@ -236,6 +237,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setServertype(this->getServertype());
     other->setLogin(this->getLogin());
     other->setPassword(this->getPassword());
+    other->setEncryptionMode(this->getEncryptionMode());
 
     other->setEnableReconnect(this->getEnableReconnect());
     other->setReconnectPeriod(this->getReconnectPeriod());
@@ -272,6 +274,7 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
 
 void BroadcastProfile::adoptDefaultValues() {
     m_secureCredentials = false;
+    m_encryptionMode = EncryptionMode::Required;
     m_enabled = false;
 
     m_host = QString();
@@ -343,6 +346,13 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_host = selectCleanNodeString(doc, kHost, &fixedStrings);
     m_port = XmlParse::selectNodeInt(doc, kPort);
     m_serverType = selectCleanNodeString(doc, kServertype, &fixedStrings);
+    switch (static_cast<EncryptionMode>(XmlParse::selectNodeInt(doc, kEncryptionMode))) {
+    case EncryptionMode::Required:
+        m_encryptionMode = EncryptionMode::Required;
+        break;
+    default:
+        m_encryptionMode = EncryptionMode::Disabled;
+    }
 
     m_login = selectCleanNodeString(doc, kLogin, &fixedStrings);
     if (m_secureCredentials) {
@@ -428,6 +438,10 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kHost, m_host);
     XmlParse::addElement(doc, docRoot, kPort, QString::number(m_port));
     XmlParse::addElement(doc, docRoot, kServertype, m_serverType);
+    XmlParse::addElement(doc,
+            docRoot,
+            kEncryptionMode,
+            QString::number(static_cast<int>(m_encryptionMode)));
 
     XmlParse::addElement(doc, docRoot, kLogin, m_login);
     if (m_secureCredentials) {
