@@ -8,6 +8,7 @@
 #include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
+#include "analyzer/plugins/analyzerrbgridbeats.h"
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
@@ -19,6 +20,7 @@ QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     // First one below is the default
     plugins.append(mixxx::AnalyzerQueenMaryBeats::pluginInfo());
     plugins.append(mixxx::AnalyzerSoundTouchBeats::pluginInfo());
+    plugins.append(mixxx::AnalyzerRbGridBeats::pluginInfo());
     return plugins;
 }
 
@@ -107,6 +109,8 @@ bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
         } else if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerSoundTouchBeats>();
+        } else if (m_pluginId == mixxx::AnalyzerRbGridBeats::pluginInfo().id()) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerRbGridBeats>();
         } else {
             // This must not happen, because we have already verified above
             // that the PlugInId is valid
@@ -175,8 +179,12 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             pluginID,
             m_bPreferencesFastAnalysis);
+    // The rekordbox-compatible plugin always produces a constant grid, so
+    // compare against the constant grid version even if the fixed tempo
+    // preference is off. Otherwise its tracks would be re-analyzed every time.
     QString newVersion = BeatFactory::getPreferredVersion(
-            m_bPreferencesFixedTempo);
+            m_bPreferencesFixedTempo ||
+            pluginID == mixxx::AnalyzerRbGridBeats::pluginInfo().id());
     QString newSubVersion = BeatFactory::getPreferredSubVersion(
             extraVersionInfo);
 
@@ -278,7 +286,11 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     } else {
         mixxx::Bpm bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = mixxx::Beats::fromConstTempo(m_sampleRate, mixxx::audio::kStartFramePos, bpm);
+        pBeats = mixxx::Beats::fromConstTempo(m_sampleRate,
+                m_pPlugin->getFirstBeat(),
+                bpm,
+                BeatFactory::getPreferredSubVersion(getExtraVersionInfo(
+                        m_pluginId, m_bPreferencesFastAnalysis)));
     }
 
     pTrack->trySetBeats(pBeats);

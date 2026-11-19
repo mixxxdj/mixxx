@@ -477,6 +477,56 @@ version 2.1 of the License, or (at your option) any later version.\par
 This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.\par
 \par
 \par
+\ul\b\fs28 PFFFT License\ulnone\b0\fs22\par
+\par
+Copyright (c) 2013  Julien Pommier ( pommier@modartt.com )\par
+\par
+Based on original fortran 77 code from FFTPACKv4 from NETLIB\par
+(http://www.netlib.org/fftpack), authored by Dr Paul Swarztrauber\par
+of NCAR, in 1985.\par
+\par
+As confirmed by the NCAR fftpack software curators, the following\par
+FFTPACKv5 license applies to FFTPACKv4 sources. My changes are\par
+released under the same terms.\par
+\par
+FFTPACK license:\par
+\par
+http://www.cisl.ucar.edu/css/software/fftpack5/ftpk.html\par
+\par
+Copyright (c) 2004 the University Corporation for Atmospheric\par
+Research ("UCAR"). All rights reserved. Developed by NCAR's\par
+Computational and Information Systems Laboratory, UCAR,\par
+www.cisl.ucar.edu.\par
+\par
+Redistribution and use of the Software in source and binary forms,\par
+with or without modification, is permitted provided that the\par
+following conditions are met:\par
+\par
+- Neither the names of NCAR's Computational and Information Systems\par
+Laboratory, the University Corporation for Atmospheric Research,\par
+nor the names of its sponsors or contributors may be used to\par
+endorse or promote products derived from this Software without\par
+specific prior written permission.\par
+\par
+- Redistributions of source code must retain the above copyright\par
+notices, this list of conditions, and the disclaimer below.\par
+\par
+- Redistributions in binary form must reproduce the above copyright\par
+notice, this list of conditions, and the disclaimer below in the\par
+documentation and/or other materials provided with the\par
+distribution.\par
+\par
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,\par
+EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE WARRANTIES OF\par
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND\par
+NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT\par
+HOLDERS BE LIABLE FOR ANY CLAIM, INDIRECT, INCIDENTAL, SPECIAL,\par
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES OR OTHER LIABILITY, WHETHER IN AN\par
+ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\par
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE\par
+SOFTWARE.\par
+\par
+\par
 \ul\b\fs28 SoundTouch License\ulnone\b0\fs22\par
 \par
 \tab\tab   GNU LESSER GENERAL PUBLIC LICENSE\par

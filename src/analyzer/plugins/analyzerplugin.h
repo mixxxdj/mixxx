@@ -73,6 +73,11 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
     virtual mixxx::Bpm getBpm() const {
         return {};
     }
+    /// Position of the first beat for plugins that only detect a constant
+    /// tempo (supportsBeatTracking() == false). Used as the grid anchor.
+    virtual mixxx::audio::FramePos getFirstBeat() const {
+        return mixxx::audio::kStartFramePos;
+    }
     virtual QVector<mixxx::audio::FramePos> getBeats() const {
         return {};
     }

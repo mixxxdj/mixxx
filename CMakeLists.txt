@@ -1194,8 +1194,10 @@ add_library(
   src/analyzer/analyzerwaveform.cpp
   src/analyzer/plugins/analyzerqueenmarybeats.cpp
   src/analyzer/plugins/analyzerqueenmarykey.cpp
+  src/analyzer/plugins/analyzerrbgridbeats.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
+  src/analyzer/plugins/rbgrid/rbgridtracker.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
   src/audio/signalinfo.cpp
@@ -2951,6 +2953,7 @@ if(BUILD_TESTING)
     src/test/portmidienumeratortest.cpp
     src/test/queryutiltest.cpp
     src/test/rangelist_test.cpp
+    src/test/rbgridtrackertest.cpp
     src/test/readaheadmanager_test.cpp
     src/test/replaygaintest.cpp
     src/test/rescalertest.cpp
@@ -4805,6 +4808,14 @@ target_link_libraries(mixxx-lib PRIVATE QueenMaryDsp)
 add_library(ReplayGain STATIC EXCLUDE_FROM_ALL lib/replaygain/replaygain.cpp)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/replaygain)
 target_link_libraries(mixxx-lib PRIVATE ReplayGain)
+
+# PFFFT (SIMD FFT used by the rekordbox-compatible beat grid analyzer)
+add_library(pffft STATIC EXCLUDE_FROM_ALL lib/pffft/pffft.c)
+if(MSVC)
+  target_compile_definitions(pffft PRIVATE _USE_MATH_DEFINES)
+endif()
+target_include_directories(mixxx-lib SYSTEM PRIVATE lib/pffft)
+target_link_libraries(mixxx-lib PRIVATE pffft)
 
 # Reverb
 add_library(Reverb STATIC EXCLUDE_FROM_ALL lib/reverb/Reverb.cc)
