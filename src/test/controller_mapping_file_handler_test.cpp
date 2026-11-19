@@ -136,7 +136,6 @@ class LegacyControllerMappingFileHandlerTest
         EXPECT_EQ(pOriginalMapping->m_screens, pSerializedMapping->m_screens);
 #endif
         EXPECT_EQ(pOriginalMapping->m_scripts, pSerializedMapping->m_scripts);
-        EXPECT_EQ(pOriginalMapping->m_deviceDirection, pSerializedMapping->m_deviceDirection);
     };
 
   private:
@@ -1179,3 +1178,82 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canSerializeMappingToFile) {
     }
 #endif
 }
+
+#ifdef __BULK__
+TEST_F(LegacyControllerMappingFileHandlerTest, canParseBulkInterfacesAndEndpoints) {
+    const QString mappingPath = getTestDataDir().filePath(
+            QStringLiteral("Multi Endpoint Device.bulk.xml"));
+    QFile mappingFile(mappingPath);
+    ASSERT_TRUE(mappingFile.open(QIODevice::WriteOnly));
+    mappingFile.write(QByteArray(R"EOF(<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.6" schemaVersion="1">
+    <info>
+        <name>Multi Endpoint Device</name>
+        <devices>
+            <product protocol="bulk" vendor_id="0x1234" product_id="0x5678">
+                <interface number="0x00">
+                    <endpoint direction="in" address="0x81" length="32" />
+                    <endpoint direction="in" address="0x84" length="64" />
+                    <endpoint direction="out" address="0x01" length="32" />
+                </interface>
+                <interface number="0x02">
+                    <endpoint direction="in" address="0x86" length="512" />
+                </interface>
+            </product>
+            <product protocol="bulk" vendor_id="0x1234" product_id="0x5679">
+                <interface number="0x00">
+                    <endpoint direction="out" address="0x03" />
+                </interface>
+            </product>
+        </devices>
+    </info>
+    <controller id="Multi Endpoint Device">
+    </controller>
+</MixxxControllerPreset>
+)EOF"));
+    mappingFile.close();
+
+    const QList<BulkInterfaceInfo> expectedInterfaces1 = {
+            {QStringLiteral("0x00"),
+                    {{QStringLiteral("in"), QStringLiteral("0x81"), QStringLiteral("32")},
+                            {QStringLiteral("in"),
+                                    QStringLiteral("0x84"),
+                                    QStringLiteral("64")},
+                            {QStringLiteral("out"),
+                                    QStringLiteral("0x01"),
+                                    QStringLiteral("32")}}},
+            {QStringLiteral("0x02"),
+                    {{QStringLiteral("in"),
+                            QStringLiteral("0x86"),
+                            QStringLiteral("512")}}}};
+    const QList<BulkInterfaceInfo> expectedInterfaces2 = {
+            {QStringLiteral("0x00"),
+                    {{QStringLiteral("out"), QStringLiteral("0x03"), QString()}}}};
+
+    // Streaming parser, used for listing the available mappings
+    const MappingInfo mappingInfo(QFileInfo{mappingPath});
+    ASSERT_TRUE(mappingInfo.isValid());
+    const QList<ProductInfo>& products = mappingInfo.getProducts();
+    ASSERT_EQ(2, products.size());
+    EXPECT_EQ(QStringLiteral("0x5678"), products[0].product_id);
+    EXPECT_EQ(expectedInterfaces1, products[0].bulkInterfaces);
+    EXPECT_EQ(QStringLiteral("0x5679"), products[1].product_id);
+    EXPECT_EQ(expectedInterfaces2, products[1].bulkInterfaces);
+
+    // DOM parser, used when loading the mapping for a controller
+    auto pMapping = LegacyControllerMappingFileHandler::loadMapping(
+            QFileInfo(mappingPath), m_mappingPath);
+    ASSERT_TRUE(pMapping);
+    EXPECT_EQ(QSet<ProductInfo>(products.cbegin(), products.cend()),
+            pMapping->productMatch());
+
+    // Serializing and loading again keeps all interfaces and endpoints
+    const QString serializedPath = getTestDataDir().filePath(
+            QStringLiteral("Serialized Multi Endpoint Device.bulk.xml"));
+    ASSERT_TRUE(writeDocument(buildRootWithScripts(*pMapping), serializedPath));
+    auto pSerializedMapping = LegacyControllerMappingFileHandler::loadMapping(
+            QFileInfo(serializedPath), m_mappingPath);
+    ASSERT_TRUE(pSerializedMapping);
+    EXPECT_EQ(pMapping->productMatch(), pSerializedMapping->productMatch());
+}
+#endif

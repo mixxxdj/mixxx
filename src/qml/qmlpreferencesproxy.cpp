@@ -514,10 +514,7 @@ bool QmlControllerDeviceProxy::save(const QmlConfigProxy* pConfig) {
                     return false;
                 }
                 productInfo.protocol = QStringLiteral("bulk");
-                productInfo.in_epaddr = QStringLiteral("0x%1").arg(
-                        pBulkController->getInEndpointAddr(), 2, 16, QChar('0'));
-                productInfo.out_epaddr = QStringLiteral("0x%1").arg(
-                        pBulkController->getOutEndpointAddr(), 2, 16, QChar('0'));
+                productInfo.bulkInterfaces = pBulkController->getInterfaces();
                 break;
             }
 #endif

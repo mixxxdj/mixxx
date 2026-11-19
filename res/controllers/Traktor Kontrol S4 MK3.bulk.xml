@@ -12,7 +12,11 @@
 
                 Tested with WinUSB v6.1.7600.16385 installed with Zadig (https://github.com/pbatard/libwdi/wiki/Zadig)
             -->
-            <product protocol="bulk" vendor_id="0x17cc" product_id="0x1720" out_epaddr="0x03" interface_number="0x04" />
+            <product protocol="bulk" vendor_id="0x17cc" product_id="0x1720">
+                <interface number="0x04">
+                    <endpoint direction="out" address="0x03" />
+                </interface>
+            </product>
         </devices>
     </info>
     <settings>
@@ -621,7 +625,7 @@
             </group>
          </group>
      </settings>
-    <controller id="Traktor" direction="out" namespace="S4MK3">
+    <controller id="Traktor" namespace="S4MK3">
         <screens>
             <screen identifier="leftdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
             <screen identifier="rightdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />

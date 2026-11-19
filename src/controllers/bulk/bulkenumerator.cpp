@@ -3,6 +3,11 @@
 #include <libusb.h>
 #include <qglobal.h>
 
+#include <QDir>
+#include <QDirIterator>
+#include <QFile>
+#include <QXmlStreamReader>
+
 #ifdef __ANDROID__
 #include <QtCore/private/qandroidextras_p.h>
 #include <android/api-level.h>
@@ -14,14 +19,16 @@
 #endif
 
 #include "controllers/bulk/bulkcontroller.h"
-#include "controllers/bulk/bulksupported.h"
+#include "controllers/defs_controllers.h"
 #include "moc_bulkenumerator.cpp"
 #include "util/assert.h"
 
 #ifndef __ANDROID__
-BulkEnumerator::BulkEnumerator()
+BulkEnumerator::BulkEnumerator(const QStringList& mappingSearchPaths)
         : ControllerEnumerator(),
           m_pContext(nullptr) {
+    loadSupportedDevices(mappingSearchPaths);
+
     int r;
     r = libusb_init(&m_pContext);
     VERIFY_OR_DEBUG_ASSERT(r == 0) {
@@ -30,7 +37,10 @@ BulkEnumerator::BulkEnumerator()
     }
 }
 #else
-BulkEnumerator::BulkEnumerator() = default;
+BulkEnumerator::BulkEnumerator(const QStringList& mappingSearchPaths)
+        : ControllerEnumerator() {
+    loadSupportedDevices(mappingSearchPaths);
+}
 #endif
 
 BulkEnumerator::~BulkEnumerator() {
@@ -45,12 +55,72 @@ BulkEnumerator::~BulkEnumerator() {
 #endif
 }
 
-static bool is_interesting(const uint16_t idVendor, const uint16_t idProduct) {
-    return std::any_of(std::cbegin(bulk_supported),
-            std::cend(bulk_supported),
-            [&](const auto& dev) {
-                return dev.key.vendor_id == idVendor && dev.key.product_id == idProduct;
-            });
+// Read the product info from a supported bulk device match
+void BulkEnumerator::readProductInfo(QFile& file) {
+    QXmlStreamReader xml(&file);
+
+    while (!xml.atEnd()) {
+        QXmlStreamReader::TokenType token = xml.readNext();
+
+        // Only parse the <info> section; stop at its end element to
+        // avoid parsing the entire (potentially large) mapping file.
+        if (token == QXmlStreamReader::EndElement &&
+                xml.name() == QStringLiteral("info")) {
+            break;
+        }
+
+        if (token != QXmlStreamReader::StartElement ||
+                xml.name() != QStringLiteral("product")) {
+            continue;
+        }
+
+        const QXmlStreamAttributes attrs = xml.attributes();
+        if (attrs.value(QStringLiteral("protocol")) != QStringLiteral("bulk")) {
+            continue;
+        }
+
+        bool okVendor = false;
+        bool okProduct = false;
+
+        const auto vendorId = static_cast<std::uint16_t>(
+                attrs.value(QStringLiteral("vendor_id")).toString().toUInt(&okVendor, 16));
+        const auto productId = static_cast<std::uint16_t>(
+                attrs.value(QStringLiteral("product_id")).toString().toUInt(&okProduct, 16));
+
+        if (okVendor && okProduct) {
+            m_supportedDevices.insert({vendorId, productId});
+        }
+    }
+}
+
+// Build the set of supported bulk devices (vendor id, product id) from the
+// controller mapping XML files. Each <product protocol="bulk"> element
+// declares one supported device.
+void BulkEnumerator::loadSupportedDevices(const QStringList& searchPaths) {
+    for (const QString& dirPath : searchPaths) {
+        QDirIterator it(dirPath);
+
+        while (it.hasNext()) {
+            it.next();
+
+            const QFileInfo fileInfo = it.fileInfo();
+            const QString path = fileInfo.filePath();
+
+            if (!path.endsWith(BULK_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
+                continue;
+            }
+
+            QFile file(path);
+            if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                readProductInfo(file);
+                file.close();
+            }
+        }
+    }
+}
+
+bool BulkEnumerator::is_interesting(std::uint16_t idVendor, std::uint16_t idProduct) {
+    return m_supportedDevices.contains({idVendor, idProduct});
 }
 
 QList<Controller*> BulkEnumerator::queryDevices() {

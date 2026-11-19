@@ -48,7 +48,7 @@ QFileInfo findLibraryPath(
         const QString& dirname,
         const QDir& systemMappingsPath) {
     // Always try to load module directory from the mapping's directory first
-    QFileInfo dir = QFileInfo(mapping.dirPath().absoluteFilePath(dirname));
+    auto dir = QFileInfo(mapping.dirPath().absoluteFilePath(dirname));
 
     // If the module directory does not exist, try to find it in the fallback dir
     if (!dir.isDir()) {
@@ -80,7 +80,7 @@ QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
         const QString& filename,
         const QDir& systemMappingsPath) {
     // Always try to load script from the mapping's directory first
-    QFileInfo file = QFileInfo(mapping->dirPath().absoluteFilePath(filename));
+    auto file = QFileInfo(mapping->dirPath().absoluteFilePath(filename));
 
     // If the script does not exist, try to find it in the fallback dir
     if (!file.exists()) {
@@ -185,6 +185,61 @@ bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapp
 }
 #endif
 
+/// Invoke `callback` for each direct child element of `parent` named `tagName`.
+template<typename Callback>
+void forEachChildElement(const QDomElement& parent, const QString& tagName, Callback callback) {
+    for (QDomElement child = parent.firstChildElement(tagName);
+            !child.isNull();
+            child = child.nextSiblingElement(tagName)) {
+        callback(child);
+    }
+}
+
+/// Parse a bulk <interface> element including its <endpoint> children.
+BulkInterfaceInfo parseBulkInterface(const QDomElement& interfaceElement) {
+    BulkInterfaceInfo interfaceInfo;
+    interfaceInfo.number = interfaceElement.attribute(QStringLiteral("number"));
+
+    forEachChildElement(interfaceElement,
+            QStringLiteral("endpoint"),
+            [&interfaceInfo](const QDomElement& endpoint) {
+                interfaceInfo.endpoints.append(BulkEndpointInfo{
+                        endpoint.attribute(QStringLiteral("direction")),
+                        endpoint.attribute(QStringLiteral("address")),
+                        endpoint.attribute(QStringLiteral("length"))});
+            });
+
+    return interfaceInfo;
+}
+
+/// Parse a <product> element of the <devices> section.
+ProductInfo parseProductInfo(const QDomElement& product) {
+    ProductInfo productInfo;
+
+    productInfo.protocol = product.attribute(QStringLiteral("protocol"));
+    productInfo.vendor_id = product.attribute(QStringLiteral("vendor_id"));
+    productInfo.product_id = product.attribute(QStringLiteral("product_id"));
+    productInfo.interface_number = product.attribute(QStringLiteral("interface_number"));
+    productInfo.friendlyName = product.attribute(QStringLiteral("friendly_name"));
+
+    if (const QString image = product.attribute(QStringLiteral("image")); !image.isEmpty()) {
+        productInfo.visualUrl = QUrl(image);
+    }
+
+    if (productInfo.protocol == QStringLiteral("hid")) {
+        productInfo.usage_page = product.attribute(QStringLiteral("usage_page"));
+        productInfo.usage = product.attribute(QStringLiteral("usage"));
+    } else if (productInfo.protocol == QStringLiteral("bulk")) {
+        forEachChildElement(product,
+                QStringLiteral("interface"),
+                [&productInfo](const QDomElement& interfaceElement) {
+                    productInfo.bulkInterfaces.append(parseBulkInterface(interfaceElement));
+                });
+    }
+
+    return productInfo;
+}
+
 } // namespace
 
 // static
@@ -248,10 +303,10 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
         return;
     }
 
-    QString mixxxVersion = root.attribute("mixxxVersion", "");
-    if (!mixxxVersion.isEmpty()) {
+    if (QString mixxxVersion = root.attribute("mixxxVersion", ""); !mixxxVersion.isEmpty()) {
         mapping->setMixxxVersion(mixxxVersion);
     }
+
     QString schemaVersion = root.attribute("schemaVersion", "");
     mapping->setSchemaVersion(schemaVersion);
     QDomElement name = info.firstChildElement("name");
@@ -266,6 +321,16 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
     mapping->setManualPage(manualPage.isNull() ? "" : manualPage.text());
     QDomElement wiki = info.firstChildElement("wiki");
     mapping->setWikiLink(wiki.isNull() ? "" : wiki.text());
+
+    // Parse the <devices><product> elements so that product matching
+    // (vendor/product id, endpoints, interface number, …) is available at
+    // runtime, e.g. for BulkController::open() which looks up endpoints from
+    // the mapping instead of a hardcoded table.
+    const QDomElement devices = info.firstChildElement(QStringLiteral("devices"));
+
+    forEachChildElement(devices, QStringLiteral("product"), [&mapping](const QDomElement& product) {
+        mapping->addProductMatch(parseProductInfo(product));
+    });
 }
 
 void LegacyControllerMappingFileHandler::parseMappingSettings(
@@ -279,10 +344,9 @@ void LegacyControllerMappingFileHandler::parseMappingSettings(
         return;
     }
 
-    std::unique_ptr<LegacyControllerSettingsLayoutContainer> settingLayout =
-            std::make_unique<LegacyControllerSettingsLayoutContainer>(
-                    LegacyControllerSettingsLayoutContainer::Disposition::
-                            VERTICAL);
+    auto settingLayout = std::make_unique<LegacyControllerSettingsLayoutContainer>(
+            LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL);
+
     parseMappingSettingsElement(settings, mapping, settingLayout.get());
     mapping->setSettingLayout(std::move(settingLayout));
 }
@@ -325,10 +389,10 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
                             "vertical"
                     ? LegacyControllerSettingsLayoutContainer::Disposition::VERTICAL
                     : LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL;
-            std::unique_ptr<LegacyControllerSettingsLayoutContainer> row =
-                    std::make_unique<LegacyControllerSettingsLayoutContainer>(
-                            LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL,
-                            orientation);
+
+            auto row = std::make_unique<LegacyControllerSettingsLayoutContainer>(
+                    LegacyControllerSettingsLayoutContainer::Disposition::HORIZONTAL, orientation);
+
             parseMappingSettingsElement(element, pMapping, row.get());
             pLayout->addItem(std::move(row));
         } else if (tagName == "group") {
@@ -370,17 +434,6 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     QString deviceId = controller.attribute("id", "");
     mapping->setDeviceId(deviceId);
 
-    // See TODO in LegacyControllerMapping::DeviceDirection - `direction` should
-    // only be used as a workaround till the bulk integration gets refactored
-    QString deviceDirection = controller.attribute("direction", "").toLower();
-    if (deviceDirection == "in") {
-        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Incoming);
-    } else if (deviceDirection == "out") {
-        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Outgoing);
-    } else {
-        mapping->setDeviceDirection(LegacyControllerMapping::DeviceDirection::Bidirectionnal);
-    }
-
     // Build a list of script files to load
     QDomElement scriptFile = controller.firstChildElement("scriptfiles")
                                      .firstChildElement("file");
@@ -396,8 +449,10 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     // Look for additional ones
     while (!scriptFile.isNull()) {
         QString filename = scriptFile.attribute("filename", "");
-        QFileInfo file = findScriptFile(mapping, filename, systemMappingsPath);
-        if (file.suffix() == "qml") {
+
+        if (QFileInfo file =
+                        findScriptFile(mapping, filename, systemMappingsPath);
+                file.suffix() == "qml") {
 #ifdef MIXXX_USE_QML
             QString identifier = scriptFile.attribute("identifier", "");
             mapping->addScriptFile(LegacyControllerMapping::ScriptFileInfo{
@@ -435,26 +490,23 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         }
         screen = screen.nextSiblingElement("screen");
     }
-    // Build a list of QML files to load
-    QDomElement qmlLibrary = controller.firstChildElement("qmllibraries")
-                                     .firstChildElement("library");
-
-    // Look for additional ones
-    while (!qmlLibrary.isNull()) {
-        QString libFilename = qmlLibrary.attribute("path", "");
-        QFileInfo path = findLibraryPath(*mapping, libFilename, systemMappingsPath);
-        kLogger.debug() << "Adding QML directory " << libFilename;
-        mapping->addModule(path);
-        qmlLibrary = qmlLibrary.nextSiblingElement("library");
-    }
+    // Build a list of QML library directories to load
+    forEachChildElement(controller.firstChildElement(QStringLiteral("qmllibraries")),
+            QStringLiteral("library"),
+            [&mapping, &systemMappingsPath](const QDomElement& qmlLibrary) {
+                QString libFilename = qmlLibrary.attribute("path", "");
+                QFileInfo path = findLibraryPath(*mapping, libFilename, systemMappingsPath);
+                kLogger.debug() << "Adding QML directory " << libFilename;
+                mapping->addModule(path);
+            });
 #endif
 }
 
 bool LegacyControllerMappingFileHandler::writeDocument(
         const QDomDocument& root, const QString& fileName) const {
     // Need to do this on Windows
-    QDir directory;
-    if (!directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
+
+    if (QDir directory; !directory.mkpath(fileName.left(fileName.lastIndexOf("/")))) {
         return false;
     }
 
@@ -525,7 +577,9 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         element.setAttribute("protocol", productInfo.protocol);
         element.setAttribute("vendor_id", productInfo.vendor_id);
         element.setAttribute("product_id", productInfo.product_id);
-        element.setAttribute("interface_number", productInfo.interface_number);
+        if (productInfo.protocol != "bulk") {
+            element.setAttribute("interface_number", productInfo.interface_number);
+        }
         if (!productInfo.friendlyName.isEmpty()) {
             element.setAttribute("friendly_name", productInfo.friendlyName);
         }
@@ -534,8 +588,18 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         }
 
         if (productInfo.protocol == "bulk") {
-            element.setAttribute("in_epaddr", productInfo.in_epaddr);
-            element.setAttribute("out_epaddr", productInfo.out_epaddr);
+            for (const auto& interfaceInfo : productInfo.bulkInterfaces) {
+                QDomElement interfaceElement = doc.createElement("interface");
+                interfaceElement.setAttribute("number", interfaceInfo.number);
+                for (const auto& endpointInfo : interfaceInfo.endpoints) {
+                    QDomElement endpoint = doc.createElement("endpoint");
+                    endpoint.setAttribute("direction", endpointInfo.direction);
+                    endpoint.setAttribute("address", endpointInfo.address);
+                    endpoint.setAttribute("length", endpointInfo.length);
+                    interfaceElement.appendChild(endpoint);
+                }
+                element.appendChild(interfaceElement);
+            }
         }
         if (productInfo.protocol == "hid") {
             element.setAttribute("usage_page", productInfo.usage_page);
@@ -560,8 +624,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
                                   QDomDocument* pDoc) {
         const QList<LegacyControllerSettingsLayoutElement*> children = pSettingElement->children();
         for (auto* pSettingChild : std::as_const(children)) {
-            auto* pGroup = dynamic_cast<LegacyControllerSettingsGroup*>(pSettingChild);
-            if (pGroup) {
+            if (auto* pGroup = dynamic_cast<LegacyControllerSettingsGroup*>(pSettingChild)) {
                 QDomElement item = pDoc->createElement("group");
                 item.setAttribute("label", pGroup->label());
                 traverseSettingNode(pGroup, &item, pDoc);
@@ -601,17 +664,6 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     QDomElement controller = doc.createElement("controller");
     // Strip off the serial number
     controller.setAttribute("id", rootDeviceName(mapping.deviceId()));
-    switch (static_cast<LegacyControllerMapping::DeviceDirection>(
-            mapping.getDeviceDirection().toInt())) {
-    case LegacyControllerMapping::DeviceDirection::Incoming:
-        controller.setAttribute("direction", "in");
-        break;
-    case LegacyControllerMapping::DeviceDirection::Outgoing:
-        controller.setAttribute("direction", "out");
-        break;
-    default:
-        break;
-    }
     rootNode.appendChild(controller);
 
     QDomElement scriptFiles = doc.createElement("scriptfiles");
@@ -673,8 +725,8 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
     QDomElement qmllibraries = doc.createElement("qmllibraries");
     for (const auto& module : mapping.getModules()) {
         QDomElement libraryElement = doc.createElement("library");
-        // TODO path should not be absolute
         libraryElement.setAttribute("path", module.dirinfo.absoluteFilePath());
+        // TODO path should not be absolute
         qmllibraries.appendChild(libraryElement);
     }
     controller.appendChild(qmllibraries);

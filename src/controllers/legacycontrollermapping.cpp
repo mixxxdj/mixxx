@@ -108,8 +108,7 @@ QDebug operator<<(QDebug dbg, const LegacyControllerMapping& mapping) {
                << ", manualPage=" << mapping.m_manualPage << ", wikilink"
                << mapping.m_wikilink << ", schemaVersion"
                << mapping.m_schemaVersion << ", mixxxVersion"
-               << mapping.m_mixxxVersion.toString()
-               << ", deviceDirection=" << mapping.m_deviceDirection;
+               << mapping.m_mixxxVersion.toString();
     return dbg;
 }
 
