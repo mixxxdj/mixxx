@@ -92,6 +92,8 @@
     </SingletonDefinition>
 
 <!-- Decks -->
+    <Template src="skins:LateNight/decks/hotcues_singletons.xml"/>
+
     <!-- minimal deck. used in deck stack and above library -->
     <SingletonDefinition>
       <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
@@ -112,6 +114,7 @@
     <SingletonDefinition>
       <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
       <Children>
+        <!-- <Template src="skins:LateNight/decks/hotcues_singletons.xml"/> -->
         <Template src="skins:LateNight/decks/deck_full.xml"/>
       </Children>
   </SingletonDefinition>
