@@ -36,7 +36,7 @@ class AutoDJFeature : public LibraryFeature {
     void paste() override;
     void deleteItem(const QModelIndex& index) override;
 
-    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dropAccept(const QList<QUrl>& urls) override;
     bool dragMoveAccept(const QList<QUrl>& urls) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
