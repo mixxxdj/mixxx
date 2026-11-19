@@ -151,7 +151,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     TrackId getTrackIdByLocation(
             const QString& location) const;
     TrackPointer getTrackById(
-            TrackId trackId) const;
+            TrackId trackId,
+            bool updateTrackFromSource = true) const;
 
     // Loads a track from the database (by id if available, otherwise by location)
     // or adds it if not found in case the location is known. The (optional) out
