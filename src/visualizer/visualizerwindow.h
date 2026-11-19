@@ -26,7 +26,9 @@ namespace mixxx {
 class EngineBandMeterRequest;
 
 /// A separate window that shows nothing but visuals driven by the music of the
-/// decks, intended for a second screen or a projector. It has no controls of
+/// decks, intended for a second screen or a projector. The covers of the
+/// audible decks are shown as a vinyl record that turns at the tempo of the
+/// music and is distorted by its bass, mids and highs. It has no controls of
 /// its own. The style and the intensities are set with the controls of the
 /// group [Visualizer], see VisualizerControls. A double click toggles full
 /// screen.
@@ -80,7 +82,7 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     void updateAnimation(std::chrono::duration<double> elapsed);
     void paintCoverDistortion();
     void paintCustomImage();
-    void drawDistorted(GLuint textureId, GLuint blurredTextureId, float aspect);
+    void drawRecord(GLuint textureId, GLuint blurredTextureId, float aspect);
     void combineCovers(QOpenGLFramebufferObject* pTarget, bool blurred);
     void setFullScreen(bool fullScreen);
     void setDecksActive(bool active);
@@ -120,6 +122,7 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     float m_slowPhase;
     float m_fastPhase;
     float m_flowPhase;
+    float m_spinPhase;
 };
 
 } // namespace mixxx

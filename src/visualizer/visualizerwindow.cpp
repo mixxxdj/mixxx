@@ -36,7 +36,13 @@ constexpr std::chrono::duration<double> kMaxFrameTime = 100ms;
 constexpr double kSlowPhaseSpeed = 0.7;
 constexpr double kFastPhaseSpeed = 4.0;
 
-// The share of the window that the cover takes up along the axis in which it
+// The background flow repeats and the record completes a turn after this many
+// beats. The record turns much slower than a real one, which would complete a
+// turn in about a bar: at that speed the picture is hard to look at.
+constexpr double kBeatsPerFlowCycle = 8.0;
+constexpr double kBeatsPerRecordTurn = 32.0;
+
+// The share of the window that the record takes up along the axis in which it
 // fits tightest.
 constexpr float kCoverScale = 0.8f;
 
@@ -59,6 +65,13 @@ float advancedPhase(float phase, double speed, std::chrono::duration<double> ela
             std::fmod(phase + speed * elapsed.count(), 2 * std::numbers::pi));
 }
 
+// The diameter in pixels with which the record is drawn.
+double drawnRecordSize(const QSize& windowSize, qreal devicePixelRatio) {
+    return kCoverScale *
+            std::min(windowSize.width(), windowSize.height()) *
+            devicePixelRatio;
+}
+
 } // namespace
 
 VisualizerWindow::VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager)
@@ -75,7 +88,8 @@ VisualizerWindow::VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager
           m_customImageChanged(false),
           m_slowPhase(0.0f),
           m_fastPhase(0.0f),
-          m_flowPhase(0.0f) {
+          m_flowPhase(0.0f),
+          m_spinPhase(0.0f) {
     connect(&m_customImageWatcher,
             &QFutureWatcher<VisualizerDeck::PreparedCover>::finished,
             this,
@@ -118,9 +132,7 @@ VisualizerWindow::~VisualizerWindow() {
 
 // static
 int VisualizerWindow::combinedCoverSize(const QSize& windowSize, qreal devicePixelRatio) {
-    const double drawnSize = kCoverScale *
-            std::min(windowSize.width(), windowSize.height()) *
-            devicePixelRatio;
+    const double drawnSize = drawnRecordSize(windowSize, devicePixelRatio);
     const int steps = static_cast<int>(std::ceil(drawnSize / kCombinedCoverSizeStep));
     return std::clamp(steps * kCombinedCoverSizeStep,
             kCombinedCoverSizeStep,
@@ -308,7 +320,10 @@ void VisualizerWindow::updateAnimation(std::chrono::duration<double> elapsed) {
             bpm = m_decks[deckIndex]->m_pDeck->bpm();
         }
     }
-    m_flowPhase = VisualizerDeck::advancedFlowPhase(m_flowPhase, bpm, elapsed);
+    m_flowPhase = VisualizerDeck::advancedTempoPhase(
+            m_flowPhase, bpm, kBeatsPerFlowCycle, elapsed);
+    m_spinPhase = VisualizerDeck::advancedTempoPhase(
+            m_spinPhase, bpm, kBeatsPerRecordTurn, elapsed);
 }
 
 void VisualizerWindow::paintCoverDistortion() {
@@ -340,7 +355,7 @@ void VisualizerWindow::paintCoverDistortion() {
 
     // First combine the covers of the audible decks into one picture and their
     // blurred copies into another one. Then draw these two like the cover of a
-    // single deck.
+    // single deck: as a record.
     std::array<GLint, 4> viewport;
     glGetIntegerv(GL_VIEWPORT, viewport.data());
     combineCovers(m_pCombinedCover.get(), false);
@@ -349,12 +364,18 @@ void VisualizerWindow::paintCoverDistortion() {
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
     // The combined cover is a square.
-    drawDistorted(m_pCombinedCover->texture(), m_pCombinedBlurredCover->texture(), 1.0f);
+    drawRecord(m_pCombinedCover->texture(), m_pCombinedBlurredCover->texture(), 1.0f);
 }
 
 void VisualizerWindow::paintCustomImage() {
     if (m_customImageChanged) {
         m_customImageTexture.setData(m_customImage);
+        if (m_customImageTexture.isStorageAllocated()) {
+            // The image can be much larger than it is drawn. Without its
+            // mipmaps it would flicker while it turns.
+            m_customImageTexture.setMinificationFilter(
+                    QOpenGLTexture::LinearMipMapLinear);
+        }
         m_blurredCustomImageTexture.setData(m_blurredCustomImage);
         m_customImageChanged = false;
     }
@@ -364,13 +385,13 @@ void VisualizerWindow::paintCustomImage() {
         paintCoverDistortion();
         return;
     }
-    drawDistorted(m_customImageTexture.textureId(),
+    drawRecord(m_customImageTexture.textureId(),
             m_blurredCustomImageTexture.textureId(),
             static_cast<float>(m_customImageTexture.width()) /
                     static_cast<float>(m_customImageTexture.height()));
 }
 
-void VisualizerWindow::drawDistorted(GLuint textureId, GLuint blurredTextureId, float aspect) {
+void VisualizerWindow::drawRecord(GLuint textureId, GLuint blurredTextureId, float aspect) {
     const std::array<float, 8> positions = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
     const std::array<float, 8> texcoords = {0.f, 1.f, 1.f, 1.f, 0.f, 0.f, 1.f, 0.f};
 
@@ -384,14 +405,18 @@ void VisualizerWindow::drawDistorted(GLuint textureId, GLuint blurredTextureId, 
     m_coverDistortionShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texcoords.data(), 2);
 
-    // The picture is scaled to fit into the window with a margin around it, and
-    // its blurred copy is scaled to fill the window.
+    // The record is scaled to fit into the window with a margin around it, and
+    // the blurred copy of the picture is scaled to fill the window. A picture
+    // that is not square is cropped to the square around its center for the
+    // record.
     const float windowAspect = height() > 0
             ? static_cast<float>(width()) / static_cast<float>(height())
             : 1.0f;
-    const QVector2D fit = QVector2D(std::max(windowAspect / aspect, 1.0f),
-                                  std::max(aspect / windowAspect, 1.0f)) /
+    const QVector2D fit = QVector2D(std::max(windowAspect, 1.0f),
+                                  std::max(1.0f / windowAspect, 1.0f)) /
             kCoverScale;
+    const QVector2D crop(std::min(1.0f, 1.0f / aspect), std::min(1.0f, aspect));
+    const double recordSize = std::max(drawnRecordSize(size(), devicePixelRatioF()), 1.0);
     const QVector2D backgroundFit(std::min(windowAspect / aspect, 1.0f),
             std::min(aspect / windowAspect, 1.0f));
 
@@ -404,8 +429,12 @@ void VisualizerWindow::drawDistorted(GLuint textureId, GLuint blurredTextureId, 
             m_coverDistortionShader.backgroundFitLocation(), backgroundFit);
     m_coverDistortionShader.setUniformValue(
             m_coverDistortionShader.windowAspectLocation(), windowAspect);
+    m_coverDistortionShader.setUniformValue(m_coverDistortionShader.cropLocation(), crop);
     m_coverDistortionShader.setUniformValue(
-            m_coverDistortionShader.coverAspectLocation(), aspect);
+            m_coverDistortionShader.pixelSizeLocation(),
+            static_cast<float>(1.0 / recordSize));
+    m_coverDistortionShader.setUniformValue(
+            m_coverDistortionShader.spinLocation(), m_spinPhase);
     m_coverDistortionShader.setUniformValue(
             m_coverDistortionShader.amountsLocation(), m_amounts);
     m_coverDistortionShader.setUniformValue(

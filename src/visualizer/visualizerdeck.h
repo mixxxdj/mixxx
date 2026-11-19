@@ -84,12 +84,15 @@ class VisualizerDeck : public QObject {
     /// band actually is. The result is 0 if either of them is 0.
     static float bandAmount(double intensity, float level);
 
-    /// Returns the phase that drives the flow of the background after the given
-    /// time at the given tempo. The phase is in radians, wrapped to 0..2 pi,
-    /// and completes a cycle every few beats. A tempo of 0 means that the tempo
-    /// is unknown; the phase then advances at a moderate default tempo.
-    static float advancedFlowPhase(
-            float flowPhase, double bpm, std::chrono::duration<double> elapsed);
+    /// Returns the phase of a movement that follows the tempo of the music,
+    /// after the given time at the given tempo. The phase is in radians,
+    /// wrapped to 0..2 pi, and completes a cycle every beatsPerCycle beats. A
+    /// tempo of 0 means that the tempo is unknown; the phase then advances at
+    /// a moderate default tempo.
+    static float advancedTempoPhase(float phase,
+            double bpm,
+            double beatsPerCycle,
+            std::chrono::duration<double> elapsed);
 
     /// A picture that is ready for drawing. The request number tells whether it
     /// is still the picture that its requester is waiting for.

@@ -37,24 +37,39 @@ TEST(VisualizerDeckTest, bandAmountStaysInRange) {
     EXPECT_FLOAT_EQ(0.0f, VisualizerDeck::bandAmount(-1.0, 1.0f));
 }
 
-TEST(VisualizerDeckTest, flowPhaseAdvancesWithTempo) {
-    // A flow cycle takes 8 beats, which is 4 s at 120 BPM.
+TEST(VisualizerDeckTest, tempoPhaseAdvancesWithTempo) {
+    // A cycle of 8 beats takes 4 s at 120 BPM.
     const float quarterCycle = static_cast<float>(std::numbers::pi / 2);
-    EXPECT_NEAR(quarterCycle, VisualizerDeck::advancedFlowPhase(0.0f, 120.0, 1s), 1e-5);
-    EXPECT_NEAR(quarterCycle / 2, VisualizerDeck::advancedFlowPhase(0.0f, 60.0, 1s), 1e-5);
+    EXPECT_NEAR(quarterCycle, VisualizerDeck::advancedTempoPhase(0.0f, 120.0, 8.0, 1s), 1e-5);
+    EXPECT_NEAR(quarterCycle / 2,
+            VisualizerDeck::advancedTempoPhase(0.0f, 60.0, 8.0, 1s),
+            1e-5);
     EXPECT_NEAR(quarterCycle * 2,
-            VisualizerDeck::advancedFlowPhase(quarterCycle, 120.0, 1s),
+            VisualizerDeck::advancedTempoPhase(quarterCycle, 120.0, 8.0, 1s),
             1e-5);
 }
 
-TEST(VisualizerDeckTest, flowPhaseWrapsAround) {
-    const float phase = VisualizerDeck::advancedFlowPhase(0.0f, 120.0, 5s);
-    EXPECT_NEAR(std::numbers::pi / 2, phase, 1e-4);
+TEST(VisualizerDeckTest, tempoPhaseCompletesACycleAfterTheGivenBeats) {
+    // A cycle of 4 beats takes 2 s at 120 BPM.
+    EXPECT_NEAR(std::numbers::pi,
+            VisualizerDeck::advancedTempoPhase(0.0f, 120.0, 4.0, 1s),
+            1e-5);
+    EXPECT_NEAR(std::numbers::pi / 2,
+            VisualizerDeck::advancedTempoPhase(0.0f, 120.0, 4.0, 500ms),
+            1e-5);
 }
 
-TEST(VisualizerDeckTest, flowPhaseKeepsMovingWithoutTempo) {
-    EXPECT_FLOAT_EQ(VisualizerDeck::advancedFlowPhase(0.0f, 120.0, 1s),
-            VisualizerDeck::advancedFlowPhase(0.0f, 0.0, 1s));
+TEST(VisualizerDeckTest, tempoPhaseWrapsAround) {
+    const float phase = VisualizerDeck::advancedTempoPhase(0.0f, 120.0, 8.0, 5s);
+    EXPECT_NEAR(std::numbers::pi / 2, phase, 1e-4);
+    EXPECT_NEAR(std::numbers::pi / 2,
+            VisualizerDeck::advancedTempoPhase(0.0f, 120.0, 4.0, 2500ms),
+            1e-4);
+}
+
+TEST(VisualizerDeckTest, tempoPhaseKeepsMovingWithoutTempo) {
+    EXPECT_FLOAT_EQ(VisualizerDeck::advancedTempoPhase(0.0f, 120.0, 8.0, 1s),
+            VisualizerDeck::advancedTempoPhase(0.0f, 0.0, 8.0, 1s));
 }
 
 TEST(VisualizerDeckTest, preparedCoverIsScaledDownAndBlurred) {

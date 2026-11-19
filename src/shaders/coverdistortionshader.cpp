@@ -14,28 +14,45 @@ void main()
 }
 )--");
 
-    // The foreground is the cover. All of its distortions are calculated in
-    // a coordinate system with the origin in the center of the cover and the
-    // height of the cover as unit, and each of them is scaled by its amount.
-    // They are applied in this order:
+    // The foreground is the record. Everything is calculated in a coordinate
+    // system with the origin in the center of the record and its diameter as
+    // unit. First the position of the pixel is moved by the distortions, each
+    // of them scaled by its amount, in this order:
     // bass: the center bulges towards the viewer and a ring runs outwards.
-    // mids: the image swirls around the center and flows like a liquid.
+    // mids: the picture glitches like on an old television: horizontal strips
+    //       are torn sideways and lose their colors, a wobbling bar runs
+    //       down the screen, and noise covers the picture. The strips change
+    //       several times per second.
     // highs: fine ripples shimmer and the red and blue channels drift apart.
-    // Where the distorted cover does not reach, the background shows. It is
-    // the dimmed blurred copy of the cover, displaced by two layers of slow
-    // waves that complete a cycle every one and every half period of the
-    // flow phase.
+    // The disc, its hole and its grooves are derived from the moved position,
+    // so the record is distorted as a whole. Only the lookup of the picture
+    // uses the position turned by the spin. The grooves are never finer than a
+    // few pixels, otherwise they would flicker. The reflections depend on the
+    // direction that is not turned, as the light does not turn with the record.
+    // Where the record does not reach, the background shows. It is the dimmed
+    // blurred copy of the picture, displaced by two layers of slow waves that
+    // complete a cycle every one and every half period of the flow phase.
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform sampler2D texture;
 uniform sampler2D blurredTexture;
 uniform highp vec2 fit;
 uniform highp vec2 backgroundFit;
-uniform highp float coverAspect;
+uniform highp vec2 crop;
 uniform highp float windowAspect;
 uniform highp vec3 amounts;
 uniform highp vec2 phases;
 uniform highp float flowPhase;
+uniform highp float spin;
+uniform highp float pixelSize;
 varying highp vec2 vTexcoord;
+
+const highp float kHoleRadius = 0.022;
+const highp float kLabelRadius = 0.17;
+const highp float kGrooveStart = 0.182;
+const highp float kGrooveEnd = 0.484;
+const highp float kDiscRadius = 0.5;
+const highp float kFinestGroove = 1.0 / 240.0;
+const highp vec2 kLightDirection = vec2(0.7071, -0.7071);
 
 highp vec2 mirrored(highp vec2 uv)
 {
@@ -43,9 +60,16 @@ highp vec2 mirrored(highp vec2 uv)
     return mix(m, 2.0 - m, step(1.0, m));
 }
 
-highp vec2 coverCoord(highp vec2 centered)
+highp vec2 turned(highp vec2 centered)
 {
-    return centered / vec2(coverAspect, 1.0) + 0.5;
+    highp float s = sin(spin);
+    highp float co = cos(spin);
+    return vec2(centered.x * co + centered.y * s, centered.y * co - centered.x * s);
+}
+
+highp vec2 pictureCoord(highp vec2 centered)
+{
+    return centered * crop + 0.5;
 }
 
 highp vec3 color(highp vec4 texel)
@@ -64,39 +88,77 @@ highp vec3 background()
     return color(texture2D(blurredTexture, mirrored(uv))) * 0.6;
 }
 
+highp float random(highp vec2 seed)
+{
+    return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+highp float ring(highp float radius, highp float center, highp float width)
+{
+    return 1.0 - smoothstep(0.5 * width, width, abs(radius - center));
+}
+
 void main()
 {
     highp float bass = amounts.x;
     highp float mid = amounts.y;
     highp float high = amounts.z;
 
-    highp vec2 c = (vTexcoord - 0.5) * fit * vec2(coverAspect, 1.0);
+    highp vec2 c = (vTexcoord - 0.5) * fit;
     highp float r = length(c);
 
     c *= 1.0 - bass * 0.28 * exp(-r * r * 3.0);
     c += c * bass * 0.09 * sin(r * 16.0 - 3.0 * phases.y);
 
-    highp float angle = mid * 0.9 * exp(-r * 1.6) * sin(phases.x + r * 3.0);
-    highp float s = sin(angle);
-    highp float co = cos(angle);
-    c = vec2(c.x * co - c.y * s, c.x * s + c.y * co);
-    c.x += mid * 0.045 * sin(c.y * 7.0 + 2.0 * phases.x);
-    c.y += mid * 0.045 * cos(c.x * 6.0 + 3.0 * phases.x);
+    // The fast phase is divided into 12 steps and the slow one into 16.
+    highp float glitch = floor(phases.y * 1.9099) + 13.0 * floor(phases.x * 2.5465);
+    highp float strip = floor(c.y * (22.0 + 26.0 * random(vec2(glitch, 1.0))) +
+            7.0 * random(vec2(glitch, 2.0)));
+    highp float line = floor(c.y * 110.0);
+    highp float torn = step(0.85 - 0.5 * mid, random(vec2(strip, glitch)));
+    highp float tear = torn * 0.28 * (random(vec2(strip, glitch + 0.5)) - 0.5) +
+            step(0.8, random(vec2(line, glitch))) * 0.05 *
+                    (random(vec2(line, glitch + 0.5)) - 0.5);
+    // The bar runs down the screen three times per cycle of the slow phase.
+    highp float bar = 1.0 - smoothstep(0.0, 0.06,
+            abs(c.y - 1.4 * (fract(phases.x * 0.47746) - 0.5)));
+    highp float grain = random(floor((vTexcoord - 0.5) * fit / (2.0 * pixelSize)) + glitch) - 0.5;
+    c.x += mid * (tear + 0.05 * bar * sin(c.y * 90.0 + 5.0 * phases.y));
+    highp vec2 split = vec2(mid * (0.006 + 0.02 * torn), 0.0);
 
     c += high * 0.01 * vec2(sin(c.y * 90.0 + 7.0 * phases.y), cos(c.x * 80.0 + 5.0 * phases.y));
     highp float fringe = high * 0.035;
 
-    highp vec2 uv = coverCoord(c);
-    highp vec3 foreground = vec3(
-            color(texture2D(texture, coverCoord(c * (1.0 + fringe)))).r,
-            color(texture2D(texture, uv)).g,
-            color(texture2D(texture, coverCoord(c * (1.0 - fringe)))).b);
+    highp float radius = length(c);
 
-    highp vec2 feather = vec2(0.004);
-    highp vec2 inside = smoothstep(vec2(0.0), feather, uv) *
-            (1.0 - smoothstep(1.0 - feather, vec2(1.0), uv));
+    highp vec3 record = vec3(
+            color(texture2D(texture, pictureCoord(turned(c + split) * (1.0 + fringe)))).r,
+            color(texture2D(texture, pictureCoord(turned(c)))).g,
+            color(texture2D(texture, pictureCoord(turned(c - split) * (1.0 - fringe)))).b);
 
-    gl_FragColor = vec4(mix(background(), foreground, inside.x * inside.y), 1.0);
+    highp float grooved = smoothstep(kLabelRadius, kGrooveStart, radius) *
+            (1.0 - smoothstep(kGrooveEnd, kGrooveEnd + 0.006, radius));
+    highp float gapWidth = max(0.005, 2.5 * pixelSize);
+    highp float gaps = max(max(ring(radius, 0.262, gapWidth), ring(radius, 0.349, gapWidth)),
+            ring(radius, 0.421, gapWidth));
+    highp float groovePeriod = max(kFinestGroove, 5.0 * pixelSize);
+    highp float groove = 0.5 + 0.5 * sin(6.2832 * radius / groovePeriod);
+    highp float depth = grooved * (1.0 - gaps) * (0.8 + 0.2 * sin(radius * 61.0));
+
+    highp float facing = abs(dot(c, kLightDirection)) / max(radius, 0.0001);
+    highp float reflection = pow(facing, 18.0) * grooved;
+
+    record *= 1.0 - 0.1 * grooved;
+    record *= 1.0 - 0.24 * depth * groove;
+    record *= 1.0 - 0.35 * smoothstep(kGrooveEnd, kDiscRadius, radius);
+    record *= 1.0 - 0.3 * ring(radius, 0.5 * (kLabelRadius + kGrooveStart), 0.008);
+    record += reflection * (0.1 + 0.16 * depth * (1.0 - groove));
+    record += mid * (0.12 * grain * (0.4 + 0.6 * torn) + 0.1 * bar);
+
+    highp float disc = clamp((kDiscRadius - radius) / pixelSize + 0.5, 0.0, 1.0) *
+            clamp((radius - kHoleRadius) / pixelSize + 0.5, 0.0, 1.0);
+
+    gl_FragColor = vec4(mix(background(), record, disc), 1.0);
 }
 )--");
 
@@ -110,7 +172,9 @@ void main()
     m_backgroundFitLocation = uniformLocation("backgroundFit");
     m_windowAspectLocation = uniformLocation("windowAspect");
     m_flowPhaseLocation = uniformLocation("flowPhase");
-    m_coverAspectLocation = uniformLocation("coverAspect");
+    m_cropLocation = uniformLocation("crop");
+    m_spinLocation = uniformLocation("spin");
+    m_pixelSizeLocation = uniformLocation("pixelSize");
     m_amountsLocation = uniformLocation("amounts");
     m_phasesLocation = uniformLocation("phases");
 }

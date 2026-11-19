@@ -39,8 +39,6 @@ constexpr std::chrono::duration<double> kLoudnessRelease = 1500ms;
 constexpr int kBlurredCoverSize = 64;
 constexpr int kBlurredCoverRadius = 5;
 
-// The background flow repeats after this many beats.
-constexpr double kBeatsPerFlowCycle = 8.0;
 constexpr double kUnknownTempoBpm = 120.0;
 
 float releasedLevel(
@@ -115,12 +113,14 @@ float VisualizerDeck::bandAmount(double intensity, float level) {
 }
 
 // static
-float VisualizerDeck::advancedFlowPhase(
-        float flowPhase, double bpm, std::chrono::duration<double> elapsed) {
+float VisualizerDeck::advancedTempoPhase(float phase,
+        double bpm,
+        double beatsPerCycle,
+        std::chrono::duration<double> elapsed) {
     const double beatsPerSecond = (bpm > 0.0 ? bpm : kUnknownTempoBpm) / 60.0;
-    const double cycles = beatsPerSecond * elapsed.count() / kBeatsPerFlowCycle;
+    const double cycles = beatsPerSecond * elapsed.count() / beatsPerCycle;
     return static_cast<float>(
-            std::fmod(flowPhase + cycles * 2 * std::numbers::pi, 2 * std::numbers::pi));
+            std::fmod(phase + cycles * 2 * std::numbers::pi, 2 * std::numbers::pi));
 }
 
 void VisualizerDeck::setActive(bool active) {
