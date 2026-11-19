@@ -232,8 +232,7 @@ struct SoundDeviceJack::Impl {
     }
 
     static int xrun(void* userData) {
-        static_cast<SoundDeviceJack*>(userData)->m_pSoundManager
-                ->underflowHappened(6);
+        static_cast<SoundDeviceJack*>(userData)->m_pSoundManager->underflowHappened(6);
         return 0;
     }
 
@@ -317,8 +316,8 @@ SoundDeviceStatus SoundDeviceJack::open(bool isClkRefDevice, int) {
             m_pImpl->getSampleRate(m_pImpl->client);
     if (serverSampleRate != m_sampleRate.value()) {
         m_lastError = QStringLiteral(
-                              "JACK server sample rate (%1 Hz) does not match "
-                              "the configured Mixxx sample rate (%2 Hz)")
+                "JACK server sample rate (%1 Hz) does not match "
+                "the configured Mixxx sample rate (%2 Hz)")
                               .arg(serverSampleRate)
                               .arg(m_sampleRate.value());
         m_pImpl->closeClient();
@@ -557,8 +556,8 @@ int SoundDeviceJack::processCallback(unsigned int framesPerBuffer) {
             }
             for (unsigned int frame = 0; frame < framesPerBuffer; ++frame) {
                 interleavedInput[static_cast<size_t>(frame) *
-                                         static_cast<size_t>(m_inputChannelCount) +
-                                 static_cast<size_t>(channel)] =
+                                static_cast<size_t>(m_inputChannelCount) +
+                        static_cast<size_t>(channel)] =
                         portBuffer[frame];
             }
         }
@@ -593,8 +592,7 @@ int SoundDeviceJack::processCallback(unsigned int framesPerBuffer) {
                 continue;
             }
             for (unsigned int frame = 0; frame < framesPerBuffer; ++frame) {
-                portBuffer[frame] = interleavedOutput[
-                        static_cast<size_t>(frame) *
+                portBuffer[frame] = interleavedOutput[static_cast<size_t>(frame) *
                                 static_cast<size_t>(m_outputChannelCount) +
                         static_cast<size_t>(channel)];
             }

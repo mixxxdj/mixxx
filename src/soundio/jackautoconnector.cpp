@@ -1,7 +1,7 @@
 #include "soundio/jackautoconnector.h"
 
-#include <QDebug>
 #include <QCollator>
+#include <QDebug>
 #include <QHash>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -263,10 +263,12 @@ void JackAutoConnector::connectPorts() {
     if (!impl.pClient && !impl.openClient()) {
         return;
     }
-    const QString autoConnectPrefix = m_pConfig->getValue(
-            ConfigKey("[SoundManager]", "jack_auto_connect_prefix"),
-            QStringLiteral("Mixxx"))
-                                              .trimmed();
+    const QString autoConnectPrefix =
+            m_pConfig
+                    ->getValue(ConfigKey("[SoundManager]",
+                                       "jack_auto_connect_prefix"),
+                            QStringLiteral("Mixxx"))
+                    .trimmed();
 
     const char** pOutputPorts = impl.getPorts(
             impl.pClient, nullptr, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput);
@@ -329,25 +331,29 @@ void JackAutoConnector::connectPorts() {
             }
         }
         if (outputPortIds.size() == outputPorts.size()) {
-            std::sort(outputPorts.begin(), outputPorts.end(),
-                    [&outputPortIds](const QString& left, const QString& right) {
-                        return outputPortIds.value(left) < outputPortIds.value(right);
+            std::sort(outputPorts.begin(),
+                    outputPorts.end(),
+                    [&outputPortIds](
+                            const QString& left, const QString& right) {
+                        return outputPortIds.value(left) <
+                                outputPortIds.value(right);
                     });
             outputPortsSortedById = true;
         }
     }
     if (!outputPortsSortedById) {
         const bool nativeJackPorts = std::all_of(
-                outputPorts.cbegin(), outputPorts.cend(),
-                [](const QString& port) {
+                outputPorts.cbegin(), outputPorts.cend(), [](const QString& port) {
                     return port.section(QLatin1Char(':'), -1)
                             .startsWith(QStringLiteral("mixxx_"));
                 });
         if (!nativeJackPorts) {
             QCollator portNameOrder;
             portNameOrder.setNumericMode(true);
-            std::sort(outputPorts.begin(), outputPorts.end(),
-                    [&portNameOrder](const QString& left, const QString& right) {
+            std::sort(outputPorts.begin(),
+                    outputPorts.end(),
+                    [&portNameOrder](
+                            const QString& left, const QString& right) {
                         return portNameOrder.compare(left, right) < 0;
                     });
         }
@@ -355,7 +361,8 @@ void JackAutoConnector::connectPorts() {
 
     QCollator portNameOrder;
     portNameOrder.setNumericMode(true);
-    std::sort(inputPorts.begin(), inputPorts.end(),
+    std::sort(inputPorts.begin(),
+            inputPorts.end(),
             [&portNameOrder](const QString& left, const QString& right) {
                 return portNameOrder.compare(left, right) < 0;
             });
@@ -414,13 +421,19 @@ void JackAutoConnector::connectPorts() {
             impl.free(const_cast<void*>(static_cast<const void*>(pConnections)));
         }
 
-        const QString destination = jack::selectAutoConnectDestination(
-                inputPorts, connectedPorts, rememberedDestination, autoConnectPrefix,
-                claimedDestinations, reservedDestinations, shortSourceName,
-                channel, outputPorts.size());
+        const QString destination =
+                jack::selectAutoConnectDestination(inputPorts,
+                        connectedPorts,
+                        rememberedDestination,
+                        autoConnectPrefix,
+                        claimedDestinations,
+                        reservedDestinations,
+                        shortSourceName,
+                        channel,
+                        outputPorts.size());
         if (destination.isEmpty()) {
-            const bool duplicateConnected = std::any_of(
-                    connectedPorts.cbegin(), connectedPorts.cend(),
+            const bool duplicateConnected = std::any_of(connectedPorts.cbegin(),
+                    connectedPorts.cend(),
                     [&claimedDestinations](const QString& port) {
                         return claimedDestinations.contains(port);
                     });

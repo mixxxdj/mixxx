@@ -251,8 +251,7 @@ void PortAudioEnumerator::initialize() {
         SoundDevicePointer currentDevice;
 #if defined(MIXXX_HAVE_JACK) && defined(__linux__)
         const PaHostApiInfo* hostApiInfo = Pa_GetHostApiInfo(deviceInfo->hostApi);
-        if (hostApiInfo && QString::fromUtf8(hostApiInfo->name) ==
-                        SoundManagerConfig::kAPIJack) {
+        if (hostApiInfo && QString::fromUtf8(hostApiInfo->name) == SoundManagerConfig::kAPIJack) {
             currentDevice = QSharedPointer<SoundDeviceJack>::create(
                     m_pConfig,
                     m_pSoundManager,
