@@ -15,6 +15,10 @@ Variables:
     <ObjectName>MixerChannelLeft</ObjectName>
     <Layout>horizontal</Layout>
     <Size>-1max,136f</Size>
+    <Connection>
+      <ConfigKey>[Skin],highlight_mixer_<Variable name="group"/></ConfigKey>
+      <BindProperty>highlight_mixer</BindProperty>
+    </Connection>
     <Children>
       <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
