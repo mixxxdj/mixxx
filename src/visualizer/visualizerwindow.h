@@ -36,6 +36,13 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     explicit VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager);
     ~VisualizerWindow() override;
 
+    /// Returns the size in pixels of the square picture into which the
+    /// covers of the decks are combined, for a window of the given size. It
+    /// is as large as the picture is drawn, but never larger than the
+    /// covers themselves. The size changes in coarse steps, so that the
+    /// picture is not recreated all the time while the window is resized.
+    static int combinedCoverSize(const QSize& windowSize, qreal devicePixelRatio);
+
     /// Sets the image file that the style CustomImage shows in place of the
     /// covers. The file is loaded in a worker thread. With an empty path, or if
     /// the file cannot be loaded, that style shows the covers.
@@ -98,6 +105,7 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     CoverDistortionShader m_coverDistortionShader;
     std::unique_ptr<QOpenGLFramebufferObject> m_pCombinedCover;
     std::unique_ptr<QOpenGLFramebufferObject> m_pCombinedBlurredCover;
+    int m_combinedCoverSize;
     QVector3D m_amounts;
 
     QFutureWatcher<VisualizerDeck::PreparedCover> m_customImageWatcher;

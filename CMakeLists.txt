@@ -2995,6 +2995,7 @@ if(BUILD_TESTING)
     src/test/visualizercontrols_test.cpp
     src/test/visualizerdeck_test.cpp
     src/test/visualizerlayout_test.cpp
+    src/test/visualizerwindow_test.cpp
     src/test/wbatterytest.cpp
     src/test/wpushbutton_test.cpp
     src/test/wwidgetstack_test.cpp

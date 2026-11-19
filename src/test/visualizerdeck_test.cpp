@@ -58,11 +58,11 @@ TEST(VisualizerDeckTest, flowPhaseKeepsMovingWithoutTempo) {
 }
 
 TEST(VisualizerDeckTest, preparedCoverIsScaledDownAndBlurred) {
-    QImage cover(3000, 1500, QImage::Format_RGB32);
+    QImage cover(5000, 2500, QImage::Format_RGB32);
     cover.fill(Qt::darkCyan);
     const VisualizerDeck::PreparedCover prepared = VisualizerDeck::prepareCover(7, cover);
     EXPECT_EQ(7, prepared.m_request);
-    EXPECT_EQ(QSize(1024, 512), prepared.m_cover.size());
+    EXPECT_EQ(QSize(2048, 1024), prepared.m_cover.size());
     EXPECT_EQ(QSize(64, 32), prepared.m_blurredCover.size());
 }
 
@@ -76,7 +76,7 @@ TEST(VisualizerDeckTest, preparedCoverKeepsSmallPictures) {
 
 TEST(VisualizerDeckTest, missingCoverIsReplacedByTheDefaultCoverInFullSize) {
     const VisualizerDeck::PreparedCover prepared = VisualizerDeck::prepareCover(1, QImage());
-    EXPECT_EQ(QSize(1024, 1024), prepared.m_cover.size());
+    EXPECT_EQ(QSize(2048, 2048), prepared.m_cover.size());
     EXPECT_FALSE(prepared.m_blurredCover.isNull());
 }
 

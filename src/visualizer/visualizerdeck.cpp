@@ -34,9 +34,6 @@ constexpr std::chrono::duration<double> kLevelRelease = 150ms;
 constexpr std::chrono::duration<double> kLoudnessAttack = 100ms;
 constexpr std::chrono::duration<double> kLoudnessRelease = 1500ms;
 
-// Larger covers are scaled down to keep the textures small.
-constexpr int kMaxCoverSize = 1024;
-
 // The size and the blur radius of the blurred copy of a cover. It is drawn
 // enlarged to the size of the window, which blurs it further.
 constexpr int kBlurredCoverSize = 64;

@@ -23,6 +23,11 @@ class PlayerCoverArtWatcher;
 class VisualizerDeck : public QObject {
     Q_OBJECT
   public:
+    /// Larger covers are scaled down to this size to limit the memory that
+    /// their textures use. It is enough for a cover that fills most of a 4K
+    /// screen.
+    static constexpr int kMaxCoverSize = 2048;
+
     VisualizerDeck(BaseTrackPlayer* pPlayer, QObject* pParent);
     ~VisualizerDeck() override = default;
 

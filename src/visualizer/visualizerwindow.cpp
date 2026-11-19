@@ -40,9 +40,10 @@ constexpr double kFastPhaseSpeed = 4.0;
 // fits tightest.
 constexpr float kCoverScale = 0.8f;
 
-// The covers of the audible decks are combined into one square picture of this
-// size, and their blurred copies into a small one.
-constexpr int kCombinedCoverSize = 1024;
+// The covers of the audible decks are combined into one square picture,
+// whose size follows the size of the window in these steps, and their
+// blurred copies into a small one.
+constexpr int kCombinedCoverSizeStep = 256;
 constexpr int kCombinedBlurredCoverSize = 64;
 
 // In the combined blurred picture the borders between the covers fade over this
@@ -69,6 +70,7 @@ VisualizerWindow::VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager
           m_highIntensity(kVisualizerHighIntensityConfigKey),
           m_style(kVisualizerStyleConfigKey),
           m_showWindow(kVisualizerShowWindowConfigKey),
+          m_combinedCoverSize(kCombinedCoverSizeStep),
           m_customImageRequest(0),
           m_customImageChanged(false),
           m_slowPhase(0.0f),
@@ -112,6 +114,17 @@ VisualizerWindow::~VisualizerWindow() {
     m_pCombinedCover.reset();
     m_pCombinedBlurredCover.reset();
     doneCurrent();
+}
+
+// static
+int VisualizerWindow::combinedCoverSize(const QSize& windowSize, qreal devicePixelRatio) {
+    const double drawnSize = kCoverScale *
+            std::min(windowSize.width(), windowSize.height()) *
+            devicePixelRatio;
+    const int steps = static_cast<int>(std::ceil(drawnSize / kCombinedCoverSizeStep));
+    return std::clamp(steps * kCombinedCoverSizeStep,
+            kCombinedCoverSizeStep,
+            VisualizerDeck::kMaxCoverSize);
 }
 
 void VisualizerWindow::setCustomImage(const QString& path) {
@@ -282,9 +295,10 @@ void VisualizerWindow::updateAnimation(std::chrono::duration<double> elapsed) {
             VisualizerDeck::bandAmount(highIntensity, std::min(highLevel, 1.0f)));
 
     m_shares = VisualizerLayout::updatedShares(loudness, m_shares);
+    m_combinedCoverSize = combinedCoverSize(size(), devicePixelRatioF());
     m_layout.update(m_shares,
             elapsed,
-            QSizeF(kCombinedCoverSize, kCombinedCoverSize));
+            QSizeF(m_combinedCoverSize, m_combinedCoverSize));
 
     double bpm = 0.0;
     float largestShare = 0.0f;
@@ -315,9 +329,11 @@ void VisualizerWindow::paintCoverDistortion() {
         return;
     }
 
-    if (!m_pCombinedCover) {
+    if (!m_pCombinedCover || m_pCombinedCover->width() != m_combinedCoverSize) {
         m_pCombinedCover = std::make_unique<QOpenGLFramebufferObject>(
-                kCombinedCoverSize, kCombinedCoverSize);
+                m_combinedCoverSize, m_combinedCoverSize);
+    }
+    if (!m_pCombinedBlurredCover) {
         m_pCombinedBlurredCover = std::make_unique<QOpenGLFramebufferObject>(
                 kCombinedBlurredCoverSize, kCombinedBlurredCoverSize);
     }
@@ -440,7 +456,7 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
     // The borders of the layout measure pixels of the combined cover. They are
     // smoothed over one pixel there.
     m_coverCombineShader.setUniformValue(m_coverCombineShader.sharpnessLocation(),
-            blurred ? 1.0f / (kBlurredBorderWidth * kCombinedCoverSize) : 1.0f);
+            blurred ? 1.0f / (kBlurredBorderWidth * m_combinedCoverSize) : 1.0f);
 
     for (std::size_t deckIndex = 0; deckIndex < m_decks.size(); ++deckIndex) {
         const auto& pDeckVisual = m_decks[deckIndex];
