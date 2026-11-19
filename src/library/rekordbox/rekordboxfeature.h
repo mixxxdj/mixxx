@@ -44,13 +44,17 @@ class RekordboxPlaylistModel : public BaseExternalPlaylistModel {
   public:
     RekordboxPlaylistModel(QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
-            QSharedPointer<BaseTrackCache> trackSource);
+            QSharedPointer<BaseTrackCache> trackSource,
+            UserSettingsPointer pConfig);
     TrackPointer getTrack(const QModelIndex& index) const override;
     bool isColumnHiddenByDefault(int column) override;
     bool isColumnInternal(int column) override;
 
   protected:
     void initSortColumnMapping() override;
+
+  private:
+    const UserSettingsPointer m_pConfig;
 };
 
 class RekordboxFeature : public BaseExternalLibraryFeature {
