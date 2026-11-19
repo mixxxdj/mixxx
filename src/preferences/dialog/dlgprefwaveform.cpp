@@ -11,6 +11,7 @@
 #include "control/controlpushbutton.h"
 #include "library/dao/analysisdao.h"
 #include "library/library.h"
+#include "library/overviewcache.h"
 #include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
 #include "util/cmdlineargs.h"
@@ -147,6 +148,10 @@ DlgPrefWaveform::DlgPrefWaveform(
         m_pOverviewMinuteMarkersControl->setReadOnly();
     }
 
+    m_pOverviewLibraryMinuteMarkersControl = std::make_unique<ControlObject>(
+            ConfigKey(kWaveformGroup, QStringLiteral("draw_library_overview_minute_markers")));
+    m_pOverviewLibraryMinuteMarkersControl->setReadOnly();
+
     // Populate untilMark options
     untilMarkAlignComboBox->addItem(tr("Top"));
     untilMarkAlignComboBox->addItem(tr("Center"));
@@ -259,6 +264,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
+    connect(overviewLibraryMinuteMarkersCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetOverviewLibraryMinuteMarkers);
     connect(overviewStereoCheckBox,
             &QCheckBox::toggled,
             this,
@@ -454,6 +463,11 @@ void DlgPrefWaveform::slotUpdate() {
         pControl->forceSet(drawOverviewMinuteMarkers);
     }
 
+    bool drawLibraryOverviewMinuteMarkers = m_pConfig->getValue(
+            ConfigKey(kWaveformGroup, QStringLiteral("draw_library_overview_minute_markers")), true);
+    overviewLibraryMinuteMarkersCheckBox->setChecked(drawLibraryOverviewMinuteMarkers);
+    m_pOverviewLibraryMinuteMarkersControl->forceSet(drawLibraryOverviewMinuteMarkers);
+
     WaveformSettings waveformSettings(m_pConfig);
     enableWaveformCaching->setChecked(waveformSettings.waveformCachingEnabled());
     enableWaveformGenerationWithAnalysis->setChecked(
@@ -510,6 +524,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // Show minute markers.
     overviewMinuteMarkersCheckBox->setChecked(true);
+    overviewLibraryMinuteMarkersCheckBox->setChecked(true);
 
     // Use "Global" waveform gain + ReplayGain if enabled
     overview_scale_allReplayGain->setChecked(!WaveformWidgetFactory::isOverviewNormalizedDefault());
@@ -806,6 +821,14 @@ void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool draw) {
         pControl->forceSet(draw);
     }
     notifyQmlWaveformSettingsChanged();
+}
+
+void DlgPrefWaveform::slotSetOverviewLibraryMinuteMarkers(bool draw) {
+    m_pConfig->setValue(ConfigKey(kWaveformGroup,
+                                QStringLiteral("draw_library_overview_minute_markers")),
+            draw);
+    m_pOverviewLibraryMinuteMarkersControl->forceSet(draw);
+    OverviewCache::instance()->invalidateAll();
 }
 
 void DlgPrefWaveform::slotSetOverviewStereoMode(bool stereo) {
