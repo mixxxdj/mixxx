@@ -712,6 +712,7 @@ void CoreServices::initialize() {
     if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryAutoScan();
     }
+    m_pTrackCollectionManager->slotInitalIncomingDirScan();
 
     // This has to be done before m_pSoundManager->setupDevices()
     // https://github.com/mixxxdj/mixxx/issues/9188
