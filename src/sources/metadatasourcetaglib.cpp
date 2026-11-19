@@ -7,6 +7,15 @@
 #include <memory>
 
 #include "track/taglib/trackmetadata.h"
+// TagLib < 2.2 has no Matroska module; the header only exists from 2.2 on.
+// The TAGLIB_* macros are defined by taglib_config.h, pulled in via the
+// taglib headers included through trackmetadata.h above.
+#if (TAGLIB_MAJOR_VERSION > 2) || \
+        ((TAGLIB_MAJOR_VERSION == 2) && (TAGLIB_MINOR_VERSION >= 2))
+#include <matroskafile.h>
+
+#include "track/taglib/trackmetadata_matroska.h"
+#endif
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 #include "util/safelywritablefile.h"
@@ -284,6 +293,39 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             return afterImport(ImportResult::Succeeded);
         }
         break;
+    }
+    case taglib::FileType::Matroska: {
+#if (TAGLIB_MAJOR_VERSION > 2) || \
+        ((TAGLIB_MAJOR_VERSION == 2) && (TAGLIB_MINOR_VERSION >= 2))
+        // TagLib >= 2.2 natively supports Matroska (MKA, MKV) and WebM.
+        TagLib::Matroska::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!taglib::readAudioPropertiesFromFile(pTrackMetadata, file)) {
+            break;
+        }
+        // @anchor: matroska:import-metadata-cover
+        bool importSucceeded = false;
+        if (file.tag() && !file.tag()->isEmpty()) {
+            taglib::importTrackMetadataFromTag(pTrackMetadata, *file.tag());
+            importSucceeded = true;
+        }
+        // Cover art is stored in file-level attachments and may be present
+        // even when the standard tags are empty.
+        if (pCoverImage &&
+                taglib::matroska::importCoverImageFromTag(pCoverImage, file)) {
+            importSucceeded = true;
+        }
+        if (importSucceeded) {
+            return afterImport(ImportResult::Succeeded);
+        }
+        break;
+#else
+        // TagLib < 2.2 has no Matroska support; duration and metadata
+        // are read from the FFmpeg-based sound source instead.
+        kLogger.debug()
+                << "TagLib does not support" << m_fileName
+                << "— using FFmpeg-based duration/metadata instead";
+        return afterImport(ImportResult::Unavailable);
+#endif
     }
     default:
         kLogger.warning()
