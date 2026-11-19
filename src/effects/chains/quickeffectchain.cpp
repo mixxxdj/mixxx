@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpreset.h"
 #include "effects/presets/effectchainpresetmanager.h"
 #include "moc_quickeffectchain.cpp"
@@ -54,8 +55,16 @@ EffectChainPresetPointer QuickEffectChain::presetAtIndex(int index) const {
 }
 
 void QuickEffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
+    // Loading a chain preset sets the super knob's value to the value it was at
+    // when the chain preset was saved. It may be desirable to keep the knob's
+    // value as is, for instance when changing between multiple presets that
+    // contain a filter and an additional additional effect.
+    const double old_super_knob_value = getSuperParameter();
+
     EffectChain::loadChainPreset(pPreset);
-    if (pPreset) {
+    if (m_pEffectsManager->isAdoptSuperknobSettingEnabled()) {
+        setSuperParameter(old_super_knob_value, true);
+    } else if (pPreset) {
         setSuperParameter(pPreset->superKnob(), true);
     }
 }
