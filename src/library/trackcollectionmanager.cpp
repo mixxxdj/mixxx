@@ -509,6 +509,32 @@ void TrackCollectionManager::purgeAllTracks(const QDir& rootDir) const {
     }
 }
 
+bool TrackCollectionManager::relocateTrack(const TrackId trackId,
+        const mixxx::FileInfo& newLocation) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    const std::optional<RelocatedTrack> oRelocatedTrack =
+            m_pInternalCollection->relocateTrack(trackId, newLocation);
+    if (!oRelocatedTrack) {
+        return false;
+    }
+
+    {
+        GlobalTrackCacheLocker cacheLocker;
+        cacheLocker.forceRelocateTrackById(trackId, mixxx::FileAccess(newLocation));
+        if (oRelocatedTrack->deletedTrackId().isValid()) {
+            cacheLocker.purgeTrackId(
+                    oRelocatedTrack->deletedTrackId());
+        }
+    }
+
+    m_pInternalCollection->getTrackDAO().slotDatabaseTracksRelocated({*oRelocatedTrack});
+    if (!m_externalCollections.isEmpty()) {
+        afterTracksRelocated({*oRelocatedTrack});
+    }
+    return true;
+}
+
 TrackPointer TrackCollectionManager::getOrAddTrack(
         const TrackRef& trackRef,
         bool* pAlreadyInLibrary) const {
