@@ -2182,6 +2182,12 @@ else()
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
+
+  # Silences GCC's psabi note about how std::pair<double, double> is passed
+  # Due to ABI change between GCC versions. Read more in GCC bug 94383
+  if(GNU_GCC)
+    target_compile_options(mixx-lib PUBLIC -Wno-psabi)
+  endif()
 endif()
 
 option(INFO_VECTORIZE "Let the compiler show vectorized loops" OFF)
