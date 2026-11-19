@@ -41,6 +41,9 @@ struct savitzky_golay {
     struct ringbuffer *delayline; /* Sample ringbuffer */
 };
 
+#define SAVGOL_MAX_WINDOW_SIZE 255
+
+size_t savgol_window_size(size_t polyorder, double cutoff);
 struct savitzky_golay *savgol_create(size_t window_size, size_t polyorder);
 void savgol_destroy(struct savitzky_golay *f);
 int savgol(struct savitzky_golay *f, int x);
