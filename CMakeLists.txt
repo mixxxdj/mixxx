@@ -441,11 +441,6 @@ endif()
 if(MIXXX_APPIMAGE OR CPACK_GENERATOR MATCHES "AppImage")
   set(MOLD_SUPPORT OFF CACHE BOOL "Use 'mold' for linking")
 endif()
-set(QOPENGL ON CACHE INTERNAL "Forced ON")
-
-if(QOPENGL)
-  add_compile_definitions(MIXXX_USE_QOPENGL)
-endif()
 
 if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
   message(STATUS "Targeting Emscripten (${VCPKG_TARGET_TRIPLET})")
@@ -1993,54 +1988,44 @@ set(
   src/util/workerthreadscheduler.h
   src/util/xml.h
 )
-if(QOPENGL)
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/shaders/endoftrackshader.cpp
-      src/shaders/slipmodeshader.cpp
-      src/shaders/patternshader.cpp
-      src/shaders/rgbashader.cpp
-      src/shaders/rgbshader.cpp
-      src/shaders/shader.cpp
-      src/shaders/textureshader.cpp
-      src/shaders/unicolorshader.cpp
-      src/shaders/vinylqualityshader.cpp
-      src/util/opengltexture2d.cpp
-      src/waveform/renderers/allshader/digitsrenderer.cpp
-      src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
-      src/waveform/renderers/allshader/waveformrenderbackground.cpp
-      src/waveform/renderers/allshader/waveformrenderbeat.cpp
-      src/waveform/renderers/allshader/waveformrenderer.cpp
-      src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
-      src/waveform/renderers/allshader/waveformrendererslipmode.cpp
-      src/waveform/renderers/allshader/waveformrendererfiltered.cpp
-      src/waveform/renderers/allshader/waveformrendererhsv.cpp
-      src/waveform/renderers/allshader/waveformrendererpreroll.cpp
-      src/waveform/renderers/allshader/waveformrendererrgb.cpp
-      src/waveform/renderers/allshader/waveformrenderertextured.cpp
-      src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
-      src/waveform/renderers/allshader/waveformrenderersimple.cpp
-      src/waveform/renderers/allshader/waveformrendermark.cpp
-      src/waveform/renderers/allshader/waveformrendermarkrange.cpp
-      src/waveform/widgets/allshader/waveformwidget.cpp
-      src/widget/openglwindow.cpp
-      src/widget/tooltipqopengl.cpp
-      src/widget/wglwidgetqopengl.cpp
-      src/widget/winitialglwidget.cpp
-      src/widget/wspinnyglsl.cpp
-      src/widget/wvumeterglsl.cpp
-  )
-else()
-  target_sources(
-    mixxx-lib
-    PRIVATE
-      src/waveform/renderers/qtvsynctestrenderer.cpp
-      src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-      src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-      src/widget/wglwidgetqglwidget.cpp
-  )
-endif()
+
+target_sources(
+  mixxx-lib
+  PRIVATE
+    src/shaders/endoftrackshader.cpp
+    src/shaders/slipmodeshader.cpp
+    src/shaders/patternshader.cpp
+    src/shaders/rgbashader.cpp
+    src/shaders/rgbshader.cpp
+    src/shaders/shader.cpp
+    src/shaders/textureshader.cpp
+    src/shaders/unicolorshader.cpp
+    src/shaders/vinylqualityshader.cpp
+    src/util/opengltexture2d.cpp
+    src/waveform/renderers/allshader/digitsrenderer.cpp
+    src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
+    src/waveform/renderers/allshader/waveformrenderbackground.cpp
+    src/waveform/renderers/allshader/waveformrenderbeat.cpp
+    src/waveform/renderers/allshader/waveformrenderer.cpp
+    src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+    src/waveform/renderers/allshader/waveformrendererslipmode.cpp
+    src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+    src/waveform/renderers/allshader/waveformrendererhsv.cpp
+    src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+    src/waveform/renderers/allshader/waveformrendererrgb.cpp
+    src/waveform/renderers/allshader/waveformrenderertextured.cpp
+    src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+    src/waveform/renderers/allshader/waveformrenderersimple.cpp
+    src/waveform/renderers/allshader/waveformrendermark.cpp
+    src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+    src/waveform/widgets/allshader/waveformwidget.cpp
+    src/widget/openglwindow.cpp
+    src/widget/tooltipqopengl.cpp
+    src/widget/wglwidgetqopengl.cpp
+    src/widget/winitialglwidget.cpp
+    src/widget/wspinnyglsl.cpp
+    src/widget/wvumeterglsl.cpp
+)
 
 set_source_files_properties(
   src/util/moc_included_test.cpp
@@ -2859,12 +2844,10 @@ if(STEM)
       src/widget/wtrackstemmenu.cpp
       src/widget/wstemlabel.cpp
   )
-  if(QOPENGL)
-    target_sources(
-      mixxx-lib
-      PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
-    )
-  endif()
+  target_sources(
+    mixxx-lib
+    PRIVATE src/waveform/renderers/allshader/waveformrendererstem.cpp
+  )
 endif()
 
 if(BUILD_TESTING)
