@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/keycontrol.h"
 #include "engine/defs_keylock.h"
 #include "engine/engine.h"
 #include "engine/enginebuffer.h"
@@ -15,6 +16,7 @@
 #include "engine/sync/enginesync.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "preferences/keydetectionsettings.h"
 #include "moc_basetrackplayer.cpp"
 #include "track/track.h"
 #include "util/sandbox.h"
@@ -618,12 +620,70 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
     m_pPrevFailedTrackId = TrackId();
 }
 
+QString BaseTrackPlayerImpl::otherMainDeckGroup() const {
+    const QString thisGroup = getGroup();
+    const EngineChannel::ChannelOrientation thisOrientation = m_pChannel->getOrientation();
+    const int numDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_decks"))));
+    QString fallback;
+    for (int i = 0; i < numDecks; ++i) {
+        const QString group = PlayerManager::groupForDeck(i);
+        if (group == thisGroup) {
+            continue;
+        }
+        EngineChannel* pOther = m_pEngineMixer->getChannel(group);
+        // Samplers, preview decks, and microphones are not in this list.
+        // Skip any non-primary channel registered under a deck group.
+        if (pOther == nullptr || !pOther->isPrimaryDeck()) {
+            continue;
+        }
+        const EngineChannel::ChannelOrientation orientation = pOther->getOrientation();
+        const bool opposite =
+                (thisOrientation == EngineChannel::LEFT &&
+                        orientation == EngineChannel::RIGHT) ||
+                (thisOrientation == EngineChannel::RIGHT &&
+                        orientation == EngineChannel::LEFT);
+        if (opposite) {
+            return group;
+        }
+        if (fallback.isEmpty()) {
+            fallback = group;
+        }
+    }
+    return fallback;
+}
+
+void BaseTrackPlayerImpl::maybeHarmonizeManualLoad() {
+    // Main decks only. Preview, sampler, and microphone players never reach
+    // here with isPrimaryDeck() (microphones are not BaseTrackPlayerImpl).
+    if (!m_pChannel->isPrimaryDeck()) {
+        return;
+    }
+    // An AutoDJ autoload consults only the Auto DJ option, in AutoDJProcessor.
+    if (isPendingAutoDjAutoload() || m_pChannelToCloneFrom != nullptr) {
+        return;
+    }
+    // Only reader of [Key] AutoHarmonizeOnManualLoad on the load path.
+    const KeyDetectionSettings keySettings(m_pConfig);
+    if (!keySettings.getAutoHarmonizeOnManualLoad()) {
+        return;
+    }
+    const QString otherGroup = otherMainDeckGroup();
+    if (otherGroup.isEmpty()) {
+        return;
+    }
+    KeyControl::applyMatchKeyPitch(getGroup(), otherGroup);
+}
+
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                                           TrackPointer pOldTrack) {
     //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
     if (!pNewTrack &&
             pOldTrack &&
             pOldTrack == m_pLoadedTrack) {
+        // A failed or ejected AutoDJ load must not stick and suppress the
+        // next manual harmonize. The next autoload sets the flag again.
+        setPendingAutoDjAutoload(false);
         // eject Track
         unloadTrack();
 
@@ -704,6 +764,10 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                     m_pPitchAdjust->set(0.0);
                 }
             }
+            // After the file key is published and the load reset has run.
+            // AutoDJ autoloads are marked pending and harmonized by
+            // AutoDJProcessor instead, so this cannot apply a second offset.
+            maybeHarmonizeManualLoad();
         } else {
             // perform a clone of the given channel
 

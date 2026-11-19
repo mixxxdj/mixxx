@@ -31,6 +31,11 @@ class KeyControl : public EngineControl {
 
     double getKey();
 
+    /// Writes `deckGroup`'s pitch the same way `sync_key` does, using
+    /// `otherDeckGroup`'s effective key (`key` + `visual_key_distance`).
+    /// Returns false without changing pitch when either key is invalid.
+    static bool applyMatchKeyPitch(const QString& deckGroup, const QString& otherDeckGroup);
+
   private slots:
     void slotSetEngineKey(double);
     void slotSetEngineKeyDistance(double);

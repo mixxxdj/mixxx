@@ -745,6 +745,20 @@ int KeyUtils::shortestStepsToCompatibleKey(
     return shortestDistance; // in the range of -2 .. +2
 }
 
+std::optional<double> KeyUtils::matchKeyPitchSemitones(
+        mixxx::track::io::key::ChromaticKey fileKey,
+        mixxx::track::io::key::ChromaticKey otherEffectiveKey,
+        double otherVisualKeyDistance) {
+    // Same early-out as KeyControl::syncKey: an invalid key is not a request
+    // to pitch back to 0.
+    if (fileKey == mixxx::track::io::key::INVALID ||
+            otherEffectiveKey == mixxx::track::io::key::INVALID) {
+        return std::nullopt;
+    }
+    const int stepsToTake = shortestStepsToCompatibleKey(fileKey, otherEffectiveKey);
+    return static_cast<double>(stepsToTake) + otherVisualKeyDistance;
+}
+
 QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
         mixxx::track::io::key::ChromaticKey key) {
     QList<mixxx::track::io::key::ChromaticKey> compatible;

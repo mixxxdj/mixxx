@@ -307,3 +307,31 @@ TEST_F(KeyUtilsTest, GetCompatibleKeys) {
                     mixxx::track::io::key::A_MINOR,
                     mixxx::track::io::key::G_MINOR));
 }
+
+TEST_F(KeyUtilsTest, MatchKeyPitchSemitonesUsesShortestCompatibleSteps) {
+    const double distance = 0.25;
+    const auto fileKey = mixxx::track::io::key::F_SHARP_MAJOR;
+    const auto otherKey = mixxx::track::io::key::C_MAJOR;
+    const std::optional<double> pitch = KeyUtils::matchKeyPitchSemitones(
+            fileKey, otherKey, distance);
+    ASSERT_TRUE(pitch.has_value());
+    EXPECT_DOUBLE_EQ(static_cast<double>(KeyUtils::shortestStepsToCompatibleKey(
+                              fileKey, otherKey)) +
+                    distance,
+            *pitch);
+    EXPECT_NE(0.0, *pitch);
+
+    // Already compatible and no visual offset is a zero pitch write, not a
+    // second algorithm.
+    const auto compatible = KeyUtils::matchKeyPitchSemitones(
+            mixxx::track::io::key::C_MAJOR, mixxx::track::io::key::C_MAJOR, 0.0);
+    ASSERT_TRUE(compatible.has_value());
+    EXPECT_DOUBLE_EQ(0.0, *compatible);
+
+    EXPECT_FALSE(KeyUtils::matchKeyPitchSemitones(
+            mixxx::track::io::key::INVALID, otherKey, distance)
+                    .has_value());
+    EXPECT_FALSE(KeyUtils::matchKeyPitchSemitones(
+            fileKey, mixxx::track::io::key::INVALID, distance)
+                    .has_value());
+}

@@ -2874,6 +2874,7 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/autoharmonize_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp

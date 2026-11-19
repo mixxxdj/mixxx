@@ -15,8 +15,10 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "proto/keys.pb.h"
 #include "sources/soundsourceproxy.h"
 #include "test/librarytest.h"
+#include "track/keyutils.h"
 #include "track/track.h"
 
 using ::testing::_;
@@ -243,6 +245,73 @@ class AutoDJProcessorTest : public LibraryTest {
         TrackPointer pTrack =
                 getOrAddTrackByLocation(getTestDir().filePath(trackLocation));
         return pTrack ? pTrack->getId() : TrackId();
+    }
+
+    // Drives the shipped AutoDJ autoload path: toggleAutoDJ -> loadTrackFromAutoDj
+    // -> playerTrackLoaded -> maybeHarmonizeAutoDjLoad. File key is published
+    // on the deck control first, which is what slotTrackLoaded does before
+    // newTrackLoaded on a real player. FakeDeck does not run that player.
+    struct AutoloadResult {
+        double pitch;
+        mixxx::track::io::key::ChromaticKey storedKey;
+    };
+
+    AutoloadResult autoloadDeck2(bool autoDjOption,
+            bool keyOption,
+            mixxx::track::io::key::ChromaticKey loadedFileKey,
+            double otherDistance,
+            double initialPitch) {
+        config()->setValue(ConfigKey("[Auto DJ]", "AutoHarmonizeToPrevious"), autoDjOption);
+        config()->setValue(ConfigKey("[Key]", "AutoHarmonizeOnManualLoad"), keyOption);
+
+        ControlObject otherKey(ConfigKey(deck1.getGroup(), "key"));
+        ControlObject otherDistanceCO(ConfigKey(deck1.getGroup(), "visual_key_distance"));
+        ControlObject loadedFileKeyCO(ConfigKey(deck2.getGroup(), "file_key"));
+        ControlObject loadedPitch(ConfigKey(deck2.getGroup(), "pitch"));
+        otherKey.set(KeyUtils::keyToNumericValue(mixxx::track::io::key::C_MAJOR));
+        otherDistanceCO.set(otherDistance);
+        loadedPitch.set(initialPitch);
+
+        mixer.crossfader.set(-1.0);
+        TrackPointer pTrack = newTestTrack();
+        pTrack->setDuration(100);
+        if (loadedFileKey == mixxx::track::io::key::INVALID) {
+            pTrack->resetKeys();
+        } else {
+            pTrack->setKey(loadedFileKey, mixxx::track::io::key::USER);
+        }
+        const mixxx::track::io::key::ChromaticKey storedBefore = pTrack->getKey();
+        deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                true);
+        deck1.fakeTrackLoadedEvent(pTrack);
+
+        TrackId testId = addTrackToCollection(kTrackLocationTest);
+        EXPECT_TRUE(testId.isValid());
+        pProcessor->getTableModel()->appendTrack(testId);
+
+        EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+        EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+        EXPECT_EQ(AutoDJProcessor::ADJ_OK, pProcessor->toggleAutoDJ(true));
+        EXPECT_TRUE(deck2.isPendingAutoDjAutoload());
+
+        if (loadedFileKey == mixxx::track::io::key::INVALID) {
+            loadedFileKeyCO.set(KeyUtils::keyToNumericValue(mixxx::track::io::key::INVALID));
+        } else {
+            loadedFileKeyCO.set(KeyUtils::keyToNumericValue(loadedFileKey));
+        }
+        // Re-assert the pitch the load reset would have left, before harmonize.
+        loadedPitch.set(initialPitch);
+        deck2.fakeTrackLoadedEvent(pTrack);
+
+        AutoloadResult result;
+        result.pitch = loadedPitch.get();
+        result.storedKey = pTrack->getKey();
+        EXPECT_EQ(storedBefore, result.storedKey);
+        EXPECT_FALSE(deck2.isPendingAutoDjAutoload());
+        return result;
     }
 
     FakeMixer mixer;
@@ -2055,4 +2124,52 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_ZeroTransition_DelayedPlaypositionAfterS
     EXPECT_DOUBLE_EQ(1.0, mixer.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+}
+
+TEST_F(AutoDJProcessorTest, AutoloadHarmonizesWhenAutoDjOptionOn) {
+    const auto loaded = mixxx::track::io::key::F_SHARP_MAJOR;
+    const auto other = mixxx::track::io::key::C_MAJOR;
+    const double distance = 0.25;
+    const double expected = static_cast<double>(
+                                    KeyUtils::shortestStepsToCompatibleKey(loaded, other)) +
+            distance;
+    const auto helper = KeyUtils::matchKeyPitchSemitones(loaded, other, distance);
+    ASSERT_TRUE(helper.has_value());
+    EXPECT_DOUBLE_EQ(expected, *helper);
+    ASSERT_NE(0.0, expected);
+    ASSERT_NE(3.5, expected);
+
+    const auto result = autoloadDeck2(true, false, loaded, distance, 3.5);
+    EXPECT_DOUBLE_EQ(expected, result.pitch);
+    EXPECT_EQ(loaded, result.storedKey);
+}
+
+TEST_F(AutoDJProcessorTest, AutoloadDoesNotHarmonizeWhenAutoDjOptionOff) {
+    // Key preference on must not cause or block an AutoDJ autoload.
+    const auto result = autoloadDeck2(
+            false, true, mixxx::track::io::key::F_SHARP_MAJOR, 0.25, 3.5);
+    EXPECT_DOUBLE_EQ(3.5, result.pitch);
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MAJOR, result.storedKey);
+}
+
+TEST_F(AutoDJProcessorTest, BothOptionsApplyOneOffsetOnAutoload) {
+    const auto loaded = mixxx::track::io::key::F_SHARP_MAJOR;
+    const auto other = mixxx::track::io::key::C_MAJOR;
+    const double distance = 0.25;
+    const double expected = static_cast<double>(
+                                    KeyUtils::shortestStepsToCompatibleKey(loaded, other)) +
+            distance;
+    ASSERT_NE(expected * 2.0, expected);
+
+    const auto result = autoloadDeck2(true, true, loaded, distance, 3.5);
+    EXPECT_DOUBLE_EQ(expected, result.pitch);
+    EXPECT_NE(expected * 2.0, result.pitch);
+    EXPECT_EQ(loaded, result.storedKey);
+}
+
+TEST_F(AutoDJProcessorTest, AutoloadInvalidKeyLeavesPitchAndStoredKey) {
+    const auto result = autoloadDeck2(
+            true, true, mixxx::track::io::key::INVALID, 0.0, 3.5);
+    EXPECT_DOUBLE_EQ(3.5, result.pitch);
+    EXPECT_EQ(mixxx::track::io::key::INVALID, result.storedKey);
 }
