@@ -11,10 +11,10 @@ namespace mixxx {
 
 namespace {
 
-// [AI-generated] The bands are narrower than the bands of the mixing
+// The bands are narrower than the bands of the mixing
 // equalizers, whose default shelves are 250 Hz and 2.5 kHz. The gaps around
 // the shelves keep the leakage of the neighbor bands out, so that a band
-// killed with the EQ reads as silent. [/AI-generated]
+// killed with the EQ reads as silent.
 constexpr double kLowBandMaxHz = 150.0;
 constexpr double kMidBandMinHz = 400.0;
 constexpr double kMidBandMaxHz = 1500.0;
@@ -22,8 +22,8 @@ constexpr double kHighBandMinHz = 4000.0;
 
 constexpr audio::SampleRate kDefaultSampleRate = audio::SampleRate(44100);
 
-// [AI-generated] The levels are published at this rate at most. Engine
-// buffers shorter than one period are accumulated. [/AI-generated]
+// The levels are published at this rate at most. Engine
+// buffers shorter than one period are accumulated.
 constexpr int kUpdateRateHz = 60;
 
 constexpr double kLevelEpsilon = 0.0001;
@@ -116,9 +116,8 @@ void EngineBandMeter::accumulate(Band* pBand, std::size_t bufferSize) {
 void EngineBandMeter::publish(Band* pBand) {
     const CSAMPLE level = std::fmin(pBand->m_sumAbs / m_samplesAccumulated, CSAMPLE_ONE);
     pBand->m_sumAbs = CSAMPLE_ZERO;
-    // [AI-generated] The levels change with every update. The epsilon keeps
+    // The levels change with every update. The epsilon keeps
     // inaudible changes from waking up the listeners of the control.
-    // [/AI-generated]
     if (std::fabs(level - pBand->m_level.get()) > kLevelEpsilon) {
         pBand->m_level.forceSet(level);
     }

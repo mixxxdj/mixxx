@@ -352,8 +352,7 @@ class EngineMixer : public QObject, public AudioSource {
     std::unique_ptr<ControlObject> m_pMainMonoMixdown;
     std::unique_ptr<ControlObject> m_pMicMonitorMode;
 
-    // [AI-generated] The band meters of the decks only run while this is set.
-    // [/AI-generated]
+    // The band meters of the decks only run while this is set.
     std::unique_ptr<ControlObject> m_pBandMetersEnabled;
 
     // TODO (Swiftb0y): remove volatile (probably supposed to be std::atomic instead).

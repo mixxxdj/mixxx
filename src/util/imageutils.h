@@ -12,10 +12,9 @@ ImageDigest digestImage(const QImage& image);
 
 QColor extractImageBackgroundColor(const QImage& image);
 
-/// [AI-generated] Returns a small, heavily blurred and opaque copy of the
+/// Returns a small, heavily blurred and opaque copy of the
 /// image that keeps its aspect ratio, or a null image if the image is null.
 /// Drawn enlarged with linear filtering it serves as a soft backdrop.
-/// [/AI-generated]
 QImage blurredThumbnail(const QImage& image);
 
 } // namespace mixxx

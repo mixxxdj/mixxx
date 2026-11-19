@@ -4,7 +4,9 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QOpenGLContext>
+#include <QStandardPaths>
 #include <QUrl>
 
 #if defined(__LINUX__) && !defined(__ANDROID__)
@@ -32,6 +34,7 @@
 #endif
 #include "control/controlindicatortimer.h"
 #include "control/controlproxy.h"
+#include "library/coverartutils.h"
 #include "library/library.h"
 #include "library/library_decl.h"
 #include "library/library_prefs.h"
@@ -55,6 +58,7 @@
 #include "util/scopedoverridecursor.h"
 #include "util/timer.h"
 #include "util/versionstore.h"
+#include "visualizer/visualizercontrols.h"
 #include "visualizer/visualizerwindow.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
@@ -70,6 +74,8 @@
 namespace {
 const ConfigKey kHideMenuBarConfigKey = ConfigKey("[Config]", "hide_menubar");
 const ConfigKey kMenuBarHintConfigKey = ConfigKey("[Config]", "show_menubar_hint");
+const ConfigKey kVisualizerImageConfigKey = ConfigKey(
+        QStringLiteral("[Visualizer]"), QStringLiteral("image_path"));
 } // namespace
 
 MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
@@ -284,6 +290,14 @@ void MixxxMainWindow::initialize() {
     m_pShowVisualizer = make_parented<ControlProxy>(
             QStringLiteral("[Visualizer]"), QStringLiteral("show_window"), this);
     m_pShowVisualizer->connectValueChanged(this, &MixxxMainWindow::slotShowVisualizer);
+    // The slot opens a dialog, which must not happen while
+    // the widget or controller that has changed the control is still
+    // handling its event.
+    m_pSelectVisualizerImage = make_parented<ControlProxy>(
+            QStringLiteral("[Visualizer]"), QStringLiteral("select_image"), this);
+    m_pSelectVisualizerImage->connectValueChanged(this,
+            &MixxxMainWindow::slotSelectVisualizerImage,
+            Qt::QueuedConnection);
 
     connect(this,
             &MixxxMainWindow::skinLoaded,
@@ -1333,9 +1347,45 @@ void MixxxMainWindow::slotShowVisualizer(double show) {
         m_pVisualizerWindow = std::make_unique<mixxx::VisualizerWindow>(
                 m_pCoreServices->getPlayerManager());
         m_pVisualizerWindow->setWindowIcon(QIcon(MIXXX_ICON_PATH));
+        m_pVisualizerWindow->setCustomImage(
+                m_pCoreServices->getSettings()->getValueString(kVisualizerImageConfigKey));
     }
     m_pVisualizerWindow->show();
     m_pVisualizerWindow->raise();
+}
+
+void MixxxMainWindow::slotSelectVisualizerImage(double pressed) {
+    // React when the button is released, so that the widget
+    // that was clicked is not left in its pressed state.
+    if (pressed > 0.0) {
+        return;
+    }
+    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
+    const QString currentPath = pConfig->getValueString(kVisualizerImageConfigKey);
+    const QString initialDir = currentPath.isEmpty()
+            ? QStandardPaths::writableLocation(QStandardPaths::PicturesLocation)
+            : QFileInfo(currentPath).absolutePath();
+
+    QStringList extensions = CoverArtUtils::supportedCoverArtExtensions();
+    for (auto&& extension : extensions) {
+        extension.prepend(QStringLiteral("*."));
+    }
+    const QString filter = QStringLiteral("%1 (%2)").arg(
+            tr("Image Files"), extensions.join(QChar(' ')));
+
+    const QString selectedPath = QFileDialog::getOpenFileName(
+            this, tr("Select Visualizer Image"), initialDir, filter);
+    if (selectedPath.isEmpty()) {
+        return;
+    }
+    pConfig->set(kVisualizerImageConfigKey, ConfigValue(selectedPath));
+    if (m_pVisualizerWindow) {
+        m_pVisualizerWindow->setCustomImage(selectedPath);
+    }
+    // Whoever selects an image wants to see it.
+    ControlObject::set(
+            ConfigKey(QStringLiteral("[Visualizer]"), QStringLiteral("style")),
+            static_cast<double>(mixxx::VisualizerStyle::CustomImage));
 }
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {

@@ -9,14 +9,13 @@ constexpr QCryptographicHash::Algorithm kImageHashAlgorithm = QCryptographicHash
 
 constexpr int kBlurredThumbnailSize = 64;
 constexpr int kBlurRadius = 5;
-// [AI-generated] Three passes of a box blur approximate a Gaussian blur.
-// [/AI-generated]
+// Three passes of a box blur approximate a Gaussian blur.
 constexpr int kBlurPasses = 3;
 
-// [AI-generated] Averages every pixel with its neighbors along one axis. The
+// Averages every pixel with its neighbors along one axis. The
 // step is (1, 0) for the horizontal and (0, 1) for the vertical axis. The
 // image must have the format RGB32. Its pixels are accessed directly, which
-// is much faster than QImage::pixel(). [/AI-generated]
+// is much faster than QImage::pixel().
 QImage boxBlurred(const QImage& source, int stepX, int stepY) {
     constexpr int kKernelSize = 2 * kBlurRadius + 1;
     const int width = source.width();

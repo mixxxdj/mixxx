@@ -71,9 +71,9 @@ TEST_F(ImageUtilsTest, BlurredThumbnailKeepsSolidColor) {
 }
 
 TEST_F(ImageUtilsTest, BlurredThumbnailSmoothsEdges) {
-    // [AI-generated] The left half of the image is black and the right half
+    // The left half of the image is black and the right half
     // is white. After blurring, the brightness must rise gradually from the
-    // left to the right. [/AI-generated]
+    // left to the right.
     QImage image(128, 128, QImage::Format_RGB32);
     for (int x = 0; x < image.width(); ++x) {
         for (int y = 0; y < image.height(); ++y) {

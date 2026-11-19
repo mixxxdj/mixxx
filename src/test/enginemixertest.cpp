@@ -163,8 +163,8 @@ class EngineMixerBandMeterTest : public BaseSignalPathTest {
     static constexpr CSAMPLE kSignal = 0.5f;
     static constexpr double kTolerance = 0.01;
 
-    // [AI-generated] Processes enough buffers for the gain ramp and the
-    // filters of the band meter to settle. [/AI-generated]
+    // Processes enough buffers for the gain ramp and the
+    // filters of the band meter to settle.
     void processUntilSettled() {
         for (int bufferIndex = 0; bufferIndex < 20; ++bufferIndex) {
             m_pEngineMixer->process(kBufferSize);
@@ -192,8 +192,8 @@ TEST_F(EngineMixerBandMeterTest, bandMetersFollowThePostFaderSignal) {
     EXPECT_CALL(*pChannel, isPflEnabled()).WillRepeatedly(Return(false));
     EXPECT_CALL(*pChannel, collectFeatures(_)).Times(AnyNumber());
     EXPECT_CALL(*pChannel, postProcess(_)).Times(AnyNumber());
-    // [AI-generated] The channel outputs a constant signal, which only the
-    // low band passes. [/AI-generated]
+    // The channel outputs a constant signal, which only the
+    // low band passes.
     EXPECT_CALL(*pChannel, process(_, _))
             .WillRepeatedly([](CSAMPLE* pBuffer, std::size_t bufferSize) {
                 SampleUtil::fill(pBuffer, kSignal, static_cast<SINT>(bufferSize));

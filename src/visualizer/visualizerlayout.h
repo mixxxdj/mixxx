@@ -7,7 +7,7 @@
 
 namespace mixxx {
 
-/// [AI-generated] Divides a picture between the decks, for combining their
+/// Divides a picture between the decks, for combining their
 /// covers into one. Every audible deck owns one cell of the picture, and the
 /// area of the cell is the share of the deck in the mix. One deck fills the
 /// picture, two decks split it into a left and a right part, three decks
@@ -17,39 +17,37 @@ namespace mixxx {
 ///
 /// All positions are picture coordinates: the origin is the center of the
 /// picture, x grows to the right, y grows downwards and the picture spans
-/// -0.5 to 0.5 on both axes. [/AI-generated]
+/// -0.5 to 0.5 on both axes.
 class VisualizerLayout {
   public:
     static constexpr int kMaxDecks = 4;
 
-    /// [AI-generated] One value per deck. [/AI-generated]
+    /// One value per deck.
     using PerDeck = std::array<float, kMaxDecks>;
 
-    /// [AI-generated] The part of the picture that belongs to one deck.
-    /// [/AI-generated]
+    /// The part of the picture that belongs to one deck.
     struct Cell {
-        /// [AI-generated] The borders to the cells of the other decks. For a
+        /// The borders to the cells of the other decks. For a
         /// position p, dot(xy, p) + z is the distance from the border in
         /// pixels, which is positive on the side of this cell. Unused
-        /// entries are positive everywhere. [/AI-generated]
+        /// entries are positive everywhere.
         std::array<QVector3D, kMaxDecks - 1> m_borders;
-        /// [AI-generated] The area of the cell as a fraction of the picture.
-        /// It is 0 if the deck has no cell. [/AI-generated]
+        /// The area of the cell as a fraction of the picture.
+        /// It is 0 if the deck has no cell.
         float m_area;
     };
 
     VisualizerLayout();
 
-    /// [AI-generated] Returns the share of each deck in the mix, 0..1, from
+    /// Returns the share of each deck in the mix, 0..1, from
     /// the loudness of the decks. While all decks are silent the previous
     /// shares are returned, so that the picture stays as it was.
-    /// [/AI-generated]
     static PerDeck updatedShares(const PerDeck& loudness, const PerDeck& previousShares);
 
-    /// [AI-generated] Recalculates the cells for the given shares and for a
+    /// Recalculates the cells for the given shares and for a
     /// picture of the given size in pixels. The cells do not jump when a
     /// deck joins or leaves: the elapsed time limits how far they move
-    /// towards their new places. [/AI-generated]
+    /// towards their new places.
     void update(const PerDeck& shares, double elapsedSeconds, const QSizeF& pictureSize);
 
     const Cell& cell(int deckIndex) const {

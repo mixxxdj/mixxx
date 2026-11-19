@@ -549,6 +549,10 @@ Description:
                       <Number>0</Number>
                       <Text>Cover Distortion</Text>
                     </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>Custom Image</Text>
+                    </State>
                     <Connection>
                       <ConfigKey>[Visualizer],style</ConfigKey>
                     </Connection>
@@ -556,6 +560,22 @@ Description:
                   <WidgetGroup><Size>0me,0f</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
+
+              <PushButton>
+                <TooltipId>visualizer_select_image</TooltipId>
+                <ObjectName>SkinSettingsButton</ObjectName>
+                <Size>-1me,18f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text>&#8202;&#8202;&#8230;  Select Image</Text>
+                  <Alignment>left</Alignment>
+                </State>
+                <Connection>
+                  <ConfigKey>[Visualizer],select_image</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
 
               <Template src="skins:LateNight/helpers/skin_settings_visualizer_slider.xml">
                 <SetVariable name="Text">Bass: </SetVariable>

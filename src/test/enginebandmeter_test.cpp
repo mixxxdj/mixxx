@@ -17,9 +17,8 @@ constexpr mixxx::audio::SampleRate kSampleRate = mixxx::audio::SampleRate(44100)
 constexpr std::size_t kBufferFrames = 1024;
 constexpr std::size_t kBufferSamples = kBufferFrames * 2;
 constexpr CSAMPLE kAmplitude = 0.5f;
-// [AI-generated] The mean absolute value of a sine is 2/pi of its amplitude.
+// The mean absolute value of a sine is 2/pi of its amplitude.
 // The tolerance allows for the attenuation near the edges of a band.
-// [/AI-generated]
 constexpr double kPassedLevel = kAmplitude * 2 / std::numbers::pi;
 constexpr double kPassedTolerance = 0.05;
 constexpr double kRejectedLevel = 0.005;
@@ -32,8 +31,7 @@ class EngineBandMeterTest : public MixxxTest {
               m_frame(0) {
     }
 
-    // [AI-generated] Feeds one second of a stereo sine into the meter.
-    // [/AI-generated]
+    // Feeds one second of a stereo sine into the meter.
     void processSine(double frequencyHz) {
         const std::size_t numBuffers = kSampleRate.value() / kBufferFrames;
         for (std::size_t bufferIndex = 0; bufferIndex < numBuffers; ++bufferIndex) {
@@ -99,13 +97,12 @@ TEST_F(EngineBandMeterTest, resetReadsZero) {
 }
 
 TEST_F(EngineBandMeterTest, shortBuffersAreAccumulated) {
-    // [AI-generated] 64 frames are shorter than one update period, so the
-    // level must still be published after several buffers. [/AI-generated]
+    // 64 frames are shorter than one update period, so the
+    // level must still be published after several buffers.
     constexpr std::size_t kShortBufferSamples = 64 * 2;
     for (SINT sampleIndex = 0; sampleIndex < static_cast<SINT>(kShortBufferSamples);
             ++sampleIndex) {
-        // [AI-generated] A 11025 Hz square wave passes the high band only.
-        // [/AI-generated]
+        // A 11025 Hz square wave passes the high band only.
         m_buffer[sampleIndex] = (sampleIndex / 4) % 2 == 0 ? kAmplitude : -kAmplitude;
     }
     for (int bufferIndex = 0; bufferIndex < 200; ++bufferIndex) {

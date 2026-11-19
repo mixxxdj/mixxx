@@ -5,6 +5,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLWindow>
 #include <QVector2D>
+#include <QtConcurrentRun>
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -15,7 +16,6 @@
 #include "moc_visualizerwindow.cpp"
 #include "util/assert.h"
 #include "visualizer/visualizercontrols.h"
-#include "visualizer/visualizerdeck.h"
 #include "waveform/waveformwidgetfactory.h"
 
 namespace mixxx {
@@ -28,28 +28,26 @@ const QString kAppGroup = QStringLiteral("[App]");
 constexpr int kDefaultWidth = 960;
 constexpr int kDefaultHeight = 540;
 
-// [AI-generated] A longer gap between two frames, for example while the
-// window was hidden, must not make the animation jump. [/AI-generated]
+// A longer gap between two frames, for example while the
+// window was hidden, must not make the animation jump.
 constexpr double kMaxFrameSeconds = 0.1;
 
-// [AI-generated] The speed of the animation phases in radians per second.
-// [/AI-generated]
+// The speed of the animation phases in radians per second.
 constexpr double kSlowPhaseSpeed = 0.7;
 constexpr double kFastPhaseSpeed = 4.0;
 
-// [AI-generated] The share of the window that the cover takes up along the
-// axis in which it fits tightest. [/AI-generated]
+// The share of the window that the cover takes up along the
+// axis in which it fits tightest.
 constexpr float kCoverScale = 0.8f;
 
-// [AI-generated] The covers of the audible decks are combined into one
+// The covers of the audible decks are combined into one
 // square picture of this size, and their blurred copies into a small one.
-// [/AI-generated]
 constexpr int kCombinedCoverSize = 1024;
 constexpr int kCombinedBlurredCoverSize = 64;
 
-// [AI-generated] In the combined blurred picture the borders between the
+// In the combined blurred picture the borders between the
 // covers fade over this share of the picture, which is about as wide as
-// the blur of the covers themselves. [/AI-generated]
+// the blur of the covers themselves.
 constexpr float kBlurredBorderWidth = 0.2f;
 
 constexpr int kCoverTextureUnit = 0;
@@ -72,13 +70,19 @@ VisualizerWindow::VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager
           m_style(kVisualizerGroup, QStringLiteral("style")),
           m_showWindow(kVisualizerGroup, QStringLiteral("show_window")),
           m_bandMetersEnabled(kAppGroup, QStringLiteral("band_meters_enabled")),
+          m_customImageRequest(0),
+          m_customImageChanged(false),
           m_slowPhase(0.0f),
           m_fastPhase(0.0f),
           m_flowPhase(0.0f) {
+    connect(&m_customImageWatcher,
+            &QFutureWatcher<VisualizerDeck::PreparedCover>::finished,
+            this,
+            &VisualizerWindow::slotCustomImageLoaded);
     setWindowTitle(tr("Mixxx Visualizer"));
     resize(kDefaultWidth, kDefaultHeight);
-    // [AI-generated] Mixxx quits when its main window is closed, even if
-    // this window is still open. [/AI-generated]
+    // Mixxx quits when its main window is closed, even if
+    // this window is still open.
     setAttribute(Qt::WA_QuitOnClose, false);
 
     connect(m_pPlayerManager.get(),
@@ -105,9 +109,49 @@ VisualizerWindow::~VisualizerWindow() {
         pDeckVisual->m_coverTexture.destroy();
         pDeckVisual->m_blurredCoverTexture.destroy();
     }
+    m_customImageTexture.destroy();
+    m_blurredCustomImageTexture.destroy();
     m_pCombinedCover.reset();
     m_pCombinedBlurredCover.reset();
     doneCurrent();
+}
+
+void VisualizerWindow::setCustomImage(const QString& path) {
+    // The new request number invalidates an image that is
+    // still being loaded.
+    ++m_customImageRequest;
+    if (path.isEmpty()) {
+        m_customImage = QImage();
+        m_blurredCustomImage = QImage();
+        m_customImageChanged = true;
+        return;
+    }
+    m_customImageWatcher.setFuture(QtConcurrent::run(
+            &VisualizerWindow::loadCustomImage, m_customImageRequest, path));
+}
+
+// static
+VisualizerDeck::PreparedCover VisualizerWindow::loadCustomImage(int request, QString path) {
+    QImage image(path);
+    if (image.isNull()) {
+        qWarning() << "Could not load the image for the visualizer:" << path;
+        return VisualizerDeck::PreparedCover{request, QImage(), QImage()};
+    }
+    // Converting from the premultiplied format puts the
+    // transparent parts of the image on a black background.
+    image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied)
+                    .convertToFormat(QImage::Format_RGB32);
+    return VisualizerDeck::prepareCover(request, image);
+}
+
+void VisualizerWindow::slotCustomImageLoaded() {
+    const VisualizerDeck::PreparedCover loaded = m_customImageWatcher.result();
+    if (loaded.m_request != m_customImageRequest) {
+        return;
+    }
+    m_customImage = loaded.m_cover;
+    m_blurredCustomImage = loaded.m_blurredCover;
+    m_customImageChanged = true;
 }
 
 void VisualizerWindow::render(VSyncThread*) {
@@ -190,6 +234,7 @@ void VisualizerWindow::initializeGL() {
     m_coverDistortionShader.init();
     m_pCombinedCover.reset();
     m_pCombinedBlurredCover.reset();
+    m_customImageChanged = true;
     for (const auto& pDeckVisual : m_decks) {
         pDeckVisual->m_uploadedCoverRevision = -1;
     }
@@ -201,6 +246,9 @@ void VisualizerWindow::paintGL() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     switch (static_cast<VisualizerStyle>(static_cast<int>(m_style.get()))) {
+    case VisualizerStyle::CustomImage:
+        paintCustomImage();
+        break;
     case VisualizerStyle::CoverDistortion:
     default:
         paintCoverDistortion();
@@ -216,10 +264,9 @@ void VisualizerWindow::updateAnimation(double elapsedSeconds) {
     const double midIntensity = m_midIntensity.get();
     const double highIntensity = m_highIntensity.get();
 
-    // [AI-generated] The decks are treated as one source of music: their
+    // The decks are treated as one source of music: their
     // band levels add up, limited to the level of a single deck at full
     // volume, and the tempo is the tempo of the loudest deck.
-    // [/AI-generated]
     VisualizerLayout::PerDeck loudness{};
     float bassLevel = 0.0f;
     float midLevel = 0.0f;
@@ -278,9 +325,9 @@ void VisualizerWindow::paintCoverDistortion() {
                 kCombinedBlurredCoverSize, kCombinedBlurredCoverSize);
     }
 
-    // [AI-generated] First combine the covers of the audible decks into one
+    // First combine the covers of the audible decks into one
     // picture and their blurred copies into another one. Then draw these
-    // two like the cover of a single deck. [/AI-generated]
+    // two like the cover of a single deck.
     std::array<GLint, 4> viewport;
     glGetIntegerv(GL_VIEWPORT, viewport.data());
     combineCovers(m_pCombinedCover.get(), false);
@@ -288,6 +335,30 @@ void VisualizerWindow::paintCoverDistortion() {
     QOpenGLFramebufferObject::bindDefault();
     glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 
+    // The combined cover is a square.
+    drawDistorted(m_pCombinedCover->texture(), m_pCombinedBlurredCover->texture(), 1.0f);
+}
+
+void VisualizerWindow::paintCustomImage() {
+    if (m_customImageChanged) {
+        m_customImageTexture.setData(m_customImage);
+        m_blurredCustomImageTexture.setData(m_blurredCustomImage);
+        m_customImageChanged = false;
+    }
+    if (!m_customImageTexture.isStorageAllocated() ||
+            !m_blurredCustomImageTexture.isStorageAllocated()) {
+        // No image has been selected, or it could not be
+        // loaded.
+        paintCoverDistortion();
+        return;
+    }
+    drawDistorted(m_customImageTexture.textureId(),
+            m_blurredCustomImageTexture.textureId(),
+            static_cast<float>(m_customImageTexture.width()) /
+                    static_cast<float>(m_customImageTexture.height()));
+}
+
+void VisualizerWindow::drawDistorted(GLuint textureId, GLuint blurredTextureId, float aspect) {
     const std::array<float, 8> positions = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
     const std::array<float, 8> texcoords = {0.f, 1.f, 1.f, 1.f, 0.f, 0.f, 1.f, 0.f};
 
@@ -301,17 +372,16 @@ void VisualizerWindow::paintCoverDistortion() {
     m_coverDistortionShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texcoords.data(), 2);
 
-    // [AI-generated] The combined cover is a square. It is scaled to fit
-    // into the window with a margin around it, and its blurred copy is
-    // scaled to fill the window. [/AI-generated]
+    // The picture is scaled to fit into the window with a
+    // margin around it, and its blurred copy is scaled to fill the window.
     const float windowAspect = height() > 0
             ? static_cast<float>(width()) / static_cast<float>(height())
             : 1.0f;
-    const QVector2D fit = QVector2D(std::max(windowAspect, 1.0f),
-                                  std::max(1.0f / windowAspect, 1.0f)) /
+    const QVector2D fit = QVector2D(std::max(windowAspect / aspect, 1.0f),
+                                  std::max(aspect / windowAspect, 1.0f)) /
             kCoverScale;
-    const QVector2D backgroundFit(std::min(windowAspect, 1.0f),
-            std::min(1.0f / windowAspect, 1.0f));
+    const QVector2D backgroundFit(std::min(windowAspect / aspect, 1.0f),
+            std::min(aspect / windowAspect, 1.0f));
 
     m_coverDistortionShader.setUniformValue(
             m_coverDistortionShader.textureLocation(), kCoverTextureUnit);
@@ -323,7 +393,7 @@ void VisualizerWindow::paintCoverDistortion() {
     m_coverDistortionShader.setUniformValue(
             m_coverDistortionShader.windowAspectLocation(), windowAspect);
     m_coverDistortionShader.setUniformValue(
-            m_coverDistortionShader.coverAspectLocation(), 1.0f);
+            m_coverDistortionShader.coverAspectLocation(), aspect);
     m_coverDistortionShader.setUniformValue(
             m_coverDistortionShader.amountsLocation(), m_amounts);
     m_coverDistortionShader.setUniformValue(
@@ -333,9 +403,9 @@ void VisualizerWindow::paintCoverDistortion() {
             m_coverDistortionShader.flowPhaseLocation(), m_flowPhase);
 
     glActiveTexture(GL_TEXTURE0 + kBlurredCoverTextureUnit);
-    glBindTexture(GL_TEXTURE_2D, m_pCombinedBlurredCover->texture());
+    glBindTexture(GL_TEXTURE_2D, blurredTextureId);
     glActiveTexture(GL_TEXTURE0 + kCoverTextureUnit);
-    glBindTexture(GL_TEXTURE_2D, m_pCombinedCover->texture());
+    glBindTexture(GL_TEXTURE_2D, textureId);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0 + kBlurredCoverTextureUnit);
@@ -352,16 +422,14 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
     glViewport(0, 0, pTarget->width(), pTarget->height());
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
-    // [AI-generated] The parts of the covers are added up. Where the
+    // The parts of the covers are added up. Where the
     // borders of their cells are smoothed, neighbor cells overlap.
-    // [/AI-generated]
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
 
-    // [AI-generated] The texture coordinates are flipped compared to the
+    // The texture coordinates are flipped compared to the
     // window, because the first row of a framebuffer texture is its bottom
     // row, while the first row of a cover texture is its top row.
-    // [/AI-generated]
     const std::array<float, 8> positions = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
     const std::array<float, 8> texcoords = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f};
 
@@ -373,9 +441,8 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
     m_coverCombineShader.setAttributeArray(positionLocation, GL_FLOAT, positions.data(), 2);
     m_coverCombineShader.setAttributeArray(texcoordLocation, GL_FLOAT, texcoords.data(), 2);
     m_coverCombineShader.setUniformValue(m_coverCombineShader.textureLocation(), 0);
-    // [AI-generated] The borders of the layout measure pixels of the
+    // The borders of the layout measure pixels of the
     // combined cover. They are smoothed over one pixel there.
-    // [/AI-generated]
     m_coverCombineShader.setUniformValue(m_coverCombineShader.sharpnessLocation(),
             blurred ? 1.0f / (kBlurredBorderWidth * kCombinedCoverSize) : 1.0f);
 
@@ -388,8 +455,8 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
         if (cell.m_area <= 0.0f || !texture.isStorageAllocated()) {
             continue;
         }
-        // [AI-generated] A cover that is not square is cropped to the
-        // square around its center. [/AI-generated]
+        // A cover that is not square is cropped to the
+        // square around its center.
         const float coverAspect = static_cast<float>(texture.width()) /
                 static_cast<float>(texture.height());
         const QVector2D fit(std::min(1.0f, 1.0f / coverAspect), std::min(1.0f, coverAspect));
@@ -408,8 +475,8 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
     m_coverCombineShader.release();
     glDisable(GL_BLEND);
 
-    // [AI-generated] The combined picture is drawn enlarged, so it needs
-    // linear filtering. [/AI-generated]
+    // The combined picture is drawn enlarged, so it needs
+    // linear filtering.
     glBindTexture(GL_TEXTURE_2D, pTarget->texture());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -425,11 +492,11 @@ void VisualizerWindow::setDecksActive(bool active) {
 }
 
 bool VisualizerWindow::shouldDraw() const {
-    // [AI-generated] Nobody can see the picture while the window is hidden
+    // Nobody can see the picture while the window is hidden
     // or minimized. Whether the window system reports the window as exposed
     // must not be used here: a full screen window on a second screen is
     // reported as not exposed when it loses the focus, although it is still
-    // in plain sight. [/AI-generated]
+    // in plain sight.
     return shouldRender() && isVisible() && !isMinimized();
 }
 
@@ -439,8 +506,7 @@ void VisualizerWindow::setFullScreen(bool fullScreen) {
     } else {
         showNormal();
     }
-    // [AI-generated] The mouse pointer would distract on a projector.
-    // [/AI-generated]
+    // The mouse pointer would distract on a projector.
     const Qt::CursorShape cursorShape = fullScreen ? Qt::BlankCursor : Qt::ArrowCursor;
     setCursor(cursorShape);
     QOpenGLWindow* pOpenGLWindow = getOpenGLWindow();

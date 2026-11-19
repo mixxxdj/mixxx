@@ -5,17 +5,21 @@
 
 namespace mixxx {
 
-/// [AI-generated] The selectable styles of the visualizer window. The values
+/// The selectable styles of the visualizer window. The values
 /// are the values of the control [Visualizer],style and must not be changed,
-/// because they are saved in the user settings. [/AI-generated]
+/// because they are saved in the user settings.
 enum class VisualizerStyle {
+    /// The covers of the audible decks.
     CoverDistortion = 0,
+    /// An image that the user has selected, shown in place
+    /// of the covers.
+    CustomImage = 1,
     Count,
 };
 
-/// [AI-generated] The controls of the visualizer window. They are created at
+/// The controls of the visualizer window. They are created at
 /// startup, independent of the skin and of the window itself, so that skins
-/// and controller mappings can use them. [/AI-generated]
+/// and controller mappings can use them.
 class VisualizerControls {
   public:
     VisualizerControls();
@@ -27,6 +31,7 @@ class VisualizerControls {
     ControlPotmeter m_highIntensity;
     ControlPushButton m_style;
     ControlPushButton m_showWindow;
+    ControlPushButton m_selectImage;
 };
 
 } // namespace mixxx

@@ -11,8 +11,8 @@ using mixxx::VisualizerLayout;
 constexpr float kTolerance = 0.002f;
 const QSizeF kPictureSize(1000, 1000);
 
-// [AI-generated] Returns the layout for decks that have been playing with
-// the given shares for a long time. [/AI-generated]
+// Returns the layout for decks that have been playing with
+// the given shares for a long time.
 VisualizerLayout settledLayout(const VisualizerLayout::PerDeck& shares) {
     VisualizerLayout layout;
     layout.update(shares, 100.0, kPictureSize);
@@ -33,8 +33,8 @@ float borderDistance(const VisualizerLayout::Cell& cell, int borderIndex, const 
     return QVector2D::dotProduct(border.toVector2D(), p) + border.z();
 }
 
-// [AI-generated] Returns the index of the deck whose cell contains the
-// position, or -1 if it is not well inside of any cell. [/AI-generated]
+// Returns the index of the deck whose cell contains the
+// position, or -1 if it is not well inside of any cell.
 int deckAt(const VisualizerLayout& layout, const QVector2D& p) {
     for (int deckIndex = 0; deckIndex < VisualizerLayout::kMaxDecks; ++deckIndex) {
         const VisualizerLayout::Cell& cell = layout.cell(deckIndex);
@@ -88,8 +88,8 @@ TEST(VisualizerLayoutTest, twoDecksGetAreaInProportionToTheirShares) {
     const VisualizerLayout layout = settledLayout({0.75f, 0.25f, 0.0f, 0.0f});
     EXPECT_NEAR(0.75f, layout.cell(0).m_area, kTolerance);
     EXPECT_NEAR(0.25f, layout.cell(1).m_area, kTolerance);
-    // [AI-generated] The border has moved to the right by a quarter of the
-    // picture. [/AI-generated]
+    // The border has moved to the right by a quarter of the
+    // picture.
     EXPECT_EQ(0, deckAt(layout, QVector2D(0.24f, 0.0f)));
     EXPECT_EQ(1, deckAt(layout, QVector2D(0.26f, 0.0f)));
 }
@@ -109,13 +109,11 @@ TEST(VisualizerLayoutTest, threeEqualDecksMeetInTheMiddle) {
         EXPECT_NEAR(third, layout.cell(deckIndex).m_area, kTolerance);
     }
     EXPECT_NEAR(1.0f, totalArea(layout), kTolerance);
-    // [AI-generated] Two wedges are at the top and one is at the bottom.
-    // [/AI-generated]
+    // Two wedges are at the top and one is at the bottom.
     EXPECT_EQ(0, deckAt(layout, QVector2D(-0.3f, -0.3f)));
     EXPECT_EQ(1, deckAt(layout, QVector2D(0.3f, -0.3f)));
     EXPECT_EQ(2, deckAt(layout, QVector2D(0.0f, 0.4f)));
-    // [AI-generated] All three wedges reach the middle of the picture.
-    // [/AI-generated]
+    // All three wedges reach the middle of the picture.
     EXPECT_EQ(0, deckAt(layout, QVector2D(-0.06f, -0.06f)));
     EXPECT_EQ(1, deckAt(layout, QVector2D(0.06f, -0.06f)));
     EXPECT_EQ(2, deckAt(layout, QVector2D(0.0f, 0.1f)));
@@ -148,8 +146,8 @@ TEST(VisualizerLayoutTest, threeAndFourDecksGetAreaInProportionToTheirShares) {
 }
 
 TEST(VisualizerLayoutTest, areaFollowsChangingShares) {
-    // [AI-generated] Unlike in the other tests the layout is updated frame
-    // by frame here, as in the window. [/AI-generated]
+    // Unlike in the other tests the layout is updated frame
+    // by frame here, as in the window.
     VisualizerLayout layout;
     for (int frame = 0; frame <= 120; ++frame) {
         const float share = 0.2f + 0.005f * static_cast<float>(frame);
@@ -174,15 +172,13 @@ TEST(VisualizerLayoutTest, cellOfJoiningDeckGrowsOutOfNothing) {
         const VisualizerLayout layout = settledLayout({1.0f - share, share, 0.0f, 0.0f});
         const float area = layout.cell(1).m_area;
         EXPECT_GE(area, previousArea);
-        // [AI-generated] The cell must not appear with a jump.
-        // [/AI-generated]
+        // The cell must not appear with a jump.
         EXPECT_LT(area - previousArea, 0.012f);
         EXPECT_NEAR(1.0f, totalArea(layout), kTolerance);
         previousArea = area;
     }
     EXPECT_LT(settledLayout({0.979f, 0.021f, 0.0f, 0.0f}).cell(1).m_area, 0.001f);
-    // [AI-generated] From here on the area is the share of the deck.
-    // [/AI-generated]
+    // From here on the area is the share of the deck.
     EXPECT_NEAR(0.09f, settledLayout({0.91f, 0.09f, 0.0f, 0.0f}).cell(1).m_area, kTolerance);
 }
 
@@ -198,13 +194,12 @@ TEST(VisualizerLayoutTest, thirdAndFourthDeckJoinWithSmallCells) {
 
 TEST(VisualizerLayoutTest, bordersMeasureTheDistanceInPixels) {
     const VisualizerLayout layout = settledLayout({0.5f, 0.5f, 0.0f, 0.0f});
-    // [AI-generated] The border is the vertical line through the center of
-    // the 1000 pixels wide picture. [/AI-generated]
+    // The border is the vertical line through the center of
+    // the 1000 pixels wide picture.
     EXPECT_NEAR(250.0f, borderDistance(layout.cell(0), 0, QVector2D(-0.25f, 0.3f)), 0.5f);
     EXPECT_NEAR(-250.0f, borderDistance(layout.cell(0), 0, QVector2D(0.25f, -0.3f)), 0.5f);
     EXPECT_NEAR(250.0f, borderDistance(layout.cell(1), 0, QVector2D(0.25f, 0.0f)), 0.5f);
-    // [AI-generated] The unused borders do not cut anything off.
-    // [/AI-generated]
+    // The unused borders do not cut anything off.
     EXPECT_GT(borderDistance(layout.cell(0), 1, QVector2D(0.5f, 0.5f)), 1000.0f);
     EXPECT_GT(borderDistance(layout.cell(0), 2, QVector2D(-0.5f, -0.5f)), 1000.0f);
 }

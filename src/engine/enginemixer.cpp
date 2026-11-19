@@ -857,9 +857,9 @@ void EngineMixer::processHeadphones(
 }
 
 void EngineMixer::processBandMeters(std::size_t bufferSize) {
-    // [AI-generated] The buffers of the channels in the crossfader buses now
+    // The buffers of the channels in the crossfader buses now
     // hold the post-fader signal of the channel. All other channels do not
-    // contribute to the main mix and are metered as silent. [/AI-generated]
+    // contribute to the main mix and are metered as silent.
     const bool enabled = m_pBandMetersEnabled->toBool();
     for (const auto& pChannelInfo : std::as_const(m_channels)) {
         mixxx::EngineBandMeter* pBandMeter = pChannelInfo->m_pBandMeter.get();

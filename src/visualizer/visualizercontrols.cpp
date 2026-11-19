@@ -42,7 +42,8 @@ VisualizerControls::VisualizerControls()
           m_style(ConfigKey(kVisualizerGroup, QStringLiteral("style")),
                   true,
                   static_cast<double>(VisualizerStyle::CoverDistortion)),
-          m_showWindow(ConfigKey(kVisualizerGroup, QStringLiteral("show_window"))) {
+          m_showWindow(ConfigKey(kVisualizerGroup, QStringLiteral("show_window"))),
+          m_selectImage(ConfigKey(kVisualizerGroup, QStringLiteral("select_image"))) {
     m_style.setBehavior(control::ButtonMode::Toggle,
             static_cast<int>(VisualizerStyle::Count));
     m_showWindow.setButtonMode(control::ButtonMode::Toggle);

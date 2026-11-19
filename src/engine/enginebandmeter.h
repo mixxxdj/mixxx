@@ -11,28 +11,27 @@
 
 namespace mixxx {
 
-/// [AI-generated] Measures how much low, mid and high frequency content a
+/// Measures how much low, mid and high frequency content a
 /// channel's signal contains and publishes the three levels as the read-only
 /// controls band_meter_low, band_meter_mid and band_meter_high of the
 /// channel's group. A level is the mean absolute sample value of the band,
 /// in the range 0..1. It is fed by EngineMixer with the post-fader signal
 /// of a deck, so the levels reflect the EQ, the volume fader, the crossfader
 /// and the post-fader effects. All methods except the constructor are called
-/// from the engine thread and do not allocate. [/AI-generated]
+/// from the engine thread and do not allocate.
 class EngineBandMeter {
   public:
     explicit EngineBandMeter(const QString& group);
     virtual ~EngineBandMeter() = default;
 
-    /// [AI-generated] Measures bufferSize interleaved stereo samples of pIn.
+    /// Measures bufferSize interleaved stereo samples of pIn.
     /// The published levels are updated once enough samples have been
-    /// accumulated. [/AI-generated]
+    /// accumulated.
     void process(const CSAMPLE* pIn, std::size_t bufferSize, audio::SampleRate sampleRate);
 
-    /// [AI-generated] Sets all levels to zero and forgets the filter history.
+    /// Sets all levels to zero and forgets the filter history.
     /// This is cheap when the meter is already reset, so it can be called on
     /// every engine callback in which the channel is not metered.
-    /// [/AI-generated]
     void reset();
 
   private:

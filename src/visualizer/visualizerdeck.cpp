@@ -18,28 +18,25 @@ namespace mixxx {
 
 namespace {
 
-// [AI-generated] The band meters report the mean absolute sample value of a
+// The band meters report the mean absolute sample value of a
 // band. These gains scale the levels of typical music at full volume to
-// about 1. The highs carry much less energy than the bass. [/AI-generated]
+// about 1. The highs carry much less energy than the bass.
 constexpr float kBassGain = 6.0f;
 constexpr float kMidGain = 15.0f;
 constexpr float kHighGain = 40.0f;
 
-// [AI-generated] Levels below this are treated as silence. This hides what
+// Levels below this are treated as silence. This hides what
 // leaks into a band from its neighbors while the band is killed with the EQ.
-// [/AI-generated]
 constexpr float kLevelFloor = 0.08f;
 
 constexpr double kLevelReleaseSeconds = 0.15;
 constexpr double kLoudnessAttackSeconds = 0.1;
 constexpr double kLoudnessReleaseSeconds = 1.5;
 
-// [AI-generated] Larger covers are scaled down to keep the textures small.
-// [/AI-generated]
+// Larger covers are scaled down to keep the textures small.
 constexpr int kMaxCoverSize = 1024;
 
-// [AI-generated] The background flow repeats after this many beats.
-// [/AI-generated]
+// The background flow repeats after this many beats.
 constexpr double kBeatsPerFlowCycle = 8.0;
 constexpr double kUnknownTempoBpm = 120.0;
 
@@ -163,9 +160,8 @@ void VisualizerDeck::slotLoadingTrack(TrackPointer, TrackPointer pOldTrack) {
 }
 
 void VisualizerDeck::slotTrackCoverArtUpdated() {
-    // [AI-generated] While the deck is inactive the cover is only marked as
+    // While the deck is inactive the cover is only marked as
     // outdated. It is requested when the deck becomes active.
-    // [/AI-generated]
     m_coverRequested = false;
     if (m_active) {
         requestCover();
@@ -193,8 +189,8 @@ void VisualizerDeck::slotCoverFound(
         m_coverRequested = false;
         return;
     }
-    // [AI-generated] Scaling and blurring a large cover takes too long for
-    // the GUI thread, which also draws the waveforms. [/AI-generated]
+    // Scaling and blurring a large cover takes too long for
+    // the GUI thread, which also draws the waveforms.
     ++m_coverRequest;
     m_preparedCoverWatcher.setFuture(
             QtConcurrent::run(&VisualizerDeck::prepareCover, m_coverRequest, pixmap.toImage()));
@@ -216,8 +212,8 @@ VisualizerDeck::PreparedCover VisualizerDeck::prepareCover(int request, QImage c
 
 void VisualizerDeck::slotCoverPrepared() {
     const PreparedCover prepared = m_preparedCoverWatcher.result();
-    // [AI-generated] Ignore the cover of a track that has been replaced or
-    // unloaded in the meantime. [/AI-generated]
+    // Ignore the cover of a track that has been replaced or
+    // unloaded in the meantime.
     if (prepared.m_request != m_coverRequest) {
         return;
     }
@@ -227,8 +223,8 @@ void VisualizerDeck::slotCoverPrepared() {
 }
 
 void VisualizerDeck::clearCover() {
-    // [AI-generated] The new request number invalidates a cover that is
-    // still being prepared. [/AI-generated]
+    // The new request number invalidates a cover that is
+    // still being prepared.
     ++m_coverRequest;
     m_coverRequested = false;
     m_cover = QImage();

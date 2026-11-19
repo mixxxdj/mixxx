@@ -14,7 +14,7 @@ void main()
 }
 )--");
 
-    // [AI-generated] The foreground is the cover. All of its distortions are
+    // The foreground is the cover. All of its distortions are
     // calculated in a coordinate system with the origin in the center of the
     // cover and the height of the cover as unit, and each of them is scaled
     // by its amount. They are applied in this order:
@@ -24,7 +24,7 @@ void main()
     // Where the distorted cover does not reach, the background shows. It is
     // the dimmed blurred copy of the cover, displaced by two layers of slow
     // waves that complete a cycle every one and every half period of the
-    // flow phase. [/AI-generated]
+    // flow phase.
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform sampler2D texture;
 uniform sampler2D blurredTexture;

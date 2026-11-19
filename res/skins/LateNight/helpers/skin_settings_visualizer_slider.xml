@@ -1,5 +1,4 @@
 <!--
-[AI-generated]
 Description:
   Labeled horizontal slider for the visualizer intensities in the skin
   settings menu.
@@ -7,7 +6,6 @@ Variables:
   Text      : label text
   Control   : control of the group [Visualizer]
   TooltipId : tooltip of the slider
-[/AI-generated]
 -->
 <Template>
   <WidgetGroup>

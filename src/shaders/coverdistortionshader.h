@@ -6,21 +6,20 @@ namespace mixxx {
 class CoverDistortionShader;
 }
 
-/// [AI-generated] Draws a cover image in front of a blurred copy of itself.
+/// Draws a cover image in front of a blurred copy of itself.
 /// The cover is warped by three independent distortions: a radial pulse for
 /// the bass, a swirl for the mids and a shimmer with color fringes for the
 /// highs. With all amounts at zero the cover is drawn undistorted. The
 /// blurred copy fills the viewport and flows slowly, driven by a phase that
 /// the caller advances with the tempo of the music. The colors of both
 /// textures are divided by their alpha channel, as CoverCombineShader
-/// requires for the pictures it produces. [/AI-generated]
+/// requires for the pictures it produces.
 class mixxx::CoverDistortionShader final : public mixxx::Shader {
   public:
     CoverDistortionShader() = default;
     ~CoverDistortionShader() = default;
 
-    /// [AI-generated] Compiles the shader. Requires a current OpenGL context.
-    /// [/AI-generated]
+    /// Compiles the shader. Requires a current OpenGL context.
     void init();
 
     int positionLocation() const {
@@ -29,48 +28,44 @@ class mixxx::CoverDistortionShader final : public mixxx::Shader {
     int texcoordLocation() const {
         return m_texcoordLocation;
     }
-    /// [AI-generated] sampler2D: the cover. [/AI-generated]
+    /// sampler2D: the cover.
     int textureLocation() const {
         return m_textureLocation;
     }
-    /// [AI-generated] sampler2D: the blurred copy of the cover.
-    /// [/AI-generated]
+    /// sampler2D: the blurred copy of the cover.
     int blurredTextureLocation() const {
         return m_blurredTextureLocation;
     }
-    /// [AI-generated] vec2: the factors that scale the viewport to the cover.
-    /// [/AI-generated]
+    /// vec2: the factors that scale the viewport to the cover.
     int fitLocation() const {
         return m_fitLocation;
     }
-    /// [AI-generated] vec2: the factors that scale the viewport to the part
-    /// of the blurred copy that fills it. [/AI-generated]
+    /// vec2: the factors that scale the viewport to the part
+    /// of the blurred copy that fills it.
     int backgroundFitLocation() const {
         return m_backgroundFitLocation;
     }
-    /// [AI-generated] float: the width of the viewport divided by its
-    /// height. [/AI-generated]
+    /// float: the width of the viewport divided by its
+    /// height.
     int windowAspectLocation() const {
         return m_windowAspectLocation;
     }
-    /// [AI-generated] float: the phase of the flow of the blurred copy in
-    /// radians. It can wrap around at 2 pi. [/AI-generated]
+    /// float: the phase of the flow of the blurred copy in
+    /// radians. It can wrap around at 2 pi.
     int flowPhaseLocation() const {
         return m_flowPhaseLocation;
     }
-    /// [AI-generated] float: the width of the cover divided by its height.
-    /// [/AI-generated]
+    /// float: the width of the cover divided by its height.
     int coverAspectLocation() const {
         return m_coverAspectLocation;
     }
-    /// [AI-generated] vec3: the bass, mid and high amounts, each 0..1.
-    /// [/AI-generated]
+    /// vec3: the bass, mid and high amounts, each 0..1.
     int amountsLocation() const {
         return m_amountsLocation;
     }
-    /// [AI-generated] vec2: the slow and the fast animation phase in radians.
+    /// vec2: the slow and the fast animation phase in radians.
     /// The shader only uses integer multiples of them, so they can wrap
-    /// around at 2 pi. [/AI-generated]
+    /// around at 2 pi.
     int phasesLocation() const {
         return m_phasesLocation;
     }
