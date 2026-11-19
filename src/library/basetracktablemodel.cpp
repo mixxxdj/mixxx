@@ -109,6 +109,14 @@ void BaseTrackTableModel::setKeyColorPalette(const ColorPalette& palette) {
     s_keyColorPalette = palette;
 }
 
+bool BaseTrackTableModel::s_bApplyTrackColor =
+        kApplyTrackColorDefault;
+
+// static
+void BaseTrackTableModel::setApplyTrackColor(bool apply) {
+    s_bApplyTrackColor = apply;
+}
+
 bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
         kApplyPlayedTrackColorDefault;
 
@@ -448,7 +456,7 @@ QVariant BaseTrackTableModel::data(
         return QVariant();
     }
 
-    if (role == Qt::BackgroundRole) {
+    if (role == Qt::BackgroundRole && s_bApplyTrackColor) {
         const auto rgbColorValue = rawSiblingValue(
                 index,
                 ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
