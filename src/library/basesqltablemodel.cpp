@@ -189,6 +189,10 @@ void BaseSqlTableModel::replaceRows(
 }
 
 void BaseSqlTableModel::select() {
+    doSelect(false);
+}
+
+void BaseSqlTableModel::doSelect(bool sortOnly) {
     if (!m_bInitialized) {
         return;
     }
@@ -284,13 +288,25 @@ void BaseSqlTableModel::select() {
     }
 
     if (m_trackSource) {
-        m_trackSource->filterAndSort(trackIds,
-                m_currentSearch,
-                m_currentSearchFilter,
-                m_trackSourceOrderBy,
-                m_sortColumns,
-                m_tableColumns.size() - 1, // exclude the 1st column with the id
-                &m_trackSortOrder);
+        // A sort-only select() cannot restore any rows, if the current
+        // result set is empty, i.e. fall back to a full select() in that
+        // case. This also covers the initial select() of a model, which
+        // has to collect the rows matching the search query.
+        const bool reSortOnly = sortOnly && !m_trackSortOrder.isEmpty();
+        if (reSortOnly) {
+            m_trackSource->sort(m_trackSourceOrderBy,
+                    m_sortColumns,
+                    m_tableColumns.size() - 1, // exclude the 1st column with the id
+                    &m_trackSortOrder);
+        } else {
+            m_trackSource->filterAndSort(trackIds,
+                    m_currentSearch,
+                    m_currentSearchFilter,
+                    m_trackSourceOrderBy,
+                    m_sortColumns,
+                    m_tableColumns.size() - 1, // exclude the 1st column with the id
+                    &m_trackSortOrder);
+        }
 
         // Re-sort the track IDs since filterAndSort can change their order or mark
         // them for removal (by setting their row to -1).
@@ -573,7 +589,12 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
         qDebug() << this << "sort()" << column << order;
     }
     setSort(column, order);
-    select();
+    // Only re-order the tracks of the current result set instead of
+    // re-collecting them from the database. Otherwise tracks whose
+    // properties have been edited to no longer match the current search
+    // query would unexpectedly disappear from the table, and tracks that
+    // now match it would unexpectedly pop in, see bug #17304.
+    doSelect(true);
 }
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
@@ -877,6 +898,14 @@ void BaseSqlTableModel::removeTrackRows(const QSet<TrackId>& trackIdsToRemove) {
         if (trackIdsToRemove.contains(rowInfo.trackId)) {
             it.remove();
         }
+    }
+
+    // Also remove the tracks from the cached result set of the track
+    // source, otherwise they would re-appear in the table on the next
+    // re-sorting (BaseSqlTableModel::sort() only re-orders the current
+    // result set without re-evaluating the search query).
+    for (const TrackId& trackId : std::as_const(trackIdsToRemove)) {
+        m_trackSortOrder.remove(trackId);
     }
 
     // Recreate TrackId2Rows, taken from select()

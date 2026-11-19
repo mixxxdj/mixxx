@@ -119,6 +119,12 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     void tracksChanged(const QSet<TrackId>& trackIds);
 
   private:
+    // Implementation of select(). If `sortOnly` is true the current result
+    // set is only re-ordered instead of being re-collected from the
+    // database, see BaseTrackCache::filterAndSort() and
+    // BaseSqlTableModel::sort().
+    void doSelect(bool sortOnly);
+
     void setTrackValueForColumn(
             TrackPointer pTrack, int column, QVariant value);
 
