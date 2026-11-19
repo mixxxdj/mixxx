@@ -336,7 +336,7 @@
         <item row="0" column="0">
           <widget class="QLabel" name="AutoHarmonizeToPreviousLabel">
             <property name="text">
-              <string>Auto-harmonize the key to the previous song when AutoDJ loads it</string>
+              <string>Auto-harmonize key to previous song when loaded by AutoDJ</string>
             </property>
             <property name="buddy">
               <cstring>AutoHarmonizeToPreviousCheckBox</cstring>

@@ -125,7 +125,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
          <string>When you load a track onto a main deck, pitch that deck to a compatible key of the other main deck. The stored file key is not changed. AutoDJ loads use the separate option in Auto DJ preferences.</string>
         </property>
         <property name="text">
-         <string>Auto-harmonize the key to the previous song when a track is loaded manually</string>
+         <string>Auto-harmonize key to previous song when a track is loaded manually</string>
         </property>
        </widget>
       </item>
