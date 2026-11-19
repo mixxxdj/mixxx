@@ -466,6 +466,10 @@ void importTrackMetadataFromTag(
     if (readCommentField(tag, "LABEL", &recordLabel) || resetMissingTagMetadata) {
         pTrackMetadata->refAlbumInfo().setRecordLabel(recordLabel);
     }
+    QString catalogueNumber;
+    if (readCommentField(tag, "CATALOGNUMBER", &catalogueNumber) || resetMissingTagMetadata) {
+        pTrackMetadata->refAlbumInfo().setCatalogueNumber(catalogueNumber);
+    }
     QString remixer;
     if (readCommentField(tag, "REMIXER", &remixer) || resetMissingTagMetadata) {
         pTrackMetadata->refTrackInfo().setRemixer(remixer);
@@ -610,6 +614,9 @@ bool exportTrackMetadataIntoTag(
     writeCommentField(pTag, "COPYRIGHT", toTString(trackMetadata.getAlbumInfo().getCopyright()));
     writeCommentField(pTag, "LICENSE", toTString(trackMetadata.getAlbumInfo().getLicense()));
     writeCommentField(pTag, "LABEL", toTString(trackMetadata.getAlbumInfo().getRecordLabel()));
+    writeCommentField(pTag,
+            "CATALOGNUMBER",
+            toTString(trackMetadata.getAlbumInfo().getCatalogueNumber()));
     writeCommentField(pTag, "REMIXER", toTString(trackMetadata.getTrackInfo().getRemixer()));
     writeCommentField(pTag, "SUBTITLE", toTString(trackMetadata.getTrackInfo().getSubtitle()));
     writeCommentField(pTag, "ENCODEDBY", toTString(trackMetadata.getTrackInfo().getEncoder()));
