@@ -220,6 +220,7 @@ void DlgPrefBroadcast::slotApply() {
     const QString failedStr = tr("Saving settings failed");
     QMap<QString, QString> mountpoints;
     const QList<BroadcastProfilePtr> broadcastProfiles = m_pSettingsModel->profiles();
+
     for (const auto& profile : broadcastProfiles) {
         const QString profileName = profile->getProfileName();
         kLogger.debug() << "saving settings for profile" << profileName;
@@ -551,6 +552,10 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     // OGG "dynamicupdate" checkbox
     ogg_dynamicupdate->setEnabled(profile->getFormat() == ENCODING_OGG);
     ogg_dynamicupdate->setChecked(profile->getOggDynamicUpdate());
+
+    // Threshold for broadcasting pregain based on spinBox
+    double pregainThreshold = profile->getBroadcastPregainThreshold();
+    spinBoxPregainThreshold->setValue(pregainThreshold);
 }
 
 void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
@@ -590,6 +595,7 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setStreamGenre(stream_genre->text());
     profile->setStreamPublic(stream_public->isChecked());
     profile->setOggDynamicUpdate(ogg_dynamicupdate->isChecked());
+    profile->setBroadcastPregainThreshold(spinBoxPregainThreshold->value());
 
     QString charset = "";
     if (enableUtf8Metadata->isChecked()) {
