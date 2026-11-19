@@ -2,6 +2,11 @@
 
 ## [2.7.0](https://github.com/mixxxdj/mixxx/milestone/47) (Unreleased)
 
+* Replace the libmodplug module decoder with libopenmpt. libopenmpt is actively
+  maintained, far more accurate, and supports many more tracker formats. Because
+  every track owns an independent decoder, loading/analyzing multiple modules at
+  once no longer corrupts audio or waveforms (a long-standing libmodplug bug).
+
 ## [2.6.0](https://github.com/mixxxdj/mixxx/milestone/44) (Unreleased)
 
 ### STEM file support
