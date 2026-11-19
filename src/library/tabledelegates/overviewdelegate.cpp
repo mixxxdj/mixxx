@@ -7,6 +7,7 @@
 #include "library/overviewcache.h"
 #include "library/trackmodel.h"
 #include "moc_overviewdelegate.cpp"
+#include "track/track.h"
 #include "util/logger.h"
 #include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
@@ -157,17 +158,39 @@ void OverviewDelegate::paintItem(QPainter* painter,
             // non-cache we can request an update.
             m_cacheMissIds.insert(trackId);
         } else {
-            pixmap = m_pCache->requestUncachedOverview(m_type,
-                    m_signalColors,
-                    trackId,
-                    this,
-                    option.rect.size() * scaleFactor);
+            // extract cue data from the Track in the GUI thread so the
+            // async render job only needs plain values, not a TrackPointer
+            TrackPointer pTrack = m_pTrackModel->getTrack(index);
+            if (pTrack) {
+                const double trackDurationMillis = pTrack->getDuration() * 1000.0;
+                const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
+                QList<mixxx::CueInfo> cueInfos;
+                const QList<CuePointer> cuePoints = pTrack->getCuePoints();
+                for (const auto& pCue : cuePoints) {
+                    if (pCue) {
+                        cueInfos.append(pCue->getCueInfo(sampleRate));
+                    }
+                }
+                pixmap = m_pCache->requestUncachedOverview(m_type,
+                        m_signalColors,
+                        trackId,
+                        cueInfos,
+                        trackDurationMillis,
+                        this,
+                        option.rect.size() * scaleFactor);
+            }
         }
         paintItemBackground(painter, option, index);
     } else {
-        // We have a cached pixmap, paint it
+        // We have a cached pixmap, paint it.
+        // Draw at natural logical size from the cell's top-left, clipped to
+        // the cell rect. No scaling, so markers stay at 1:1. Short uniform
+        // tracks leave empty space on the right; long tracks clip overflow.
         pixmap.setDevicePixelRatio(scaleFactor);
-        painter->drawPixmap(option.rect, pixmap);
+        painter->save();
+        painter->setClipRect(option.rect);
+        painter->drawPixmap(option.rect.topLeft(), pixmap);
+        painter->restore();
     }
 
     // Draw a border if the cover art cell has focus
