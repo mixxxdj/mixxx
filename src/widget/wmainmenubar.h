@@ -9,8 +9,9 @@
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
-class QAction;
+class Controller;
 class KeyboardEventFilter;
+class QAction;
 
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
@@ -56,6 +57,7 @@ class WMainMenuBar : public QMenuBar {
     void onVinylControlDeckEnabledStateChange(int deck, bool enabled);
     void onNumberOfDecksChanged(int decks);
     void onKeywheelChange(int state);
+    void onControllersChanged(const QList<Controller*>& controllers);
 #ifndef __APPLE__
     void slotToggleMenuBar();
 #endif
@@ -82,6 +84,7 @@ class WMainMenuBar : public QMenuBar {
     void toggleBroadcasting(bool toggle);
     void toggleRecording(bool enabled);
     void toggleVinylControl(int deck);
+    void openControllerLearningWizard(Controller* pController);
     void visitUrl(const QString& url);
     void quit();
 
@@ -118,4 +121,6 @@ class WMainMenuBar : public QMenuBar {
     std::shared_ptr<KeyboardEventFilter> m_pKeyboard;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
+    QMenu* m_pControllerLearningMenu;
+    QList<QAction*> m_controllerLearningActions;
 };
