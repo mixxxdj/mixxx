@@ -22,6 +22,8 @@ namespace {
 constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
 
 const QString kActionTextPrefixSuffixSeparator = QStringLiteral(": ");
+const char* kQueryProp = "query";
+const char* kCriterionProp = "criterion";
 
 inline QString quoteSearchQueryText(const QString& text) {
     return QChar('"') + text + QChar('"');
@@ -54,6 +56,8 @@ QString extractCalendarYearNumberFromReleaseDate(
 
 } // namespace
 
+SearchCriteria WSearchRelatedTracksMenu::s_prevCriteria;
+
 WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
         QWidget* pParent)
         : QMenu(tr("Search related Tracks"), pParent) {
@@ -63,6 +67,7 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
         bool* /*in/out*/ pAddSeparatorBeforeNextAction,
         /*!by-value-because-captured-by-lambda!*/
         QString searchQuery, // clazy:exclude=function-args-by-ref
+        SearchCriterion criterion,
         const QString& actionTextPrefix,
         const QString& elidableTextSuffix) {
     DEBUG_ASSERT(pAddSeparatorBeforeNextAction);
@@ -79,7 +84,11 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
     auto pCheckBox = make_parented<WSearchRelatedCheckBox>(
             mixxx::escapeTextPropertyWithoutShortcuts(elidedActionText),
             this);
-    pCheckBox->setProperty("query", searchQuery);
+    pCheckBox->setProperty(kQueryProp, searchQuery);
+    pCheckBox->setProperty(kCriterionProp, QVariant::fromValue(criterion));
+    if (s_prevCriteria.testFlag(criterion)) {
+        pCheckBox->setChecked(true);
+    }
     connect(pCheckBox.get(),
             &QCheckBox::toggled,
             this,
@@ -94,10 +103,14 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
     connect(pAction.get(),
             &QAction::triggered,
             this,
-            [this, searchQuery]() {
+            [this, criterion, searchQuery]() {
                 // TODO Call combineQueriesTriggerSearch() so we can check multiple
                 // actions and press return on the last selected action without
                 // having to go to the Search button?
+                //
+                // Clear the saved criteria and save this one
+                s_prevCriteria = SearchCriteria();
+                s_prevCriteria.setFlag(criterion);
                 emit triggerSearch(searchQuery);
             });
     addAction(pAction.get());
@@ -151,6 +164,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Key,
                     tr("Key"),
                     tr("harmonic with %1").arg(keyText));
         }
@@ -171,6 +185,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     QString::number(bpmUpperBound);
             addTriggerSearchAction(&addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Bpm,
                     tr("BPM"),
                     tr("%1 - %2")
                             .arg(QString::number(bpmLowerBound),
@@ -211,6 +226,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     addTriggerSearchAction(
                             &addSeparatorBeforeNextAction,
                             searchQuery,
+                            SearchCriterion::Artist,
                             actionTextPrefix,
                             primaryArtist);
                 }
@@ -221,6 +237,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     addTriggerSearchAction(
                             &addSeparatorBeforeNextAction,
                             searchQuery,
+                            SearchCriterion::Artist,
                             actionTextPrefix,
                             secondaryArtist);
                 }
@@ -235,6 +252,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     addTriggerSearchAction(
                             &addSeparatorBeforeNextAction,
                             searchQuery,
+                            SearchCriterion::AlbumArtist,
                             actionTextPrefix,
                             primaryArtist);
                 }
@@ -245,6 +263,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     addTriggerSearchAction(
                             &addSeparatorBeforeNextAction,
                             searchQuery,
+                            SearchCriterion::AlbumArtist,
                             actionTextPrefix,
                             secondaryArtist);
                 }
@@ -260,6 +279,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Composer,
                     tr("Composer"),
                     composer);
         }
@@ -276,6 +296,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Title,
                     tr("Title"),
                     title);
         }
@@ -289,6 +310,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Album,
                     tr("Album"),
                     album);
         }
@@ -302,6 +324,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Grouping,
                     tr("Grouping"),
                     grouping);
         }
@@ -319,6 +342,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Year,
                     tr("Year"),
                     releaseYearNumber);
         }
@@ -332,6 +356,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Genre,
                     tr("Genre"),
                     genre);
         }
@@ -350,6 +375,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             addTriggerSearchAction(
                     &addSeparatorBeforeNextAction,
                     searchQuery,
+                    SearchCriterion::Location,
                     tr("Directory"),
                     locationPathWithTerminator);
         }
@@ -377,12 +403,16 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             &QCheckBox::toggled,
             this,
             &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
+
+    // Update Search button since we might have auto-checked some
+    // previously used criteria
+    updateSearchButton();
 }
 
 bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
     if (e->type() == QEvent::MouseButtonRelease) {
         // Note: QCheckBox/QAbstractButton and QMenu act on release, not on click.
-        // Since we want tp provide a toggle function that allows to check multiple
+        // Since we want to provide a toggle function that allows to check multiple
         // criteria (ie. don't auto-close the menu on first click) we need to
         // figure the intended click target.
         // Simply checking whether the click is inside the indicator's rectangle
@@ -402,7 +432,10 @@ bool WSearchRelatedTracksMenu::eventFilter(QObject* pObj, QEvent* e) {
             QMouseEvent* pMe = static_cast<QMouseEvent*>(e);
             if (pMe->pos().x() > labelRect.left()) {
                 // Label region was clicked, trigger the search.
-                const QString query = pBox->property("query").toString();
+                const QString query = pBox->property(kQueryProp).toString();
+                SearchCriterion cr = pBox->property(kCriterionProp).value<SearchCriterion>();
+                s_prevCriteria = SearchCriteria();
+                s_prevCriteria.setFlag(cr);
                 emit triggerSearch(query);
                 // Note that this click will not emit QAction::triggered like
                 // when pressing Return on a selected action, hence we need to
@@ -434,15 +467,19 @@ void WSearchRelatedTracksMenu::updateSearchButton() {
 void WSearchRelatedTracksMenu::combineQueriesTriggerSearch() {
     // collect queries of all checked checkboxes
     QStringList queries;
+    // Unset search criteria to store only what we are using for this search
+    s_prevCriteria = SearchCriteria();
     for (const auto* pChild : std::as_const(children())) {
         if (pChild == m_pSearchAction) {
             continue;
         }
         const auto* pBox = qobject_cast<const QCheckBox*>(pChild);
         if (pBox && pBox->isChecked()) {
-            QString query = pBox->property("query").toString();
+            QString query = pBox->property(kQueryProp).toString();
             if (!query.isEmpty()) {
                 queries.append(query);
+                SearchCriterion cr = pBox->property(kCriterionProp).value<SearchCriterion>();
+                s_prevCriteria.setFlag(cr);
             }
         }
     }
