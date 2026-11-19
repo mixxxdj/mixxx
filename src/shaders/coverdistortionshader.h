@@ -11,8 +11,8 @@ class CoverDistortionShader;
 /// picture in the square around its center, shaded with grooves and with the
 /// reflections of a light that stays in place while the record turns. The
 /// record is warped by three independent distortions: a radial pulse for the
-/// bass, the glitches of a badly tuned television for the mids and a shimmer
-/// with color fringes for the highs.
+/// bass, a shimmer with color fringes for the mids and the glitches of a badly
+/// tuned television for the highs.
 /// With all amounts at zero it is drawn undistorted. The blurred copy fills the
 /// viewport and flows slowly, driven by a phase that the caller advances with
 /// the tempo of the music. The colors of both textures are divided by their

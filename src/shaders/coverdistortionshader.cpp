@@ -19,11 +19,13 @@ void main()
     // unit. First the position of the pixel is moved by the distortions, each
     // of them scaled by its amount, in this order:
     // bass: the center bulges towards the viewer and a ring runs outwards.
-    // mids: the picture glitches like on an old television: horizontal strips
-    //       are torn sideways and lose their colors, a wobbling bar runs
-    //       down the screen, and noise covers the picture. The strips change
-    //       several times per second.
-    // highs: fine ripples shimmer and the red and blue channels drift apart.
+    // highs: the picture glitches like on an old television: thin horizontal
+    //        strips are torn sideways and lose their colors, a wobbling bar
+    //        runs down the screen, and noise covers the picture. The strips
+    //        change several times per second. Towards its lower edge a strip
+    //        slides over into the next one, which smears the picture there
+    //        instead of cutting it.
+    // mids: fine ripples shimmer and the red and blue channels drift apart.
     // The disc, its hole and its grooves are derived from the moved position,
     // so the record is distorted as a whole. Only the lookup of the picture
     // uses the position turned by the spin. The grooves are never finer than a
@@ -93,6 +95,19 @@ highp float random(highp vec2 seed)
     return fract(sin(dot(seed, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
+// Returns whether a strip of a glitch is torn, and how far.
+highp vec2 stripTear(highp float strip, highp float glitch, highp float amount)
+{
+    highp float torn = step(0.85 - 0.5 * amount, random(vec2(strip, glitch)));
+    return vec2(torn, torn * 0.28 * (random(vec2(strip, glitch + 0.5)) - 0.5));
+}
+
+highp float lineTear(highp float line, highp float glitch)
+{
+    return step(0.8, random(vec2(line, glitch))) * 0.05 *
+            (random(vec2(line, glitch + 0.5)) - 0.5);
+}
+
 highp float ring(highp float radius, highp float center, highp float width)
 {
     return 1.0 - smoothstep(0.5 * width, width, abs(radius - center));
@@ -112,22 +127,26 @@ void main()
 
     // The fast phase is divided into 12 steps and the slow one into 16.
     highp float glitch = floor(phases.y * 1.9099) + 13.0 * floor(phases.x * 2.5465);
-    highp float strip = floor(c.y * (22.0 + 26.0 * random(vec2(glitch, 1.0))) +
-            7.0 * random(vec2(glitch, 2.0)));
-    highp float line = floor(c.y * 110.0);
-    highp float torn = step(0.85 - 0.5 * mid, random(vec2(strip, glitch)));
-    highp float tear = torn * 0.28 * (random(vec2(strip, glitch + 0.5)) - 0.5) +
-            step(0.8, random(vec2(line, glitch))) * 0.05 *
-                    (random(vec2(line, glitch + 0.5)) - 0.5);
+    highp float strip = c.y * (60.0 + 60.0 * random(vec2(glitch, 1.0))) +
+            7.0 * random(vec2(glitch, 2.0));
+    highp float line = c.y * 240.0;
+    highp vec2 stripTorn = mix(stripTear(floor(strip), glitch, high),
+            stripTear(floor(strip) + 1.0, glitch, high),
+            smoothstep(0.3, 1.0, fract(strip)));
+    highp float torn = stripTorn.x;
+    highp float tear = stripTorn.y +
+            mix(lineTear(floor(line), glitch),
+                    lineTear(floor(line) + 1.0, glitch),
+                    smoothstep(0.0, 1.0, fract(line)));
     // The bar runs down the screen three times per cycle of the slow phase.
     highp float bar = 1.0 - smoothstep(0.0, 0.06,
             abs(c.y - 1.4 * (fract(phases.x * 0.47746) - 0.5)));
     highp float grain = random(floor((vTexcoord - 0.5) * fit / (2.0 * pixelSize)) + glitch) - 0.5;
-    c.x += mid * (tear + 0.05 * bar * sin(c.y * 90.0 + 5.0 * phases.y));
-    highp vec2 split = vec2(mid * (0.006 + 0.02 * torn), 0.0);
+    c.x += high * (tear + 0.05 * bar * sin(c.y * 90.0 + 5.0 * phases.y));
+    highp vec2 split = vec2(high * (0.006 + 0.02 * torn), 0.0);
 
-    c += high * 0.01 * vec2(sin(c.y * 90.0 + 7.0 * phases.y), cos(c.x * 80.0 + 5.0 * phases.y));
-    highp float fringe = high * 0.035;
+    c += mid * 0.01 * vec2(sin(c.y * 90.0 + 7.0 * phases.y), cos(c.x * 80.0 + 5.0 * phases.y));
+    highp float fringe = mid * 0.035;
 
     highp float radius = length(c);
 
@@ -153,7 +172,7 @@ void main()
     record *= 1.0 - 0.35 * smoothstep(kGrooveEnd, kDiscRadius, radius);
     record *= 1.0 - 0.3 * ring(radius, 0.5 * (kLabelRadius + kGrooveStart), 0.008);
     record += reflection * (0.1 + 0.16 * depth * (1.0 - groove));
-    record += mid * (0.12 * grain * (0.4 + 0.6 * torn) + 0.1 * bar);
+    record += high * (0.12 * grain * (0.4 + 0.6 * torn) + 0.1 * bar);
 
     highp float disc = clamp((kDiscRadius - radius) / pixelSize + 0.5, 0.0, 1.0) *
             clamp((radius - kHoleRadius) / pixelSize + 0.5, 0.0, 1.0);
