@@ -42,6 +42,9 @@
             <SignalRGBHighColor></SignalRGBHighColor>
             <SignalRGBMidColor></SignalRGBMidColor>
             <SignalRGBLowColor></SignalRGBLowColor>
+            <SignalStackedHighColor>#8833FF</SignalStackedHighColor>
+            <SignalStackedMidColor>#00CC88</SignalStackedMidColor>
+            <SignalStackedLowColor>#FF6600</SignalStackedLowColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
             <PlayPosColor>#00FF00</PlayPosColor>
             <ShowCueTimes>false</ShowCueTimes>
