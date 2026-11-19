@@ -310,6 +310,8 @@ void DlgPrefInterface::slotUpdateSchemes() {
         return;
     }
 
+    ComboBoxSchemeconf->blockSignals(true);
+
     // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     const QList<QString> schlist = m_pSkin->colorschemes();
@@ -346,6 +348,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
             m_colorSchemeOnUpdate = schlist[0];
         }
     }
+    ComboBoxSchemeconf->blockSignals(false);
 }
 
 void DlgPrefInterface::slotUpdate() {
