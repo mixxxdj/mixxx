@@ -2385,11 +2385,14 @@ TEST_F(AutoDjManualAfterDisableTest, CompletionAfterDisableThenManualLoad) {
     ControlObject::set(pitchKey, 4.0);
     const double pitchBeforeLoad = ControlObject::get(pitchKey);
     ASSERT_NE(pitchBeforeLoad, expected);
+    // Same round trip KeyControl applies when it stores the Match Key pitch.
+    const double storedPitch = KeyUtils::powerOf2ToSemitoneChange(
+            KeyUtils::semitoneChangeToPowerOf2(expected));
 
     // Shipped load path. The pending flag skips the Key option; the processor
     // one-shot applies the Auto DJ option once.
     m_pMixerDeck2->slotTrackLoaded(m_pTrack2, TrackPointer());
-    EXPECT_DOUBLE_EQ(expected, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(storedPitch, ControlObject::get(pitchKey));
     EXPECT_NE(expected * 2.0, ControlObject::get(pitchKey));
     EXPECT_FALSE(m_pMixerDeck2->isPendingAutoDjAutoload());
     EXPECT_EQ(storedBefore, m_pTrack2->getKey());
@@ -2401,7 +2404,7 @@ TEST_F(AutoDjManualAfterDisableTest, CompletionAfterDisableThenManualLoad) {
     const double pitchBeforeManualOn = ControlObject::get(pitchKey);
     ASSERT_NE(pitchBeforeManualOn, expected);
     m_pMixerDeck2->slotTrackLoaded(m_pTrack2, TrackPointer());
-    EXPECT_DOUBLE_EQ(expected, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(storedPitch, ControlObject::get(pitchKey));
     EXPECT_NE(expected * 2.0, ControlObject::get(pitchKey));
     EXPECT_FALSE(m_pMixerDeck2->isPendingAutoDjAutoload());
     EXPECT_EQ(storedBefore, m_pTrack2->getKey());

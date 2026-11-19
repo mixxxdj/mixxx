@@ -7,6 +7,10 @@
 #include "mixer/basetrackplayer.h"
 #include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefkey.h"
+// Named here so mixxx-test's AUTOUIC generates them. The dialog headers
+// include the same files, but that include is not scanned on this target.
+#include "preferences/dialog/ui_dlgprefautodjdlg.h"
+#include "preferences/dialog/ui_dlgprefkeydlg.h"
 #include "preferences/keydetectionsettings.h"
 #include "proto/keys.pb.h"
 #include "test/mockedenginebackendtest.h"
@@ -30,6 +34,14 @@ double compatibleOffset(mixxx::track::io::key::ChromaticKey fileKey,
         double otherDistance) {
     return static_cast<double>(KeyUtils::shortestStepsToCompatibleKey(fileKey, otherKey)) +
             otherDistance;
+}
+
+// KeyControl stores pow(2, semitones/12) converted back to semitones.
+// That is not always the requested double, and EXPECT_DOUBLE_EQ allows
+// only 4 ULPs, which this round trip can use up.
+double storedMatchKeyPitch(double requestedSemitones) {
+    return KeyUtils::powerOf2ToSemitoneChange(
+            KeyUtils::semitoneChangeToPowerOf2(requestedSemitones));
 }
 
 // Publish an effective key on a real deck the same way KeyControl does when
@@ -103,7 +115,8 @@ TEST_F(AutoHarmonizeManualLoadTest, ManualLoadHarmonizesWhenKeyOptionOn) {
 
     const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
     ASSERT_NE(loaded.pitchBefore, expected);
-    EXPECT_DOUBLE_EQ(expected, loaded.pitch);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), loaded.pitch);
+    EXPECT_NE(expected * 2.0, loaded.pitch);
     EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
 }
 
@@ -122,7 +135,7 @@ TEST_F(AutoHarmonizeManualLoadTest, BothOptionsApplyOneOffsetOnManualLoad) {
     ASSERT_NE(0.0, expected);
 
     const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
-    EXPECT_DOUBLE_EQ(expected, loaded.pitch);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), loaded.pitch);
     EXPECT_NE(expected * 2.0, loaded.pitch);
     EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
 }
