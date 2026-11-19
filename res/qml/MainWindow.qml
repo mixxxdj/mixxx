@@ -645,7 +645,10 @@ Item {
                 Loader {
                     id: library
 
-                    active: root.maximizeLibrary || root.height - mixer.height >= 400
+                    property bool keptBySearch: false
+                    readonly property bool roomy: root.maximizeLibrary || root.height - mixer.height >= 400
+
+                    active: roomy || keptBySearch
                     width: parent.width
 
                     sourceComponent: Component {
@@ -671,7 +674,7 @@ Item {
                             }
                         },
                         State {
-                            when: !root.maximizeLibrary && root.height - mixer.height < 400
+                            when: !library.roomy && !library.keptBySearch
 
                             PropertyChanges {
                                 target: library
@@ -680,6 +683,13 @@ Item {
                         }
                     ]
 
+                    Connections {
+                        function onSearchActiveChanged() {
+                            library.keptBySearch = (library.item as Skin.Library).searchActive;
+                        }
+
+                        target: library.item
+                    }
                     anchors {
                         bottom: parent.bottom
                         top: mixer.bottom

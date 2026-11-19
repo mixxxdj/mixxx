@@ -13,6 +13,7 @@ import "Library" as LibraryComponent
 Item {
     id: root
 
+    readonly property bool searchActive: searchField.activeFocus || searchReleaseDelay.running
     property var sidebar: librarySources.sidebar()
 
     function applySearch() {
@@ -37,7 +38,18 @@ Item {
         anchors.top: parent.top
         placeholderText: qsTranslate("WSearchLineEdit", "Search...")
 
+        onActiveFocusChanged: {
+            if (!activeFocus) {
+                searchReleaseDelay.restart();
+            }
+        }
         onTextChanged: root.applySearch()
+
+        Timer {
+            id: searchReleaseDelay
+
+            interval: 1500
+        }
     }
     SplitView {
         id: librarySplitView
