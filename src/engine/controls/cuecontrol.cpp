@@ -278,12 +278,14 @@ void CueControl::createControls() {
     m_pOutroEndActivate = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "outro_end_activate"));
 
+#ifdef __VINYLCONTROL__
     if (PlayerManager::isDeckGroup(m_group)) {
         m_pVinylControlEnabled = std::make_unique<ControlProxy>(
                 m_group, "vinylcontrol_enabled");
         m_pVinylControlMode = std::make_unique<ControlProxy>(
                 m_group, "vinylcontrol_mode");
     }
+#endif
 
     m_pHotcueFocus = std::make_unique<ControlObject>(ConfigKey(m_group, "hotcue_focus"));
     setHotcueFocusIndex(Cue::kNoHotCue);
