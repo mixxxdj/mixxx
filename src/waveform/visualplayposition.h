@@ -69,9 +69,19 @@ class VisualPlayPosition : public QObject {
             double audioBufferMicroS);
 
     double getAtNextVSync(VSyncThread* pVSyncThread);
+    // pSlipActive, if not null, is set to whether slip mode is actually
+    // running (i.e. whether slipPosition is expected to diverge from
+    // playPosition), read from the same snapshot as the two positions.
+    // Callers should prefer this over comparing *playPosition and
+    // *slipPosition for equality: the two are computed from the same value
+    // when slip is inactive, but code compiled with aggressive
+    // (non-IEEE-754-strict) floating point optimizations is not guaranteed
+    // to reproduce bit-identical results for the same formula evaluated
+    // twice, which can make such a comparison spuriously report a mismatch.
     void getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
             double* playPosition,
-            double* slipPosition);
+            double* slipPosition,
+            bool* pSlipActive = nullptr);
     double determinePlayPosInLoopBoundries(
             const VisualPlayPositionData& data, const double& offset);
     double getEnginePlayPos();
