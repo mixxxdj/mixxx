@@ -27,12 +27,14 @@ QString pathName(const AudioPath& path) {
     case AudioPathType::Headphones:
         name = QStringLiteral("headphone");
         break;
-    default:
+    default: {
+        static const QRegularExpression nonAlphanumeric(
+                QStringLiteral("[^a-z0-9]+"));
         name = AudioPath::getStringFromType(path.getType())
                        .toLower()
-                       .replace(QRegularExpression(QStringLiteral("[^a-z0-9]+")),
-                               QStringLiteral("_"));
+                       .replace(nonAlphanumeric, QStringLiteral("_"));
         break;
+    }
     }
     if (AudioPath::isIndexed(path.getType()) ||
             path.getType() == AudioPathType::Bus) {
