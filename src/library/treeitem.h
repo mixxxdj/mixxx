@@ -92,7 +92,6 @@ class TreeItem final {
     // take ownership of children items
     void insertChildren(int row, std::vector<std::unique_ptr<TreeItem>>&& children);
     void removeChildren(int row, int count);
-    void insertChild(int row, std::unique_ptr<TreeItem> pChild);
 
     /////////////////////////////////////////////////////////////////////////
     // Payload
@@ -132,6 +131,7 @@ class TreeItem final {
             QString label = QString(),
             QVariant data = QVariant());
 
+    void insertChild(int row, std::unique_ptr<TreeItem> pChild);
     void initFeatureRecursively(LibraryFeature* pFeature);
 
     // The library feature is inherited from the parent.

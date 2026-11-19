@@ -28,7 +28,7 @@ class AutoDJFeature : public LibraryFeature {
     AutoDJFeature(Library* pLibrary,
                   UserSettingsPointer pConfig,
                   PlayerManagerInterface* pPlayerManager);
-    virtual ~AutoDJFeature();
+    ~AutoDJFeature() override;
 
     QVariant title() override;
 
@@ -48,10 +48,9 @@ class AutoDJFeature : public LibraryFeature {
     bool hasTrackTable() override {
         return true;
     }
-
-  public slots:
     void activate() override;
 
+  public slots:
     void onRightClick(const QPoint& globalPos) override;
     // Temporary, until WCrateTableView can be written.
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
