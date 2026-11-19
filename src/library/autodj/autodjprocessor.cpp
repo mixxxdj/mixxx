@@ -632,7 +632,22 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 this,
                 &AutoDJProcessor::playlistFirstTrackChanged);
         for (const auto& pDeck : m_decks) {
+            // An autoload may already be queued. Disconnecting trackLoaded
+            // without a replacement leaves m_pendingAutoDjAutoload set, so
+            // every later manual load skips harmonize until eject.
+            const bool pendingAutoload = pDeck->player() != nullptr &&
+                    pDeck->player()->isPendingAutoDjAutoload();
             pDeck->disconnect(this);
+            if (!pendingAutoload) {
+                continue;
+            }
+            // One completion. finishPendingAutoDjLoad calls
+            // maybeHarmonizeAutoDjLoad, the only reader of
+            // [Auto DJ] AutoHarmonizeToPrevious, then the flag is clear.
+            connect(pDeck.get(),
+                    &DeckAttributes::trackLoaded,
+                    this,
+                    &AutoDJProcessor::finishPendingAutoDjLoad);
         }
         if (m_pConfig->getValue<bool>(ConfigKey(kPreferenceGroup,
                     QStringLiteral("center_xfader_when_disabling")))) {
@@ -1713,6 +1728,19 @@ void AutoDJProcessor::maybeHarmonizeAutoDjLoad(DeckAttributes* pDeck) {
     // One Match Key pitch write against the other main deck. Invalid keys
     // leave pitch unchanged. The stored file key is not written.
     KeyControl::applyMatchKeyPitch(pDeck->group, pOtherDeck->group);
+}
+
+void AutoDJProcessor::finishPendingAutoDjLoad(DeckAttributes* pDeck, TrackPointer) {
+    if (pDeck == nullptr) {
+        return;
+    }
+    // Drop the one-shot before the write so this completion cannot run twice
+    // and a later user load is not harmonized as an AutoDJ autoload.
+    disconnect(pDeck,
+            &DeckAttributes::trackLoaded,
+            this,
+            &AutoDJProcessor::finishPendingAutoDjLoad);
+    maybeHarmonizeAutoDjLoad(pDeck);
 }
 
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {

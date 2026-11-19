@@ -234,6 +234,10 @@ class AutoDJProcessor : public QObject {
     void playerOutroStartChanged(DeckAttributes* pDeck, double position);
     void playerOutroEndChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
+    // One-shot after AutoDJ is disabled while a load is still in flight.
+    // Calls maybeHarmonizeAutoDjLoad once, which is the only reader of
+    // [Auto DJ] AutoHarmonizeToPrevious and clears the pending flag.
+    void finishPendingAutoDjLoad(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
