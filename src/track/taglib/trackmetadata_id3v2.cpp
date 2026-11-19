@@ -14,10 +14,9 @@
 #endif // __EXTRA_METADATA__
 
 #include "track/taglib/fmpsrating.h"
-#include "track/trackrecord.h"
-
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
+#include "track/trackrecord.h"
 #include "util/logger.h"
 
 namespace mixxx {

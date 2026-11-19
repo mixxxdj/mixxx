@@ -235,8 +235,7 @@ TEST_F(RatingExportImportTest, MalformedFmpsTagValueIgnored_MP3) {
     for (const char* malformedValue : kMalformedValues) {
         const QString dstPath = m_tempDir.filePath(
                 QStringLiteral("malformed_%1.mp3")
-                        .arg(QString::fromLatin1(malformedValue).replace(
-                                QLatin1Char(','), QLatin1Char('_'))));
+                        .arg(QString::fromLatin1(malformedValue).replace(QLatin1Char(','), QLatin1Char('_'))));
         mixxxtest::copyFile(
                 m_testDataDir.absoluteFilePath(QStringLiteral("empty.mp3")),
                 dstPath);
