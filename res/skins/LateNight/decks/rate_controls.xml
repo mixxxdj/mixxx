@@ -40,7 +40,7 @@
                     <ObjectName>AlignCenter</ObjectName>
                     <Pos>0,0</Pos>
                     <Layout>vertical</Layout>
-                    <Size>62f,-1me</Size>
+                    <Size>62f,42f</Size>
                     <Children>
                       <Number>
                         <ObjectName>BpmText</ObjectName>
@@ -50,6 +50,10 @@
                         <NumberOfDigits>2</NumberOfDigits>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[Skin],show_bpm</ConfigKey>
+                          <BindProperty>visible</BindProperty>
                         </Connection>
                       </Number>
                       <NumberRate>
