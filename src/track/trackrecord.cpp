@@ -215,6 +215,21 @@ bool TrackRecord::replaceMetadataFromSource(
     return modified;
 }
 
+bool TrackRecord::mayMergeExtraMetadataFromSource() const {
+#if defined(__EXTRA_METADATA__)
+    // With extra metadata enabled many more properties are merged
+    // lazily from file tags and checking all of them upfront is
+    // impractical. File tags still need to be parsed for the
+    // gradual migration of those properties.
+    return true;
+#else
+    // The only properties that are merged lazily are the track total
+    // (and implicitly the track number), all other properties are
+    // already stored in the database.
+    return getMetadata().getTrackInfo().getTrackTotal() == kTrackTotalPlaceholder;
+#endif
+}
+
 bool TrackRecord::mergeExtraMetadataFromSource(
         const TrackMetadata& importedMetadata) {
     bool modified = false;
