@@ -15,6 +15,7 @@
 #include "util/desktophelper.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "visualizer/visualizercontrols.h"
 
 namespace {
 
@@ -375,10 +376,14 @@ void WMainMenuBar::initialize() {
     QString visualizerText = tr("Show a separate window with visuals that react to the music");
     auto* pViewVisualizer = new QAction(visualizerTitle, this);
     pViewVisualizer->setCheckable(true);
+    m_pKeyboard->registerMenuBarActionSetShortcut(
+            pViewVisualizer,
+            ConfigKey(kKbdShortcutsGroup, QStringLiteral("ViewMenu_ShowVisualizer")),
+            QStringLiteral("Ctrl+7"));
+    pViewVisualizer->setShortcutContext(Qt::ApplicationShortcut);
     pViewVisualizer->setStatusTip(visualizerText);
     pViewVisualizer->setWhatsThis(buildWhatsThis(visualizerTitle, visualizerText));
-    createVisibilityControl(pViewVisualizer,
-            ConfigKey(QStringLiteral("[Visualizer]"), QStringLiteral("show_window")));
+    createVisibilityControl(pViewVisualizer, mixxx::kVisualizerShowWindowConfigKey);
     pViewMenu->addAction(pViewVisualizer);
 
     QString maximizeLibraryTitle = tr("Maximize Library");

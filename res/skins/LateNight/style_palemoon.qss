@@ -987,9 +987,9 @@ WEffectSelector:!editable:on {
   margin: 0px;
   }
 
-#VisualizerStyleSelector:!editable,
+WComboBox:!editable,
 #fadeModeCombobox:!editable,
-#VisualizerStyleSelector:!editable:on,
+WComboBox:!editable:on,
 #fadeModeCombobox:!editable:on {
   min-height: 17px;
   max-height: 17px;
@@ -999,7 +999,7 @@ WEffectSelector:!editable:on {
   /* selected item */
   WEffectSelector::checked,
   WEffectChainPresetSelector::checked,
-  #VisualizerStyleSelector::checked,
+  WComboBox::checked,
   #fadeModeCombobox::checked {
     /* not applied
     padding-left: 5px;  */
@@ -1008,7 +1008,7 @@ WEffectSelector:!editable:on {
   }
   WEffectSelector::down-arrow,
   WEffectChainPresetSelector::down-arrow,
-  #VisualizerStyleSelector::down-arrow,
+  WComboBox::down-arrow,
   #fadeModeCombobox::down-arrow,
   /* Arrow size is set in C++ to match the library font size */
   WSearchLineEdit::down-arrow {
@@ -1268,7 +1268,7 @@ WLabel#MicAuxLabel,
 WLabel#MicAuxLabelUnconfigured,
 WEffectSelector,
 WEffectChainPresetSelector,
-#VisualizerStyleSelector,
+WComboBox,
 #fadeModeCombobox {
   font-weight: 500;
 }
@@ -1364,17 +1364,17 @@ WEffectSelector:!editable,
 WEffectSelector:!editable:on,
 WEffectChainPresetSelector:!editable,
 WEffectChainPresetSelector:!editable:on,
-#VisualizerStyleSelector:!editable,
+WComboBox:!editable,
 #fadeModeCombobox:!editable,
-#VisualizerStyleSelector:!editable:on,
+WComboBox:!editable:on,
 #fadeModeCombobox:!editable:on {
   color: #918273;
   }
   WEffectSelector:!editable,
   WEffectSelector:!editable:on,
-  #VisualizerStyleSelector:!editable,
+  WComboBox:!editable,
   #fadeModeCombobox:!editable,
-  #VisualizerStyleSelector:!editable:on,
+  WComboBox:!editable:on,
   #fadeModeCombobox:!editable:on {
     /* use slightly larger labels than in Classic */
     font-size: 14px;
@@ -1466,7 +1466,7 @@ WEffectChainPresetSelector:!editable:on,
 WSearchLineEdit QAbstractScrollArea,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
-#VisualizerStyleSelector QAbstractScrollArea,
+WComboBox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 #GuiToggleButton[displayValue="0"],
 #RecDuration[highlight="0"],
@@ -1577,7 +1577,7 @@ WPushButton#VinylStatus[displayValue="0"],
 #SyncDeck[displayValue="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
-#VisualizerStyleSelector:!editable,
+WComboBox:!editable,
 #fadeModeCombobox:!editable,
 #LibraryFeatureControls QPushButton:enabled,
 #CueDeleteButton,
@@ -1609,7 +1609,7 @@ WEffectSelector:!editable,
   QPushButton#pushButtonAnalyze:checked,
   QPushButton#pushButtonRecording:checked,
   WEffectSelector:!editable:on,
-  #VisualizerStyleSelector:!editable:on,
+  WComboBox:!editable:on,
   #fadeModeCombobox:!editable:on,
   #CueDeleteButton[pressed="true"],
   #CueStandardButton[pressed="true"],
@@ -1742,7 +1742,7 @@ WBpmEditor QDoubleSpinBox {
   WPushButton#MixModeButton[displayValue="1"],
   WEffectSelector,
   WEffectChainPresetSelector,
-  #VisualizerStyleSelector,
+  WComboBox,
   #fadeModeCombobox,
   #SamplerContainer WPushButton#SyncSampler[displayValue="0"],
   #SamplerContainer WPushButton#PflButton[displayValue="0"],
@@ -3426,7 +3426,7 @@ WEffectSelector QAbstractScrollArea,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetSelector QAbstractScrollArea,
 WSearchLineEdit QAbstractScrollArea,
-#VisualizerStyleSelector QAbstractScrollArea,
+WComboBox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #333;
   border-radius: 1px;
@@ -3466,9 +3466,9 @@ WEffectChainPresetSelector::item,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton::item,
 WEffectChainPresetButton QMenu QCheckBox,
-#VisualizerStyleSelector QAbstractScrollArea,
+WComboBox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
-#VisualizerStyleSelector::item,
+WComboBox::item,
 #fadeModeCombobox::item,
 WSearchLineEdit QAbstractScrollArea,
 WSearchLineEdit::item {
@@ -3502,7 +3502,7 @@ WEffectChainPresetButton QMenu::item:selected,
 WEffectChainPresetButton QMenu QCheckBox:selected,
 WEffectChainPresetButton QMenu QCheckBox:focus,
 WEffectChainPresetButton QMenu QCheckBox:hover,
-#VisualizerStyleSelector::item:selected,
+WComboBox::item:selected,
 #fadeModeCombobox::item:selected,
 WSearchLineEdit::item:selected,
 #SkinSettingsButton[hover="true"],
@@ -3529,7 +3529,7 @@ WSearchLineEdit::item:selected,
   WEffectSelector::item:checked,
   WEffectChainPresetSelector::item:checked,
   WSearchLineEdit::item:checked,
-  #VisualizerStyleSelector::item:checked,
+  WComboBox::item:checked,
   #fadeModeCombobox::item:checked {
     color: #fff;
   }
@@ -3537,7 +3537,7 @@ WSearchLineEdit::item:selected,
   WEffectSelector::item:checked:selected,
   WEffectChainPresetSelector::item:checked:selected,
   WSearchLineEdit::item:checked:selected,
-  #VisualizerStyleSelector::item:checked:selected,
+  WComboBox::item:checked:selected,
   #fadeModeCombobox::item:checked:selected {
     background-color: #2f2f2f;
     color: #fff;
@@ -3608,7 +3608,7 @@ QPlainTextEdit QMenu::item:disabled {
   }
   WEffectSelector::indicator:checked,
   WEffectChainPresetSelector::indicator:checked,
-  #VisualizerStyleSelector::indicator:checked,
+  WComboBox::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     image: url(skins:LateNight/palemoon/buttons/btn__effect_selected.svg);
     margin-left: 6px;
@@ -3639,9 +3639,9 @@ WEffectChainPresetSelector::indicator:unchecked,
 WEffectChainPresetSelector::indicator:unchecked:selected,
 WEffectChainPresetButton QMenu QCheckBox::indicator:unchecked,
 WEffectChainPresetButton QMenu QCheckBox::indicator:unchecked:selected,
-#VisualizerStyleSelector::indicator:unchecked,
+WComboBox::indicator:unchecked,
 #fadeModeCombobox::indicator:unchecked,
-#VisualizerStyleSelector::indicator:unchecked:selected,
+WComboBox::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked:selected,
 WSearchLineEdit::indicator:unchecked,
 WSearchLineEdit::indicator:unchecked:selected {

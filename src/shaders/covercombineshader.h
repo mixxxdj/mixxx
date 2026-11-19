@@ -6,12 +6,12 @@ namespace mixxx {
 class CoverCombineShader;
 }
 
-/// Draws the part of a cover image that lies inside one cell
-/// of the viewport. The cell is bounded by up to three straight borders.
-/// Drawing the covers of several decks with the cells of a layout, and
-/// adding them up, combines them into a single picture. The alpha channel
-/// of the result tells how much has been drawn at a position, so that the
-/// colors can be divided by it where soft borders overlap.
+/// Draws the part of a cover image that lies inside one cell of the viewport.
+/// The cell is bounded by up to three straight borders. Drawing the covers of
+/// several decks with the cells of a layout, and adding them up, combines them
+/// into a single picture. The alpha channel of the result tells how much has
+/// been drawn at a position, so that the colors can be divided by it where soft
+/// borders overlap.
 class mixxx::CoverCombineShader final : public mixxx::Shader {
   public:
     CoverCombineShader() = default;

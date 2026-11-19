@@ -3,6 +3,7 @@
 #include <QFutureWatcher>
 #include <QOpenGLFunctions>
 #include <QVector3D>
+#include <chrono>
 #include <memory>
 #include <vector>
 
@@ -22,26 +23,27 @@ QT_FORWARD_DECLARE_CLASS(QOpenGLFramebufferObject);
 
 namespace mixxx {
 
-/// A separate window that shows nothing but visuals driven by
-/// the music of the decks, intended for a second screen or a projector. It
-/// has no controls of its own. The style and the intensities are set with
-/// the controls of the group [Visualizer], see VisualizerControls. A double
-/// click toggles full screen.
+class EngineBandMeterRequest;
+
+/// A separate window that shows nothing but visuals driven by the music of the
+/// decks, intended for a second screen or a projector. It has no controls of
+/// its own. The style and the intensities are set with the controls of the
+/// group [Visualizer], see VisualizerControls. A double click toggles full
+/// screen.
 class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     Q_OBJECT
   public:
     explicit VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager);
     ~VisualizerWindow() override;
 
-    /// Sets the image file that the style CustomImage shows
-    /// in place of the covers. The file is loaded in a worker thread. With
-    /// an empty path, or if the file cannot be loaded, that style shows the
-    /// covers.
+    /// Sets the image file that the style CustomImage shows in place of the
+    /// covers. The file is loaded in a worker thread. With an empty path, or if
+    /// the file cannot be loaded, that style shows the covers.
     void setCustomImage(const QString& path);
 
   public slots:
-    /// Advances the animation and draws the next frame into
-    /// the back buffer. Connected to the frame clock of the waveforms.
+    /// Advances the animation and draws the next frame into the back buffer.
+    /// Connected to the frame clock of the waveforms.
     void render(VSyncThread* pVSyncThread);
     /// Shows the frame drawn by render().
     void swap();
@@ -68,7 +70,7 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     void initializeGL() override;
     void paintGL() override;
 
-    void updateAnimation(double elapsedSeconds);
+    void updateAnimation(std::chrono::duration<double> elapsed);
     void paintCoverDistortion();
     void paintCustomImage();
     void drawDistorted(GLuint textureId, GLuint blurredTextureId, float aspect);
@@ -89,7 +91,8 @@ class VisualizerWindow : public WGLWidget, private QOpenGLFunctions {
     PollingControlProxy m_highIntensity;
     PollingControlProxy m_style;
     PollingControlProxy m_showWindow;
-    PollingControlProxy m_bandMetersEnabled;
+    /// Exists while the window is shown.
+    std::unique_ptr<EngineBandMeterRequest> m_pBandMeterRequest;
 
     CoverCombineShader m_coverCombineShader;
     CoverDistortionShader m_coverDistortionShader;

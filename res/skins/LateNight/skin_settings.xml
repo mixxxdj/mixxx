@@ -568,7 +568,7 @@ Description:
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Text>&#8202;&#8202;&#8230;  Select Image</Text>
+                  <Text>&#8202;&#8202;Select Image&#8230;</Text>
                   <Alignment>left</Alignment>
                 </State>
                 <Connection>

@@ -9,6 +9,7 @@
 
 #include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
+#include "engine/enginebandmeter.h"
 #include "engine/enginemixer.h"
 #include "gtest/gtest.h"
 #include "test/signalpathtest.h"
@@ -163,8 +164,8 @@ class EngineMixerBandMeterTest : public BaseSignalPathTest {
     static constexpr CSAMPLE kSignal = 0.5f;
     static constexpr double kTolerance = 0.01;
 
-    // Processes enough buffers for the gain ramp and the
-    // filters of the band meter to settle.
+    // Processes enough buffers for the gain ramp and the filters of the band
+    // meter to settle.
     void processUntilSettled() {
         for (int bufferIndex = 0; bufferIndex < 20; ++bufferIndex) {
             m_pEngineMixer->process(kBufferSize);
@@ -192,8 +193,7 @@ TEST_F(EngineMixerBandMeterTest, bandMetersFollowThePostFaderSignal) {
     EXPECT_CALL(*pChannel, isPflEnabled()).WillRepeatedly(Return(false));
     EXPECT_CALL(*pChannel, collectFeatures(_)).Times(AnyNumber());
     EXPECT_CALL(*pChannel, postProcess(_)).Times(AnyNumber());
-    // The channel outputs a constant signal, which only the
-    // low band passes.
+    // The channel outputs a constant signal, which only the low band passes.
     EXPECT_CALL(*pChannel, process(_, _))
             .WillRepeatedly([](CSAMPLE* pBuffer, std::size_t bufferSize) {
                 SampleUtil::fill(pBuffer, kSignal, static_cast<SINT>(bufferSize));
@@ -221,6 +221,16 @@ TEST_F(EngineMixerBandMeterTest, bandMetersFollowThePostFaderSignal) {
     EXPECT_NEAR(kSignal, ControlObject::get(lowKey), kTolerance);
 
     ControlObject::set(enabledKey, 0.0);
+    processUntilSettled();
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(lowKey));
+
+    // A request switches the meters on without touching the control.
+    {
+        const mixxx::EngineBandMeterRequest request;
+        processUntilSettled();
+        EXPECT_NEAR(kSignal, ControlObject::get(lowKey), kTolerance);
+        EXPECT_DOUBLE_EQ(0.0, ControlObject::get(enabledKey));
+    }
     processUntilSettled();
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(lowKey));
 }

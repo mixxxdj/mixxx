@@ -6,14 +6,13 @@ namespace mixxx {
 class CoverDistortionShader;
 }
 
-/// Draws a cover image in front of a blurred copy of itself.
-/// The cover is warped by three independent distortions: a radial pulse for
-/// the bass, a swirl for the mids and a shimmer with color fringes for the
-/// highs. With all amounts at zero the cover is drawn undistorted. The
-/// blurred copy fills the viewport and flows slowly, driven by a phase that
-/// the caller advances with the tempo of the music. The colors of both
-/// textures are divided by their alpha channel, as CoverCombineShader
-/// requires for the pictures it produces.
+/// Draws a cover image in front of a blurred copy of itself. The cover is
+/// warped by three independent distortions: a radial pulse for the bass, a
+/// swirl for the mids and a shimmer with color fringes for the highs. With all
+/// amounts at zero the cover is drawn undistorted. The blurred copy fills the
+/// viewport and flows slowly, driven by a phase that the caller advances with
+/// the tempo of the music. The colors of both textures are divided by their
+/// alpha channel, as CoverCombineShader requires for the pictures it produces.
 class mixxx::CoverDistortionShader final : public mixxx::Shader {
   public:
     CoverDistortionShader() = default;

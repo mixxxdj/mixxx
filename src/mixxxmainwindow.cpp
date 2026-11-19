@@ -74,8 +74,6 @@
 namespace {
 const ConfigKey kHideMenuBarConfigKey = ConfigKey("[Config]", "hide_menubar");
 const ConfigKey kMenuBarHintConfigKey = ConfigKey("[Config]", "show_menubar_hint");
-const ConfigKey kVisualizerImageConfigKey = ConfigKey(
-        QStringLiteral("[Visualizer]"), QStringLiteral("image_path"));
 } // namespace
 
 MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
@@ -287,14 +285,17 @@ void MixxxMainWindow::initialize() {
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager, false);
 
+    // Both slots are queued. The first one may reset its control, which
+    // must not happen before all other listeners have seen the change. The
+    // second one opens a dialog, which must not happen while the widget or
+    // controller that has changed the control is still handling its event.
     m_pShowVisualizer = make_parented<ControlProxy>(
-            QStringLiteral("[Visualizer]"), QStringLiteral("show_window"), this);
-    m_pShowVisualizer->connectValueChanged(this, &MixxxMainWindow::slotShowVisualizer);
-    // The slot opens a dialog, which must not happen while
-    // the widget or controller that has changed the control is still
-    // handling its event.
+            mixxx::kVisualizerShowWindowConfigKey, this);
+    m_pShowVisualizer->connectValueChanged(this,
+            &MixxxMainWindow::slotShowVisualizer,
+            Qt::QueuedConnection);
     m_pSelectVisualizerImage = make_parented<ControlProxy>(
-            QStringLiteral("[Visualizer]"), QStringLiteral("select_image"), this);
+            mixxx::kVisualizerSelectImageConfigKey, this);
     m_pSelectVisualizerImage->connectValueChanged(this,
             &MixxxMainWindow::slotSelectVisualizerImage,
             Qt::QueuedConnection);
@@ -1342,26 +1343,35 @@ void MixxxMainWindow::slotShowVisualizer(double show) {
         if (!WaveformWidgetFactory::instance()->isOpenGlShaderAvailable()) {
             qWarning() << "The visualizer window requires OpenGL shaders";
             m_pShowVisualizer->set(0.0);
+            QMessageBox::warning(this,
+                    tr("Visualizer"),
+                    tr("The visualizer window cannot be shown, because OpenGL "
+                       "shaders are not available."));
             return;
         }
         m_pVisualizerWindow = std::make_unique<mixxx::VisualizerWindow>(
                 m_pCoreServices->getPlayerManager());
         m_pVisualizerWindow->setWindowIcon(QIcon(MIXXX_ICON_PATH));
+        // Without this the keyboard shortcuts would not work while the
+        // visualizer window has the focus.
+        m_pVisualizerWindow->installEventFilter(
+                m_pCoreServices->getKeyboardEventFilter().get());
         m_pVisualizerWindow->setCustomImage(
-                m_pCoreServices->getSettings()->getValueString(kVisualizerImageConfigKey));
+                m_pCoreServices->getSettings()->getValueString(
+                        mixxx::kVisualizerImagePathConfigKey));
     }
     m_pVisualizerWindow->show();
     m_pVisualizerWindow->raise();
 }
 
 void MixxxMainWindow::slotSelectVisualizerImage(double pressed) {
-    // React when the button is released, so that the widget
-    // that was clicked is not left in its pressed state.
+    // React when the button is released, so that the widget that was clicked is
+    // not left in its pressed state.
     if (pressed > 0.0) {
         return;
     }
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
-    const QString currentPath = pConfig->getValueString(kVisualizerImageConfigKey);
+    const QString currentPath = pConfig->getValueString(mixxx::kVisualizerImagePathConfigKey);
     const QString initialDir = currentPath.isEmpty()
             ? QStandardPaths::writableLocation(QStandardPaths::PicturesLocation)
             : QFileInfo(currentPath).absolutePath();
@@ -1378,14 +1388,14 @@ void MixxxMainWindow::slotSelectVisualizerImage(double pressed) {
     if (selectedPath.isEmpty()) {
         return;
     }
-    pConfig->set(kVisualizerImageConfigKey, ConfigValue(selectedPath));
+    pConfig->set(mixxx::kVisualizerImagePathConfigKey, ConfigValue(selectedPath));
     if (m_pVisualizerWindow) {
         m_pVisualizerWindow->setCustomImage(selectedPath);
     }
     // Whoever selects an image wants to see it.
-    ControlObject::set(
-            ConfigKey(QStringLiteral("[Visualizer]"), QStringLiteral("style")),
-            static_cast<double>(mixxx::VisualizerStyle::CustomImage));
+    ControlObject::set(mixxx::kVisualizerStyleConfigKey,
+            mixxx::VisualizerControls::controlValueFromStyle(
+                    mixxx::VisualizerControls::Style::CustomImage));
 }
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::preferences::Tooltips tt) {

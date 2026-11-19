@@ -72,8 +72,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotShowKeywheel(bool toggle);
     /// show or hide the visualizer window
     void slotShowVisualizer(double show);
-    /// ask for the image of the visualizer style that shows
-    /// an image in place of the covers
+    /// ask for the image of the visualizer style that shows an image in place
+    /// of the covers
     void slotSelectVisualizerImage(double pressed);
     /// toggle full screen mode
     void slotViewFullScreen(bool toggle);

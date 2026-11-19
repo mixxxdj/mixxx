@@ -12,6 +12,7 @@
 #include "engine/channelmixer.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "engine/enginebandmeter.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
@@ -856,11 +857,18 @@ void EngineMixer::processHeadphones(
     m_headphoneGainOld = headphoneGain;
 }
 
+EngineMixer::ChannelInfo::ChannelInfo(int index)
+        : m_index(index) {
+}
+
+EngineMixer::ChannelInfo::~ChannelInfo() = default;
+
 void EngineMixer::processBandMeters(std::size_t bufferSize) {
-    // The buffers of the channels in the crossfader buses now
-    // hold the post-fader signal of the channel. All other channels do not
-    // contribute to the main mix and are metered as silent.
-    const bool enabled = m_pBandMetersEnabled->toBool();
+    // The buffers of the channels in the crossfader buses now hold the
+    // post-fader signal of the channel. All other channels do not contribute to
+    // the main mix and are metered as silent.
+    const bool enabled = m_pBandMetersEnabled->toBool() ||
+            mixxx::EngineBandMeterRequest::anyActive();
     for (const auto& pChannelInfo : std::as_const(m_channels)) {
         mixxx::EngineBandMeter* pBandMeter = pChannelInfo->m_pBandMeter.get();
         if (!pBandMeter) {

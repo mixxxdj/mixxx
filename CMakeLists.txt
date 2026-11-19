@@ -1465,6 +1465,7 @@ add_library(
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
+  src/library/playercoverartwatcher.cpp
   src/library/playlisttablemodel.cpp
   src/library/proxytrackmodel.cpp
   src/library/recording/dlgrecording.cpp
@@ -2953,6 +2954,7 @@ if(BUILD_TESTING)
     src/test/musicbrainzrecordingstasktest.cpp
     src/test/performancetimer_test.cpp
     src/test/playcountertest.cpp
+    src/test/playercoverartwatcher_test.cpp
     src/test/playermanagertest.cpp
     src/test/playlisttest.cpp
     src/test/portmidicontroller_test.cpp
@@ -2990,6 +2992,7 @@ if(BUILD_TESTING)
     src/test/trackreftest.cpp
     src/test/trackupdate_test.cpp
     src/test/uuid_test.cpp
+    src/test/visualizercontrols_test.cpp
     src/test/visualizerdeck_test.cpp
     src/test/visualizerlayout_test.cpp
     src/test/wbatterytest.cpp

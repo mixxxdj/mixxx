@@ -10,26 +10,26 @@ namespace mixxx {
 
 namespace {
 
-// A deck joins the layout when its share exceeds the first
-// value and leaves it when its share falls below the second one.
+using namespace std::chrono_literals;
+
+// A deck joins the layout when its share exceeds the first value and leaves it
+// when its share falls below the second one.
 constexpr float kJoinShare = 0.02f;
 constexpr float kLeaveShare = 0.01f;
 
-// Between kJoinShare and this share the cell of a deck is
-// smaller than its share, so that the cell of a deck that joins grows out of
-// nothing.
+// Between kJoinShare and this share the cell of a deck is smaller than its
+// share, so that the cell of a deck that joins grows out of nothing.
 constexpr float kFullCellShare = 0.08f;
 
 // The summed loudness below which the mix counts as silent.
 constexpr float kSilentLoudness = 0.002f;
 
-// How fast the sites move to their places after a deck has
-// joined or left.
-constexpr double kSiteMoveSeconds = 0.35;
+// How fast the sites move to their places after a deck has joined or left.
+constexpr std::chrono::duration<double> kSiteMoveTime = 350ms;
 
-// The bonuses are adjusted in steps until the area of every
-// cell is this close to its target. The step size is small enough for the
-// adjustment to converge for up to four decks.
+// The bonuses are adjusted in steps until the area of every cell is this close
+// to its target. The step size is small enough for the adjustment to converge
+// for up to four decks.
 constexpr float kAreaTolerance = 2e-4f;
 constexpr float kBonusStep = 0.2f;
 constexpr int kMaxBonusSteps = 200;
@@ -39,13 +39,14 @@ constexpr float kMinCellArea = 1e-5f;
 constexpr float kNoBorderDistance = 1e6f;
 
 using PerDeck = VisualizerLayout::PerDeck;
-using Sites = std::array<QVector2D, VisualizerLayout::kMaxDecks>;
-using Active = std::array<bool, VisualizerLayout::kMaxDecks>;
+using Sites = std::array<QVector2D, kMaxNumberOfDecks>;
+using Active = std::array<bool, kMaxNumberOfDecks>;
 
-// The places of the sites for one to four audible decks, in
-// the order of the decks. Three decks form a triangle around the center, so
-// that their cells meet in the middle of the picture.
-const std::array<Sites, VisualizerLayout::kMaxDecks> kSitePlaces = {
+// The places of the sites for one to four audible decks, in the order of the
+// decks. Three decks form a triangle around the center, so that their cells
+// meet in the middle of the picture.
+static_assert(kMaxNumberOfDecks == 4);
+const std::array<Sites, kMaxNumberOfDecks> kSitePlaces = {
         Sites{QVector2D(0.0f, 0.0f)},
         Sites{QVector2D(-0.25f, 0.0f), QVector2D(0.25f, 0.0f)},
         Sites{QVector2D(-0.25f, -0.1443f),
@@ -57,8 +58,8 @@ const std::array<Sites, VisualizerLayout::kMaxDecks> kSitePlaces = {
                 QVector2D(0.25f, 0.25f)},
 };
 
-// The corners of a cell. A cell is the picture cut by up to
-// three borders, so it has seven corners at most.
+// The corners of a cell. A cell is the picture cut by up to three borders, so
+// it has seven corners at most.
 using Polygon = QVarLengthArray<QVector2D, 8>;
 
 // Returns the border between two decks seen from the first
@@ -74,8 +75,8 @@ QVector3D borderBetween(const QVector2D& site,
     return QVector3D(direction.x(), direction.y(), offset);
 }
 
-// Returns the part of the polygon in which
-// dot(border.xy, position) + border.z is not negative.
+// Returns the part of the polygon in which dot(border.xy, position) + border.z
+// is not negative.
 Polygon clipped(const Polygon& polygon, const QVector3D& border) {
     Polygon result;
     const int count = static_cast<int>(polygon.size());
@@ -106,7 +107,7 @@ Polygon cellPolygon(int deckIndex,
     polygon.append(QVector2D(0.5f, -0.5f));
     polygon.append(QVector2D(0.5f, 0.5f));
     polygon.append(QVector2D(-0.5f, 0.5f));
-    for (int otherIndex = 0; otherIndex < VisualizerLayout::kMaxDecks; ++otherIndex) {
+    for (int otherIndex = 0; otherIndex < kMaxNumberOfDecks; ++otherIndex) {
         if (otherIndex == deckIndex || !active[otherIndex]) {
             continue;
         }
@@ -123,8 +124,8 @@ float cross(const QVector2D& a, const QVector2D& b) {
     return a.x() * b.y() - a.y() * b.x();
 }
 
-// Returns twice the area of the polygon. The sign tells the
-// orientation of its corners.
+// Returns twice the area of the polygon. The sign tells the orientation of its
+// corners.
 float doubleArea(const Polygon& polygon) {
     float sum = 0.0f;
     const int count = static_cast<int>(polygon.size());
@@ -134,13 +135,12 @@ float doubleArea(const Polygon& polygon) {
     return sum;
 }
 
-// Returns the area that the cell of each deck shall have, as
-// a fraction of the picture. It is the share of the deck, except for decks
-// that have just joined.
+// Returns the area that the cell of each deck shall have, as a fraction of the
+// picture. It is the share of the deck, except for decks that have just joined.
 PerDeck targetAreas(const PerDeck& shares, const Active& active) {
     PerDeck areas{};
     float sum = 0.0f;
-    for (int deckIndex = 0; deckIndex < VisualizerLayout::kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         if (!active[deckIndex]) {
             continue;
         }
@@ -179,33 +179,34 @@ VisualizerLayout::PerDeck VisualizerLayout::updatedShares(
         return previousShares;
     }
     PerDeck shares;
-    for (int deckIndex = 0; deckIndex < kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         shares[deckIndex] = std::max(loudness[deckIndex], 0.0f) / totalLoudness;
     }
     return shares;
 }
 
 void VisualizerLayout::update(
-        const PerDeck& shares, double elapsedSeconds, const QSizeF& pictureSize) {
+        const PerDeck& shares,
+        std::chrono::duration<double> elapsed,
+        const QSizeF& pictureSize) {
     VERIFY_OR_DEBUG_ASSERT(pictureSize.width() > 0 && pictureSize.height() > 0) {
         return;
     }
     const float pictureWidth = static_cast<float>(pictureSize.width());
     const float pictureHeight = static_cast<float>(pictureSize.height());
 
-    // Give every deck in the layout its place. The site of a
-    // deck that joins is put there at once and its bonus is set too low for
-    // a cell, so that nothing changes visibly. The other sites move to
-    // their places gradually.
+    // Give every deck in the layout its place. The site of a deck that joins is
+    // put there at once and its bonus is set too low for a cell, so that
+    // nothing changes visibly. The other sites move to their places gradually.
     float lowestBonus = 0.0f;
-    for (int deckIndex = 0; deckIndex < kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         if (m_active[deckIndex]) {
             lowestBonus = std::min(lowestBonus, m_bonuses[deckIndex]);
         }
     }
     Active joined{};
     int activeCount = 0;
-    for (int deckIndex = 0; deckIndex < kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         const bool wasActive = m_active[deckIndex];
         m_active[deckIndex] = shares[deckIndex] > (wasActive ? kLeaveShare : kJoinShare);
         joined[deckIndex] = m_active[deckIndex] && !wasActive;
@@ -213,9 +214,9 @@ void VisualizerLayout::update(
             ++activeCount;
         }
     }
-    const float moved = static_cast<float>(1.0 - std::exp(-elapsedSeconds / kSiteMoveSeconds));
+    const float moved = static_cast<float>(1.0 - std::exp(-(elapsed / kSiteMoveTime)));
     int place = 0;
-    for (int deckIndex = 0; deckIndex < kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         if (!m_active[deckIndex]) {
             continue;
         }
@@ -229,15 +230,14 @@ void VisualizerLayout::update(
         }
     }
 
-    // Raise the bonus of every deck whose cell is too small
-    // and lower it where the cell is too large, until all cells have their
-    // target area. Starting from the bonuses of the previous update, this
-    // takes only a few steps.
+    // Raise the bonus of every deck whose cell is too small and lower it where
+    // the cell is too large, until all cells have their target area. Starting
+    // from the bonuses of the previous update, this takes only a few steps.
     const PerDeck targets = targetAreas(shares, m_active);
     for (int step = 0; step < kMaxBonusSteps; ++step) {
         float largestError = 0.0f;
         float bonusSum = 0.0f;
-        for (int deckIndex = 0; deckIndex < kMaxDecks; ++deckIndex) {
+        for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
             if (!m_active[deckIndex]) {
                 continue;
             }
@@ -249,9 +249,9 @@ void VisualizerLayout::update(
             m_bonuses[deckIndex] += kBonusStep * error;
             bonusSum += m_bonuses[deckIndex];
         }
-        // Only the differences of the bonuses matter. Keeping
-        // their mean at zero prevents them from drifting.
-        for (int deckIndex = 0; deckIndex < kMaxDecks; ++deckIndex) {
+        // Only the differences of the bonuses matter. Keeping their mean at
+        // zero prevents them from drifting.
+        for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
             if (m_active[deckIndex]) {
                 m_bonuses[deckIndex] -= bonusSum / static_cast<float>(activeCount);
             }
@@ -261,7 +261,7 @@ void VisualizerLayout::update(
         }
     }
 
-    for (int deckIndex = 0; deckIndex < kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         Cell& cell = m_cells[deckIndex];
         cell.m_borders.fill(QVector3D(0.0f, 0.0f, kNoBorderDistance));
         cell.m_area = 0.0f;
@@ -269,10 +269,9 @@ void VisualizerLayout::update(
             continue;
         }
 
-        // Scale the borders, so that they measure the
-        // distance in pixels.
+        // Scale the borders, so that they measure the distance in pixels.
         int borderIndex = 0;
-        for (int otherIndex = 0; otherIndex < kMaxDecks; ++otherIndex) {
+        for (int otherIndex = 0; otherIndex < kMaxNumberOfDecks; ++otherIndex) {
             if (otherIndex == deckIndex || !m_active[otherIndex]) {
                 continue;
             }

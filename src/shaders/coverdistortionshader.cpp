@@ -14,10 +14,10 @@ void main()
 }
 )--");
 
-    // The foreground is the cover. All of its distortions are
-    // calculated in a coordinate system with the origin in the center of the
-    // cover and the height of the cover as unit, and each of them is scaled
-    // by its amount. They are applied in this order:
+    // The foreground is the cover. All of its distortions are calculated in
+    // a coordinate system with the origin in the center of the cover and the
+    // height of the cover as unit, and each of them is scaled by its amount.
+    // They are applied in this order:
     // bass: the center bulges towards the viewer and a ring runs outwards.
     // mids: the image swirls around the center and flows like a liquid.
     // highs: fine ripples shimmer and the red and blue channels drift apart.

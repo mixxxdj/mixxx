@@ -8,21 +8,24 @@ namespace {
 
 using mixxx::VisualizerLayout;
 
+using namespace std::chrono_literals;
+
 constexpr float kTolerance = 0.002f;
+constexpr std::chrono::duration<double> kFrameTime(1.0 / 60);
 const QSizeF kPictureSize(1000, 1000);
 
-// Returns the layout for decks that have been playing with
-// the given shares for a long time.
+// Returns the layout for decks that have been playing with the given shares for
+// a long time.
 VisualizerLayout settledLayout(const VisualizerLayout::PerDeck& shares) {
     VisualizerLayout layout;
-    layout.update(shares, 100.0, kPictureSize);
-    layout.update(shares, 100.0, kPictureSize);
+    layout.update(shares, 100s, kPictureSize);
+    layout.update(shares, 100s, kPictureSize);
     return layout;
 }
 
 float totalArea(const VisualizerLayout& layout) {
     float area = 0.0f;
-    for (int deckIndex = 0; deckIndex < VisualizerLayout::kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         area += layout.cell(deckIndex).m_area;
     }
     return area;
@@ -33,10 +36,10 @@ float borderDistance(const VisualizerLayout::Cell& cell, int borderIndex, const 
     return QVector2D::dotProduct(border.toVector2D(), p) + border.z();
 }
 
-// Returns the index of the deck whose cell contains the
-// position, or -1 if it is not well inside of any cell.
+// Returns the index of the deck whose cell contains the position, or -1 if it
+// is not well inside of any cell.
 int deckAt(const VisualizerLayout& layout, const QVector2D& p) {
-    for (int deckIndex = 0; deckIndex < VisualizerLayout::kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         const VisualizerLayout::Cell& cell = layout.cell(deckIndex);
         if (cell.m_area > 0.0f &&
                 borderDistance(cell, 0, p) > 1.0f &&
@@ -88,8 +91,7 @@ TEST(VisualizerLayoutTest, twoDecksGetAreaInProportionToTheirShares) {
     const VisualizerLayout layout = settledLayout({0.75f, 0.25f, 0.0f, 0.0f});
     EXPECT_NEAR(0.75f, layout.cell(0).m_area, kTolerance);
     EXPECT_NEAR(0.25f, layout.cell(1).m_area, kTolerance);
-    // The border has moved to the right by a quarter of the
-    // picture.
+    // The border has moved to the right by a quarter of the picture.
     EXPECT_EQ(0, deckAt(layout, QVector2D(0.24f, 0.0f)));
     EXPECT_EQ(1, deckAt(layout, QVector2D(0.26f, 0.0f)));
 }
@@ -139,21 +141,21 @@ TEST(VisualizerLayoutTest, threeAndFourDecksGetAreaInProportionToTheirShares) {
     const VisualizerLayout three = settledLayout(threeShares);
     const VisualizerLayout::PerDeck fourShares = {0.15f, 0.2f, 0.4f, 0.25f};
     const VisualizerLayout four = settledLayout(fourShares);
-    for (int deckIndex = 0; deckIndex < VisualizerLayout::kMaxDecks; ++deckIndex) {
+    for (int deckIndex = 0; deckIndex < kMaxNumberOfDecks; ++deckIndex) {
         EXPECT_NEAR(threeShares[deckIndex], three.cell(deckIndex).m_area, kTolerance);
         EXPECT_NEAR(fourShares[deckIndex], four.cell(deckIndex).m_area, kTolerance);
     }
 }
 
 TEST(VisualizerLayoutTest, areaFollowsChangingShares) {
-    // Unlike in the other tests the layout is updated frame
-    // by frame here, as in the window.
+    // Unlike in the other tests the layout is updated frame by frame here, as
+    // in the window.
     VisualizerLayout layout;
     for (int frame = 0; frame <= 120; ++frame) {
         const float share = 0.2f + 0.005f * static_cast<float>(frame);
         const VisualizerLayout::PerDeck shares = {
                 share, (1.0f - share) / 2, (1.0f - share) / 2, 0.0f};
-        layout.update(shares, 1.0 / 60, kPictureSize);
+        layout.update(shares, kFrameTime, kPictureSize);
         EXPECT_NEAR(shares[0], layout.cell(0).m_area, kTolerance);
         EXPECT_NEAR(shares[1], layout.cell(1).m_area, kTolerance);
         EXPECT_NEAR(shares[2], layout.cell(2).m_area, kTolerance);
@@ -194,8 +196,8 @@ TEST(VisualizerLayoutTest, thirdAndFourthDeckJoinWithSmallCells) {
 
 TEST(VisualizerLayoutTest, bordersMeasureTheDistanceInPixels) {
     const VisualizerLayout layout = settledLayout({0.5f, 0.5f, 0.0f, 0.0f});
-    // The border is the vertical line through the center of
-    // the 1000 pixels wide picture.
+    // The border is the vertical line through the center of the 1000 pixels
+    // wide picture.
     EXPECT_NEAR(250.0f, borderDistance(layout.cell(0), 0, QVector2D(-0.25f, 0.3f)), 0.5f);
     EXPECT_NEAR(-250.0f, borderDistance(layout.cell(0), 0, QVector2D(0.25f, -0.3f)), 0.5f);
     EXPECT_NEAR(250.0f, borderDistance(layout.cell(1), 0, QVector2D(0.25f, 0.0f)), 0.5f);

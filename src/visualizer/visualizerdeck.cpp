@@ -1,48 +1,55 @@
 #include "visualizer/visualizerdeck.h"
 
+#include <QImageReader>
 #include <QPixmap>
 #include <QtConcurrentRun>
 #include <algorithm>
 #include <cmath>
 #include <numbers>
 
-#include "library/coverart.h"
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/playercoverartwatcher.h"
 #include "mixer/basetrackplayer.h"
 #include "moc_visualizerdeck.cpp"
-#include "track/track.h"
 #include "util/imageutils.h"
 
 namespace mixxx {
 
 namespace {
 
-// The band meters report the mean absolute sample value of a
-// band. These gains scale the levels of typical music at full volume to
-// about 1. The highs carry much less energy than the bass.
+using namespace std::chrono_literals;
+
+// The band meters report the mean absolute sample value of a band. These gains
+// scale the levels of typical music at full volume to about 1. The highs carry
+// much less energy than the bass.
 constexpr float kBassGain = 6.0f;
 constexpr float kMidGain = 15.0f;
 constexpr float kHighGain = 40.0f;
 
-// Levels below this are treated as silence. This hides what
-// leaks into a band from its neighbors while the band is killed with the EQ.
+// Levels below this are treated as silence. This hides what leaks into a band
+// from its neighbors while the band is killed with the EQ.
 constexpr float kLevelFloor = 0.08f;
 
-constexpr double kLevelReleaseSeconds = 0.15;
-constexpr double kLoudnessAttackSeconds = 0.1;
-constexpr double kLoudnessReleaseSeconds = 1.5;
+constexpr std::chrono::duration<double> kLevelRelease = 150ms;
+constexpr std::chrono::duration<double> kLoudnessAttack = 100ms;
+constexpr std::chrono::duration<double> kLoudnessRelease = 1500ms;
 
 // Larger covers are scaled down to keep the textures small.
 constexpr int kMaxCoverSize = 1024;
+
+// The size and the blur radius of the blurred copy of a cover. It is drawn
+// enlarged to the size of the window, which blurs it further.
+constexpr int kBlurredCoverSize = 64;
+constexpr int kBlurredCoverRadius = 5;
 
 // The background flow repeats after this many beats.
 constexpr double kBeatsPerFlowCycle = 8.0;
 constexpr double kUnknownTempoBpm = 120.0;
 
-float releasedLevel(float currentLevel, float newLevel, double elapsedSeconds) {
+float releasedLevel(
+        float currentLevel, float newLevel, std::chrono::duration<double> elapsed) {
     const float decayed = currentLevel *
-            static_cast<float>(std::exp(-elapsedSeconds / kLevelReleaseSeconds));
+            static_cast<float>(std::exp(-(elapsed / kLevelRelease)));
     return std::max(newLevel, decayed);
 }
 
@@ -62,6 +69,7 @@ VisualizerDeck::VisualizerDeck(BaseTrackPlayer* pPlayer, QObject* pParent)
           m_midLevel(0.0f),
           m_highLevel(0.0f),
           m_loudness(0.0f),
+          m_pCoverArtWatcher(make_parented<PlayerCoverArtWatcher>(pPlayer, this)),
           m_coverRevision(0),
           m_active(false),
           m_coverRequested(false),
@@ -70,39 +78,36 @@ VisualizerDeck::VisualizerDeck(BaseTrackPlayer* pPlayer, QObject* pParent)
             &QFutureWatcher<PreparedCover>::finished,
             this,
             &VisualizerDeck::slotCoverPrepared);
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache) {
-        connect(pCache,
-                &CoverArtCache::coverFound,
-                this,
-                &VisualizerDeck::slotCoverFound);
-    }
-    connect(pPlayer,
-            &BaseTrackPlayer::newTrackLoaded,
+    connect(m_pCoverArtWatcher,
+            &PlayerCoverArtWatcher::trackChanged,
             this,
-            &VisualizerDeck::slotLoadTrack);
-    connect(pPlayer,
-            &BaseTrackPlayer::loadingTrack,
+            &VisualizerDeck::slotTrackChanged);
+    connect(m_pCoverArtWatcher,
+            &PlayerCoverArtWatcher::coverOutdated,
             this,
-            &VisualizerDeck::slotLoadingTrack);
-    slotLoadTrack(pPlayer->getLoadedTrack());
+            &VisualizerDeck::slotCoverOutdated);
+    connect(m_pCoverArtWatcher,
+            &PlayerCoverArtWatcher::coverFound,
+            this,
+            &VisualizerDeck::slotCoverFound);
+    m_pCoverArtWatcher->slotLoadTrack(pPlayer->getLoadedTrack());
 }
 
-void VisualizerDeck::update(double elapsedSeconds) {
+void VisualizerDeck::update(std::chrono::duration<double> elapsed) {
     const float bassLevel = scaledLevel(m_bassMeter, kBassGain);
     const float midLevel = scaledLevel(m_midMeter, kMidGain);
     const float highLevel = scaledLevel(m_highMeter, kHighGain);
-    m_bassLevel = releasedLevel(m_bassLevel, bassLevel, elapsedSeconds);
-    m_midLevel = releasedLevel(m_midLevel, midLevel, elapsedSeconds);
-    m_highLevel = releasedLevel(m_highLevel, highLevel, elapsedSeconds);
+    m_bassLevel = releasedLevel(m_bassLevel, bassLevel, elapsed);
+    m_midLevel = releasedLevel(m_midLevel, midLevel, elapsed);
+    m_highLevel = releasedLevel(m_highLevel, highLevel, elapsed);
 
     const float loudness = static_cast<float>(
             m_bassMeter.get() + m_midMeter.get() + m_highMeter.get());
-    const double timeConstant = loudness > m_loudness
-            ? kLoudnessAttackSeconds
-            : kLoudnessReleaseSeconds;
+    const std::chrono::duration<double> timeConstant = loudness > m_loudness
+            ? kLoudnessAttack
+            : kLoudnessRelease;
     m_loudness += (loudness - m_loudness) *
-            static_cast<float>(1.0 - std::exp(-elapsedSeconds / timeConstant));
+            static_cast<float>(1.0 - std::exp(-(elapsed / timeConstant)));
 }
 
 // static
@@ -113,9 +118,10 @@ float VisualizerDeck::bandAmount(double intensity, float level) {
 }
 
 // static
-float VisualizerDeck::advancedFlowPhase(float flowPhase, double bpm, double elapsedSeconds) {
+float VisualizerDeck::advancedFlowPhase(
+        float flowPhase, double bpm, std::chrono::duration<double> elapsed) {
     const double beatsPerSecond = (bpm > 0.0 ? bpm : kUnknownTempoBpm) / 60.0;
-    const double cycles = beatsPerSecond * elapsedSeconds / kBeatsPerFlowCycle;
+    const double cycles = beatsPerSecond * elapsed.count() / kBeatsPerFlowCycle;
     return static_cast<float>(
             std::fmod(flowPhase + cycles * 2 * std::numbers::pi, 2 * std::numbers::pi));
 }
@@ -130,38 +136,19 @@ void VisualizerDeck::setActive(bool active) {
     }
 }
 
-void VisualizerDeck::slotLoadTrack(TrackPointer pTrack) {
-    if (m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.get(),
-                &Track::coverArtUpdated,
-                this,
-                &VisualizerDeck::slotTrackCoverArtUpdated);
-    }
-    clearCover();
-    m_pLoadedTrack = pTrack;
-    if (m_pLoadedTrack) {
-        connect(m_pLoadedTrack.get(),
-                &Track::coverArtUpdated,
-                this,
-                &VisualizerDeck::slotTrackCoverArtUpdated);
-    }
-    slotTrackCoverArtUpdated();
+void VisualizerDeck::slotTrackChanged() {
+    // The new request number invalidates a cover that is still being
+    // prepared.
+    ++m_coverRequest;
+    m_coverRequested = false;
+    m_cover = QImage();
+    m_blurredCover = QImage();
+    ++m_coverRevision;
 }
 
-void VisualizerDeck::slotLoadingTrack(TrackPointer, TrackPointer pOldTrack) {
-    if (m_pLoadedTrack && pOldTrack == m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.get(),
-                &Track::coverArtUpdated,
-                this,
-                &VisualizerDeck::slotTrackCoverArtUpdated);
-    }
-    m_pLoadedTrack.reset();
-    clearCover();
-}
-
-void VisualizerDeck::slotTrackCoverArtUpdated() {
-    // While the deck is inactive the cover is only marked as
-    // outdated. It is requested when the deck becomes active.
+void VisualizerDeck::slotCoverOutdated() {
+    // While the deck is inactive the cover is only marked as outdated. It
+    // is requested when the deck becomes active.
     m_coverRequested = false;
     if (m_active) {
         requestCover();
@@ -169,28 +156,20 @@ void VisualizerDeck::slotTrackCoverArtUpdated() {
 }
 
 void VisualizerDeck::requestCover() {
-    if (!m_pLoadedTrack) {
+    if (!m_pCoverArtWatcher->loadedTrack()) {
         return;
     }
     m_coverRequested = true;
-    CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
+    m_pCoverArtWatcher->requestCover();
 }
 
-void VisualizerDeck::slotCoverFound(
-        const QObject* pRequester,
-        const CoverInfo& coverInfo,
-        const QPixmap& pixmap) {
-    if (pRequester != this ||
-            !m_pLoadedTrack ||
-            m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
-        return;
-    }
+void VisualizerDeck::slotCoverFound(const QPixmap& pixmap) {
     if (!m_active) {
         m_coverRequested = false;
         return;
     }
-    // Scaling and blurring a large cover takes too long for
-    // the GUI thread, which also draws the waveforms.
+    // Scaling and blurring a large cover takes too long for the GUI thread,
+    // which also draws the waveforms.
     ++m_coverRequest;
     m_preparedCoverWatcher.setFuture(
             QtConcurrent::run(&VisualizerDeck::prepareCover, m_coverRequest, pixmap.toImage()));
@@ -199,7 +178,11 @@ void VisualizerDeck::slotCoverFound(
 // static
 VisualizerDeck::PreparedCover VisualizerDeck::prepareCover(int request, QImage cover) {
     if (cover.isNull()) {
-        cover = QImage(CoverArtUtils::defaultCoverLocation());
+        // The default cover is a small vector image. Render it in the size
+        // that is used for drawing instead of enlarging it afterwards.
+        QImageReader reader(CoverArtUtils::defaultCoverLocation());
+        reader.setScaledSize(QSize(kMaxCoverSize, kMaxCoverSize));
+        cover = reader.read();
     }
     if (cover.width() > kMaxCoverSize || cover.height() > kMaxCoverSize) {
         cover = cover.scaled(kMaxCoverSize,
@@ -207,28 +190,20 @@ VisualizerDeck::PreparedCover VisualizerDeck::prepareCover(int request, QImage c
                 Qt::KeepAspectRatio,
                 Qt::SmoothTransformation);
     }
-    return PreparedCover{request, cover, blurredThumbnail(cover)};
+    return PreparedCover{request,
+            cover,
+            blurredThumbnail(cover, kBlurredCoverSize, kBlurredCoverRadius)};
 }
 
 void VisualizerDeck::slotCoverPrepared() {
     const PreparedCover prepared = m_preparedCoverWatcher.result();
-    // Ignore the cover of a track that has been replaced or
-    // unloaded in the meantime.
+    // Ignore the cover of a track that has been replaced or unloaded in the
+    // meantime.
     if (prepared.m_request != m_coverRequest) {
         return;
     }
     m_cover = prepared.m_cover;
     m_blurredCover = prepared.m_blurredCover;
-    ++m_coverRevision;
-}
-
-void VisualizerDeck::clearCover() {
-    // The new request number invalidates a cover that is
-    // still being prepared.
-    ++m_coverRequest;
-    m_coverRequested = false;
-    m_cover = QImage();
-    m_blurredCover = QImage();
     ++m_coverRevision;
 }
 

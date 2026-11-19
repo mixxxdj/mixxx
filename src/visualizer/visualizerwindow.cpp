@@ -11,6 +11,7 @@
 #include <cmath>
 #include <numbers>
 
+#include "engine/enginebandmeter.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_visualizerwindow.cpp"
@@ -22,40 +23,39 @@ namespace mixxx {
 
 namespace {
 
-const QString kVisualizerGroup = QStringLiteral("[Visualizer]");
-const QString kAppGroup = QStringLiteral("[App]");
+using namespace std::chrono_literals;
 
 constexpr int kDefaultWidth = 960;
 constexpr int kDefaultHeight = 540;
 
-// A longer gap between two frames, for example while the
-// window was hidden, must not make the animation jump.
-constexpr double kMaxFrameSeconds = 0.1;
+// A longer gap between two frames, for example while the window was hidden,
+// must not make the animation jump.
+constexpr std::chrono::duration<double> kMaxFrameTime = 100ms;
 
 // The speed of the animation phases in radians per second.
 constexpr double kSlowPhaseSpeed = 0.7;
 constexpr double kFastPhaseSpeed = 4.0;
 
-// The share of the window that the cover takes up along the
-// axis in which it fits tightest.
+// The share of the window that the cover takes up along the axis in which it
+// fits tightest.
 constexpr float kCoverScale = 0.8f;
 
-// The covers of the audible decks are combined into one
-// square picture of this size, and their blurred copies into a small one.
+// The covers of the audible decks are combined into one square picture of this
+// size, and their blurred copies into a small one.
 constexpr int kCombinedCoverSize = 1024;
 constexpr int kCombinedBlurredCoverSize = 64;
 
-// In the combined blurred picture the borders between the
-// covers fade over this share of the picture, which is about as wide as
-// the blur of the covers themselves.
+// In the combined blurred picture the borders between the covers fade over this
+// share of the picture, which is about as wide as the blur of the covers
+// themselves.
 constexpr float kBlurredBorderWidth = 0.2f;
 
 constexpr int kCoverTextureUnit = 0;
 constexpr int kBlurredCoverTextureUnit = 1;
 
-float advancedPhase(float phase, double speed, double elapsedSeconds) {
+float advancedPhase(float phase, double speed, std::chrono::duration<double> elapsed) {
     return static_cast<float>(
-            std::fmod(phase + speed * elapsedSeconds, 2 * std::numbers::pi));
+            std::fmod(phase + speed * elapsed.count(), 2 * std::numbers::pi));
 }
 
 } // namespace
@@ -64,12 +64,11 @@ VisualizerWindow::VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager
         : WGLWidget(nullptr),
           m_pPlayerManager(std::move(pPlayerManager)),
           m_shares(),
-          m_bassIntensity(kVisualizerGroup, QStringLiteral("bass_intensity")),
-          m_midIntensity(kVisualizerGroup, QStringLiteral("mid_intensity")),
-          m_highIntensity(kVisualizerGroup, QStringLiteral("high_intensity")),
-          m_style(kVisualizerGroup, QStringLiteral("style")),
-          m_showWindow(kVisualizerGroup, QStringLiteral("show_window")),
-          m_bandMetersEnabled(kAppGroup, QStringLiteral("band_meters_enabled")),
+          m_bassIntensity(kVisualizerBassIntensityConfigKey),
+          m_midIntensity(kVisualizerMidIntensityConfigKey),
+          m_highIntensity(kVisualizerHighIntensityConfigKey),
+          m_style(kVisualizerStyleConfigKey),
+          m_showWindow(kVisualizerShowWindowConfigKey),
           m_customImageRequest(0),
           m_customImageChanged(false),
           m_slowPhase(0.0f),
@@ -81,8 +80,8 @@ VisualizerWindow::VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager
             &VisualizerWindow::slotCustomImageLoaded);
     setWindowTitle(tr("Mixxx Visualizer"));
     resize(kDefaultWidth, kDefaultHeight);
-    // Mixxx quits when its main window is closed, even if
-    // this window is still open.
+    // Mixxx quits when its main window is closed, even if this window is still
+    // open.
     setAttribute(Qt::WA_QuitOnClose, false);
 
     connect(m_pPlayerManager.get(),
@@ -103,7 +102,6 @@ VisualizerWindow::VisualizerWindow(std::shared_ptr<PlayerManager> pPlayerManager
 }
 
 VisualizerWindow::~VisualizerWindow() {
-    m_bandMetersEnabled.set(0.0);
     makeCurrentIfNeeded();
     for (const auto& pDeckVisual : m_decks) {
         pDeckVisual->m_coverTexture.destroy();
@@ -117,8 +115,7 @@ VisualizerWindow::~VisualizerWindow() {
 }
 
 void VisualizerWindow::setCustomImage(const QString& path) {
-    // The new request number invalidates an image that is
-    // still being loaded.
+    // The new request number invalidates an image that is still being loaded.
     ++m_customImageRequest;
     if (path.isEmpty()) {
         m_customImage = QImage();
@@ -137,8 +134,8 @@ VisualizerDeck::PreparedCover VisualizerWindow::loadCustomImage(int request, QSt
         qWarning() << "Could not load the image for the visualizer:" << path;
         return VisualizerDeck::PreparedCover{request, QImage(), QImage()};
     }
-    // Converting from the premultiplied format puts the
-    // transparent parts of the image on a black background.
+    // Converting from the premultiplied format puts the transparent parts of
+    // the image on a black background.
     image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied)
                     .convertToFormat(QImage::Format_RGB32);
     return VisualizerDeck::prepareCover(request, image);
@@ -158,13 +155,14 @@ void VisualizerWindow::render(VSyncThread*) {
     if (!shouldDraw()) {
         return;
     }
-    double elapsedSeconds = 0.0;
+    std::chrono::duration<double> elapsed = 0s;
     if (m_frameTimer.running()) {
-        elapsedSeconds = std::min(m_frameTimer.restart().toDoubleSeconds(), kMaxFrameSeconds);
+        elapsed = std::min<std::chrono::duration<double>>(
+                m_frameTimer.restart().toStdDuration(), kMaxFrameTime);
     } else {
         m_frameTimer.start();
     }
-    updateAnimation(elapsedSeconds);
+    updateAnimation(elapsed);
 
     makeCurrentIfNeeded();
     paintGL();
@@ -181,13 +179,13 @@ void VisualizerWindow::swap() {
 }
 
 void VisualizerWindow::showEvent(QShowEvent* pEvent) {
-    m_bandMetersEnabled.set(1.0);
+    m_pBandMeterRequest = std::make_unique<EngineBandMeterRequest>();
     setDecksActive(true);
     WGLWidget::showEvent(pEvent);
 }
 
 void VisualizerWindow::hideEvent(QHideEvent* pEvent) {
-    m_bandMetersEnabled.set(0.0);
+    m_pBandMeterRequest.reset();
     setDecksActive(false);
     WGLWidget::hideEvent(pEvent);
 }
@@ -210,8 +208,8 @@ void VisualizerWindow::keyPressEvent(QKeyEvent* pEvent) {
 }
 
 void VisualizerWindow::slotNumberOfDecksChanged(int numberOfDecks) {
-    VERIFY_OR_DEBUG_ASSERT(numberOfDecks <= VisualizerLayout::kMaxDecks) {
-        numberOfDecks = VisualizerLayout::kMaxDecks;
+    VERIFY_OR_DEBUG_ASSERT(numberOfDecks <= kMaxNumberOfDecks) {
+        numberOfDecks = kMaxNumberOfDecks;
     }
     for (int deckIndex = static_cast<int>(m_decks.size());
             deckIndex < numberOfDecks;
@@ -245,35 +243,34 @@ void VisualizerWindow::paintGL() {
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    switch (static_cast<VisualizerStyle>(static_cast<int>(m_style.get()))) {
-    case VisualizerStyle::CustomImage:
+    switch (VisualizerControls::styleFromControlValue(m_style.get())) {
+    case VisualizerControls::Style::CustomImage:
         paintCustomImage();
         break;
-    case VisualizerStyle::CoverDistortion:
-    default:
+    case VisualizerControls::Style::CoverDistortion:
         paintCoverDistortion();
         break;
     }
 }
 
-void VisualizerWindow::updateAnimation(double elapsedSeconds) {
-    m_slowPhase = advancedPhase(m_slowPhase, kSlowPhaseSpeed, elapsedSeconds);
-    m_fastPhase = advancedPhase(m_fastPhase, kFastPhaseSpeed, elapsedSeconds);
+void VisualizerWindow::updateAnimation(std::chrono::duration<double> elapsed) {
+    m_slowPhase = advancedPhase(m_slowPhase, kSlowPhaseSpeed, elapsed);
+    m_fastPhase = advancedPhase(m_fastPhase, kFastPhaseSpeed, elapsed);
 
     const double bassIntensity = m_bassIntensity.get();
     const double midIntensity = m_midIntensity.get();
     const double highIntensity = m_highIntensity.get();
 
-    // The decks are treated as one source of music: their
-    // band levels add up, limited to the level of a single deck at full
-    // volume, and the tempo is the tempo of the loudest deck.
+    // The decks are treated as one source of music: their band levels add up,
+    // limited to the level of a single deck at full volume, and the tempo is
+    // the tempo of the loudest deck.
     VisualizerLayout::PerDeck loudness{};
     float bassLevel = 0.0f;
     float midLevel = 0.0f;
     float highLevel = 0.0f;
     for (std::size_t deckIndex = 0; deckIndex < m_decks.size(); ++deckIndex) {
         VisualizerDeck& deck = *m_decks[deckIndex]->m_pDeck;
-        deck.update(elapsedSeconds);
+        deck.update(elapsed);
         loudness[deckIndex] = deck.loudness();
         bassLevel += deck.bassLevel();
         midLevel += deck.midLevel();
@@ -286,7 +283,7 @@ void VisualizerWindow::updateAnimation(double elapsedSeconds) {
 
     m_shares = VisualizerLayout::updatedShares(loudness, m_shares);
     m_layout.update(m_shares,
-            elapsedSeconds,
+            elapsed,
             QSizeF(kCombinedCoverSize, kCombinedCoverSize));
 
     double bpm = 0.0;
@@ -297,7 +294,7 @@ void VisualizerWindow::updateAnimation(double elapsedSeconds) {
             bpm = m_decks[deckIndex]->m_pDeck->bpm();
         }
     }
-    m_flowPhase = VisualizerDeck::advancedFlowPhase(m_flowPhase, bpm, elapsedSeconds);
+    m_flowPhase = VisualizerDeck::advancedFlowPhase(m_flowPhase, bpm, elapsed);
 }
 
 void VisualizerWindow::paintCoverDistortion() {
@@ -325,9 +322,9 @@ void VisualizerWindow::paintCoverDistortion() {
                 kCombinedBlurredCoverSize, kCombinedBlurredCoverSize);
     }
 
-    // First combine the covers of the audible decks into one
-    // picture and their blurred copies into another one. Then draw these
-    // two like the cover of a single deck.
+    // First combine the covers of the audible decks into one picture and their
+    // blurred copies into another one. Then draw these two like the cover of a
+    // single deck.
     std::array<GLint, 4> viewport;
     glGetIntegerv(GL_VIEWPORT, viewport.data());
     combineCovers(m_pCombinedCover.get(), false);
@@ -347,8 +344,7 @@ void VisualizerWindow::paintCustomImage() {
     }
     if (!m_customImageTexture.isStorageAllocated() ||
             !m_blurredCustomImageTexture.isStorageAllocated()) {
-        // No image has been selected, or it could not be
-        // loaded.
+        // No image has been selected, or it could not be loaded.
         paintCoverDistortion();
         return;
     }
@@ -372,8 +368,8 @@ void VisualizerWindow::drawDistorted(GLuint textureId, GLuint blurredTextureId, 
     m_coverDistortionShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texcoords.data(), 2);
 
-    // The picture is scaled to fit into the window with a
-    // margin around it, and its blurred copy is scaled to fill the window.
+    // The picture is scaled to fit into the window with a margin around it, and
+    // its blurred copy is scaled to fill the window.
     const float windowAspect = height() > 0
             ? static_cast<float>(width()) / static_cast<float>(height())
             : 1.0f;
@@ -422,14 +418,14 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
     glViewport(0, 0, pTarget->width(), pTarget->height());
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT);
-    // The parts of the covers are added up. Where the
-    // borders of their cells are smoothed, neighbor cells overlap.
+    // The parts of the covers are added up. Where the borders of their cells
+    // are smoothed, neighbor cells overlap.
     glEnable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ONE);
 
-    // The texture coordinates are flipped compared to the
-    // window, because the first row of a framebuffer texture is its bottom
-    // row, while the first row of a cover texture is its top row.
+    // The texture coordinates are flipped compared to the window, because the
+    // first row of a framebuffer texture is its bottom row, while the first row
+    // of a cover texture is its top row.
     const std::array<float, 8> positions = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
     const std::array<float, 8> texcoords = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f};
 
@@ -441,8 +437,8 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
     m_coverCombineShader.setAttributeArray(positionLocation, GL_FLOAT, positions.data(), 2);
     m_coverCombineShader.setAttributeArray(texcoordLocation, GL_FLOAT, texcoords.data(), 2);
     m_coverCombineShader.setUniformValue(m_coverCombineShader.textureLocation(), 0);
-    // The borders of the layout measure pixels of the
-    // combined cover. They are smoothed over one pixel there.
+    // The borders of the layout measure pixels of the combined cover. They are
+    // smoothed over one pixel there.
     m_coverCombineShader.setUniformValue(m_coverCombineShader.sharpnessLocation(),
             blurred ? 1.0f / (kBlurredBorderWidth * kCombinedCoverSize) : 1.0f);
 
@@ -455,8 +451,8 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
         if (cell.m_area <= 0.0f || !texture.isStorageAllocated()) {
             continue;
         }
-        // A cover that is not square is cropped to the
-        // square around its center.
+        // A cover that is not square is cropped to the square around its
+        // center.
         const float coverAspect = static_cast<float>(texture.width()) /
                 static_cast<float>(texture.height());
         const QVector2D fit(std::min(1.0f, 1.0f / coverAspect), std::min(1.0f, coverAspect));
@@ -475,8 +471,7 @@ void VisualizerWindow::combineCovers(QOpenGLFramebufferObject* pTarget, bool blu
     m_coverCombineShader.release();
     glDisable(GL_BLEND);
 
-    // The combined picture is drawn enlarged, so it needs
-    // linear filtering.
+    // The combined picture is drawn enlarged, so it needs linear filtering.
     glBindTexture(GL_TEXTURE_2D, pTarget->texture());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

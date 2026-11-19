@@ -6,6 +6,9 @@
 
 namespace {
 
+constexpr int kThumbnailSize = 64;
+constexpr int kBlurRadius = 5;
+
 class ImageUtilsTest : public testing::Test {
   protected:
     static void fillImageWithColor(QImage& image, QRgb color) {
@@ -50,13 +53,13 @@ TEST_F(ImageUtilsTest, SolidImageBackgroundColor) {
 }
 
 TEST_F(ImageUtilsTest, NullImageBlurredThumbnail) {
-    EXPECT_TRUE(mixxx::blurredThumbnail(QImage()).isNull());
+    EXPECT_TRUE(mixxx::blurredThumbnail(QImage(), kThumbnailSize, kBlurRadius).isNull());
 }
 
 TEST_F(ImageUtilsTest, BlurredThumbnailIsSmallAndKeepsAspectRatio) {
     QImage image(400, 200, QImage::Format_RGB32);
     fillImageWithColor(image, QRgb(0x336699));
-    const QImage blurred = mixxx::blurredThumbnail(image);
+    const QImage blurred = mixxx::blurredThumbnail(image, kThumbnailSize, kBlurRadius);
     EXPECT_EQ(QSize(64, 32), blurred.size());
 }
 
@@ -64,23 +67,22 @@ TEST_F(ImageUtilsTest, BlurredThumbnailKeepsSolidColor) {
     QImage image(100, 100, QImage::Format_RGB32);
     const QRgb color = qRgb(0x33, 0x66, 0x99);
     fillImageWithColor(image, color);
-    const QImage blurred = mixxx::blurredThumbnail(image);
+    const QImage blurred = mixxx::blurredThumbnail(image, kThumbnailSize, kBlurRadius);
     EXPECT_EQ(color, blurred.pixel(0, 0));
     EXPECT_EQ(color, blurred.pixel(32, 32));
     EXPECT_EQ(color, blurred.pixel(63, 63));
 }
 
 TEST_F(ImageUtilsTest, BlurredThumbnailSmoothsEdges) {
-    // The left half of the image is black and the right half
-    // is white. After blurring, the brightness must rise gradually from the
-    // left to the right.
+    // The left half of the image is black and the right half is white. After
+    // blurring, the brightness must rise gradually from the left to the right.
     QImage image(128, 128, QImage::Format_RGB32);
     for (int x = 0; x < image.width(); ++x) {
         for (int y = 0; y < image.height(); ++y) {
             image.setPixel(x, y, x < image.width() / 2 ? qRgb(0, 0, 0) : qRgb(255, 255, 255));
         }
     }
-    const QImage blurred = mixxx::blurredThumbnail(image);
+    const QImage blurred = mixxx::blurredThumbnail(image, kThumbnailSize, kBlurRadius);
     const int row = blurred.height() / 2;
     EXPECT_LT(qRed(blurred.pixel(0, row)), 10);
     EXPECT_GT(qRed(blurred.pixel(blurred.width() - 1, row)), 245);
