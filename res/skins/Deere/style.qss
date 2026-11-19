@@ -2240,7 +2240,7 @@ WEffectChainPresetSelector:!editable,
   }
   WEffectSelector:!editable,
   #fadeModeCombobox:!editable {
-    font: 15px;
+    font: 14px;
   }
   WEffectChainPresetSelector:!editable {
     font: 13px;
