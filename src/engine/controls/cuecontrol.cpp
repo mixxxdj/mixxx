@@ -639,7 +639,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
         if (!(m_pVinylControlEnabled && m_pVinylControlEnabled->toBool() &&
-                    m_pVinylControlMode && m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
+                    m_pVinylControlMode && m_pVinylControlMode->get() == kVcModeAbsolute)) {
             seekOnLoad(mixxx::audio::kStartFramePos);
         }
         return;

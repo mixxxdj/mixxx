@@ -38,23 +38,23 @@ DlgPrefVinyl::DlgPrefVinyl(
             ComboBoxVinylType3,
             ComboBoxVinylType4};
     for (auto* box : std::as_const(m_vcTypeBoxes)) {
-        box->addItem(MIXXX_VINYL_ALGORIDDIMA);
-        box->addItem(MIXXX_VINYL_ALGORIDDIMB);
-        box->addItem(MIXXX_VINYL_MIXVIBES7INCH);
-        box->addItem(MIXXX_VINYL_MIXVIBESDVS);
-        box->addItem(MIXXX_VINYL_PIONEERA);
-        box->addItem(MIXXX_VINYL_PIONEERB);
-        box->addItem(MIXXX_VINYL_SERATOCD);
-        box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
-        box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2CD);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA);
-        box->addItem(MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB);
+        box->addItem(kVinylAlgoriddimA);
+        box->addItem(kVinylAlgoriddimB);
+        box->addItem(kVinylMixVibes7Inch);
+        box->addItem(kVinylMixVibesDvs);
+        box->addItem(kVinylPioneerA);
+        box->addItem(kVinylPioneerB);
+        box->addItem(kVinylSeratoCd);
+        box->addItem(kVinylSeratoCv02SideA);
+        box->addItem(kVinylSeratoCv02SideB);
+        box->addItem(kVinylTraktorScratchMk1SideA);
+        box->addItem(kVinylTraktorScratchMk1SideB);
+        box->addItem(kVinylTraktorScratchMk2Cd);
+        box->addItem(kVinylTraktorScratchMk2SideA);
+        box->addItem(kVinylTraktorScratchMk2SideB);
 
         // Use Serato as initial constructor value. Gets overwritten by config in slotUpdate()
-        box->setCurrentText(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+        box->setCurrentText(kVinylSeratoCv02SideA);
         connect(box,
                 &QComboBox::currentTextChanged,
                 this,
@@ -66,8 +66,8 @@ DlgPrefVinyl::DlgPrefVinyl(
             ComboBoxVinylSpeed3,
             ComboBoxVinylSpeed4};
     for (auto* box : std::as_const(m_vcSpeedBoxes)) {
-        box->addItem(MIXXX_VINYL_SPEED_33);
-        box->addItem(MIXXX_VINYL_SPEED_45);
+        box->addItem(kVinylSpeed33);
+        box->addItem(kVinylSpeed45);
     }
 
     m_vcPitchEstimatorBoxes = {ComboBoxPitchEstimator1,
@@ -75,8 +75,8 @@ DlgPrefVinyl::DlgPrefVinyl(
             ComboBoxPitchEstimator3,
             ComboBoxPitchEstimator4};
     for (auto* box : std::as_const(m_vcPitchEstimatorBoxes)) {
-        box->addItem(MIXXX_VINYL_PITCH_FILTER_KALMAN);
-        box->addItem(MIXXX_VINYL_PITCH_FILTER_LEGACY);
+        box->addItem(kVinylPitchFilterKalman);
+        box->addItem(kVinylPitchFilterLegacy);
     }
 
     m_vcLeadInBoxes = {LeadinTime1, LeadinTime2, LeadinTime3, LeadinTime4};
@@ -94,7 +94,7 @@ DlgPrefVinyl::DlgPrefVinyl(
         VinylControlSignalWidget* widget = new VinylControlSignalWidget();
         m_signalWidgets.push_back(widget);
         widget->setVinylInput(i);
-        widget->setSize(MIXXX_VINYL_SCOPE_SIZE);
+        widget->setSize(kVinylScopeSize);
         signalQualityLayout->addWidget(widget);
     }
 
@@ -170,16 +170,16 @@ void DlgPrefVinyl::slotHide() {
 void DlgPrefVinyl::slotResetToDefaults() {
     // Default to Serato Side A.
     for (auto* pBox : std::as_const(m_vcTypeBoxes)) {
-        pBox->setCurrentText(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+        pBox->setCurrentText(kVinylSeratoCv02SideA);
     }
 
     // Default to 33 RPM.
     for (auto* pBox : std::as_const(m_vcSpeedBoxes)) {
-        pBox->setCurrentText(MIXXX_VINYL_SPEED_33);
+        pBox->setCurrentText(kVinylSpeed33);
     }
 
     for (auto* pBox : std::as_const(m_vcLeadInBoxes)) {
-        pBox->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
+        pBox->setValue(kVinylSeratoCv02SideALeadIn);
     }
 
     SignalQualityEnable->setChecked(true);
@@ -189,13 +189,13 @@ void DlgPrefVinyl::slotResetToDefaults() {
 
 void DlgPrefVinyl::slotUpdate() {
     // set vinyl control gain
-    const double ratioGain = config->getValue<double>(ConfigKey(VINYL_PREF_KEY, "gain"));
+    const double ratioGain = config->getValue<double>(ConfigKey(kVinylPrefKey, "gain"));
     const double dbGain = ratio2db(ratioGain);
     SliderVinylGain->setValue(static_cast<int>(dbGain + 0.5));
     slotUpdateVinylGain();
 
     SignalQualityEnable->setChecked(
-            (bool)config->getValue<bool>(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")));
+            (bool)config->getValue<bool>(ConfigKey(kVinylPrefKey, "show_signal_quality")));
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         QString group = PlayerManager::groupForDeck(i);
@@ -245,34 +245,34 @@ void DlgPrefVinyl::verifyAndSaveLeadInTime(
 }
 
 int DlgPrefVinyl::getDefaultLeadIn(const QString& vinyl_type) const {
-    if (vinyl_type == MIXXX_VINYL_ALGORIDDIMA) {
-        return MIXXX_VINYL_ALGORIDDIMA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_ALGORIDDIMB) {
-        return MIXXX_VINYL_ALGORIDDIMB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_MIXVIBES7INCH) {
-        return MIXXX_VINYL_MIXVIBES7INCH_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_MIXVIBESDVS) {
-        return MIXXX_VINYL_MIXVIBESDVS_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_PIONEERA) {
-        return MIXXX_VINYL_PIONEERA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_PIONEERB) {
-        return MIXXX_VINYL_PIONEERB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_SERATOCD) {
-        return MIXXX_VINYL_SERATOCD_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
-        return MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {
-        return MIXXX_VINYL_SERATOCV02VINYLSIDEB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK1SIDEB_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2CD) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK2CD_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEA_LEADIN;
-    } else if (vinyl_type == MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB) {
-        return MIXXX_VINYL_TRAKTORSCRATCHMK2SIDEB_LEADIN;
+    if (vinyl_type == kVinylAlgoriddimA) {
+        return kVinylAlgoriddimALeadIn;
+    } else if (vinyl_type == kVinylAlgoriddimB) {
+        return kVinylAlgoriddimBLeadIn;
+    } else if (vinyl_type == kVinylMixVibes7Inch) {
+        return kVinylMixVibes7InchLeadIn;
+    } else if (vinyl_type == kVinylMixVibesDvs) {
+        return kVinylMixVibesDvsLeadIn;
+    } else if (vinyl_type == kVinylPioneerA) {
+        return kVinylPioneerALeadIn;
+    } else if (vinyl_type == kVinylPioneerB) {
+        return kVinylPioneerBLeadIn;
+    } else if (vinyl_type == kVinylSeratoCd) {
+        return kVinylSeratoCdLeadIn;
+    } else if (vinyl_type == kVinylSeratoCv02SideA) {
+        return kVinylSeratoCv02SideALeadIn;
+    } else if (vinyl_type == kVinylSeratoCv02SideB) {
+        return kVinylSeratoCv02SideBLeadIn;
+    } else if (vinyl_type == kVinylTraktorScratchMk1SideA) {
+        return kVinylTraktorScratchMk1SideALeadIn;
+    } else if (vinyl_type == kVinylTraktorScratchMk1SideB) {
+        return kVinylTraktorScratchMk1SideBLeadIn;
+    } else if (vinyl_type == kVinylTraktorScratchMk2Cd) {
+        return kVinylTraktorScratchMk2CdLeadIn;
+    } else if (vinyl_type == kVinylTraktorScratchMk2SideA) {
+        return kVinylTraktorScratchMk2SideALeadIn;
+    } else if (vinyl_type == kVinylTraktorScratchMk2SideB) {
+        return kVinylTraktorScratchMk2SideBLeadIn;
     }
 
     qWarning() << "Unknown vinyl type " << vinyl_type;
@@ -302,14 +302,14 @@ void DlgPrefVinyl::slotApply() {
     // retrieved quickly on the fly. (eg. WSpinny needs to know how fast to spin)
     for (auto* co : std::as_const(m_COSpeeds)) {
         int i = m_COSpeeds.indexOf(co);
-        double speed = m_vcSpeedBoxes[i]->currentText() == MIXXX_VINYL_SPEED_33
-                ? MIXXX_VINYL_SPEED_33_NUM
-                : MIXXX_VINYL_SPEED_45_NUM;
+        double speed = m_vcSpeedBoxes[i]->currentText() == kVinylSpeed33
+                ? kVinylSpeed33Num
+                : kVinylSpeed45Num;
         co->set(speed);
     }
 
-    config->set(ConfigKey(VINYL_PREF_KEY,"show_signal_quality"),
-                ConfigValue((int)(SignalQualityEnable->isChecked())));
+    config->set(ConfigKey(kVinylPrefKey, "show_signal_quality"),
+            ConfigValue((int)(SignalQualityEnable->isChecked())));
 
     m_pVCManager->requestReloadConfig();
     slotUpdate();
@@ -320,10 +320,10 @@ void DlgPrefVinyl::slotVinylGainApply() {
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << dBGain << "dB";
     // Update the config key...
     const double ratioGain = db2ratio(static_cast<double>(dBGain));
-    config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(QString::number(ratioGain)));
+    config->set(ConfigKey(kVinylPrefKey, "gain"), ConfigValue(QString::number(ratioGain)));
 
     // Update the ControlObject...
-    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"), ratioGain);
+    ControlObject::set(ConfigKey(kVinylPrefKey, "gain"), ratioGain);
 }
 
 void DlgPrefVinyl::slotUpdateVinylGain() {

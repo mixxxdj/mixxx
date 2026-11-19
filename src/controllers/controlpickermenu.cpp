@@ -520,7 +520,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Vinyl Control Passthrough"),
             tr("Pass through external audio into the internal mixer"),
             pVinylControlMenu);
-    addControl(VINYL_PREF_KEY,
+    addControl(kVinylPrefKey,
             "Toggle",
             tr("Vinyl Control Next Deck"),
             tr("Single deck mode - Switch vinyl control to next deck"),
@@ -1524,7 +1524,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Cover Art Show/Hide (Decks)"),
             tr("Show/hide cover art in the main decks"),
             pGuiMenu);
-    addControl(VINYL_PREF_KEY,
+    addControl(kVinylPrefKey,
             "show_vinylcontrol",
             tr("Vinyl Control Show/Hide"),
             tr("Show/hide the vinyl control section"),
