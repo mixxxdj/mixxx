@@ -11,6 +11,7 @@
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformmark.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/widgets/waveformwidgetvars.h"
@@ -179,6 +180,12 @@ class WaveformWidgetFactory : public QObject,
     bool widgetTypeSupportsStems() const;
 
     void setUntilMarkShowBeats(bool value);
+    void setHotCueLetters(bool letters);
+    bool getHotCueLetters() const;
+    void setHotCueLabelPlacement(WaveformMark::HotCueLabelPlacement placement);
+    WaveformMark::HotCueLabelPlacement getHotCueLabelPlacement() const;
+    void setHotCueLabelStyle(WaveformMark::HotCueLabelStyle style);
+    WaveformMark::HotCueLabelStyle getHotCueLabelStyle() const;
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);

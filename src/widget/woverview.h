@@ -192,6 +192,9 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     // Current active track
     TrackPointer m_pCurrentTrack;
+    // Last seen WaveformMark::styleGeneration(), to refresh hotcue labels
+    // when a marker style setting changes.
+    int m_markStyleGeneration{-1};
     ConstWaveformPointer m_pWaveform;
 
     QImage m_waveformSourceImage;
