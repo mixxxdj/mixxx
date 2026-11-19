@@ -23,6 +23,9 @@
 #ifdef __FFMPEG__
 #include "sources/soundsourceffmpeg.h"
 #endif
+#ifdef __OPENMPT__
+#include "sources/soundsourceopenmpt.h"
+#endif
 #ifdef __MODPLUG__
 #include "sources/soundsourcemodplug.h"
 #endif
@@ -220,10 +223,18 @@ bool SoundSourceProxy::registerProviders() {
             &s_soundSourceProviders,
             std::make_shared<mixxx::SoundSourceProviderMp3>());
 #endif
+#ifdef __OPENMPT__
+    registerSoundSourceProvider(
+            &s_soundSourceProviders,
+            std::make_shared<mixxx::SoundSourceProviderOpenMPT>());
+#endif
 #ifdef __MODPLUG__
+// modplug as fallback if openmpt not available
+#ifndef __OPENMPT__
     registerSoundSourceProvider(
             &s_soundSourceProviders,
             std::make_shared<mixxx::SoundSourceProviderModPlug>());
+#endif
 #endif
 #ifdef __FAAD__
     registerSoundSourceProvider(
@@ -257,8 +268,14 @@ bool SoundSourceProxy::registerProviders() {
         for (const QMimeType& mimeType : mimeTypes) {
             if (!mimeType.isDefault()) {
                 qDebug() << mimeType << supportedFileType;
-                DEBUG_ASSERT(s_fileTypeByMimeType.constFind(mimeType) ==
-                        s_fileTypeByMimeType.constEnd());
+                // Different file types may share a MIME type on some
+                // platforms (e.g. Ubuntu 24.04 maps several tracker module
+                // extensions to the same MIME type). Skip duplicates instead
+                // of asserting, since DebugAssertBreak raises SIGINT.
+                if (s_fileTypeByMimeType.constFind(mimeType) !=
+                        s_fileTypeByMimeType.constEnd()) {
+                    continue;
+                }
                 s_fileTypeByMimeType.insert(mimeType, supportedFileType);
             }
         }
