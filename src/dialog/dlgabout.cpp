@@ -26,6 +26,13 @@ DlgAbout::DlgAbout()
     platform_label->setText(VersionStore::platform());
     QLocale locale;
     date_label->setText(locale.toString(VersionStore::date().toLocalTime(), QLocale::LongFormat));
+    trademark_label->setText(
+            QString("<a style=\"color:%1;\" href=\"%2\"><small>%3</small></a>")
+                    .arg(Color::blendColors(palette().link().color(),
+                                 palette().text().color())
+                                    .name(),
+                            MIXXX_TRADEMARK_URL,
+                            tr("Mixxx is a registered trademark of Mixxx e.V.")));
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {
@@ -473,7 +480,7 @@ DlgAbout::DlgAbout()
     textBrowser->setHtml(sections.join(""));
 
     textWebsiteLink->setText(
-            QString("<a style=\"color:%1;\" href=\"%2\">%3</a>")
+            QStringLiteral("<a style=\"color:%1;\" href=\"%2\">%3</a>")
                     .arg(Color::blendColors(palette().link().color(),
                                  palette().text().color())
                                     .name(),
