@@ -100,6 +100,10 @@ void TrackExportWorker::copyFile(
     QFileInfo dest_fileinfo(dest_path);
 
     if (dest_fileinfo.exists()) {
+        // Removing a file already at its destination would delete the source.
+        if (dest_fileinfo.canonicalFilePath() == sourceFilename) {
+            return;
+        }
         switch (m_overwriteMode) {
         // Give the user the option to overwrite existing files in the destination.
         case OverwriteMode::ASK:
