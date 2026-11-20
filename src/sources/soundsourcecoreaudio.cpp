@@ -227,6 +227,15 @@ void SoundSourceCoreAudio::close() {
 SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     DEBUG_ASSERT(isValidFrameIndex(frameIndex));
 
+    // LegacyAudioSourceAdapter seeks before every read. Reading MP3 on gives
+    // the same samples as seeking again, reading AAC on does not (< 1e-6).
+    SInt64 frameOffset;
+    if (m_bFileIsMp3 &&
+            ExtAudioFileTell(m_audioFile, &frameOffset) == noErr &&
+            frameOffset == frameIndex) {
+        return frameIndex;
+    }
+
     // Prefetch frames for sample-accurate decoding
     const SINT prefetchFrames = math_min(frameIndex, m_seekPrefetchFrames);
     OSStatus err = ExtAudioFileSeek(m_audioFile, frameIndex - prefetchFrames);
