@@ -743,6 +743,16 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="RememberVinylControlState">
+        <property name="toolTip">
+         <string>Restore vinyl control for those decks the next time Mixxx starts</string>
+        </property>
+        <property name="text">
+         <string>Remember which decks have vinyl control enabled</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
