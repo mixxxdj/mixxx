@@ -8,11 +8,13 @@
 #include <unknownframe.h>
 
 #include <array>
+#include <limits>
 #include <optional>
 #if defined(__EXTRA_METADATA__)
 #include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/taglib/fmpsplaycount.h"
 #include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
@@ -82,6 +84,9 @@ const QString kFrameDescriptionSeratoMarkers2 = QStringLiteral("Serato Markers2"
 // FMPS Rating - TXXX frame description for cross-application rating compatibility
 // https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
 const QString kFMPSRatingDescription = QStringLiteral("FMPS_Rating");
+
+// FMPS Playcount - TXXX frame description, same specification
+const QString kFMPSPlayCountDescription = QStringLiteral("FMPS_Playcount");
 
 // Returns the text of an ID3v2 frame as a string.
 inline QString frameToQString(
@@ -642,6 +647,60 @@ std::optional<int> importRatingFromTag(const TagLib::ID3v2::Tag& tag) {
     }
 
     return std::nullopt;
+}
+
+std::optional<int> importPlayCountFromTag(const TagLib::ID3v2::Tag& tag) {
+    const QString fmpsPlayCount = readFirstUserTextIdentificationFrame(
+            tag, kFMPSPlayCountDescription);
+    if (!fmpsPlayCount.isEmpty()) {
+        const std::optional<int> playCount = parseFmpsPlayCount(fmpsPlayCount);
+        if (playCount) {
+            return playCount;
+        }
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Playcount value in TXXX frame:"
+                << fmpsPlayCount;
+        // Fall through to the POPM frame
+    }
+
+    // The counter of a POPM frame is optional and defaults to 0, which
+    // cannot be distinguished from a missing value.
+    const TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(tag);
+    if (pPopmFrame && pPopmFrame->counter() > 0) {
+        const unsigned int counter = pPopmFrame->counter();
+        const auto maxPlayCount =
+                static_cast<unsigned int>(std::numeric_limits<int>::max());
+        return static_cast<int>(counter > maxPlayCount ? maxPlayCount : counter);
+    }
+
+    return std::nullopt;
+}
+
+bool exportPlayCountIntoTag(
+        TagLib::ID3v2::Tag* pTag,
+        int playCount) {
+    DEBUG_ASSERT(pTag);
+    const std::optional<QString> fmpsPlayCount = formatFmpsPlayCount(playCount);
+    if (!fmpsPlayCount) {
+        kLogger.warning()
+                << "Invalid play count for export:" << playCount;
+        return false;
+    }
+    writeUserTextIdentificationFrame(
+            pTag,
+            kFMPSPlayCountDescription,
+            *fmpsPlayCount,
+            true); // isNumericOrURL = true
+    // Keep the counter of an existing POPM frame in sync, because the
+    // import falls back to it. The identifier and the rating byte are
+    // preserved, and no POPM frame is created if none exists.
+    TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(*pTag);
+    if (pPopmFrame) {
+        pPopmFrame->setCounter(static_cast<unsigned int>(playCount));
+    }
+    return true;
 }
 
 bool exportRatingIntoTag(

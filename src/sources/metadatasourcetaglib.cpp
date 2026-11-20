@@ -928,4 +928,230 @@ bool MetadataSourceTagLib::exportRating(int rating) const {
     return false;
 }
 
+std::optional<int> MetadataSourceTagLib::importPlayCount() const {
+    switch (m_fileType) {
+    case taglib::FileType::MPEG: {
+        TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen()) {
+            return std::nullopt;
+        }
+        // Try ID3v2 first, then APE
+        if (file.hasID3v2Tag()) {
+            auto playCount = taglib::id3v2::importPlayCountFromTag(*file.ID3v2Tag());
+            if (playCount.has_value()) {
+                return playCount;
+            }
+        }
+        if (taglib::hasAPETag(file) && file.APETag()) {
+            return taglib::ape::importPlayCountFromTag(*file.APETag());
+        }
+        return std::nullopt;
+    }
+    case taglib::FileType::MP4: {
+        TagLib::MP4::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::mp4::importPlayCountFromTag(*file.tag());
+    }
+    case taglib::FileType::FLAC: {
+        TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen()) {
+            return std::nullopt;
+        }
+        // Try ID3v2 first, then Xiph comment
+        if (file.hasID3v2Tag()) {
+            auto playCount = taglib::id3v2::importPlayCountFromTag(*file.ID3v2Tag());
+            if (playCount.has_value()) {
+                return playCount;
+            }
+        }
+        if (taglib::hasXiphComment(file) && file.xiphComment()) {
+            return taglib::xiph::importPlayCountFromTag(*file.xiphComment());
+        }
+        return std::nullopt;
+    }
+    case taglib::FileType::OggVorbis: {
+        TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::xiph::importPlayCountFromTag(*file.tag());
+    }
+    case taglib::FileType::Opus: {
+        TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::xiph::importPlayCountFromTag(*file.tag());
+    }
+    case taglib::FileType::WavPack: {
+        TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.APETag()) {
+            return std::nullopt;
+        }
+        return taglib::ape::importPlayCountFromTag(*file.APETag());
+    }
+    case taglib::FileType::WAV: {
+        TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen()) {
+            return std::nullopt;
+        }
+        if (file.hasID3v2Tag()) {
+            return taglib::id3v2::importPlayCountFromTag(*file.ID3v2Tag());
+        }
+        return std::nullopt;
+    }
+    case taglib::FileType::AIFF: {
+        TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(m_fileName));
+        if (!file.isOpen() || !file.tag()) {
+            return std::nullopt;
+        }
+        return taglib::id3v2::importPlayCountFromTag(*file.tag());
+    }
+    default:
+        return std::nullopt;
+    }
+}
+
+bool MetadataSourceTagLib::exportPlayCount(int playCount) const {
+    SafelyWritableFile safelyWritableFile(m_fileName,
+            SafelyWritableFile::SafetyMode::Edit);
+    if (!safelyWritableFile.isReady()) {
+        kLogger.warning()
+                << "Unable to export play count into file"
+                << m_fileName
+                << "- Please check file permissions and storage space";
+        return false;
+    }
+
+    bool success = false;
+    switch (m_fileType) {
+    case taglib::FileType::MPEG: {
+        TagLib::MPEG::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            // Export into ID3v2 (preferred)
+            int modifiedTags = TagLib::MPEG::File::ID3v2;
+            TagLib::ID3v2::Tag* pTag = file.ID3v2Tag(true);
+            if (pTag && taglib::id3v2::exportPlayCountIntoTag(pTag, playCount)) {
+                // Keep the FMPS_PLAYCOUNT item of an existing APE tag in
+                // sync, because the import falls back to the APE tag.
+                // No APE tag is created if none exists.
+                if (taglib::hasAPETag(file)) {
+                    TagLib::APE::Tag* pApeTag = file.APETag();
+                    if (pApeTag &&
+                            taglib::ape::exportPlayCountIntoTag(pApeTag, playCount)) {
+                        modifiedTags |= TagLib::MPEG::File::APE;
+                    }
+                }
+                // Keep an ID3v1 tag synchronized if it already exists
+                // and never strip any of the other tags from the file
+                // (see MpegTagSaver::saveModifiedTags() above)
+                const auto duplicateTags = file.hasID3v1Tag()
+                        ? TagLib::File::DuplicateTags::Duplicate
+                        : TagLib::File::DuplicateTags::DoNotDuplicate;
+                success = file.save(
+                        modifiedTags,
+                        TagLib::File::StripTags::StripNone,
+                        TagLib::ID3v2::Version::v4,
+                        duplicateTags);
+            }
+        }
+        break;
+    }
+    case taglib::FileType::MP4: {
+        TagLib::MP4::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::mp4::exportPlayCountIntoTag(file.tag(), playCount)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::FLAC: {
+        TagLib::FLAC::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            TagLib::Ogg::XiphComment* pTag = file.xiphComment(true);
+            if (pTag && taglib::xiph::exportPlayCountIntoTag(pTag, playCount)) {
+                // Keep the FMPS_Playcount frame of an existing ID3v2 tag
+                // in sync, because the import prefers the ID3v2 tag.
+                // No ID3v2 tag is created if none exists.
+                if (file.hasID3v2Tag()) {
+                    TagLib::ID3v2::Tag* pId3v2Tag = file.ID3v2Tag();
+                    if (pId3v2Tag) {
+                        taglib::id3v2::exportPlayCountIntoTag(pId3v2Tag, playCount);
+                    }
+                }
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::OggVorbis: {
+        TagLib::Ogg::Vorbis::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::xiph::exportPlayCountIntoTag(file.tag(), playCount)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::Opus: {
+        TagLib::Ogg::Opus::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::xiph::exportPlayCountIntoTag(file.tag(), playCount)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::WavPack: {
+        TagLib::WavPack::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            TagLib::APE::Tag* pTag = file.APETag(true);
+            if (pTag && taglib::ape::exportPlayCountIntoTag(pTag, playCount)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::WAV: {
+        TagLib::RIFF::WAV::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen()) {
+            TagLib::ID3v2::Tag* pTag = file.ID3v2Tag();
+            if (pTag && taglib::id3v2::exportPlayCountIntoTag(pTag, playCount)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    case taglib::FileType::AIFF: {
+        TagLib::RIFF::AIFF::File file(TAGLIB_FILENAME_FROM_QSTRING(safelyWritableFile.fileName()));
+        if (file.isOpen() && file.tag()) {
+            if (taglib::id3v2::exportPlayCountIntoTag(file.tag(), playCount)) {
+                success = file.save();
+            }
+        }
+        break;
+    }
+    default:
+        kLogger.warning()
+                << "Play count export not supported for file type"
+                << static_cast<int>(m_fileType);
+        return false;
+    }
+
+    if (success) {
+        if (!safelyWritableFile.commit()) {
+            kLogger.warning() << "Failed to commit play count changes to file" << m_fileName;
+            return false;
+        }
+        kLogger.debug() << "Exported play count" << playCount << "to file" << m_fileName;
+        return true;
+    }
+
+    kLogger.warning() << "Failed to export play count to file" << m_fileName;
+    return false;
+}
+
 } // namespace mixxx

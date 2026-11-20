@@ -25,6 +25,15 @@ bool exportRatingIntoTag(
         TagLib::MP4::Tag* pTag,
         int rating);
 
+/// Import the play count from MP4 atom (FMPS_Playcount)
+std::optional<int> importPlayCountFromTag(const TagLib::MP4::Tag& tag);
+
+/// Export the play count to MP4 atom (FMPS_Playcount)
+/// Returns true on success, false on a negative play count
+bool exportPlayCountIntoTag(
+        TagLib::MP4::Tag* pTag,
+        int playCount);
+
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::MP4::Tag& tag,

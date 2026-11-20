@@ -92,6 +92,10 @@ SyncTrackMetadataParams SyncTrackMetadataParams::readFromUserSettings(
                     mixxx::library::prefs::kExportRatingToFileTagsConfigKey),
             .importRatingFromFile = userSettings.getValue<bool>(
                     mixxx::library::prefs::kImportRatingFromFileTagsConfigKey),
+            .exportPlayCountToFile = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kExportPlayCountToFileTagsConfigKey),
+            .importPlayCountFromFile = userSettings.getValue<bool>(
+                    mixxx::library::prefs::kImportPlayCountFromFileTagsConfigKey),
     };
 }
 
@@ -1797,14 +1801,35 @@ ExportTrackMetadataResult Track::exportMetadata(
             metadataSource.importRating().value_or(
                     mixxx::TrackRecord::kNoRating) != m_record.getRating();
 
-    // Export only the rating into the file tags, leaving all other tags
-    // untouched. The synchronization time stamp is refreshed afterwards,
-    // because the write updates the file's modification time and the
-    // file would otherwise be considered externally modified.
-    const auto exportRatingOnly = [this, &metadataSource]() {
-        if (!metadataSource.exportRating(m_record.getRating())) {
+    // The play count is not part of TrackMetadata either. It only ever
+    // increases, so it is written only when the library holds a higher
+    // value than the file tags. A higher value in the file is adopted
+    // by the import instead and must never be overwritten here.
+    const int playCount = m_record.getPlayCounter().getTimesPlayed();
+    const bool playCountNeedsExport = syncParams.exportPlayCountToFile &&
+            playCount > metadataSource.importPlayCount().value_or(0);
+    const bool ratingOrPlayCountNeedsExport =
+            ratingNeedsExport || playCountNeedsExport;
+
+    // Export only the rating and the play count into the file tags,
+    // leaving all other tags untouched. The synchronization time stamp
+    // is refreshed afterwards, because the write updates the file's
+    // modification time and the file would otherwise be considered
+    // externally modified.
+    const auto exportRatingOnly = [this,
+                                          &metadataSource,
+                                          ratingNeedsExport,
+                                          playCountNeedsExport,
+                                          playCount]() {
+        if (ratingNeedsExport && !metadataSource.exportRating(m_record.getRating())) {
             kLogger.warning()
                     << "Failed to export rating to file:"
+                    << getLocation();
+            return ExportTrackMetadataResult::Failed;
+        }
+        if (playCountNeedsExport && !metadataSource.exportPlayCount(playCount)) {
+            kLogger.warning()
+                    << "Failed to export play count to file:"
                     << getLocation();
             return ExportTrackMetadataResult::Failed;
         }
@@ -1892,7 +1917,7 @@ ExportTrackMetadataResult Track::exportMetadata(
                         mixxx::Bpm::Comparison::Integer)) {
             // The file tags are in-sync with the track's metadata and don't need
             // to be updated. Only the rating might need to be written.
-            if (ratingNeedsExport) {
+            if (ratingOrPlayCountNeedsExport) {
                 return exportRatingOnly();
             }
             if (kLogger.debugEnabled()) {
@@ -1908,7 +1933,7 @@ ExportTrackMetadataResult Track::exportMetadata(
             // export is enabled. A full synchronization of metadata into
             // file tags has neither been enabled nor requested explicitly,
             // so no other file tags must be written.
-            if (ratingNeedsExport) {
+            if (ratingOrPlayCountNeedsExport) {
                 return exportRatingOnly();
             }
             return ExportTrackMetadataResult::Skipped;
@@ -1926,7 +1951,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         } else {
             // The rating can still be exported into a file without any
             // tags: a new tag containing only the rating is created.
-            if (ratingNeedsExport) {
+            if (ratingOrPlayCountNeedsExport) {
                 return exportRatingOnly();
             }
             kLogger.warning()
@@ -1965,7 +1990,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         // been cleared, i.e. equals TrackRecord::kNoRating. The rating
         // export writes the file again after the metadata export, so
         // the synchronization time stamp is refreshed afterwards.
-        if (ratingNeedsExport) {
+        if (ratingOrPlayCountNeedsExport) {
             if (exportRatingOnly() == ExportTrackMetadataResult::Failed) {
                 // The metadata export succeeded, only the rating could
                 // not be written. Do not fail the whole operation.

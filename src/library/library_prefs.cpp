@@ -111,6 +111,17 @@ const ConfigKey mixxx::library::prefs::kImportRatingFromFileTagsConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("import_rating_from_file_tags")};
 
+// Play count import/export using FMPS_Playcount standard
+const ConfigKey mixxx::library::prefs::kExportPlayCountToFileTagsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("export_playcount_to_file_tags")};
+
+const ConfigKey mixxx::library::prefs::kImportPlayCountFromFileTagsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("import_playcount_from_file_tags")};
+
 const ConfigKey mixxx::library::prefs::kUseRelativePathOnExportConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,

@@ -30,6 +30,15 @@ bool importCoverImageFromTag(
 QImage importCoverImageFromPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures);
 
+/// Import the play count from Vorbis comment (FMPS_Playcount)
+std::optional<int> importPlayCountFromTag(const TagLib::Ogg::XiphComment& tag);
+
+/// Export the play count to Vorbis comment (FMPS_Playcount)
+/// Returns true on success, false on a negative play count
+bool exportPlayCountIntoTag(
+        TagLib::Ogg::XiphComment* pTag,
+        int playCount);
+
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::Ogg::XiphComment& tag,

@@ -11,6 +11,7 @@
 
 #include <optional>
 
+#include "track/taglib/fmpsplaycount.h"
 #include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
@@ -49,6 +50,7 @@ const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
 // https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
 // Using org.freedesktop.FMPS namespace for compatibility
 const TagLib::String kAtomKeyFMPSRating = "----:org.freedesktop.FMPS:FMPS_Rating";
+const TagLib::String kAtomKeyFMPSPlayCount = "----:org.freedesktop.FMPS:FMPS_Playcount";
 
 bool readAtom(
         const TagLib::MP4::Tag& tag,
@@ -143,6 +145,38 @@ bool exportRatingIntoTag(
             pTag,
             kAtomKeyFMPSRating,
             toTString(*fmpsRating));
+    return true;
+}
+
+std::optional<int> importPlayCountFromTag(const TagLib::MP4::Tag& tag) {
+    QString fmpsPlayCount;
+    if (!readAtom(tag, kAtomKeyFMPSPlayCount, &fmpsPlayCount) ||
+            fmpsPlayCount.isEmpty()) {
+        return std::nullopt;
+    }
+    const std::optional<int> playCount = parseFmpsPlayCount(fmpsPlayCount);
+    if (!playCount) {
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Playcount value in MP4 atom:"
+                << fmpsPlayCount;
+    }
+    return playCount;
+}
+
+bool exportPlayCountIntoTag(
+        TagLib::MP4::Tag* pTag,
+        int playCount) {
+    DEBUG_ASSERT(pTag);
+    const std::optional<QString> fmpsPlayCount = formatFmpsPlayCount(playCount);
+    if (!fmpsPlayCount) {
+        kLogger.warning()
+                << "Invalid play count for export:" << playCount;
+        return false;
+    }
+    writeAtom(
+            pTag,
+            kAtomKeyFMPSPlayCount,
+            toTString(*fmpsPlayCount));
     return true;
 }
 

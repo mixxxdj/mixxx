@@ -315,3 +315,95 @@ TEST_F(TrackUpdateTest, newerModeUnchangedFileKeepsMixxxRating) {
             params);
     EXPECT_EQ(pTrack->getRating(), 4);
 }
+
+TEST_F(TrackUpdateTest, importAdoptsHigherPlayCountFromFile) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString trackPath = tempDir.filePath("played.mp3");
+    mixxxtest::copyFile(
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/TOAL_TPE2.mp3")),
+            trackPath);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportPlayCount(12));
+    }
+
+    // First import without play count import enabled
+    auto pTrack = Track::newTemporary(trackPath);
+    ASSERT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    SyncTrackMetadataParams{}));
+    ASSERT_EQ(pTrack->getTimesPlayed(), 0);
+    pTrack->resetPlayCounter(3);
+    pTrack->markClean();
+
+    // Enabling the import later raises the play count during a partial
+    // import of the unchanged file and marks the track for saving
+    SyncTrackMetadataParams params;
+    params.importPlayCountFromFile = true;
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            params);
+    EXPECT_EQ(pTrack->getTimesPlayed(), 12);
+    EXPECT_TRUE(pTrack->isDirty());
+}
+
+TEST_F(TrackUpdateTest, importKeepsHigherPlayCountFromLibrary) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString trackPath = tempDir.filePath("played.mp3");
+    mixxxtest::copyFile(
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/TOAL_TPE2.mp3")),
+            trackPath);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportPlayCount(2));
+    }
+
+    SyncTrackMetadataParams params;
+    params.importPlayCountFromFile = true;
+
+    // Full import of a new file: the file's play count is adopted
+    auto pTrack = Track::newTemporary(trackPath);
+    ASSERT_EQ(
+            SoundSourceProxy::UpdateTrackFromSourceResult::MetadataImportedAndUpdated,
+            SoundSourceProxy(pTrack).updateTrackFromSource(
+                    SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+                    params));
+    ASSERT_EQ(pTrack->getTimesPlayed(), 2);
+
+    // Plays counted by Mixxx must survive both a partial import and a
+    // forced full import of the file with the lower value
+    pTrack->resetPlayCounter(9);
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once,
+            params);
+    EXPECT_EQ(pTrack->getTimesPlayed(), 9);
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+            params);
+    EXPECT_EQ(pTrack->getTimesPlayed(), 9);
+}
+
+TEST_F(TrackUpdateTest, playCountImportDisabledIgnoresFile) {
+    QTemporaryDir tempDir;
+    ASSERT_TRUE(tempDir.isValid());
+    const QString trackPath = tempDir.filePath("played.mp3");
+    mixxxtest::copyFile(
+            MixxxTest::getOrInitTestDir().filePath(
+                    QStringLiteral("id3-test-data/TOAL_TPE2.mp3")),
+            trackPath);
+    {
+        mixxx::MetadataSourceTagLib source(trackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportPlayCount(12));
+    }
+    auto pTrack = Track::newTemporary(trackPath);
+    SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Always,
+            SyncTrackMetadataParams{});
+    EXPECT_EQ(pTrack->getTimesPlayed(), 0);
+}

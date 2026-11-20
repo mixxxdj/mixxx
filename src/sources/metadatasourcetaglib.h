@@ -32,6 +32,12 @@ class MetadataSourceTagLib : public MetadataSource {
     /// Returns true if export succeeded, false otherwise
     bool exportRating(int rating) const override;
 
+    /// Import the play count from file tags using the FMPS_Playcount standard
+    std::optional<int> importPlayCount() const override;
+
+    /// Export the play count to file tags using the FMPS_Playcount standard
+    bool exportPlayCount(int playCount) const override;
+
   private:
     std::pair<ImportResult, QDateTime> afterImport(ImportResult importResult) const;
     std::pair<ExportResult, QDateTime> afterExport(ExportResult exportResult) const;

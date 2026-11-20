@@ -56,6 +56,10 @@ extern const ConfigKey kExportRatingToFileTagsConfigKey;
 
 extern const ConfigKey kImportRatingFromFileTagsConfigKey;
 
+extern const ConfigKey kExportPlayCountToFileTagsConfigKey;
+
+extern const ConfigKey kImportPlayCountFromFileTagsConfigKey;
+
 extern const ConfigKey kUseRelativePathOnExportConfigKey;
 
 extern const ConfigKey kCoverArtFetcherQualityConfigKey;

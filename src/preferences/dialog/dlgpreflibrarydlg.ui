@@ -178,6 +178,28 @@
       </item>
 
       <item row="4" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_playcount_export">
+        <property name="toolTip">
+         <string>Write the play count into file tags using the FMPS_Playcount standard whenever it exceeds the value stored in the file.&lt;br/&gt;Only the play count tag is written; other file tags are not touched unless metadata synchronization is also enabled.&lt;br/&gt;This allows play counts to be shared with other media players that support FMPS (e.g., Strawberry, Clementine).</string>
+        </property>
+        <property name="text">
+         <string>Export play counts to file tags (FMPS_Playcount)</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="5" column="0" colspan="2">
+       <widget class="QCheckBox" name="checkBox_playcount_import">
+        <property name="toolTip">
+         <string>Import play counts from file tags when tracks are loaded or scanned.&lt;br/&gt;Reads FMPS_Playcount (and the POPM counter for MP3 files) from file tags.&lt;br/&gt;A play count only ever increases, so the higher value of file and library is kept.</string>
+        </property>
+        <property name="text">
+         <string>Import play counts from file tags</string>
+        </property>
+       </widget>
+      </item>
+
+      <item row="6" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_use_relative_path">
         <property name="text">
          <string>Use relative paths for playlist export if possible</string>
@@ -797,6 +819,8 @@
   <tabstop>checkBox_serato_metadata_export</tabstop>
   <tabstop>checkBox_rating_export</tabstop>
   <tabstop>checkBox_rating_import</tabstop>
+  <tabstop>checkBox_playcount_export</tabstop>
+  <tabstop>checkBox_playcount_import</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>checkBox_edit_metadata_selected_clicked</tabstop>
   <tabstop>radioButton_dbclick_deck</tabstop>

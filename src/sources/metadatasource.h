@@ -76,6 +76,20 @@ class MetadataSource {
     virtual bool exportRating(int /*rating*/) const {
         return false;
     }
+
+    /// Import the play count from file tags using the FMPS_Playcount
+    /// standard. Returns nullopt if the file contains no valid play count.
+    /// Default implementation returns nullopt (no play count support).
+    virtual std::optional<int> importPlayCount() const {
+        return std::nullopt;
+    }
+
+    /// Export the play count to file tags using the FMPS_Playcount
+    /// standard. Returns true if export succeeded, false otherwise.
+    /// Default implementation returns false (no play count support).
+    virtual bool exportPlayCount(int /*playCount*/) const {
+        return false;
+    }
 };
 
 typedef std::shared_ptr<MetadataSource> MetadataSourcePointer;

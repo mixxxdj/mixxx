@@ -25,6 +25,15 @@ bool exportRatingIntoTag(
         TagLib::APE::Tag* pTag,
         int rating);
 
+/// Import the play count from APE tag (FMPS_Playcount)
+std::optional<int> importPlayCountFromTag(const TagLib::APE::Tag& tag);
+
+/// Export the play count to APE tag (FMPS_Playcount)
+/// Returns true on success, false on a negative play count
+bool exportPlayCountIntoTag(
+        TagLib::APE::Tag* pTag,
+        int playCount);
+
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::APE::Tag& tag,

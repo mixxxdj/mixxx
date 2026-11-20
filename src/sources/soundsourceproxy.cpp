@@ -4,6 +4,7 @@
 #include <QMimeType>
 #include <QRegularExpression>
 #include <QStandardPaths>
+#include <optional>
 
 #include "sources/audiosourcetrackproxy.h"
 
@@ -632,6 +633,35 @@ inline bool shouldImportSeratoTagsFromSource(
             syncParams.syncSeratoMetadata;
 }
 
+// A play counter only ever increases. If both the file tags and the
+// library hold a value the higher one is the more recent, regardless
+// of which side has been modified last. Returns true if the track's
+// play counter has been raised to the value from the file tags.
+bool importHigherPlayCountFromSource(
+        Track* pTrack,
+        const mixxx::MetadataSource& metadataSource) {
+    DEBUG_ASSERT(pTrack);
+    const std::optional<int> filePlayCount = metadataSource.importPlayCount();
+    if (!filePlayCount) {
+        return false;
+    }
+    PlayCounter playCounter = pTrack->getPlayCounter();
+    if (*filePlayCount <= playCounter.getTimesPlayed()) {
+        return false;
+    }
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Imported play count"
+                << *filePlayCount
+                << "(was" << playCounter.getTimesPlayed() << ")"
+                << "from file"
+                << pTrack->getLocation();
+    }
+    playCounter.setTimesPlayed(*filePlayCount);
+    pTrack->setPlayCounter(playCounter);
+    return true;
+}
+
 } // namespace
 
 SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromSource(
@@ -778,6 +808,12 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
             }
         }
 
+        if (syncParams.importPlayCountFromFile && m_pSoundSource &&
+                importHigherPlayCountFromSource(m_pTrack.get(), *m_pSoundSource)) {
+            // Reuses the flag: both are extra data merged from the file
+            ratingImported = true;
+        }
+
         if (metadataImportResult == mixxx::MetadataSource::ImportResult::Succeeded) {
             if (m_pTrack->mergeExtraMetadataFromSource(trackMetadata)) {
                 return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
@@ -897,6 +933,10 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
                 }
             }
         }
+    }
+
+    if (syncParams.importPlayCountFromFile && m_pSoundSource) {
+        importHigherPlayCountFromSource(m_pTrack.get(), *m_pSoundSource);
     }
 
     const bool pendingBeatsImport =

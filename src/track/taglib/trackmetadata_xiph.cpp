@@ -14,6 +14,7 @@
 #include <array>
 #include <optional>
 
+#include "track/taglib/fmpsplaycount.h"
 #include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
@@ -47,6 +48,7 @@ const TagLib::String kCommentFieldKeySeratoMarkers2Ogg = "SERATO_MARKERS2";
 // FMPS Rating - Vorbis comment field for cross-application rating compatibility
 // https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
 const TagLib::String kCommentFieldKeyFMPSRating = "FMPS_RATING";
+const TagLib::String kCommentFieldKeyFMPSPlayCount = "FMPS_PLAYCOUNT";
 
 bool readCommentField(
         const TagLib::Ogg::XiphComment& tag,
@@ -168,6 +170,38 @@ bool exportRatingIntoTag(
             pTag,
             kCommentFieldKeyFMPSRating,
             toTString(*fmpsRating));
+    return true;
+}
+
+std::optional<int> importPlayCountFromTag(const TagLib::Ogg::XiphComment& tag) {
+    QString fmpsPlayCount;
+    if (!readCommentField(tag, kCommentFieldKeyFMPSPlayCount, &fmpsPlayCount) ||
+            fmpsPlayCount.isEmpty()) {
+        return std::nullopt;
+    }
+    const std::optional<int> playCount = parseFmpsPlayCount(fmpsPlayCount);
+    if (!playCount) {
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Playcount value in Vorbis comment:"
+                << fmpsPlayCount;
+    }
+    return playCount;
+}
+
+bool exportPlayCountIntoTag(
+        TagLib::Ogg::XiphComment* pTag,
+        int playCount) {
+    DEBUG_ASSERT(pTag);
+    const std::optional<QString> fmpsPlayCount = formatFmpsPlayCount(playCount);
+    if (!fmpsPlayCount) {
+        kLogger.warning()
+                << "Invalid play count for export:" << playCount;
+        return false;
+    }
+    writeCommentField(
+            pTag,
+            kCommentFieldKeyFMPSPlayCount,
+            toTString(*fmpsPlayCount));
     return true;
 }
 

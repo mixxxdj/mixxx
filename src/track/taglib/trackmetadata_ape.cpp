@@ -2,6 +2,7 @@
 
 #include <optional>
 
+#include "track/taglib/fmpsplaycount.h"
 #include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
@@ -55,6 +56,7 @@ void writeItem(
 // https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
 // APE keys must be uppercase to match TagLib's case normalization on save/reload
 const TagLib::String kItemKeyFMPSRating = "FMPS_RATING";
+const TagLib::String kItemKeyFMPSPlayCount = "FMPS_PLAYCOUNT";
 
 } // anonymous namespace
 
@@ -94,6 +96,38 @@ bool exportRatingIntoTag(
             pTag,
             kItemKeyFMPSRating,
             toTString(*fmpsRating));
+    return true;
+}
+
+std::optional<int> importPlayCountFromTag(const TagLib::APE::Tag& tag) {
+    QString fmpsPlayCount;
+    if (!readItem(tag, kItemKeyFMPSPlayCount, &fmpsPlayCount) ||
+            fmpsPlayCount.isEmpty()) {
+        return std::nullopt;
+    }
+    const std::optional<int> playCount = parseFmpsPlayCount(fmpsPlayCount);
+    if (!playCount) {
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Playcount value in APE tag:"
+                << fmpsPlayCount;
+    }
+    return playCount;
+}
+
+bool exportPlayCountIntoTag(
+        TagLib::APE::Tag* pTag,
+        int playCount) {
+    DEBUG_ASSERT(pTag);
+    const std::optional<QString> fmpsPlayCount = formatFmpsPlayCount(playCount);
+    if (!fmpsPlayCount) {
+        kLogger.warning()
+                << "Invalid play count for export:" << playCount;
+        return false;
+    }
+    writeItem(
+            pTag,
+            kItemKeyFMPSPlayCount,
+            toTString(*fmpsPlayCount));
     return true;
 }
 

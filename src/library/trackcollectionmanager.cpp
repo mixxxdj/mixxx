@@ -341,7 +341,9 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
             (pTrack->isDirty() && m_pConfig &&
                     (m_pConfig->getValue(kSyncTrackMetadataConfigKey, false) ||
                             m_pConfig->getValue(
-                                    kExportRatingToFileTagsConfigKey, false)))) {
+                                    kExportRatingToFileTagsConfigKey, false) ||
+                            m_pConfig->getValue(
+                                    kExportPlayCountToFileTagsConfigKey, false)))) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate: {
             // Export track metadata now by saving as file tags.

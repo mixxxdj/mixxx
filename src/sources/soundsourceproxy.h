@@ -209,6 +209,10 @@ class SoundSourceProxy {
     FRIEND_TEST(TrackMetadataExportTest, RatingOnlyChangeExports);
     FRIEND_TEST(TrackMetadataExportTest, RatingExportKeepsSourceSynchronized);
     FRIEND_TEST(TrackMetadataExportTest, RatingOnlyPrefDoesNotExportOtherTags);
+    FRIEND_TEST(TrackMetadataExportTest, HigherPlayCountExports);
+    FRIEND_TEST(TrackMetadataExportTest, LowerPlayCountNeverOverwritesFile);
+    FRIEND_TEST(TrackMetadataExportTest, PlayCountExportDisabledWritesNothing);
+    FRIEND_TEST(TrackMetadataExportTest, PlayCountOnlyPrefDoesNotExportOtherTags);
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             const SyncTrackMetadataParams& syncParams);

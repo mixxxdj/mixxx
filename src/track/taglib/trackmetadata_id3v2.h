@@ -25,6 +25,16 @@ bool exportRatingIntoTag(
         TagLib::ID3v2::Tag* pTag,
         int rating);
 
+/// Import the play count from ID3v2 tag (FMPS_Playcount TXXX frame
+/// preferred, counter of a POPM frame as fallback)
+std::optional<int> importPlayCountFromTag(const TagLib::ID3v2::Tag& tag);
+
+/// Export the play count to ID3v2 tag as FMPS_Playcount TXXX frame
+/// Returns true on success, false on a negative play count
+bool exportPlayCountIntoTag(
+        TagLib::ID3v2::Tag* pTag,
+        int playCount);
+
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,
         const TagLib::ID3v2::Tag& tag,

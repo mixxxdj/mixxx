@@ -282,3 +282,102 @@ TEST_F(TrackMetadataExportTest, RatingOnlyChangeExports) {
                     pTrack.get(), params));
     EXPECT_EQ(readRatingFromFile(exportTrackPath).value_or(0), 5);
 }
+
+namespace {
+
+std::optional<int> readPlayCountFromFile(const QString& filePath) {
+    return mixxx::MetadataSourceTagLib(filePath, QStringLiteral("mp3"))
+            .importPlayCount();
+}
+
+} // namespace
+
+TEST_F(TrackMetadataExportTest, HigherPlayCountExports) {
+    const QString exportTrackPath = m_exportTempDir.filePath("playcount_higher.mp3");
+    mixxxtest::copyFile(m_testDataDir.absoluteFilePath(kEmptyFile), exportTrackPath);
+    TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+
+    SyncTrackMetadataParams params;
+    params.exportPlayCountToFile = true;
+
+    pTrack->resetPlayCounter(3);
+    EXPECT_EQ(ExportTrackMetadataResult::Succeeded,
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack.get(), params));
+    EXPECT_EQ(readPlayCountFromFile(exportTrackPath).value_or(-1), 3);
+    // The write must not make the file appear externally modified
+    EXPECT_TRUE(pTrack->checkSourceSynchronized());
+
+    // Nothing changed: the file must not be rewritten
+    EXPECT_EQ(ExportTrackMetadataResult::Skipped,
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack.get(), params));
+
+    // Playing the track again exports the new total
+    pTrack->updatePlayCounter();
+    EXPECT_EQ(ExportTrackMetadataResult::Succeeded,
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack.get(), params));
+    EXPECT_EQ(readPlayCountFromFile(exportTrackPath).value_or(-1), 4);
+}
+
+TEST_F(TrackMetadataExportTest, LowerPlayCountNeverOverwritesFile) {
+    const QString exportTrackPath = m_exportTempDir.filePath("playcount_lower.mp3");
+    mixxxtest::copyFile(m_testDataDir.absoluteFilePath(kEmptyFile), exportTrackPath);
+    {
+        mixxx::MetadataSourceTagLib source(exportTrackPath, QStringLiteral("mp3"));
+        ASSERT_TRUE(source.exportPlayCount(50));
+    }
+    TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+
+    SyncTrackMetadataParams params;
+    params.exportPlayCountToFile = true;
+
+    // Another player counted more plays than Mixxx. Even an explicit
+    // export request must not reduce the value in the file.
+    pTrack->resetPlayCounter(2);
+    pTrack->markForMetadataExport();
+    SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack.get(), params);
+    EXPECT_EQ(readPlayCountFromFile(exportTrackPath).value_or(-1), 50);
+}
+
+TEST_F(TrackMetadataExportTest, PlayCountExportDisabledWritesNothing) {
+    const QString exportTrackPath = m_exportTempDir.filePath("playcount_disabled.mp3");
+    mixxxtest::copyFile(m_testDataDir.absoluteFilePath(kEmptyFile), exportTrackPath);
+    TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+
+    pTrack->resetPlayCounter(3);
+    pTrack->markForMetadataExport();
+    SoundSourceProxy::exportTrackMetadataBeforeSaving(
+            pTrack.get(), SyncTrackMetadataParams{});
+    EXPECT_FALSE(readPlayCountFromFile(exportTrackPath).has_value());
+}
+
+TEST_F(TrackMetadataExportTest, PlayCountOnlyPrefDoesNotExportOtherTags) {
+    const QString exportTrackPath = m_exportTempDir.filePath("playcount_only_pref.mp3");
+    mixxxtest::copyFile(m_testDataDir.absoluteFilePath(kEmptyFile), exportTrackPath);
+    TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+
+    SyncTrackMetadataParams params;
+    params.syncTrackMetadata = false;
+    params.exportPlayCountToFile = true;
+
+    pTrack->setTitle(QStringLiteral("Only In Mixxx"));
+    pTrack->setRating(3);
+    pTrack->resetPlayCounter(6);
+    EXPECT_EQ(ExportTrackMetadataResult::Succeeded,
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack.get(), params));
+
+    // Only the play count must be in the file
+    EXPECT_EQ(readPlayCountFromFile(exportTrackPath).value_or(-1), 6);
+    EXPECT_FALSE(readRatingFromFile(exportTrackPath).has_value());
+    mixxx::TrackMetadata fileMetadata;
+    SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+            mixxx::FileAccess(mixxx::FileInfo(exportTrackPath)),
+            &fileMetadata,
+            nullptr,
+            false);
+    EXPECT_NE(fileMetadata.getTrackInfo().getTitle(),
+            QStringLiteral("Only In Mixxx"));
+}
