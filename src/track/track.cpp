@@ -107,6 +107,7 @@ Track::Track(
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
+          m_bMetadataExportDeferred(false),
           m_undoingBeatsChange(false) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
@@ -1568,9 +1569,14 @@ void Track::markForMetadataExport() {
     // is transient and not stored in the database.
 }
 
+void Track::markForDeferredMetadataExport() {
+    const auto locked = QMutexLocker(&m_qMutex);
+    m_bMetadataExportDeferred = true;
+}
+
 bool Track::isMarkedForMetadataExport() const {
     const auto locked = QMutexLocker(&m_qMutex);
-    return m_bMarkedForMetadataExport;
+    return m_bMarkedForMetadataExport || m_bMetadataExportDeferred;
 }
 
 int Track::getRating() const {
@@ -1733,6 +1739,9 @@ ExportTrackMetadataResult Track::exportMetadata(
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
     auto locked = QMutexLocker(&m_qMutex);
+    // AI-generated: A deferred export is attempted only once and, unlike
+    // an explicitly requested export, never forces a write. (AI-generated)
+    m_bMetadataExportDeferred = false;
     const auto sourceSyncStatus = m_record.checkSourceSyncStatus(m_fileAccess.info());
     switch (sourceSyncStatus) {
     case mixxx::TrackRecord::SourceSyncStatus::Void:
