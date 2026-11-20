@@ -2915,6 +2915,7 @@ if(BUILD_TESTING)
     src/test/enginebufferscalelineartest.cpp
     src/test/enginebuffertest.cpp
     src/test/enginefilterbiquadtest.cpp
+    src/test/enginefilterdelaytest.cpp
     src/test/enginemixertest.cpp
     src/test/enginemicrophonetest.cpp
     src/test/enginesynctest.cpp
