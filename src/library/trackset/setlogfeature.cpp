@@ -347,7 +347,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     return indexFromPlaylistId(selectedId);
 }
 
-void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
+void SetlogFeature::decorateChild(gsl::not_null<TreeItem*> item, int playlistId) {
     if (playlistId == m_currentPlaylistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
