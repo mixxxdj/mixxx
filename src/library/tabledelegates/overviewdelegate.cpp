@@ -4,11 +4,11 @@
 
 #include "control/controlproxy.h"
 #include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 #include "library/overviewcache.h"
 #include "library/trackmodel.h"
 #include "moc_overviewdelegate.cpp"
 #include "util/logger.h"
-#include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
 
 namespace {
@@ -39,11 +39,11 @@ inline WLibrary* findLibraryWidgetParent(QWidget* pWidget) {
 } // anonymous namespace
 
 OverviewDelegate::OverviewDelegate(QTableView* pTableView)
-        : TableItemDelegate(pTableView),
+        : CachedTableItemDelegate(pTableView,
+                  asTrackModel(pTableView)->fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)),
           m_pTrackModel(asTrackModel(pTableView)),
           m_pCache(OverviewCache::instance()),
-          m_type(mixxx::OverviewType::RGB),
-          m_inhibitLazyLoading(false) {
+          m_type(mixxx::OverviewType::RGB) {
     WLibrary* pLibrary = findLibraryWidgetParent(pTableView);
     if (pLibrary) {
         m_signalColors = pLibrary->getOverviewSignalColors();
@@ -67,6 +67,35 @@ OverviewDelegate::OverviewDelegate(QTableView* pTableView)
     slotTypeControlChanged(m_pTypeControl->get());
 }
 
+qint64 OverviewDelegate::prefetchBytesPerRow() const {
+    if (m_cellSize.isEmpty()) {
+        return 0;
+    }
+    return qint64{m_cellSize.width()} * m_cellSize.height() * 4;
+}
+
+bool OverviewDelegate::prefetchRow(int row, bool /*visible*/) {
+    const TrackId trackId = m_pTrackModel->getTrackId(
+            m_pTableView->model()->index(row, 0));
+    if (!trackId.isValid() || m_pCache->hasNoOverview(trackId)) {
+        return true;
+    }
+    if (m_prefetchInFlight.contains(trackId)) {
+        return false;
+    }
+    // Returns the overview if it is cached, does nothing if it is loading
+    const QPixmap pixmap = m_pCache->requestUncachedOverview(
+            m_type, m_signalColors, trackId, this, m_cellSize);
+    if (!pixmap.isNull()) {
+        return true;
+    }
+    // Also if another view requested it, so we repaint when it's ready
+    if (m_pCache->isLoading(trackId)) {
+        m_prefetchInFlight.insert(trackId);
+    }
+    return false;
+}
+
 void OverviewDelegate::slotTypeControlChanged(double v) {
     // Assert that v is in enum range to prevent UB.
     DEBUG_ASSERT(v >= 0 && v < QMetaEnum::fromType<mixxx::OverviewType>().keyCount());
@@ -81,7 +110,8 @@ void OverviewDelegate::slotTypeControlChanged(double v) {
     m_pTableView->update();
 }
 
-void OverviewDelegate::emitOverviewRowsChanged(QSet<TrackId>&& trackIds) {
+void OverviewDelegate::emitOverviewRowsChanged(
+        QSet<TrackId>&& trackIds, bool visibleOnly) {
     if (trackIds.isEmpty()) {
         return;
     }
@@ -91,47 +121,29 @@ void OverviewDelegate::emitOverviewRowsChanged(QSet<TrackId>&& trackIds) {
         const QList<int> idRows = m_pTrackModel->getTrackRows(id);
         rows.append(idRows);
     }
+    rows = rowsToRefresh(std::move(rows), visibleOnly);
     if (rows.isEmpty()) {
-        // For some reason this can happen during startup
+        // None visible, or none found, which happens during startup
         return;
     }
-    // Sort in ascending order...
-    std::sort(rows.begin(), rows.end());
-    // ...and then deduplicate...
-    constErase(
-            &rows,
-            make_const_iterator(
-                    rows, std::unique(rows.begin(), rows.end())),
-            rows.constEnd());
-    // ...before emitting the signal.
-    DEBUG_ASSERT(!rows.isEmpty());
-    emit overviewRowsChanged(std::move(rows));
-}
-
-void OverviewDelegate::slotInhibitLazyLoading(bool inhibitLazyLoading) {
-    m_inhibitLazyLoading = inhibitLazyLoading;
-    if (m_inhibitLazyLoading || m_cacheMissIds.isEmpty()) {
-        return;
-    }
-    // If we can request non-cache covers now, request updates
-    // for all rows that were cache misses since the last time.
-    // Reset the member variable before mutating the aggregated
-    // rows list (-> implicit sharing) and emitting a signal that
-    // in turn may trigger new signals for CoverArtDelegate!
-    QSet<TrackId> staleIds = std::move(m_cacheMissIds);
-    DEBUG_ASSERT(m_cacheMissIds.isEmpty());
-    emitOverviewRowsChanged(std::move(staleIds));
+    emit overviewRowsChanged(rows);
 }
 
 /// Maybe request repaint via dataChanged() by BaseTrackTableModel
-void OverviewDelegate::slotOverviewReady(const QObject* pRequester,
+void OverviewDelegate::slotOverviewReady(const QObject* /*pRequester*/,
         const TrackId trackId,
         bool pixmapValid) {
     // kLogger.info() << "slotOverviewReady()" << trackId << "pixmap valid:" << pixmapValid;
-
-    if (pRequester == this && pixmapValid) {
-        emitOverviewRowsChanged(QSet<TrackId>{trackId});
+    // Also tracks requests of other views, see prefetchRow()
+    if (!m_prefetchInFlight.remove(trackId)) {
+        return;
     }
+    // Repaint, if another view loaded it we request our size. Only
+    // visible rows, each refresh makes the QML library render.
+    if (pixmapValid) {
+        emitOverviewRowsChanged(QSet<TrackId>{trackId}, true);
+    }
+    processPrefetchQueue();
 }
 
 /// Maybe request repaint via dataChanged() by BaseTrackTableModel
@@ -145,24 +157,18 @@ void OverviewDelegate::paintItem(QPainter* painter,
         const QModelIndex& index) const {
     const TrackId trackId(m_pTrackModel->getTrackId(index));
     const double scaleFactor = m_pTableView->devicePixelRatioF();
+    const QSize cellSize = option.rect.size() * scaleFactor;
+    m_cellSize = cellSize;
+    // Cache misses are rendered by prefetchRow()
     QPixmap pixmap = m_pCache->requestCachedOverview(m_type,
             trackId,
             this,
-            option.rect.size() * scaleFactor);
+            cellSize);
+    // Also if another view is loading it, to repaint when it's ready
+    schedulePrefetch(pixmap.isNull() && trackId.isValid() &&
+            !m_prefetchInFlight.contains(trackId) &&
+            !m_pCache->hasNoOverview(trackId));
     if (pixmap.isNull()) {
-        // Cache miss
-        if (m_inhibitLazyLoading) {
-            // We are requesting cache-only covers and got a cache
-            // miss. Record this row so that when we switch to requesting
-            // non-cache we can request an update.
-            m_cacheMissIds.insert(trackId);
-        } else {
-            pixmap = m_pCache->requestUncachedOverview(m_type,
-                    m_signalColors,
-                    trackId,
-                    this,
-                    option.rect.size() * scaleFactor);
-        }
         paintItemBackground(painter, option, index);
     } else {
         // We have a cached pixmap, paint it

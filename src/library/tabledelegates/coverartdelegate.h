@@ -1,17 +1,20 @@
 #pragma once
 
+#include <QHash>
 #include <QList>
+#include <QSet>
 
 #include "library/coverart.h"
-#include "library/tabledelegates/tableitemdelegate.h"
+#include "library/tabledelegates/cachedtableitemdelegate.h"
 #include "track/track_decl.h"
 #include "util/cache.h"
+#include "util/duration.h"
 
 class CoverArtCache;
 class TrackModel;
 class QTableView;
 
-class CoverArtDelegate : public TableItemDelegate {
+class CoverArtDelegate : public CachedTableItemDelegate {
     Q_OBJECT
 
   public:
@@ -28,21 +31,6 @@ class CoverArtDelegate : public TableItemDelegate {
     // Sent when rows need to be refreshed
     void rowsChanged(const QList<int>& rows);
 
-  public slots:
-    // Advise the delegate to temporarily inhibit lazy loading
-    // of cover images and to only display those cover images
-    // that have already been cached. Otherwise only the solid
-    // (background) color is painted.
-    //
-    // It is useful to handle cases when the user scroll down
-    // very fast or when they hold an arrow key. In this case
-    // it is NOT desirable to start multiple expensive file
-    // system operations in worker threads for loading and
-    // scaling cover images that are not even displayed after
-    // scrolling beyond them.
-    void slotInhibitLazyLoading(
-            bool inhibitLazyLoading);
-
   private slots:
     void slotCoverFound(
             const QObject* pRequester,
@@ -53,20 +41,28 @@ class CoverArtDelegate : public TableItemDelegate {
     TrackModel* const m_pTrackModel;
 
   private:
-    void emitRowsChanged(
-            QList<int>&& rows);
-    void cleanCacheMissRows() const;
-    void requestUncachedCover(
+    // Returns false if no coverFound() will arrive for coverInfo.cacheKey()
+    bool requestUncachedCover(
             const CoverInfo& coverInfo,
-            int width,
-            int row) const;
+            int width);
+
+    // Load covers around the viewport into QPixmapCache
+    bool prefetchRow(int row, bool visible) override;
+    int prefetchInFlightCount() const override {
+        return static_cast<int>(m_prefetchInFlight.size());
+    }
+    qint64 prefetchBytesPerRow() const override;
+    void prefetchRowsReplaced() override;
+    bool isKnownMissing(mixxx::cache_key_t key) const;
+
+    mutable int m_cellWidth = 0; // device pixels
+    QSet<mixxx::cache_key_t> m_prefetchInFlight;
+    // Covers that were expected but not found, e.g. on a missing drive.
+    // CoverArtCache doesn't cache them, so we must not retry on every pass.
+    QHash<mixxx::cache_key_t, mixxx::Duration> m_missingSince;
 
     CoverArtCache* const m_pCache;
-    bool m_inhibitLazyLoading;
-    int m_column;
 
-    // We need to record rows in paint() (which is const) so
-    // these are marked mutable.
-    mutable QSet<int> m_cacheMissRows;
+    // Rows to refresh when a cover is loaded, also recorded in paint
     mutable QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
 };
