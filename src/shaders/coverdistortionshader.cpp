@@ -123,7 +123,7 @@ void main()
     highp float r = length(c);
 
     c *= 1.0 - bass * 0.28 * exp(-r * r * 3.0);
-    c += c * bass * 0.045 * sin(r * 16.0 - 9.0 * phases.y);
+    c += c * bass * 0.045 * sin(r * 16.0 - 12.0 * phases.y);
 
     // The fast phase is divided into 12 steps and the slow one into 16.
     highp float glitch = floor(phases.y * 1.9099) + 13.0 * floor(phases.x * 2.5465);

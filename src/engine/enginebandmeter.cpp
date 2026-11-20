@@ -20,7 +20,7 @@ namespace {
 constexpr double kLowBandMaxHz = 125.0;
 constexpr double kMidBandMinHz = 400.0;
 constexpr double kMidBandMaxHz = 1500.0;
-constexpr double kHighBandMinHz = 4000.0;
+constexpr double kHighBandMinHz = 6000.0;
 
 // The sample rates for which the filters are designed in advance. At any
 // other rate the filters of the nearest rate are used, which shifts the
