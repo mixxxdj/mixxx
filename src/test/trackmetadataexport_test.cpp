@@ -1,5 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <QDateTime>
+#include <QFile>
+#include <QFileInfo>
 #include <QTemporaryDir>
 
 #include "sources/metadatasourcetaglib.h"
@@ -258,6 +261,89 @@ TEST_F(TrackMetadataExportTest, RatingOnlyPrefDoesNotExportOtherTags) {
             false);
     EXPECT_NE(fileMetadata.getTrackInfo().getTitle(),
             QStringLiteral("Only In Mixxx"));
+}
+
+// AI-generated: The two tests below cover deferred exports, which are
+// scheduled whenever a modified track is saved while still in use.
+// (AI-generated)
+TEST_F(TrackMetadataExportTest, DeferredExportLeavesUnmodifiedFileUntouched) {
+    const QString exportTrackPath = m_exportTempDir.filePath("deferred_unmodified.mp3");
+    mixxxtest::copyFile(m_testDataDir.absoluteFilePath(kEmptyFile), exportTrackPath);
+
+    SyncTrackMetadataParams params;
+    params.syncTrackMetadata = true;
+
+    // Write some tags into the file by an explicitly requested export
+    {
+        TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+        pTrack->setTitle(QStringLiteral("Deferred Title"));
+        pTrack->markForMetadataExport();
+        ASSERT_EQ(ExportTrackMetadataResult::Succeeded,
+                SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                        pTrack.get(), params));
+    }
+
+    // Backdate the file to detect any subsequent write
+    const QDateTime backdated = QDateTime::currentDateTimeUtc().addSecs(-3600);
+    {
+        QFile file(exportTrackPath);
+        ASSERT_TRUE(file.open(QIODevice::ReadWrite));
+        ASSERT_TRUE(file.setFileTime(backdated, QFileDevice::FileModificationTime));
+    }
+    const QDateTime modifiedBefore = QFileInfo(exportTrackPath).lastModified();
+    ASSERT_LT(modifiedBefore.secsTo(QDateTime::currentDateTimeUtc()), 3700);
+    ASSERT_GT(modifiedBefore.secsTo(QDateTime::currentDateTimeUtc()), 3500);
+
+    // A deferred export of a track whose metadata equals the file tags
+    // must not write the file
+    TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+    pTrack->markForDeferredMetadataExport();
+    EXPECT_TRUE(pTrack->isMarkedForMetadataExport());
+    EXPECT_EQ(ExportTrackMetadataResult::Skipped,
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack.get(), params));
+    EXPECT_FALSE(pTrack->isMarkedForMetadataExport());
+    EXPECT_EQ(modifiedBefore, QFileInfo(exportTrackPath).lastModified());
+
+    // An explicitly requested export still writes the unmodified metadata
+    pTrack->markForMetadataExport();
+    EXPECT_EQ(ExportTrackMetadataResult::Succeeded,
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack.get(), params));
+    EXPECT_NE(modifiedBefore, QFileInfo(exportTrackPath).lastModified());
+}
+
+TEST_F(TrackMetadataExportTest, DeferredExportWritesModifiedMetadata) {
+    const QString exportTrackPath = m_exportTempDir.filePath("deferred_modified.mp3");
+    mixxxtest::copyFile(m_testDataDir.absoluteFilePath(kEmptyFile), exportTrackPath);
+
+    SyncTrackMetadataParams params;
+    params.syncTrackMetadata = true;
+
+    {
+        TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+        pTrack->setTitle(QStringLiteral("First Title"));
+        pTrack->markForMetadataExport();
+        ASSERT_EQ(ExportTrackMetadataResult::Succeeded,
+                SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                        pTrack.get(), params));
+    }
+
+    TrackPointer pTrack = newTrackWithImportedMetadata(exportTrackPath);
+    pTrack->setTitle(QStringLiteral("Second Title"));
+    pTrack->markForDeferredMetadataExport();
+    EXPECT_EQ(ExportTrackMetadataResult::Succeeded,
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(
+                    pTrack.get(), params));
+
+    mixxx::TrackMetadata fileMetadata;
+    SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+            mixxx::FileAccess(mixxx::FileInfo(exportTrackPath)),
+            &fileMetadata,
+            nullptr,
+            false);
+    EXPECT_EQ(fileMetadata.getTrackInfo().getTitle(),
+            QStringLiteral("Second Title"));
 }
 
 TEST_F(TrackMetadataExportTest, RatingOnlyChangeExports) {
