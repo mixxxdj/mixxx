@@ -1,0 +1,15 @@
+<svg version="1.1" viewBox="0 0 42 19" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="a" x1="4.0861306" x2="14.996832" y1="-18.470181" y2="-18.470181" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#d9d9d9" offset="0"/>
+      <stop stop-color="#d9d9d9" offset=".09073675"/>
+      <stop stop-color="#b1b1b1" offset=".12751043"/>
+      <stop stop-color="#b1b1b1" offset=".85076457"/>
+      <stop stop-color="#777" offset=".90926093"/>
+      <stop stop-color="#777" offset="1"/>
+    </linearGradient>
+  </defs>
+  <path d="m38.998047 7.6244926c0-1.0175989-.845683-1.8632813-1.863281-1.8632813h-32.244141c-1.0175989 0-1.8632812.8456824-1.8632812 1.8632813v7.2304684c0 1.017599.8456823 1.863281 1.8632812 1.863281h32.244141c1.017598 0 1.863281-.845682 1.863281-1.863281z" fill="#2f2f2f" fill-opacity=".29820052" stop-color="#000000" stroke-linecap="round" stroke-miterlimit="0" style="paint-order:fill markers stroke"/>
+  <rect transform="rotate(90)" x="4.8864946" y="-38.150074" width="9.2630625" height="34.276394" rx="1.016" fill="none" stroke="url(#a)" stroke-linecap="round" stroke-miterlimit="0" stroke-width="1.69455" style="paint-order:fill markers stroke"/>
+  <rect transform="rotate(90)" x="5.0335031" y="-38.208984" width="8.9690704" height="34.178284" rx="1.0420001" fill="#adadad" style="paint-order:fill markers stroke"/>
+</svg>
