@@ -24,6 +24,7 @@ class allshader::WaveformRendererFiltered final
 
   private:
     const bool m_bRgbStacked;
+    const ::WaveformRendererSignalBase::Options m_options;
     bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererFiltered);

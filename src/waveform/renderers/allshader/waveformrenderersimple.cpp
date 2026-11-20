@@ -130,27 +130,21 @@ bool WaveformRendererSimple::preprocessInner() {
 
         const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
 
-        // - Per channel
-        uchar u8maxAllChn[2]{};
-        for (int chn = 0; chn < 2; chn++) {
-            // data is interleaved left / right
-            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
-                const WaveformData& waveformData = data[i];
-
-                u8maxAllChn[chn] = math_max(u8maxAllChn[chn], waveformData.filtered.all);
-            }
+        // The simple renderer draws a single symmetric signal envelope that is
+        // shared for both stereo channels. The right-channel max is never used,
+        // so compute one combined max instead of a redundant per-channel pass.
+        float maxAll = 0.0f;
+        for (int i = visualIndexStart; i <= visualIndexStop; ++i) {
+            const WaveformData& waveformData = data[i];
+            maxAll = math_max(maxAll, static_cast<float>(waveformData.filtered.all));
         }
-        float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
 
         // TODO: use two geometrynodes, with uniform material,
         // one for the axis, one for the signal
-
-        // note: heightFactor is the same for left and right,
-        // but negative for left (chn 0) and positive for right (chn 1)
         vertexUpdater.addRectangle({fpos - halfPixelSize,
-                                           halfBreadth - heightFactor * maxAllChn[0]},
+                                           halfBreadth - heightFactor * maxAll},
                 {fpos + halfPixelSize,
-                        halfBreadth + heightFactor * maxAllChn[0]},
+                        halfBreadth + heightFactor * maxAll},
                 signalColor);
 
         xVisualFrame += visualIncrementPerPixel;
