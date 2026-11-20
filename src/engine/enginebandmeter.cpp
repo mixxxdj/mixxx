@@ -17,7 +17,7 @@ namespace {
 // default shelves are 250 Hz and 2.5 kHz. The gaps around the shelves keep
 // the leakage of the neighbor bands out, so that a band killed with the EQ
 // reads as silent.
-constexpr double kLowBandMaxHz = 150.0;
+constexpr double kLowBandMaxHz = 125.0;
 constexpr double kMidBandMinHz = 400.0;
 constexpr double kMidBandMaxHz = 1500.0;
 constexpr double kHighBandMinHz = 4000.0;
