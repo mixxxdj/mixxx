@@ -27,6 +27,7 @@ EngineDeck::EngineDeck(
           m_pConfig(pConfig),
 #ifdef __STEM__
           m_stemClonedState(false),
+          m_activeStemCount(0),
 #endif
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))) {
@@ -125,12 +126,14 @@ void EngineDeck::addStemHandle(const ChannelHandleAndGroup& stemHandleGroup) {
 
 void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     mixxx::audio::ChannelCount chCount = m_pBuffer->getChannelCount();
-    VERIFY_OR_DEBUG_ASSERT(m_stems.size() <= chCount &&
-            m_stemMute.size() <= chCount && m_stemGain.size() <= chCount) {
+    unsigned int stemCount = chCount / mixxx::kEngineChannelOutputCount;
+    VERIFY_OR_DEBUG_ASSERT(stemCount <= m_stems.size() &&
+            stemCount <= m_stemMute.size() && stemCount <= m_stemGain.size()) {
+        // Cannot mix the stems without their controls, output silence.
+        m_activeStemCount = 0;
+        SampleUtil::clear(pOut, bufferSize);
         return;
     };
-    mixxx::audio::SampleRate sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
-    unsigned int stemCount = chCount / mixxx::kEngineChannelOutputCount;
     SINT numFrames = bufferSize / mixxx::kEngineChannelOutputCount;
     std::size_t allChannelBufferSize = bufferSize * stemCount;
     if (m_stemBuffer.size() < static_cast<SINT>(allChannelBufferSize)) {
@@ -138,26 +141,25 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     }
     m_pBuffer->process(m_stemBuffer.data(), allChannelBufferSize);
 
+    // Apply the pregain before any per-stem processing. Its speed dependent
+    // gain (vinyl sound emulation) drops to 0 while the deck is paused and must
+    // not silence the effect tails that are generated later in ChannelMixer,
+    // after the fader gains (see issue #16718).
+    m_pPregain->setSpeedAndScratching(m_pBuffer->getSpeed(), m_pBuffer->getScratching());
+    m_pPregain->process(m_stemBuffer.data(), allChannelBufferSize);
+
     CSAMPLE* pIn = m_stemBuffer.data();
 
     // TODO(XXX): process stem DSP
 
-    EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
-
-    VERIFY_OR_DEBUG_ASSERT(pEngineEffectsManager != nullptr) {
-        // If we don't have an engine manager to mix the stem together, we mixed
-        // the multi channel into stereo and return early.
-        SampleUtil::mixMultichannelToStereo(pOut, pIn, numFrames, chCount);
-        return;
-    }
-
-    // We will now mix each stem (stereo channel) into a single "output"
-    // stereo channel. In order to mix the steam, we will use the engine
-    // effect manager so we can also apply the individual stem quick FX
-    GroupFeatureState featureState;
-    collectFeatures(&featureState);
-    for (unsigned int stemIdx = 0; stemIdx < stemCount;
-            stemIdx++) {
+    // Apply the stem volume and mute (the stems' own fader) to each stem and
+    // write the results back into m_stemBuffer. ChannelMixer picks up these
+    // per-stem buffers via copySubChannel() and applies the Postfader effect
+    // chains registered for the stem handles (the stem QuickEffect and
+    // effects assigned to a stem) once the deck's volume, crossfader and
+    // orientation gains have been applied as well. This keeps the effect tails
+    // audible when the deck is faded out or paused (post-fader, issue #16718).
+    for (unsigned int stemIdx = 0; stemIdx < stemCount; stemIdx++) {
         int chOffset = stemIdx * mixxx::audio::ChannelCount::stereo();
         float stemGain = m_stemMute[stemIdx]->toBool()
                 ? 0.0f
@@ -169,21 +171,13 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
                 numFrames,
                 chCount,
                 chOffset);
-        // Mix the stem frames with the right gain after proceeding its effect.
-        pEngineEffectsManager->processPostFaderInPlace(m_stems[stemIdx].handle(),
-                m_pEffectsManager->getMainHandle(),
-                pOut,
-                bufferSize,
-                sampleRate,
-                featureState,
-                m_stemsGainCache[stemIdx],
-                stemGain,
-                false);
+        // Ramp the gain to avoid clicks when stem volume or mute is changed.
+        SampleUtil::applyRampingGain(
+                pOut, m_stemsGainCache[stemIdx], stemGain, bufferSize);
         // We cache the current gain so we can use it to fade the frame on
         // next iteration. Without this, (e.g using a static "previous"
         // gain) gain changes will yield to audio cracks.
         m_stemsGainCache[stemIdx] = stemGain;
-
         // Put back the stem frames into the steam buffer (LRLR -> LR......LR......)
         SampleUtil::insertStereoToMulti(
                 pIn,
@@ -193,8 +187,12 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
                 chOffset);
     }
 
-    // Mixxx all the stem tracks together
+    // Mixxx all the stem tracks together into the dry deck output. This is
+    // used for the VU meter, the deck output and as a fallback in the mixing
+    // passes; ChannelMixer rebuilds the post-fader mix from the single stems.
     SampleUtil::mixMultichannelToStereo(pOut, pIn, numFrames, chCount);
+
+    m_activeStemCount = static_cast<int>(stemCount);
 }
 
 void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
@@ -217,9 +215,35 @@ void EngineDeck::cloneStemState(const EngineDeck* deckToClone) {
     }
     m_stemClonedState = true;
 }
+
+ChannelHandle EngineDeck::subChannelHandle(int index) const {
+    VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < static_cast<int>(m_stems.size())) {
+        return m_group.handle();
+    }
+    return m_stems[index].handle();
+}
+
+void EngineDeck::copySubChannel(CSAMPLE* pDest, int index, std::size_t numSamples) const {
+    VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < m_activeStemCount) {
+        return;
+    }
+    const auto numFrames = static_cast<SINT>(numSamples / mixxx::kEngineChannelOutputCount);
+    SampleUtil::copyOneStereoFromMulti(pDest,
+            m_stemBuffer.data(),
+            numFrames,
+            m_pBuffer->getChannelCount(),
+            index * mixxx::audio::ChannelCount::stereo());
+}
 #endif
 
 void EngineDeck::process(CSAMPLE* pOut, const std::size_t bufferSize) {
+#ifdef __STEM__
+    // processStem() sets this to the number of stems it has prepared for
+    // ChannelMixer. Reset it here so that ChannelMixer does not pick up stale
+    // sub-channel data when the stem path is not used this callback, e.g. while
+    // passthrough is active or when playing a regular stereo track.
+    m_activeStemCount = 0;
+#endif
     // Feed the incoming audio through if passthrough is active
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
     if (isPassthroughActive() && sampleBuffer) {
@@ -227,6 +251,8 @@ void EngineDeck::process(CSAMPLE* pOut, const std::size_t bufferSize) {
         m_bPassthroughWasActive = true;
         m_sampleBuffer = nullptr;
         m_pPregain->setSpeedAndScratching(1, false);
+        // Apply pregain
+        m_pPregain->process(pOut, bufferSize);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
@@ -239,28 +265,42 @@ void EngineDeck::process(CSAMPLE* pOut, const std::size_t bufferSize) {
         // Process the raw audio
         if (m_pBuffer->getChannelCount() <= mixxx::kEngineChannelOutputCount) {
             // Process a single mono or stereo channel
-#endif
             m_pBuffer->process(pOut, bufferSize);
-#ifdef __STEM__
+            m_pPregain->setSpeedAndScratching(
+                    m_pBuffer->getSpeed(), m_pBuffer->getScratching());
+            // Apply pregain
+            m_pPregain->process(pOut, bufferSize);
         } else {
-            // Process multiple stereo channels (stems) and mix them together
+            // Process multiple stereo channels (stems), mix them together and
+            // apply the pregain. The per-stem effects are applied later by
+            // ChannelMixer, after the fader gains (see processStem()).
             processStem(pOut, bufferSize);
         }
-#endif
+#else
+        m_pBuffer->process(pOut, bufferSize);
         m_pPregain->setSpeedAndScratching(m_pBuffer->getSpeed(), m_pBuffer->getScratching());
+        // Apply pregain
+        m_pPregain->process(pOut, bufferSize);
+#endif
         m_bPassthroughWasActive = false;
     }
 
-    // Apply pregain
-    m_pPregain->process(pOut, bufferSize);
-
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
-        pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
-                m_pEffectsManager->getMainHandle(),
-                pOut,
-                bufferSize,
-                mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
+#ifdef __STEM__
+        // The equalizer of a stem deck is applied by ChannelMixer on the
+        // post-fader mix together with the other deck effects, because the
+        // downmix produced here is rebuilt there from the single stems
+        // (see issue #16718).
+        if (m_activeStemCount == 0)
+#endif
+        {
+            pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
+                    m_pEffectsManager->getMainHandle(),
+                    pOut,
+                    bufferSize,
+                    mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
+        }
     }
 
     // Update VU meter
