@@ -17,6 +17,7 @@
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/parented_ptr.h"
+#include "widget/wsearchpopup.h"
 #include "wskincolor.h"
 
 #define ENABLE_TRACE_LOG false
@@ -138,6 +139,11 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
             &QComboBox::currentTextChanged,
             this,
             &WSearchLineEdit::slotTextChanged);
+    QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F3", "Search|Focus")), this);
+    connect(setFocusShortcut,
+            &QShortcut::activated,
+            this,
+            &WSearchLineEdit::slotShowSearchPopup);
     connect(this,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -150,6 +156,30 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent, UserSettingsPointer pConfig)
 
 WSearchLineEdit::~WSearchLineEdit() {
     saveQueriesInConfig();
+}
+
+void WSearchLineEdit::slotShowSearchPopup() {
+    WSearchPopup* dialog = new WSearchPopup(m_pConfig, this);
+
+    connect(dialog, &WSearchPopup::searchRequest, this, [this](const QString& result) {
+        QString query;
+        const QStringList parts = result.split("\n");
+        for (const QString& part : std::as_const(parts)) {
+            if (part.startsWith("query: ")) {
+                query = part.mid(7).trimmed();
+            }
+        }
+        if (query.isEmpty()) {
+            return;
+        }
+        setTextBlockSignals(query);
+        updateClearAndDropdownButton(query);
+        emit search(query);
+        m_queryEmitted = true;
+    });
+
+    dialog->exec();
+    dialog->deleteLater();
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
