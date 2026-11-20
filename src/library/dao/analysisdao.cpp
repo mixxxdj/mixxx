@@ -6,6 +6,7 @@
 
 #include "library/queryutil.h"
 #include "preferences/waveformsettings.h"
+#include "util/fastchecksum.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
 
@@ -85,8 +86,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
         QString dataPath = analysisPath.absoluteFilePath(
             QString::number(info.analysisId));
         const QByteArray compressedData = loadDataFromFile(dataPath);
-        const int file_checksum = qChecksum(
-                compressedData);
+        const int file_checksum = mixxx::fastChecksum(compressedData);
         if (checksum != file_checksum) {
             qDebug() << "WARNING: Corrupt analysis loaded from" << dataPath
                      << "length" << compressedData.length();
@@ -115,8 +115,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     time.start();
 
     const QByteArray compressedData = qCompress(info->data, kCompressionLevel);
-    const int checksum = qChecksum(
-            compressedData);
+    const int checksum = mixxx::fastChecksum(compressedData);
     QSqlQuery query(m_database);
     if (info->analysisId == -1) {
         query.prepare(QString(
