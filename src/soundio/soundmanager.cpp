@@ -45,6 +45,31 @@ struct DeviceMode {
 #ifdef __LINUX__
 constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
+
+QString describeRouting(const AudioPath& path, const SoundDevicePointer& pDevice) {
+    const ChannelGroup channelGroup = path.getChannelGroup();
+    const int firstChannel = channelGroup.getChannelBase() + 1;
+    const int channelCount = channelGroup.getChannelCount().value();
+
+    if (channelCount == 0) {
+        return QStringLiteral("%1 -> %2 no channels")
+                .arg(path.getString(), pDevice->getDisplayName());
+    }
+
+    if (channelCount == 1) {
+        return QStringLiteral("%1 -> %2 channel %3")
+                .arg(path.getString(),
+                        pDevice->getDisplayName(),
+                        QString::number(firstChannel));
+    }
+
+    const int lastChannel = firstChannel + channelCount - 1;
+    return QStringLiteral("%1 -> %2 channels %3-%4")
+            .arg(path.getString(),
+                    pDevice->getDisplayName(),
+                    QString::number(firstChannel),
+                    QString::number(lastChannel));
+}
 } // anonymous namespace
 
 SoundManager::SoundManager(
@@ -350,6 +375,8 @@ SoundDeviceStatus SoundManager::setupDevices() {
                 goto closeAndError;
             }
 
+            qInfo().noquote() << "Sound hardware input:" << describeRouting(in, pDevice);
+
             if (!isPipewireSelected()) {
                 // PipeWire manages input/output configuration itself
                 configureInput(in);
@@ -387,6 +414,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
             status = pDevice->addOutput(aob);
             if (status != SoundDeviceStatus::Ok) {
                 goto closeAndError;
+            }
+
+            if (pDevice->getDeviceId().name != kNetworkDeviceInternalName) {
+                qInfo().noquote() << "Sound hardware output:" << describeRouting(out, pDevice);
             }
 
             if (!m_config.getForceNetworkClock() || jackApiUsed()) {

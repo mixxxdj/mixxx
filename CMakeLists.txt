@@ -3852,6 +3852,10 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickDialogs2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.11)
+    # From Qt 6.11 QuickShapesPrivate is an interface to the public QuickShapes
+    list(APPEND QT_EXTRA_COMPONENTS "QuickShapes")
+  endif()
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
@@ -4351,47 +4355,24 @@ else()
           applocal
       )
 
-      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
-        get_target_property(
-          _QuickShapes_Type
-          Qt${QT_VERSION_MAJOR}::QuickShapes
-          TYPE
+      if(QT_VERSION VERSION_LESS 6.11)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
         )
-        if(
-          _QuickShapes_Type STREQUAL "SHARED_LIBRARY"
-          OR _QuickShapes_Type STREQUAL "MODULE_LIBRARY"
-          OR _QuickShapes_Type STREQUAL "EXECUTABLE"
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickShapes
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
         )
-          install(
-            IMPORTED_RUNTIME_ARTIFACTS
-              Qt${QT_VERSION_MAJOR}::QuickShapes
-              DESTINATION
-              "${MIXXX_INSTALL_DATADIR}"
-              COMPONENT
-              applocal
-          )
-        endif()
-      endif()
-      if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapesPrivate)
-        get_target_property(
-          _QuickShapesPrivate_Type
-          Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          TYPE
-        )
-        if(
-          _QuickShapesPrivate_Type STREQUAL "SHARED_LIBRARY"
-          OR _QuickShapesPrivate_Type STREQUAL "MODULE_LIBRARY"
-          OR _QuickShapesPrivate_Type STREQUAL "EXECUTABLE"
-        )
-          install(
-            IMPORTED_RUNTIME_ARTIFACTS
-              Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-              DESTINATION
-              "${MIXXX_INSTALL_DATADIR}"
-              COMPONENT
-              applocal
-          )
-        endif()
       endif()
 
       if(QT_VERSION VERSION_LESS 6.4)
