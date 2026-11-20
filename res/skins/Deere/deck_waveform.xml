@@ -134,6 +134,7 @@
         <ObjectName>WaveformZoomContainer</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
+        <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
         <Children>
           <Template src="skin:left_1state_button.xml">
             <SetVariable name="TooltipId">waveform_zoom_down</SetVariable>
