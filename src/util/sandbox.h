@@ -4,11 +4,11 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QHash>
+#include <QRecursiveMutex>
 #include <QSharedPointer>
 #include <QtGlobal>
 
 #include "preferences/configobject.h"
-#include "util/compatibility/qmutex.h"
 #include "util/fileinfo.h"
 
 #ifdef __APPLE__
@@ -84,7 +84,7 @@ class Sandbox {
     static bool createSecurityToken(
             const QString& canonicalPath, bool isDirectory);
 
-    static QT_RECURSIVE_MUTEX s_mutex;
+    static QRecursiveMutex s_mutex;
     static bool s_bInSandbox;
     static QSharedPointer<ConfigObject<ConfigValue>> s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;

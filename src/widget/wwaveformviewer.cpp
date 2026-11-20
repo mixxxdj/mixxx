@@ -103,11 +103,7 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             auto cueAtClickPos = getCuePointerFromCueMark(m_pHoveredMark);
             if (cueAtClickPos) {
                 m_pCueMenuPopup->setTrackCueGroup(currentTrack, cueAtClickPos, m_group);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
                 m_pCueMenuPopup->popup(event->globalPosition().toPoint());
-#else
-                m_pCueMenuPopup->popup(event->globalPos());
-#endif
             }
         } else {
             // If we are scratching then disable and reset because the two shouldn't

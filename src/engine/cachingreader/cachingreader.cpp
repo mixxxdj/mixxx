@@ -4,7 +4,6 @@
 
 #include "moc_cachingreader.cpp"
 #include "util/assert.h"
-#include "util/compatibility/qatomic.h"
 #include "util/counter.h"
 #include "util/logger.h"
 #include "util/sample.h"
@@ -238,7 +237,7 @@ void CachingReader::process() {
         auto* pChunk = update.takeFromWorker();
         if (pChunk) {
             // Result of a read request (with a chunk)
-            DEBUG_ASSERT(atomicLoadRelaxed(m_state) != STATE_IDLE);
+            DEBUG_ASSERT(m_state.loadRelaxed() != STATE_IDLE);
             DEBUG_ASSERT(
                     update.status == CHUNK_READ_SUCCESS ||
                     update.status == CHUNK_READ_EOF ||
@@ -250,7 +249,7 @@ void CachingReader::process() {
                 freeChunk(pChunk);
                 continue;
             }
-            DEBUG_ASSERT(atomicLoadRelaxed(m_state) == STATE_TRACK_LOADED);
+            DEBUG_ASSERT(m_state.loadRelaxed() == STATE_TRACK_LOADED);
             if (update.status == CHUNK_READ_SUCCESS) {
                 // Insert or freshen the chunk in the MRU/LRU list after
                 // obtaining ownership from the worker.
@@ -274,12 +273,12 @@ void CachingReader::process() {
                 // or the cache has been already cleared.
                 // In case of two consecutive load events, we receive two consecutive
                 // TRACK_LOADED without a chunk in between, assert this here.
-                DEBUG_ASSERT(atomicLoadRelaxed(m_state) == STATE_TRACK_LOADING ||
-                        (atomicLoadRelaxed(m_state) == STATE_TRACK_LOADED &&
+                DEBUG_ASSERT(m_state.loadRelaxed() == STATE_TRACK_LOADING ||
+                        (m_state.loadRelaxed() == STATE_TRACK_LOADED &&
                                 !m_mruCachingReaderChunk && !m_lruCachingReaderChunk));
                 // now purge also the recently used chunk list from the old track.
                 if (m_mruCachingReaderChunk || m_lruCachingReaderChunk) {
-                    DEBUG_ASSERT(atomicLoadRelaxed(m_state) == STATE_TRACK_LOADING);
+                    DEBUG_ASSERT(m_state.loadRelaxed() == STATE_TRACK_LOADING);
                     freeAllChunks();
                 }
                 // Reset the readable frame index range
@@ -292,8 +291,8 @@ void CachingReader::process() {
                 // be the very next status update.
                 if (!m_state.testAndSetRelease(STATE_TRACK_UNLOADING, STATE_IDLE)) {
                     DEBUG_ASSERT(
-                            atomicLoadRelaxed(m_state) == STATE_TRACK_LOADING ||
-                            atomicLoadRelaxed(m_state) == STATE_IDLE);
+                            m_state.loadRelaxed() == STATE_TRACK_LOADING ||
+                            m_state.loadRelaxed() == STATE_IDLE);
                 }
             }
         }
@@ -334,7 +333,7 @@ CachingReader::ReadResult CachingReader::read(SINT startSample,
     }
 
     // If no track is loaded, don't do anything.
-    if (atomicLoadRelaxed(m_state) != STATE_TRACK_LOADED) {
+    if (m_state.loadRelaxed() != STATE_TRACK_LOADED) {
         return ReadResult::UNAVAILABLE;
     }
 
@@ -538,7 +537,7 @@ CachingReader::ReadResult CachingReader::read(SINT startSample,
 
 void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
     // If no file is loaded, skip.
-    if (atomicLoadRelaxed(m_state) != STATE_TRACK_LOADED) {
+    if (m_state.loadRelaxed() != STATE_TRACK_LOADED) {
         return;
     }
 

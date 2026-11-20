@@ -106,11 +106,7 @@ bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
         // This allows dragging the row also by grabbing the star cell
         QMouseEvent* me = static_cast<QMouseEvent*>(event);
         if (me->buttons().testFlag(Qt::NoButton)) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             const int eventPosition = static_cast<int>(me->position().x());
-#else
-            const int eventPosition = me->x();
-#endif
             int star = m_starRating.starAtPosition(eventPosition, m_styleOption.rect);
 
             if (star <= StarRating::kInvalidStarCount) {

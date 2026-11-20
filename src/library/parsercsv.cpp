@@ -175,11 +175,7 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     // rfc4180: Common usage of CSV is US-ASCII ...
     // Using UTF-8 to get around codepage issues
     // and it's the default encoding in Ooo Calc
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     DEBUG_ASSERT(out.encoding() == QStringConverter::Utf8);
-#else
-    out.setCodec("UTF-8");
-#endif
 
     // writing header section
     bool first = true;

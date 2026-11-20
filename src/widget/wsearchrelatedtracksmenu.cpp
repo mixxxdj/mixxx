@@ -14,7 +14,6 @@
 #include "util/math.h"
 #include "util/parented_ptr.h"
 #include "util/qt.h"
-#include "util/widgethelper.h"
 
 namespace {
 
@@ -110,8 +109,7 @@ QString WSearchRelatedTracksMenu::elideActionText(
     if (elidableTextSuffix.isEmpty()) {
         return actionTextPrefix;
     }
-    const auto* const pScreen =
-            mixxx::widgethelper::getScreen(*this);
+    const auto* const pScreen = screen();
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         // This should never fail
         return actionTextPrefix;
