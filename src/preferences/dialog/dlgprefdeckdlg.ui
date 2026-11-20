@@ -192,6 +192,26 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
         </property>
        </widget>
       </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="labelOverviewSeekBarAligned">
+        <property name="text">
+         <string>Overview seek</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxOverviewSeekBarAligned</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxOverviewSeekBarAligned">
+        <property name="toolTip">
+         <string>When clicking (or releasing a drag on) the waveform overview of a playing deck, land on the same beat in the bar as the sync target if another deck is playing, otherwise as this deck before the jump. The target is usually within two beats of the click. This works regardless of Quantize.</string>
+        </property>
+        <property name="text">
+         <string>Keep the beat in the bar when clicking the overview of a playing deck</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -669,6 +689,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>comboBoxLoadPoint</tabstop>
   <tabstop>comboBoxLoadWhenDeckPlaying</tabstop>
   <tabstop>checkBoxCloneDeckOnLoadDoubleTap</tabstop>
+  <tabstop>checkBoxOverviewSeekBarAligned</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>checkBoxInvertSpeedSlider</tabstop>
   <tabstop>checkBoxResetPitch</tabstop>
