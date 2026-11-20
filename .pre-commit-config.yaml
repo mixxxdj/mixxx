@@ -205,3 +205,10 @@ repos:
         language: python
         types: [text]
         files: ^.*\.ui$
+      - id: check-svg-dims
+        name: check-svg-dims
+        description: "Detect SVG files missing explicit width or height attributes in the root tag."
+        entry: python tools/check_svg_dims.py
+        language: python
+        types: [text]
+        files: ^.*\.svg$
