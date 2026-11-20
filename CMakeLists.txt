@@ -3844,6 +3844,10 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickDialogs2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickLayouts")
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
+  if(QT_VERSION VERSION_GREATER_EQUAL 6.11)
+    # From Qt 6.11 QuickShapesPrivate is an interface to the public QuickShapes
+    list(APPEND QT_EXTRA_COMPONENTS "QuickShapes")
+  endif()
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
@@ -4226,6 +4230,16 @@ else()
         applocal
     )
 
+    # svg icons (stylesheet image:) at device size, else rasterized and scaled
+    install(
+      IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QSvgIconPlugin
+        DESTINATION
+        "${MIXXX_INSTALL_DATADIR}/iconengines"
+        COMPONENT
+        applocal
+    )
+
     install(
       IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
@@ -4318,14 +4332,25 @@ else()
           applocal
       )
 
-      install(
-        IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
-          DESTINATION
-          "${MIXXX_INSTALL_DATADIR}"
-          COMPONENT
-          applocal
-      )
+      if(QT_VERSION VERSION_LESS 6.11)
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickShapes
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      endif()
 
       if(QT_VERSION VERSION_LESS 6.4)
         # From Qt 6.4 integrated in QuickControls2

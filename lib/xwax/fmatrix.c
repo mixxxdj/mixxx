@@ -149,6 +149,19 @@ struct fmatrix *fmat_trans(struct fmatrix *dest, const struct fmatrix *src)
 	return dest;
 }
 
+/*
+ * Compute the LUP decomposition of a square floating-point matrix in place
+ *
+ * LUP decomposition factors a matrix A into P * A = L * U, where L is a lower
+ * triangular matrix with ones on its diagonal, U is an upper triangular matrix
+ * and P is a permutation matrix that reorders the rows of A. The rows are
+ * swapped so that the pivot with the largest absolute value is used in each
+ * step (partial pivoting), which keeps the decomposition numerically stable.
+ *
+ * L (without its diagonal) and U are stored together in a, perm[i] is the
+ * original row of A that ends up in row i, and sign is the determinant of P
+ * (1 or -1). Returns -1 if the matrix is singular.
+ */
 static int fmat_lup_decompose(struct fmatrix *a, size_t *perm, double *sign)
 {
 	const size_t n = a->rows;
@@ -201,7 +214,11 @@ static int fmat_lup_decompose(struct fmatrix *a, size_t *perm, double *sign)
 	return 0;
 }
 
-static void fmat_lu_solve(const struct fmatrix *lu, const size_t *perm, const double *b, double *x)
+/*
+ * Solve the linear system A * x = b using the LUP decomposition of A from
+ * fmat_lup_decompose(), by forward substitution with L and back substitution with U
+ */
+static void fmat_lu_solve(double *x, const struct fmatrix *lu, const size_t *perm, const double *b)
 {
 	const size_t n = lu->rows;
 
@@ -220,7 +237,8 @@ static void fmat_lu_solve(const struct fmatrix *lu, const size_t *perm, const do
 	}
 }
 
-struct fmatrix *fmat_inv_lup(struct fmatrix *dest, const struct fmatrix *src)
+/* Compute the inverse of a square floating-point matrix using LUP decomposition */
+static struct fmatrix *fmat_inv_lup(struct fmatrix *dest, const struct fmatrix *src)
 {
 	struct fmatrix *lu = NULL;
 	int dest_allocated = 0;
@@ -266,7 +284,7 @@ struct fmatrix *fmat_inv_lup(struct fmatrix *dest, const struct fmatrix *src)
 	for (size_t col = 0; col < n; ++col) {
 		memset(rhs, 0, n * sizeof(*rhs));
 		rhs[col] = 1.0;
-		fmat_lu_solve(lu, perm, rhs, sol);
+		fmat_lu_solve(sol, lu, perm, rhs);
 
 		for (size_t row = 0; row < n; ++row)
 			dest->data[row * n + col] = sol[row];
@@ -290,7 +308,8 @@ out:
 	return dest;
 }
 
-static int fmat_inv_2x2(const struct fmatrix *src, struct fmatrix *dest)
+/* Compute the inverse of a 2x2 floating-point matrix */
+static int fmat_inv_2x2(struct fmatrix *dest, const struct fmatrix *src)
 {
 	const double a = src->data[0];
 	const double b = src->data[1];
@@ -311,7 +330,8 @@ static int fmat_inv_2x2(const struct fmatrix *src, struct fmatrix *dest)
 	return 0;
 }
 
-static int fmat_inv_3x3(const struct fmatrix *src, struct fmatrix *dest)
+/* Compute the inverse of a 3x3 floating-point matrix */
+static int fmat_inv_3x3(struct fmatrix *dest, const struct fmatrix *src)
 {
 	const double *m = src->data;
 
@@ -357,6 +377,7 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 	}
 
 	const size_t n = src->rows;
+	int dest_allocated = 0;
 
 	if (dest) {
 		if (dest->rows != n || dest->cols != n) {
@@ -367,9 +388,10 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 		}
 	} else {
 		dest = fmat_alloc(n, n);
-
 		if (!dest)
 			return NULL;
+
+		dest_allocated = 1;
 	}
 
 	if (n == 1) {
@@ -384,7 +406,7 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 	}
 
 	if (n == 2) {
-		if (fmat_inv_2x2(src, dest) != 0) {
+		if (fmat_inv_2x2(dest, src) != 0) {
 			fprintf(stderr, "%s: matrix is singular\n", __func__);
 			goto error;
 		}
@@ -393,7 +415,7 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 	}
 
 	if (n == 3) {
-		if (fmat_inv_3x3(src, dest) != 0) {
+		if (fmat_inv_3x3(dest, src) != 0) {
 			fprintf(stderr, "%s: matrix is singular\n", __func__);
 			goto error;
 		}
@@ -401,9 +423,14 @@ struct fmatrix *fmat_inv(struct fmatrix *dest, const struct fmatrix *src)
 		return dest;
 	}
 
-	return fmat_inv_lup(dest, src);
+	if (!fmat_inv_lup(dest, src))
+		goto error;
+
+	return dest;
 
 error:
-	fmat_free(dest);
+	if (dest_allocated)
+		fmat_free(dest);
+
 	return NULL;
 }
