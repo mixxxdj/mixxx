@@ -214,10 +214,21 @@ class BpmFilterNode : public QueryNode {
         Constant,          // bpm:const|constant
     };
 
+// Silences GCC's psabi note about how std::pair<double, double> is passed
+// Due to ABI change between GCC versions. Read more in GCC bug 94383
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpsabi"
+#endif
+
     // Allows WSearchRelatedTracksMenu to construct the QAction title
     std::pair<double, double> getBpmRange() const {
         return std::pair<double, double>(m_rangeLower, m_rangeUpper);
     }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
     QString toSql() const override;
 
