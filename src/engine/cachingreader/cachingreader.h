@@ -111,7 +111,11 @@ class CachingReader : public QObject {
     // that is not in the cache. If any hints do request a chunk not in cache,
     // then wake the reader so that it can process them. Must only be called
     // from the engine callback.
-    void hintAndMaybeWake(const HintVector& hintList);
+    //
+    // fastSearch says the playhead is moving far faster than any decoder
+    // keeps up with (jog wheel search). Then at most one read request is kept
+    // in flight, see the implementation.
+    void hintAndMaybeWake(const HintVector& hintList, bool fastSearch = false);
 
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
@@ -196,6 +200,11 @@ class CachingReader : public QObject {
 
     // The readable frame index range as reported by the worker.
     mixxx::IndexRange m_readableFrameIndexRange;
+
+    // Read requests handed to the worker whose chunk has not come back
+    // through process() yet. Every request comes back exactly once (read or
+    // discarded), also across track changes. Engine thread only.
+    int m_readRequestsInFlight = 0;
 
     CachingReaderWorker m_worker;
 };

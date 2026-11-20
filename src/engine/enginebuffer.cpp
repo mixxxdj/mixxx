@@ -50,6 +50,13 @@ constexpr double kLinearScalerElipsis =
 // Rate at which the playpos slider is updated
 constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
+// Playback rate (in track frames per output frame) above which the deck
+// counts as fast-searching for the reader, see
+// CachingReader::hintAndMaybeWake(). Twice the FWD/BACK search speed (4x) and
+// far above anything musical; jog wheel search modes of controllers (e.g.
+// SHIFT + jog) run much faster.
+constexpr double kFastSearchRate = 8.0;
+
 const QString kAppGroup = QStringLiteral("[App]");
 
 } // anonymous namespace
@@ -1584,7 +1591,7 @@ void EngineBuffer::hintReader(const double dRate) {
     for (const auto& pControl : std::as_const(m_engineControls)) {
         pControl->hintReader(&m_hintList);
     }
-    m_pReader->hintAndMaybeWake(m_hintList);
+    m_pReader->hintAndMaybeWake(m_hintList, fabs(dRate) > kFastSearchRate);
 }
 
 // WARNING: This method runs in the GUI thread
