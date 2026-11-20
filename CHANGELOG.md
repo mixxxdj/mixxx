@@ -29,6 +29,7 @@
   [#17185](https://github.com/mixxxdj/mixxx/pull/17185)
   [#17159](https://github.com/mixxxdj/mixxx/pull/17159)
   [#17158](https://github.com/mixxxdj/mixxx/issues/17158)
+  [#17463](https://github.com/mixxxdj/mixxx/pull/17463)
 * Add stem controls and waveforms
   [#13086](https://github.com/mixxxdj/mixxx/pull/13086)
   [#14951](https://github.com/mixxxdj/mixxx/pull/14951)
@@ -76,6 +77,7 @@
   [#13123](https://github.com/mixxxdj/mixxx/pull/13123)
   [#15743](https://github.com/mixxxdj/mixxx/pull/15743)
   [#15530](https://github.com/mixxxdj/mixxx/pull/15530)
+  [#17382](https://github.com/mixxxdj/mixxx/pull/17382)
 * Multithreaded Rubberband (Smooth keylock support)
   [#13143](https://github.com/mixxxdj/mixxx/pull/13143)
   [#13649](https://github.com/mixxxdj/mixxx/pull/13649)
