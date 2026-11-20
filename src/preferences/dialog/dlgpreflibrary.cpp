@@ -269,6 +269,10 @@ void DlgPrefLibrary::slotResetToDefaults() {
     spinbox_history_min_tracks_to_keep->setValue(1);
     checkBox_sync_track_metadata->setChecked(false);
     checkBox_serato_metadata_export->setChecked(false);
+    checkBox_rating_export->setChecked(false);
+    checkBox_rating_import->setChecked(false);
+    checkBox_playcount_export->setChecked(false);
+    checkBox_playcount_import->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_edit_metadata_selected_clicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
@@ -327,6 +331,14 @@ void DlgPrefLibrary::slotUpdate() {
     checkBox_serato_metadata_export->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
     setSeratoMetadataEnabled(checkBox_sync_track_metadata->isChecked());
+    checkBox_rating_export->setChecked(
+            m_pConfig->getValue(kExportRatingToFileTagsConfigKey, false));
+    checkBox_rating_import->setChecked(
+            m_pConfig->getValue(kImportRatingFromFileTagsConfigKey, false));
+    checkBox_playcount_export->setChecked(
+            m_pConfig->getValue(kExportPlayCountToFileTagsConfigKey, false));
+    checkBox_playcount_import->setChecked(
+            m_pConfig->getValue(kImportPlayCountFromFileTagsConfigKey, false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             kUseRelativePathOnExportConfigKey, false));
 
@@ -605,6 +617,18 @@ void DlgPrefLibrary::slotApply() {
     m_pConfig->set(
             kSyncSeratoMetadataConfigKey,
             ConfigValue{checkBox_serato_metadata_export->isChecked()});
+    m_pConfig->set(
+            kExportRatingToFileTagsConfigKey,
+            ConfigValue{checkBox_rating_export->isChecked()});
+    m_pConfig->set(
+            kImportRatingFromFileTagsConfigKey,
+            ConfigValue{checkBox_rating_import->isChecked()});
+    m_pConfig->set(
+            kExportPlayCountToFileTagsConfigKey,
+            ConfigValue{checkBox_playcount_export->isChecked()});
+    m_pConfig->set(
+            kImportPlayCountFromFileTagsConfigKey,
+            ConfigValue{checkBox_playcount_import->isChecked()});
 
     m_pConfig->set(kUseRelativePathOnExportConfigKey,
             ConfigValue((int)checkBox_use_relative_path->isChecked()));

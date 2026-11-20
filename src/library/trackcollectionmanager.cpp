@@ -338,11 +338,12 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
     // last synchronized. Exporting metadata will update this time
     // stamp on the track object!
     if (pTrack->isMarkedForMetadataExport() ||
-            (pTrack->isDirty() &&
-                    m_pConfig &&
-                    m_pConfig->getValueString(
-                                     kSyncTrackMetadataConfigKey)
-                                    .toInt() == 1)) {
+            (pTrack->isDirty() && m_pConfig &&
+                    (m_pConfig->getValue(kSyncTrackMetadataConfigKey, false) ||
+                            m_pConfig->getValue(
+                                    kExportRatingToFileTagsConfigKey, false) ||
+                            m_pConfig->getValue(
+                                    kExportPlayCountToFileTagsConfigKey, false)))) {
         switch (mode) {
         case TrackMetadataExportMode::Immediate: {
             // Export track metadata now by saving as file tags.
@@ -371,7 +372,11 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
             // are still loaded in memory to allow frequent synchronization
             // of external collections. Local caching is error prone and not
             // always feasible.
-            pTrack->markForMetadataExport();
+            // AI-generated: The export must not be forced here. Otherwise
+            // every saved track would be rewritten even if its file tags
+            // are unchanged, e.g. after importing metadata from file tags
+            // for the whole library. (AI-generated)
+            pTrack->markForDeferredMetadataExport();
             break;
         default:
             DEBUG_ASSERT(!"unreachable");

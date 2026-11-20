@@ -17,6 +17,17 @@ typedef QList<TrackPointer> TrackPointerList;
 struct SyncTrackMetadataParams {
     bool resetMissingTagMetadataOnImport = false;
     bool syncSeratoMetadata = false;
+    /// Full synchronization of track metadata into file tags is enabled.
+    /// When false, only the rating may be written (see exportRatingToFile).
+    bool syncTrackMetadata = false;
+    bool exportRatingToFile = false;
+    bool importRatingFromFile = false;
+    /// Write the play count into the FMPS_Playcount file tag when it
+    /// exceeds the value stored in the file.
+    bool exportPlayCountToFile = false;
+    /// Adopt the play count from the FMPS_Playcount file tag when it
+    /// exceeds the value stored in the library.
+    bool importPlayCountFromFile = false;
 
     static SyncTrackMetadataParams readFromUserSettings(
             const UserSettings& userSettings);

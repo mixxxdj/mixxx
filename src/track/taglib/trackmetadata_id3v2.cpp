@@ -3,16 +3,22 @@
 #include <attachedpictureframe.h>
 #include <commentsframe.h>
 #include <generalencapsulatedobjectframe.h>
+#include <popularimeterframe.h>
 #include <textidentificationframe.h>
 #include <unknownframe.h>
 
 #include <array>
+#include <limits>
+#include <optional>
 #if defined(__EXTRA_METADATA__)
 #include <uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/taglib/fmpsplaycount.h"
+#include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
+#include "track/trackrecord.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -74,6 +80,13 @@ const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 const QString kFrameDescriptionSeratoBeatGrid = QStringLiteral("Serato BeatGrid");
 const QString kFrameDescriptionSeratoMarkers = QStringLiteral("Serato Markers_");
 const QString kFrameDescriptionSeratoMarkers2 = QStringLiteral("Serato Markers2");
+
+// FMPS Rating - TXXX frame description for cross-application rating compatibility
+// https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
+const QString kFMPSRatingDescription = QStringLiteral("FMPS_Rating");
+
+// FMPS Playcount - TXXX frame description, same specification
+const QString kFMPSPlayCountDescription = QStringLiteral("FMPS_Playcount");
 
 // Returns the text of an ID3v2 frame as a string.
 inline QString frameToQString(
@@ -462,6 +475,19 @@ int removeUserTextIdentificationFrames(
     return count;
 }
 
+/// Find the first POPM (Popularimeter) frame in the tag
+TagLib::ID3v2::PopularimeterFrame* findFirstPopularimeterFrame(
+        const TagLib::ID3v2::Tag& tag) {
+    for (TagLib::ID3v2::Frame* const pFrame : tag.frameListMap()["POPM"]) {
+        DEBUG_ASSERT(pFrame);
+        auto* const pPopmFrame = downcastFrame<TagLib::ID3v2::PopularimeterFrame>(pFrame);
+        if (pPopmFrame) {
+            return pPopmFrame;
+        }
+    }
+    return nullptr;
+}
+
 void writeCommentsFrame(
         TagLib::ID3v2::Tag* pTag,
         const TagLib::String& text,
@@ -598,6 +624,121 @@ inline QString formatBpmInteger(
 } // anonymous namespace
 
 namespace id3v2 {
+
+std::optional<int> importRatingFromTag(const TagLib::ID3v2::Tag& tag) {
+    // Prefer the FMPS_Rating TXXX frame, which is more precise than POPM
+    const QString fmpsRating = readFirstUserTextIdentificationFrame(
+            tag, kFMPSRatingDescription);
+    if (!fmpsRating.isEmpty()) {
+        const std::optional<int> rating = parseFmpsRating(fmpsRating);
+        if (rating) {
+            return rating;
+        }
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Rating value in TXXX frame:"
+                << fmpsRating;
+        // Fall through to the POPM frame
+    }
+
+    const TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(tag);
+    if (pPopmFrame) {
+        return ratingFromPopm(pPopmFrame->rating());
+    }
+
+    return std::nullopt;
+}
+
+std::optional<int> importPlayCountFromTag(const TagLib::ID3v2::Tag& tag) {
+    const QString fmpsPlayCount = readFirstUserTextIdentificationFrame(
+            tag, kFMPSPlayCountDescription);
+    if (!fmpsPlayCount.isEmpty()) {
+        const std::optional<int> playCount = parseFmpsPlayCount(fmpsPlayCount);
+        if (playCount) {
+            return playCount;
+        }
+        kLogger.warning()
+                << "Ignoring invalid FMPS_Playcount value in TXXX frame:"
+                << fmpsPlayCount;
+        // Fall through to the POPM frame
+    }
+
+    // The counter of a POPM frame is optional and defaults to 0, which
+    // cannot be distinguished from a missing value.
+    const TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(tag);
+    if (pPopmFrame && pPopmFrame->counter() > 0) {
+        const unsigned int counter = pPopmFrame->counter();
+        const auto maxPlayCount =
+                static_cast<unsigned int>(std::numeric_limits<int>::max());
+        return static_cast<int>(counter > maxPlayCount ? maxPlayCount : counter);
+    }
+
+    return std::nullopt;
+}
+
+bool exportPlayCountIntoTag(
+        TagLib::ID3v2::Tag* pTag,
+        int playCount) {
+    DEBUG_ASSERT(pTag);
+    const std::optional<QString> fmpsPlayCount = formatFmpsPlayCount(playCount);
+    if (!fmpsPlayCount) {
+        kLogger.warning()
+                << "Invalid play count for export:" << playCount;
+        return false;
+    }
+    writeUserTextIdentificationFrame(
+            pTag,
+            kFMPSPlayCountDescription,
+            *fmpsPlayCount,
+            true); // isNumericOrURL = true
+    // Keep the counter of an existing POPM frame in sync, because the
+    // import falls back to it. The identifier and the rating byte are
+    // preserved, and no POPM frame is created if none exists.
+    TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(*pTag);
+    if (pPopmFrame) {
+        pPopmFrame->setCounter(static_cast<unsigned int>(playCount));
+    }
+    return true;
+}
+
+bool exportRatingIntoTag(
+        TagLib::ID3v2::Tag* pTag,
+        int rating) {
+    DEBUG_ASSERT(pTag);
+    // Keep an existing POPM frame written by another application in
+    // sync with the exported FMPS_Rating. Otherwise the two frames
+    // would contradict each other and a cleared rating would be
+    // resurrected by the POPM import fallback. Only the rating byte
+    // is updated: the identifier and the play counter are preserved,
+    // and no POPM frame is created if none exists.
+    TagLib::ID3v2::PopularimeterFrame* pPopmFrame =
+            findFirstPopularimeterFrame(*pTag);
+    if (rating == TrackRecord::kNoRating) {
+        // Remove any existing FMPS_Rating frame if the rating is cleared
+        removeUserTextIdentificationFrames(pTag, kFMPSRatingDescription);
+        if (pPopmFrame) {
+            pPopmFrame->setRating(popmFromRating(rating));
+        }
+        return true;
+    }
+    const std::optional<QString> fmpsRating = formatFmpsRating(rating);
+    if (!fmpsRating) {
+        kLogger.warning()
+                << "Invalid rating value for export:" << rating;
+        return false;
+    }
+    writeUserTextIdentificationFrame(
+            pTag,
+            kFMPSRatingDescription,
+            *fmpsRating,
+            true); // isNumericOrURL = true
+    if (pPopmFrame) {
+        pPopmFrame->setRating(popmFromRating(rating));
+    }
+    return true;
+}
 
 bool importCoverImageFromTag(
         QImage* pCoverArt,

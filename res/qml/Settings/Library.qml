@@ -45,6 +45,8 @@ Category {
             },
         ];
         metadataSynchroniseEnabled.selected = Mixxx.Config.librarySyncTrackMetadataExport ? "on" : "off";
+        metadataRatingExportEnabled.selected = Mixxx.Config.libraryExportRatingToFileTags ? "on" : "off";
+        metadataRatingImportEnabled.selected = Mixxx.Config.libraryImportRatingFromFileTags ? "on" : "off";
         metadataSynchroniseSeratoEnabled.selected = Mixxx.Config.librarySeratoMetadataExport ? "on" : "off";
         metadataRelativePathEnabled.selected = Mixxx.Config.libraryUseRelativePathOnExport ? "on" : "off";
         searchCompletionEnabled.selected = Mixxx.Config.librarySearchCompletionsEnable ? "on" : "off";
@@ -134,6 +136,8 @@ Category {
         Mixxx.Config.libraryRekordboxEnabled = integrations.Rekordbox;
         Mixxx.Config.librarySeratoEnabled = integrations.Serato;
         Mixxx.Config.librarySyncTrackMetadataExport = metadataSynchroniseEnabled.enabled;
+        Mixxx.Config.libraryExportRatingToFileTags = metadataRatingExportEnabled.enabled;
+        Mixxx.Config.libraryImportRatingFromFileTags = metadataRatingImportEnabled.enabled;
         Mixxx.Config.librarySeratoMetadataExport = metadataSynchroniseSeratoEnabled.enabled;
         Mixxx.Config.libraryUseRelativePathOnExport = metadataRelativePathEnabled.enabled;
         Mixxx.Config.librarySearchCompletionsEnable = searchCompletionEnabled.enabled;
@@ -597,6 +601,64 @@ Category {
                                 }
                                 RatioChoice {
                                     id: metadataSynchroniseEnabled
+
+                                    readonly property bool enabled: selected == "on"
+
+                                    inactiveColor: Theme.darkGray4
+                                    maxWidth: parent.width * 0.5
+                                    options: ["on", "off"]
+
+                                    onSelectedChanged: root.dirty = true
+                                }
+                            }
+                            RowLayout {
+                                Layout.preferredWidth: metadataPane.width / metadataPane.columns
+
+                                Mixxx.SettingParameter {
+                                    Layout.fillWidth: true
+                                    label: qsTr("Export star ratings to file tags (FMPS_Rating)")
+
+                                    Text {
+                                        anchors.fill: parent
+                                        color: Theme.white
+                                        font.pixelSize: 14
+                                        font.weight: Font.Medium
+                                        horizontalAlignment: Text.AlignLeft
+                                        text: parent.label
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+                                RatioChoice {
+                                    id: metadataRatingExportEnabled
+
+                                    readonly property bool enabled: selected == "on"
+
+                                    inactiveColor: Theme.darkGray4
+                                    maxWidth: parent.width * 0.5
+                                    options: ["on", "off"]
+
+                                    onSelectedChanged: root.dirty = true
+                                }
+                            }
+                            RowLayout {
+                                Layout.preferredWidth: metadataPane.width / metadataPane.columns
+
+                                Mixxx.SettingParameter {
+                                    Layout.fillWidth: true
+                                    label: qsTr("Import star ratings from file tags")
+
+                                    Text {
+                                        anchors.fill: parent
+                                        color: Theme.white
+                                        font.pixelSize: 14
+                                        font.weight: Font.Medium
+                                        horizontalAlignment: Text.AlignLeft
+                                        text: parent.label
+                                        verticalAlignment: Text.AlignVCenter
+                                    }
+                                }
+                                RatioChoice {
+                                    id: metadataRatingImportEnabled
 
                                     readonly property bool enabled: selected == "on"
 
