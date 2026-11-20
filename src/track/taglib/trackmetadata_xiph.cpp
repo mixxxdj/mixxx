@@ -12,9 +12,12 @@
 #include <flacpicture.h>
 
 #include <array>
+#include <optional>
 
+#include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
+#include "track/trackrecord.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -40,6 +43,10 @@ const std::array<TagLib::FLAC::Picture::Type, 4> kPreferredPictureTypes{{
 const TagLib::String kCommentFieldKeySeratoBeatGrid = "SERATO_BEATGRID";
 const TagLib::String kCommentFieldKeySeratoMarkers2FLAC = "SERATO_MARKERS_V2";
 const TagLib::String kCommentFieldKeySeratoMarkers2Ogg = "SERATO_MARKERS2";
+
+// FMPS Rating - Vorbis comment field for cross-application rating compatibility
+// https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
+const TagLib::String kCommentFieldKeyFMPSRating = "FMPS_RATING";
 
 bool readCommentField(
         const TagLib::Ogg::XiphComment& tag,
@@ -126,6 +133,43 @@ inline QImage parseBase64EncodedImage(
 } // anonymous namespace
 
 namespace xiph {
+
+std::optional<int> importRatingFromTag(const TagLib::Ogg::XiphComment& tag) {
+    QString fmpsRating;
+    if (!readCommentField(tag, kCommentFieldKeyFMPSRating, &fmpsRating) ||
+            fmpsRating.isEmpty()) {
+        return std::nullopt;
+    }
+    const std::optional<int> rating = parseFmpsRating(fmpsRating);
+    if (!rating) {
+        kLogger.warning()
+                << "Ignoring invalid FMPS_RATING value in Vorbis comment:"
+                << fmpsRating;
+    }
+    return rating;
+}
+
+bool exportRatingIntoTag(
+        TagLib::Ogg::XiphComment* pTag,
+        int rating) {
+    DEBUG_ASSERT(pTag);
+    if (rating == TrackRecord::kNoRating) {
+        // Remove any existing FMPS_RATING field if the rating is cleared
+        pTag->removeFields(kCommentFieldKeyFMPSRating);
+        return true;
+    }
+    const std::optional<QString> fmpsRating = formatFmpsRating(rating);
+    if (!fmpsRating) {
+        kLogger.warning()
+                << "Invalid rating value for export:" << rating;
+        return false;
+    }
+    writeCommentField(
+            pTag,
+            kCommentFieldKeyFMPSRating,
+            toTString(*fmpsRating));
+    return true;
+}
 
 QImage importCoverImageFromPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
