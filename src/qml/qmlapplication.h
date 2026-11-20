@@ -3,7 +3,6 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QString>
-#include <QTimer>
 #include <memory>
 
 #include "coreservices.h"
@@ -40,6 +39,7 @@ class QmlApplication : public QObject {
 
   private slots:
     void slotFrameSwapped();
+    void slotWindowClosing();
     void slotWindowChanged(QQuickWindow* window);
 
   private:
@@ -50,7 +50,6 @@ class QmlApplication : public QObject {
     std::shared_ptr<CoreServices> m_pCoreServices;
     std::unique_ptr<::VisualsManager> m_visualsManager;
     std::unique_ptr<GuiTick> m_pGuiTick;
-    QTimer m_guiTickTimer;
 
     parented_ptr<ControlProxy> m_pShowSpinny;
     parented_ptr<ControlProxy> m_pShowCover;
