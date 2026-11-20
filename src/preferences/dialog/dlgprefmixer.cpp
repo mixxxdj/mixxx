@@ -13,6 +13,7 @@
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpreset.h"
+#include "engine/enginevumeter.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefmixer.cpp"
@@ -78,6 +79,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_xfCurveCO(make_parented<ControlProxy>(kXfaderCurveKey, this)),
           m_xfReverseCO(make_parented<ControlProxy>(kXfaderReverseKey, this)),
           m_xfCalibrationCO(make_parented<ControlProxy>(kXfaderCalibrationKey, this)),
+          m_vuMeterModeCO(make_parented<ControlProxy>(EngineVuMeter::modeConfigKey(), this)),
           m_crossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
@@ -95,6 +97,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_eqEffectsOnly(true),
           m_eqAutoReset(false),
           m_gainAutoReset(false),
+          m_vuMeterMode(static_cast<int>(EngineVuMeter::MeterMode::DjPeak)),
 #ifdef __STEM__
           m_stemAutoReset(true),
 #endif
@@ -104,6 +107,11 @@ DlgPrefMixer::DlgPrefMixer(
           m_applyingDeckEQs(false),
           m_applyingQuickEffects(false) {
     setupUi(this);
+
+    ComboBoxVuMeterMode->addItem(tr("DJ peak meter"),
+            static_cast<int>(EngineVuMeter::MeterMode::DjPeak));
+    ComboBoxVuMeterMode->addItem(tr("VU/RMS meter"),
+            static_cast<int>(EngineVuMeter::MeterMode::VuRms));
 
     // Update the crossfader curve graph and other settings when the
     // crossfader mode is changed or the slider is moved.
@@ -163,6 +171,10 @@ DlgPrefMixer::DlgPrefMixer(
 #endif
             this,
             &DlgPrefMixer::slotGainAutoResetToggled);
+    connect(ComboBoxVuMeterMode,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefMixer::slotVuMeterModeChanged);
 #ifdef __STEM__
     connect(CheckBoxStemAutoReset,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -224,6 +236,7 @@ DlgPrefMixer::DlgPrefMixer(
     setScrollSafeGuard(SliderHiEQ);
     setScrollSafeGuard(SliderLoEQ);
     setScrollSafeGuard(comboBoxMainEq);
+    setScrollSafeGuard(ComboBoxVuMeterMode);
 
     // This applies the Main EQ and saves default values of previously missing
     // ConfigKeys. EQ/QuickEffects are already applied by slotNumDecksChanged().
@@ -521,6 +534,8 @@ void DlgPrefMixer::slotResetToDefaults() {
     CheckBoxSingleEqEffect->setChecked(true);
     CheckBoxEqAutoReset->setChecked(false);
     CheckBoxGainAutoReset->setChecked(false);
+    ComboBoxVuMeterMode->setCurrentIndex(ComboBoxVuMeterMode->findData(
+            static_cast<int>(EngineVuMeter::MeterMode::DjPeak)));
 #ifdef __STEM__
     CheckBoxStemAutoReset->setChecked(true);
 #endif
@@ -735,6 +750,8 @@ void DlgPrefMixer::slotApply() {
     m_pConfig->set(kEqsOnlyKey, ConfigValue(m_eqEffectsOnly ? 1 : 0));
     m_pConfig->set(kEqAutoResetKey, ConfigValue(m_eqAutoReset ? 1 : 0));
     m_pConfig->set(kGainAutoResetKey, ConfigValue(m_gainAutoReset ? 1 : 0));
+    m_pConfig->set(EngineVuMeter::modeConfigKey(), ConfigValue(m_vuMeterMode));
+    m_vuMeterModeCO->set(m_vuMeterMode);
 #ifdef __STEM__
     m_pConfig->set(kStemAutoResetKey, ConfigValue(m_stemAutoReset ? 1 : 0));
 #endif
@@ -792,6 +809,13 @@ void DlgPrefMixer::slotUpdate() {
 
     m_gainAutoReset = m_pConfig->getValue<bool>(kGainAutoResetKey, false);
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
+
+    m_vuMeterMode = static_cast<int>(EngineVuMeter::modeFromValue(
+            m_pConfig->getValue<int>(EngineVuMeter::modeConfigKey(),
+                    static_cast<int>(EngineVuMeter::MeterMode::DjPeak))));
+    const int vuMeterModeIndex = ComboBoxVuMeterMode->findData(m_vuMeterMode);
+    ComboBoxVuMeterMode->setCurrentIndex(
+            vuMeterModeIndex >= 0 ? vuMeterModeIndex : 0);
 
 #ifdef __STEM__
     m_stemAutoReset = m_pConfig->getValue(kStemAutoResetKey, true);
@@ -1052,6 +1076,15 @@ void DlgPrefMixer::slotEqAutoResetToggled(bool checked) {
 
 void DlgPrefMixer::slotGainAutoResetToggled(bool checked) {
     m_gainAutoReset = checked;
+}
+
+void DlgPrefMixer::slotVuMeterModeChanged(int index) {
+    if (index < 0) {
+        return;
+    }
+    m_vuMeterMode = static_cast<int>(
+            EngineVuMeter::modeFromValue(
+                    ComboBoxVuMeterMode->itemData(index).toInt()));
 }
 
 #ifdef __STEM__
