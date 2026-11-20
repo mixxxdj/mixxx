@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.7" type="development" date="2026-11-13" timestamp="1794553058">
+    <release version="2.5.7" type="development" date="2026-11-20" timestamp="1795181949">
       <description>
  <p>
   Controller Mappings
@@ -123,6 +123,10 @@
   <li>
    Pioneer DDJ-400: unmap headphones mixing knob
    #17121
+  </li>
+  <li>
+   Pioneer DDJ-SX: fix isuue with 2-deck skins
+   #17477
   </li>
   <li>
    Reloop Beatpad: Fix typo in group tags for ShiftBtn
@@ -184,6 +188,10 @@
    #13533
   </li>
   <li>
+   Search: stop re-search when entering the search box
+   #17471
+  </li>
+  <li>
    Rekordbox: detect databases in hidden .PIONEER directory
    #16895
    #16894
@@ -192,6 +200,10 @@
    Rekordbox: fix empty USB device and first-open crash in the macOS sandbox
    #17441
    #13624
+  </li>
+  <li>
+   Recordbox: fix empty library when sorting for key
+   #17484
   </li>
   <li>
    Track table header: throw warning when storing the state fails
@@ -401,6 +413,8 @@
    #17003
    #17260
    #17337
+   #17496
+   #10441
   </li>
   <li>
    Run all tests
@@ -659,7 +673,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-11-13" timestamp="1794553058">
+    <release version="2.5.5" type="development" date="2026-11-20" timestamp="1795181949">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.
