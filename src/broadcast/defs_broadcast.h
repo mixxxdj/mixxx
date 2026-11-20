@@ -9,6 +9,13 @@
 #define BROADCAST_SERVER_ICECAST1 "Icecast1"
 #define BROADCAST_SERVER_ICECAST2 "Icecast2"
 
+// TLS modes saved in the broadcast profile.
+// BROADCAST_TLS_REQUIRED works like HTTPS (RFC 2818) with all server types.
+// BROADCAST_TLS_UPGRADE uses the HTTP Upgrade header (RFC 2817), Icecast 2 only.
+#define BROADCAST_TLS_DISABLED "Disabled"
+#define BROADCAST_TLS_REQUIRED "TLS"
+#define BROADCAST_TLS_UPGRADE "Upgrade"
+
 #define BROADCAST_BITRATE_320KBPS 320
 #define BROADCAST_BITRATE_256KBPS 256
 #define BROADCAST_BITRATE_224KBPS 224
