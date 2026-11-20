@@ -210,7 +210,7 @@ IonDiscoverDjPro.WheelTouch = function(channel, control, value, status, group) {
         } else {
             engine.scratchDisable(deck);
             if (IonDiscoverDjPro.KeyIsLocked[deck-1]) {
-                engine.setValur(group, "keylock", 1);
+                engine.setValue(group, "keylock", 1);
             }
             IonDiscoverDjPro.scratching[deck-1] = false;
         }
