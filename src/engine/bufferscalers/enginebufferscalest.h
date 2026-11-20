@@ -45,4 +45,12 @@ class EngineBufferScaleST : public EngineBufferScale {
 
     // Holds the playback direction.
     bool m_bBackwards;
+
+    // SoundTouch runs its anti-alias FIR filter even when it does not
+    // resample (rate 1.0, e.g. keylock at the original key on a file with the
+    // engine sample rate). Its multichannel path is plain C: with an 8-channel
+    // stem deck it took 40% of the audio thread on ARM64 and caused underruns.
+    // Enabled only when the rate is not 1.0.
+    void updateAntiAliasFilter();
+    bool m_bAntiAliasFilter;
 };
