@@ -68,6 +68,7 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
         VSyncTest = WaveformWidgetType::VSyncTest,
         RGB = WaveformWidgetType::RGB,
         Stacked = WaveformWidgetType::Stacked,
+        RGB3Band = WaveformWidgetType::RGB3Band,
     };
     Q_ENUM(Type);
     enum class Option : int {

@@ -36,7 +36,7 @@ Mixxx.WaveformOverview {
     minuteMarkers: Mixxx.Config.waveformOverviewMinuteMarkers
     analyzerProgress: root.playerAnalyzerProgress
     normalized: Mixxx.Config.waveformOverviewNormalized
-    renderer: Mixxx.Config.waveformOverviewType === 0 ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.Config.waveformOverviewType === 1 ? Mixxx.WaveformOverview.Renderer.HSV : Mixxx.WaveformOverview.Renderer.RGB
+    renderer: Mixxx.Config.waveformOverviewType === 0 ? Mixxx.WaveformOverview.Renderer.Filtered : Mixxx.Config.waveformOverviewType === 1 ? Mixxx.WaveformOverview.Renderer.HSV : Mixxx.Config.waveformOverviewType === 3 ? Mixxx.WaveformOverview.Renderer.RGB3Band : Mixxx.WaveformOverview.Renderer.RGB
     stereo: Mixxx.Config.waveformOverviewStereo
     track: player?.currentTrack
 

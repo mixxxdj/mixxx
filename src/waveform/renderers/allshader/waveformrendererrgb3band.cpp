@@ -1,0 +1,359 @@
+#include "waveform/renderers/allshader/waveformrendererrgb3band.h"
+
+#include <algorithm>
+#include <cmath>
+
+#include "rendergraph/material/rgbamaterial.h"
+#include "rendergraph/vertexupdaters/rgbavertexupdater.h"
+#include "track/track.h"
+#include "util/colorcomponents.h"
+#include "waveform/renderers/rgb3bandlevels.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
+
+using namespace rendergraph;
+
+namespace {
+
+// Each band is a peak envelope with instant attack and exponential release of
+// the stereo-combined amplitude, mixed with a share of a neighboring band's
+// envelope. Its height relative to half the breadth is
+//   normalization * max(0, envelope - floor)^exponent
+// with the per-track normalization gain / level^slope. The constants were
+// fitted against Rekordbox's 3-band analysis data of 323 tracks. The low band
+// has the longest release, which also determines the lead-in.
+constexpr double kReleaseSeconds[3] = {0.3, 0.08, 0.065};
+// Mid includes some low and high some mid, like Rekordbox's lower crossovers
+constexpr float kMixWeight[3] = {0.0f, 0.195f, 0.14f};
+constexpr float kFloor[3] = {0.0f, 0.0f, 0.1f};
+constexpr float kExponent[3] = {1.4f, 1.0f, 1.27f};
+constexpr float kLevelQuantile[3] = {0.99f, 0.999f, 0.999f};
+constexpr float kNormalizationGain[3] = {0.7f, 0.63f, 0.91f};
+constexpr float kNormalizationSlope[3] = {0.97f, 0.76f, 0.63f};
+// Envelopes decay below 1/256 after this many release time constants.
+constexpr double kLeadInReleases = 5.6;
+// Recalculate the levels during analysis after this share of the track
+constexpr int kLevelUpdateDivisor = 16;
+
+// Layers in drawing order
+constexpr int kLowLayer = 0;
+constexpr int kMidLayer = 1;
+constexpr int kLowMidLayer = 2;
+constexpr int kHighLayer = 3;
+constexpr int kUnscaledLayerCount = 4;
+constexpr int kLayerCount = 2 * kUnscaledLayerCount;
+constexpr int kBandLayer[3] = {kLowLayer, kMidLayer, kHighLayer};
+constexpr int kDrawOrder[kLayerCount] = {
+        kLowLayer,
+        kUnscaledLayerCount + kLowLayer,
+        kMidLayer,
+        kUnscaledLayerCount + kMidLayer,
+        kLowMidLayer,
+        kUnscaledLayerCount + kLowMidLayer,
+        kHighLayer,
+        kUnscaledLayerCount + kHighLayer};
+
+} // namespace
+
+namespace allshader {
+
+WaveformRendererRGB3Band::WaveformRendererRGB3Band(
+        WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererSignalBase::Options options)
+        : WaveformRendererSignalBase(waveformWidget, options),
+          m_lowMidColor_r(0),
+          m_lowMidColor_g(0),
+          m_lowMidColor_b(0),
+          m_levelCompletion(0),
+          m_normalization{1.0f, 1.0f, 1.0f} {
+    initForRectangles<RGBAMaterial>(0);
+    setUsePreprocess(true);
+}
+
+void WaveformRendererRGB3Band::onSetup(const QDomNode&) {
+    // Skins configure these separately from the Filtered colors
+    const auto* pColors = m_waveformRenderer->getWaveformSignalColors();
+    getRgbF(pColors->getRgb3BandLowColor(), &m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
+    getRgbF(pColors->getRgb3BandMidColor(), &m_midColor_r, &m_midColor_g, &m_midColor_b);
+    getRgbF(pColors->getRgb3BandHighColor(), &m_highColor_r, &m_highColor_g, &m_highColor_b);
+    setLowMidColor(pColors->getRgb3BandLowMidColor());
+}
+
+void WaveformRendererRGB3Band::setLowMidColor(const QColor& lowMidColor) {
+    getRgbF(lowMidColor, &m_lowMidColor_r, &m_lowMidColor_g, &m_lowMidColor_b);
+}
+
+void WaveformRendererRGB3Band::preprocess() {
+    if (!preprocessInner()) {
+        if (geometry().vertexCount() != 0) {
+            geometry().allocate(0);
+            markDirtyGeometry();
+        }
+    }
+}
+
+// Calculates the layer heights in pixels for every pixel. The envelopes run
+// over the stereo-combined visual frames, starting early enough to be settled
+// at the first pixel, so scrolling does not change the shape.
+void WaveformRendererRGB3Band::calculateHeights(const WaveformData* data,
+        int visualFramesSize,
+        double visualSampleRate,
+        double firstPixelVisualFrame,
+        double visualIncrementPerPixel,
+        int pixelLength,
+        float scale,
+        const float bandGain[3],
+        float maxHeight) {
+    const double halfPixelFrames = visualIncrementPerPixel / 2.0;
+    const int leadInFrames = static_cast<int>(
+            std::ceil(kLeadInReleases * kReleaseSeconds[0] * visualSampleRate));
+    const int firstFrame = static_cast<int>(std::floor(firstPixelVisualFrame - halfPixelFrames)) -
+            leadInFrames;
+    const int lastFrame = static_cast<int>(std::ceil(firstPixelVisualFrame +
+                                  (pixelLength - 1) * visualIncrementPerPixel + halfPixelFrames)) +
+            1;
+    const int frameCount = lastFrame - firstFrame + 1;
+
+    float decay[3];
+    for (int band = 0; band < 3; ++band) {
+        decay[band] = static_cast<float>(
+                std::exp(-1.0 / (kReleaseSeconds[band] * visualSampleRate)));
+        m_envelopes[band].resize(frameCount);
+    }
+
+    constexpr float kInvMax = 1.0f / 255.0f;
+    float envelope[3]{};
+    float mixEnvelope[3]{};
+    for (int i = 0; i < frameCount; ++i) {
+        const int frame = firstFrame + i;
+        float amplitude[3]{};
+        if (frame >= 0 && frame < visualFramesSize) {
+            const WaveformFilteredData& left = data[frame * 2].filtered;
+            const WaveformFilteredData& right = data[frame * 2 + 1].filtered;
+            amplitude[0] = kInvMax * rgb3band::combinedAmplitude(left.low, right.low);
+            amplitude[1] = kInvMax * rgb3band::combinedAmplitude(left.mid, right.mid);
+            amplitude[2] = kInvMax * rgb3band::combinedAmplitude(left.high, right.high);
+        }
+        for (int band = 0; band < 3; ++band) {
+            envelope[band] = std::max(amplitude[band], envelope[band] * decay[band]);
+            if (band == 0) {
+                m_envelopes[band][i] = envelope[band];
+                continue;
+            }
+            mixEnvelope[band] = std::max(
+                    amplitude[band - 1], mixEnvelope[band] * decay[band]);
+            m_envelopes[band][i] = std::sqrt(envelope[band] * envelope[band] +
+                    kMixWeight[band] * mixEnvelope[band] * mixEnvelope[band]);
+        }
+    }
+
+    for (int layer = 0; layer < kLayerCount; ++layer) {
+        m_heights[layer].resize(pixelLength);
+    }
+
+    for (int pos = 0; pos < pixelLength; ++pos) {
+        const double center = firstPixelVisualFrame + pos * visualIncrementPerPixel - firstFrame;
+        for (int band = 0; band < 3; ++band) {
+            const std::vector<float>& bandEnvelope = m_envelopes[band];
+            float value;
+            if (visualIncrementPerPixel > 1.0) {
+                // Zoomed out: peak over the frames covered by this pixel.
+                const int start = static_cast<int>(std::lround(center - halfPixelFrames));
+                const int stop = std::max(start + 1,
+                        static_cast<int>(std::lround(center + halfPixelFrames)));
+                value = *std::max_element(bandEnvelope.begin() + start,
+                        bandEnvelope.begin() + stop);
+            } else {
+                // Zoomed in: interpolate between frames.
+                const int index = static_cast<int>(center);
+                const float fraction = static_cast<float>(center - index);
+                value = bandEnvelope[index] +
+                        fraction * (bandEnvelope[index + 1] - bandEnvelope[index]);
+            }
+            value = m_normalization[band] *
+                    std::pow(std::max(0.0f, value - kFloor[band]), kExponent[band]);
+            const float height = scale * value;
+            m_heights[kBandLayer[band]][pos] = std::min(maxHeight, height);
+            m_heights[kUnscaledLayerCount + kBandLayer[band]][pos] =
+                    std::min(maxHeight, height * bandGain[band]);
+        }
+        m_heights[kLowMidLayer][pos] =
+                std::min(m_heights[kLowLayer][pos], m_heights[kMidLayer][pos]);
+        m_heights[kUnscaledLayerCount + kLowMidLayer][pos] =
+                std::min(m_heights[kUnscaledLayerCount + kLowLayer][pos],
+                        m_heights[kUnscaledLayerCount + kMidLayer][pos]);
+    }
+}
+
+// The levels need the whole track. During analysis they are recalculated
+// whenever a bigger part of the track is available.
+void WaveformRendererRGB3Band::updateNormalization(const ConstWaveformPointer& pWaveform) {
+    const int completion = pWaveform->getCompletion();
+    if (pWaveform == m_pLevelWaveform &&
+            (completion == m_levelCompletion ||
+                    (completion < pWaveform->getDataSize() &&
+                            completion - m_levelCompletion <
+                                    pWaveform->getDataSize() /
+                                            kLevelUpdateDivisor))) {
+        return;
+    }
+    m_pLevelWaveform = pWaveform;
+    m_levelCompletion = completion;
+
+    float level[3];
+    rgb3band::bandLevels(*pWaveform, completion, kLevelQuantile, level);
+    for (int band = 0; band < 3; ++band) {
+        m_normalization[band] = rgb3band::normalization(
+                level[band], kNormalizationGain[band], kNormalizationSlope[band]);
+    }
+}
+
+bool WaveformRendererRGB3Band::preprocessInner() {
+    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+
+    if (!pTrack) {
+        m_pLevelWaveform.clear();
+        return false;
+    }
+
+    ConstWaveformPointer waveform = pTrack->getWaveform();
+    if (waveform.isNull()) {
+        m_pLevelWaveform.clear();
+        return false;
+    }
+
+    const int dataSize = waveform->getDataSize();
+    if (dataSize <= 1) {
+        return false;
+    }
+
+    const WaveformData* data = waveform->data();
+    if (data == nullptr) {
+        return false;
+    }
+#ifdef __STEM__
+    auto stemInfo = pTrack->getStemInfo();
+    // If this track is a stem track, skip the rendering
+    if (!stemInfo.isEmpty() && waveform->hasStem() && !m_ignoreStem) {
+        return false;
+    }
+#endif
+
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    const int length = static_cast<int>(m_waveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const float invDevicePixelRatio = 1.f / devicePixelRatio;
+
+    // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
+    const int visualFramesSize = dataSize / 2;
+    const double firstVisualFrame =
+            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+    const double lastVisualFrame =
+            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
+
+    // Represents the # of visual frames per horizontal pixel.
+    const double visualIncrementPerPixel =
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(pixelLength);
+
+    // Avoids undefined behavior in the float to int conversions below, e.g.
+    // a division by zero on waveform initialization
+    if (pixelLength <= 0 || !(visualIncrementPerPixel > 0.0) ||
+            !std::isfinite(visualIncrementPerPixel)) {
+        return false;
+    }
+
+    const double visualSampleRate = waveform->getVisualSampleRate();
+    if (!(visualSampleRate > 0.0)) {
+        return false;
+    }
+
+    updateNormalization(waveform);
+
+    // Per-band gain from the EQ knobs.
+    float allGain(1.0);
+    float bandGain[3] = {1.0, 1.0, 1.0};
+    getGains(&allGain, &bandGain[0], &bandGain[1], &bandGain[2]);
+
+    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float halfBreadth = breadth / 2.0f;
+
+    // Pixels are sampled on a grid anchored to the track, so their values do
+    // not change while scrolling. Drawing them shifted by the sub-pixel
+    // remainder keeps the waveform in sync with the beat grid instead of
+    // jumping by up to half a pixel.
+    const double firstPixel = qRound(firstVisualFrame / visualIncrementPerPixel);
+    const double firstPixelVisualFrame = firstPixel * visualIncrementPerPixel;
+    const float xOffset = static_cast<float>(
+            firstPixel - firstVisualFrame / visualIncrementPerPixel);
+    calculateHeights(data,
+            visualFramesSize,
+            visualSampleRate,
+            firstPixelVisualFrame,
+            visualIncrementPerPixel,
+            pixelLength,
+            allGain * halfBreadth,
+            bandGain,
+            halfBreadth);
+
+    const int numVerticesPerLine = 6; // 2 triangles
+
+    // Connected segments between neighboring pixels for each layer + horizontal axis
+    const int segmentCount = std::max(0, pixelLength - 1);
+    const bool showUnscaled =
+            bandGain[0] < 1.0f || bandGain[1] < 1.0f || bandGain[2] < 1.0f;
+    const int reserved = numVerticesPerLine *
+            (segmentCount * (showUnscaled ? kLayerCount : kUnscaledLayerCount) + 1);
+
+    geometry().setDrawingMode(Geometry::DrawingMode::Triangles);
+    geometry().allocate(reserved);
+    markDirtyGeometry();
+
+    RGBAVertexUpdater vertexUpdater{geometry().vertexDataAs<Geometry::RGBAColoredPoint2D>()};
+    vertexUpdater.addRectangle({0.f, halfBreadth - 0.5f},
+            {static_cast<float>(length), halfBreadth + 0.5f},
+            {static_cast<float>(m_axesColor_r),
+                    static_cast<float>(m_axesColor_g),
+                    static_cast<float>(m_axesColor_b),
+                    1.0f});
+
+    QVector3D rgb[kUnscaledLayerCount];
+    rgb[kLowLayer] = QVector3D(static_cast<float>(m_lowColor_r),
+            static_cast<float>(m_lowColor_g),
+            static_cast<float>(m_lowColor_b));
+    rgb[kMidLayer] = QVector3D(static_cast<float>(m_midColor_r),
+            static_cast<float>(m_midColor_g),
+            static_cast<float>(m_midColor_b));
+    rgb[kLowMidLayer] = QVector3D(m_lowMidColor_r, m_lowMidColor_g, m_lowMidColor_b);
+    rgb[kHighLayer] = QVector3D(static_cast<float>(m_highColor_r),
+            static_cast<float>(m_highColor_g),
+            static_cast<float>(m_highColor_b));
+
+    // Mirrored trapezoids between neighboring pixels
+    for (int layer : kDrawOrder) {
+        if (!showUnscaled && layer < kUnscaledLayerCount) {
+            continue;
+        }
+        const std::vector<float>& height = m_heights[layer];
+        const QVector4D color(rgb[layer % kUnscaledLayerCount],
+                layer < kUnscaledLayerCount ? 0.6f : 1.0f);
+        for (int pos = 0; pos < segmentCount; ++pos) {
+            const float x1 = (static_cast<float>(pos) + xOffset) * invDevicePixelRatio;
+            const float x2 = (static_cast<float>(pos + 1) + xOffset) * invDevicePixelRatio;
+            const float top1 = halfBreadth - height[pos];
+            const float top2 = halfBreadth - height[pos + 1];
+            const float bottom1 = halfBreadth + height[pos];
+            const float bottom2 = halfBreadth + height[pos + 1];
+            vertexUpdater.addTriangle({x1, top1}, {x2, top2}, {x1, bottom1}, color);
+            vertexUpdater.addTriangle({x2, top2}, {x2, bottom2}, {x1, bottom1}, color);
+        }
+    }
+
+    DEBUG_ASSERT(reserved == vertexUpdater.index());
+
+    markDirtyMaterial();
+
+    return true;
+}
+
+} // namespace allshader
