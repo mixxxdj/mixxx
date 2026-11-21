@@ -80,6 +80,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     // Copy all of the tracks in a playlist to a new directory.
     void slotExportTrackFiles();
     void slotAnalyzePlaylist();
+    void slotMarkTracksPlayed();
 
   protected:
     struct IdAndLabel {
@@ -121,6 +122,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pExportTrackFilesAction;
     parented_ptr<QAction> m_pDuplicatePlaylistAction;
     parented_ptr<QAction> m_pAnalyzePlaylistAction;
+    parented_ptr<QAction> m_pMarkTracksPlayedAction;
 #ifdef __ENGINEPRIME__
     parented_ptr<QAction> m_pExportAllPlaylistsToEngineAction;
     parented_ptr<QAction> m_pExportPlaylistToEngineAction;
