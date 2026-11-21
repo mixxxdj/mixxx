@@ -2874,6 +2874,7 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/autoharmonize_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp
@@ -3051,7 +3052,17 @@ if(BUILD_TESTING)
     target_sources(mixxx-test PRIVATE src/test/audiounitmanager_test.mm)
   endif()
 
-  set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
+  # Dialog headers include generated ui_*.h files. mixxx-lib's AUTOUIC
+  # output is private, and uic only scans this target's own sources, so
+  # the harmonize test includes those ui headers directly. The .ui files
+  # live under src/, which is not next to the test source.
+  set_target_properties(
+    mixxx-test
+    PROPERTIES
+      AUTOMOC ON
+      AUTOUIC ON
+      AUTOUIC_SEARCH_PATHS "${CMAKE_CURRENT_SOURCE_DIR}/src"
+  )
   target_link_libraries(
     mixxx-test
     PRIVATE mixxx-lib mixxx-gitinfostore mixxx-xwax GTest::gtest GTest::gmock

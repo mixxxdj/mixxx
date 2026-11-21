@@ -457,30 +457,41 @@ void KeyControl::slotResetKey(double v) {
     }
 }
 
+bool KeyControl::applyMatchKeyPitch(const QString& deckGroup, const QString& otherDeckGroup) {
+    if (deckGroup.isEmpty() || otherDeckGroup.isEmpty() || deckGroup == otherDeckGroup) {
+        return false;
+    }
+
+    const mixxx::track::io::key::ChromaticKey thisFileKey =
+            KeyUtils::keyFromNumericValue(ControlObject::get(ConfigKey(deckGroup, "file_key")));
+    // Effective key of the deck we are matching, including its current pitch.
+    const mixxx::track::io::key::ChromaticKey otherKey =
+            KeyUtils::keyFromNumericValue(ControlObject::get(ConfigKey(otherDeckGroup, "key")));
+    const double otherDistance = ControlObject::get(
+            ConfigKey(otherDeckGroup, "visual_key_distance"));
+
+    const std::optional<double> pitch = KeyUtils::matchKeyPitchSemitones(
+            thisFileKey, otherKey, otherDistance);
+    if (!pitch.has_value()) {
+        return false;
+    }
+
+    // `pitch` is in semitones. Setting the control runs KeyControl::slotPitchChanged
+    // for the deck that owns it, which is the same write `sync_key` performs.
+    ControlObject::set(ConfigKey(deckGroup, "pitch"), *pitch);
+    return true;
+}
+
 bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     if (!pOtherEngineBuffer) {
         return false;
     }
 
-    mixxx::track::io::key::ChromaticKey thisFileKey =
-            KeyUtils::keyFromNumericValue(m_pFileKey->get());
-
-    // Get the sync target's effective key, since that is what we aim to match.
-    double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
-    mixxx::track::io::key::ChromaticKey otherKey =
-            KeyUtils::keyFromNumericValue(dKey);
-    double otherDistance = ControlObject::get(
-            ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
-
-    if (thisFileKey == mixxx::track::io::key::INVALID ||
-        otherKey == mixxx::track::io::key::INVALID) {
+    if (!applyMatchKeyPitch(getGroup(), pOtherEngineBuffer->getGroup())) {
         return false;
     }
-
-    int stepsToTake = KeyUtils::shortestStepsToCompatibleKey(thisFileKey, otherKey);
-    double pitchToTakeOctaves = (stepsToTake + otherDistance) / 12.0;
-
-    m_pPitch->set(pitchToTakeOctaves * 12);
-    slotPitchChanged(pitchToTakeOctaves * 12);
+    // set() does not emit when the value is unchanged. Repeat the pitch update
+    // so ratios stay consistent, matching the previous sync_key behavior.
+    slotPitchChanged(m_pPitch->get());
     return true;
 }

@@ -16,6 +16,8 @@
 #define KEY_FAST_ANALYSIS "FastAnalysisEnabled"
 #define KEY_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
 
+#define KEY_AUTO_HARMONIZE_ON_MANUAL_LOAD "AutoHarmonizeOnManualLoad"
+
 #define KEY_NOTATION "KeyNotation"
 #define KEY_NOTATION_OPEN_KEY "OpenKey"
 #define KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL "OpenKey/Traditional"
@@ -46,6 +48,11 @@ class KeyDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(ReanalyzeWhenSettingsChange, bool,
                               KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE, false);
+
+    // Pitch-adjust a manually loaded main-deck track to the other deck.
+    // Distinct from [Auto DJ] AutoHarmonizeToPrevious.
+    DEFINE_PREFERENCE_HELPERS(AutoHarmonizeOnManualLoad, bool,
+                              KEY_CONFIG_KEY, KEY_AUTO_HARMONIZE_ON_MANUAL_LOAD, false);
 
     // TODO(rryan): Enum
     DEFINE_PREFERENCE_HELPERS(KeyNotation, QString,

@@ -94,6 +94,10 @@ class DeckAttributes : public QObject {
 
     TrackPointer getLoadedTrack() const;
 
+    BaseTrackPlayer* player() const {
+        return m_pPlayer;
+    }
+
   signals:
     void playChanged(DeckAttributes* pDeck, bool playing);
     void playPositionChanged(DeckAttributes* pDeck, double playPosition);
@@ -230,6 +234,10 @@ class AutoDJProcessor : public QObject {
     void playerOutroStartChanged(DeckAttributes* pDeck, double position);
     void playerOutroEndChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
+    // One-shot after AutoDJ is disabled while a load is still in flight.
+    // Calls maybeHarmonizeAutoDjLoad once, which is the only reader of
+    // [Auto DJ] AutoHarmonizeToPrevious and clears the pending flag.
+    void finishPendingAutoDjLoad(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
@@ -277,6 +285,13 @@ class AutoDJProcessor : public QObject {
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
+    // Marks the deck so the manual key preference does not also harmonize,
+    // then emits the load. Reads nothing; the option is read once the track
+    // is on the deck.
+    void loadTrackFromAutoDj(const DeckAttributes& deck, TrackPointer pTrack, bool play);
+    // Only reader of [Auto DJ] AutoHarmonizeToPrevious. No-op unless this
+    // load was requested by loadTrackFromAutoDj.
+    void maybeHarmonizeAutoDjLoad(DeckAttributes* pDeck);
     void calculateTransition(DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
             bool seekToStartPoint);

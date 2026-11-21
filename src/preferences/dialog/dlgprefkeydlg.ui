@@ -114,6 +114,25 @@ and allows you to pitch adjust them for harmonic mixing.</string>
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupHarmonicMixing">
+     <property name="title">
+      <string>Harmonic Mixing</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutHarmonicMixing">
+      <item>
+       <widget class="QCheckBox" name="bAutoHarmonizeOnManualLoad">
+        <property name="toolTip">
+         <string>When you load a track onto a main deck, pitch that deck to a compatible key of the other main deck. The stored file key is not changed. AutoDJ loads use the separate option in Auto DJ preferences.</string>
+        </property>
+        <property name="text">
+         <string>Auto-harmonize key to previous song when a track is loaded manually</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupNotation">
      <property name="minimumSize">
       <size>

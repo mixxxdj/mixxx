@@ -1,6 +1,7 @@
 #include "library/autodj/autodjprocessor.h"
 
 #include "engine/channels/enginedeck.h"
+#include "engine/controls/keycontrol.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"
@@ -600,19 +601,19 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             // Load track into the left deck and play. Once it starts playing,
             // we will receive a playerPositionChanged update for deck 1 which
             // will load a track into the right deck and switch to IDLE mode.
-            emitLoadTrackToPlayer(nextTrack, pLeftDeck->group, true);
+            loadTrackFromAutoDj(*pLeftDeck, nextTrack, true);
         } else {
             // One of the two decks is playing. Switch into IDLE mode and wait
             // until the playing deck crosses posThreshold to start fading.
             m_eState = ADJ_IDLE;
             if (leftDeckPlaying) {
                 // Load track into the right deck.
-                emitLoadTrackToPlayer(nextTrack, pRightDeck->group, false);
+                loadTrackFromAutoDj(*pRightDeck, nextTrack, false);
                 // Move crossfader to the left.
                 setCrossfader(-1.0);
             } else {
                 // Load track into the left deck.
-                emitLoadTrackToPlayer(nextTrack, pLeftDeck->group, false);
+                loadTrackFromAutoDj(*pLeftDeck, nextTrack, false);
                 // Move crossfader to the right.
                 setCrossfader(1.0);
             }
@@ -631,7 +632,22 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 this,
                 &AutoDJProcessor::playlistFirstTrackChanged);
         for (const auto& pDeck : m_decks) {
+            // An autoload may already be queued. Disconnecting trackLoaded
+            // without a replacement leaves m_pendingAutoDjAutoload set, so
+            // every later manual load skips harmonize until eject.
+            const bool pendingAutoload = pDeck->player() != nullptr &&
+                    pDeck->player()->isPendingAutoDjAutoload();
             pDeck->disconnect(this);
+            if (!pendingAutoload) {
+                continue;
+            }
+            // One completion. finishPendingAutoDjLoad calls
+            // maybeHarmonizeAutoDjLoad, the only reader of
+            // [Auto DJ] AutoHarmonizeToPrevious, then the flag is clear.
+            connect(pDeck.get(),
+                    &DeckAttributes::trackLoaded,
+                    this,
+                    &AutoDJProcessor::finishPendingAutoDjLoad);
         }
         if (m_pConfig->getValue<bool>(ConfigKey(kPreferenceGroup,
                     QStringLiteral("center_xfader_when_disabling")))) {
@@ -1024,12 +1040,13 @@ bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool pl
         // Disable AutoDJ.
         toggleAutoDJ(false);
 
-        // And eject track (nextTrack is null) as "End of auto DJ warning"
+        // And eject track (nextTrack is null) as "End of auto DJ warning".
+        // Not an autoload of a new song, so do not arm key harmonize.
         emitLoadTrackToPlayer(nextTrack, deck.group, false);
         return false;
     }
 
-    emitLoadTrackToPlayer(nextTrack, deck.group, play);
+    loadTrackFromAutoDj(deck, nextTrack, play);
     return true;
 }
 
@@ -1678,6 +1695,54 @@ void AutoDJProcessor::useFixedFadeTime(
     }
 }
 
+void AutoDJProcessor::loadTrackFromAutoDj(
+        const DeckAttributes& deck, TrackPointer pTrack, bool play) {
+    if (pTrack && deck.player() != nullptr) {
+        // Armed before the queued load so BaseTrackPlayerImpl skips the
+        // manual key preference for this same load.
+        deck.player()->setPendingAutoDjAutoload(true);
+    }
+    emitLoadTrackToPlayer(pTrack, deck.group, play);
+}
+
+void AutoDJProcessor::maybeHarmonizeAutoDjLoad(DeckAttributes* pDeck) {
+    if (pDeck == nullptr || pDeck->player() == nullptr ||
+            !pDeck->player()->isPendingAutoDjAutoload()) {
+        return;
+    }
+    // Consume the flag even when the option is off so a later manual load
+    // is not treated as this autoload.
+    pDeck->player()->setPendingAutoDjAutoload(false);
+
+    // Only reader of this key. The Key preference cannot cause or block it.
+    const bool enabled = m_pConfig->getValue<bool>(
+            ConfigKey(kPreferenceGroup, QStringLiteral("AutoHarmonizeToPrevious")),
+            false);
+    if (!enabled) {
+        return;
+    }
+    DeckAttributes* pOtherDeck = getOtherDeck(pDeck);
+    if (pOtherDeck == nullptr) {
+        return;
+    }
+    // One Match Key pitch write against the other main deck. Invalid keys
+    // leave pitch unchanged. The stored file key is not written.
+    KeyControl::applyMatchKeyPitch(pDeck->group, pOtherDeck->group);
+}
+
+void AutoDJProcessor::finishPendingAutoDjLoad(DeckAttributes* pDeck, TrackPointer) {
+    if (pDeck == nullptr) {
+        return;
+    }
+    // Drop the one-shot before the write so this completion cannot run twice
+    // and a later user load is not harmonized as an AutoDJ autoload.
+    disconnect(pDeck,
+            &DeckAttributes::trackLoaded,
+            this,
+            &AutoDJProcessor::finishPendingAutoDjLoad);
+    maybeHarmonizeAutoDjLoad(pDeck);
+}
+
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
     if (kLogger.debugEnabled()) {
         kLogger.debug() << "playerTrackLoaded" << pDeck->group
@@ -1689,6 +1754,13 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
     // Since the end position is measured in seconds from 0:00 it is also
     // the track duration.
     double duration = getEndSecond(pDeck);
+    if (duration >= kMinimumTrackDurationSec) {
+        // File key is already on the deck: BaseTrackPlayerImpl::slotTrackLoaded
+        // publishes it before emitting newTrackLoaded, which calls us.
+        maybeHarmonizeAutoDjLoad(pDeck);
+    } else if (pDeck->player() != nullptr) {
+        pDeck->player()->setPendingAutoDjAutoload(false);
+    }
     if (duration < kMinimumTrackDurationSec) {
         qWarning() << "Skip track with" << duration << "Duration"
                    << pTrack->getLocation();

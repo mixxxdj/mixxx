@@ -32,10 +32,12 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     void analyzerEnabled(Qt::CheckState state);
     void fastAnalysisEnabled(Qt::CheckState state);
     void reanalyzeEnabled(Qt::CheckState state);
+    void autoHarmonizeOnManualLoadEnabled(Qt::CheckState state);
 #else
     void analyzerEnabled(int i);
     void fastAnalysisEnabled(int i);
     void reanalyzeEnabled(int i);
+    void autoHarmonizeOnManualLoadEnabled(int i);
 #endif
 
     void setNotation(KeyUtils::KeyNotation notation);
@@ -58,5 +60,6 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
+    bool m_bAutoHarmonizeOnManualLoad;
     KeyDetectionSettings::StemStrategy m_stemStrategy;
 };

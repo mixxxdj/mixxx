@@ -3,6 +3,7 @@
 #include <QList>
 #include <QMutex>
 #include <QString>
+#include <optional>
 
 #include "audio/types.h"
 #include "control/controlproxy.h"
@@ -89,6 +90,15 @@ class KeyUtils {
 
     static int shortestStepsToCompatibleKey(mixxx::track::io::key::ChromaticKey key,
                                             mixxx::track::io::key::ChromaticKey target_key);
+
+    /// Semitone offset `sync_key` writes so `fileKey` matches a Circle-of-Fifths
+    /// compatible key of `otherEffectiveKey`, shifted by that deck's
+    /// `visual_key_distance`. Empty when either key is invalid: callers must
+    /// leave pitch unchanged.
+    static std::optional<double> matchKeyPitchSemitones(
+            mixxx::track::io::key::ChromaticKey fileKey,
+            mixxx::track::io::key::ChromaticKey otherEffectiveKey,
+            double otherVisualKeyDistance);
 
     /// Returns a list of keys that are harmonically compatible with key using
     /// the Circle of Fifths (including the key itself).
