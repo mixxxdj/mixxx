@@ -1,0 +1,8 @@
+<svg width="48" height="48" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <g transform="translate(2)">
+    <path d="m5 21h-2v-18h2z"/>
+  </g>
+  <path d="m17 21h2v-18h-2z"/>
+  <path d="m14 13 7-4-7-4z"/>
+  <path d="m10 13-7-4 7-4z"/>
+</svg>
