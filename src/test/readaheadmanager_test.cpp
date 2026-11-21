@@ -243,3 +243,21 @@ TEST_F(ReadAheadManagerTest, FractionalFrameLoop) {
     // The rounding error must not exceed a half frame (one samples in stereo)
     EXPECT_NEAR(16, m_pReadAheadManager->getPlaypos(), 1);
 }
+
+TEST(CachingReaderConfigTest, DeckOnlyScope) {
+    auto pConfig = UserSettingsPointer::create(QString());
+    pConfig->setValue(CachingReader::kChunkCountConfigKey, 512);
+    pConfig->setValue(CachingReader::kPreloadCacheConfigKey, true);
+
+    CachingReader deckReader(QStringLiteral("[Channel1]"),
+            pConfig,
+            mixxx::audio::ChannelCount::stereo());
+    EXPECT_EQ(deckReader.cachedChunkCount(), 512);
+    EXPECT_TRUE(deckReader.isPreloadEnabled());
+
+    CachingReader samplerReader(QStringLiteral("[Sampler1]"),
+            pConfig,
+            mixxx::audio::ChannelCount::stereo());
+    EXPECT_EQ(samplerReader.cachedChunkCount(), CachingReader::kDefaultChunkCount);
+    EXPECT_FALSE(samplerReader.isPreloadEnabled());
+}

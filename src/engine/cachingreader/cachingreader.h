@@ -80,6 +80,12 @@ class CachingReader : public QObject {
     Q_OBJECT
 
   public:
+    static inline const ConfigKey kChunkCountConfigKey =
+            ConfigKey(QStringLiteral("[Controls]"), QStringLiteral("CachingReaderChunkCount"));
+    static inline const ConfigKey kPreloadCacheConfigKey =
+            ConfigKey(QStringLiteral("[Controls]"), QStringLiteral("CachingReaderPreload"));
+    static constexpr SINT kDefaultChunkCount = 80;
+
     // Construct a CachingReader with the given group.
     CachingReader(const QString& group,
             UserSettingsPointer _config,
@@ -126,6 +132,13 @@ class CachingReader : public QObject {
         m_worker.setScheduler(pScheduler);
     }
 
+    SINT cachedChunkCount() const {
+        return m_numberOfCachedChunks;
+    }
+    bool isPreloadEnabled() const {
+        return m_preloadEnabled;
+    }
+
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
@@ -137,6 +150,9 @@ class CachingReader : public QObject {
 
   private:
     const UserSettingsPointer m_pConfig;
+    const SINT m_numberOfCachedChunks;
+    const bool m_preloadEnabled;
+    SINT m_nextPreloadChunkIndex;
 
     // Thread-safe FIFOs for communication between the engine callback and
     // reader thread.
