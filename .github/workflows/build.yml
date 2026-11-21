@@ -206,7 +206,6 @@ jobs:
           - name: AppImage Linux x86_64
             os: ubuntu-22.04
             cmake_args: >-
-              -DQT6=ON
               -DQML=ON
               -DMIXXX_APPIMAGE=ON
               -DINSTALL_USER_UDEV_RULES=OFF
@@ -229,6 +228,33 @@ jobs:
             artifacts_path: build/*.AppImage
             artifacts_slug: linux-appimage
             arch: x86_64
+          - name: AppImage Linux aarch64
+            os: ubuntu-22.04-arm
+            # -Wl,--allow-shlib-undefined permits a bundled shared library to
+            # reference a symbol that the host's system libraries do not
+            # provide at link time; the AppImage ships its own copy of that
+            # library, which satisfies the reference at runtime.
+            cmake_args: >-
+              -DQML=ON
+              -DMIXXX_APPIMAGE=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
+              -DCMAKE_INSTALL_PREFIX=/usr
+              -DCMAKE_INSTALL_LIBDIR=lib
+              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
+            ctest_args: []
+            cpack_generator: AppImage
+            crosscompile: false
+            compiler_cache: ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: appimage-qt6
+            compiler_cache_max_size: 10G
+            buildenv_basepath: /home/runner/buildenv
+            buildenv_script: tools/appimage_release_buildenv.sh
+            artifacts_name: AppImage Linux aarch64
+            artifacts_path: build/*.AppImage
+            artifacts_slug: linux-appimage-arm64
+            arch: aarch64
 
     env:
       # macOS codesigning
@@ -570,6 +596,21 @@ jobs:
           dotnet.exe tool install --global wix --version 6.0.2
           wix extension add --global WixToolset.UI.wixext/6.0.2
 
+      - name: "[AppImage] Import signing GPG key"
+        # Sign the AppImage with the release GPG key, like the Flatpak
+        # publishing.  The secret is only passed on release builds; on develop
+        # and pull-request builds it is empty and the step is a no-op.  The
+        # import and the MIXXX_APPIMAGE_SIGN switch make CPackConfig.cmake pass
+        # --sign to appimagetool.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "${GPG_PRIVATE_KEY}" ]; then
+            gpg --batch --import <(printf '%s' "${GPG_PRIVATE_KEY}")
+            echo "MIXXX_APPIMAGE_SIGN=ON" >> "${GITHUB_ENV}"
+          fi
+
       - name: "Package"
         id: package
         if: matrix.cpack_generator != null
@@ -584,6 +625,20 @@ jobs:
           command: |
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
+
+      - name: "[AppImage] Check floor dependencies"
+        # The AppImage delegates fontconfig, freetype, harfbuzz, alsa and the
+        # base system stack to the host, so the shipped binary must not
+        # reference symbols or symbol versions the Ubuntu 22.04 floor cannot
+        # provide.  Headers from newer vcpkg ports can introduce them; walk
+        # the packaged AppImage's dynamic-linking closure against its bundled
+        # libraries and the build host's own libraries and fail on anything
+        # unsatisfiable.
+        if: matrix.cpack_generator == 'AppImage'
+        run: |
+          APPIMAGE=$(ls build/*.AppImage | head -1)
+          echo "Checking ${APPIMAGE}"
+          python3 tools/check_appimage_floor_deps.py "${APPIMAGE}"
 
       - name: "[AppImage] Upload AppImage"
         if: matrix.cpack_generator == 'AppImage'

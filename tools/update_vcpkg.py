@@ -98,6 +98,25 @@ PLATFORMS = [
             r'\g<4>{shasum}}}"'
         ),
     },
+    {
+        # The aarch64 AppImage job builds on the same script; the triplet
+        # differs so a separate entry keeps the arm64-linux pins updated too.
+        "host_os": "Linux",
+        "triplet": "arm64-linux",
+        "release_triplet": "arm64-linux-rel",
+        "file": "tools/appimage_buildenv.sh",
+        "pattern": (
+            r"BUILDENV_BRANCH:=[^}}]+"
+            r"\}}\"(\s+: \"\$\{{BUILDENV_NAME:=)mixxx-deps-"
+            r"[0-9]+\.[0-9]+(-{triplet}-)([a-z0-9]+)"
+            r"\}}\"(\s+: \"\$\{{BUILDENV_SHA256:=)[a-f0-9]+\}}\""
+        ),
+        "replace": (
+            r'BUILDENV_BRANCH:={channel}}}"'
+            r'\g<1>mixxx-deps-{channel_num}\g<2>{version}}}"'
+            r'\g<4>{shasum}}}"'
+        ),
+    },
 ]
 
 

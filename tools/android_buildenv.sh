@@ -95,6 +95,14 @@ case "$1" in
         sudo sdkmanager "platforms;android-${ANDROID_API}" "platform-tools" "build-tools;${ANDROID_VERSION}" "ndk;${ANDROID_NDK}"
         ANDROID_SDK=/usr/lib/android-sdk
         ANDROID_NDK_HOME=/usr/lib/android-sdk/ndk/${ANDROID_NDK}
+        # Let the build-time sdkmanager install any component it still needs
+        # (for example the build-tools version required by the buildenv Qt's
+        # Android Gradle Plugin) by making the SDK tree and the sdkmanager
+        # repository cache writable for the runner user.
+        sudo chown -R "$(id -u):$(id -g)" "$ANDROID_SDK"
+        if [ -d "$HOME/.config/.android" ]; then
+            sudo chown -R "$(id -u):$(id -g)" "$HOME/.config/.android"
+        fi
         JAVA_HOME=$(find /usr/lib/jvm -maxdepth 1 -name 'java-17-openjdk*')
         export ANDROID_SDK
         export ANDROID_NDK_HOME
