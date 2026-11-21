@@ -85,7 +85,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void clearChildModel();
 
     /// borrows pChild which must not be null
-    virtual void decorateChild(gsl::not_null<TreeItem*> pChild, int playlistId) = 0;
+    virtual void decorateChild(gsl::strict_not_null<TreeItem*> pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
     int playlistIdFromIndex(const QModelIndex& index) const;

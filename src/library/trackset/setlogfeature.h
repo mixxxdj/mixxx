@@ -37,7 +37,7 @@ class SetlogFeature : public BasePlaylistFeature {
 
   protected:
     QModelIndex constructChildModel(int selectedId);
-    void decorateChild(gsl::not_null<TreeItem*> pChild, int playlistId) override;
+    void decorateChild(gsl::strict_not_null<TreeItem*> pChild, int playlistId) override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

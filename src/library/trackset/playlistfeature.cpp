@@ -257,9 +257,10 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
 
         // Create the TreeItem whose parent is the invisible root item
         auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
-        pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+        gsl::strict_not_null<TreeItem*> pStrictItem{pItem.get()};
+        pStrictItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
-        decorateChild(pItem.get(), playlistId);
+        decorateChild(pStrictItem, playlistId);
         childrenToAdd.push_back(std::move(pItem));
 
         ++row;
@@ -273,7 +274,7 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     return m_pSidebarModel->index(selectedRow, 0);
 }
 
-void PlaylistFeature::decorateChild(gsl::not_null<TreeItem*> item, int playlistId) {
+void PlaylistFeature::decorateChild(gsl::strict_not_null<TreeItem*> item, int playlistId) {
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(
                 QIcon(":/images/library/ic_library_locked_tracklist.svg"));
