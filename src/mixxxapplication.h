@@ -16,6 +16,9 @@ class MixxxApplication : public QApplication {
 
     void setNotifyWarningThreshold(int threshold);
 
+    /// dark palette for dialogs and preferences, independent of the skin
+    static void setDarkDialogs(bool dark);
+
   private:
     bool touchIsRightButton();
     void registerMetaTypes();
