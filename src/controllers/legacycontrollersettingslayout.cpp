@@ -33,7 +33,7 @@ QBoxLayout* LegacyControllerSettingsLayoutContainer::buildLayout(QWidget* pParen
     return pLayout;
 }
 
-QWidget* LegacyControllerSettingsLayoutContainer::build(QWidget* pParent) {
+QWidget* LegacyControllerSettingsLayoutContainer::build(QWidget* pParent) const {
     auto pContainer = make_parented<WLegacyControllerSettingsContainer>(m_disposition, pParent);
     QBoxLayout* pLayout = buildLayout(pContainer);
 
@@ -53,7 +53,7 @@ QWidget* LegacyControllerSettingsLayoutContainer::build(QWidget* pParent) {
     return pContainer;
 }
 
-QWidget* LegacyControllerSettingsGroup::build(QWidget* pParent) {
+QWidget* LegacyControllerSettingsGroup::build(QWidget* pParent) const {
     auto pContainer = make_parented<WCollapsibleGroupBox>(m_label, pParent);
     QBoxLayout* pLayout = buildLayout(pContainer);
 
@@ -67,7 +67,7 @@ QWidget* LegacyControllerSettingsGroup::build(QWidget* pParent) {
     return pContainer;
 }
 
-QWidget* LegacyControllerSettingsLayoutItem::build(QWidget* parent) {
+QWidget* LegacyControllerSettingsLayoutItem::build(QWidget* parent) const {
     VERIFY_OR_DEBUG_ASSERT(m_setting.get() != nullptr) {
         return nullptr;
     }

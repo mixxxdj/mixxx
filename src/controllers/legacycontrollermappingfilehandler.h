@@ -71,7 +71,14 @@ class LegacyControllerMappingFileHandler {
 
     /// Creates the XML document and includes what script files are currently
     /// loaded. Sub-classes need to call this before adding any other items.
+    /// Sections written: <info>, <controller>, <scriptfiles>
     QDomDocument buildRootWithScripts(const LegacyControllerMapping& mapping) const;
+
+    /// Serializes the mapping's settings (definitions and layout) into a
+    /// <settings> element and appends it to the given document's root node
+    /// right after <info>
+    void addSettingsToDocument(const LegacyControllerMapping& mapping,
+            QDomDocument* pDoc) const;
 
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
 
