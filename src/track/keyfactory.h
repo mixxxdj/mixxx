@@ -40,6 +40,5 @@ class KeyFactory {
             const KeyChangeList& key_changes,
             const QHash<QString, QString>& extraVersionInfo,
             mixxx::audio::SampleRate sampleRate,
-            SINT totalFrames,
-            double tuningFrequencyHz = 0.0);
+            SINT totalFrames);
 };
