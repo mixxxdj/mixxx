@@ -51,6 +51,19 @@ mixxx::Bpm averageBpmRoundedWithinRange(double averageLength, double rateRatio) 
     return averageBpm;
 }
 
+constexpr int kBarMatchBeatsPerBar = 4;
+
+/// Position in beats counted from the first marker, which is treated as the
+/// first downbeat. E.g. 5.25 is a quarter into the 6th beat.
+double beatsFromFirstMarker(const mixxx::Beats& beats, mixxx::audio::FramePos position) {
+    // The iterator extrapolates the grid before the first and after the last marker
+    auto it = beats.iteratorFrom(position);
+    if (*it > position) {
+        --it;
+    }
+    return (it - beats.cfirstmarker()) + (position - *it) / it.beatLengthFrames();
+}
+
 } // namespace
 
 BpmControl::BpmControl(const QString& group,
@@ -1131,6 +1144,65 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
     // Note: Syncing to before the loop beginning is allowed, because
     // loops are catching
     return newPlayPosition;
+}
+
+mixxx::audio::FramePos BpmControl::getBarMatchPosition(
+        mixxx::audio::FramePos requestedPosition,
+        mixxx::audio::FramePos phaseMatchedPosition) {
+    const mixxx::BeatsPointer pBeats = m_pBeats;
+    if (!pBeats) {
+        return phaseMatchedPosition;
+    }
+
+    // Use the same reference as getBeatMatchPosition() does while playing.
+    EngineBuffer* pReference = pickSyncTarget();
+    if (!pReference || pReference->getSpeed() == 0.0) {
+        pReference = getEngineBuffer();
+    }
+    const mixxx::audio::FramePos referencePosition = pReference->getExactPlayPos();
+    mixxx::BeatsPointer pReferenceBeats = pBeats;
+    if (pReference != getEngineBuffer()) {
+        const TrackPointer pReferenceTrack = pReference->getLoadedTrack();
+        pReferenceBeats = pReferenceTrack ? pReferenceTrack->getBeats() : nullptr;
+        if (!pReferenceBeats) {
+            return phaseMatchedPosition;
+        }
+        // Counting beats of both grids only works if their beats are about
+        // equally long, e.g. not with half/double BPM sync.
+        const double bpmRatio = pReference->getBpm().value() / getBpm().value();
+        if (!(std::abs(bpmRatio - 1.0) < 0.1)) {
+            return phaseMatchedPosition;
+        }
+    }
+
+    // Both positions are already in phase, so apart from user offsets they
+    // differ by a whole number of beats.
+    const long beatDifference = std::lround(
+            beatsFromFirstMarker(*pBeats, phaseMatchedPosition) -
+            beatsFromFirstMarker(*pReferenceBeats, referencePosition));
+    const int beatsPastBarPhase = static_cast<int>(
+            ((beatDifference % kBarMatchBeatsPerBar) + kBarMatchBeatsPerBar) %
+            kBarMatchBeatsPerBar);
+    if (beatsPastBarPhase == 0) {
+        return phaseMatchedPosition;
+    }
+
+    const mixxx::audio::FramePos earlier =
+            pBeats->findNBeatsFromPosition(phaseMatchedPosition, -beatsPastBarPhase);
+    const mixxx::audio::FramePos later = pBeats->findNBeatsFromPosition(
+            phaseMatchedPosition, kBarMatchBeatsPerBar - beatsPastBarPhase);
+    // Prefer the candidate inside the track, then the one nearest to the click
+    const mixxx::audio::FramePos trackEndPosition = frameInfo().trackEndPosition;
+    if (trackEndPosition.isValid() && later >= trackEndPosition) {
+        return earlier;
+    }
+    if (earlier < mixxx::audio::kStartFramePos) {
+        return later;
+    }
+    if (std::abs(later - requestedPosition) < std::abs(requestedPosition - earlier)) {
+        return later;
+    }
+    return earlier;
 }
 
 mixxx::audio::FrameDiff_t BpmControl::getPhaseOffset(mixxx::audio::FramePos thisPosition) {

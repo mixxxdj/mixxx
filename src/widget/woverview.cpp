@@ -15,6 +15,7 @@
 #include "mixer/playermanager.h"
 #include "moc_woverview.cpp"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/overviewseeksettings.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/duration.h"
@@ -77,7 +78,10 @@ WOverview::WOverview(
                   QStringLiteral("track_samples")),
           m_playpositionControl(
                   m_group,
-                  QStringLiteral("playposition")) {
+                  QStringLiteral("playposition")),
+          m_playposBarAlignedControl(
+                  m_group,
+                  QStringLiteral("playposition_bar_aligned")) {
     m_endOfTrackControl = make_parented<ControlProxy>(
             m_group, QStringLiteral("end_of_track"), this, ControlFlag::NoAssertIfMissing);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
@@ -606,7 +610,15 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
             if (isPosInAllowedPosDragZone(e->pos())) {
                 m_iPlayPos = m_iPickupPos;
                 double dValue = positionToValue(m_iPickupPos);
-                setControlParameterUp(dValue);
+                // If enabled in the preferences, a free seek on a deck keeps
+                // the beat in the bar while the deck is playing. Cue marker
+                // clicks are handled in mousePressEvent() via playposition.
+                if (PlayerManager::isDeckGroup(m_group) &&
+                        OverviewSeekSettings(m_pConfig).getKeepBarPhase()) {
+                    m_playposBarAlignedControl.set(dValue);
+                } else {
+                    setControlParameterUp(dValue);
+                }
                 m_bLeftClickDragging = false;
             } else {
                 // Abort dragging if we are way outside the widget.

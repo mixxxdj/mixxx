@@ -1,6 +1,7 @@
 #include "engine/enginebuffer.h"
 
 #include <QtDebug>
+#include <cmath>
 
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
@@ -52,6 +53,12 @@ constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
 const QString kAppGroup = QStringLiteral("[App]");
 
+// Seek tail buffer, 371 ms of stereo at 44.1 kHz.
+// Allocated for every player, so keep it moderate.
+constexpr std::size_t kSeekTailCapacitySamples = 32768;
+// Crossfade length of a bar aligned seek
+constexpr double kSeekTailMillis = 160;
+
 } // anonymous namespace
 
 EngineBuffer::EngineBuffer(const QString& group,
@@ -98,7 +105,10 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pCrossfadeBuffer(SampleUtil::alloc(
                   kMaxEngineFrames * mixxx::kMaxEngineChannelInputCount)),
           m_bCrossfadeReady(false),
-          m_lastBufferSize(0)
+          m_lastBufferSize(0),
+          m_pSeekTailBuffer(SampleUtil::alloc(kSeekTailCapacitySamples)),
+          m_seekTailSamples(0),
+          m_seekTailPlayedSamples(0)
 #ifdef __STEM__
           ,
           m_stemMask()
@@ -111,6 +121,7 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     // zero out crossfade buffer
     SampleUtil::clear(m_pCrossfadeBuffer, kMaxEngineFrames * mixxx::kMaxEngineChannelInputCount);
+    SampleUtil::clear(m_pSeekTailBuffer, kSeekTailCapacitySamples);
 
     m_pReader = new CachingReader(group, pConfig, maxSupportedChannel);
     connect(m_pReader, &CachingReader::trackLoading,
@@ -168,6 +179,17 @@ EngineBuffer::EngineBuffer(const QString& group,
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
     connect(m_playposSlider, &ControlObject::valueChanged,
             this, &EngineBuffer::slotControlSeek,
+            Qt::DirectConnection);
+
+    // Written by the waveform overview. Not ignoring no-ops, so clicking the
+    // same spot twice seeks twice.
+    m_pPlayposBarAligned = std::make_unique<ControlObject>(
+            ConfigKey(m_group, QStringLiteral("playposition_bar_aligned")),
+            false);
+    connect(m_pPlayposBarAligned.get(),
+            &ControlObject::valueChanged,
+            this,
+            &EngineBuffer::slotControlSeekBarAligned,
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
@@ -341,6 +363,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_pReplayGain;
 
     SampleUtil::free(m_pCrossfadeBuffer);
+    SampleUtil::free(m_pSeekTailBuffer);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
@@ -475,20 +498,73 @@ void EngineBuffer::readToCrossfadeBuffer(const std::size_t bufferSize) {
      }
 }
 
+bool EngineBuffer::renderSeekTail() {
+    if (m_seekTailSamples > 0 || m_rate_old == 0.0 || m_lastBufferSize == 0) {
+        // Use the usual one buffer crossfade. A running tail keeps fading.
+        return false;
+    }
+    const std::size_t channelCount = m_channelCount;
+    const auto frames = static_cast<std::size_t>(
+            m_sampleRate.toDouble() * kSeekTailMillis / 1000.0);
+    // At high sample rates or with stems the capacity limits the length
+    const std::size_t samples = std::min(frames * channelCount,
+            kSeekTailCapacitySamples / channelCount * channelCount);
+    // Continue the current scaler at the old position, as if there was no seek.
+    // This costs as much CPU as playing the tail, but all in this callback.
+    std::size_t rendered = 0;
+    while (rendered < samples) {
+        const std::size_t chunk = std::min(m_lastBufferSize, samples - rendered);
+        m_pScale->scaleBuffer(m_pSeekTailBuffer + rendered, chunk);
+        rendered += chunk;
+    }
+    m_seekTailSamples = samples;
+    m_seekTailPlayedSamples = 0;
+    return true;
+}
+
+void EngineBuffer::mixSeekTail(CSAMPLE* pOutput, std::size_t bufferSize, bool stop) {
+    const std::size_t samples =
+            std::min(bufferSize, m_seekTailSamples - m_seekTailPlayedSamples);
+    // Equal power, because the old and new audio are mostly not correlated.
+    // Linear ramps between the gains at the start and end of this buffer.
+    const auto angle = [this](std::size_t playedSamples) {
+        return M_PI_2 * playedSamples / m_seekTailSamples;
+    };
+    const double startAngle = angle(m_seekTailPlayedSamples);
+    const double endAngle = stop ? M_PI_2 : angle(m_seekTailPlayedSamples + samples);
+    if (!stop) {
+        SampleUtil::applyRampingGain(pOutput,
+                static_cast<CSAMPLE_GAIN>(std::sin(startAngle)),
+                static_cast<CSAMPLE_GAIN>(std::sin(endAngle)),
+                samples);
+    }
+    SampleUtil::addWithRampingGain(pOutput,
+            m_pSeekTailBuffer + m_seekTailPlayedSamples,
+            static_cast<CSAMPLE_GAIN>(std::cos(startAngle)),
+            static_cast<CSAMPLE_GAIN>(std::cos(endAngle)),
+            samples);
+    m_seekTailPlayedSamples += samples;
+    if (stop || m_seekTailPlayedSamples >= m_seekTailSamples) {
+        m_seekTailSamples = 0;
+        m_seekTailPlayedSamples = 0;
+    }
+}
+
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
-void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
+void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position, bool seekTailRendered) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "setNewPlaypos" << m_group << position;
     }
 
     m_playPos = position;
 
-    if (m_rate_old != 0.0) {
+    if (m_rate_old != 0.0 && !seekTailRendered) {
         // Before seeking, read extra buffer for crossfading
         // this also sets m_pReadAheadManager to newpos
         readToCrossfadeBuffer(m_lastBufferSize);
     } else {
+        // Not playing, or the seek tail replaces the crossfade buffer
         m_pReadAheadManager->notifySeek(m_playPos.toSamplePos(m_channelCount));
     }
     m_pScale->clear();
@@ -590,6 +666,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pReplayGain->set(pTrack->getReplayGain().getRatio());
 
     m_queuedSeek.setValue(kNoQueuedSeek);
+    m_seekTailSamples = 0; // no tail of the old track
 
     // Reset the pitch value for the new track.
     m_pause.unlock();
@@ -729,6 +806,11 @@ void EngineBuffer::slotPassthroughChanged(double enabled) {
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double fractionalPos) {
     doSeekFractional(fractionalPos, SEEK_STANDARD);
+}
+
+void EngineBuffer::slotControlSeekBarAligned(double fractionalPos) {
+    // Always in phase, independent of Quantize
+    doSeekFractional(fractionalPos, SEEK_STANDARD_PHASE_BAR);
 }
 
 // WARNING: This method is called by EngineControl and runs in the engine thread
@@ -1157,6 +1239,9 @@ void EngineBuffer::processTrackLocked(
             SampleUtil::linearCrossfadeBuffersIn(
                     pOutput, m_pCrossfadeBuffer, bufferSize, m_channelCount);
         }
+        if (m_seekTailSamples > 0) {
+            mixSeekTail(pOutput, bufferSize, false);
+        }
         // Note: we do not fade here if we pass the end or the start of
         // the track in reverse direction
         // because we assume that the track samples itself start and stop
@@ -1171,6 +1256,10 @@ void EngineBuffer::processTrackLocked(
             SampleUtil::copy(pOutput, m_pCrossfadeBuffer, bufferSize);
         } else {
             SampleUtil::clear(pOutput, bufferSize);
+        }
+        if (m_seekTailSamples > 0) {
+            // Fade out the rest of a seek tail instead of cutting it off
+            mixSeekTail(pOutput, bufferSize, true);
         }
     }
 
@@ -1368,6 +1457,9 @@ void EngineBuffer::processSeek(bool paused) {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
 
     SeekRequests seekType = queuedSeek.seekType;
+    // The bar flag only modifies a phase seek
+    const bool alignBar = seekType.testFlag(SEEK_BAR);
+    seekType.setFlag(SEEK_BAR, false);
     mixxx::audio::FramePos position = queuedSeek.position;
 
     // Add SEEK_PHASE bit, if any
@@ -1418,8 +1510,12 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "processSeek" << getGroup() << "Seeking phase";
         }
-        const mixxx::audio::FramePos syncPosition =
+        mixxx::audio::FramePos syncPosition =
                 m_pBpmControl->getBeatMatchPosition(position, true, true);
+        if (alignBar) {
+            // Keep the beat in the bar as well
+            syncPosition = m_pBpmControl->getBarMatchPosition(position, syncPosition);
+        }
         position = m_pLoopingControl->getSyncPositionInsideLoop(position, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
@@ -1431,7 +1527,10 @@ void EngineBuffer::processSeek(bool paused) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "processSeek" << getGroup() << "Seek to" << position;
         }
-        setNewPlaypos(position);
+        // Smoother jump, unless it ends the track
+        setNewPlaypos(position,
+                alignBar && !paused && position < m_trackEndPositionOld &&
+                        renderSeekTail());
         m_previousBufferSeek = true;
     }
     // Reset the m_queuedSeek value after it has been processed in

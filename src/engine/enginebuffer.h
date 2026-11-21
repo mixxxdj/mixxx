@@ -5,6 +5,7 @@
 #include <QAtomicInt>
 #include <QMutex>
 #include <initializer_list>
+#include <memory>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -77,7 +78,10 @@ class EngineBuffer : public EngineObject {
         /// phase seek are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
         /// #SEEK_EXACT to the other deck position
-        SEEK_CLONE = 1 << 3
+        SEEK_CLONE = 1 << 3,
+        /// Also keep the beat in the bar (overview)
+        SEEK_BAR = 1 << 4,
+        SEEK_STANDARD_PHASE_BAR = SEEK_STANDARD_PHASE | SEEK_BAR,
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
@@ -261,6 +265,7 @@ class EngineBuffer : public EngineObject {
     void slotControlStart(double);
     void slotControlEnd(double);
     void slotControlSeek(double);
+    void slotControlSeekBarAligned(double);
     void slotKeylockEngineChanged(double);
 
   signals:
@@ -308,8 +313,16 @@ class EngineBuffer : public EngineObject {
     // to prevent pops.
     void readToCrossfadeBuffer(const std::size_t bufferSize);
 
+    /// Before a bar aligned seek: render kSeekTailMillis of the old position
+    /// with the current scaler, to fade it out over the next buffers.
+    /// Returns false if the usual one buffer crossfade is needed instead.
+    bool renderSeekTail();
+    /// Fade in pOutput and fade out the seek tail. With stop, leave pOutput
+    /// as is and fade out the rest of the tail within this buffer.
+    void mixSeekTail(CSAMPLE* pOutput, std::size_t bufferSize, bool stop);
+
     // Reset buffer playpos and set file playpos.
-    void setNewPlaypos(mixxx::audio::FramePos playpos);
+    void setNewPlaypos(mixxx::audio::FramePos playpos, bool seekTailRendered = false);
 
     void processSyncRequests();
     void processSeek(bool paused);
@@ -341,6 +354,9 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, BarAlignedSeekIsExactWhilePaused);
+    FRIEND_TEST(EngineSyncTest, BarAlignedSeekFadesOutOldPosition);
+    FRIEND_TEST(EngineSyncTest, BarAlignedSeekSkipsHalfTimeTarget);
     FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange);
     FRIEND_TEST(EngineSyncTest, BeatMapQuantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
@@ -432,6 +448,8 @@ class EngineBuffer : public EngineObject {
 
     PollingControlProxy m_quantize;
     ControlPotmeter* m_playposSlider;
+    // Seek like playposition, but keep the beat in the bar
+    std::unique_ptr<ControlObject> m_pPlayposBarAligned;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
@@ -512,6 +530,11 @@ class EngineBuffer : public EngineObject {
     CSAMPLE* m_pCrossfadeBuffer;
     bool m_bCrossfadeReady;
     std::size_t m_lastBufferSize;
+
+    // Old audio faded out after a bar aligned seek, see renderSeekTail()
+    CSAMPLE* m_pSeekTailBuffer;
+    std::size_t m_seekTailSamples;
+    std::size_t m_seekTailPlayedSamples;
 
     QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 

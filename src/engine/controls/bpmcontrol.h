@@ -45,6 +45,15 @@ class BpmControl : public EngineControl {
             mixxx::audio::FramePos thisPosition,
             bool respectLoops,
             bool playing);
+    /// Shifts an already phase-matched seek target by whole beats, so that its
+    /// beat in the bar (4/4, counted from the first downbeat of the grid)
+    /// equals the one of the playing sync target, or of this deck before the
+    /// seek if no other deck is playing. From the two candidates, the one
+    /// nearest to requestedPosition is used. Returns phaseMatchedPosition
+    /// unchanged if either deck has no usable beat grid.
+    mixxx::audio::FramePos getBarMatchPosition(
+            mixxx::audio::FramePos requestedPosition,
+            mixxx::audio::FramePos phaseMatchedPosition);
     double getPhaseOffset(mixxx::audio::FramePos thisPosition);
     /// getBeatDistance is adjusted to include the user offset so it's
     /// transparent to other decks.

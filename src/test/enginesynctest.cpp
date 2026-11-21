@@ -1,6 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <cmath>
 #include <memory>
 #include <string>
 
@@ -2741,6 +2743,138 @@ TEST_F(EngineSyncTest, SeekStayInPhase) {
     EXPECT_DOUBLE_EQ(0.050309901738473162,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     EXPECT_DOUBLE_EQ(41731.692307692305, m_pChannel1->getEngineBuffer()->getExactPlayPos().value());
+}
+
+namespace {
+/// Distance of beatPosition from the nearest multiple of a 4 beat bar.
+double barPhaseError(double beatPosition) {
+    const double phase = std::fmod(beatPosition, 4.0);
+    const double wrapped = phase < 0 ? phase + 4.0 : phase;
+    return std::min(wrapped, 4.0 - wrapped);
+}
+} // namespace
+
+TEST_F(EngineSyncTest, BarAlignedSeekKeepsBeatInBar) {
+    // Bar aligned seeks are always in phase, independent of Quantize
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 0.0);
+    const mixxx::audio::SampleRate sampleRate = m_pTrack1->getSampleRate();
+    m_pTrack1->trySetBeats(mixxx::Beats::fromConstTempo(
+            sampleRate, mixxx::audio::kStartFramePos, mixxx::Bpm(130)));
+    const double beatLengthFrames = sampleRate * 60.0 / 130.0;
+    EngineBuffer* pEngineBuffer = m_pChannel1->getEngineBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+
+    for (const double target : {0.2, 0.31, 0.5, 0.77}) {
+        const double requestedBeat = target *
+                pEngineBuffer->getTrackEndPosition().value() / beatLengthFrames;
+        const double beatBeforeSeek =
+                pEngineBuffer->getExactPlayPos().value() / beatLengthFrames;
+        ControlObject::set(ConfigKey(m_sGroup1, "playposition_bar_aligned"), target);
+        ProcessBuffer();
+        const double beatAfterSeek =
+                pEngineBuffer->getExactPlayPos().value() / beatLengthFrames;
+        SCOPED_TRACE(target);
+        // Same beat in the bar as before, apart from one buffer of playback
+        EXPECT_LT(barPhaseError(beatAfterSeek - beatBeforeSeek), 0.1);
+        // and not further from the click than half a bar
+        EXPECT_LE(std::abs(beatAfterSeek - requestedBeat), 2.1);
+    }
+}
+
+TEST_F(EngineSyncTest, BarAlignedSeekFollowsOtherPlayingDeck) {
+    const mixxx::audio::SampleRate sampleRate = m_pTrack1->getSampleRate();
+    m_pTrack1->trySetBeats(mixxx::Beats::fromConstTempo(
+            sampleRate, mixxx::audio::kStartFramePos, mixxx::Bpm(128)));
+    m_pTrack2->trySetBeats(mixxx::Beats::fromConstTempo(
+            m_pTrack2->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(128)));
+    const double beatLength1 = sampleRate * 60.0 / 128.0;
+    const double beatLength2 = m_pTrack2->getSampleRate() * 60.0 / 128.0;
+    EngineBuffer* pEngineBuffer1 = m_pChannel1->getEngineBuffer();
+    EngineBuffer* pEngineBuffer2 = m_pChannel2->getEngineBuffer();
+
+    // Deck 2 plays from beat 2 of a bar, deck 1 from the first downbeat
+    ControlObject::set(ConfigKey(m_sGroup2, "playposition"),
+            beatLength2 / pEngineBuffer2->getTrackEndPosition().value());
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
+
+    for (const double target : {0.2, 0.43, 0.6}) {
+        ControlObject::set(ConfigKey(m_sGroup1, "playposition_bar_aligned"), target);
+        ProcessBuffer();
+        const double beat1 = pEngineBuffer1->getExactPlayPos().value() / beatLength1;
+        const double beat2 = pEngineBuffer2->getExactPlayPos().value() / beatLength2;
+        SCOPED_TRACE(target);
+        EXPECT_LT(barPhaseError(beat1 - beat2), 0.01);
+    }
+}
+
+TEST_F(EngineSyncTest, BarAlignedSeekSkipsHalfTimeTarget) {
+    const mixxx::audio::SampleRate sampleRate = m_pTrack1->getSampleRate();
+    m_pTrack1->trySetBeats(mixxx::Beats::fromConstTempo(
+            sampleRate, mixxx::audio::kStartFramePos, mixxx::Bpm(128)));
+    m_pTrack2->trySetBeats(mixxx::Beats::fromConstTempo(
+            m_pTrack2->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(64)));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
+    BpmControl* pBpmControl = m_pChannel1->getEngineBuffer()->m_pBpmControl;
+    // On the 2nd beat of the 3rd bar of deck 1, while deck 2 is near a downbeat
+    const mixxx::audio::FramePos position(sampleRate * 60.0 / 128 * 9);
+
+    // Beats of half the length cannot be counted against each other
+    EXPECT_EQ(position, pBpmControl->getBarMatchPosition(position, position));
+
+    // With the same tempo it moves to a downbeat
+    m_pTrack2->trySetBeats(mixxx::Beats::fromConstTempo(
+            m_pTrack2->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(128)));
+    ProcessBuffer();
+    EXPECT_NE(position, pBpmControl->getBarMatchPosition(position, position));
+}
+
+TEST_F(EngineSyncTest, BarAlignedSeekIsExactWhilePaused) {
+    const mixxx::audio::SampleRate sampleRate = m_pTrack1->getSampleRate();
+    m_pTrack1->trySetBeats(mixxx::Beats::fromConstTempo(
+            sampleRate, mixxx::audio::kStartFramePos, mixxx::Bpm(130)));
+    EngineBuffer* pEngineBuffer = m_pChannel1->getEngineBuffer();
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition_bar_aligned"), 0.2);
+    ProcessBuffer();
+    EXPECT_NEAR(0.2 * pEngineBuffer->getTrackEndPosition().value(),
+            pEngineBuffer->getExactPlayPos().value(),
+            1.0);
+    EXPECT_EQ(0u, pEngineBuffer->m_seekTailSamples);
+}
+
+TEST_F(EngineSyncTest, BarAlignedSeekFadesOutOldPosition) {
+    const mixxx::audio::SampleRate sampleRate = m_pTrack1->getSampleRate();
+    m_pTrack1->trySetBeats(mixxx::Beats::fromConstTempo(
+            sampleRate, mixxx::audio::kStartFramePos, mixxx::Bpm(130)));
+    EngineBuffer* pEngineBuffer = m_pChannel1->getEngineBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition_bar_aligned"), 0.2);
+    ProcessBuffer();
+    // One buffer of the 160 ms tail is mixed already, the rest is pending
+    const std::size_t tailSamples = pEngineBuffer->m_seekTailSamples;
+    const double outputSampleRate = ControlObject::get(ConfigKey("[App]", "samplerate"));
+    EXPECT_EQ(static_cast<std::size_t>(outputSampleRate * 160 / 1000.0) * 2, tailSamples);
+    EXPECT_GT(pEngineBuffer->m_seekTailPlayedSamples, 0u);
+    // A second click during the fade does not cut the running tail
+    const std::size_t playedSamples = pEngineBuffer->m_seekTailPlayedSamples;
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition_bar_aligned"), 0.3);
+    ProcessBuffer();
+    EXPECT_EQ(tailSamples, pEngineBuffer->m_seekTailSamples);
+    EXPECT_GT(pEngineBuffer->m_seekTailPlayedSamples, playedSamples);
+    for (int i = 0; i < 100 && pEngineBuffer->m_seekTailSamples > 0; ++i) {
+        ProcessBuffer();
+    }
+    EXPECT_EQ(0u, pEngineBuffer->m_seekTailSamples);
 }
 
 TEST_F(EngineSyncTest, ScratchEndOtherStoppedTrackStayInPhase) {

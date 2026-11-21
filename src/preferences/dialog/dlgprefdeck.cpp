@@ -10,6 +10,7 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefdeck.cpp"
+#include "preferences/overviewseeksettings.h"
 #include "preferences/usersettings.h"
 #include "util/duration.h"
 
@@ -450,6 +451,8 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")), true));
 
+    checkBoxOverviewSeekBarAligned->setChecked(OverviewSeekSettings(m_pConfig).getKeepBarPhase());
+
     double rateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
     if (index == -1) {
@@ -535,6 +538,10 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     // Clone decks by double-tapping Load button.
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
+
+    // Overview seek keeps the beat in the bar
+    checkBoxOverviewSeekBarAligned->setChecked(
+            OverviewSeekSettings(m_pConfig).getKeepBarPhaseDefault());
 
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
@@ -719,6 +726,7 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CueRecall")), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("CloneDeckOnLoadDoubleTap")),
             m_bCloneDeckOnLoadDoubleTap);
+    OverviewSeekSettings(m_pConfig).setKeepBarPhase(checkBoxOverviewSeekBarAligned->isChecked());
 
     // Set rate range
     // Set the config value before setting the CO values in setRateRangeForAllDecks()
