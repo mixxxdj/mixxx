@@ -144,6 +144,14 @@ QList<QList<QString>> ParserCsv::tokenize(const QByteArray& str, char delimiter)
             field.push_back(c);
         }
     }
+    // Flush the final field even if the file does not end with a newline.
+    if (!field.isEmpty() || !tokens[row].isEmpty()) {
+        if (Parser::isUtf8(field.constData())) {
+            tokens[row].append(QString::fromUtf8(field));
+        } else {
+            tokens[row].append(QString::fromLatin1(field));
+        }
+    }
     return tokens;
 }
 
