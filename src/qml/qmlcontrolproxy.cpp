@@ -1,5 +1,8 @@
 #include "qml/qmlcontrolproxy.h"
 
+#include <QTimer>
+#include <algorithm>
+
 #include "moc_qmlcontrolproxy.cpp"
 #include "util/cmdlineargs.h"
 
@@ -14,7 +17,10 @@ constexpr double kDefaultParameter = 0.0;
 QmlControlProxy::QmlControlProxy(QObject* parent)
         : QObject(parent),
           m_isComponentComplete(false),
-          m_pControlProxy(nullptr) {
+          m_pControlProxy(nullptr),
+          m_updateIntervalMs(0),
+          m_pThrottleTimer(nullptr),
+          m_throttlePending(false) {
 }
 
 void QmlControlProxy::componentComplete() {
@@ -173,13 +179,70 @@ void QmlControlProxy::reinitializeFromKey() {
     if (!wasInitialized) {
         emit initializedChanged(true);
     }
-    m_pControlProxy->connectValueChanged(this, &QmlControlProxy::slotControlProxyValueChanged);
+    m_pControlProxy->connectValueChanged(this, &QmlControlProxy::slotControlValueChangedThrottled);
     slotControlProxyValueChanged(m_pControlProxy->get());
 }
 
 void QmlControlProxy::slotControlProxyValueChanged(double newValue) {
     emit valueChanged(newValue);
     emit parameterChanged(m_pControlProxy->getParameter());
+}
+
+void QmlControlProxy::setUpdateInterval(int intervalMs) {
+    intervalMs = std::max(0, intervalMs);
+    if (m_updateIntervalMs == intervalMs) {
+        return;
+    }
+    m_updateIntervalMs = intervalMs;
+    if (m_pThrottleTimer) {
+        m_pThrottleTimer->stop();
+    }
+    // Never hold back a value: deliver anything pending right away.
+    if (m_throttlePending) {
+        m_throttlePending = false;
+        if (isInitialized()) {
+            slotControlProxyValueChanged(m_pControlProxy->get());
+        }
+    }
+    emit updateIntervalChanged(m_updateIntervalMs);
+}
+
+void QmlControlProxy::slotControlValueChangedThrottled(double newValue) {
+    if (m_updateIntervalMs <= 0) {
+        slotControlProxyValueChanged(newValue);
+        return;
+    }
+    if (!m_pThrottleTimer) {
+        m_pThrottleTimer = new QTimer(this);
+        m_pThrottleTimer->setSingleShot(true);
+        connect(m_pThrottleTimer,
+                &QTimer::timeout,
+                this,
+                &QmlControlProxy::slotThrottleTimeout);
+    }
+    if (m_pThrottleTimer->isActive()) {
+        // Inside the quiet window: remember that a newer value exists, it is
+        // delivered (read fresh from the control) when the window ends.
+        m_throttlePending = true;
+        return;
+    }
+    // Leading edge: notify now and open a quiet window.
+    m_throttlePending = false;
+    slotControlProxyValueChanged(newValue);
+    m_pThrottleTimer->start(m_updateIntervalMs);
+}
+
+void QmlControlProxy::slotThrottleTimeout() {
+    if (!m_throttlePending) {
+        return;
+    }
+    m_throttlePending = false;
+    if (!isInitialized()) {
+        return;
+    }
+    slotControlProxyValueChanged(m_pControlProxy->get());
+    // Keep the cadence while the control keeps changing.
+    m_pThrottleTimer->start(m_updateIntervalMs);
 }
 
 void QmlControlProxy::trigger() {
