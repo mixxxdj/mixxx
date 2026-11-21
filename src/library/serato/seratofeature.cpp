@@ -16,6 +16,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_seratofeature.cpp"
+#include "track/keyutils.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
@@ -503,6 +504,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             LIBRARYTABLE_SAMPLERATE + ", " +
             LIBRARYTABLE_BPM + ", " +
             LIBRARYTABLE_KEY + ", " +
+            LIBRARYTABLE_KEY_ID + ", " +
             TRACKLOCATIONSTABLE_LOCATION + ", " +
             LIBRARYTABLE_BPM_LOCK + ", " +
             LIBRARYTABLE_DATETIMEADDED +
@@ -522,6 +524,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             ":samplerate, "
             ":bpm, "
             ":key, "
+            ":key_id, "
             ":location, "
             ":bpm_lock, "
             ":datetime_added, "
@@ -592,6 +595,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                 query.bindValue(":samplerate", track.samplerate);
                 query.bindValue(":bpm", track.bpm);
                 query.bindValue(":key", track.key);
+                query.bindValue(":key_id",
+                        static_cast<int>(KeyUtils::guessKeyFromText(track.key)));
                 query.bindValue(":location", location);
                 query.bindValue(":bpm_lock", track.beatgridlocked);
                 query.bindValue(":datetime_added", track.datetimeadded);
@@ -764,6 +769,7 @@ bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
             "    samplerate TEXT,"
             "    bpm FLOAT,"
             "    key TEXT,"
+            "    key_id INTEGER,"
             "    location TEXT,"
             "    bpm_lock INTEGER,"
             "    datetime_added DEFAULT CURRENT_TIMESTAMP,"
@@ -862,6 +868,7 @@ SeratoFeature::SeratoFeature(
             LIBRARYTABLE_SAMPLERATE,
             LIBRARYTABLE_BPM,
             LIBRARYTABLE_KEY,
+            LIBRARYTABLE_KEY_ID,
             LIBRARYTABLE_TRACKNUMBER,
             TRACKLOCATIONSTABLE_LOCATION,
             LIBRARYTABLE_BPM_LOCK};
