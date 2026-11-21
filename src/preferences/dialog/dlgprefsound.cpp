@@ -3,6 +3,7 @@
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QGroupBox>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
@@ -43,6 +44,8 @@ const ConfigKey kPipeWirePatchbay =
         ConfigKey(kAppGroup, QStringLiteral("pipewire_patchbay_sync"));
 const ConfigKey kForceBufferSize = ConfigKey(kAppGroup, QStringLiteral("force_buffer_size"));
 const ConfigKey kForceSamplerate = ConfigKey(kAppGroup, QStringLiteral("force_samplerate"));
+const ConfigKey kJackAutoConnectPrefix =
+        ConfigKey(QStringLiteral("[SoundManager]"), QStringLiteral("jack_auto_connect_prefix"));
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -97,6 +100,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_pMicMonitorMode(kMasterGroup, QStringLiteral("talkover_mix")),
           m_pKeylockEngine(kKeylockEngingeCfgkey),
           m_settingsModified(false),
+          m_jackAutoConnectPrefixModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
           m_loading(false),
@@ -173,6 +177,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefSound::engineClockChanged);
+    connect(jackAutoConnectPrefixLineEdit,
+            &QLineEdit::textChanged,
+            this,
+            [this] {
+                if (!m_loading) {
+                    m_jackAutoConnectPrefixModified = true;
+                }
+            });
 
     keylockComboBox->clear();
     for (const auto engine : EngineBuffer::kKeylockEngines) {
@@ -550,6 +562,17 @@ void DlgPrefSound::slotUpdate() {
 
 /// Slot called when the Apply or OK button is pressed.
 void DlgPrefSound::slotApply() {
+    if (!m_settingsModified && !m_jackAutoConnectPrefixModified) {
+        return;
+    }
+
+    if (m_jackAutoConnectPrefixModified) {
+        const QString prefix = jackAutoConnectPrefixLineEdit->text().trimmed();
+        jackAutoConnectPrefixLineEdit->setText(prefix);
+        m_jackAutoConnectPrefixModified = false;
+        m_pSettings->setValue(kJackAutoConnectPrefix, prefix);
+    }
+
     if (!m_settingsModified) {
         return;
     }
@@ -761,6 +784,10 @@ void DlgPrefSound::loadSettings() {
 void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     m_loading = true; // so settingsChanged ignores all our modifications here
     m_config = config;
+    jackAutoConnectPrefixLineEdit->setText(
+            m_pSettings->getValue(kJackAutoConnectPrefix, QStringLiteral("Mixxx")));
+    m_jackAutoConnectPrefixModified = false;
+    updateJackAutoConnectPrefixVisibility();
     int apiIndex = apiComboBox->findData(m_config.getAPI());
     if (apiIndex != -1) {
         apiComboBox->setCurrentIndex(apiIndex);
@@ -875,6 +902,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
 /// for the new API and pushes those to the path items.
 void DlgPrefSound::apiChanged(int index) {
     m_config.setAPI(apiComboBox->itemData(index).toString());
+    updateJackAutoConnectPrefixVisibility();
     refreshDevices();
     // JACK sets its own buffer size and sample rate that Mixxx cannot change.
     // PortAudio is able to chop/combine the buffer but that will mess up the
@@ -893,6 +921,13 @@ void DlgPrefSound::apiChanged(int index) {
     deviceSyncComboBox->setEnabled(enable);
     engineClockComboBox->setEnabled(enable);
     updateAudioBufferSizes(sampleRateComboBox->currentIndex());
+}
+
+void DlgPrefSound::updateJackAutoConnectPrefixVisibility() {
+    const bool visible = m_config.getAPI() == SoundManagerConfig::kAPIJack;
+    jackAutoConnectPrefixLabel->setVisible(visible);
+    jackAutoConnectPrefixLineEdit->setVisible(visible);
+    jackAutoConnectPrefixHint->setVisible(visible);
 }
 
 /// Updates the list of APIs, trying to keep the API and device selections
@@ -1238,6 +1273,7 @@ void DlgPrefSound::slotResetToDefaults() {
     SoundManagerConfig newConfig(m_pSoundManager.get());
     newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
+    jackAutoConnectPrefixLineEdit->setText(QStringLiteral("Mixxx"));
 
     const auto keylockEngine = EngineBuffer::defaultKeylockEngine();
     const int index = keylockComboBox->findData(QVariant::fromValue(keylockEngine));

@@ -13,6 +13,7 @@
 #include "engine/enginemixer.h"
 #include "moc_soundmanager.cpp"
 #include "preferences/configobject.h"
+#include "soundio/jackautoconnector.h"
 #include "soundio/portaudioenumerator.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceenumerator.h"
@@ -106,6 +107,7 @@ SoundManager::SoundManager(
     {
         m_pEnumerator = std::make_unique<PortAudioEnumerator>(m_pConfig, this);
     }
+    m_pJackAutoConnector = std::make_unique<JackAutoConnector>(m_pConfig);
 
     queryDevices();
 
@@ -190,6 +192,7 @@ void SoundManager::closeDevices(
         [[maybe_unused]] bool sleepAfterClosing, [[maybe_unused]] bool async) {
     // sleepAfterClosing and async maybe unused depending on platform support
     // qDebug() << "SoundManager::closeDevices()";
+    m_pJackAutoConnector->stop();
 
 #ifdef __LINUX__
     bool closed = false;
@@ -496,6 +499,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
     m_pControlObjectSoundStatusCO->set(
             outputDevicesOpened > 0 ?
                     SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
+
+    if (jackApiUsed() && outputDevicesOpened > 0) {
+        m_pJackAutoConnector->start();
+    }
 
     // returns OK if we were able to open all the devices the user wanted
     if (devicesNotFound.isEmpty() || pipewireSkipConfig()) {

@@ -22,6 +22,7 @@
 
 class EngineMixer;
 class ControlObject;
+class JackAutoConnector;
 class PipewireEnumerator;
 
 #define SOUNDMANAGER_DISCONNECTED 0
@@ -207,6 +208,7 @@ class SoundManager : public QObject {
     PollingControlProxy m_audioLatencyOverload;
 
     std::unique_ptr<SoundDeviceEnumerator> m_pEnumerator;
+    std::unique_ptr<JackAutoConnector> m_pJackAutoConnector;
 
     QSharedPointer<EngineNetworkStream> m_pNetworkStream;
     QSharedPointer<SoundDeviceNetwork> m_pNetworkDevice;
