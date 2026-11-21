@@ -7,6 +7,7 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 #include <QShortcut>
+#include <QSignalBlocker>
 #include <QSizePolicy>
 #include <QStringLiteral>
 #include <QToolButton>
@@ -564,18 +565,25 @@ void WSearchLineEdit::slotSaveSearch() {
         return;
     }
 
-    if (cIndex > 0) {
-        // If query exists and is not at the top, remove the original index
-        removeItem(cIndex);
-    }
-    if (cIndex > 0 || cIndex == -1) {
-        // If the query doesn't exist yet or was not at top, insert it at the top
-        insertItem(0, cText.trimmed());
-    }
-    setCurrentIndex(0);
+    {
+        // Updating the history must not trigger a search. Selecting the
+        // trimmed entry changes the text if the query has trailing spaces,
+        // and the resulting search would scroll the library view back to
+        // the selected track and restart the save timer, endlessly.
+        const QSignalBlocker signalBlocker(this);
+        if (cIndex > 0) {
+            // If query exists and is not at the top, remove the original index
+            removeItem(cIndex);
+        }
+        if (cIndex > 0 || cIndex == -1) {
+            // If the query doesn't exist yet or was not at top, insert it at the top
+            insertItem(0, cText.trimmed());
+        }
+        setCurrentIndex(0);
 
-    while (count() > kMaxSearchEntries) {
-        removeItem(kMaxSearchEntries);
+        while (count() > kMaxSearchEntries) {
+            removeItem(kMaxSearchEntries);
+        }
     }
 
     if (currentText() != origText) {
