@@ -1,7 +1,9 @@
 #include "engine/cachingreader/cachingreader.h"
 
 #include <QtDebug>
+#include <algorithm>
 
+#include "mixer/playermanager.h"
 #include "moc_cachingreader.cpp"
 #include "util/assert.h"
 #include "util/counter.h"
@@ -32,7 +34,8 @@ constexpr SINT kDefaultHintFrames = 1024;
 // (kNumberOfCachedChunksInMemory = 1, 2, 3, ...) for testing purposes
 // to verify that the MRU/LRU cache works as expected. Even though
 // massive drop outs are expected to occur Mixxx should run reliably!
-constexpr SINT kNumberOfCachedChunksInMemory = 80;
+// NOTE(npredella, 2026-11-21): as this number is now set from dropdown,
+// find the setting as CachingReaderChunkCount in [Controls], in mixxx.cfg
 
 } // anonymous namespace
 
@@ -40,6 +43,18 @@ CachingReader::CachingReader(const QString& group,
         UserSettingsPointer config,
         mixxx::audio::ChannelCount maxSupportedChannel)
         : m_pConfig(config),
+          m_numberOfCachedChunks(m_pConfig && PlayerManager::isDeckGroup(group)
+                          ? std::clamp<SINT>(
+                                    m_pConfig->getValue<int>(
+                                            kChunkCountConfigKey,
+                                            static_cast<int>(kDefaultChunkCount)),
+                                    1,
+                                    4096)
+                          : kDefaultChunkCount),
+          m_preloadEnabled(m_pConfig &&
+                  PlayerManager::isDeckGroup(group) &&
+                  m_pConfig->getValue<bool>(kPreloadCacheConfigKey, false)),
+          m_nextPreloadChunkIndex(0),
           // Limit the number of in-flight requests to the worker. This should
           // prevent to overload the worker when it is not able to fetch those
           // requests from the FIFO timely. Otherwise outdated requests pile up
@@ -49,25 +64,25 @@ CachingReader::CachingReader(const QString& group,
           // buffer, where new requests replace old requests when full. Those
           // old requests need to be returned immediately to the CachingReader
           // that must take ownership and free them!!!
-          m_chunkReadRequestFIFO(kNumberOfCachedChunksInMemory / 4),
+          m_chunkReadRequestFIFO(std::max<SINT>(1, m_numberOfCachedChunks / 4)),
           // The capacity of the back channel must be equal to the number of
           // allocated chunks, because the worker use writeBlocking(). Otherwise
           // the worker could get stuck in a hot loop!!!
-          m_readerStatusUpdateFIFO(kNumberOfCachedChunksInMemory),
+          m_readerStatusUpdateFIFO(m_numberOfCachedChunks),
           m_state(STATE_IDLE),
           m_mruCachingReaderChunk(nullptr),
           m_lruCachingReaderChunk(nullptr),
           m_sampleBuffer(CachingReaderChunk::kFrames * maxSupportedChannel *
-                  kNumberOfCachedChunksInMemory),
+                  m_numberOfCachedChunks),
           m_worker(group,
                   &m_chunkReadRequestFIFO,
                   &m_readerStatusUpdateFIFO,
                   maxSupportedChannel) {
-    m_allocatedCachingReaderChunks.reserve(kNumberOfCachedChunksInMemory);
+    m_allocatedCachingReaderChunks.reserve(m_numberOfCachedChunks);
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
     // list.
-    for (SINT i = 0; i < kNumberOfCachedChunksInMemory; ++i) {
+    for (SINT i = 0; i < m_numberOfCachedChunks; ++i) {
         CachingReaderChunkForOwner* c =
                 new CachingReaderChunkForOwner(
                         mixxx::SampleBuffer::WritableSlice(
@@ -283,6 +298,8 @@ void CachingReader::process() {
                 }
                 // Reset the readable frame index range
                 m_readableFrameIndexRange = update.readableFrameIndexRange();
+                m_nextPreloadChunkIndex =
+                        CachingReaderChunk::indexForFrame(m_readableFrameIndexRange.start());
                 m_state.storeRelease(STATE_TRACK_LOADED);
             } else {
                 DEBUG_ASSERT(update.status == TRACK_UNLOADED);
@@ -569,6 +586,15 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
             continue;
         }
 
+        if (hint.type == Hint::Type::CurrentPosition &&
+                m_numberOfCachedChunks > kDefaultChunkCount) {
+            const SINT radiusFrames =
+                    std::min<SINT>(4, m_numberOfCachedChunks / 16) * CachingReaderChunk::kFrames;
+            const SINT newStart = std::max<SINT>(0, hintFrame - radiusFrames);
+            hintFrameCount += (hintFrame - newStart) + radiusFrames;
+            hintFrame = newStart;
+        }
+
         const auto readableFrameIndexRange = intersect(
                 m_readableFrameIndexRange,
                 mixxx::IndexRange::forward(hintFrame, hintFrameCount));
@@ -612,6 +638,33 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                 // chunk will be moved to the end of the LRU list.
                 freshenChunk(pChunk);
             }
+        }
+    }
+
+    if (m_preloadEnabled && !m_freeChunks.empty() && !m_readableFrameIndexRange.empty() &&
+            m_chunkReadRequestFIFO.readAvailable() <= 2) {
+        const SINT lastTrackChunkIndex =
+                CachingReaderChunk::indexForFrame(m_readableFrameIndexRange.end() - 1);
+        for (int scan = 0, queued = 0;
+                scan < 16 && queued < 2 && m_nextPreloadChunkIndex <= lastTrackChunkIndex;
+                ++scan) {
+            const SINT chunkIndex = m_nextPreloadChunkIndex++;
+            if (lookupChunk(chunkIndex)) {
+                continue;
+            }
+            CachingReaderChunkForOwner* pChunk = allocateChunk(chunkIndex);
+            if (!pChunk) {
+                break;
+            }
+            CachingReaderChunkReadRequest request;
+            request.giveToWorker(pChunk);
+            if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
+                pChunk->takeFromWorker();
+                freeChunk(pChunk);
+                break;
+            }
+            shouldWake = true;
+            ++queued;
         }
     }
 

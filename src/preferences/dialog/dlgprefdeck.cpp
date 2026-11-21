@@ -1,10 +1,12 @@
 #include "preferences/dialog/dlgprefdeck.h"
 
 #include <QDoubleSpinBox>
+#include <QMessageBox>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
@@ -429,6 +431,17 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
+    // Hardware and Performance options: CachingReader cache size
+    comboBoxCachedChunks->clear();
+    for (int chunks : {16, 32, 64, 80, 128, 256, 512, 1024, 2048, 4096}) {
+        const int mb = chunks * CachingReaderChunk::kFrames * 2 * sizeof(CSAMPLE) / (1024 * 1024);
+        comboBoxCachedChunks->addItem(
+                chunks == CachingReader::kDefaultChunkCount
+                        ? tr("%1 MB (default)").arg(mb)
+                        : tr("%1 MB").arg(mb),
+                chunks);
+    }
+
     slotUpdate();
 }
 
@@ -521,6 +534,19 @@ void DlgPrefDeck::slotUpdate() {
     spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
     spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
     spinBoxPermanentRateFine->setValue(RateControl::getPermanentRateChangeFineAmount());
+
+    const int cachedChunks = m_pConfig->getValue(
+            CachingReader::kChunkCountConfigKey,
+            static_cast<int>(CachingReader::kDefaultChunkCount));
+    int cachedChunksIndex = comboBoxCachedChunks->findData(cachedChunks);
+    if (cachedChunksIndex == -1) {
+        cachedChunksIndex = comboBoxCachedChunks->findData(
+                static_cast<int>(CachingReader::kDefaultChunkCount));
+    }
+    comboBoxCachedChunks->setCurrentIndex(cachedChunksIndex);
+
+    checkBoxPreloadCache->setChecked(m_pConfig->getValue(
+            CachingReader::kPreloadCacheConfigKey, false));
 }
 
 void DlgPrefDeck::slotResetToDefaults() {
@@ -564,6 +590,10 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
+
+    comboBoxCachedChunks->setCurrentIndex(comboBoxCachedChunks->findData(
+            static_cast<int>(CachingReader::kDefaultChunkCount)));
+    checkBoxPreloadCache->setChecked(false);
 }
 
 void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
@@ -792,6 +822,23 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(
             ConfigKey(kControlsGroup, QStringLiteral("RatePermRight")),
             m_dRatePermFine);
+
+    const int cachedChunks = comboBoxCachedChunks->currentData().toInt();
+    const int previousCachedChunks = m_pConfig->getValue(
+            CachingReader::kChunkCountConfigKey,
+            static_cast<int>(CachingReader::kDefaultChunkCount));
+    m_pConfig->setValue(CachingReader::kChunkCountConfigKey, cachedChunks);
+    const bool preloadCache = checkBoxPreloadCache->isChecked();
+    const bool previousPreloadCache = m_pConfig->getValue(
+            CachingReader::kPreloadCacheConfigKey, false);
+    m_pConfig->setValue(CachingReader::kPreloadCacheConfigKey, preloadCache);
+    if (previousCachedChunks != cachedChunks ||
+            previousPreloadCache != preloadCache) {
+        QMessageBox::information(this,
+                tr("Information"),
+                tr("Mixxx must be restarted before the audio cache settings "
+                   "change will take effect."));
+    }
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
