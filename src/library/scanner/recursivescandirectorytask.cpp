@@ -48,21 +48,12 @@ void RecursiveScanDirectoryTask::run() {
 
     QCryptographicHash hasher(QCryptographicHash::Sha256);
 
-    // TODO(rryan) benchmark QRegularExpression copy versus QMutex/QRegularExpression in ScannerGlobal
-    // versus slicing the extension off and checking for set/list containment.
-    QRegularExpression supportedExtensionsRegex =
-            m_scannerGlobal->supportedExtensionsRegex();
-    QRegularExpression supportedCoverExtensionsRegex =
-            m_scannerGlobal->supportedCoverExtensionsRegex();
-
     for (const auto& currentFileInfo : children) {
         QString currentFile = currentFileInfo.filePath();
 
         if (currentFileInfo.isFile()) {
             const QString& fileName = currentFileInfo.fileName();
-            const QRegularExpressionMatch supportedExtensionsMatch =
-                    supportedExtensionsRegex.match(fileName);
-            if (supportedExtensionsMatch.hasMatch()) {
+            if (m_scannerGlobal->isAudioFileSupported(fileName)) {
                 hasher.addData(currentFile.toUtf8());
                 filesToImport.push_back(currentFileInfo);
                 // Record the canonical track location used by track_locations
@@ -70,12 +61,8 @@ void RecursiveScanDirectoryTask::run() {
                 // files that are still physically present in this directory.
                 presentTrackLocations.append(
                         mixxx::FileInfo(currentFileInfo).location());
-            } else {
-                const QRegularExpressionMatch supportedCoverExtensionsMatch =
-                        supportedCoverExtensionsRegex.match(fileName);
-                if (supportedCoverExtensionsMatch.hasMatch()) {
-                    possibleCovers.push_back(currentFileInfo);
-                }
+            } else if (m_scannerGlobal->isCoverFileSupported(fileName)) {
+                possibleCovers.push_back(currentFileInfo);
             }
         } else {
             // File is a directory

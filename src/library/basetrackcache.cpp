@@ -206,8 +206,9 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         return false;
     }
 
-    int numColumns = columnCount();
-    int idColumn = query.record().indexOf(m_idColumn);
+    const int numColumns = columnCount();
+    const int idColumn = query.record().indexOf(m_idColumn);
+    const int locationColumn = fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
 
     while (query.next()) {
         TrackId trackId(query.value(idColumn));
@@ -218,10 +219,10 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         record.resize(numColumns);
 
         for (int i = 0; i < numColumns; ++i) {
-            if (fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) == i) {
+            if (locationColumn == i) {
                 // Database stores all locations with Qt separators: "/"
                 // Here we want to cache the display string with native separators.
-                QString location = query.value(i).toString();
+                const QString location = query.value(i).toString();
                 record[i] = QDir::toNativeSeparators(location);
             } else {
                 record[i] = query.value(i);
