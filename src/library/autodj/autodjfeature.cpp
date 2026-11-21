@@ -66,6 +66,11 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             &LibraryFeature::loadTrackToPlayer,
             Qt::QueuedConnection);
 
+    connect(m_pAutoDJProcessor,
+            &AutoDJProcessor::randomTrackRequested,
+            this,
+            &AutoDJFeature::slotRandomQueue);
+
     m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
     // Create the "Crates" tree-item under the root item.
@@ -162,11 +167,6 @@ void AutoDJFeature::bindLibraryWidget(
             this,
             &AutoDJFeature::trackSelected);
 
-    // Be informed when the user wants to add another random track.
-    connect(m_pAutoDJProcessor,
-            &AutoDJProcessor::randomTrackRequested,
-            this,
-            &AutoDJFeature::slotRandomQueue);
     connect(m_pAutoDJView,
             &DlgAutoDJ::addRandomTrackButton,
             this,
@@ -347,7 +347,7 @@ void AutoDJFeature::slotAddRandomTrack() {
         if (pRandomTrack) {
             m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(
                     pRandomTrack->getId(), m_iAutoDJPlaylistId);
-            m_pAutoDJView->onShow();
+            m_pAutoDJProcessor->getTableModel()->select();
             return; // success
         }
     }

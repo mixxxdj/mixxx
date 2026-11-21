@@ -2874,6 +2874,7 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/autodjpreferences_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp
@@ -3052,6 +3053,14 @@ if(BUILD_TESTING)
   endif()
 
   set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
+  get_target_property(mixxx_lib_autogen_dir mixxx-lib AUTOGEN_BUILD_DIR)
+  if(NOT mixxx_lib_autogen_dir)
+    set(mixxx_lib_autogen_dir "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen")
+  endif()
+  set_source_files_properties(
+    src/test/autodjpreferences_test.cpp PROPERTIES INCLUDE_DIRECTORIES
+      "${mixxx_lib_autogen_dir}/include$<$<BOOL:${CMAKE_CONFIGURATION_TYPES}>:_$<CONFIG>>"
+  )
   target_link_libraries(
     mixxx-test
     PRIVATE mixxx-lib mixxx-gitinfostore mixxx-xwax GTest::gtest GTest::gmock

@@ -36,6 +36,9 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
 }
 
 void DlgPrefAutoDJ::slotUpdate() {
+    StartOnLaunchCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "StartOnLaunch"), false));
+
     // The minimum available for randomly-selected tracks
     MinimumAvailableSpinBox->setValue(
             m_pConfig->getValue(
@@ -83,6 +86,9 @@ void DlgPrefAutoDJ::slotUpdate() {
 }
 
 void DlgPrefAutoDJ::slotApply() {
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "StartOnLaunch"),
+            StartOnLaunchCheckBox->isChecked());
+
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "MinimumAvailable"),
             MinimumAvailableSpinBox->value());
 
@@ -103,6 +109,7 @@ void DlgPrefAutoDJ::slotApply() {
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
+    StartOnLaunchCheckBox->setChecked(false);
     MinimumAvailableSpinBox->setValue(20);
 
     RequeueIgnoreCheckBox->setChecked(false);

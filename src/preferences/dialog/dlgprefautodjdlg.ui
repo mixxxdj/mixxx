@@ -16,6 +16,17 @@
   <layout class="QVBoxLayout" name="AutoDJGridLayout">
 
    <item>
+    <widget class="QCheckBox" name="StartOnLaunchCheckBox">
+     <property name="text">
+      <string>Start Auto DJ when Mixxx launches</string>
+     </property>
+     <property name="toolTip">
+      <string>Auto DJ may begin playing tracks immediately on startup.</string>
+     </property>
+    </widget>
+   </item>
+
+   <item>
     <widget class="QGroupBox" name="RequeueOptions">
       <property name="title">
        <string>Re-queue Tracks</string>
