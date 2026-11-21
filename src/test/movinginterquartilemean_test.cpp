@@ -26,6 +26,19 @@ TEST_F(MovingInterquartileMeanTest, zeros1) {
     EXPECT_DOUBLE_EQ(-4, mean);
 }
 
+TEST_F(MovingInterquartileMeanTest, clearResetsMean) {
+    MovingInterquartileMean iqm(3);
+    iqm.insert(1.0);
+    iqm.insert(2.0);
+    EXPECT_DOUBLE_EQ(1.5, iqm.mean());
+
+    iqm.clear();
+    EXPECT_DOUBLE_EQ(0.0, iqm.mean());
+
+    iqm.insert(7.0);
+    EXPECT_DOUBLE_EQ(7.0, iqm.mean());
+}
+
 TEST_F(MovingInterquartileMeanTest, zeros2) {
     MovingInterquartileMean iqm(2);
     double mean = iqm.insert(0);
