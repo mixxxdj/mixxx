@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.6.0" type="development" date="2026-11-20" timestamp="1795181949">
+    <release version="2.6.0" type="development" date="2026-11-20" timestamp="1795210395">
       <description>
  <p>
   STEM File Support
@@ -128,6 +128,7 @@
    #17185
    #17159
    #17158
+   #17463
   </li>
   <li>
    Add stem controls and waveforms
@@ -181,6 +182,7 @@
    #13123
    #15743
    #15530
+   #17382
   </li>
   <li>
    Multithreaded Rubberband (Smooth keylock support)
@@ -1073,7 +1075,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.7" type="development" date="2026-11-20" timestamp="1795181949">
+    <release version="2.5.7" type="development" date="2026-11-20" timestamp="1795210395">
       <description>
  <p>
   Controller Mappings
@@ -1651,7 +1653,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.5.5" type="development" date="2026-11-20" timestamp="1795181949">
+    <release version="2.5.5" type="development" date="2026-11-20" timestamp="1795210395">
       <description>
  <p>
   Note: Version 2.5.5 has been skipped following an issue in the release workflow.
