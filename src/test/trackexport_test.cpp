@@ -119,6 +119,42 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     EXPECT_EQ(0, newfile2.size());
 }
 
+TEST_F(TrackExporterTest, ExportIntoSourceDirectory) {
+    // A playlist may mix tracks already in the destination with tracks elsewhere.
+    QFile sourceFile(m_exportDir.filePath(kOggTestFile));
+    ASSERT_TRUE(QFile::copy(m_testDataDir.filePath(kOggTestFile), sourceFile.fileName()));
+    ASSERT_TRUE(sourceFile.open(QIODevice::ReadOnly));
+    const QByteArray originalContents = sourceFile.readAll();
+    sourceFile.close();
+
+    TrackPointerList tracks;
+    tracks.append(Track::newTemporary(mixxx::FileAccess(mixxx::FileInfo(sourceFile))));
+    tracks.append(Track::newTemporary(
+            mixxx::FileAccess(mixxx::FileInfo(m_testDataDir.filePath(kFlacTestFile)))));
+
+    TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    m_answerer.reset(new FakeOverwriteAnswerer(&worker));
+    // Answer the overwrite prompt if it occurs, so a regression cannot hang.
+    m_answerer->setAnswer(QFileInfo(sourceFile).canonicalFilePath(),
+            TrackExportWorker::OverwriteAnswer::OVERWRITE);
+    int overwriteRequests = 0;
+    QObject::connect(&worker,
+            &TrackExportWorker::askOverwriteMode,
+            [&overwriteRequests](const QString&,
+                    std::promise<TrackExportWorker::OverwriteAnswer>*) {
+                ++overwriteRequests;
+            });
+
+    worker.run();
+    EXPECT_TRUE(worker.errorMessage().isEmpty());
+    EXPECT_EQ(0, overwriteRequests);
+    EXPECT_EQ(2, m_answerer->currentProgress());
+    EXPECT_EQ(2, m_answerer->currentProgressCount());
+    ASSERT_TRUE(sourceFile.open(QIODevice::ReadOnly));
+    EXPECT_EQ(originalContents, sourceFile.readAll());
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath(kFlacTestFile)));
+}
+
 TEST_F(TrackExporterTest, OverwriteAll) {
     // Export a tracklist with two existing tracks -- overwrite both.
     mixxx::FileInfo fileinfo1(m_testDataDir.filePath(kOggTestFile));
