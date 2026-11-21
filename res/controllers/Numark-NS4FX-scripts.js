@@ -6,9 +6,12 @@ const ShiftLoadEjects = engine.getSetting("ShiftLoadEjects");
 const OnlyActiveDeckEffect = engine.getSetting("OnlyActiveDeckEffect");
 const displayVUFromBothDecks = engine.getSetting("displayVUFromBothDecks");
 const defaultPadMode = engine.getSetting("defaultPadMode");
-const useFadercutsAsStems = engine.getSetting("useFadercutsAsStems");
+const useSlicerAsStems = engine.getSetting("useSlicerAsStems");
+const useAdditionalStemEffects = engine.getSetting("useAdditionalStemEffects");
 const useAdditionalHotcues = engine.getSetting("useAdditionalHotcues");
 const exitSlipmodeAfterScratching = engine.getSetting("exitSlipmodeAfterScratching");
+const useEQsAs = engine.getSetting("useEQsAs");
+const useEQs34as12EQs = engine.getSetting("useEQs34as12EQs");
 
 /**
  * Creates a configuration object for a performance pad to be used for stem control.
@@ -108,6 +111,86 @@ const createStemPadConfig = function(deckInstance, padStateProperty, stemNumber,
     };
 };
 
+const createStemEffectPadConfig = function(deckInstance, padStateProperty, stemNumber, midiDetails) {
+    const fullMidi = [0x94 + midiDetails.channel, midiDetails.note];
+
+    return {
+        midi: fullMidi,
+        type: components.Button.prototype.types.toggle,
+        inKey: "enabled", // quick effect enabled
+        group: `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`,
+        on: 0x7F,
+        off: 0x01,
+        output: function(value) {
+            if (deckInstance[padStateProperty].isHeldForEffectVolume) {
+                return;
+            }
+            midi.sendShortMsg(this.midi[0], this.midi[1], value ? this.on : this.off);
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this);
+            const stemGroup = `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`;
+            const buttonInstance = this;
+            this.effect_enabled_connection = engine.makeConnection(stemGroup, "enabled", function(value) {
+                const isEnabled = (value === 1);
+                const ledValue = isEnabled ? buttonInstance.on : buttonInstance.off;
+                midi.sendShortMsg(buttonInstance.midi[0], buttonInstance.midi[1], ledValue);
+            });
+            this.effect_enabled_connection.trigger();
+        },
+        disconnect: function() {
+            components.Button.prototype.disconnect.call(this);
+            if (this.effect_enabled_connection) {
+                this.effect_enabled_connection.disconnect();
+                this.effect_enabled_connection = null;
+            }
+        },
+        input: function input(_channel, _control, value, _status) {
+            const padState = deckInstance[padStateProperty];
+
+            // If shift is held, we enter a mode to select the effect for the stem.
+            if (NS4FX.shift) {
+                if (value === 0x7F) { // Shift + Press
+                    padState.isHeldForEffectSelector = true;
+                } else { // Shift + Release
+                    padState.isHeldForEffectSelector = false;
+                }
+                // When shift is held, we don't want to trigger the normal tap/hold logic.
+                return;
+            }
+
+            if (value === 0x7F) { // Button pressed
+                padState.isHeldForEffectVolume = false; // Reset on each press
+                if (padState.shiftTimerId) {
+                    engine.stopTimer(padState.shiftTimerId);
+                }
+                const localTimerId = engine.beginTimer(250, function() { // 250ms hold threshold
+                    if (padState.shiftTimerId === localTimerId) {
+                        padState.isHeldForEffectVolume = true;
+                        NS4FX.dbg(`Stem effect pad ${stemNumber} on deck ${deckInstance.number} HELD.`);
+                        padState.shiftTimerId = null;
+                    }
+                }, true); // one-shot timer
+                padState.shiftTimerId = localTimerId;
+            } else { // Button released
+                if (padState.shiftTimerId) {
+                    engine.stopTimer(padState.shiftTimerId);
+                    padState.shiftTimerId = null;
+                }
+                if (!padState.isHeldForEffectVolume) {
+                    NS4FX.dbg(`Stem effect pad ${stemNumber} on deck ${deckInstance.number} TAPPED.`);
+                    const quickEffectGroup = `[QuickEffectRack1_[Channel${deckInstance.number}_Stem${stemNumber}]]`;
+                    const currentEffectState = engine.getValue(quickEffectGroup, "enabled");
+                    engine.setValue(quickEffectGroup, "enabled", !currentEffectState);
+                }
+                padState.isHeldForEffectVolume = false;
+                // Also reset the effect selector hold state on release.
+                padState.isHeldForEffectSelector = false;
+            }
+        }
+    };
+};
+
 const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
     const hotcueNumber = 4 + padNumber;
     const midiNote = 0x18 + (padNumber - 1);
@@ -125,6 +208,14 @@ const createTransportPad = function(deck, padNumber, defaultKey, momentary) {
 
     const button = new components.Button({
         input: function(channel, control, value, status, group) {
+            // If we're using slicer for stems, and the current pad mode is stems,
+            // these pads are handled by the stem effect buttons, so we delegate the event.
+            if (useSlicerAsStems && useAdditionalStemEffects && deck.padmode_str === "stems") {
+                if (deck.stems_buttons[padNumber + 4]) {
+                    deck.stems_buttons[padNumber + 4].input(channel, control, value, status, group);
+                }
+                return;
+            }
             NS4FX.dbg(`Transport pad ${padNumber} on deck ${deck.number} pressed with value ${value}`);
             const isHotcueModeForTransport = useAdditionalHotcues && deck.padmode_str === "hotcue";
 
@@ -166,6 +257,26 @@ NS4FX.dbg = function(str) {
     }
 };
 
+/**
+ * Normalizes a set of stem volumes so the loudest stem is at 1.0 (full volume),
+ * preserving the relative ratio between them, and applies them to the deck.
+ * @param {object} deck - The deck object to apply volumes to.
+ * @param {object} volumes - An object with v_v, v_m, and v_d volume properties.
+ */
+NS4FX.normalizeAndApplyStemVolumes = function(deck, volumes) {
+    const max_vol = Math.max(volumes.v_v, volumes.v_m, volumes.v_d);
+
+    if (max_vol > 0) {
+        volumes.v_v /= max_vol;
+        volumes.v_m /= max_vol;
+        volumes.v_d /= max_vol;
+    }
+    engine.setValue(`[Channel${deck.number}_Stem4]`, "volume", volumes.v_v); // Vocals
+    engine.setValue(`[Channel${deck.number}_Stem3]`, "volume", volumes.v_m); // Music/Melody
+    engine.setValue(`[Channel${deck.number}_Stem1]`, "volume", volumes.v_d); // Drums
+    engine.setValue(`[Channel${deck.number}_Stem2]`, "volume", volumes.v_d); // Bass
+};
+
 NS4FX.testMidi = function(status, control, value) {
     midi.sendShortMsg(status, control, value);
     NS4FX.dbg(`Sent test MIDI: status=${status.toString(16)}, control=${control.toString(16)}, value=${value.toString(16)}`);
@@ -177,7 +288,7 @@ NS4FX.init = function(id, debug) {
 
     NS4FX.id = id;
 
-    NS4FX.dbg(`useFadercutsAsStems is ${useFadercutsAsStems}`);
+    NS4FX.dbg(`useSlicerAsStems is ${useSlicerAsStems}`);
 
     // This component handles the BEATS knob.
     // When a stem pad is held, this knob adjusts the stem's volume (or effect amount if SHIFT is also held).
@@ -185,6 +296,8 @@ NS4FX.init = function(id, debug) {
     NS4FX.beatsKnob = new components.Encoder({
         input: function(_channel, control, value, _status, group) {
             let heldStemInfo = null;
+            let isEffectVolume = false;
+            let isEffectSelector = false;
             for (let i = 1; i <= 4; i++) {
                 const deck = NS4FX.decks[i];
                 for (let j = 1; j <= 4; j++) {
@@ -194,6 +307,23 @@ NS4FX.init = function(id, debug) {
                             deckNumber: i,
                             stemNumber: j
                         };
+                        break;
+                    }
+                    if (padState && padState.isHeldForEffectVolume) {
+                        heldStemInfo = {
+                            deckNumber: i,
+                            stemNumber: j
+                        };
+                        isEffectVolume = true;
+                        break;
+                    }
+                    // Check if a pad is held with SHIFT for effect selection.
+                    if (NS4FX.shift && padState && padState.isHeldForEffectSelector) {
+                        heldStemInfo = {
+                            deckNumber: i,
+                            stemNumber: j
+                        };
+                        isEffectSelector = true;
                         break;
                     }
                 }
@@ -207,7 +337,22 @@ NS4FX.init = function(id, debug) {
                     controlSuffix = "_down_small";
                 }
 
-                if (NS4FX.shift) {
+                if (isEffectSelector) {
+                    // A pad on the second row is held with SHIFT: control the effect selector.
+                    const effectSlotGroup = `[QuickEffectRack1_[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]]`;
+                    if (value === 0x01) { // Turned right
+                        NS4FX.dbg(`Cycling to next effect for ${effectSlotGroup}`);
+                        engine.setValue(effectSlotGroup, "next_chain_preset", 1);
+                    } else { // Turned left (0x7F)
+                        NS4FX.dbg(`Cycling to previous effect for ${effectSlotGroup}`);
+                        engine.setValue(effectSlotGroup, "prev_chain_preset", 1);
+                    }
+                    return; // Done.
+                } else if (isEffectVolume) {
+                    // A pad on the second row is held: control the QuickEffect's super1 parameter for the stem.
+                    group = `[QuickEffectRack1_[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]]`;
+                    control = "super1";
+                } else if (NS4FX.shift) {
                     // Shift is held: control the QuickEffect's super1 parameter for the stem.
                     group = `[QuickEffectRack1_[Channel${heldStemInfo.deckNumber}_Stem${heldStemInfo.stemNumber}]]`;
                     control = "super1";
@@ -243,21 +388,9 @@ NS4FX.init = function(id, debug) {
         }
     });
     // This component handles the crossfader.
-    // It's necessary because the NS4FX sends hardware-level fader cut MIDI messages
-    // when the Fader Cuts pad mode is active. We need to intercept and ignore these
-    // messages when we are using that mode for stem control.
     NS4FX.crossfader = new components.Pot({
         group: "[Master]",
         inKey: "crossfader",
-        input: function(channel, control, value, status, group) {
-            if (useFadercutsAsStems) {
-                if (NS4FX.decks[1].padmode_str === "stems" || NS4FX.decks[2].padmode_str === "stems" || NS4FX.decks[3].padmode_str === "stems" || NS4FX.decks[4].padmode_str === "stems") {
-                    return; // In stems mode, so do nothing.
-                }
-            }
-            // If not in stems mode, process the crossfader movement as normal.
-            components.Pot.prototype.input.call(this, channel, control, value, status, group);
-        }
     });
 
     // Deck switching sends the command 2 times, from current and next. This flag helps ignore the duplicate.
@@ -288,6 +421,11 @@ NS4FX.init = function(id, debug) {
     NS4FX.decks[2] = new NS4FX.Deck(2, 0x01);
     NS4FX.decks[3] = new NS4FX.Deck(3, 0x02);
     NS4FX.decks[4] = new NS4FX.Deck(4, 0x03);
+
+    // Initial update of EQ mappings after all decks have been instantiated
+    for (let i = 1; i <= 4; i++) {
+        NS4FX.decks[i].updateEQs();
+    }
 
     // Initialize hotcue pad LEDs to a "dim" state on startup.
     for (let i = 0; i < 4; ++i) { // For each deck
@@ -682,17 +820,287 @@ NS4FX.Deck = function(number, midi_chan) {
     this.midi_chan = midi_chan;
     this.active = (number === 1 || number === 2);
 
-    // If using stems, create state objects for each pad to track hold timers and states.
     // This is necessary for the hold-for-volume/effect functionality.
-    if (useFadercutsAsStems) {
-        this.stemPad1 = {timerId: null, isHeldForVolume: false};
-        this.stemPad2 = {timerId: null, isHeldForVolume: false};
-        this.stemPad3 = {timerId: null, isHeldForVolume: false};
-        this.stemPad4 = {timerId: null, isHeldForVolume: false};
+    if (useSlicerAsStems) {
+        // Add isHeldForEffectSelector to track the new SHIFT+hold state.
+        this.stemPad1 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
+        this.stemPad2 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
+        this.stemPad3 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
+        this.stemPad4 = {timerId: null, isHeldForVolume: false, shiftTimerId: null, isHeldForEffectVolume: false, isHeldForEffectSelector: false};
     }
 
-
     components.Deck.call(this, number);
+
+    // decide whether the current deck holds a track with separated stems
+    this.trackHasStems = function() {
+        if (engine.getValue(deck.currentDeck, "passthrough")) {
+            return false;
+        }
+        return engine.getValue(deck.currentDeck, "stem_count") > 0;
+    };
+
+    /**
+     * Checks if a secondary deck (Deck 3 for Deck 1, Deck 4 for Deck 2) is currently
+     * controlling the standard High/Mid/Low EQs of this deck.
+     */
+    this.isSecondaryControllingMyEQs = function() {
+        if (!useEQs34as12EQs || useEQsAs === "normal" || !deck.trackHasStems()) {
+            return false;
+        }
+        if (deck.number === 1) {
+            const deck3 = (NS4FX.decks && NS4FX.decks[3]) ? NS4FX.decks[3] : null;
+            return deck3 && (!engine.getValue(deck3.currentDeck, "track_loaded") || engine.getValue(deck3.currentDeck, "passthrough"));
+        }
+        if (deck.number === 2) {
+            const deck4 = (NS4FX.decks && NS4FX.decks[4]) ? NS4FX.decks[4] : null;
+            return deck4 && (!engine.getValue(deck4.currentDeck, "track_loaded") || engine.getValue(deck4.currentDeck, "passthrough"));
+        }
+        return false;
+    };
+
+    /**
+     * Updates EQs on this deck and its companion deck (Deck 1 <-> Deck 3, Deck 2 <-> Deck 4) if present.
+     */
+    this.updateEQsWithCompanion = function() {
+        deck.updateEQs();
+        let companionNumber = 0;
+        if (deck.number === 1) {
+            companionNumber = 3;
+        } else if (deck.number === 2) {
+            companionNumber = 4;
+        } else if (deck.number === 3) {
+            companionNumber = 1;
+        } else if (deck.number === 4) {
+            companionNumber = 2;
+        }
+        if (companionNumber > 0 && NS4FX.decks && NS4FX.decks[companionNumber]) {
+            NS4FX.decks[companionNumber].updateEQs();
+        }
+    };
+
+    /**
+     * Configures the behavior of the high, mid, and low EQ knobs.
+     * Depending on the 'useEQsAs' setting in the controller script, these knobs can either
+     * control the standard EQs or be repurposed to control stems in various modes
+     * (e.g., simple volume, softmax balancing, gated attenuation, or triangle balancing).
+     * If a stem mode is selected but the current track does not have stems,
+     * the function defaults to the standard EQ behavior for that track.
+     * This function is called when a track is loaded or when the deck becomes active
+     * to ensure the EQs are correctly mapped for the current context.
+     */
+    this.updateEQs = function() {
+        const targetDeck = (NS4FX.decks && (deck.number === 3 || deck.number === 4)) ? NS4FX.decks[deck.number - 2] : null;
+        const targetHasStems = targetDeck && targetDeck.trackHasStems && targetDeck.trackHasStems();
+        const isDeck34UnloadedOrPassthrough = (deck.number === 3 || deck.number === 4) &&
+            (!engine.getValue(deck.currentDeck, "track_loaded") ||
+                engine.getValue(deck.currentDeck, "passthrough"));
+        const isDeck34Controlling12EQs = useEQs34as12EQs && (useEQsAs !== "normal") && isDeck34UnloadedOrPassthrough && targetHasStems;
+
+        if (isDeck34Controlling12EQs) {
+            const targetDeckNumber = deck.number - 2;
+            NS4FX.dbg(`Deck ${deck.number} is controlling High/Mid/Low EQs for Deck ${targetDeckNumber}`);
+
+            const eq_group = `[EqualizerRack1_${deck.currentDeck}_Effect1]`;
+            engine.setValue(eq_group, "enabled", false); // Disable standard EQ unit for this deck
+
+            const targetEQGroup = `[EqualizerRack1_[Channel${targetDeckNumber}]_Effect1]`;
+            // Ensure target deck's EQ rack is enabled so Deck 3/4 EQ changes affect audio output
+            engine.setValue(targetEQGroup, "enabled", true);
+            deck.high_eq = new components.Pot({group: targetEQGroup, inKey: "parameter3"});
+            deck.mid_eq = new components.Pot({group: targetEQGroup, inKey: "parameter2"});
+            deck.low_eq = new components.Pot({group: targetEQGroup, inKey: "parameter1"});
+            return; // Exit to prevent running standard EQ/stem logic on this deck
+        }
+
+        let currentEQsAs = useEQsAs;
+        NS4FX.dbg(`trackHasStems: ${deck.trackHasStems()}`);
+        // If a stem mode is selected but the track has no stems, fall back to normal EQ mode.
+        if (useEQsAs !== "normal" && !deck.trackHasStems()) {
+            NS4FX.dbg(`Deck ${deck.number}: Track has no stems, falling back to normal EQ mode.`);
+            currentEQsAs = "normal";
+        }
+
+        const eq_group = `[EqualizerRack1_${deck.currentDeck}_Effect1]`;
+
+        if (currentEQsAs === "normal") {
+            // If 'normal' mode, enable the EQ effect unit and map knobs to standard EQs.
+            engine.setValue(eq_group, "enabled", true);
+            deck.high_eq = new components.Pot({group: eq_group, inKey: "parameter3"});
+            deck.mid_eq = new components.Pot({group: eq_group, inKey: "parameter2"});
+            deck.low_eq = new components.Pot({group: eq_group, inKey: "parameter1"});
+        } else {
+            // If not 'normal', EQs are used for stem control.
+            NS4FX.dbg(`Deck ${deck.number}: EQs are configured as Stems in '${currentEQsAs}' mode.`);
+            if (deck.isSecondaryControllingMyEQs()) {
+                // If Deck 3 or 4 is controlling our High/Mid/Low EQs, keep our EQ rack enabled so Deck 3/4 EQ changes affect sound!
+                engine.setValue(eq_group, "enabled", true);
+                NS4FX.dbg(`Deck ${deck.number}: Keeping EQ effect unit ${eq_group} enabled because secondary deck is controlling EQs.`);
+            } else {
+                // Disable the standard EQ effect unit to prevent interference when secondary deck is not controlling EQs.
+                engine.setValue(eq_group, "enabled", false);
+                NS4FX.dbg(`Disabled EQ effect unit ${eq_group} for stem control on Deck ${deck.number}.`);
+            }
+
+            // Only update visual EQ knobs if secondary deck is NOT controlling our EQs (avoids clashing with Deck 3/4 EQ control)
+            const updateVisualEQ = !deck.isSecondaryControllingMyEQs();
+            let highEQInput, midEQInput, lowEQInput;
+
+            // 'stemSimple' mode: Each EQ knob directly controls the volume of one or more stems.
+            if (currentEQsAs === "stemSimple") {
+                const createStemInput = function(stemNumbers, eq_param) {
+                    const stems = Array.isArray(stemNumbers) ? stemNumbers : [stemNumbers];
+                    return function(_channel, _control, value, _status) {
+                        const paramValue = value / 127;
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, paramValue);
+                        }
+                        stems.forEach(function(stemNumber) {
+                            engine.setValue(`[Channel${deck.number}_Stem${stemNumber}]`, "volume", paramValue);
+                        });
+                    };
+                };
+                highEQInput = createStemInput(4, "parameter3");      // Vocals
+                midEQInput = createStemInput(3, "parameter2");       // Melody
+                lowEQInput = createStemInput([1, 2], "parameter1");  // Drums & Bass
+                // 'stemSoftMax' mode: Uses a softmax function to balance stem volumes. Turning one knob up turns others down.
+            } else if (currentEQsAs === "stemSoftMax") {
+                deck.logits = {z_v: 1, z_m: 1, z_d: 1};
+
+                const updateStemVolumes = function(deckToUpdate) {
+                    const {z_v, z_m, z_d} = deckToUpdate.logits;
+
+                    const exp_zv = Math.exp(z_v);
+                    const exp_zm = Math.exp(z_m);
+                    const exp_zd = Math.exp(z_d);
+
+                    // Denominator for the softmax calculation. Drums and bass are weighted together.
+                    const denominator = exp_zv + exp_zm + 2 * exp_zd;
+
+                    if (denominator === 0) { return; } // Avoid division by zero.
+
+                    const volumes = {
+                        v_v: exp_zv / denominator,
+                        v_m: exp_zm / denominator,
+                        v_d: exp_zd / denominator // This volume is used for both drums and bass.
+                    };
+                    NS4FX.normalizeAndApplyStemVolumes(deckToUpdate, volumes);
+                };
+                updateStemVolumes(deck);
+
+                const createSoftmaxInput = function(logitKey, eq_param) {
+                    return function(_channel, _control, value, _status) {
+                        const LOGIT_RANGE = 5;
+                        deck.logits[logitKey] = (value / 127) * LOGIT_RANGE;
+                        updateStemVolumes(deck);
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, value / 127);
+                        }
+                    };
+                };
+                highEQInput = createSoftmaxInput("z_v", "parameter3");
+                midEQInput = createSoftmaxInput("z_m", "parameter2");
+                lowEQInput = createSoftmaxInput("z_d", "parameter1");
+                // 'stemGatedAttenuation' mode: A more complex model where knobs can attenuate their own stem or focus it while attenuating others.
+            } else if (currentEQsAs === "stemGatedAttenuation") {
+                deck.attenuation = {x_v: 0.5, x_m: 0.5, x_d: 0.5}; // Centered
+                const GAMMA = 2;
+
+                const updateStemVolumes = function(deckToUpdate) {
+                    const {x_v, x_m, x_d} = deckToUpdate.attenuation;
+                    // The knob's right side (0.5 to 1) controls focus, increasing the stem's volume relative to others.
+
+                    // --- Focus (right side: 0 → 1) ---
+                    const focus_v = Math.pow(Math.max(0, 2 * (x_v - 0.5)), GAMMA);
+                    const focus_m = Math.pow(Math.max(0, 2 * (x_m - 0.5)), GAMMA);
+                    const focus_d = Math.pow(Math.max(0, 2 * (x_d - 0.5)), GAMMA);
+
+                    // The knob's left side (0 to 0.5) controls self-attenuation, reducing the stem's own volume.
+                    // --- Self attenuation (left side) ---
+                    const self_v = 1 - Math.pow(Math.max(0, 2 * (0.5 - x_v)), GAMMA);
+                    const self_m = 1 - Math.pow(Math.max(0, 2 * (0.5 - x_m)), GAMMA);
+                    const self_d = 1 - Math.pow(Math.max(0, 2 * (0.5 - x_d)), GAMMA);
+
+                    // Calculates the final volume for each stem based on self-attenuation and the focus levels of other stems.
+                    // --- Cooperative attenuation (FIXED) ---
+                    const volumes = {
+                        v_v: self_v *
+                            (1 - focus_m * (1 - focus_v)) *
+                            (1 - focus_d * (1 - focus_v)),
+                        v_m: self_m *
+                            (1 - focus_v * (1 - focus_m)) *
+                            (1 - focus_d * (1 - focus_m)),
+                        v_d: self_d *
+                            (1 - focus_v * (1 - focus_d)) *
+                            (1 - focus_m * (1 - focus_d))
+                    };
+                    NS4FX.normalizeAndApplyStemVolumes(deckToUpdate, volumes);
+                };
+                updateStemVolumes(deck);
+
+                const createGatedAttenuationInput = function(attenuationKey, eq_param) {
+                    return function(_channel, _control, value, _status) {
+                        deck.attenuation[attenuationKey] = value / 127;
+                        updateStemVolumes(deck);
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, value / 127);
+                        }
+                    };
+                };
+
+                highEQInput = createGatedAttenuationInput("x_v", "parameter3");
+                midEQInput = createGatedAttenuationInput("x_m", "parameter2");
+                lowEQInput = createGatedAttenuationInput("x_d", "parameter1");
+                // 'stemTriangle' mode: A volume balancing model based on a triangular function.
+            } else if (currentEQsAs === "stemTriangle") {
+                deck.triangle = {x_v: 0.5, x_m: 0.5, x_d: 0.5}; // Centered at 0.5
+                const GAMMA = 2;
+
+                const updateStemVolumes = function(deckToUpdate) {
+                    const {x_v, x_m, x_d} = deckToUpdate.triangle;
+                    // This function processes the knob value to create a non-linear response.
+
+                    const processKnob = function(x) {
+                        const d = 2 * (x - 0.5);
+                        const a = Math.max(0, d);
+                        const r = Math.max(0, -d);
+                        return 1 + Math.pow(a, GAMMA) - Math.pow(r, GAMMA);
+                    };
+
+                    const w_v = Math.max(0, processKnob(x_v));
+                    const w_m = Math.max(0, processKnob(x_m));
+                    const w_d = Math.max(0, processKnob(x_d));
+
+                    // The denominator is the sum of all weighted volumes, used for normalization.
+                    const denominator = w_v + w_m + w_d;
+
+                    const V_v = (denominator > 0) ? w_v / denominator : 0;
+                    const V_m = (denominator > 0) ? w_m / denominator : 0;
+                    const V_d = (denominator > 0) ? w_d / denominator : 0;
+                    const volumes = {v_v: V_v, v_m: V_m, v_d: V_d};
+                    NS4FX.normalizeAndApplyStemVolumes(deckToUpdate, volumes);
+                };
+                updateStemVolumes(deck);
+
+                const createTriangleInput = function(triangleKey, eq_param) {
+                    return function(_channel, _control, value, _status) {
+                        deck.triangle[triangleKey] = value / 127;
+                        updateStemVolumes(deck);
+                        if (updateVisualEQ) {
+                            engine.setParameter(eq_group, eq_param, value / 127);
+                        }
+                    };
+                };
+
+                highEQInput = createTriangleInput("x_v", "parameter3");
+                midEQInput = createTriangleInput("x_m", "parameter2");
+                lowEQInput = createTriangleInput("x_d", "parameter1");
+            }
+            // Assign the created input handlers to the EQ knob components.
+            deck.high_eq = new components.Pot({input: highEQInput});
+            deck.mid_eq = new components.Pot({input: midEQInput});
+            deck.low_eq = new components.Pot({input: lowEQInput});
+        }
+    };
 
     this.bpm = new components.Component({
         outKey: "bpm",
@@ -729,6 +1137,7 @@ NS4FX.Deck = function(number, midi_chan) {
             NS4FX.sendScreenDurationMidi(number, duration * 1000);
 
             // when the duration changes, we need to update the play position
+            deck.updateEQsWithCompanion();
 
             deck.position.trigger();
             // When a new track loads, the hotcue_enabled states can flicker, causing the LEDs to blink.
@@ -744,6 +1153,7 @@ NS4FX.Deck = function(number, midi_chan) {
                     deck.hotcue_buttons.updateLEDs();
                 }
             }, true);
+            deck.updateEQsWithCompanion();
         },
     });
 
@@ -1063,8 +1473,7 @@ NS4FX.Deck = function(number, midi_chan) {
             number: i // Stores the button number (1-4)
         });
 
-        if (!useFadercutsAsStems) {
-            this.fadercuts_buttons[5 - i] = new components.Button({
+        this.fadercuts_buttons[5 - i] = new components.Button({
                 midi: [0x94 + midi_chan, 0x18 - i], // Example MIDI addresses
                 input: function(_channel, _control, value, _status) {
                     if (deck.padmode_str !== "fadercuts") {
@@ -1113,7 +1522,6 @@ NS4FX.Deck = function(number, midi_chan) {
                 },
                 number: i
             });
-        }
 
         const rollDuration = Math.pow(2, -(i)); // Calculates the loop roll duration (0.5, 0.25, 0.125, 0.0625)
         const rollDurationString = rollDuration.toFixed(4).replace(/0+$/, "");
@@ -1183,6 +1591,17 @@ NS4FX.Deck = function(number, midi_chan) {
         });
         this.hotcues = buttons;
         this.hotcues.reconnectComponents();
+
+        if (this.padMode) {
+            this.padMode.pad_hotcue.output(padmode === "hotcue" ? 1 : 0);
+            this.padMode.pad_pitchplay.output(padmode === "pitchplay" ? 1 : 0);
+            this.padMode.pad_autoloop.output(padmode === "autoloop" ? 1 : 0);
+            this.padMode.pad_roll.output(padmode === "roll" ? 1 : 0);
+            this.padMode.pad_fadercuts.output(padmode === "fadercuts" ? 1 : 0);
+            this.padMode.pad_slicer.output((padmode === "stems" || padmode === "slicer") ? 1 : 0);
+            this.padMode.pad_sampler.output(padmode === "sampler" ? 1 : 0);
+            this.padMode.pad_scratchbanks.output(padmode === "scratchbanks" ? 1 : 0);
+        }
     };
     this.hotcues = new components.ComponentContainer();
     this.pitch = new components.Pot({
@@ -1297,11 +1716,17 @@ NS4FX.Deck = function(number, midi_chan) {
     this.key_down.other = this.key_up;
 
     this.stems_buttons = new components.ComponentContainer();
-    if (useFadercutsAsStems) {
+    if (useSlicerAsStems) {
         for (let i = 1; i <= 4; ++i) {
             this.stems_buttons[i] = new components.Button(createStemPadConfig(deck, `stemPad${i}`, i, {
                 channel: midi_chan,
                 note: 0x13 + i
+            }));
+        }
+        for (let i = 1; i <= 4; ++i) {
+            this.stems_buttons[i + 4] = new components.Button(createStemEffectPadConfig(deck, `stemPad${i}`, i, {
+                channel: midi_chan,
+                note: 0x17 + i
             }));
         }
     }
@@ -1342,15 +1767,7 @@ NS4FX.Deck = function(number, midi_chan) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
-                    // If useFadercutsAsStems is true, this button activates "stems" mode.
-                    // Otherwise, it activates the normal "fadercuts" mode.
-                    if (useFadercutsAsStems) {
-                        ;
-                        NS4FX.dbg(`Switching to stems mode on deck ${deck.number}`);
-                        deck.change_padmode("stems");
-                    } else {
-                        deck.change_padmode("fadercuts");
-                    }
+                    deck.change_padmode("fadercuts");
                 }
             },
             output: function(value) {
@@ -1402,7 +1819,12 @@ NS4FX.Deck = function(number, midi_chan) {
                 if (value === 0x7F) {
                     this.groupContainer.turnOffOtherButtons(this);
                     this.output(1);
-                    deck.change_padmode("slicer");
+                    if (useSlicerAsStems) {
+                        NS4FX.dbg(`Switching to stems mode on deck ${deck.number}`);
+                        deck.change_padmode("stems");
+                    } else {
+                        deck.change_padmode("slicer");
+                    }
                 }
             },
             output: function(value) {
@@ -1443,9 +1865,10 @@ NS4FX.Deck = function(number, midi_chan) {
         if (this.padMode[button] instanceof components.Button) {
             this.padMode[button].groupContainer = this.padMode; // Set container reference
         }
+    }
 
-        // LOOP controls
-        this.loopControls = new components.ComponentContainer({
+    // LOOP controls
+    this.loopControls = new components.ComponentContainer({
             loop_halve: new components.Button({
                 midi: [0x94 + midi_chan, 0x34],
                 input: function(_channel, _control, value, _status) {
@@ -1589,11 +2012,6 @@ NS4FX.Deck = function(number, midi_chan) {
             })
         });
 
-        const eq_group = `[EqualizerRack1_${this.currentDeck}_Effect1]`;
-        this.high_eq = new components.Pot({group: eq_group, inKey: "parameter3"});
-        this.mid_eq = new components.Pot({group: eq_group, inKey: "parameter2"});
-        this.low_eq = new components.Pot({group: eq_group, inKey: "parameter1"});
-
         this.filter = new components.Pot({
             group: `[QuickEffectRack1_${this.currentDeck}]`,
             inKey: "super1",
@@ -1614,12 +2032,22 @@ NS4FX.Deck = function(number, midi_chan) {
         this.setActive = function(active) {
             this.active = active;
 
+        if (active) {
+            deck.updateEQsWithCompanion();
+        }
+
             if (!active) {
                 // trigger soft takeover on the pitch control
                 this.pitch.disconnect();
             }
         };
-    };
+    this.updateEQs();
+    engine.makeConnection(this.currentDeck, "track_loaded", function() {
+        deck.updateEQsWithCompanion();
+    });
+    engine.makeConnection(this.currentDeck, "passthrough", function() {
+        deck.updateEQsWithCompanion();
+    });
 };
 
 NS4FX.Deck.prototype = new components.Deck();
