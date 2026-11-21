@@ -8,8 +8,7 @@ namespace {
 
 void assertEndPosition(
         CueType type,
-        std::optional<double> endPositionMillis) {
-    Q_UNUSED(endPositionMillis);
+        [[maybe_unused]] std::optional<double> endPositionMillis) {
     switch (type) {
     case CueType::HotCue:
     case CueType::MainCue:

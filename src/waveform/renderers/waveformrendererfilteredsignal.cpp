@@ -24,8 +24,7 @@ void WaveformRendererFilteredSignal::onResize() {
     m_highLines.resize(devicePixelLength);
 }
 
-void WaveformRendererFilteredSignal::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void WaveformRendererFilteredSignal::onSetup(const QDomNode&) {
 }
 
 void WaveformRendererFilteredSignal::draw(QPainter* painter,

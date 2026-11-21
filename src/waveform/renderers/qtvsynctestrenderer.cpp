@@ -17,8 +17,7 @@ QtVSyncTestRenderer::QtVSyncTestRenderer(
 QtVSyncTestRenderer::~QtVSyncTestRenderer() {
 }
 
-void QtVSyncTestRenderer::onSetup(const QDomNode& node) {
-    Q_UNUSED(node);
+void QtVSyncTestRenderer::onSetup(const QDomNode&) {
 }
 
 inline void setPoint(QPointF& point, qreal x, qreal y) {

@@ -35,8 +35,7 @@ CoverArtArchiveImageTask::CoverArtArchiveImageTask(
 
 QNetworkReply* CoverArtArchiveImageTask::doStartNetworkRequest(
         QNetworkAccessManager* pNetworkAccessManager,
-        int parentTimeoutMillis) {
-    Q_UNUSED(parentTimeoutMillis);
+        int) {
     pNetworkAccessManager->setRedirectPolicy(QNetworkRequest::NoLessSafeRedirectPolicy);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(pNetworkAccessManager);

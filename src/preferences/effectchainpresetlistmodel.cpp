@@ -29,12 +29,10 @@ QMimeData* EffectChainPresetListModel::mimeData(const QModelIndexList& indexes) 
 
 bool EffectChainPresetListModel::dropMimeData(
         const QMimeData* data,
-        Qt::DropAction action,
+        Qt::DropAction,
         int row,
-        int column,
+        int,
         const QModelIndex& parent) {
-    Q_UNUSED(column);
-    Q_UNUSED(action);
     if (!data->hasText()) {
         return false;
     }
@@ -80,7 +78,6 @@ Qt::DropActions EffectChainPresetListModel::supportedDropActions() const {
     return Qt::CopyAction;
 }
 
-Qt::ItemFlags EffectChainPresetListModel::flags(const QModelIndex& index) const {
-    Q_UNUSED(index);
+Qt::ItemFlags EffectChainPresetListModel::flags(const QModelIndex&) const {
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }

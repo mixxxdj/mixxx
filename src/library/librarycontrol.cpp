@@ -629,8 +629,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &LibraryControl::sidebarWidgetDeleted);
 }
 
-void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
-    Q_UNUSED(pKeyboard);
+void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter*) {
     if (m_pLibraryWidget) {
         disconnect(m_pLibraryWidget, nullptr, this, nullptr);
     }
@@ -1033,9 +1032,7 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget, Qt::FocusReason
     // to update [Library],focused_widget
 }
 
-void LibraryControl::slotFocusedWidgetChanged(QWidget* oldW, QWidget* newW) {
-    Q_UNUSED(newW);
-
+void LibraryControl::slotFocusedWidgetChanged(QWidget* oldW, QWidget*) {
     // If one of the library widgets had focus store it so we can return to it,
     // for example when we finish editing a WBeatSizeSpinBox.
     if (m_pSearchbox && oldW == m_pSearchbox) {

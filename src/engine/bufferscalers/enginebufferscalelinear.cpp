@@ -44,9 +44,7 @@ void EngineBufferScaleLinear::onSignalChanged() {
 
 void EngineBufferScaleLinear::setScaleParameters(double baseRate,
         double* pTempoRatio,
-        double* pPitchRatio) {
-    Q_UNUSED(pPitchRatio);
-
+        double*) {
     m_dOldRate = m_dRate;
     m_dRate = baseRate * *pTempoRatio;
 }

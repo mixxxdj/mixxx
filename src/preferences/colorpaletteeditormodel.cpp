@@ -59,9 +59,12 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
             });
 }
 
-bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
+bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data,
+        Qt::DropAction action,
+        int row,
+        int,
+        const QModelIndex& parent) {
     // Always move the entire row, and don't allow column "shifting"
-    Q_UNUSED(column);
     return QStandardItemModel::dropMimeData(data, action, row, 0, parent);
 }
 

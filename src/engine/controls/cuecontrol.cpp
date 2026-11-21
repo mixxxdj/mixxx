@@ -898,14 +898,11 @@ void CueControl::trackCuesUpdated() {
     loadCuesFromTrack();
 }
 
-void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
-    Q_UNUSED(pBeats);
+void CueControl::trackBeatsUpdated(mixxx::BeatsPointer) {
     loadCuesFromTrack();
 }
 
-void CueControl::quantizeChanged(double v) {
-    Q_UNUSED(v);
-
+void CueControl::quantizeChanged(double) {
     // check if we were at the cue point before
     bool wasTrackAtCue = getTrackAt() == TrackAt::Cue;
     bool wasTrackAtIntro = isTrackAtIntroCue();

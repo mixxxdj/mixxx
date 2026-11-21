@@ -83,9 +83,7 @@ void ReverbEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     const auto decay = static_cast<sample_t>(m_pDecayParameter->value());
     const auto bandwidth = static_cast<sample_t>(m_pBandWidthParameter->value());
     const auto damping = static_cast<sample_t>(m_pDampingParameter->value());

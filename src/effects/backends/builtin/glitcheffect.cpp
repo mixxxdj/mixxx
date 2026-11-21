@@ -72,10 +72,8 @@ void GlitchEffect::processChannel(
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
-        const EffectEnableState enableState,
+        const EffectEnableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(enableState);
-
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
 

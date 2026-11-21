@@ -43,8 +43,7 @@ const QStringList SoundSourceProviderCoreAudio::kSupportedFileTypes = {
 };
 
 SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
-        const QString& supportedFileType) const {
-    Q_UNUSED(supportedFileType)
+        const QString&) const {
     // On macOS SoundSourceCoreAudio is the preferred decoder for all
     // supported audio formats.
     return SoundSourceProviderPriority::Higher;
@@ -291,9 +290,9 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         fillBufList.mBuffers[0].mData = sampleBuffer + getSignalInfo().frames2samples(numFramesRead);
 
         UInt32 numFramesToReadInOut = numFramesToRead; // input/output parameter
-        OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut, &fillBufList);
+        [[maybe_unused]] OSStatus err = ExtAudioFileRead(
+                m_audioFile, &numFramesToReadInOut, &fillBufList);
         // TODO(uklotz): Should this be handled?
-        Q_UNUSED(err);
         if (0 == numFramesToReadInOut) {
             // EOF
             break; // done

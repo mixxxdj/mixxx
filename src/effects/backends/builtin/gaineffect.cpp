@@ -62,10 +62,7 @@ void GainEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-    Q_UNUSED(enableState);
-
+        const GroupFeatureState&) {
     const auto clip = m_pClipParameter->toBool();
 
     CSAMPLE_GAIN gain;

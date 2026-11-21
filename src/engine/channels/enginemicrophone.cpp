@@ -62,9 +62,7 @@ void EngineMicrophone::onInputUnconfigured(const AudioInput& input) {
 }
 
 void EngineMicrophone::receiveBuffer(
-        const AudioInput& input, const CSAMPLE* pBuffer, unsigned int nFrames) {
-    Q_UNUSED(input);
-    Q_UNUSED(nFrames);
+        const AudioInput&, const CSAMPLE* pBuffer, unsigned int) {
     m_sampleBuffer = pBuffer;
 }
 

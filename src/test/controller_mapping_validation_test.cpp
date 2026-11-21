@@ -32,71 +32,49 @@ FakeMidiControllerJSProxy::FakeMidiControllerJSProxy()
         : ControllerJSProxy(nullptr) {
 }
 
-void FakeMidiControllerJSProxy::send(const QList<int>& data, unsigned int length) {
-    Q_UNUSED(data);
-    Q_UNUSED(length);
+void FakeMidiControllerJSProxy::send(const QList<int>&, unsigned int) {
     qInfo() << "LINT: Prefer to use sendSysexMsg instead of the generic alias send!";
 }
 
-void FakeMidiControllerJSProxy::sendSysexMsg(const QList<int>& data, unsigned int length) {
-    Q_UNUSED(data);
-    Q_UNUSED(length);
+void FakeMidiControllerJSProxy::sendSysexMsg(const QList<int>&, unsigned int) {
 }
 
-void FakeMidiControllerJSProxy::sendShortMsg(unsigned char status,
-        unsigned char byte1,
-        unsigned char byte2) {
-    Q_UNUSED(status);
-    Q_UNUSED(byte1);
-    Q_UNUSED(byte2);
+void FakeMidiControllerJSProxy::sendShortMsg(unsigned char,
+        unsigned char,
+        unsigned char) {
 }
 
 FakeHidControllerJSProxy::FakeHidControllerJSProxy()
         : ControllerJSProxy(nullptr) {
 }
 
-void FakeHidControllerJSProxy::send(const QList<int>& data, unsigned int length) {
-    Q_UNUSED(data);
-    Q_UNUSED(length);
-
+void FakeHidControllerJSProxy::send(const QList<int>&, unsigned int) {
     qInfo() << "LINT: Prefer to use sendOutputReport instead of send!";
 }
 
-void FakeHidControllerJSProxy::send(const QList<int>& dataList,
-        unsigned int length,
-        quint8 reportID,
-        bool useNonSkippingFIFO) {
-    Q_UNUSED(dataList);
-    Q_UNUSED(length);
-    Q_UNUSED(reportID);
-    Q_UNUSED(useNonSkippingFIFO);
-
+void FakeHidControllerJSProxy::send(const QList<int>&,
+        unsigned int,
+        quint8,
+        bool) {
     qInfo() << "LINT: Prefer to use sendOutputReport instead of send!";
 }
 
-void FakeHidControllerJSProxy::sendOutputReport(quint8 reportID,
-        const QByteArray& dataArray,
-        bool resendUnchangedReport) {
-    Q_UNUSED(reportID);
-    Q_UNUSED(dataArray);
-    Q_UNUSED(resendUnchangedReport);
+void FakeHidControllerJSProxy::sendOutputReport(quint8,
+        const QByteArray&,
+        bool) {
 }
 
 QByteArray FakeHidControllerJSProxy::getInputReport(
-        quint8 reportID) {
-    Q_UNUSED(reportID);
+        quint8) {
     return QByteArray();
 }
 
 void FakeHidControllerJSProxy::sendFeatureReport(
-        quint8 reportID, const QByteArray& reportData) {
-    Q_UNUSED(reportID);
-    Q_UNUSED(reportData);
+        quint8, const QByteArray&) {
 }
 
 QByteArray FakeHidControllerJSProxy::getFeatureReport(
-        quint8 reportID) {
-    Q_UNUSED(reportID);
+        quint8) {
     return QByteArray();
 }
 
@@ -104,9 +82,7 @@ FakeBulkControllerJSProxy::FakeBulkControllerJSProxy()
         : ControllerJSProxy(nullptr) {
 }
 
-void FakeBulkControllerJSProxy::send(const QList<int>& data, unsigned int length) {
-    Q_UNUSED(data);
-    Q_UNUSED(length);
+void FakeBulkControllerJSProxy::send(const QList<int>&, unsigned int) {
 }
 
 FakeController::FakeController()

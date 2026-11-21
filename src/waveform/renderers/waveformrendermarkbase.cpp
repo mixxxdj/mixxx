@@ -42,9 +42,7 @@ void WaveformRenderMarkBase::onResize() {
     }
 }
 
-void WaveformRenderMarkBase::onMarkChanged(double v) {
-    Q_UNUSED(v);
-
+void WaveformRenderMarkBase::onMarkChanged(double) {
     updateMarks();
 }
 

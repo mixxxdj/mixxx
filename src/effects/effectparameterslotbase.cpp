@@ -54,9 +54,7 @@ EffectManifestParameterPointer EffectParameterSlotBase::getManifest() {
 void EffectParameterSlotBase::syncSofttakeover() {
 }
 
-void EffectParameterSlotBase::onEffectMetaParameterChanged(double parameter, bool force) {
-    Q_UNUSED(parameter);
-    Q_UNUSED(force);
+void EffectParameterSlotBase::onEffectMetaParameterChanged(double, bool) {
 }
 
 void EffectParameterSlotBase::slotValueChanged(double v) {

@@ -81,9 +81,7 @@ void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
     updateLabel();
 }
 
-void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
+void WTrackProperty::slotLoadingTrack(TrackPointer, TrackPointer) {
     if (m_pCurrentTrack) {
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
@@ -94,8 +92,7 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
     updateLabel();
 }
 
-void WTrackProperty::slotTrackChanged(TrackId trackId) {
-    Q_UNUSED(trackId);
+void WTrackProperty::slotTrackChanged(TrackId) {
     updateLabel();
 }
 
@@ -184,8 +181,7 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent* pEvent) {
     }
 }
 
-void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* pEvent) {
-    Q_UNUSED(pEvent);
+void WTrackProperty::mouseDoubleClickEvent(QMouseEvent*) {
     if (!m_pCurrentTrack) {
         return;
     }

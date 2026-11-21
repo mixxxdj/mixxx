@@ -525,8 +525,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileTypes() const {
 }
 
 SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
-        const QString& supportedFileType) const {
-    Q_UNUSED(supportedFileType)
+        const QString&) const {
     // TODO: Increase priority to Default or even Higher for all
     // supported and tested file types?
     // Currently it is only used as a fallback after all other

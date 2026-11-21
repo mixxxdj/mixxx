@@ -189,8 +189,7 @@ void QmlApplicationProxy::reloadSkin() {
 }
 
 QmlApplicationProxy* QmlApplicationProxy::create(
-        QQmlEngine* pQmlEngine, QJSEngine* pJsEngine) {
-    Q_UNUSED(pJsEngine);
+        QQmlEngine* pQmlEngine, QJSEngine*) {
     return new QmlApplicationProxy(pQmlEngine);
 }
 

@@ -284,8 +284,7 @@ CoverInfo BrowseTableModel::getCoverInfo(const QModelIndex& index) const {
     }
 }
 
-const QVector<int> BrowseTableModel::getTrackRows(TrackId trackId) const {
-    Q_UNUSED(trackId);
+const QVector<int> BrowseTableModel::getTrackRows(TrackId) const {
     // We can't implement this as it stands.
     return QVector<int>();
 }
@@ -391,10 +390,9 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
             Capability::Sorting;
 }
 
-QString BrowseTableModel::modelKey(bool noSearch) const {
+QString BrowseTableModel::modelKey(bool) const {
     // Searching is handled by the proxy model, so if there is an active search
     // modelkey is composed there, too.
-    Q_UNUSED(noSearch);
     return QStringLiteral("browse:") + m_currentDirectory;
 }
 
@@ -433,9 +431,7 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {
 bool BrowseTableModel::setData(
         const QModelIndex& index,
         const QVariant& value,
-        int role) {
-    Q_UNUSED(role);
-
+        int) {
     QStandardItem* item = itemFromIndex(index);
     DEBUG_ASSERT(nullptr != item);
 
@@ -504,8 +500,7 @@ bool BrowseTableModel::setData(
 }
 
 void BrowseTableModel::trackChanged(
-        const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+        const QString& group, TrackPointer pNewTrack, TrackPointer) {
     if (group == m_previewDeckGroup) {
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex i = index(row, COLUMN_PREVIEW);

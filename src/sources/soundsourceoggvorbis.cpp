@@ -36,8 +36,7 @@ const QStringList SoundSourceProviderOggVorbis::kSupportedFileTypes = {
 };
 
 SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
-        const QString& supportedFileType) const {
-    Q_UNUSED(supportedFileType)
+        const QString&) const {
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;

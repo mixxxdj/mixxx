@@ -15,8 +15,7 @@ GLVSyncTestRenderer::GLVSyncTestRenderer(
 GLVSyncTestRenderer::~GLVSyncTestRenderer() {
 }
 
-void GLVSyncTestRenderer::onSetup(const QDomNode &node) {
-    Q_UNUSED(node);
+void GLVSyncTestRenderer::onSetup(const QDomNode&) {
 }
 
 inline void setPoint(QPointF& point, qreal x, qreal y) {

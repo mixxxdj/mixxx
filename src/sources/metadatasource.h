@@ -39,12 +39,9 @@ class MetadataSource {
     /// The flag resetMissingTagMetadata controls if existing metadata
     /// should be discarded if the corresponding file tags are missing.
     virtual std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverImage,
-            bool resetMissingTagMetadata) const {
-        Q_UNUSED(pTrackMetadata)
-        Q_UNUSED(pCoverImage)
-        Q_UNUSED(resetMissingTagMetadata)
+            [[maybe_unused]] TrackMetadata* pTrackMetadata,
+            [[maybe_unused]] QImage* pCoverImage,
+            [[maybe_unused]] bool resetMissingTagMetadata) const {
         return std::make_pair(ImportResult::Unavailable, QDateTime());
     }
 

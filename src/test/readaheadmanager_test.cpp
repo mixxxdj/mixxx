@@ -24,14 +24,11 @@ class StubReader : public CachingReader {
             : CachingReader(kGroup, UserSettingsPointer(), mixxx::audio::ChannelCount::stereo()) {
     }
 
-    CachingReader::ReadResult read(SINT startSample,
+    CachingReader::ReadResult read(SINT,
             SINT numSamples,
-            bool reverse,
+            bool,
             CSAMPLE* buffer,
-            mixxx::audio::ChannelCount channelCount) override {
-        Q_UNUSED(startSample);
-        Q_UNUSED(reverse);
-        Q_UNUSED(channelCount);
+            mixxx::audio::ChannelCount) override {
         SampleUtil::clear(buffer, numSamples);
         return CachingReader::ReadResult::AVAILABLE;
     }
@@ -50,12 +47,9 @@ class StubLoopControl : public LoopingControl {
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(target));
     }
 
-    mixxx::audio::FramePos nextTrigger(bool reverse,
-            mixxx::audio::FramePos currentPosition,
+    mixxx::audio::FramePos nextTrigger(bool,
+            mixxx::audio::FramePos,
             mixxx::audio::FramePos* pTargetPosition) override {
-        Q_UNUSED(reverse);
-        Q_UNUSED(currentPosition);
-        Q_UNUSED(pTargetPosition);
         RELEASE_ASSERT(!m_targetReturnValues.isEmpty());
         *pTargetPosition = m_targetReturnValues.takeFirst();
         RELEASE_ASSERT(!m_triggerReturnValues.isEmpty());

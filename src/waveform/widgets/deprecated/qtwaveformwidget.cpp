@@ -34,8 +34,7 @@ void QtWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void QtWaveformWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void QtWaveformWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration QtWaveformWidget::render() {

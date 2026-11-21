@@ -31,13 +31,11 @@ void EffectManifestTableModel::setList(const QList<EffectManifestPointer>& newLi
     endInsertRows();
 }
 
-int EffectManifestTableModel::rowCount(const QModelIndex& parent) const {
-    Q_UNUSED(parent);
+int EffectManifestTableModel::rowCount(const QModelIndex&) const {
     return m_manifests.size();
 }
 
-int EffectManifestTableModel::columnCount(const QModelIndex& parent) const {
-    Q_UNUSED(parent);
+int EffectManifestTableModel::columnCount(const QModelIndex&) const {
     return kNumberOfColumns;
 }
 
@@ -102,9 +100,8 @@ QMimeData* EffectManifestTableModel::mimeData(
 bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
         Qt::DropAction action,
         int row,
-        int column,
+        int,
         const QModelIndex& parent) {
-    Q_UNUSED(column);
     if (!data->hasText() || action != Qt::MoveAction) {
         return false;
     }

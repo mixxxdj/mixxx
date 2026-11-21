@@ -87,7 +87,7 @@ void QmlVinylSignalQuality::updateSignalQualityListener() {
 }
 
 void QmlVinylSignalQuality::onVinylSignalQualityUpdate(
-        const VinylSignalQualityReport& report) {
+        [[maybe_unused]] const VinylSignalQualityReport& report) {
 #ifdef __VINYLCONTROL__
     if (!m_active || !m_listenerRegistered || !m_pVinylControlManager ||
             report.processor != m_vinylInput) {
@@ -115,8 +115,6 @@ void QmlVinylSignalQuality::onVinylSignalQualityUpdate(
 
     m_hasReport = true;
     update();
-#else
-    Q_UNUSED(report);
 #endif
 }
 

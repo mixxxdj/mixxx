@@ -33,8 +33,7 @@ void QtRGBWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void QtRGBWaveformWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void QtRGBWaveformWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration QtRGBWaveformWidget::render() {

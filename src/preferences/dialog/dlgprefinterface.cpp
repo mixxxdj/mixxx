@@ -210,8 +210,7 @@ DlgPrefInterface::DlgPrefInterface(
     connect(buttonGroupTooltips,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
-            [this](QAbstractButton* button) {
-                Q_UNUSED(button);
+            [this](QAbstractButton*) {
                 slotSetTooltips();
             });
 

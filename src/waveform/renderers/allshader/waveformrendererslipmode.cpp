@@ -37,9 +37,7 @@ WaveformRendererSlipMode::WaveformRendererSlipMode(
     setUsePreprocess(true);
 }
 
-void WaveformRendererSlipMode::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void WaveformRendererSlipMode::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 

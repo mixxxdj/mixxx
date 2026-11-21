@@ -124,8 +124,7 @@ void WEffectChainPresetSelector::populate() {
     blockSignals(false);
 }
 
-void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
-    Q_UNUSED(index);
+void WEffectChainPresetSelector::slotEffectChainPresetSelected(int) {
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
     // Clicking a chain item moves keyboard focus to the list view.
@@ -176,8 +175,7 @@ bool WEffectChainPresetSelector::event(QEvent* pEvent) {
     return QComboBox::event(pEvent);
 }
 
-void WEffectChainPresetSelector::paintEvent(QPaintEvent* e) {
-    Q_UNUSED(e);
+void WEffectChainPresetSelector::paintEvent(QPaintEvent*) {
     // The default paint implementation aligns the text based on the layout direction.
     // Override to allow qss to align the text of the closed combobox with the
     // Quick effect controls in the mixer.

@@ -139,21 +139,19 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
 }
 
 int EncoderOpus::initEncoder(mixxx::audio::SampleRate sampleRate,
-        QString* pUserErrorMessage) {
-    Q_UNUSED(pUserErrorMessage);
-
+        QString*) {
     if (sampleRate != kMainSampleRate) {
-            kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
+        kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
 
-            const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
+        const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
 
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_WARNING);
-            props->setTitle(QObject::tr("Encoder"));
-            props->setText(invalidSamplerateMessage);
-            props->setKey(invalidSamplerateMessage);
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
-            return -1;
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(QObject::tr("Encoder"));
+        props->setText(invalidSamplerateMessage);
+        props->setKey(invalidSamplerateMessage);
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
+        return -1;
     }
     m_sampleRate = sampleRate;
     DEBUG_ASSERT(m_sampleRate == 8000 || m_sampleRate == 12000 ||

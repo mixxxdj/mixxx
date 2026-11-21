@@ -55,7 +55,6 @@ WCoverArt::~WCoverArt() {
 }
 
 void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
-    Q_UNUSED(node);
     setMouseTracking(true);
 
     // Background color
@@ -96,9 +95,8 @@ void WCoverArt::slotReloadCoverArt() {
     if (!m_loadedTrack) {
         return;
     }
-    const auto future = guessTrackCoverInfoConcurrently(m_loadedTrack);
+    [[maybe_unused]] const auto future = guessTrackCoverInfoConcurrently(m_loadedTrack);
     // Don't wait for the result and keep running in the background
-    Q_UNUSED(future)
 }
 
 void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -118,9 +116,7 @@ void WCoverArt::slotEnable(bool enable) {
     update();
 }
 
-void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
+void WCoverArt::slotLoadingTrack(TrackPointer, TrackPointer) {
     slotReset();
 }
 

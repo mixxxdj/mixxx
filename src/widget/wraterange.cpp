@@ -38,9 +38,7 @@ void WRateRange::setup(const QDomNode& node, const SkinContext& context) {
     setValue(range);
 }
 
-void WRateRange::slotRateDirChanged(double dir) {
-    Q_UNUSED(dir);
-
+void WRateRange::slotRateDirChanged(double) {
     const double range = m_pRateRangeControl->get();
     setValue(range);
 }

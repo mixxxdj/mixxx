@@ -160,8 +160,7 @@ void SetlogFeature::slotDeletePlaylist() {
     }
 }
 
-void SetlogFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
+void SetlogFeature::onRightClick(const QPoint&) {
     m_lastRightClickedIndex = QModelIndex();
 
     // Create the right-click menu
@@ -732,8 +731,7 @@ void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistId
     updateChildModel(idsToBeUpdated);
 }
 
-void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
-    Q_UNUSED(newName);
+void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString&) {
     // qDebug() << "SetlogFeature::slotPlaylistTableRenamed() Id:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
         updateChildModel(QSet<int>{playlistId});

@@ -34,8 +34,7 @@ void GLSimpleWaveformWidget::castToQWidget() {
     m_widget = this;
 }
 
-void GLSimpleWaveformWidget::paintEvent(QPaintEvent* event) {
-    Q_UNUSED(event);
+void GLSimpleWaveformWidget::paintEvent(QPaintEvent*) {
 }
 
 mixxx::Duration GLSimpleWaveformWidget::render() {

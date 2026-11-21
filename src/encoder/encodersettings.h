@@ -35,16 +35,18 @@ class EncoderSettings {
     // Returns the list of compression values supported, to assign them to the slider
     virtual QList<int> getCompressionValues() const { return QList<int>(); }
     // Sets the compression level
-    virtual void setCompression(int compression) {  Q_UNUSED(compression); }
-    virtual int getCompression() const { return 0; }
+    virtual void setCompression([[maybe_unused]] int compression) {
+    }
+    virtual int getCompression() const {
+        return 0;
+    }
     // Returns the list of radio options to show to the user
     virtual QList<OptionsGroup> getOptionGroups() const { return QList<OptionsGroup>(); }
     // Selects the option by its index. If it is a single-element option, 
     // index 0 means disabled and 1 enabled.
     // Return the selected option of the group. If it is a single-element option, 
     // 0 means disabled and 1 enabled.
-    virtual int getSelectedOption(const QString& groupCode) const {
-        Q_UNUSED(groupCode);
+    virtual int getSelectedOption([[maybe_unused]] const QString& groupCode) const {
         return 0;
     }
 

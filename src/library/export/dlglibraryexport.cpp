@@ -325,8 +325,7 @@ void DlgLibraryExport::checkExistingDatabase() {
                 0, QString::fromStdString(db.version_name()), QVariant{-1});
         m_pVersionCombo->setEnabled(false);
 
-    } catch (std::exception& e) {
-        Q_UNUSED(e);
+    } catch (std::exception&) {
         m_pExistingDatabaseLabel->setText(
                 tr("A database already exists in the chosen directory, "
                    "but there was a problem loading it. Export is not "
