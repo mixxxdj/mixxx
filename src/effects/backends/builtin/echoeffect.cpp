@@ -1,5 +1,8 @@
 #include "effects/backends/builtin/echoeffect.h"
 
+#include <algorithm>
+#include <span>
+
 #include "effects/backends/effectmanifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
@@ -16,6 +19,14 @@ void incrementRing(int* pIndex, int increment, int length) {
 
 void decrementRing(int* pIndex, int decrement, int length) {
     *pIndex = (*pIndex + length - decrement) % length;
+}
+
+// -60 dB, same threshold as used in analyzersilence.cpp
+constexpr CSAMPLE kSilenceThreshold = 0.001f;
+
+bool isBufferSilent(std::span<const CSAMPLE> buffer) {
+    return std::none_of(buffer.begin(), buffer.end(),
+            [](CSAMPLE s) { return std::abs(s) >= kSilenceThreshold; });
 }
 
 } // anonymous namespace
@@ -127,9 +138,15 @@ void EchoEffect::processChannel(
         const GroupFeatureState& groupFeatures) {
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
-    const auto send_current = static_cast<CSAMPLE_GAIN>(m_pSendParameter->value());
+    const auto send_current = enableState == EffectEnableState::Disabling
+            ? 0
+            : static_cast<CSAMPLE_GAIN>(m_pSendParameter->value());
     const auto feedback_current = static_cast<CSAMPLE_GAIN>(m_pFeedbackParameter->value());
     const auto pingpong_frac = static_cast<CSAMPLE_GAIN>(m_pPingPongParameter->value());
+
+    if (enableState == EffectEnableState::Enabling) {
+        m_isReadyForDisable = false;
+    }
 
     double delay_seconds;
     if (groupFeatures.beat_length.has_value()) {
@@ -239,16 +256,14 @@ void EchoEffect::processChannel(
             pGroupState->ping_pong = 0;
         }
     }
-
-    // The ramping of the send parameter handles ramping when enabling, so
-    // this effect must handle ramping to dry when disabling itself (instead
-    // of being handled by EngineEffect::process).
+    pGroupState->prev_send = send_current;
     if (enableState == EffectEnableState::Disabling) {
-        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, engineParameters.samplesPerBuffer());
-        pGroupState->delay_buf.clear();
         pGroupState->prev_send = 0;
-    } else {
-        pGroupState->prev_send = send_current;
+        // Check if the delay buffer is silent (all samples below -60 dB)
+        if (isBufferSilent(pGroupState->delay_buf.span())) {
+            m_isReadyForDisable = true;
+            pGroupState->delay_buf.clear();
+        }
     }
 
     pGroupState->prev_feedback = feedback_current;
