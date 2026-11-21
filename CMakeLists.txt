@@ -2352,12 +2352,12 @@ if(NOT Qt6_FOUND)
   fatal_error_missing_env()
 endif()
 
-# We need Qt 6.4 for ComponentBehavior: Bound
+# We need Qt 6.10 for ComponentBehavior: Bound
 cmake_dependent_option(
   QML
   "Build with QML"
   ON
-  "Qt6_VERSION VERSION_GREATER_EQUAL 6.4"
+  "Qt6_VERSION VERSION_GREATER_EQUAL 6.10"
   OFF
 )
 if(QML)
@@ -4071,6 +4071,10 @@ if(QML)
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
+  # Set QT_QML_MODULE_NO_IMPORT_SCAN to avoid warnings about missing QML plugin
+  # targets. The plugins are loaded dynamically at runtime from the system Qt
+  # installation on Linux.
+  set_target_properties(mixxx PROPERTIES QT_QML_MODULE_NO_IMPORT_SCAN ON)
   qt_finalize_target(mixxx)
 
   install(
@@ -4352,8 +4356,8 @@ else()
         )
       endif()
 
-      if(QT_VERSION VERSION_LESS 6.4)
-        # From Qt 6.4 integrated in QuickControls2
+      if(QT_VERSION VERSION_LESS 6.10)
+        # From Qt 6.10 integrated in QuickControls2
         install(
           IMPORTED_RUNTIME_ARTIFACTS
             Qt${QT_VERSION_MAJOR}::QuickTemplates2
