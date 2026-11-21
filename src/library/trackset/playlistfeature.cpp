@@ -109,6 +109,7 @@ void PlaylistFeature::onRightClickChild(
     menu.addAction(m_pDuplicatePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
+    menu.addAction(m_pMarkTracksPlayedAction);
     menu.addSeparator();
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
