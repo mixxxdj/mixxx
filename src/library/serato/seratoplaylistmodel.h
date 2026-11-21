@@ -13,6 +13,7 @@ class SeratoPlaylistModel : public BaseExternalPlaylistModel {
             QSharedPointer<BaseTrackCache> trackSource);
     TrackPointer getTrack(const QModelIndex& index) const override;
     bool isColumnHiddenByDefault(int column) override;
+    bool isColumnInternal(int column) override;
 
   protected:
     void initSortColumnMapping() override;
