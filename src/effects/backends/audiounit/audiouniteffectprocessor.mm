@@ -15,10 +15,8 @@
 #include "util/assert.h"
 #include "util/fpclassify.h"
 
-AudioUnitEffectGroupState::AudioUnitEffectGroupState(
-        const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_timestamp{
+AudioUnitEffectGroupState::AudioUnitEffectGroupState()
+        : m_timestamp{
                   .mSampleTime = 0,
                   .mFlags = kAudioTimeStampSampleTimeValid,
           } {

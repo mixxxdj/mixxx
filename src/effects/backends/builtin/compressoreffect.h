@@ -10,8 +10,7 @@
 
 class CompressorGroupState : public EffectState {
   public:
-    CompressorGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
+    CompressorGroupState(const mixxx::EngineParameters& engineParameters) {
         clear(engineParameters);
     }
 

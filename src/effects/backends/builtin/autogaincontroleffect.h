@@ -10,8 +10,7 @@
 
 class AutoGainControlGroupState : public EffectState {
   public:
-    AutoGainControlGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
+    AutoGainControlGroupState(const mixxx::EngineParameters& engineParameters) {
         clear(engineParameters);
     }
 

@@ -14,7 +14,7 @@
 
 class AudioUnitEffectGroupState final : public EffectState {
   public:
-    AudioUnitEffectGroupState(const mixxx::EngineParameters& engineParameters);
+    AudioUnitEffectGroupState();
 
     void render(AudioUnit _Nonnull audioUnit,
             const mixxx::EngineParameters& engineParameters,

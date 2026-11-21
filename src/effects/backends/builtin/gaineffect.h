@@ -5,9 +5,8 @@
 
 struct GainGroupState : public EffectState {
   public:
-    GainGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              previous_gain(1.0) {
+    GainGroupState()
+            : previous_gain(1.0) {
     }
     ~GainGroupState() override = default;
     CSAMPLE_GAIN previous_gain;

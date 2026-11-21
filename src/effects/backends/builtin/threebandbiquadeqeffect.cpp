@@ -71,8 +71,7 @@ EffectManifestPointer ThreeBandBiquadEQEffect::getManifest() {
 
 ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_tempBuf(engineParameters.samplesPerBuffer()),
+        : m_tempBuf(engineParameters.samplesPerBuffer()),
           m_oldLowBoost(0),
           m_oldMidBoost(0),
           m_oldHighBoost(0),

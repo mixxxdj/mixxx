@@ -8,9 +8,8 @@
 
 class WhiteNoiseGroupState final : public EffectState {
   public:
-    WhiteNoiseGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              previous_drywet(0.0),
+    WhiteNoiseGroupState()
+            : previous_drywet(0.0),
               gen(rs()) {
     }
     ~WhiteNoiseGroupState() override = default;

@@ -8,9 +8,8 @@
 
 struct BitCrusherGroupState : public EffectState {
     // Default accumulator to 1 so we immediately pick an input value.
-    BitCrusherGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              hold_l(0),
+    BitCrusherGroupState()
+            : hold_l(0),
               hold_r(0),
               accumulator(1) {
     }

@@ -38,8 +38,7 @@ EffectManifestPointer LinkwitzRiley8EQEffect::getManifest() {
 
 LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          old_low(1.0),
+        : old_low(1.0),
           old_mid(1.0),
           old_high(1.0),
           m_oldSampleRate(engineParameters.sampleRate()),

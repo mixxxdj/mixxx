@@ -23,8 +23,7 @@ PitchShiftEffect::PitchShiftEffect()
 }
 
 PitchShiftGroupState::PitchShiftGroupState(
-        const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters) {
+        const mixxx::EngineParameters& engineParameters) {
     initializeBuffer(engineParameters);
     audioParametersChanged(engineParameters);
 }

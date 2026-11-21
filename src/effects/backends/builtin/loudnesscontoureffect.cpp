@@ -63,8 +63,7 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
 
 LoudnessContourEffectGroupState::LoudnessContourEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_oldGainKnob(1.0),
+        : m_oldGainKnob(1.0),
           m_oldLoudness(0.0),
           m_oldGain(1.0f),
           m_oldFilterGainDb(0),

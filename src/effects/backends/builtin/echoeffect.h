@@ -13,8 +13,7 @@ class EchoGroupState : public EffectState {
     // 40 BPM.
     static constexpr int kMaxDelaySeconds = 3;
 
-    EchoGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
+    EchoGroupState(const mixxx::EngineParameters& engineParameters) {
         audioParametersChanged(engineParameters);
         clear();
     }
