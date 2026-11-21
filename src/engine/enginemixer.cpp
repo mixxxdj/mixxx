@@ -12,6 +12,7 @@
 #include "engine/channelmixer.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "engine/enginebandmeter.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
@@ -148,7 +149,9 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pMainMonoMixdown(std::make_unique<ControlObject>(
                   ConfigKey(group, "mono_mixdown"), true, false, true)),
           m_pMicMonitorMode(std::make_unique<ControlObject>(
-                  ConfigKey(group, "talkover_mix"), true, false, true)) {
+                  ConfigKey(group, "talkover_mix"), true, false, true)),
+          m_pBandMetersEnabled(std::make_unique<ControlObject>(
+                  ConfigKey(kAppGroup, QStringLiteral("band_meters_enabled")))) {
     pEffectsManager->registerInputChannel(m_mainHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
     pEffectsManager->registerOutputChannel(m_mainHandle);
@@ -504,6 +507,8 @@ void EngineMixer::process(const std::size_t bufferSize) {
                 m_pEngineEffectsManager);
     }
 
+    processBandMeters(bufferSize);
+
     // Process crossfader orientation bus channel effects
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
@@ -852,10 +857,44 @@ void EngineMixer::processHeadphones(
     m_headphoneGainOld = headphoneGain;
 }
 
+EngineMixer::ChannelInfo::ChannelInfo(int index)
+        : m_index(index) {
+}
+
+EngineMixer::ChannelInfo::~ChannelInfo() = default;
+
+void EngineMixer::processBandMeters(std::size_t bufferSize) {
+    // The buffers of the channels in the crossfader buses now hold the
+    // post-fader signal of the channel. All other channels do not contribute to
+    // the main mix and are metered as silent.
+    const bool enabled = m_pBandMetersEnabled->toBool() ||
+            mixxx::EngineBandMeterRequest::anyActive();
+    for (const auto& pChannelInfo : std::as_const(m_channels)) {
+        mixxx::EngineBandMeter* pBandMeter = pChannelInfo->m_pBandMeter.get();
+        if (!pBandMeter) {
+            continue;
+        }
+        const bool inMainMix = enabled &&
+                (m_activeBusChannels[EngineChannel::LEFT].contains(pChannelInfo.get()) ||
+                        m_activeBusChannels[EngineChannel::CENTER].contains(
+                                pChannelInfo.get()) ||
+                        m_activeBusChannels[EngineChannel::RIGHT].contains(
+                                pChannelInfo.get()));
+        if (inMainMix) {
+            pBandMeter->process(pChannelInfo->m_pBuffer.data(), bufferSize, m_sampleRate);
+        } else {
+            pBandMeter->reset();
+        }
+    }
+}
+
 void EngineMixer::addChannel(std::unique_ptr<EngineChannel> pChannel) {
     auto pChannelInfo = std::make_unique<ChannelInfo>(m_channels.size());
     pChannel->setChannelIndex(pChannelInfo->m_index);
     const QString& group = pChannel->getGroup();
+    if (pChannel->isPrimaryDeck()) {
+        pChannelInfo->m_pBandMeter = std::make_unique<mixxx::EngineBandMeter>(group);
+    }
     // take ownership of the pointer explicitly
     pChannelInfo->m_pChannel = std::move(pChannel);
     pChannelInfo->m_handle = m_pChannelHandleFactory->getOrCreateHandle(group);

@@ -257,6 +257,33 @@ void Tooltips::addStandardTooltips() {
             << tr("Cover Art")
             << tr("Show/hide Cover Art.");
 
+    add("visualizer_show_window")
+            << tr("Visualizer Window")
+            << tr("Show/hide the separate window with visuals that react to the music.");
+
+    add("visualizer_style")
+            << tr("Visualizer Style")
+            << tr("Select the style of the visuals.");
+
+    add("visualizer_select_image")
+            << tr("Visualizer Image")
+            << tr("Select the image that the style Custom Image shows in place of the covers.");
+
+    add("visualizer_bass_intensity")
+            << tr("Visualizer Bass Intensity")
+            << tr("Adjusts how strongly the bass of the decks distorts the visuals.")
+            << tr("The visuals do not react to the bass if this is at the minimum.");
+
+    add("visualizer_mid_intensity")
+            << tr("Visualizer Mids Intensity")
+            << tr("Adjusts how strongly the mids of the decks distort the visuals.")
+            << tr("The visuals do not react to the mids if this is at the minimum.");
+
+    add("visualizer_high_intensity")
+            << tr("Visualizer Highs Intensity")
+            << tr("Adjusts how strongly the highs of the decks distort the visuals.")
+            << tr("The visuals do not react to the highs if this is at the minimum.");
+
     add("show_library_coverart")
             << tr("Cover Art")
             << tr("Show/hide Cover Art of the selected track in the library.");

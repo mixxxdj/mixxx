@@ -18,6 +18,10 @@ class VSyncThread;
 class QDomNode;
 class SkinContext;
 class BaseTrackPlayer;
+
+namespace mixxx {
+class PlayerCoverArtWatcher;
+} // namespace mixxx
 class DlgCoverArtFullSize;
 
 class WSpinnyBase : public WGLWidget,
@@ -46,8 +50,6 @@ class WSpinnyBase : public WGLWidget,
     void dropEvent(QDropEvent* event) override;
 
   public slots:
-    void slotLoadTrack(TrackPointer);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void updateVinylControlSpeed(double rpm);
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
@@ -56,13 +58,10 @@ class WSpinnyBase : public WGLWidget,
     void swap();
 
   protected slots:
-    void slotCoverFound(
-            const QObject* pRequester,
-            const CoverInfo& coverInfo,
-            const QPixmap& pixmap);
+    void slotTrackChanged();
+    void slotCoverFound(const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
-    void slotTrackCoverArtUpdated();
 
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
@@ -121,10 +120,9 @@ class WSpinnyBase : public WGLWidget,
     parented_ptr<ControlProxy> m_pSlipEnabled;
     parented_ptr<ControlProxy> m_pShowCoverProxy;
 
-    TrackPointer m_pLoadedTrack;
+    parented_ptr<mixxx::PlayerCoverArtWatcher> m_pCoverArtWatcher;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
-    CoverInfo m_lastRequestedCover;
     bool m_bShowCover;
 
     VinylControlManager* m_pVCManager;
