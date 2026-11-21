@@ -19,8 +19,8 @@ class FileInfo;
 class SoundSourceProxy {
   public:
     /// Initially registers all built-in SoundSource providers. This function is
-    /// not thread-safe and must be called only once upon startup of the
-    /// application.
+    /// not thread-safe and must be called upon startup of the application.
+    /// Subsequent calls are no-ops if providers have already been registered.
     ///
     /// Returns true if providers for one or more file extensions have been
     /// registered.
