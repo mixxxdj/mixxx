@@ -31,7 +31,8 @@ constexpr SINT kBackBufferFrameSize = 512;
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager* pReadAheadManager)
         : m_pReadAheadManager(pReadAheadManager),
           m_pSoundTouch(std::make_unique<soundtouch::SoundTouch>()),
-          m_bBackwards(false) {
+          m_bBackwards(false),
+          m_bAntiAliasFilter(true) {
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
@@ -84,9 +85,23 @@ void EngineBufferScaleST::setScaleParameters(double base_rate,
         }
         m_dPitchRatio = *pPitchRatio;
     }
+    updateAntiAliasFilter();
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
     // changed direction. I removed it because this is handled by EngineBuffer.
+}
+
+void EngineBufferScaleST::updateAntiAliasFilter() {
+    // SoundTouch resamples by rate * pitch
+    const double rate = m_dBaseRate * fabs(m_dPitchRatio);
+    const bool resampling = fabs(rate - 1.0) > 1e-9;
+    if (resampling != m_bAntiAliasFilter) {
+        // Sets a flag and clears the rate transposer buffers (no allocation).
+        // This happens only when the effective rate reaches or leaves exactly
+        // 1.0, e.g. when the key is reset to the original key.
+        m_pSoundTouch->setSetting(SETTING_USE_AA_FILTER, resampling ? 1 : 0);
+        m_bAntiAliasFilter = resampling;
+    }
 }
 
 void EngineBufferScaleST::onSignalChanged() {
