@@ -5,6 +5,7 @@
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzergain.h"
+#include "analyzer/analyzerhotcues.h"
 #include "analyzer/analyzerkey.h"
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
@@ -112,9 +113,13 @@ void AnalyzerThread::doRun() {
     // BPM detection might be disabled in the config, but can be overridden
     // and enabled by explicitly setting the mode flag.
     const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
-    m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection)));
+    auto pAnalyzerBeats = std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection);
+    const AnalyzerBeats* pBeats = pAnalyzerBeats.get();
+    m_analyzers.push_back(AnalyzerWithState(std::move(pAnalyzerBeats)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerKey>(m_pConfig)));
     m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerSilence>(m_pConfig)));
+    // after AnalyzerBeats, needs its beats
+    m_analyzers.push_back(AnalyzerWithState(std::make_unique<AnalyzerHotcues>(m_pConfig, pBeats)));
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 

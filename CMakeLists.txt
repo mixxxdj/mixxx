@@ -1186,6 +1186,7 @@ add_library(
   src/analyzer/analyzerbeats.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
+  src/analyzer/analyzerhotcues.cpp
   src/analyzer/analyzerkey.cpp
   src/analyzer/analyzerscheduledtrack.cpp
   src/analyzer/analyzersilence.cpp
@@ -2871,6 +2872,7 @@ if(BUILD_TESTING)
   set(
     src-mixxx-test
     src/test/analyserwaveformtest.cpp
+    src/test/analyzerhotcuestest.cpp
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
