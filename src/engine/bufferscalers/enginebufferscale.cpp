@@ -22,17 +22,22 @@ void EngineBufferScale::setSignal(
         mixxx::audio::ChannelCount channelCount) {
     DEBUG_ASSERT(sampleRate.isValid());
     DEBUG_ASSERT(channelCount.isValid());
+
     bool changed = false;
+
     if (sampleRate != m_signal.getSampleRate()) {
         m_signal.setSampleRate(sampleRate);
         changed = true;
     }
+
     if (channelCount != m_signal.getChannelCount()) {
         m_signal.setChannelCount(channelCount);
         changed = true;
     }
+
     if (changed) {
         onSignalChanged();
     }
+
     DEBUG_ASSERT(m_signal.isValid());
 }
