@@ -120,6 +120,10 @@ QByteArray Waveform::toByteArray() const {
     high->set_channels(mixxx::kEngineChannelOutputCount);
 
     int dataSize = getDataSize();
+    all->mutable_value()->Reserve(dataSize);
+    low->mutable_value()->Reserve(dataSize);
+    mid->mutable_value()->Reserve(dataSize);
+    high->mutable_value()->Reserve(dataSize);
     for (int i = 0; i < dataSize; ++i) {
         const WaveformData& datum = m_data.at(i);
         all->add_value(datum.filtered.all);
@@ -132,6 +136,7 @@ QByteArray Waveform::toByteArray() const {
     for (auto& stem : stems) {
         stem->set_units(io::Waveform::RMS);
         stem->set_channels(mixxx::kEngineChannelOutputCount);
+        stem->mutable_value()->Reserve(dataSize);
         for (int i = 0; i < dataSize; ++i) {
             const WaveformData& datum = m_data.at(i);
             stem->add_value(datum.stems[stemIdx]);

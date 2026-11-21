@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <cstdint>
 #include <limits>
 
 #include "analyzer/analyzer.h"
@@ -15,7 +16,7 @@
 class QImage;
 #endif
 
-class EngineFilterIIRBase;
+class WaveformBandFilters;
 class QSqlDatabase;
 
 struct WaveformStride {
@@ -138,6 +139,27 @@ struct WaveformStride {
     float m_postScaleConversion;
 };
 
+// The stride positions p > 0 with fmod(p, length) < 1, where a stride of the
+// given length ends. They are calculated with exact integer arithmetic.
+class WaveformStrideEnds {
+  public:
+    explicit WaveformStrideEnds(double length = 0);
+
+    // The next position, where a stride ends
+    int next() const {
+        return m_next;
+    }
+    void advance();
+
+  private:
+    // length = m_lengthFraction / 2^m_shift
+    int64_t m_lengthFraction = 1;
+    int m_shift = 0;
+    // fmod(m_next, length) * 2^m_shift
+    int64_t m_remainder = 0;
+    int m_next = 0;
+};
+
 class AnalyzerWaveform : public Analyzer {
   public:
     AnalyzerWaveform(
@@ -161,7 +183,6 @@ class AnalyzerWaveform : public Analyzer {
 
     void createFilters(mixxx::audio::SampleRate sampleRate);
     void destroyFilters();
-    void storeIfGreater(float* pDest, float source);
 
     mutable AnalysisDao m_analysisDao;
 
@@ -174,32 +195,11 @@ class AnalyzerWaveform : public Analyzer {
 
     int m_currentStride;
     int m_currentSummaryStride;
+    WaveformStrideEnds m_storeEnds;
+    WaveformStrideEnds m_summaryEnds;
     mixxx::audio::ChannelCount m_channelCount;
 
-    struct Filters {
-        std::unique_ptr<EngineFilterIIRBase> low;
-        std::unique_ptr<EngineFilterIIRBase> mid;
-        std::unique_ptr<EngineFilterIIRBase> high;
-    };
-
-    Filters m_filters;
-
-    struct Buffers {
-        std::vector<float> low;
-        std::vector<float> mid;
-        std::vector<float> high;
-
-        SINT size;
-
-        Buffers()
-                : low(),
-                  mid(),
-                  high(),
-                  size(0) {
-        }
-    };
-
-    Buffers m_buffers;
+    std::unique_ptr<WaveformBandFilters> m_filters;
 
     PerformanceTimer m_timer;
 
