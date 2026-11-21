@@ -1,5 +1,10 @@
 #pragma once
 
+#include <algorithm>
+#include <cstddef>
+#include <cstring>
+
+#include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/assert.h"
 #include "util/sample.h"
@@ -46,7 +51,38 @@ class EngineFilterDelay : public EngineObjectConstIn {
     }
 
     virtual void process(const CSAMPLE* pIn, CSAMPLE* pOutput, const std::size_t bufferSize) {
-        if (m_oldDelaySamples == m_delaySamples) {
+        if (m_oldDelaySamples == m_delaySamples &&
+                bufferSize + static_cast<std::size_t>(m_delaySamples) <= SIZE) {
+            // Same result as the sample by sample loop below (every slot that is
+            // read has already been written, because the whole buffer plus the
+            // delay fits in the ring) but in block copies: that loop does two
+            // modulo operations per sample, which made it 3 % of the audio
+            // thread on an ARM64 device with two stem decks playing.
+            const std::size_t srcStart = (static_cast<std::size_t>(m_delayPos) + SIZE -
+                                                 static_cast<std::size_t>(m_delaySamples)) %
+                    SIZE;
+            std::size_t pos = static_cast<std::size_t>(m_delayPos);
+            std::size_t remaining = bufferSize;
+            const CSAMPLE* pFrom = pIn;
+            while (remaining > 0) {
+                const std::size_t chunk = std::min(remaining, SIZE - pos);
+                std::memcpy(m_buf + pos, pFrom, chunk * sizeof(CSAMPLE));
+                pos = (pos + chunk) % SIZE;
+                pFrom += chunk;
+                remaining -= chunk;
+            }
+            m_delayPos = static_cast<int>(pos);
+            pos = srcStart;
+            remaining = bufferSize;
+            CSAMPLE* pTo = pOutput;
+            while (remaining > 0) {
+                const std::size_t chunk = std::min(remaining, SIZE - pos);
+                std::memcpy(pTo, m_buf + pos, chunk * sizeof(CSAMPLE));
+                pos = (pos + chunk) % SIZE;
+                pTo += chunk;
+                remaining -= chunk;
+            }
+        } else if (m_oldDelaySamples == m_delaySamples) {
             // The "+ SIZE" addition ensures positive values for the modulo calculation.
             // From a mathematical point of view, this addition can be removed. Anyway,
             // from the cpp point of view, the modulo operator for negative values
