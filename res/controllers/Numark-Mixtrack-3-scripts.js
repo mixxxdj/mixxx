@@ -13,6 +13,11 @@ const iCutEnabled = engine.getSetting("iCutEnabled") === true;
 //activate PFL of deck on track load
 const smartPFL = engine.getSetting("smartPFL") === true;
 
+//traditionalPFL: "true": headphone cue (PFL) buttons latch independently per
+// channel, like a traditional DJ mixer, instead of switching the cue between
+// channels automatically (also skips the smartPFL switch on track load)
+const traditionalPFL = engine.getSetting("traditionalPFL") === true;
+
 //Disable Play on Sync button Double Press
 const noPlayOnSyncDoublePress = engine.getSetting("noPlayOnSyncDoublePress") === true;
 
@@ -23,6 +28,9 @@ const ShiftFilterFX4 = engine.getSetting("ShiftFilterFX4") === true;
 
 // allow pitch bend with wheel when wheel is not active
 const PitchBendOnWheelOff = engine.getSetting("PitchBendOnWheelOff") === true;
+
+// DisableMasterGainKnob: "true" disables the physical master gain knob
+const DisableMasterGainKnob = engine.getSetting("DisableMasterGainKnob") === true;
 
 /**************************
  *  scriptpause
@@ -226,6 +234,42 @@ function parameterSoftTakeOver(group, control, value) {
         return; //do nothing until we get close
     }
 }
+
+// =====================================================================
+// Engine connections
+// =====================================================================
+// `engine.connectControl` is deprecated. These wrappers around `engine.makeConnection`
+// keep track of the connection objects they create so that they can be replaced or
+// removed later (e.g. when the hardware is switched to control different decks).
+NumarkMixtrack3.connections = {};
+
+NumarkMixtrack3.connectControl = function(group, control, callback) {
+    const key = `${group  }|${  control}`;
+    const existing = NumarkMixtrack3.connections[key];
+
+    if (existing !== undefined && existing.isConnected) {
+        existing.disconnect();
+    }
+
+    const connection = engine.makeConnection(group, control, callback);
+
+    if (connection !== undefined && connection.isConnected) {
+        NumarkMixtrack3.connections[key] = connection;
+    }
+
+    return connection;
+};
+
+NumarkMixtrack3.disconnectControl = function(group, control) {
+    const key = `${group  }|${  control}`;
+    const existing = NumarkMixtrack3.connections[key];
+
+    if (existing !== undefined && existing.isConnected) {
+        existing.disconnect();
+    }
+
+    delete NumarkMixtrack3.connections[key];
+};
 
 // =====================================================================
 // Reusable Objects (special buttons handling, LEDs, iCUT and Jog wheels)
@@ -766,8 +810,9 @@ NumarkMixtrack3.deck = function(decknum) {
     this.LEDs.meter = new LED(0x90 + ledCategories.meters, leds.meter1 - 1 + j);
 
     for (var led in this.LEDs) {
-        if (led.hasOwnProperty("onOff")) {
-            led.onOff(OFF);
+        const ledToTurnOff = this.LEDs[led];
+        if (typeof ledToTurnOff.onOff === "function") {
+            ledToTurnOff.onOff(OFF);
         }
     }
 
@@ -811,7 +856,7 @@ NumarkMixtrack3.sampler = function(decknum) {
 
     this.PADSampleButtonHold = new LongShortBtn(NumarkMixtrack3.onPADSampleButtonHold);
 
-    engine.connectControl(this.group, "play", "NumarkMixtrack3.OnSamplePlayStop");
+    NumarkMixtrack3.connectControl(this.group, "play", NumarkMixtrack3.OnSamplePlayStop);
 
     // sampler LED, first 4 are 0x91, next 4 are 0x92
     this.led = new LED(0x91 + Math.round(decknum / 9), leds["padSampler" + decknum]);
@@ -901,6 +946,16 @@ NumarkMixtrack3.init = function(id, debug) {
     // Turn ON all the lights: the only way PADMode Leds light up
     NumarkMixtrack3.AllLeds.onOff(ON);
 
+    // The all-lights flash above lights the hardware directly, bypassing the
+    // per-deck LED objects. Force the steady states of the two LEDs whose
+    // update callbacks skip redundant sends (meter, wheel button); every other
+    // LED is re-sent unconditionally by its engine connection when the decks
+    // are initialized below.
+    for (let deckNum = 1; deckNum <= 4; deckNum++) {
+        NumarkMixtrack3.decks[`D${  deckNum}`].LEDs.meter.onOff(OFF);
+        NumarkMixtrack3.decks[`D${  deckNum}`].LEDs.jogWheelsInScratchMode.onOff(OFF);
+    }
+
     NumarkMixtrack3.initDeck("[Channel1]", false); //Initial load, "remove" is set to false
     NumarkMixtrack3.initDeck("[Channel2]", false);
 
@@ -951,11 +1006,21 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         offDeck.shiftKey = false;
         onDeck.shiftKey = false;
 
+        // Turn off the outgoing deck's LEDs. This also stops any flash timers
+        // they are running (e.g. an end-of-track warning flash), which would
+        // otherwise keep flashing LED notes that this deck shares with the
+        // incoming deck when the hardware is switched to control other decks.
         for (var led in offDeck.LEDs) {
-            if (led.hasOwnProperty("onOff")) {
-                led.onOff(OFF);
+            const ledToTurnOff = offDeck.LEDs[led];
+            if (typeof ledToTurnOff.onOff === "function") {
+                ledToTurnOff.onOff(OFF);
             }
         }
+
+        // The wheel button LED is not driven by any engine connection, so
+        // re-assert the incoming deck's steady state after the reset above.
+        onDeck.LEDs.jogWheelsInScratchMode.onOff(
+            onDeck.jogWheelsInScratchMode ? ON : OFF);
 
         for (var i = 1; i <= 4; i++) {
             onDeck.LEDs["padLoop" + i].onOff(PADcolors.yellow);
@@ -967,33 +1032,36 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     print("");
 
     var controlsToFunctions = {
-        "hotcue_1_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "hotcue_2_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "hotcue_3_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "hotcue_4_enabled": "NumarkMixtrack3.OnHotcueChange",
-        "vu_meter": "NumarkMixtrack3.OnVuMeterChange",
-        "playposition": "NumarkMixtrack3.OnPlaypositionChange",
-        "volume": "NumarkMixtrack3.OnVolumeChange",
-        "pfl": "NumarkMixtrack3.OnPFLStatusChange",
-        "duration": "NumarkMixtrack3.OnLoadSelectedTrack",
-        "play_indicator": "NumarkMixtrack3.OnPlayIndicatorChange",
-        "cue_indicator": "NumarkMixtrack3.OnCuePointChange",
-        "loop_start_position": "NumarkMixtrack3.OnLoopInOutChange",
-        "loop_end_position": "NumarkMixtrack3.OnLoopInOutChange",
-        "loop_enabled": "NumarkMixtrack3.OnLoopInOutChange",
-        "sync_enabled": "NumarkMixtrack3.OnSyncButtonChange"
+        "hotcue_1_status": NumarkMixtrack3.OnHotcueChange,
+        "hotcue_2_status": NumarkMixtrack3.OnHotcueChange,
+        "hotcue_3_status": NumarkMixtrack3.OnHotcueChange,
+        "hotcue_4_status": NumarkMixtrack3.OnHotcueChange,
+        "vu_meter": NumarkMixtrack3.OnVuMeterChange,
+        "playposition": NumarkMixtrack3.OnPlaypositionChange,
+        "volume": NumarkMixtrack3.OnVolumeChange,
+        "pfl": NumarkMixtrack3.OnPFLStatusChange,
+        "duration": NumarkMixtrack3.OnLoadSelectedTrack,
+        "play_indicator": NumarkMixtrack3.OnPlayIndicatorChange,
+        "cue_indicator": NumarkMixtrack3.OnCuePointChange,
+        "loop_start_position": NumarkMixtrack3.OnLoopInOutChange,
+        "loop_end_position": NumarkMixtrack3.OnLoopInOutChange,
+        "loop_enabled": NumarkMixtrack3.OnLoopInOutChange,
+        "sync_enabled": NumarkMixtrack3.OnSyncButtonChange
     };
 
     for (var i = 0, n = loopsize.length; i < n; i ++) {
-        controlsToFunctions["beatloop_" + loopsize[i] + "_enabled"] = "NumarkMixtrack3.OnPADLoopButtonChange";
+        controlsToFunctions[`beatloop_${  loopsize[i]  }_enabled`] = NumarkMixtrack3.OnPADLoopButtonChange;
     }
 
-    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
-    engine.connectControl("[EffectRack1_EffectUnit" + onDeckNum + "_Effect3]", "enabled",
-        "NumarkMixtrack3.OnEffectEnabled");
+    NumarkMixtrack3.connectControl(
+        `[EffectRack1_EffectUnit${  onDeckNum  }_Effect1]`, "enabled",
+        NumarkMixtrack3.OnEffectEnabled);
+    NumarkMixtrack3.connectControl(
+        `[EffectRack1_EffectUnit${  onDeckNum  }_Effect2]`, "enabled",
+        NumarkMixtrack3.OnEffectEnabled);
+    NumarkMixtrack3.connectControl(
+        `[EffectRack1_EffectUnit${  onDeckNum  }_Effect3]`, "enabled",
+        NumarkMixtrack3.OnEffectEnabled);
 
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect1]", "enabled");
     engine.trigger("[EffectRack1_EffectUnit" + onDeckNum + "_Effect2]", "enabled");
@@ -1011,9 +1079,9 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
     for (var control in controlsToFunctions) {
         if (controlsToFunctions.hasOwnProperty(control)) {
             if (remove) {
-                engine.connectControl(offDeck.group, control, controlsToFunctions[control], true);
+                NumarkMixtrack3.disconnectControl(offDeck.group, control);
             }
-            engine.connectControl(group, control, controlsToFunctions[control]);
+            NumarkMixtrack3.connectControl(group, control, controlsToFunctions[control]);
             engine.trigger(group, control);
         }
     }
@@ -1181,7 +1249,7 @@ NumarkMixtrack3.LoadButton = function(channel, control, value, status, group) {
     if (value === DOWN) {
         deck.faderstart = false;
 
-        if (smartPFL) {
+        if (smartPFL && !traditionalPFL) {
             for (var i = 1; i <= 4; i++) {
                 //Change headphone cue (pfl) to the deck on which the song loaded.
                 engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
@@ -1220,9 +1288,11 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
     var trackDuration = engine.getValue(deck.group, "duration");
 
     if (smartPFL && deck.duration !== trackDuration && trackDuration !== 0) {
-        for (var i = 1; i <= 4; i++) {
-            // change headphone cue (pfl) to the deck on which the song loaded.
-            engine.setValue("[Channel" + i + "]", "pfl", deck.decknum === i);
+        if (!traditionalPFL) {
+            for (let i = 1; i <= 4; i++) {
+                // change headphone cue (pfl) to the deck on which the song loaded.
+                engine.setValue(`[Channel${  i  }]`, "pfl", deck.decknum === i);
+            }
         }
 
         // update the jog light
@@ -1724,9 +1794,12 @@ NumarkMixtrack3.PFLButton = function(channel, control, value, status, group) {
             script.toggleControl(group, "quantize");
         } else {
             script.toggleControl(deck.group, "pfl");
-            for (var i = 1; i <= 4; i++) {
-                if (i !== deck.decknum) {
-                    engine.setValue("[Channel" + i + "]", "pfl", false);
+
+            if (!traditionalPFL) {
+                for (let i = 1; i <= 4; i++) {
+                    if (i !== deck.decknum) {
+                        engine.setValue(`[Channel${  i  }]`, "pfl", false);
+                    }
                 }
             }
         }
@@ -1885,6 +1958,15 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
     }
 };
 
+// Master gain knob; mapped 1:1 exactly like the previous direct [Master] gain
+// binding, so behavior is unchanged unless the option disables it
+NumarkMixtrack3.MasterGainKnob = function(channel, control, value, _status, _group) {
+    if (DisableMasterGainKnob) {
+        return;
+    }
+    engine.setParameter("[Master]", "gain", value / 127);
+};
+
 NumarkMixtrack3.loop_in = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     engine.setValue(deck.group, "loop_in", value === DOWN);
@@ -1974,7 +2056,28 @@ NumarkMixtrack3.OnVolumeChange = function(value, group, control) {
 
 NumarkMixtrack3.OnVuMeterChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
-    deck.LEDs.meter.onOff(82 * value);
+    const meterLevel = Math.round(82 * value);
+
+    // This callback fires nonstop for every playing deck, so skip redundant
+    // sends of an unchanged level.
+    if (meterLevel !== deck.LEDs.meter.lit) {
+        deck.LEDs.meter.onOff(meterLevel);
+    }
+};
+
+// Restore the steady state of the wheel button LED (and stop an obsolete
+// end-of-track warning flash if one is running). Called on every
+// playposition update of every playing deck, so redundant sends are skipped.
+NumarkMixtrack3.setWheelLedSteady = function(deck) {
+    const wheelLed = deck.LEDs.jogWheelsInScratchMode;
+    const steadyValue = deck.jogWheelsInScratchMode ? ON : OFF;
+
+    if (wheelLed.flashDuration !== 0) {
+        // stops all timers of the running flash on its way
+        wheelLed.onOff(steadyValue);
+    } else if (wheelLed.lit !== steadyValue) {
+        wheelLed.onOff(steadyValue);
+    }
 };
 
 NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
@@ -1984,25 +2087,39 @@ NumarkMixtrack3.OnPlaypositionChange = function(value, group, control) {
     if (deck.trackLoaded() && TrackEndWarning) {
         var timeRemaining = duration * (1 - value);
 
-        if (timeRemaining <= 30) {
-            // flashing slowly
-            if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 1000) {
-                deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
-            }
-        } else if (timeRemaining <= 10) {
+        // Only start the warning flash while the deck is playing. While paused
+        // there are no further playposition updates, so a flash started from a
+        // stale position or duration (which happens when playposition updates
+        // race with track loading) would flash until something else writes the
+        // LED - e.g. right after loading a track.
+        const isPlaying = engine.getValue(group, "play");
+
+        if (timeRemaining <= 10 && isPlaying) {
             // flashing fast
             if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 300) {
                 deck.LEDs.jogWheelsInScratchMode.flashOn(300, ON, 300);
             }
+        } else if (timeRemaining <= 30 && isPlaying) {
+            // flashing slowly
+            if (deck.LEDs.jogWheelsInScratchMode.flashDuration !== 1000) {
+                deck.LEDs.jogWheelsInScratchMode.flashOn(1000, ON, 1000);
+            }
         } else {
-            deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
+            NumarkMixtrack3.setWheelLedSteady(deck);
         }
     } else {
-        deck.LEDs.jogWheelsInScratchMode.onOff(deck.jogWheelsInScratchMode ? ON : OFF);
+        NumarkMixtrack3.setWheelLedSteady(deck);
     }
 };
 
 NumarkMixtrack3.OnPlayIndicatorChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     deck.LEDs.play.onOff((value) ? ON : OFF);
+
+    // Stop an end-of-track warning flash when playback stops: a paused deck
+    // emits no further playposition updates, so the flash would otherwise
+    // keep running (e.g. after pausing near the end of a track).
+    if (!value) {
+        NumarkMixtrack3.setWheelLedSteady(deck);
+    }
 };

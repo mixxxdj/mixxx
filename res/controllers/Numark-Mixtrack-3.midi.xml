@@ -51,6 +51,18 @@
             </description>
         </option>
         <option
+            variable="traditionalPFL"
+            label="Traditional Headphone Cue"
+            type="boolean"
+            default="false">
+            <description>
+                Keep each channel’s headphone cue (PFL) latched until its own button is pressed again,
+                like a traditional DJ mixer, instead of automatically turning off the cue of the other
+                channels when a headphone button is pressed. Also disables the “Smart PFL” auto switching
+                on track load.
+            </description>
+        </option>
+        <option
             variable="noPlayOnSyncDoublePress"
             label="Disable Play on Sync Double-Press"
             type="boolean"
@@ -75,6 +87,17 @@
             default="true">
             <description>
                 Allows pitch-bend using the jog wheel even when scratch mode is disabled.
+            </description>
+        </option>
+        <option
+            variable="DisableMasterGainKnob"
+            label="Disable Master Gain Knob"
+            type="boolean"
+            default="false">
+            <description>
+                Lets the physical Master gain knob do nothing, so the Mixxx master gain can only
+                be changed from the software. The crossfader, cue mix and cue gain knobs are
+                not affected.
             </description>
         </option>
     </settings>
@@ -115,12 +138,12 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>gain</key>
+                <key>NumarkMixtrack3.MasterGainKnob</key>
                 <description>Master gain knob</description>
                 <status>0xB0</status>
                 <midino>0x0A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
