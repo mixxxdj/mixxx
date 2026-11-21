@@ -4,12 +4,15 @@
 #include <QMenuBar>
 #include <QObject>
 #include <QScopedPointer>
+#include <QTimer>
 
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
 
 class QAction;
+class QMouseEvent;
+class QToolButton;
 class KeyboardEventFilter;
 
 class VisibilityControlConnection : public QObject {
@@ -103,7 +106,22 @@ class WMainMenuBar : public QMenuBar {
     void slotDeveloperDebugger(bool toggle);
     void slotVisitUrl(const QUrl& url);
 
+  public:
+    /// logo and min/max/close in the corners, for a frameless main window
+    void addWindowControls();
+    void updateWindowControls();
+    /// skin style, plus taller items next to window controls
+    void setSkinStyleSheet(const QString& style);
+    /// window buttons in the skin's menu text color
+    void styleWindowControls();
+
+  protected:
+    void mousePressEvent(QMouseEvent* pEvent) override;
+    void mouseDoubleClickEvent(QMouseEvent* pEvent) override;
+
   private:
+    /// empty bar area, drags the window
+    bool isDragArea(QPoint pos) const;
     void initialize();
 #ifndef __APPLE__
     /// this ensures the menubar is shown when a menu hotkey is pressed
@@ -118,4 +136,6 @@ class WMainMenuBar : public QMenuBar {
     std::shared_ptr<KeyboardEventFilter> m_pKeyboard;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
+    QToolButton* m_pMaximizeButton = nullptr;
+    QTimer m_hoverCheck;
 };
