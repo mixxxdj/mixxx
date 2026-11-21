@@ -2,9 +2,6 @@ name: Flatpak
 on:
   workflow_call:
     inputs:
-      update_repo:
-        type: boolean
-        default: false
       run_id:
         type: string
         required: true
@@ -20,7 +17,7 @@ on:
 jobs:
   publish-flatpak:
     name: Publish Flatpak
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
       - name: "Set up SSH Agent"
         shell: bash
@@ -36,7 +33,6 @@ jobs:
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
       - name: Check out repository
-        if: ${{ inputs.update_repo }}
         uses: actions/checkout@v7
 
       - name: "Prepare"
@@ -174,6 +170,7 @@ jobs:
 
           # Garbage-collect unreferenced objects.
           ostree --repo=repo prune
+
       - name: "Push the updated repo"
         env:
           SSH_HOST: downloads-hostgator.mixxx.org
@@ -183,15 +180,10 @@ jobs:
         run: |
           ostree --repo=repo summary -u --gpg-sign=$GPG_KEY_ID
           flatpak build-update-repo --gpg-sign=$GPG_KEY_ID repo
+          export GPG_PUBLIC_KEY="$(gpg --export $GPG_KEY_ID | base64 --wrap=0)"
+          while IFS= read -r line; do
+              printf '%s\n' "${line//\$GPG_PUBLIC_KEY/${GPG_PUBLIC_KEY}}"
+          done < packaging/flatpak/repo.flatpakrepo.in > repo/repo.flatpakrepo
           ./rsync-repos --src "repo/" --dest "${SSH_USER}@${SSH_HOST}:public_html/downloads/flatpak" --rsync-opts "--verbose --recursive --checksum --times --delay-updates"
-
-      - name: "Update the repo manifest"
-        if: ${{ inputs.update_repo }}
-        env:
-          SSH_HOST: downloads-hostgator.mixxx.org
-          SSH_USER: mixxx
-        shell: bash
-        run: |
-          rsync --verbose "packaging/flatpak/repo.flatpakrepo" "${SSH_USER}@${SSH_HOST}:public_html/downloads/flatpak/repo.flatpakrepo"
 
       # TODO we could also publish a .flatpakref file to allow one-click install a version and publish this as a comment to the PR.
