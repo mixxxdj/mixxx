@@ -235,3 +235,22 @@ TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
 
     EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
 }
+
+TEST_F(GlobalTrackCacheTest, discardIncompleteTrack) {
+    ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
+
+    {
+        // Resolve a new track and then drop the resolver without
+        // initializing the track id, e.g. after adding the track to
+        // the database failed in TrackDAO::addTracksAddFile(). The
+        // resolver releases the last reference, which evicts the track
+        // synchronously on this (the cache's) thread. This must not
+        // deadlock on the cache mutex.
+        auto resolver = GlobalTrackCacheResolver(
+                mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile))));
+        EXPECT_EQ(GlobalTrackCacheLookupResult::Miss, resolver.getLookupResult());
+        EXPECT_TRUE(static_cast<bool>(resolver.getTrack()));
+    }
+
+    EXPECT_TRUE(GlobalTrackCacheLocker().isEmpty());
+}
