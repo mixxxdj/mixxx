@@ -13,7 +13,6 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
           m_bAnalyzerEnabled(m_keySettings.getKeyDetectionEnabledDefault()),
           m_bFastAnalysisEnabled(m_keySettings.getFastAnalysisDefault()),
           m_bReanalyzeEnabled(m_keySettings.getReanalyzeWhenSettingsChangeDefault()),
-          m_bAutoHarmonizeOnManualLoad(m_keySettings.getAutoHarmonizeOnManualLoadDefault()),
           m_stemStrategy(KeyDetectionSettings::StemStrategy::Disabled) {
     setupUi(this);
 
@@ -56,8 +55,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     labelStemStrategy->hide();
 
     // Connections
-    connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &DlgPrefKey::pluginSelected);
+    connect(plugincombo,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefKey::pluginSelected);
     setScrollSafeGuard(plugincombo);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
@@ -81,26 +82,22 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 #endif
             this,
             &DlgPrefKey::reanalyzeEnabled);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-    connect(bAutoHarmonizeOnManualLoad, &QCheckBox::checkStateChanged,
-#else
-    connect(bAutoHarmonizeOnManualLoad, &QCheckBox::stateChanged,
-#endif
-            this,
-            &DlgPrefKey::autoHarmonizeOnManualLoadEnabled);
 
-    connect(radioNotationOpenKey, &QRadioButton::toggled,
-            this, &DlgPrefKey::setNotationOpenKey);
-    connect(radioNotationOpenKeyAndTraditional, &QRadioButton::toggled,
-            this, &DlgPrefKey::setNotationOpenKeyAndTraditional);
-    connect(radioNotationLancelot, &QRadioButton::toggled,
-            this, &DlgPrefKey::setNotationLancelot);
-    connect(radioNotationLancelotAndTraditional, &QRadioButton::toggled,
-            this, &DlgPrefKey::setNotationLancelotAndTraditional);
-    connect(radioNotationTraditional, &QRadioButton::toggled,
-            this, &DlgPrefKey::setNotationTraditional);
-    connect(radioNotationCustom, &QRadioButton::toggled,
-            this, &DlgPrefKey::setNotationCustom);
+    connect(radioNotationOpenKey, &QRadioButton::toggled, this, &DlgPrefKey::setNotationOpenKey);
+    connect(radioNotationOpenKeyAndTraditional,
+            &QRadioButton::toggled,
+            this,
+            &DlgPrefKey::setNotationOpenKeyAndTraditional);
+    connect(radioNotationLancelot, &QRadioButton::toggled, this, &DlgPrefKey::setNotationLancelot);
+    connect(radioNotationLancelotAndTraditional,
+            &QRadioButton::toggled,
+            this,
+            &DlgPrefKey::setNotationLancelotAndTraditional);
+    connect(radioNotationTraditional,
+            &QRadioButton::toggled,
+            this,
+            &DlgPrefKey::setNotationTraditional);
+    connect(radioNotationCustom, &QRadioButton::toggled, this, &DlgPrefKey::setNotationCustom);
     connect(comboBoxStemStrategy,
             &QComboBox::currentIndexChanged,
             this,
@@ -121,7 +118,6 @@ void DlgPrefKey::loadSettings() {
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabled();
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
-    m_bAutoHarmonizeOnManualLoad = m_keySettings.getAutoHarmonizeOnManualLoad();
 
     KeyUtils::KeyNotation notation_type =
             KeyUtils::keyNotationFromString(m_keySettings.getKeyNotation());
@@ -130,7 +126,8 @@ void DlgPrefKey::loadSettings() {
         radioNotationCustom->setChecked(true);
         // Read the custom notation from the config and store it in a temp QMap
         for (auto it = m_keyLineEdits.constBegin();
-                it != m_keyLineEdits.constEnd(); ++it) {
+                it != m_keyLineEdits.constEnd();
+                ++it) {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
             notation[it.key()] = it.value()->text();
         }
@@ -172,7 +169,6 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabledDefault();
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
-    m_bAutoHarmonizeOnManualLoad = m_keySettings.getAutoHarmonizeOnManualLoadDefault();
     if (m_availablePlugins.size() > 0) {
         m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
@@ -234,16 +230,6 @@ void DlgPrefKey::reanalyzeEnabled(int i) {
     slotUpdate();
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-void DlgPrefKey::autoHarmonizeOnManualLoadEnabled(Qt::CheckState state) {
-    m_bAutoHarmonizeOnManualLoad = (state == Qt::Checked);
-#else
-void DlgPrefKey::autoHarmonizeOnManualLoadEnabled(int i) {
-    m_bAutoHarmonizeOnManualLoad = static_cast<bool>(i);
-#endif
-    slotUpdate();
-}
-
 void DlgPrefKey::slotStemStrategyChanged(int index) {
     switch (index) {
     case 1:
@@ -261,7 +247,6 @@ void DlgPrefKey::slotApply() {
     m_keySettings.setKeyDetectionEnabled(m_bAnalyzerEnabled);
     m_keySettings.setFastAnalysis(m_bFastAnalysisEnabled);
     m_keySettings.setReanalyzeWhenSettingsChange(m_bReanalyzeEnabled);
-    m_keySettings.setAutoHarmonizeOnManualLoad(m_bAutoHarmonizeOnManualLoad);
 
     QString notation_name;
     KeyUtils::KeyNotation notation_type;
@@ -270,7 +255,8 @@ void DlgPrefKey::slotApply() {
         notation_name = KEY_NOTATION_CUSTOM;
         notation_type = KeyUtils::KeyNotation::Custom;
         for (auto it = m_keyLineEdits.constBegin();
-                it != m_keyLineEdits.constEnd(); ++it) {
+                it != m_keyLineEdits.constEnd();
+                ++it) {
             notation[it.key()] = it.value()->text();
             m_keySettings.setCustomKeyNotation(it.key(), it.value()->text());
         }
@@ -307,10 +293,6 @@ void DlgPrefKey::slotApply() {
 }
 
 void DlgPrefKey::slotUpdate() {
-    // Independent of the analyzer enable switch so a disabled detector does
-    // not hide or reset this checkbox.
-    bAutoHarmonizeOnManualLoad->setChecked(m_bAutoHarmonizeOnManualLoad);
-
     plugincombo->setEnabled(m_bAnalyzerEnabled);
     banalyzerenabled->setChecked(m_bAnalyzerEnabled);
     bfastAnalysisEnabled->setChecked(m_bFastAnalysisEnabled);
@@ -344,7 +326,8 @@ void DlgPrefKey::slotUpdate() {
 
 void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
     for (auto it = m_keyLineEdits.constBegin();
-            it != m_keyLineEdits.constEnd(); ++it) {
+            it != m_keyLineEdits.constEnd();
+            ++it) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
         // QLineEdits are only enabled for Custom notation.
         it.value()->setEnabled(notation == KeyUtils::KeyNotation::Custom);

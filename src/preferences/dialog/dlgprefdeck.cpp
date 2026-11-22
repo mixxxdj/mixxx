@@ -5,6 +5,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
+#include "engine/controls/keycontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
@@ -91,16 +92,16 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::REMAINING));
+                static_cast<double>(TrackTime::DisplayMode::REMAINING));
     } else if (positionDisplayType ==
-                   static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING)) {
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING)) {
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
+                static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
     } else {
         radioButtonElapsed->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
+                static_cast<double>(TrackTime::DisplayMode::ELAPSED));
     }
     connect(buttonGroupTrackTime,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
@@ -118,29 +119,24 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     comboBoxTimeFormat->clear();
 
     comboBoxTimeFormat->addItem(tr("mm:ss%1zz - Traditional")
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::TRADITIONAL));
+                                        .arg(mixxx::DurationBase::kDecimalSeparator),
+            static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL));
 
     comboBoxTimeFormat->addItem(tr("mm:ss - Traditional (Coarse)"),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::TRADITIONAL_COARSE));
+            static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL_COARSE));
 
     comboBoxTimeFormat->addItem(tr("s%1zz - Seconds")
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::SECONDS));
+                                        .arg(mixxx::DurationBase::kDecimalSeparator),
+            static_cast<int>(TrackTime::DisplayFormat::SECONDS));
 
     comboBoxTimeFormat->addItem(tr("sss%1zz - Seconds (Long)")
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::SECONDS_LONG));
+                                        .arg(mixxx::DurationBase::kDecimalSeparator),
+            static_cast<int>(TrackTime::DisplayFormat::SECONDS_LONG));
 
     comboBoxTimeFormat->addItem(tr("s%1sss%2zz - Kiloseconds")
-                                .arg(QString(mixxx::DurationBase::kDecimalSeparator),
-                                     QString(mixxx::DurationBase::kKiloGroupSeparator)),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::KILO_SECONDS));
+                                        .arg(QString(mixxx::DurationBase::kDecimalSeparator),
+                                                QString(mixxx::DurationBase::kKiloGroupSeparator)),
+            static_cast<int>(TrackTime::DisplayFormat::KILO_SECONDS));
 
     double time_format = static_cast<double>(
             m_pConfig->getValue(
@@ -148,7 +144,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
                     static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL)));
     m_pControlTrackTimeFormat->set(time_format);
     comboBoxTimeFormat->setCurrentIndex(
-                comboBoxTimeFormat->findData(time_format));
+            comboBoxTimeFormat->findData(time_format));
 
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
@@ -262,7 +258,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         } else if (legacyIndex == 1) {
             m_iRateRangePercent = 8;
         } else {
-            m_iRateRangePercent = (legacyIndex-1) * 10;
+            m_iRateRangePercent = (legacyIndex - 1) * 10;
         }
     } else {
         m_iRateRangePercent = m_pConfig->getValue(
@@ -337,6 +333,20 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
+
+    m_bAutoHarmonizeOnLoad = KeyControl::autoHarmonizeOnLoadEnabled(m_pConfig);
+    checkBoxAutoHarmonizeOnLoad->setChecked(m_bAutoHarmonizeOnLoad);
+    connect(checkBoxAutoHarmonizeOnLoad,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotAutoHarmonizeOnLoad);
+
+    m_bExactKeyMatch = KeyControl::exactKeyMatchEnabled(m_pConfig);
+    checkBoxExactKeyMatch->setChecked(m_bExactKeyMatch);
+    connect(checkBoxExactKeyMatch,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotExactKeyMatch);
 
     //
     // Ramping Temporary Rate Change configuration
@@ -521,6 +531,12 @@ void DlgPrefDeck::slotUpdate() {
     spinBoxTemporaryRateFine->setValue(RateControl::getTemporaryRateChangeFineAmount());
     spinBoxPermanentRateCoarse->setValue(RateControl::getPermanentRateChangeCoarseAmount());
     spinBoxPermanentRateFine->setValue(RateControl::getPermanentRateChangeFineAmount());
+
+    m_bAutoHarmonizeOnLoad = KeyControl::autoHarmonizeOnLoadEnabled(m_pConfig);
+    checkBoxAutoHarmonizeOnLoad->setChecked(m_bAutoHarmonizeOnLoad);
+
+    m_bExactKeyMatch = KeyControl::exactKeyMatchEnabled(m_pConfig);
+    checkBoxExactKeyMatch->setChecked(m_bExactKeyMatch);
 }
 
 void DlgPrefDeck::slotResetToDefaults() {
@@ -559,6 +575,12 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     checkBoxResetSpeed->setChecked(false);
     checkBoxResetPitch->setChecked(true);
+
+    checkBoxAutoHarmonizeOnLoad->setChecked(false);
+    m_bAutoHarmonizeOnLoad = false;
+
+    checkBoxExactKeyMatch->setChecked(false);
+    m_bExactKeyMatch = false;
 
     radioButtonSoftLeader->setChecked(true);
 
@@ -681,7 +703,7 @@ void DlgPrefDeck::slotTimeFormatChanged(double v) {
     int i = static_cast<int>(v);
     m_pConfig->set(ConfigKey(kControlsGroup, QStringLiteral("TimeFormat")), ConfigValue(v));
     comboBoxTimeFormat->setCurrentIndex(
-                comboBoxTimeFormat->findData(i));
+            comboBoxTimeFormat->findData(i));
 }
 
 void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
@@ -744,6 +766,9 @@ void DlgPrefDeck::slotApply() {
 
     m_pConfig->setValue(ConfigKey(kControlsGroup, QStringLiteral("SpeedAutoReset")),
             configSPAutoReset);
+
+    m_pConfig->setValue(kAutoHarmonizeOnLoadConfigKey, m_bAutoHarmonizeOnLoad);
+    m_pConfig->setValue(kExactKeyMatchConfigKey, m_bExactKeyMatch);
 
     if (radioButtonSoftLeader->isChecked()) {
         m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
@@ -867,6 +892,14 @@ void DlgPrefDeck::slotUpdateSpeedAutoReset(bool b) {
 
 void DlgPrefDeck::slotUpdatePitchAutoReset(bool b) {
     m_pitchAutoReset = b;
+}
+
+void DlgPrefDeck::slotAutoHarmonizeOnLoad(bool checked) {
+    m_bAutoHarmonizeOnLoad = checked;
+}
+
+void DlgPrefDeck::slotExactKeyMatch(bool checked) {
+    m_bExactKeyMatch = checked;
 }
 
 int DlgPrefDeck::cueDefaultIndexByData(int userData) const {

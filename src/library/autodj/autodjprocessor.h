@@ -178,10 +178,10 @@ class AutoDJProcessor : public QObject {
     };
 
     AutoDJProcessor(QObject* pParent,
-                    UserSettingsPointer pConfig,
-                    PlayerManagerInterface* pPlayerManager,
-                    TrackCollectionManager* pTrackCollectionManager,
-                    int iAutoDJPlaylistId);
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager,
+            TrackCollectionManager* pTrackCollectionManager,
+            int iAutoDJPlaylistId);
     virtual ~AutoDJProcessor() = default;
 
     AutoDJState getState() const {
@@ -235,8 +235,7 @@ class AutoDJProcessor : public QObject {
     void playerOutroEndChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     // One-shot after AutoDJ is disabled while a load is still in flight.
-    // Calls maybeHarmonizeAutoDjLoad once, which is the only reader of
-    // [Auto DJ] AutoHarmonizeToPrevious and clears the pending flag.
+    // Calls maybeHarmonizeAutoDjLoad once and clears the pending flag.
     void finishPendingAutoDjLoad(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
@@ -285,12 +284,12 @@ class AutoDJProcessor : public QObject {
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
-    // Marks the deck so the manual key preference does not also harmonize,
-    // then emits the load. Reads nothing; the option is read once the track
-    // is on the deck.
+    // Marks the deck so the manual load path does not also harmonize,
+    // then emits the load. The option is read once the track is on the deck.
     void loadTrackFromAutoDj(const DeckAttributes& deck, TrackPointer pTrack, bool play);
-    // Only reader of [Auto DJ] AutoHarmonizeToPrevious. No-op unless this
-    // load was requested by loadTrackFromAutoDj.
+    // Harmonizes an autoload requested by loadTrackFromAutoDj. Uses the
+    // Decks preference and this deck's Match Key latch. Clears the pending
+    // flag even when it does not change pitch.
     void maybeHarmonizeAutoDjLoad(DeckAttributes* pDeck);
     void calculateTransition(DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,

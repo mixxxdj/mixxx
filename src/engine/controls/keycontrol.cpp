@@ -1,12 +1,16 @@
 #include "engine/controls/keycontrol.h"
 
+#include <cmath>
+
 #include <QPair>
+#include <QThread>
 #include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/defs_keylock.h"
 #include "engine/enginebuffer.h"
 #include "mixer/playermanager.h"
@@ -29,6 +33,10 @@ KeyControl::KeyControl(const QString& group,
                   ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true)),
           m_pButtonSyncKey(std::make_unique<ControlPushButton>(
                   ConfigKey(group, "sync_key"))),
+          m_pButtonMatchKey(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, "match_key"))),
+          m_pButtonSyncKeyLeader(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, "sync_key_leader"))),
           m_pButtonResetKey(std::make_unique<ControlPushButton>(
                   ConfigKey(group, "reset_key"))),
           m_keylockMode(std::make_unique<ControlPushButton>(ConfigKey(group, "keylockMode"))),
@@ -52,6 +60,16 @@ KeyControl::KeyControl(const QString& group,
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitchAdjust->setSmallStepCount(60);
 
+    // Same hold-to-latch behavior as sync_enabled. The first deck to turn
+    // this on lights the crown and keeps its key. A later deck matches that
+    // leader. Turning sync off clears the crown. A long press stays on so a
+    // follower keeps matching the leader on later loads. Clicking the crown
+    // latches sync as well.
+    m_pButtonSyncKey->setButtonMode(mixxx::control::ButtonMode::LongPressLatching);
+    // Same three-state control as the beat crown. Explicit is not used: a
+    // value of 2 is folded back to 1 (mixxx#11788).
+    m_pButtonSyncKeyLeader->setBehavior(mixxx::control::ButtonMode::Toggle, 3);
+
     m_keylockMode->setButtonMode(mixxx::control::ButtonMode::Toggle);
 
     m_keyunlockMode->setButtonMode(mixxx::control::ButtonMode::Toggle);
@@ -71,7 +89,21 @@ KeyControl::KeyControl(const QString& group,
     connect(m_pButtonSyncKey.get(),
             &ControlObject::valueChanged,
             this,
+            &KeyControl::slotSyncKeyButton,
+            Qt::DirectConnection);
+
+    // Push mode: press matches once and release returns to 0. sync_key is
+    // left alone, so the Sync button does not light.
+    connect(m_pButtonMatchKey.get(),
+            &ControlObject::valueChanged,
+            this,
             &KeyControl::slotSyncKey,
+            Qt::DirectConnection);
+
+    connect(m_pButtonSyncKeyLeader.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotSyncKeyLeader,
             Qt::DirectConnection);
 
     connect(m_pButtonResetKey.get(),
@@ -79,6 +111,12 @@ KeyControl::KeyControl(const QString& group,
             this,
             &KeyControl::slotResetKey,
             Qt::DirectConnection);
+
+    connect(this,
+            &KeyControl::leaderKeyFollowRequested,
+            this,
+            &KeyControl::slotLeaderKeyFollow,
+            Qt::QueuedConnection);
 
     connect(m_pFileKey.get(),
             &ControlObject::valueChanged,
@@ -100,8 +138,7 @@ KeyControl::KeyControl(const QString& group,
 
     // In case of vinyl control "rate_ratio" is a filtered mean value for display
     m_pRateRatio = make_parented<ControlProxy>(ConfigKey(group, "rate_ratio"), this);
-    m_pRateRatio->connectValueChanged(this, &KeyControl::slotRateChanged,
-            Qt::DirectConnection);
+    m_pRateRatio->connectValueChanged(this, &KeyControl::slotRateChanged, Qt::DirectConnection);
 
     // VinylControl is only available on main decks
     if (PlayerManager::isDeckGroup(group)) {
@@ -113,8 +150,7 @@ KeyControl::KeyControl(const QString& group,
     }
 
     m_pKeylock = make_parented<ControlProxy>(group, "keylock", this);
-    m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged,
-            Qt::DirectConnection);
+    m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged, Qt::DirectConnection);
 
     // m_pitchRateInfo members are initialized with default values, only keylock
     // is persistent and needs to be updated from config
@@ -188,7 +224,7 @@ void KeyControl::updateRate() {
             m_pitchRateInfo.pitchRatio / m_pitchRateInfo.pitchTweakRatio;
 
     if (m_pKeylock->toBool()) {
-        if (!m_pitchRateInfo.keylock) {                    // Enabling keylock
+        if (!m_pitchRateInfo.keylock) { // Enabling keylock
             if (m_keylockMode->get() ==
                     static_cast<double>(KeylockMode::LockCurrentKey)) {
                 // Lock at current pitch
@@ -302,7 +338,7 @@ void KeyControl::updateRate() {
 /// This is called when the file key is changed (by analysis or user input),
 /// or when a track with a different key is loaded
 void KeyControl::slotFileKeyChanged(double value) {
-    updateKeyCOs(value,  m_pPitch->get() / 12);
+    updateKeyCOs(value, m_pPitch->get() / 12);
 }
 
 void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitchOctaves) {
@@ -315,6 +351,8 @@ void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitchOctaves) {
     double diff_to_nearest_full_key = adjusted.second;
     m_pEngineKeyDistance->set(diff_to_nearest_full_key);
     m_pPitch->set(pitchOctaves * 12);
+    // The pitch write above can re-enter. Follow after the key COs are current.
+    queueOrApplyLeaderKeyToFollowers();
     if constexpr (kEnableDebugOutput) {
         qDebug() << "       .";
         qDebug() << "       KeyControl::updateKeyCOs";
@@ -342,7 +380,7 @@ void KeyControl::setEngineKey(double key, double key_distance) {
             KeyUtils::keyFromNumericValue(key);
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
-        newKey == mixxx::track::io::key::INVALID) {
+            newKey == mixxx::track::io::key::INVALID) {
         return;
     }
 
@@ -440,9 +478,197 @@ void KeyControl::updatePitchAdjust() {
 
 void KeyControl::slotSyncKey(double v) {
     if (v > 0) {
+        // The note. A crowned deck is the reference. Otherwise keep the
+        // BPM sync target this one-shot button has always used.
+        const QString leader = keyLeaderGroup(getGroup());
+        if (!leader.isEmpty()) {
+            if (applyMatchKeyPitch(getGroup(), leader, getConfig())) {
+                slotPitchChanged(m_pPitch->get());
+            }
+            return;
+        }
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
         syncKey(pOtherEngineBuffer);
     }
+}
+
+namespace {
+
+void clearOtherKeyCrowns(const QString& group) {
+    const int numDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_decks"))));
+    for (int i = 0; i < numDecks; ++i) {
+        const QString other = PlayerManager::groupForDeck(i);
+        if (other == group) {
+            continue;
+        }
+        const ConfigKey key(other, QStringLiteral("sync_key_leader"));
+        // ControlPushButton does not ignore unchanged writes.
+        if (ControlObject::get(key) >= 1.0) {
+            ControlObject::set(key, 0.0);
+        }
+    }
+}
+
+// Another synced primary deck becomes the leader and keeps its own key.
+// Prefer the opposite left/right deck, the same tie break as keyLeaderGroup.
+void promoteOtherSyncedKeyLeader(const QString& group) {
+    const int numDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_decks"))));
+    const double thisOrientation = ControlObject::get(
+            ConfigKey(group, QStringLiteral("orientation")));
+    QString bestGroup;
+    bool bestOpposite = false;
+    for (int i = 0; i < numDecks; ++i) {
+        const QString other = PlayerManager::groupForDeck(i);
+        if (other == group) {
+            continue;
+        }
+        if (ControlObject::get(ConfigKey(other, QStringLiteral("sync_key"))) <= 0.0) {
+            continue;
+        }
+        if (ControlObject::get(ConfigKey(other, QStringLiteral("sync_key_leader"))) >= 1.0) {
+            continue;
+        }
+        const double orientation = ControlObject::get(
+                ConfigKey(other, QStringLiteral("orientation")));
+        const bool opposite =
+                (thisOrientation == static_cast<double>(EngineChannel::LEFT) &&
+                        orientation == static_cast<double>(EngineChannel::RIGHT)) ||
+                (thisOrientation == static_cast<double>(EngineChannel::RIGHT) &&
+                        orientation == static_cast<double>(EngineChannel::LEFT));
+        if (bestGroup.isEmpty() || (opposite && !bestOpposite)) {
+            bestGroup = other;
+            bestOpposite = opposite;
+        }
+    }
+    if (!bestGroup.isEmpty()) {
+        ControlObject::set(
+                ConfigKey(bestGroup, QStringLiteral("sync_key_leader")), 1.0);
+    }
+}
+
+} // namespace
+
+void KeyControl::slotSyncKeyButton(double v) {
+    // A crown click latches sync. That write must not retune or clear the crown.
+    if (m_applyingCrownSync) {
+        return;
+    }
+    if (v <= 0.0) {
+        // Leaving sync clears the crown, the same as beat sync mode None.
+        // The crown write does not re-enter slotSyncKeyLeader.
+        dropKeyCrown();
+        return;
+    }
+    // This deck is already the reference. A click must not retune it.
+    if (isKeyMatchReference(getGroup())) {
+        return;
+    }
+    const QString leader = keyLeaderGroup(getGroup());
+    if (!leader.isEmpty()) {
+        if (applyMatchKeyPitch(getGroup(), leader, getConfig())) {
+            slotPitchChanged(m_pPitch->get());
+        }
+        return;
+    }
+    // Nobody else is crowned. Light the crown and keep this key.
+    // The crown write does not re-enter slotSyncKeyLeader, so follow here.
+    if (m_pButtonSyncKeyLeader->get() < 1.0) {
+        m_pButtonSyncKeyLeader->set(1.0);
+        queueOrApplyLeaderKeyToFollowers();
+    }
+}
+
+void KeyControl::dropKeyCrown() {
+    if (m_pButtonSyncKeyLeader->get() < 1.0) {
+        return;
+    }
+    // This set does not re-enter slotSyncKeyLeader.
+    m_pButtonSyncKeyLeader->set(0.0);
+    if (keyLeaderGroup(getGroup()).isEmpty()) {
+        promoteOtherSyncedKeyLeader(getGroup());
+    }
+}
+
+void KeyControl::queueOrApplyLeaderKeyToFollowers() {
+    // Uncrowned decks never drive followers. get() is safe on the engine thread.
+    if (m_pButtonSyncKeyLeader->get() < 1.0) {
+        return;
+    }
+    if (QThread::currentThread() != thread()) {
+        const int key = static_cast<int>(std::lround(m_pEngineKey->get()));
+        const int distanceMicro = static_cast<int>(
+                std::lround(m_pEngineKeyDistance->get() * 1000000.0));
+        if (m_leaderFollowValid.loadAcquire() != 0 &&
+                key == m_lastFollowedKey.loadAcquire() &&
+                distanceMicro == m_lastFollowedDistanceMicro.loadAcquire()) {
+            return;
+        }
+        if (m_leaderFollowQueued.testAndSetOrdered(0, 1)) {
+            emit leaderKeyFollowRequested();
+        }
+        return;
+    }
+    applyLeaderKeyToFollowers();
+}
+
+void KeyControl::slotLeaderKeyFollow() {
+    m_leaderFollowQueued.storeRelease(0);
+    applyLeaderKeyToFollowers();
+}
+
+void KeyControl::applyLeaderKeyToFollowers() {
+    if (!isKeyMatchReference(getGroup())) {
+        return;
+    }
+    const int key = static_cast<int>(std::lround(m_pEngineKey->get()));
+    const int distanceMicro = static_cast<int>(
+            std::lround(m_pEngineKeyDistance->get() * 1000000.0));
+    const int numDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_decks"))));
+    for (int i = 0; i < numDecks; ++i) {
+        const QString group = PlayerManager::groupForDeck(i);
+        if (group == getGroup()) {
+            continue;
+        }
+        // Sync latched, and not itself the reference.
+        if (ControlObject::get(ConfigKey(group, QStringLiteral("sync_key"))) <= 0.0 ||
+                isKeyMatchReference(group)) {
+            continue;
+        }
+        applyMatchKeyPitch(group, getGroup(), getConfig());
+    }
+    m_lastFollowedKey.storeRelease(key);
+    m_lastFollowedDistanceMicro.storeRelease(distanceMicro);
+    m_leaderFollowValid.storeRelease(1);
+}
+
+void KeyControl::slotSyncKeyLeader(double v) {
+    // Explicit is disabled. A request above the crown stays at 1, matching
+    // the beat crown (mixxx#11788). This set does not re-enter the slot.
+    if (v >= 2.0) {
+        m_pButtonSyncKeyLeader->set(1.0);
+        v = 1.0;
+    }
+    if (v >= 1.0) {
+        // One crown. Clear the others before follow so this deck is the reference.
+        clearOtherKeyCrowns(getGroup());
+        // A lit crown turns key sync on and leaves it on. This deck's key stays.
+        if (m_pButtonSyncKey->get() <= 0.0) {
+            m_applyingCrownSync = true;
+            m_pButtonSyncKey->set(1.0);
+            m_applyingCrownSync = false;
+        }
+        queueOrApplyLeaderKeyToFollowers();
+        return;
+    }
+    // Crown off. Sync stays on. If another deck already has the crown, this
+    // one was cleared because they took it.
+    if (!keyLeaderGroup(getGroup()).isEmpty()) {
+        return;
+    }
+    promoteOtherSyncedKeyLeader(getGroup());
 }
 
 void KeyControl::slotResetKey(double v) {
@@ -452,12 +678,26 @@ void KeyControl::slotResetKey(double v) {
             qDebug() << "   KeyControl::slotResetKey";
             qDebug() << "   .";
         }
+        // A follower must leave sync before pitch returns to 0, or the
+        // leader would pull it back. Own set() does not re-enter the
+        // sync slot, so drop a crown here too.
+        // The leader keeps sync and the crown. Pitch 0 then runs the
+        // same follow as any other pitch change, so synced decks match
+        // this original key.
+        if (!isKeyMatchReference(getGroup())) {
+            if (m_pButtonSyncKey->get() > 0.0) {
+                m_pButtonSyncKey->set(0.0);
+            }
+            dropKeyCrown();
+        }
         m_pPitch->set(0);
         slotPitchChanged(0);
     }
 }
 
-bool KeyControl::applyMatchKeyPitch(const QString& deckGroup, const QString& otherDeckGroup) {
+bool KeyControl::applyMatchKeyPitch(const QString& deckGroup,
+        const QString& otherDeckGroup,
+        const UserSettingsPointer& pConfig) {
     if (deckGroup.isEmpty() || otherDeckGroup.isEmpty() || deckGroup == otherDeckGroup) {
         return false;
     }
@@ -471,7 +711,7 @@ bool KeyControl::applyMatchKeyPitch(const QString& deckGroup, const QString& oth
             ConfigKey(otherDeckGroup, "visual_key_distance"));
 
     const std::optional<double> pitch = KeyUtils::matchKeyPitchSemitones(
-            thisFileKey, otherKey, otherDistance);
+            thisFileKey, otherKey, otherDistance, exactKeyMatchEnabled(pConfig));
     if (!pitch.has_value()) {
         return false;
     }
@@ -482,12 +722,101 @@ bool KeyControl::applyMatchKeyPitch(const QString& deckGroup, const QString& oth
     return true;
 }
 
+bool KeyControl::autoHarmonizeOnLoadEnabled(const UserSettingsPointer& pConfig) {
+    if (!pConfig) {
+        return false;
+    }
+    if (pConfig->exists(kAutoHarmonizeOnLoadConfigKey)) {
+        return pConfig->getValue<bool>(kAutoHarmonizeOnLoadConfigKey, false);
+    }
+    // Draft builds stored two checkboxes. Either one still opts in until
+    // the Decks page writes the single key.
+    const bool retiredAutoDj = pConfig->getValue<bool>(
+            ConfigKey(QStringLiteral("[Auto DJ]"),
+                    QStringLiteral("AutoHarmonizeToPrevious")),
+            false);
+    const bool retiredManual = pConfig->getValue<bool>(
+            ConfigKey(QStringLiteral("[Key]"),
+                    QStringLiteral("AutoHarmonizeOnManualLoad")),
+            false);
+    return retiredAutoDj || retiredManual;
+}
+
+bool KeyControl::exactKeyMatchEnabled(const UserSettingsPointer& pConfig) {
+    if (!pConfig) {
+        return false;
+    }
+    // No retired key. An unset preference stays on the compatible match.
+    return pConfig->getValue<bool>(kExactKeyMatchConfigKey, false);
+}
+
+QString KeyControl::keyLeaderGroup(const QString& excludeGroup) {
+    const int numDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_decks"))));
+    const double thisOrientation = ControlObject::get(
+            ConfigKey(excludeGroup, QStringLiteral("orientation")));
+    QString bestGroup;
+    double bestState = 0.0;
+    bool bestOpposite = false;
+    for (int i = 0; i < numDecks; ++i) {
+        const QString group = PlayerManager::groupForDeck(i);
+        if (group == excludeGroup) {
+            continue;
+        }
+        const double state = ControlObject::get(
+                ConfigKey(group, QStringLiteral("sync_key_leader")));
+        if (state < 1.0) {
+            continue;
+        }
+        const double orientation = ControlObject::get(
+                ConfigKey(group, QStringLiteral("orientation")));
+        const bool opposite =
+                (thisOrientation == static_cast<double>(EngineChannel::LEFT) &&
+                        orientation == static_cast<double>(EngineChannel::RIGHT)) ||
+                (thisOrientation == static_cast<double>(EngineChannel::RIGHT) &&
+                        orientation == static_cast<double>(EngineChannel::LEFT));
+        const bool betterState = state > bestState;
+        const bool betterSide = state == bestState && opposite && !bestOpposite;
+        if (bestGroup.isEmpty() || betterState || betterSide) {
+            bestGroup = group;
+            bestState = state;
+            bestOpposite = opposite;
+        }
+    }
+    return bestGroup;
+}
+
+bool KeyControl::isKeyMatchReference(const QString& deckGroup) {
+    const double mine = ControlObject::get(
+            ConfigKey(deckGroup, QStringLiteral("sync_key_leader")));
+    if (mine < 1.0) {
+        return false;
+    }
+    // A value of 2 is the reference even if another deck is also lit.
+    // KeyControl folds that back to 1. A bare control can still sit at 2.
+    if (mine >= 2.0) {
+        return true;
+    }
+    // The crown is the reference only when nothing else is crowned.
+    return keyLeaderGroup(deckGroup).isEmpty();
+}
+
+bool KeyControl::shouldHarmonizeOnLoad(
+        const QString& deckGroup, const UserSettingsPointer& pConfig) {
+    if (deckGroup.isEmpty() || isKeyMatchReference(deckGroup)) {
+        return false;
+    }
+    const bool latched =
+            ControlObject::get(ConfigKey(deckGroup, QStringLiteral("sync_key"))) > 0.0;
+    return latched || autoHarmonizeOnLoadEnabled(pConfig);
+}
+
 bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     if (!pOtherEngineBuffer) {
         return false;
     }
 
-    if (!applyMatchKeyPitch(getGroup(), pOtherEngineBuffer->getGroup())) {
+    if (!applyMatchKeyPitch(getGroup(), pOtherEngineBuffer->getGroup(), getConfig())) {
         return false;
     }
     // set() does not emit when the value is unchanged. Repeat the pitch update

@@ -321,6 +321,24 @@ TEST_F(KeyUtilsTest, MatchKeyPitchSemitonesUsesShortestCompatibleSteps) {
             *pitch);
     EXPECT_NE(0.0, *pitch);
 
+    // F# major against C major is ±6 chromatically and ±1 when folded onto
+    // a compatible key. An ignored exact flag would make these equal.
+    const std::optional<double> exact = KeyUtils::matchKeyPitchSemitones(
+            fileKey, otherKey, distance, true);
+    ASSERT_TRUE(exact.has_value());
+    EXPECT_DOUBLE_EQ(static_cast<double>(KeyUtils::shortestStepsToKey(
+                              fileKey, otherKey)) +
+                    distance,
+            *exact);
+    ASSERT_NE(*pitch, *exact);
+    EXPECT_NE(0.0, *exact);
+    EXPECT_FALSE(KeyUtils::matchKeyPitchSemitones(
+            mixxx::track::io::key::INVALID, otherKey, distance, true)
+                    .has_value());
+    EXPECT_FALSE(KeyUtils::matchKeyPitchSemitones(
+            fileKey, mixxx::track::io::key::INVALID, distance, true)
+                    .has_value());
+
     // Already compatible and no visual offset is a zero pitch write, not a
     // second algorithm.
     const auto compatible = KeyUtils::matchKeyPitchSemitones(

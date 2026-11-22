@@ -75,12 +75,9 @@ DeckAttributes::DeckAttributes(int index,
           m_sampleRate(group, "track_samplerate"),
           m_rateRatio(group, "rate_ratio"),
           m_pPlayer(pPlayer) {
-    connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded,
-            this, &DeckAttributes::slotTrackLoaded);
-    connect(m_pPlayer, &BaseTrackPlayer::loadingTrack,
-            this, &DeckAttributes::slotLoadingTrack);
-    connect(m_pPlayer, &BaseTrackPlayer::playerEmpty,
-            this, &DeckAttributes::slotPlayerEmpty);
+    connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &DeckAttributes::slotTrackLoaded);
+    connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &DeckAttributes::slotLoadingTrack);
+    connect(m_pPlayer, &BaseTrackPlayer::playerEmpty, this, &DeckAttributes::slotPlayerEmpty);
     m_playPos.connectValueChanged(this, &DeckAttributes::slotPlayPosChanged);
     m_play.connectValueChanged(this, &DeckAttributes::slotPlayChanged);
     m_introStartPos.connectValueChanged(this, &DeckAttributes::slotIntroStartPositionChanged);
@@ -384,7 +381,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
         TrackId leftId = pLeftDeck->getLoadedTrack()->getId();
         TrackId rightId = pRightDeck->getLoadedTrack()->getId();
         if (nextId == leftId || nextId == rightId) {
-        // One of the playing tracks is still on top of playlist, remove second item
+            // One of the playing tracks is still on top of playlist, remove second item
             m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(1, 0));
         } else {
             m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
@@ -642,8 +639,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 continue;
             }
             // One completion. finishPendingAutoDjLoad calls
-            // maybeHarmonizeAutoDjLoad, the only reader of
-            // [Auto DJ] AutoHarmonizeToPrevious, then the flag is clear.
+            // maybeHarmonizeAutoDjLoad, then the flag is clear.
             connect(pDeck.get(),
                     &DeckAttributes::trackLoaded,
                     this,
@@ -737,7 +733,7 @@ void AutoDJProcessor::crossfaderChanged(double value) {
 }
 
 void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
-                                            double thisPlayPosition) {
+        double thisPlayPosition) {
     // qDebug() << "player" << pAttributes->group << "PositionChanged(" << value << ")";
     if (m_eState == ADJ_DISABLED) {
         // nothing to do
@@ -1623,7 +1619,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             startPoint = toDeckPositionSeconds;
         }
         useFixedFadeTime(pFromDeck, pToDeck, fromDeckPosition, fromDeckEndPosition, startPoint);
-        }
+    }
     }
 
     // These are expected to be a fraction of the track length.
@@ -1698,8 +1694,8 @@ void AutoDJProcessor::useFixedFadeTime(
 void AutoDJProcessor::loadTrackFromAutoDj(
         const DeckAttributes& deck, TrackPointer pTrack, bool play) {
     if (pTrack && deck.player() != nullptr) {
-        // Armed before the queued load so BaseTrackPlayerImpl skips the
-        // manual key preference for this same load.
+        // Armed before the queued load so BaseTrackPlayerImpl skips its
+        // own harmonize for this same load.
         deck.player()->setPendingAutoDjAutoload(true);
     }
     emitLoadTrackToPlayer(pTrack, deck.group, play);
@@ -1710,24 +1706,24 @@ void AutoDJProcessor::maybeHarmonizeAutoDjLoad(DeckAttributes* pDeck) {
             !pDeck->player()->isPendingAutoDjAutoload()) {
         return;
     }
-    // Consume the flag even when the option is off so a later manual load
+    // Consume the flag even when harmonize is off so a later manual load
     // is not treated as this autoload.
     pDeck->player()->setPendingAutoDjAutoload(false);
 
-    // Only reader of this key. The Key preference cannot cause or block it.
-    const bool enabled = m_pConfig->getValue<bool>(
-            ConfigKey(kPreferenceGroup, QStringLiteral("AutoHarmonizeToPrevious")),
-            false);
-    if (!enabled) {
+    if (!KeyControl::shouldHarmonizeOnLoad(pDeck->group, m_pConfig)) {
         return;
     }
-    DeckAttributes* pOtherDeck = getOtherDeck(pDeck);
-    if (pOtherDeck == nullptr) {
-        return;
+    QString target = KeyControl::keyLeaderGroup(pDeck->group);
+    if (target.isEmpty()) {
+        DeckAttributes* pOtherDeck = getOtherDeck(pDeck);
+        if (pOtherDeck == nullptr) {
+            return;
+        }
+        target = pOtherDeck->group;
     }
-    // One Match Key pitch write against the other main deck. Invalid keys
-    // leave pitch unchanged. The stored file key is not written.
-    KeyControl::applyMatchKeyPitch(pDeck->group, pOtherDeck->group);
+    // One Match Key pitch write. Invalid keys leave pitch unchanged.
+    // The stored file key is not written.
+    KeyControl::applyMatchKeyPitch(pDeck->group, target, m_pConfig);
 }
 
 void AutoDJProcessor::finishPendingAutoDjLoad(DeckAttributes* pDeck, TrackPointer) {
@@ -1809,7 +1805,8 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
 }
 
 void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
-        TrackPointer pNewTrack, TrackPointer pOldTrack) {
+        TrackPointer pNewTrack,
+        TrackPointer pOldTrack) {
     if (kLogger.debugEnabled()) {
         kLogger.debug() << "playerLoadingTrack" << pDeck->group
                         << "new:" << (pNewTrack ? pNewTrack->getLocation() : "(null)")

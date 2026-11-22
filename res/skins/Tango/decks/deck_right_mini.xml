@@ -193,13 +193,27 @@ Variables:
                     <Alignment>center</Alignment>
                     <Children>
                       <!-- KeyMatch, transparent -->
-                      <Template src="skins:Tango/controls/button_1state_right.xml">
-                        <SetVariable name="TooltipId">sync_reset_key</SetVariable>
-                        <SetVariable name="ObjectName">KeyMatchMini</SetVariable>
-                        <SetVariable name="Size">30me,20f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
-                      </Template>
+                      <PushButton>
+                        <TooltipId>sync_reset_key</TooltipId>
+                        <ObjectName>KeyMatchMini</ObjectName>
+                        <Size>30me,20f</Size>
+                        <NumberStates>2</NumberStates>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,sync_key</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,reset_key</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
 
                       <Key><!-- Actual Key display -->
                         <TooltipId>visual_key</TooltipId>

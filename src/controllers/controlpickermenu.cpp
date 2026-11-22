@@ -495,10 +495,28 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             pPitchMenu,
             true);
     pPitchMenu->addSeparator();
-    addDeckAndSamplerControl("sync_key", tr("Match Key"), tr("Match musical key"), pPitchMenu);
+    addDeckAndSamplerControl("sync_key",
+            tr("Sync Key"),
+            tr("The first deck to sync lights the crown and keeps its "
+               "key. Turning sync off removes the crown. Another synced "
+               "deck matches the leader and follows later pitch changes. "
+               "Hold to keep matching."),
+            pPitchMenu);
+    addDeckAndSamplerControl("match_key",
+            tr("Match Key Once"),
+            tr("Matches musical key once and does not latch."),
+            pPitchMenu);
+    addDeckAndSamplerControl("sync_key_leader",
+            tr("Key Leader"),
+            tr("Key crown, the same light the beat leader uses. Turning "
+               "it on enables key sync and does not change this deck's "
+               "key. Only one deck wears it."),
+            pPitchMenu);
     addDeckAndSamplerControl("reset_key",
             tr("Reset Key"),
-            tr("Resets key to original"),
+            tr("Resets the key to the original. The leader keeps sync "
+               "and other synced decks follow. Any other deck turns "
+               "sync off."),
             pPitchMenu);
     addDeckAndSamplerControl("keylock", tr("Keylock"), tr("Toggle keylock mode"), pPitchMenu);
 

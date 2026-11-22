@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QPointer>
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QtDebug>
@@ -15,6 +16,29 @@
 #include "util/debug.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
+
+namespace {
+
+// Widget whose press is writing the control. Null for MIDI and scripts.
+QPointer<WPushButton> s_latchWriteSource;
+
+class LatchWriteSource {
+  public:
+    explicit LatchWriteSource(WPushButton* pButton)
+            : m_previous(s_latchWriteSource) {
+        s_latchWriteSource = pButton;
+    }
+    ~LatchWriteSource() {
+        s_latchWriteSource = m_previous;
+    }
+    LatchWriteSource(const LatchWriteSource&) = delete;
+    LatchWriteSource& operator=(const LatchWriteSource&) = delete;
+
+  private:
+    QPointer<WPushButton> m_previous;
+};
+
+} // namespace
 
 WPushButton::WPushButton(QWidget* pParent)
         : WWidget(pParent),
@@ -34,6 +58,7 @@ WPushButton::WPushButton(QWidget* pParent,
 
 void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
     setScaleFactor(context.getScaleFactor());
+    setRightClickMatchesLeft(context.selectBool(node, "RightClickMatchesLeft", false));
 
     // Number of states
     int iNumStates = context.selectInt(node, "NumberStates");
@@ -160,11 +185,25 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                 leftConnection->setEmitOption(
                         ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
                 break;
-            case mixxx::control::ButtonMode::LongPressLatching:
+            case mixxx::control::ButtonMode::LongPressLatching: {
                 leftConnection->setEmitOption(
                         ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
-                m_pLongPressLatching = std::make_unique<LongPressLatching>(this);
+                // Missing or empty keeps the sweep. "false" still latches.
+                const QDomNode animNode = context.selectNode(
+                        node, QStringLiteral("LongPressLatchAnimation"));
+                bool showLatchAnimation = true;
+                if (!animNode.isNull()) {
+                    const QString animValue = context.nodeToString(animNode).trimmed();
+                    if (!animValue.isEmpty()) {
+                        showLatchAnimation = animValue.contains(
+                                QStringLiteral("true"), Qt::CaseInsensitive);
+                    }
+                }
+                if (showLatchAnimation) {
+                    m_pLongPressLatching = std::make_unique<LongPressLatching>(this);
+                }
                 break;
+            }
             case mixxx::control::ButtonMode::Toggle:
             case mixxx::control::ButtonMode::Trigger:
             default:
@@ -308,7 +347,11 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     }
     if (m_pLongPressLatching) {
         if (dValue == 1.0) {
-            m_pLongPressLatching->start();
+            // A shared control must not sweep every button. The sweep follows
+            // the pressed widget, and still follows a non-widget write.
+            if (s_latchWriteSource.isNull() || s_latchWriteSource == this) {
+                m_pLongPressLatching->start();
+            }
         } else {
             m_pLongPressLatching->stop();
         }
@@ -378,6 +421,19 @@ void WPushButton::paintOnDevice(QPaintDevice* pd, int idx) {
 void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
+    // Key sync: right-click hold activates like left-click. While the
+    // button is already on, or a press is already in progress, right-click
+    // does nothing.
+    const bool rightMatchesLeft = rightClick && m_rightClickMatchesLeft &&
+            m_leftButtonMode != mixxx::control::ButtonMode::PowerWindow;
+    if (rightMatchesLeft &&
+            (m_bPressed || getControlParameterLeft() >= 1.0)) {
+        m_rightPressIgnored = true;
+        return;
+    }
+    if (rightMatchesLeft) {
+        m_rightPressIgnored = false;
+    }
 
     if (m_leftButtonMode == mixxx::control::ButtonMode::PowerWindow && m_iNoStates == 2) {
         if (leftClick) {
@@ -386,6 +442,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             m_bPressed = true;
 
             double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+            const LatchWriteSource source(this);
             setControlParameterLeftDown(emitValue);
             restyleAndRepaint();
         }
@@ -393,7 +450,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         return;
     }
 
-    if (rightClick) {
+    if (rightClick && !rightMatchesLeft) {
         // This is the secondary button function always a Pushbutton
         // due the lack of visual feedback we do not allow a toggle function
         if (m_rightButtonMode == mixxx::control::ButtonMode::Push ||
@@ -406,7 +463,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         return;
     }
 
-    if (leftClick) {
+    if (leftClick || rightMatchesLeft) {
         m_bPressed = true;
         double emitValue;
         if (m_leftButtonMode == mixxx::control::ButtonMode::Push || m_iNoStates == 1) {
@@ -428,6 +485,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
                 }
             }
         }
+        const LatchWriteSource source(this);
         setControlParameterLeftDown(emitValue);
         restyleAndRepaint();
     }
@@ -471,6 +529,13 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     // WHotcueButton::release()
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
+    const bool rightMatchesLeft = rightClick && m_rightClickMatchesLeft &&
+            m_leftButtonMode != mixxx::control::ButtonMode::PowerWindow;
+    // An ignored right press must not write the control or stop a left hold.
+    if (rightMatchesLeft && m_rightPressIgnored) {
+        m_rightPressIgnored = false;
+        return;
+    }
 
     if (m_pLongPressLatching) {
         m_pLongPressLatching->stop();
@@ -492,7 +557,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         return;
     }
 
-    if (rightClick) {
+    if (rightClick && !rightMatchesLeft) {
         // This is the secondary clickButton function,
         // due the lack of visual feedback we do not allow a toggle
         // function
@@ -504,7 +569,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         return;
     }
 
-    if (leftClick) {
+    if (leftClick || rightMatchesLeft) {
         m_bPressed = false;
         double emitValue = getControlParameterLeft();
         if (m_leftButtonMode == mixxx::control::ButtonMode::Push || m_iNoStates == 1) {

@@ -73,8 +73,8 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
-    virtual void slotSetAndConfirmTrackMenuControl(bool){};
-    virtual void slotTrackRatingChangeRequest(int){};
+    virtual void slotSetAndConfirmTrackMenuControl(bool) {};
+    virtual void slotTrackRatingChangeRequest(int) {};
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -179,8 +179,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     /// Other primary deck whose effective key a manual load matches.
     /// Prefers the opposite left/right deck, then the first other main deck.
     QString otherMainDeckGroup() const;
-    /// Reads only the Key preference. No-op for AutoDJ autoloads, clones,
-    /// samplers, preview decks, and anything that is not a main deck.
+    /// Harmonizes a user load on a main deck. No-op for AutoDJ autoloads,
+    /// clones, samplers, preview decks, and the crowned key leader.
     void maybeHarmonizeManualLoad();
 
     UserSettingsPointer m_pConfig;

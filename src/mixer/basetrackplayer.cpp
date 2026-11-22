@@ -16,7 +16,6 @@
 #include "engine/sync/enginesync.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "preferences/keydetectionsettings.h"
 #include "moc_basetrackplayer.cpp"
 #include "track/track.h"
 #include "util/sandbox.h"
@@ -99,7 +98,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = std::make_unique<ControlObject>(
-        ConfigKey(getGroup(), "duration"));
+            ConfigKey(getGroup(), "duration"));
 
     // Track color of the current track
     m_pTrackColor = std::make_unique<ControlObject>(
@@ -555,9 +554,9 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
         bool bPlay) {
 #endif
-    //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
-    // Before loading the track, ensure we have access. This uses lazy
-    // evaluation to make sure track isn't NULL before we dereference it.
+    // qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
+    //  Before loading the track, ensure we have access. This uses lazy
+    //  evaluation to make sure track isn't NULL before we dereference it.
     if (pNewTrack) {
         auto fileInfo = pNewTrack->getFileInfo();
         if (!Sandbox::askForAccess(&fileInfo)) {
@@ -659,25 +658,26 @@ void BaseTrackPlayerImpl::maybeHarmonizeManualLoad() {
     if (!m_pChannel->isPrimaryDeck()) {
         return;
     }
-    // An AutoDJ autoload consults only the Auto DJ option, in AutoDJProcessor.
+    // An AutoDJ autoload is harmonized by AutoDJProcessor, once.
     if (isPendingAutoDjAutoload() || m_pChannelToCloneFrom != nullptr) {
         return;
     }
-    // Only reader of [Key] AutoHarmonizeOnManualLoad on the load path.
-    const KeyDetectionSettings keySettings(m_pConfig);
-    if (!keySettings.getAutoHarmonizeOnManualLoad()) {
+    if (!KeyControl::shouldHarmonizeOnLoad(getGroup(), m_pConfig)) {
         return;
     }
-    const QString otherGroup = otherMainDeckGroup();
-    if (otherGroup.isEmpty()) {
+    QString target = KeyControl::keyLeaderGroup(getGroup());
+    if (target.isEmpty()) {
+        target = otherMainDeckGroup();
+    }
+    if (target.isEmpty()) {
         return;
     }
-    KeyControl::applyMatchKeyPitch(getGroup(), otherGroup);
+    KeyControl::applyMatchKeyPitch(getGroup(), target, m_pConfig);
 }
 
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
-                                          TrackPointer pOldTrack) {
-    //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
+        TrackPointer pOldTrack) {
+    // qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
     if (!pNewTrack &&
             pOldTrack &&
             pOldTrack == m_pLoadedTrack) {
@@ -714,8 +714,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pKey->set(m_pLoadedTrack->getKey());
         slotSetTrackColor(m_pLoadedTrack->getColor());
 
-        if(m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
+        if (m_pConfig->getValue(
+                    ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
             if (m_pLowFilter) {
                 m_pLowFilter->set(1.0);
             }
@@ -736,7 +736,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
         }
         if (m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
+                    ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
             m_pPreGain->set(1.0);
         }
 
@@ -1060,8 +1060,8 @@ void BaseTrackPlayerImpl::setupEqControls() {
 }
 
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
-    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
-            && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
+    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom &&
+            v >= WaveformWidgetRenderer::s_waveformMinZoom) {
         m_pWaveformZoom->setAndConfirm(v);
     }
 }

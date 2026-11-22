@@ -324,39 +324,6 @@
    </item>
 
    <item>
-    <widget class="QGroupBox" name="KeyBehaviour">
-      <property name="title">
-       <string>Key</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-      </property>
-      <layout class="QGridLayout" name="KeyBehaviourLayout">
-
-        <item row="0" column="0">
-          <widget class="QLabel" name="AutoHarmonizeToPreviousLabel">
-            <property name="text">
-              <string>Auto-harmonize key to previous song when loaded by AutoDJ</string>
-            </property>
-            <property name="buddy">
-              <cstring>AutoHarmonizeToPreviousCheckBox</cstring>
-            </property>
-          </widget>
-        </item>
-
-        <item row="0" column="1">
-          <widget class="QCheckBox" name="AutoHarmonizeToPreviousCheckBox">
-            <property name="toolTip">
-              <string>When AutoDJ loads the next track onto a deck, pitch that deck to a compatible key of the other deck. The stored file key is not changed. Manual loads use the separate option in Key preferences.</string>
-            </property>
-          </widget>
-        </item>
-
-      </layout>
-    </widget>
-   </item>
-
-   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>

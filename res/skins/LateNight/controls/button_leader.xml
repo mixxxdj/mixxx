@@ -1,0 +1,21 @@
+<!--
+Description:
+  3-state leader crown. Left click only.
+Variables:
+  TooltipId : standard tooltip id
+  ObjectName : SyncLeader on the beat row, KeyLeader on the key row
+  Size
+  ConfigKey : Group,sync_leader or Group,sync_key_leader
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>3</NumberStates>
+    <Connection>
+      <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

@@ -16,6 +16,9 @@ LateNightIconButton {
     property bool powerWindow: false
     property bool releaseToZero: true
     property bool longPressLatching: false
+    property bool rightClickMatchesLeft: false
+    property bool showLongPressLatch: true
+    property bool cycleStates: false
     property int numberStates: 2
     property int longPressDuration: 300
     property color longPressLatchOverlayColor: "transparent"
@@ -45,7 +48,7 @@ LateNightIconButton {
 
     activeState: root.isVisuallyActive
     pressedState: controlBehavior.pressed
-    latchOverlayVisible: root.latchRevealRunning
+    latchOverlayVisible: root.showLongPressLatch && root.latchRevealRunning
     latchOverlayProgress: controlBehavior.longPressProgress
     latchOverlayColor: root.longPressLatchOverlayColor
     latchOverlayBackgroundSource: root.effectiveLatchOverlayBackgroundSource
@@ -83,6 +86,8 @@ LateNightIconButton {
         powerWindow: root.powerWindow
         releaseToZero: root.releaseToZero
         longPressLatching: root.longPressLatching
+        rightClickMatchesLeft: root.rightClickMatchesLeft
+        cycleStates: root.cycleStates
         numberStates: root.numberStates
         longPressDuration: root.longPressDuration
         activeDisplayThreshold: root.activeDisplayThreshold

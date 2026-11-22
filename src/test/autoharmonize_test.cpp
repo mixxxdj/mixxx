@@ -1,27 +1,25 @@
 #include <gtest/gtest.h>
 
 #include <QCheckBox>
+#include <QLabel>
 
 #include "control/controlobject.h"
-#include "library/library_prefs.h"
+#include "engine/controls/keycontrol.h"
 #include "mixer/basetrackplayer.h"
-#include "preferences/dialog/dlgprefautodj.h"
-#include "preferences/dialog/dlgprefkey.h"
-// Named here so mixxx-test's AUTOUIC generates them. The dialog headers
-// include the same files, but that include is not scanned on this target.
-#include "preferences/dialog/ui_dlgprefautodjdlg.h"
-#include "preferences/dialog/ui_dlgprefkeydlg.h"
-#include "preferences/keydetectionsettings.h"
+#include "preferences/dialog/dlgprefdeck.h"
+// Named here so mixxx-test's AUTOUIC generates it. The dialog header
+// includes the same file, but that include is not scanned on this target.
+#include "preferences/dialog/ui_dlgprefdeckdlg.h"
 #include "proto/keys.pb.h"
-#include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
+#include "test/mockedenginebackendtest.h"
 #include "track/keyutils.h"
 
 namespace {
 
-const ConfigKey kAutoDjHarmonizeKey(QStringLiteral("[Auto DJ]"),
+const ConfigKey kRetiredAutoDjKey(QStringLiteral("[Auto DJ]"),
         QStringLiteral("AutoHarmonizeToPrevious"));
-const ConfigKey kManualHarmonizeKey(QStringLiteral("[Key]"),
+const ConfigKey kRetiredManualKey(QStringLiteral("[Key]"),
         QStringLiteral("AutoHarmonizeOnManualLoad"));
 
 const mixxx::track::io::key::ChromaticKey kLoadedKey =
@@ -33,6 +31,13 @@ double compatibleOffset(mixxx::track::io::key::ChromaticKey fileKey,
         mixxx::track::io::key::ChromaticKey otherKey,
         double otherDistance) {
     return static_cast<double>(KeyUtils::shortestStepsToCompatibleKey(fileKey, otherKey)) +
+            otherDistance;
+}
+
+double exactOffset(mixxx::track::io::key::ChromaticKey fileKey,
+        mixxx::track::io::key::ChromaticKey otherKey,
+        double otherDistance) {
+    return static_cast<double>(KeyUtils::shortestStepsToKey(fileKey, otherKey)) +
             otherDistance;
 }
 
@@ -71,9 +76,12 @@ class AutoHarmonizeManualLoadTest : public MockedEngineBackendTest {
                 BaseTrackPlayer::TrackLoadReset::RESET_NONE);
     }
 
-    void setOptions(bool manual, bool autoDj) {
-        config()->setValue(kManualHarmonizeKey, manual);
-        config()->setValue(kAutoDjHarmonizeKey, autoDj);
+    void setOption(bool enabled) {
+        config()->setValue(kAutoHarmonizeOnLoadConfigKey, enabled);
+    }
+
+    void setExact(bool enabled) {
+        config()->setValue(kExactKeyMatchConfigKey, enabled);
     }
 
     struct LoadResult {
@@ -103,8 +111,8 @@ class AutoHarmonizeManualLoadTest : public MockedEngineBackendTest {
     }
 };
 
-TEST_F(AutoHarmonizeManualLoadTest, ManualLoadHarmonizesWhenKeyOptionOn) {
-    setOptions(true, false);
+TEST_F(AutoHarmonizeManualLoadTest, ManualLoadHarmonizesWhenOptionOn) {
+    setOption(true);
     const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.3);
     ASSERT_NE(mixxx::track::io::key::INVALID, other.key);
     const double expected = compatibleOffset(kLoadedKey, other.key, other.distance);
@@ -120,28 +128,545 @@ TEST_F(AutoHarmonizeManualLoadTest, ManualLoadHarmonizesWhenKeyOptionOn) {
     EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
 }
 
-TEST_F(AutoHarmonizeManualLoadTest, ManualLoadLeavesPitchWhenKeyOptionOff) {
-    setOptions(false, true);
+TEST_F(AutoHarmonizeManualLoadTest, ManualLoadLeavesPitchWhenOptionOff) {
+    setOption(false);
     publishOtherDeckKey(m_sGroup2, 0.3);
     const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
     EXPECT_DOUBLE_EQ(loaded.pitchBefore, loaded.pitch);
     EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
 }
 
-TEST_F(AutoHarmonizeManualLoadTest, BothOptionsApplyOneOffsetOnManualLoad) {
-    setOptions(true, true);
+TEST_F(AutoHarmonizeManualLoadTest, MatchKeyClickLeavesSyncOff) {
+    setOption(false);
+    const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
+    ASSERT_NE(mixxx::track::io::key::INVALID, other.key);
+    // No leader makes slotSyncKey call pickSyncTarget, which needs a playing
+    // deck with a BPM. The crown selects the target without that.
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key_leader"), 2.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const double expected = compatibleOffset(kLoadedKey, other.key, other.distance);
+    ASSERT_NE(0.0, expected);
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    ASSERT_NE(ControlObject::get(pitchKey), storedMatchKeyPitch(expected));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "match_key"), 1.0);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "match_key"), 0.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), ControlObject::get(pitchKey));
+
+    // The click must not latch later loads.
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(loaded.pitchBefore, loaded.pitch);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, SyncKeyFirstPressBecomesLeader) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.3);
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    const double pitch = ControlObject::get(pitchKey);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    // A short tap leaves sync, which clears the crown. The key stays.
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 0.0);
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(loaded.pitchBefore, loaded.pitch);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, FollowerSyncMatchesLeader) {
+    setOption(false);
+    const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
+    ASSERT_NE(mixxx::track::io::key::INVALID, other.key);
+    const double leaderPitch = ControlObject::get(ConfigKey(m_sGroup2, "pitch"));
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(leaderPitch, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const double expected = compatibleOffset(kLoadedKey, other.key, other.distance);
+    ASSERT_NE(0.0, expected);
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    ASSERT_NE(ControlObject::get(pitchKey), storedMatchKeyPitch(expected));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    // Turning the follower's sync off leaves the leader's crown alone.
+    const double leaderPitchAfter = ControlObject::get(ConfigKey(m_sGroup2, "pitch"));
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 0.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(leaderPitchAfter, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), ControlObject::get(pitchKey));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, LatchedFollowerHarmonizesWhenOptionOff) {
+    setOption(false);
     const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.3);
+    const double expected = compatibleOffset(kLoadedKey, other.key, other.distance);
+    ASSERT_NE(0.0, expected);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), loaded.pitch);
+    EXPECT_NE(expected * 2.0, loaded.pitch);
+    // The load must not release the latch, and must not take the crown.
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, LeaderPitchChangeRetunesSyncedDeck) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    ControlObject::set(ConfigKey(m_sGroup3, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey followerPitch(m_sGroup1, "pitch");
+    const ConfigKey idlePitch(m_sGroup3, "pitch");
+    ControlObject::set(followerPitch, 4.0);
+    ControlObject::set(idlePitch, 4.0);
+    const double idleBefore = ControlObject::get(idlePitch);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    const double matched = ControlObject::get(followerPitch);
+
+    ControlObject::set(ConfigKey(m_sGroup2, "pitch"), 1.0);
+    const auto leaderKey = KeyUtils::keyFromNumericValue(
+            ControlObject::get(ConfigKey(m_sGroup2, "key")));
+    const double leaderDistance =
+            ControlObject::get(ConfigKey(m_sGroup2, "visual_key_distance"));
+    ASSERT_NE(mixxx::track::io::key::INVALID, leaderKey);
+    const double expected = compatibleOffset(kLoadedKey, leaderKey, leaderDistance);
+    ASSERT_NE(matched, storedMatchKeyPitch(expected));
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), ControlObject::get(followerPitch));
+    EXPECT_DOUBLE_EQ(idleBefore, ControlObject::get(idlePitch));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+
+    // Editing the follower must not drag the leader.
+    const double leaderPitch = ControlObject::get(ConfigKey(m_sGroup2, "pitch"));
+    ControlObject::set(followerPitch, 3.0);
+    EXPECT_DOUBLE_EQ(leaderPitch, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, FollowerSyncExactKeyMatchesTonic) {
+    setOption(false);
+    setExact(true);
+    const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
+    ASSERT_NE(mixxx::track::io::key::INVALID, other.key);
+    const double exact = exactOffset(kLoadedKey, other.key, other.distance);
+    const double compatible = compatibleOffset(kLoadedKey, other.key, other.distance);
+    ASSERT_NE(exact, compatible);
+
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(exact), ControlObject::get(pitchKey));
+    EXPECT_NE(storedMatchKeyPitch(compatible), ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, ManualLoadExactKeyWhenBothOptionsOn) {
+    setOption(true);
+    setExact(true);
+    const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
+    const double exact = exactOffset(kLoadedKey, other.key, other.distance);
+    const double compatible = compatibleOffset(kLoadedKey, other.key, other.distance);
+    ASSERT_NE(exact, compatible);
+    ASSERT_NE(0.0, exact);
+
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(exact), loaded.pitch);
+    EXPECT_NE(storedMatchKeyPitch(compatible), loaded.pitch);
+    EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, LeaderPitchChangeExactKeyRetunesSyncedDeck) {
+    setOption(false);
+    setExact(true);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey followerPitch(m_sGroup1, "pitch");
+    ControlObject::set(followerPitch, 4.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    const double matched = ControlObject::get(followerPitch);
+
+    ControlObject::set(ConfigKey(m_sGroup2, "pitch"), 1.0);
+    const auto leaderKey = KeyUtils::keyFromNumericValue(
+            ControlObject::get(ConfigKey(m_sGroup2, "key")));
+    const double leaderDistance =
+            ControlObject::get(ConfigKey(m_sGroup2, "visual_key_distance"));
+    ASSERT_NE(mixxx::track::io::key::INVALID, leaderKey);
+    const double exact = exactOffset(kLoadedKey, leaderKey, leaderDistance);
+    const double compatible = compatibleOffset(kLoadedKey, leaderKey, leaderDistance);
+    ASSERT_NE(exact, compatible);
+    ASSERT_NE(matched, storedMatchKeyPitch(exact));
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(exact), ControlObject::get(followerPitch));
+    EXPECT_NE(storedMatchKeyPitch(compatible), ControlObject::get(followerPitch));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, ResetKeyReleasesSyncLatch) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    const double matched = ControlObject::get(pitchKey);
+    ASSERT_NE(0.0, matched);
+    ASSERT_NE(4.0, matched);
+
+    // Right-click reset on the note. The latch must drop or the leader
+    // would pull this deck back onto the harmonized key.
+    ControlObject::set(ConfigKey(m_sGroup1, "reset_key"), 1.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup2, "pitch"), 1.0);
+    const auto leaderKey = KeyUtils::keyFromNumericValue(
+            ControlObject::get(ConfigKey(m_sGroup2, "key")));
+    const double leaderDistance =
+            ControlObject::get(ConfigKey(m_sGroup2, "visual_key_distance"));
+    ASSERT_NE(mixxx::track::io::key::INVALID, leaderKey);
+    const double pulled = compatibleOffset(kLoadedKey, leaderKey, leaderDistance);
+    // That leader move would have changed this deck if sync were still on.
+    ASSERT_NE(0.0, storedMatchKeyPitch(pulled));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "reset_key"), 0.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(pitchKey));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, KeyLeaderAboveSoftStaysOn) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    // A request for the explicit light is folded back to the one crown.
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key_leader"), 2.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    const double pitch = ControlObject::get(pitchKey);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+
+    // Clicking the lit crown asks for 2 and stays on this key.
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key_leader"), 2.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, CrownClickTurnsSyncOn) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    const double pitch = ControlObject::get(pitchKey);
+
+    // The crown latches sync immediately and does not retune.
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key_leader"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+
+    // Crown off leaves sync latched, the way a beat follower keeps sync.
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key_leader"), 0.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, SyncOffClearsCrownAndPromotesFollower) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    const double leaderPitch = ControlObject::get(ConfigKey(m_sGroup2, "pitch"));
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(leaderPitch, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    const double followerPitch = ControlObject::get(pitchKey);
+    ASSERT_NE(0.0, followerPitch);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+
+    // The old leader drops the crown. The follower takes it and keeps its key.
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 0.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(leaderPitch, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(followerPitch, ControlObject::get(pitchKey));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, ResetLeaderKeepsSyncAndRetunesFollower) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    ControlObject::set(ConfigKey(m_sGroup3, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    const ConfigKey idlePitch(m_sGroup3, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    ControlObject::set(idlePitch, 4.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key"), 1.0);
+    const double idleBefore = ControlObject::get(idlePitch);
+    // Move the leader off the original key so the follower is not already
+    // on the reset target.
+    ControlObject::set(ConfigKey(m_sGroup2, "pitch"), 1.0);
+    const double followerPitch = ControlObject::get(pitchKey);
+    ASSERT_NE(0.0, followerPitch);
+    ASSERT_NE(0.0, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+
+    // The leader keeps sync and the crown. Other synced decks match the
+    // restored key. A deck with sync off stays put.
+    ControlObject::set(ConfigKey(m_sGroup2, "reset_key"), 1.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    const auto leaderKey = KeyUtils::keyFromNumericValue(
+            ControlObject::get(ConfigKey(m_sGroup2, "key")));
+    const double leaderDistance =
+            ControlObject::get(ConfigKey(m_sGroup2, "visual_key_distance"));
+    ASSERT_NE(mixxx::track::io::key::INVALID, leaderKey);
+    const double expected = compatibleOffset(kLoadedKey, leaderKey, leaderDistance);
+    ASSERT_NE(followerPitch, storedMatchKeyPitch(expected));
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(idleBefore, ControlObject::get(idlePitch));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup3, "sync_key")));
+
+    ControlObject::set(ConfigKey(m_sGroup2, "reset_key"), 0.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), ControlObject::get(pitchKey));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, CrownTakeoverKeepsOwnKey) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key_leader"), 2.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+    const double previousLeaderPitch = ControlObject::get(ConfigKey(m_sGroup2, "pitch"));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    const double pitch = ControlObject::get(pitchKey);
+    const auto leaderKey = KeyUtils::keyFromNumericValue(
+            ControlObject::get(ConfigKey(m_sGroup1, "key")));
+    const double leaderDistance =
+            ControlObject::get(ConfigKey(m_sGroup1, "visual_key_distance"));
+    ASSERT_NE(mixxx::track::io::key::INVALID, leaderKey);
+    const double expected = compatibleOffset(kOtherKey, leaderKey, leaderDistance);
+    ASSERT_NE(previousLeaderPitch, storedMatchKeyPitch(expected));
+
+    // Taking the crown does not retune this deck. The old leader keeps sync
+    // and matches this key.
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key_leader"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected),
+            ControlObject::get(ConfigKey(m_sGroup2, "pitch")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, ExplicitCrownClickTurnsSyncOn) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_key_leader"), 1.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    const ConfigKey pitchKey(m_sGroup1, "pitch");
+    ControlObject::set(pitchKey, 4.0);
+    const double pitch = ControlObject::get(pitchKey);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key_leader"), 2.0);
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(pitch, ControlObject::get(pitchKey));
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+    // Demoting the other crown does not release its sync latch.
+    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, MatchKeyDoesNotAdoptLeader) {
+    setOption(false);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
+            KeyUtils::keyToNumericValue(kLoadedKey));
+    ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 4.0);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "match_key"), 1.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, ExplicitLeaderIsMatchTarget) {
+    setOption(true);
+    const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup3, "file_key"),
+            KeyUtils::keyToNumericValue(mixxx::track::io::key::A_MINOR));
+    ControlObject::set(ConfigKey(m_sGroup3, "pitch"), 0.3);
+    const auto leaderKey = KeyUtils::keyFromNumericValue(
+            ControlObject::get(ConfigKey(m_sGroup3, "key")));
+    const double leaderDistance =
+            ControlObject::get(ConfigKey(m_sGroup3, "visual_key_distance"));
+    ASSERT_NE(mixxx::track::io::key::INVALID, leaderKey);
+    const double expected = compatibleOffset(kLoadedKey, leaderKey, leaderDistance);
+    const double otherOffset = compatibleOffset(kLoadedKey, other.key, other.distance);
+    ASSERT_NE(expected, otherOffset);
+
+    ControlObject::set(ConfigKey(m_sGroup3, "sync_key_leader"), 2.0);
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup1, "sync_key_leader")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(m_sGroup2, "sync_key_leader")));
+
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), loaded.pitch);
+    EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, SoftLeaderIsMatchTarget) {
+    setOption(true);
+    const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
+    ControlObject::set(ConfigKey(m_sGroup3, "file_key"),
+            KeyUtils::keyToNumericValue(mixxx::track::io::key::A_MINOR));
+    ControlObject::set(ConfigKey(m_sGroup3, "pitch"), 0.3);
+    const auto leaderKey = KeyUtils::keyFromNumericValue(
+            ControlObject::get(ConfigKey(m_sGroup3, "key")));
+    const double leaderDistance =
+            ControlObject::get(ConfigKey(m_sGroup3, "visual_key_distance"));
+    const double expected = compatibleOffset(kLoadedKey, leaderKey, leaderDistance);
+    const double otherOffset = compatibleOffset(kLoadedKey, other.key, other.distance);
+    ASSERT_NE(expected, otherOffset);
+
+    ControlObject::set(ConfigKey(m_sGroup3, "sync_key_leader"), 1.0);
+
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), loaded.pitch);
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, LeaderDeckLoadKeepsPitch) {
+    setOption(true);
+    publishOtherDeckKey(m_sGroup2, 0.3);
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_key_leader"), 2.0);
+
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(loaded.pitchBefore, loaded.pitch);
+    EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, NextLoadFollowsChangedLeaderKey) {
+    setOption(true);
+    publishOtherDeckKey(m_sGroup2, 0.0);
+    const LoadResult first = loadDeck1(kLoadedKey, 4.0);
+
+    const OtherDeckKey shifted = publishOtherDeckKey(m_sGroup2, 0.3);
+    const double expected = compatibleOffset(kLoadedKey, shifted.key, shifted.distance);
+    ASSERT_NE(storedMatchKeyPitch(expected), first.pitch);
+
+    const LoadResult second = loadDeck1(kLoadedKey, first.pitch);
+    EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), second.pitch);
+    EXPECT_NE(expected * 2.0, second.pitch);
+    EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, RetiredAutoDjKeyHarmonizesUntilDecksKeyExists) {
+    config()->setValue(kRetiredAutoDjKey, true);
+    const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
     const double expected = compatibleOffset(kLoadedKey, other.key, other.distance);
     ASSERT_NE(0.0, expected);
 
     const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
     EXPECT_DOUBLE_EQ(storedMatchKeyPitch(expected), loaded.pitch);
-    EXPECT_NE(expected * 2.0, loaded.pitch);
-    EXPECT_EQ(kLoadedKey, m_pTrack1->getKey());
+}
+
+TEST_F(AutoHarmonizeManualLoadTest, DecksKeyOffIgnoresRetiredKeys) {
+    setOption(false);
+    config()->setValue(kRetiredAutoDjKey, true);
+    config()->setValue(kRetiredManualKey, true);
+    publishOtherDeckKey(m_sGroup2, 0.3);
+
+    const LoadResult loaded = loadDeck1(kLoadedKey, 4.0);
+    EXPECT_DOUBLE_EQ(loaded.pitchBefore, loaded.pitch);
 }
 
 TEST_F(AutoHarmonizeManualLoadTest, AutoDjMarkBlocksManualHarmonize) {
-    setOptions(true, true);
+    setOption(true);
     publishOtherDeckKey(m_sGroup2, 0.3);
     m_pMixerDeck1->setPendingAutoDjAutoload(true);
 
@@ -153,7 +678,7 @@ TEST_F(AutoHarmonizeManualLoadTest, AutoDjMarkBlocksManualHarmonize) {
 }
 
 TEST_F(AutoHarmonizeManualLoadTest, InvalidKeyLeavesPitchAndStoredKey) {
-    setOptions(true, true);
+    setOption(true);
     publishOtherDeckKey(m_sGroup2, 0.0);
     const LoadResult loaded = loadDeck1(mixxx::track::io::key::INVALID, 4.0);
     EXPECT_DOUBLE_EQ(loaded.pitchBefore, loaded.pitch);
@@ -162,7 +687,7 @@ TEST_F(AutoHarmonizeManualLoadTest, InvalidKeyLeavesPitchAndStoredKey) {
 }
 
 TEST_F(AutoHarmonizeManualLoadTest, CompatiblePairWritesZeroOffset) {
-    setOptions(true, false);
+    setOption(true);
     const OtherDeckKey other = publishOtherDeckKey(m_sGroup2, 0.0);
     const double expected = compatibleOffset(kOtherKey, other.key, other.distance);
     EXPECT_DOUBLE_EQ(0.0, expected);
@@ -173,7 +698,7 @@ TEST_F(AutoHarmonizeManualLoadTest, CompatiblePairWritesZeroOffset) {
 }
 
 TEST_F(AutoHarmonizeManualLoadTest, PreviewLoadIsNotHarmonized) {
-    setOptions(true, true);
+    setOption(true);
     publishOtherDeckKey(m_sGroup2, 0.3);
     TrackPointer pPreview = m_pPreview1->loadFakeTrack(false, 120.0);
     pPreview->setKey(kLoadedKey, mixxx::track::io::key::USER);
@@ -188,57 +713,80 @@ TEST_F(AutoHarmonizeManualLoadTest, PreviewLoadIsNotHarmonized) {
     EXPECT_EQ(pPreview, m_pPreview1->getLoadedTrack());
 }
 
-TEST_F(MixxxTest, HarmonizePreferencesAreIndependent) {
-    ControlObject keyNotation(mixxx::library::prefs::kKeyNotationConfigKey);
+TEST_F(MixxxTest, HarmonizePreferenceIsOnDecksPage) {
+    ControlObject numDecks(ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_decks")));
+    ControlObject numSamplers(ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_samplers")));
+    numDecks.set(1.0);
+    numSamplers.set(0.0);
+    ControlObject rate(ConfigKey(QStringLiteral("[Channel1]"), QStringLiteral("rate")));
+    ControlObject rateRange(ConfigKey(QStringLiteral("[Channel1]"), QStringLiteral("rateRange")));
+    ControlObject rateDir(ConfigKey(QStringLiteral("[Channel1]"), QStringLiteral("rate_dir")));
+    ControlObject cueMode(ConfigKey(QStringLiteral("[Channel1]"), QStringLiteral("cue_mode")));
+    ControlObject keylockMode(ConfigKey(
+            QStringLiteral("[Channel1]"), QStringLiteral("keylockMode")));
+    ControlObject keyunlockMode(
+            ConfigKey(QStringLiteral("[Channel1]"), QStringLiteral("keyunlockMode")));
 
-    DlgPrefAutoDJ autoDjPage(nullptr, config());
-    DlgPrefKey keyPage(nullptr, config());
-    autoDjPage.slotUpdate();
+    DlgPrefDeck deckPage(nullptr, config());
+    QCheckBox* pBox = deckPage.findChild<QCheckBox*>(
+            QStringLiteral("checkBoxAutoHarmonizeOnLoad"));
+    ASSERT_NE(pBox, nullptr);
+    EXPECT_FALSE(pBox->isChecked());
+    // Unset key uses the false default. A true default here would hide that.
+    EXPECT_FALSE(config()->getValue<bool>(kAutoHarmonizeOnLoadConfigKey, false));
+    EXPECT_FALSE(config()->exists(kRetiredAutoDjKey));
+    EXPECT_FALSE(config()->exists(kRetiredManualKey));
 
-    QCheckBox* pAutoDj = autoDjPage.findChild<QCheckBox*>(
-            QStringLiteral("AutoHarmonizeToPreviousCheckBox"));
-    QCheckBox* pManual = keyPage.findChild<QCheckBox*>(
-            QStringLiteral("bAutoHarmonizeOnManualLoad"));
-    ASSERT_NE(pAutoDj, nullptr);
-    ASSERT_NE(pManual, nullptr);
-    EXPECT_FALSE(pAutoDj->isChecked());
-    EXPECT_FALSE(pManual->isChecked());
-    // Unset keys use the false default. A true default here would hide that.
-    EXPECT_FALSE(config()->getValue<bool>(kAutoDjHarmonizeKey, false));
-    EXPECT_FALSE(config()->getValue<bool>(kManualHarmonizeKey, false));
+    pBox->setChecked(true);
+    deckPage.slotApply();
+    EXPECT_TRUE(config()->getValue<bool>(kAutoHarmonizeOnLoadConfigKey, false));
+    EXPECT_FALSE(config()->exists(kRetiredAutoDjKey));
+    EXPECT_FALSE(config()->exists(kRetiredManualKey));
 
-    pAutoDj->setChecked(true);
-    autoDjPage.slotApply();
-    EXPECT_TRUE(config()->getValue<bool>(kAutoDjHarmonizeKey, false));
-    EXPECT_FALSE(config()->getValue<bool>(kManualHarmonizeKey, false));
-
-    pManual->setChecked(true);
-    keyPage.slotApply();
-    EXPECT_TRUE(config()->getValue<bool>(kManualHarmonizeKey, false));
-    EXPECT_TRUE(config()->getValue<bool>(kAutoDjHarmonizeKey, false));
-
-    autoDjPage.slotResetToDefaults();
-    EXPECT_FALSE(pAutoDj->isChecked());
-    EXPECT_TRUE(pManual->isChecked());
-    // Reset changes the widget only. The other page's saved value stays.
-    EXPECT_TRUE(config()->getValue<bool>(kManualHarmonizeKey, false));
-    autoDjPage.slotApply();
+    deckPage.slotResetToDefaults();
+    EXPECT_FALSE(pBox->isChecked());
+    // Reset changes the widget only until Apply.
+    EXPECT_TRUE(config()->getValue<bool>(kAutoHarmonizeOnLoadConfigKey, false));
+    deckPage.slotApply();
     // Stored false must win over a true fallback, so this is not "unset".
-    EXPECT_FALSE(config()->getValue<bool>(kAutoDjHarmonizeKey, true));
-    EXPECT_TRUE(config()->getValue<bool>(kManualHarmonizeKey, false));
+    EXPECT_FALSE(config()->getValue<bool>(kAutoHarmonizeOnLoadConfigKey, true));
 
-    keyPage.slotResetToDefaults();
-    EXPECT_FALSE(pManual->isChecked());
-    EXPECT_FALSE(pAutoDj->isChecked());
-    EXPECT_FALSE(config()->getValue<bool>(kAutoDjHarmonizeKey, true));
-    keyPage.slotApply();
-    EXPECT_FALSE(config()->getValue<bool>(kManualHarmonizeKey, true));
-    EXPECT_FALSE(config()->getValue<bool>(kAutoDjHarmonizeKey, true));
+    pBox->setChecked(true);
+    deckPage.slotUpdate();
+    EXPECT_FALSE(pBox->isChecked());
+    EXPECT_FALSE(config()->getValue<bool>(kAutoHarmonizeOnLoadConfigKey, true));
 
-    // Applying one page again does not revive the other key.
-    pAutoDj->setChecked(true);
-    autoDjPage.slotApply();
-    keyPage.slotUpdate();
-    EXPECT_FALSE(pManual->isChecked());
-    EXPECT_FALSE(config()->getValue<bool>(kManualHarmonizeKey, true));
+    QCheckBox* pExact = deckPage.findChild<QCheckBox*>(
+            QStringLiteral("checkBoxExactKeyMatch"));
+    QLabel* pLabel = deckPage.findChild<QLabel*>(
+            QStringLiteral("labelExactKeyMatch"));
+    ASSERT_NE(pExact, nullptr);
+    ASSERT_NE(pLabel, nullptr);
+    EXPECT_EQ(QStringLiteral("Exact key"), pLabel->text());
+    EXPECT_EQ(QStringLiteral("Match the other deck's key exactly"), pExact->text());
+    EXPECT_FALSE(pExact->isChecked());
+    EXPECT_FALSE(config()->getValue<bool>(kExactKeyMatchConfigKey, false));
+    EXPECT_FALSE(KeyControl::exactKeyMatchEnabled(config()));
+    EXPECT_FALSE(KeyControl::exactKeyMatchEnabled(UserSettingsPointer()));
+
+    pExact->setChecked(true);
+    deckPage.slotApply();
+    EXPECT_TRUE(config()->getValue<bool>(kExactKeyMatchConfigKey, false));
+    EXPECT_TRUE(KeyControl::exactKeyMatchEnabled(config()));
+    // Exact key does not turn auto-harmonize on.
+    EXPECT_FALSE(pBox->isChecked());
+    EXPECT_FALSE(config()->getValue<bool>(kAutoHarmonizeOnLoadConfigKey, true));
+
+    deckPage.slotResetToDefaults();
+    EXPECT_FALSE(pExact->isChecked());
+    // Reset changes the widget only until Apply.
+    EXPECT_TRUE(config()->getValue<bool>(kExactKeyMatchConfigKey, false));
+    deckPage.slotApply();
+    EXPECT_FALSE(config()->getValue<bool>(kExactKeyMatchConfigKey, true));
+    EXPECT_FALSE(KeyControl::exactKeyMatchEnabled(config()));
+
+    pExact->setChecked(true);
+    deckPage.slotUpdate();
+    EXPECT_FALSE(pExact->isChecked());
+    EXPECT_FALSE(config()->getValue<bool>(kExactKeyMatchConfigKey, true));
 }

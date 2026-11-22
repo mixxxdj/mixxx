@@ -180,7 +180,7 @@
 
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
-        <MaximumSize>111,</MaximumSize>
+        <MaximumSize>173,</MaximumSize>
         <Layout>vertical</Layout>
         <Children>
           <SingletonContainer>

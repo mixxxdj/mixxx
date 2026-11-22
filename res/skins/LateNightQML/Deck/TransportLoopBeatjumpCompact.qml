@@ -167,16 +167,16 @@ Item {
             visible: root.showKeyControls
         }
         Item {
-            Layout.minimumHeight: 20
-            Layout.preferredHeight: 20
-            Layout.maximumHeight: 20
-            Layout.minimumWidth: 76
-            Layout.preferredWidth: 76
-            Layout.maximumWidth: 111
+            Layout.minimumHeight: 22
+            Layout.preferredHeight: 22
+            Layout.maximumHeight: 22
+            Layout.minimumWidth: 138
+            Layout.preferredWidth: 173
+            Layout.maximumWidth: 173
             visible: root.showKeyControls
 
             KeyControlsPlaceholder {
-                anchors.centerIn: parent
+                anchors.fill: parent
                 group: root.group
             }
         }

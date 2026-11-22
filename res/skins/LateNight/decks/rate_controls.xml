@@ -91,16 +91,12 @@
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                   </PushButton>
-                  <PushButton>
-                    <TooltipId>sync_leader</TooltipId>
-                    <ObjectName>SyncLeader</ObjectName>
-                    <Size>22f,22f</Size>
-                    <NumberStates>3</NumberStates>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,sync_leader</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skins:LateNight/controls/button_leader.xml">
+                    <SetVariable name="TooltipId">sync_leader</SetVariable>
+                    <SetVariable name="ObjectName">SyncLeader</SetVariable>
+                    <SetVariable name="Size">22f,22f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_leader</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- SyncBox -->
             </Children>

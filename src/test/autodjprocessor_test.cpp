@@ -3,16 +3,16 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <memory>
-
 #include <QScopedPointer>
 #include <QString>
+#include <memory>
 
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "database/mixxxdb.h"
 #include "engine/channels/enginechannel.h"
+#include "engine/controls/keycontrol.h"
 #include "engine/engine.h"
 #include "library/coverartcache.h"
 #include "library/dao/playlistdao.h"
@@ -104,7 +104,7 @@ class FakeDeck : public BaseTrackPlayer {
         return loadedTrack;
     }
 
-    void setupEqControls() override{};
+    void setupEqControls() override {};
 
     // This method emulates requesting a track load to a player and emits no
     // signals. Normally, the reader thread attempts to load the file and emits
@@ -182,12 +182,15 @@ class MockPlayerManager : public PlayerManagerInterface {
 class MockAutoDJProcessor : public AutoDJProcessor {
   public:
     MockAutoDJProcessor(QObject* pParent,
-                        UserSettingsPointer pConfig,
-                        PlayerManagerInterface* pPlayerManager,
-                        TrackCollectionManager* pTrackCollectionManager,
-                        int iAutoDJPlaylistId)
-            : AutoDJProcessor(pParent, pConfig, pPlayerManager,
-                              pTrackCollectionManager, iAutoDJPlaylistId) {
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface* pPlayerManager,
+            TrackCollectionManager* pTrackCollectionManager,
+            int iAutoDJPlaylistId)
+            : AutoDJProcessor(pParent,
+                      pConfig,
+                      pPlayerManager,
+                      pTrackCollectionManager,
+                      iAutoDJPlaylistId) {
     }
 
     virtual ~MockAutoDJProcessor() {
@@ -270,14 +273,12 @@ class AutoDJProcessorTest : public LibraryTest {
         mixxx::track::io::key::ChromaticKey storedKey;
     };
 
-    AutoloadResult autoloadDeck2(bool autoDjOption,
-            bool keyOption,
+    AutoloadResult autoloadDeck2(bool harmonize,
             mixxx::track::io::key::ChromaticKey loadedFileKey,
             double otherDistance,
             double initialPitch,
             bool disableBeforeLoaded = false) {
-        config()->setValue(ConfigKey("[Auto DJ]", "AutoHarmonizeToPrevious"), autoDjOption);
-        config()->setValue(ConfigKey("[Key]", "AutoHarmonizeOnManualLoad"), keyOption);
+        config()->setValue(kAutoHarmonizeOnLoadConfigKey, harmonize);
 
         ControlObject otherKey(ConfigKey(deck1.getGroup(), "key"));
         ControlObject otherDistanceCO(ConfigKey(deck1.getGroup(), "visual_key_distance"));
@@ -1634,7 +1635,6 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
 }
 
-
 TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedFullTrack);
 
@@ -2163,46 +2163,87 @@ TEST_F(AutoDJProcessorTest, AutoloadHarmonizesWhenAutoDjOptionOn) {
     ASSERT_NE(0.0, expected);
     ASSERT_NE(3.5, expected);
 
-    const auto result = autoloadDeck2(true, false, loaded, distance, 3.5);
+    const auto result = autoloadDeck2(true, loaded, distance, 3.5);
     EXPECT_DOUBLE_EQ(expected, result.pitch);
     EXPECT_EQ(loaded, result.storedKey);
 }
 
-TEST_F(AutoDJProcessorTest, AutoloadDoesNotHarmonizeWhenAutoDjOptionOff) {
-    // Key preference on must not cause or block an AutoDJ autoload.
+TEST_F(AutoDJProcessorTest, AutoloadLeavesPitchWhenOptionOff) {
     const auto result = autoloadDeck2(
-            false, true, mixxx::track::io::key::F_SHARP_MAJOR, 0.25, 3.5);
+            false, mixxx::track::io::key::F_SHARP_MAJOR, 0.25, 3.5);
     EXPECT_DOUBLE_EQ(3.5, result.pitch);
     EXPECT_EQ(mixxx::track::io::key::F_SHARP_MAJOR, result.storedKey);
 }
 
-TEST_F(AutoDJProcessorTest, BothOptionsApplyOneOffsetOnAutoload) {
+TEST_F(AutoDJProcessorTest, AutoloadHarmonizesWhenMatchKeyLatched) {
     const auto loaded = mixxx::track::io::key::F_SHARP_MAJOR;
     const auto other = mixxx::track::io::key::C_MAJOR;
     const double distance = 0.25;
     const double expected = static_cast<double>(
                                     KeyUtils::shortestStepsToCompatibleKey(loaded, other)) +
             distance;
-    ASSERT_NE(expected * 2.0, expected);
+    ASSERT_NE(3.5, expected);
 
-    const auto result = autoloadDeck2(true, true, loaded, distance, 3.5);
+    // The Decks checkbox is off. A latched Match Key button still harmonizes.
+    ControlObject latched(ConfigKey(QStringLiteral("[Channel2]"), QStringLiteral("sync_key")));
+    latched.set(1.0);
+    const auto result = autoloadDeck2(false, loaded, distance, 3.5);
     EXPECT_DOUBLE_EQ(expected, result.pitch);
     EXPECT_NE(expected * 2.0, result.pitch);
     EXPECT_EQ(loaded, result.storedKey);
+    EXPECT_DOUBLE_EQ(1.0, latched.get());
+}
+
+TEST_F(AutoDJProcessorTest, AutoloadMatchesExplicitKeyLeader) {
+    const auto loaded = mixxx::track::io::key::F_SHARP_MAJOR;
+    const auto leaderFileKey = mixxx::track::io::key::A_MINOR;
+    const double leaderDistance = 0.0;
+    const double otherDistance = 0.25;
+    const double leaderOffset = static_cast<double>(
+                                        KeyUtils::shortestStepsToCompatibleKey(
+                                                loaded, leaderFileKey)) +
+            leaderDistance;
+    const double otherOffset = static_cast<double>(
+                                       KeyUtils::shortestStepsToCompatibleKey(
+                                               loaded, mixxx::track::io::key::C_MAJOR)) +
+            otherDistance;
+    ASSERT_NE(leaderOffset, otherOffset);
+
+    ControlObject leader(ConfigKey(
+            QStringLiteral("[Channel3]"), QStringLiteral("sync_key_leader")));
+    ControlObject leaderKey(ConfigKey(QStringLiteral("[Channel3]"), QStringLiteral("key")));
+    ControlObject leaderDistanceCO(
+            ConfigKey(QStringLiteral("[Channel3]"), QStringLiteral("visual_key_distance")));
+    leader.set(2.0);
+    leaderKey.set(KeyUtils::keyToNumericValue(leaderFileKey));
+    leaderDistanceCO.set(leaderDistance);
+
+    const auto result = autoloadDeck2(true, loaded, otherDistance, 3.5);
+    EXPECT_DOUBLE_EQ(leaderOffset, result.pitch);
+    EXPECT_EQ(loaded, result.storedKey);
+}
+
+TEST_F(AutoDJProcessorTest, AutoloadOnKeyLeaderLeavesPitch) {
+    ControlObject leader(ConfigKey(
+            QStringLiteral("[Channel2]"), QStringLiteral("sync_key_leader")));
+    leader.set(2.0);
+    const auto result = autoloadDeck2(
+            true, mixxx::track::io::key::F_SHARP_MAJOR, 0.25, 3.5);
+    EXPECT_DOUBLE_EQ(3.5, result.pitch);
+    EXPECT_EQ(mixxx::track::io::key::F_SHARP_MAJOR, result.storedKey);
 }
 
 TEST_F(AutoDJProcessorTest, AutoloadInvalidKeyLeavesPitchAndStoredKey) {
     const auto result = autoloadDeck2(
-            true, true, mixxx::track::io::key::INVALID, 0.0, 3.5);
+            true, mixxx::track::io::key::INVALID, 0.0, 3.5);
     EXPECT_DOUBLE_EQ(3.5, result.pitch);
     EXPECT_EQ(mixxx::track::io::key::INVALID, result.storedKey);
 }
 
 TEST_F(AutoDJProcessorTest, AutoloadCompletionAfterDisableHarmonizesOnce) {
     // Arms loadTrackFromAutoDj, disables AutoDJ, then fakeTrackLoadedEvent
-    // delivers the completion. The Auto DJ option applies once. The Key
-    // option must not add a second offset. FakeDeck is not
-    // BaseTrackPlayerImpl, so the later manual load is covered by
+    // delivers the completion. The Decks option applies once. FakeDeck is
+    // not BaseTrackPlayerImpl, so the later manual load is covered by
     // AutoDjManualAfterDisableTest, which delivers that same completion
     // through BaseTrackPlayerImpl::slotTrackLoaded.
     const auto loaded = mixxx::track::io::key::F_SHARP_MAJOR;
@@ -2215,7 +2256,7 @@ TEST_F(AutoDJProcessorTest, AutoloadCompletionAfterDisableHarmonizesOnce) {
     ASSERT_NE(expected * 2.0, expected);
     ASSERT_NE(3.5, expected);
 
-    const auto result = autoloadDeck2(true, true, loaded, distance, 3.5, true);
+    const auto result = autoloadDeck2(true, loaded, distance, 3.5, true);
     EXPECT_DOUBLE_EQ(expected, result.pitch);
     EXPECT_NE(expected * 2.0, result.pitch);
     EXPECT_EQ(loaded, result.storedKey);
@@ -2334,13 +2375,7 @@ class AutoDjManualAfterDisableTest : public MockedEngineBackendTest {
 };
 
 TEST_F(AutoDjManualAfterDisableTest, CompletionAfterDisableThenManualLoad) {
-    const ConfigKey autoDjKey(QStringLiteral("[Auto DJ]"),
-            QStringLiteral("AutoHarmonizeToPrevious"));
-    const ConfigKey manualKey(QStringLiteral("[Key]"),
-            QStringLiteral("AutoHarmonizeOnManualLoad"));
-    config()->setValue(autoDjKey, true);
-    // Off so a pitch change on the armed load can only come from the AutoDJ option.
-    config()->setValue(manualKey, false);
+    config()->setValue(kAutoHarmonizeOnLoadConfigKey, true);
 
     ControlObject::set(ConfigKey(m_sGroup1, "file_key"),
             KeyUtils::keyToNumericValue(mixxx::track::io::key::C_MAJOR));
@@ -2389,8 +2424,8 @@ TEST_F(AutoDjManualAfterDisableTest, CompletionAfterDisableThenManualLoad) {
     const double storedPitch = KeyUtils::powerOf2ToSemitoneChange(
             KeyUtils::semitoneChangeToPowerOf2(expected));
 
-    // Shipped load path. The pending flag skips the Key option; the processor
-    // one-shot applies the Auto DJ option once.
+    // Shipped load path. The pending flag skips the manual harmonize; the
+    // processor one-shot applies the Decks option once.
     m_pMixerDeck2->slotTrackLoaded(m_pTrack2, TrackPointer());
     EXPECT_DOUBLE_EQ(storedPitch, ControlObject::get(pitchKey));
     EXPECT_NE(expected * 2.0, ControlObject::get(pitchKey));
@@ -2398,8 +2433,7 @@ TEST_F(AutoDjManualAfterDisableTest, CompletionAfterDisableThenManualLoad) {
     EXPECT_EQ(storedBefore, m_pTrack2->getKey());
     EXPECT_EQ(m_pTrack2, m_pMixerDeck2->getLoadedTrack());
 
-    // Later manual load. Key option on changes pitch once.
-    config()->setValue(manualKey, true);
+    // Later manual load. The same option is still on, so pitch changes once.
     ControlObject::set(pitchKey, 4.0);
     const double pitchBeforeManualOn = ControlObject::get(pitchKey);
     ASSERT_NE(pitchBeforeManualOn, expected);
@@ -2409,8 +2443,8 @@ TEST_F(AutoDjManualAfterDisableTest, CompletionAfterDisableThenManualLoad) {
     EXPECT_FALSE(m_pMixerDeck2->isPendingAutoDjAutoload());
     EXPECT_EQ(storedBefore, m_pTrack2->getKey());
 
-    // Key option off does not change pitch, and the Auto DJ one-shot is gone.
-    config()->setValue(manualKey, false);
+    // Option off does not change pitch, and the Auto DJ one-shot is gone.
+    config()->setValue(kAutoHarmonizeOnLoadConfigKey, false);
     ControlObject::set(pitchKey, 4.0);
     const double pitchBeforeManualOff = ControlObject::get(pitchKey);
     m_pMixerDeck2->slotTrackLoaded(m_pTrack2, TrackPointer());

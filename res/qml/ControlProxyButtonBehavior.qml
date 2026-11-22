@@ -15,6 +15,12 @@ Item {
     property bool powerWindow: false
     property bool releaseToZero: true
     property bool longPressLatching: false
+    // Right-click repeats the left action. An already-on button ignores it.
+    property bool rightClickMatchesLeft: false
+    property bool secondaryPressIgnored: false
+    // Press writes the next absolute state, 0 .. numberStates-1. Used by the
+    // key crown. The beat crown does not set this; its engine maps the press.
+    property bool cycleStates: false
     property bool handlePointerInput: true
     property int numberStates: 2
     property int longPressDuration: 300
@@ -29,7 +35,10 @@ Item {
     readonly property real displayValue: displayControl.value
     readonly property bool isActive: displayControl.value > root.activeDisplayThreshold
     readonly property bool isVisuallyActive: root.isActive || root.visualActiveState
-    readonly property bool pressed: interactionArea.pressed
+    // An ignored right-click must not draw the pressed state.
+    readonly property bool pressed: interactionArea.pressed &&
+            !(secondaryPressIgnored &&
+                    !(interactionArea.pressedButtons & Qt.LeftButton))
 
     signal primaryPressed(real displayValue)
     signal secondaryPressed(real displayValue, real mouseX, real mouseY)
@@ -87,6 +96,8 @@ Item {
                     root.pressTargetValue > root.activeDisplayThreshold) {
                 root.startLatchReveal();
             }
+        } else if (root.cycleStates) {
+            control.value = root.nextState(displayControl.value);
         } else if (!root.activateOnClick) {
             root.triggerPrimaryAction();
         }
@@ -114,13 +125,26 @@ Item {
             longPressProgressAnimation.stop();
             root.longPressAnimationRunning = false;
             root.longPressProgress = 0;
-        } else if (!root.toggleable && !root.activateOnClick && root.releaseToZero) {
+        } else if (!root.cycleStates && !root.toggleable &&
+                !root.activateOnClick && root.releaseToZero) {
             control.value = 0;
         }
     }
 
     function pressSecondary(mouseX, mouseY) {
         root.secondaryPressed(displayControl.value, mouseX, mouseY);
+        if (root.rightClickMatchesLeft) {
+            // Already on, or the left button is already down. Do not toggle
+            // and do not cancel a hold that is still latching.
+            if ((interactionArea.pressedButtons & Qt.LeftButton) ||
+                    displayControl.value > root.activeDisplayThreshold) {
+                root.secondaryPressIgnored = true;
+                return;
+            }
+            root.secondaryPressIgnored = false;
+            root.pressPrimary();
+            return;
+        }
         if (root.rightClickKey.length > 0) {
             rightControl.value = 1;
         }
@@ -129,6 +153,14 @@ Item {
     function releaseSecondary() {
         if (root.powerWindow && (interactionArea.pressedButtons & Qt.LeftButton)) {
             root.powerWindowLatched = true;
+        }
+        if (root.rightClickMatchesLeft) {
+            if (root.secondaryPressIgnored) {
+                root.secondaryPressIgnored = false;
+                return;
+            }
+            root.releasePrimary();
+            return;
         }
         if (root.rightClickKey.length > 0) {
             rightControl.value = 0;

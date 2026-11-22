@@ -26,7 +26,7 @@ const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck =
 constexpr LoadWhenDeckPlaying kDefaultLoadWhenDeckPlaying = LoadWhenDeckPlaying::Reject;
 } // namespace
 
-class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
+class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg {
     Q_OBJECT
   public:
     DlgPrefDeck(QWidget* parent,
@@ -58,11 +58,13 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     void slotTimeFormatChanged(double);
 
-    void slotNumDecksChanged(double, bool initializing=false);
-    void slotNumSamplersChanged(double, bool initializing=false);
+    void slotNumDecksChanged(double, bool initializing = false);
+    void slotNumSamplersChanged(double, bool initializing = false);
 
     void slotUpdateSpeedAutoReset(bool);
     void slotUpdatePitchAutoReset(bool);
+    void slotAutoHarmonizeOnLoad(bool);
+    void slotExactKeyMatch(bool);
 
   private:
     // Because the CueDefault list is out of order, we have to set the combo
@@ -104,6 +106,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
+    bool m_bAutoHarmonizeOnLoad;
+    bool m_bExactKeyMatch;
     KeylockMode m_keylockMode;
     KeyunlockMode m_keyunlockMode;
     SeekOnLoadMode m_seekOnLoadMode;

@@ -7,7 +7,7 @@
 #include "moc_dlgprefautodj.cpp"
 
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
-                             UserSettingsPointer pConfig)
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig) {
     setupUi(this);
@@ -80,10 +80,6 @@ void DlgPrefAutoDJ::slotUpdate() {
     // Re-center the crossfader instantly when AutoDJ is disabled
     CenterXfaderCheckBox->setChecked(m_pConfig->getValue(
             ConfigKey("[Auto DJ]", "center_xfader_when_disabling"), false));
-
-    // Pitch the next AutoDJ autoload to the other deck. Default off.
-    AutoHarmonizeToPreviousCheckBox->setChecked(m_pConfig->getValue(
-            ConfigKey("[Auto DJ]", "AutoHarmonizeToPrevious"), false));
 }
 
 void DlgPrefAutoDJ::slotApply() {
@@ -104,9 +100,6 @@ void DlgPrefAutoDJ::slotApply() {
 
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "center_xfader_when_disabling"),
             CenterXfaderCheckBox->isChecked());
-
-    m_pConfig->setValue(ConfigKey("[Auto DJ]", "AutoHarmonizeToPrevious"),
-            AutoHarmonizeToPreviousCheckBox->isChecked());
 }
 
 void DlgPrefAutoDJ::slotResetToDefaults() {
@@ -122,8 +115,6 @@ void DlgPrefAutoDJ::slotResetToDefaults() {
     RandomQueueMinimumSpinBox->setValue(5);
 
     CenterXfaderCheckBox->setChecked(false);
-
-    AutoHarmonizeToPreviousCheckBox->setChecked(false);
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)

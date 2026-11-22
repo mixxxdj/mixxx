@@ -1563,8 +1563,11 @@ QPushButton#pushButtonRecording:checked {
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
+#KeyMatchReset[displayValue="1"],
 WPushButton#VinylStatus[displayValue="0"],
 #SyncDeck[displayValue="0"],
+#KeySync[displayValue="0"],
+#KeyLeader[value="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
@@ -1581,6 +1584,9 @@ WEffectSelector:!editable,
   WPushButton#VinylStatus[displayValue="2"],
   WPushButton#VinylStatus[displayValue="3"],
   #SyncDeck[displayValue="1"],
+  #KeySync[displayValue="1"],
+  #KeyLeader[value="1"],
+  #KeyLeader[value="2"],
   WPushButton#FxAssignButton1[displayValue="1"],
   #KeyMatchReset[pressed="true"],
   #GuiToggleButton[displayValue="1"],
@@ -1664,6 +1670,8 @@ WPushButton#SamplerExpand,
 #KeyControls WPushButton,
 WPushButton#SyncDeck,
 WPushButton#SyncLeader,
+WPushButton#KeyLeader,
+WPushButton#KeySync,
 #SamplerSettings WPushButton,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
@@ -1685,6 +1693,7 @@ WPushButton#CueDeck[displayValue="0"],
 #SamplerPlayBox WPushButton#PreviewIndicator,
 WPushButton#LoopActivate[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
+#KeyMatchReset[displayValue="1"],
 #EQKillButtonBox WPushButton[displayValue="0"],
 WPushButton#QuickEffectButton[displayValue="0"],
 WPushButton#FxToggleButton[displayValue="0"],
@@ -1702,6 +1711,8 @@ WBpmEditor QDoubleSpinBox {
   #BeatjumpControls WPushButton[displayValue="0"],
   WPushButton#SyncDeck[value="0"],
   WPushButton#SyncLeader[value="0"],
+  WPushButton#KeyLeader[value="0"],
+  WPushButton#KeySync[value="0"],
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
   WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
@@ -1720,6 +1731,7 @@ WBpmEditor QDoubleSpinBox {
   #FxAssignButtons WPushButton[displayValue="0"],
   #VinylControls WPushButton[displayValue="0"],
   #KeyControls WPushButton[displayValue="0"],
+  #KeyMatchReset[displayValue="1"],
   WPushButton#VinylModeButton[displayValue="1"],
   WPushButton#VinylModeButton[displayValue="2"],
   WPushButton#HotcueButton[displayValue="0"],
@@ -1774,6 +1786,8 @@ WPushButton#Reverse[pressed="true"],
 #SyncSampler[displayValue="1"],
 #SyncDeck[value="1"],
 #SyncLeader[value="2"],
+#KeyLeader[value="2"],
+#KeySync[value="1"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
@@ -1794,6 +1808,7 @@ QPushButton#pushButtonAnalyze:checked {
 /* dim orange for momentary controls */
 #KeyControls WPushButton[pressed="true"],
 #SyncLeader[value="1"],
+#KeyLeader[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
 WPushButton#LoopAnchor[pressed="true"],
@@ -2470,20 +2485,25 @@ WPushButton#PlayDeck[value="0"] {
   }
 
 /* Rate buttons */
-#SyncDeck[displayValue="0"] {
+#SyncDeck[displayValue="0"],
+#KeySync[displayValue="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__sync_deck.svg) no-repeat center center;
   }
-  #SyncDeck[displayValue="1"] {
+  #SyncDeck[displayValue="1"],
+  #KeySync[displayValue="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
   }
 
-#SyncLeader[value="0"] {
+#SyncLeader[value="0"],
+#KeyLeader[value="0"] {
   image: url(skins:LateNight/palemoon/buttons/btn__sync_leader.svg) no-repeat center center;
   }
-  #SyncLeader[value="1"] {
+  #SyncLeader[value="1"],
+  #KeyLeader[value="1"] {
     image: url(skins:LateNight/palemoon/buttons/btn__sync_leader_implicit.svg) no-repeat center center;
   }
-  #SyncLeader[value="2"] {
+  #SyncLeader[value="2"],
+  #KeyLeader[value="2"] {
     image: url(skins:LateNight/palemoon/buttons/btn__sync_leader_explicit.svg) no-repeat center center;
   }
 
