@@ -93,6 +93,11 @@ TrackPointer SeratoPlaylistModel::getTrack(const QModelIndex& index) const {
     return track;
 }
 
+bool SeratoPlaylistModel::isColumnInternal(int column) {
+    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
+            BaseExternalPlaylistModel::isColumnInternal(column);
+}
+
 bool SeratoPlaylistModel::isColumnHiddenByDefault(int column) {
     if (
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE) ||
