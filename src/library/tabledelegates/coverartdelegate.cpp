@@ -177,6 +177,9 @@ void CoverArtDelegate::paintItem(
         } else {
             loadNow = pixmap.isNull() && !isKnownMissing(key);
         }
+        if (pixmap.isNull() && !isKnownMissing(key)) {
+            scheduleRetry();
+        }
         if (!pixmap.isNull()) {
             // Cache hit
             pixmap.setDevicePixelRatio(scaleFactor);

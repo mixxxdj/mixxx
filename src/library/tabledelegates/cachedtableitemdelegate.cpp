@@ -25,6 +25,8 @@ constexpr int kCacheShareDivisor = 4;
 // Visible rows are only limited while scrolling, so rows that are
 // scrolled past are not all requested
 constexpr int kMaxPrefetchInFlight = 4;
+constexpr auto kRetryDelay = 500ms;
+constexpr int kMaxRetries = 3;
 
 std::chrono::milliseconds elapsed(const QElapsedTimer& timer) {
     return std::chrono::milliseconds(timer.elapsed());
@@ -77,6 +79,19 @@ void CachedTableItemDelegate::schedulePrefetch(bool immediately) const {
     m_pPrefetchTimer->start(delay);
 }
 
+void CachedTableItemDelegate::scheduleRetry() const {
+    if (m_retryPending || m_retryCount >= kMaxRetries) {
+        return;
+    }
+    m_retryPending = true;
+    QTimer::singleShot(kRetryDelay, this, [this]() {
+        m_retryPending = false;
+        ++m_retryCount;
+        // Cached images are drawn, misses force a pass
+        m_pTableView->viewport()->update();
+    });
+}
+
 void CachedTableItemDelegate::prefetchViewport() {
     m_lastPrefetch.start();
     const bool forced = std::exchange(m_forcePrefetch, false);
@@ -100,6 +115,9 @@ void CachedTableItemDelegate::prefetchViewport() {
     }
     if (viewport == m_viewport && !forced) {
         return;
+    }
+    if (viewport != m_viewport) {
+        m_retryCount = 0;
     }
     m_viewport = viewport;
     if (forced) {

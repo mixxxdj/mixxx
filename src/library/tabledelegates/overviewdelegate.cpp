@@ -169,6 +169,9 @@ void OverviewDelegate::paintItem(QPainter* painter,
             !m_prefetchInFlight.contains(trackId) &&
             !m_pCache->hasNoOverview(trackId));
     if (pixmap.isNull()) {
+        if (trackId.isValid() && !m_pCache->hasNoOverview(trackId)) {
+            scheduleRetry();
+        }
         paintItemBackground(painter, option, index);
     } else {
         // We have a cached pixmap, paint it

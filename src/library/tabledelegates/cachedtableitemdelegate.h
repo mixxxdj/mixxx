@@ -26,6 +26,9 @@ class CachedTableItemDelegate : public TableItemDelegate {
     /// Visible cache misses pass `immediately` to skip the wait and
     /// force a pass right after the current paint, unless scrolling.
     void schedulePrefetch(bool immediately = false) const;
+    /// Call this when painting a placeholder for an expected image. The
+    /// view is repainted a few times, in case it was loaded but not refreshed.
+    void scheduleRetry() const;
     /// Continue with the queued rows, call this when a request finished
     void processPrefetchQueue();
     /// Sorted and deduplicated, optionally only the visible ones
@@ -69,6 +72,9 @@ class CachedTableItemDelegate : public TableItemDelegate {
     const parented_ptr<QTimer> m_pPrefetchTimer;
     // Centers the window again once scrolling stopped
     const parented_ptr<QTimer> m_pSettleTimer;
+    // Since the viewport last changed
+    mutable int m_retryCount = 0;
+    mutable bool m_retryPending = false;
     // An immediate pass is pending, it runs even if the viewport didn't move
     mutable bool m_forcePrefetch = false;
     QElapsedTimer m_lastPrefetch;
