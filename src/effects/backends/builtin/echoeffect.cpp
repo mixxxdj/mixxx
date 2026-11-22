@@ -148,15 +148,11 @@ void EchoEffect::processChannel(
         period = std::max(period, 1 / 8.0);
         delay_seconds = period;
     }
-    const double minDelaySeconds =
-            1.0 / static_cast<double>(engineParameters.sampleRate());
-    const double maxDelaySeconds =
-            static_cast<double>(EchoGroupState::kMaxDelaySeconds);
-    if (std::isnan(delay_seconds) || delay_seconds < minDelaySeconds) {
-        delay_seconds = minDelaySeconds;
-    } else if (delay_seconds > maxDelaySeconds) {
-        delay_seconds = maxDelaySeconds;
+    VERIFY_OR_DEBUG_ASSERT(delay_seconds > 0) {
+        delay_seconds = 1.0 / engineParameters.sampleRate();
     }
+    delay_seconds = std::min<double>(
+            delay_seconds, EchoGroupState::kMaxDelaySeconds);
 
     int delay_frames = static_cast<int>(delay_seconds *
             engineParameters.sampleRate());
