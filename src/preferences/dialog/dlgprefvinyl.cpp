@@ -8,6 +8,7 @@
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefvinyl.cpp"
+#include "util/assert.h"
 #include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -131,8 +132,11 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
 }
 
 void DlgPrefVinyl::slotVinylTypeChanged(const QString& text) {
-    QComboBox* c = qobject_cast<QComboBox*>(sender());
-    int i = m_vcTypeBoxes.indexOf(c);
+    auto* pTypeBox = qobject_cast<QComboBox*>(sender());
+    int i = m_vcTypeBoxes.indexOf(pTypeBox);
+    VERIFY_OR_DEBUG_ASSERT(i >= 0 && i < m_vcLeadInBoxes.size()) {
+        return;
+    }
     m_vcLeadInBoxes[i]->setValue(getDefaultLeadIn(text));
 }
 
@@ -161,17 +165,22 @@ void DlgPrefVinyl::slotHide() {
 
 void DlgPrefVinyl::slotResetToDefaults() {
     // Default to Serato Side A.
-    for (auto* box : std::as_const(m_vcTypeBoxes)) {
-        box->setCurrentIndex(0);
+    for (auto* pBox : std::as_const(m_vcTypeBoxes)) {
+        pBox->setCurrentIndex(0);
     }
 
     // Default to 33 RPM.
-    for (auto* box : std::as_const(m_vcTypeBoxes)) {
-        box->setCurrentIndex(0);
+    for (auto* pBox : std::as_const(m_vcSpeedBoxes)) {
+        pBox->setCurrentIndex(0);
     }
 
-    for (auto* box : std::as_const(m_vcLeadInBoxes)) {
-        box->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
+    // Default to Kalman pitch filter.
+    for (auto* pBox : std::as_const(m_vcPitchEstimatorBoxes)) {
+        pBox->setCurrentIndex(0);
+    }
+
+    for (auto* pBox : std::as_const(m_vcLeadInBoxes)) {
+        pBox->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
     }
 
     SignalQualityEnable->setChecked(true);
@@ -217,10 +226,10 @@ void DlgPrefVinyl::slotUpdate() {
         }
 
         // set lead-in time
-        int leadIn = config->getValue(
+        int leadInTime = config->getValue(
                 ConfigKey(group, "vinylcontrol_lead_in_time"),
                 getDefaultLeadIn(m_vcTypeBoxes[i]->currentText()));
-        m_vcLeadInBoxes[i]->setValue(leadIn);
+        m_vcLeadInBoxes[i]->setValue(leadInTime);
 
         m_signalWidgets[i]->setVinylActive(m_pVCManager->vinylInputConnected(i));
     }
