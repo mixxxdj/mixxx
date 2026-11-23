@@ -33,7 +33,6 @@ WTrackTableViewHeader QMenu,
 WTrackTableViewHeader QMenu QCheckBox,
 WTrackTableViewHeader::section,
 WLibrarySidebar QMenu,
-WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
 QPlainTextEdit QMenu,
@@ -477,14 +476,18 @@ WLibrary WColorPicker QPushButton {
 ############ added styling for AutoDJ & Recording etc ###### */
 
 WTrackTableView,
+WLibrarySidebar {
+  font-weight: normal;
+}
+
 WLibraryTextBrowser,
+WTrackTableView,
 WLibrarySidebar {
   border: 1px solid #585858;
-  font-weight: normal;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
 /* In selected library rows this sets the color of
-  * shapes in star rating delegate  */
+ * shapes in star rating delegate  */
   selection-color: #fff;
   /* background of Color delegate in selected row */
   selection-background-color: #656d75;

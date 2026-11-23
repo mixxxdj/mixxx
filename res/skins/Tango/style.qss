@@ -26,7 +26,6 @@ QSpinBox,
 WBeatSpinBox,
 WOverview #PassthroughLabel,
 WEffectName,
-WLibraryTextBrowser,
 #LibraryFeatureControls QPushButton,
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton {
