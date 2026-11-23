@@ -29,6 +29,7 @@
   [#17185](https://github.com/mixxxdj/mixxx/pull/17185)
   [#17159](https://github.com/mixxxdj/mixxx/pull/17159)
   [#17158](https://github.com/mixxxdj/mixxx/issues/17158)
+  [#17463](https://github.com/mixxxdj/mixxx/pull/17463)
 * Add stem controls and waveforms
   [#13086](https://github.com/mixxxdj/mixxx/pull/13086)
   [#14951](https://github.com/mixxxdj/mixxx/pull/14951)
@@ -76,6 +77,7 @@
   [#13123](https://github.com/mixxxdj/mixxx/pull/13123)
   [#15743](https://github.com/mixxxdj/mixxx/pull/15743)
   [#15530](https://github.com/mixxxdj/mixxx/pull/15530)
+  [#17382](https://github.com/mixxxdj/mixxx/pull/17382)
 * Multithreaded Rubberband (Smooth keylock support)
   [#13143](https://github.com/mixxxdj/mixxx/pull/13143)
   [#13649](https://github.com/mixxxdj/mixxx/pull/13649)
@@ -575,6 +577,7 @@
 * Numark DJ2GO2 Touch: fix bug with preview deck [#16844](https://github.com/mixxxdj/mixxx/pull/16844)
 * Numark Mixtrack 3: fix settings bool evaluation [#16708](https://github.com/mixxxdj/mixxx/pull/16708)
 * Pioneer DDJ-400: unmap headphones mixing knob [#17121](https://github.com/mixxxdj/mixxx/pull/17121)
+* Pioneer DDJ-SX: fix isuue with 2-deck skins [#17477](https://github.com/mixxxdj/mixxx/pull/17477)
 * Reloop Beatpad: Fix typo in group tags for ShiftBtn [#17455](https://github.com/mixxxdj/mixxx/pull/17455)
 * Vestax VCI-400: fix VU meters, midi.sendShortMsg() [#16180](https://github.com/mixxxdj/mixxx/pull/16180)
 
@@ -602,12 +605,15 @@
 * Fix false-positive missing tracks
   [#16685](https://github.com/mixxxdj/mixxx/pull/16685)
   [#13533](https://github.com/mixxxdj/mixxx/issues/13533)
+* Search: stop re-search when entering the search box [#17471](https://github.com/mixxxdj/mixxx/pull/17471)
 * Rekordbox: detect databases in hidden .PIONEER directory
   [#16895](https://github.com/mixxxdj/mixxx/pull/16895)
   [#16894](https://github.com/mixxxdj/mixxx/issues/16894)
 * Rekordbox: fix empty USB device and first-open crash in the macOS sandbox
   [#17441](https://github.com/mixxxdj/mixxx/pull/17441)
   [#13624](https://github.com/mixxxdj/mixxx/issues/13624)
+* Recordbox: fix empty library when sorting for key
+  [#17484](https://github.com/mixxxdj/mixxx/pull/17484)
 * Track table header: throw warning when storing the state fails [#17072](https://github.com/mixxxdj/mixxx/pull/17072)
 * Row colors: fix missing opacity of track colors
   [#17043](https://github.com/mixxxdj/mixxx/pull/17043)
@@ -711,6 +717,8 @@
   [#17003](https://github.com/mixxxdj/mixxx/pull/17003)
   [#17260](https://github.com/mixxxdj/mixxx/pull/17260)
   [#17337](https://github.com/mixxxdj/mixxx/pull/17337)
+  [#17496](https://github.com/mixxxdj/mixxx/pull/17496)
+  [#10441](https://github.com/mixxxdj/mixxx/issues/10441)
 * Run all tests [#17058](https://github.com/mixxxdj/mixxx/pull/17058)
 * Skins: Fix tiny battery icons [#16801](https://github.com/mixxxdj/mixxx/pull/16801)
 * Fix broadcasting using libshout-idjc >= 2.4.6, by using the correct usage flag

@@ -835,10 +835,17 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
 
     for (int row = 0; row < m_pSidebarModel->rowCount(); ++row) {
         QModelIndex index = m_pSidebarModel->index(row, 0);
-        TreeItem* pTreeItem = m_pSidebarModel->getItem(index);
-        DEBUG_ASSERT(pTreeItem != nullptr);
+        TreeItem* pRawTreeItem = m_pSidebarModel->getItem(index);
+        VERIFY_OR_DEBUG_ASSERT(pRawTreeItem != nullptr) {
+            continue;
+        }
+        gsl::strict_not_null<TreeItem*> pTreeItem{pRawTreeItem};
         if (pTreeItem->hasChildren()) {
-            for (TreeItem* pChild : pTreeItem->children()) {
+            for (TreeItem* pRawChild : pTreeItem->children()) {
+                VERIFY_OR_DEBUG_ASSERT(pRawChild != nullptr) {
+                    continue;
+                }
+                gsl::strict_not_null<TreeItem*> pChild{pRawChild};
                 id = pChild->getData().toInt(&ok);
                 if (ok && id != kInvalidPlaylistId && playlistIds.contains(id)) {
                     label = fetchPlaylistLabel(id);

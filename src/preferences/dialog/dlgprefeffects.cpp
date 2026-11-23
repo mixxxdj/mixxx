@@ -148,9 +148,15 @@ void DlgPrefEffects::slotApply() {
 
 void DlgPrefEffects::saveChainPresetLists() {
     auto* pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
+    VERIFY_OR_DEBUG_ASSERT(pModel) {
+        return;
+    }
     m_pChainPresetManager->setPresetOrder(pModel->stringList());
 
     pModel = dynamic_cast<EffectChainPresetListModel*>(quickEffectListView->model());
+    VERIFY_OR_DEBUG_ASSERT(pModel) {
+        return;
+    }
     m_pChainPresetManager->setQuickEffectPresetOrder(pModel->stringList());
 }
 
@@ -206,6 +212,9 @@ void DlgPrefEffects::loadChainPresetLists() {
         chainPresetNames << pChainPreset->name();
     }
     auto* pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
+    VERIFY_OR_DEBUG_ASSERT(pModel) {
+        return;
+    }
     pModel->setStringList(chainPresetNames);
 
     QStringList quickEffectChainPresetNames;
@@ -217,6 +226,9 @@ void DlgPrefEffects::loadChainPresetLists() {
         quickEffectChainPresetNames << pChainPreset->name();
     }
     pModel = dynamic_cast<EffectChainPresetListModel*>(quickEffectListView->model());
+    VERIFY_OR_DEBUG_ASSERT(pModel) {
+        return;
+    }
     pModel->setStringList(quickEffectChainPresetNames);
 }
 
@@ -375,6 +387,9 @@ void DlgPrefEffects::slotDeletePreset() {
     }
     auto* pFocusedModel = dynamic_cast<EffectChainPresetListModel*>(
             m_pFocusedChainList->model());
+    VERIFY_OR_DEBUG_ASSERT(pFocusedModel) {
+        return;
+    }
     QStringList focusedChainStringList = pFocusedModel->stringList();
 
     QListView* pUnfocusedChainList = unfocusedChainList();
@@ -383,6 +398,9 @@ void DlgPrefEffects::slotDeletePreset() {
     }
     auto* pUnfocusedModel = dynamic_cast<EffectChainPresetListModel*>(
             pUnfocusedChainList->model());
+    VERIFY_OR_DEBUG_ASSERT(pUnfocusedModel) {
+        return;
+    }
     auto unfocusedChainStringList = pUnfocusedModel->stringList();
 
     bool updateAndSavePresetLists = false;
