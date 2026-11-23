@@ -471,11 +471,11 @@ void DlgPrefWaveform::slotUpdate() {
             waveformSettings.waveformGenerationWithAnalysisEnabled());
     calculateCachedWaveformDiskUsage();
 
-    bool downbeatsEnabled = factory->getDownbeatsEnabled();
+    bool downbeatsEnabled = pFactory->getDownbeatsEnabled();
     enableDownBeatCheckBox->setChecked(downbeatsEnabled);
     downbeatDistanceLabel->setEnabled(downbeatsEnabled);
     downbeatDistanceSpinBox->setEnabled(downbeatsEnabled);
-    int downbeatDistance = factory->getDownbeatDistance();
+    int downbeatDistance = pFactory->getDownbeatDistance();
     downbeatDistanceSpinBox->setValue(downbeatDistance);
 }
 
