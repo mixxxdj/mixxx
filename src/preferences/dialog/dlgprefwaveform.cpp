@@ -646,20 +646,20 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
     highDetailCheckBox->blockSignals(true);
     visualizeEqGainCheckBox->blockSignals(true);
 
-#ifdef MIXXX_USE_QOPENGL
     auto* pFactory = WaveformWidgetFactory::instance();
 
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
-#ifdef MIXXX_USE_QML
-    const bool qmlMode = isQtQuickWaveformRenderActive();
-#else
-    constexpr bool qmlMode = false;
-#endif
     WaveformWidgetBackend backend = pFactory->getBackendFromConfig();
     allshader::WaveformRendererSignalBase::Options currentOptions = pFactory->getWaveformOptions();
     allshader::WaveformRendererSignalBase::Options supportedOptions =
             pFactory->getWaveformOptionsSupportedByType(type, backend);
 
+#ifdef MIXXX_USE_QOPENGL
+#ifdef MIXXX_USE_QML
+    const bool qmlMode = isQtQuickWaveformRenderActive();
+#else
+    constexpr bool qmlMode = false;
+#endif
     splitLeftRightCheckBox->setEnabled(useWaveform &&
             (supportedOptions &
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
@@ -671,17 +671,16 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
             (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
+#else
+    splitLeftRightCheckBox->setVisible(false);
+    highDetailCheckBox->setVisible(false);
+#endif
     visualizeEqGainCheckBox->setEnabled(useWaveform &&
             (supportedOptions &
                     allshader::WaveformRendererSignalBase::Option::IgnoreEqGain));
     visualizeEqGainCheckBox->setChecked(visualizeEqGainCheckBox->isEnabled() &&
             !(currentOptions &
                     allshader::WaveformRendererSignalBase::Option::IgnoreEqGain));
-#else
-    splitLeftRightCheckBox->setVisible(false);
-    highDetailCheckBox->setVisible(false);
-    visualizeEqGainCheckBox->setVisible(false);
-#endif
 
     splitLeftRightCheckBox->blockSignals(false);
     highDetailCheckBox->blockSignals(false);
