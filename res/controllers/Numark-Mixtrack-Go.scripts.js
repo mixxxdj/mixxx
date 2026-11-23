@@ -716,7 +716,7 @@ NumarkMixtrackGo.browseEncoder = new components.Encoder({
             engine.setValue("[Playlist]", "SelectTrackKnob", rotateValue);
         } else { // isStripSearching - 0.05 modifies the fraction of the duration of the track the encoder moves per detent while rotating
             const currentPosition = engine.getValue("[PreviewDeck1]", "playposition");
-            let newPosition = currentPosition + currentPosition*0.05*rotateValue;
+            let newPosition = currentPosition + 0.05*rotateValue;
             // prevents the trackhead from going past where the GUI can show, as we get the deck in playing status, but hear nothing
             if (newPosition < 0) {
                 newPosition = 0;
