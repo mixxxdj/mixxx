@@ -183,6 +183,7 @@ void DlgPrefVinyl::slotResetToDefaults() {
     }
 
     SignalQualityEnable->setChecked(true);
+    AutoRelToAbsEnable->setChecked(false);
     SliderVinylGain->setValue(0);
     slotUpdateVinylGain();
 }
@@ -196,6 +197,8 @@ void DlgPrefVinyl::slotUpdate() {
 
     SignalQualityEnable->setChecked(
             (bool)config->getValue<bool>(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")));
+    AutoRelToAbsEnable->setChecked(config->getValue<bool>(
+            ConfigKey(VINYL_PREF_KEY, "auto_rel_to_abs_needle_drop"), false));
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         QString group = PlayerManager::groupForDeck(i);
@@ -310,6 +313,8 @@ void DlgPrefVinyl::slotApply() {
 
     config->set(ConfigKey(VINYL_PREF_KEY,"show_signal_quality"),
                 ConfigValue((int)(SignalQualityEnable->isChecked())));
+    config->set(ConfigKey(VINYL_PREF_KEY, "auto_rel_to_abs_needle_drop"),
+            ConfigValue(static_cast<int>(AutoRelToAbsEnable->isChecked())));
 
     m_pVCManager->requestReloadConfig();
     slotUpdate();

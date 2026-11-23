@@ -44,6 +44,10 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_iPosition(-1),
           m_bAtRecordEnd(false),
           m_bForceResync(false),
+          m_bAutoRelToAbsEnabled(m_pConfig->getValue<bool>(
+                  ConfigKey(VINYL_PREF_KEY, "auto_rel_to_abs_needle_drop"), false)),
+          m_bAutoRelToAbsPending(false),
+          m_bHavePreviousVinylPosition(false),
           m_iVCMode(static_cast<int>(mode->get())),
           m_iOldVCMode(MIXXX_VCMODE_ABSOLUTE),
           m_dOldFilePos(0.0),
@@ -353,6 +357,46 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         }
     }
 
+    // Complete the second phase of the automatic REL -> CONST -> ABS
+    // transition on the next analysis cycle. Playback is not toggled.
+    if (m_bAutoRelToAbsPending) {
+        m_bAutoRelToAbsPending = false;
+        m_iVCMode = MIXXX_VCMODE_ABSOLUTE;
+        mode->set(static_cast<double>(m_iVCMode));
+        m_bForceResync = true;
+    }
+
+    // The one-second threshold is based on consecutive timecode positions,
+    // never on Mixxx's looped track-playback position. Loop repetition and
+    // loop length therefore do not accumulate toward the threshold.
+    const double vinylDisplacement =
+            std::fabs(m_dVinylPosition - m_dVinylPositionOld);
+    const bool needleDropDetected = vinylDisplacement >= 1.0;
+    const bool loopActive = loopEnabled->toBool();
+    // A running loop alone suppresses fallback; a detected needle drop is
+    // still eligible during the loop and will disable it when triggered.
+    const bool fallbackTriggered = needleDropDetected;
+
+    if (m_bAutoRelToAbsEnabled &&
+            m_bHavePreviousVinylPosition &&
+            bHaveSignal &&
+            m_iPosition != -1 &&
+            m_fTimecodeQuality >= 0.5f &&
+            m_iVCMode == MIXXX_VCMODE_RELATIVE &&
+            fallbackTriggered &&
+            !scratching->toBool() &&
+            !reverseButton->toBool() &&
+            cueing->toBool() == MIXXX_RELATIVE_CUE_OFF) {
+        // Disable Beatloop only when the qualifying needle drop triggers.
+        if (loopActive) {
+            loopEnabled->set(0.0);
+        }
+        m_iOldVCMode = m_iVCMode;
+        m_iVCMode = MIXXX_VCMODE_CONSTANT;
+        mode->set(static_cast<double>(m_iVCMode));
+        m_bAutoRelToAbsPending = true;
+    }
+
     //if looping has been enabled, don't allow absolute mode
     if (loopEnabled->toBool() && m_iVCMode == MIXXX_VCMODE_ABSOLUTE) {
         m_iVCMode = MIXXX_VCMODE_RELATIVE;
@@ -493,6 +537,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
             }
 
             m_dVinylPositionOld = m_dVinylPosition;
+            m_bHavePreviousVinylPosition = true;
         } else {
             //POSITION: NO  PITCH: YES
             //if we don't have valid position, we're not playing so reset time to current

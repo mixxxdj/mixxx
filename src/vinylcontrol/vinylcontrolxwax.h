@@ -83,6 +83,11 @@ class VinylControlXwax : public VinylControl {
     // Whether to force a resync on the next analysis loop.
     bool m_bForceResync;
 
+    // Optional automatic REL -> CONST -> ABS needle-drop fallback.
+    bool m_bAutoRelToAbsEnabled;
+    bool m_bAutoRelToAbsPending;
+    bool m_bHavePreviousVinylPosition;
+
     // The Vinyl Control mode and the previous mode.
     int m_iVCMode;
     int m_iOldVCMode;
