@@ -68,7 +68,7 @@ class WaveformWidgetAbstractHandle {
             WaveformWidgetBackend backend) const {
         return backend == WaveformWidgetBackend::AllShader
                 ? m_supportedOption
-                : WaveformRendererSignalBase::Option::None;
+                : m_supportedOption & WaveformRendererSignalBase::Option::IgnoreEqGain;
     }
 #endif
 
@@ -79,7 +79,7 @@ class WaveformWidgetAbstractHandle {
     WaveformWidgetType::Type m_type;
     QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
-    // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
+    // Options of the Allshader (accelerated) backend. Other backends only implement IgnoreEqGain
     WaveformRendererSignalBase::Options m_supportedOption;
 #endif
 

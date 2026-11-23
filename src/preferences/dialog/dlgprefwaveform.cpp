@@ -226,6 +226,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::clicked,
             this,
             &DlgPrefWaveform::slotSetWaveformOptionHighDetail);
+    connect(visualizeEqGainCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetWaveformOptionVisualizeEqGain);
     connect(defaultZoomComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -640,6 +644,7 @@ void DlgPrefWaveform::updateWaveformAcceleration(WaveformWidgetType::Type type) 
 void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
     splitLeftRightCheckBox->blockSignals(true);
     highDetailCheckBox->blockSignals(true);
+    visualizeEqGainCheckBox->blockSignals(true);
 
 #ifdef MIXXX_USE_QOPENGL
     auto* pFactory = WaveformWidgetFactory::instance();
@@ -666,13 +671,21 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
             (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
+    visualizeEqGainCheckBox->setEnabled(useWaveform &&
+            (supportedOptions &
+                    allshader::WaveformRendererSignalBase::Option::IgnoreEqGain));
+    visualizeEqGainCheckBox->setChecked(visualizeEqGainCheckBox->isEnabled() &&
+            !(currentOptions &
+                    allshader::WaveformRendererSignalBase::Option::IgnoreEqGain));
 #else
     splitLeftRightCheckBox->setVisible(false);
     highDetailCheckBox->setVisible(false);
+    visualizeEqGainCheckBox->setVisible(false);
 #endif
 
     splitLeftRightCheckBox->blockSignals(false);
     highDetailCheckBox->blockSignals(false);
+    visualizeEqGainCheckBox->blockSignals(false);
 }
 
 void DlgPrefWaveform::updateEnableUntilMark() {

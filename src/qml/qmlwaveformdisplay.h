@@ -77,6 +77,8 @@ class QmlWaveformDisplay : public QQuickItem, VSyncTimeProvider, public Waveform
                         WaveformRendererSignalBase::Option::SplitStereoSignal),
         HighDetail = static_cast<int>(
                 allshader::WaveformRendererSignalBase::Option::HighDetail),
+        IgnoreEqGain = static_cast<int>(
+                allshader::WaveformRendererSignalBase::Option::IgnoreEqGain),
     };
     Q_ENUM(Option);
     Q_DECLARE_FLAGS(Options, Option);

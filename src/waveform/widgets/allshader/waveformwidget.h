@@ -59,6 +59,10 @@ class allshader::WaveformWidget final : public ::WGLWidget,
         default:
             break;
         }
+        if (type != WaveformWidgetType::Type::Simple) {
+            // Simple has no per-band gains
+            options |= ::WaveformRendererSignalBase::Option::IgnoreEqGain;
+        }
         if (useGles) {
             // High detail (textured) waveforms are not supported on OpenGL ES.
             // See https://github.com/mixxxdj/mixxx/issues/13385

@@ -48,6 +48,7 @@ Category {
         var options = Mixxx.Config.waveformOptions;
         splitStereoSignalInput.selected = (options & Mixxx.WaveformDisplay.Option.SplitStereoSignal) ? "on" : "off";
         highDetailInput.selected = (options & Mixxx.WaveformDisplay.Option.HighDetail) ? "on" : "off";
+        visualizeEqGainInput.selected = (options & Mixxx.WaveformDisplay.Option.IgnoreEqGain) ? "off" : "on";
         defaultZoomInput.value = Mixxx.Config.waveformDefaultZoom;
         endOfTrackWarningInput.value = Mixxx.Config.waveformEndOfTrackWarningTime;
         beatGridAlphaInput.value = Mixxx.Config.waveformBeatGridAlpha;
@@ -83,6 +84,7 @@ Category {
         frameRateInput.value = 60;
         splitStereoSignalInput.selected = "off";
         highDetailInput.selected = "off";
+        visualizeEqGainInput.selected = "on";
         defaultZoomInput.value = 3;
         endOfTrackWarningInput.value = 30;
         beatGridAlphaInput.value = 90;
@@ -117,6 +119,8 @@ Category {
             options |= Mixxx.WaveformDisplay.Option.SplitStereoSignal;
         if (highDetailInput.selected === "on")
             options |= Mixxx.WaveformDisplay.Option.HighDetail;
+        if (visualizeEqGainInput.selected === "off")
+            options |= Mixxx.WaveformDisplay.Option.IgnoreEqGain;
         Mixxx.Config.waveformOptions = options;
         Mixxx.Config.waveformDefaultZoom = defaultZoomInput.value;
         Mixxx.Config.waveformEndOfTrackWarningTime = endOfTrackWarningInput.value;
@@ -427,6 +431,21 @@ Category {
                 color: Theme.midGray
                 text: "High detail is retained for compatibility but is unavailable in the QML scene-graph renderer."
                 wrapMode: Text.WordWrap
+            }
+            RowLayout {
+                Layout.fillWidth: true
+
+                WaveformSettingParameter {
+                    label: "Visualize EQ gain"
+                }
+                RatioChoice {
+                    id: visualizeEqGainInput
+
+                    enabled: waveformTypeInput.currentIndex !== 0
+                    options: ["on", "off"]
+
+                    onSelectedChanged: root.markDirty()
+                }
             }
             RowLayout {
                 Layout.fillWidth: true
