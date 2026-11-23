@@ -60,6 +60,24 @@ class allshader::WaveformRenderBeat final
 
     TrackPointer m_pLoadedTrack;
 
+    // Optional skin styling of beat and bar (downbeat) lines
+    enum class MarkerShape {
+        None,
+        Triangle,
+        Tick,
+        Block,
+    };
+    struct LineStyle {
+        float lineWidth{1.f}; // 0 draws the markers only
+        MarkerShape markerShape{MarkerShape::None};
+        float markerSize{4.f};
+        QColor markerColor;
+    };
+    LineStyle m_beatStyle;
+    LineStyle m_barStyle;
+    bool m_markersOnTop{true};
+    bool m_markersOnBottom{true};
+
     bool preprocessInner();
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
