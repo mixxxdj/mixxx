@@ -149,7 +149,14 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "\n"
             "Skip Silence Start Full Volume:\n"
             "The same as Skip Silence, but starting transitions with a centered\n"
-            "crossfader, so that the intro starts at full volume.\n");
+            "crossfader, so that the intro starts at full volume.\n"
+            "\n"
+            "Full Track + Silence Gap:\n"
+            "Play the whole track, then wait the selected number of seconds of\n"
+            "true silence, and start the next track exactly at its marked start\n"
+            "point (intro start cue, first sound or 0:00). The silence does not\n"
+            "depend on the file's lead-in. 'Fade now' keeps the fade-out and the\n"
+            "following silence gap.\n");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
@@ -184,6 +191,8 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
     fadeModeCombobox->addItem(tr("Skip Silence Start Full Volume"),
             static_cast<int>(AutoDJProcessor::TransitionMode::FixedStartCenterSkipSilence));
+    fadeModeCombobox->addItem(tr("Full Track + Silence Gap"),
+            static_cast<int>(AutoDJProcessor::TransitionMode::FixedSilenceGap));
     fadeModeCombobox->setCurrentIndex(
             fadeModeCombobox->findData(static_cast<int>(m_pAutoDJProcessor->getTransitionMode())));
     connect(fadeModeCombobox,

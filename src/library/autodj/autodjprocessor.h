@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QTimer>
 #include <memory>
 #include <vector>
 
@@ -170,7 +171,8 @@ class AutoDJProcessor : public QObject {
         FadeAtOutroStart,
         FixedFullTrack,
         FixedSkipSilence,
-        FixedStartCenterSkipSilence
+        FixedStartCenterSkipSilence,
+        FixedSilenceGap
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -242,6 +244,7 @@ class AutoDJProcessor : public QObject {
     void controlSkipNext(double value);
     void controlAddRandomTrack(double value);
     void slotNumberOfDecksChanged(int decks);
+    void slotHoldElapsed();
 
   protected:
     // The following virtual signal wrappers are used for testing
@@ -255,6 +258,10 @@ class AutoDJProcessor : public QObject {
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         emit autoDJStateChanged(state);
     }
+    // Starts a real-silence gap of |m_transitionTime| seconds before the next
+    // track starts playing. Used with the FixedSilenceGap transition mode.
+    // Virtual so tests can simulate the gap elapsing without an event loop.
+    virtual void startTransitionHold(DeckAttributes* pToDeck, double fadeSeconds);
 
   private:
     // Gets or sets the crossfader position while normalizing it so that -1 is
@@ -307,6 +314,8 @@ class AutoDJProcessor : public QObject {
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
     bool m_crossfaderStartCenter;
+    QTimer m_transitionHoldTimer;
+    DeckAttributes* m_transitionHoldDeck;
 
     PlayerManagerInterface* m_pPlayerManager;
     std::vector<std::unique_ptr<DeckAttributes>> m_decks;

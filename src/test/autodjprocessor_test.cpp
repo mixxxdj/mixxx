@@ -179,6 +179,7 @@ class MockAutoDJProcessor : public AutoDJProcessor {
 
     MOCK_METHOD3(emitLoadTrackToPlayer, void(TrackPointer, const QString&, bool));
     MOCK_METHOD1(emitAutoDJStateChanged, void(AutoDJProcessor::AutoDJState));
+    MOCK_METHOD2(startTransitionHold, void(DeckAttributes*, double));
 };
 
 class AutoDJProcessorTest : public LibraryTest {
@@ -2055,4 +2056,132 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_ZeroTransition_DelayedPlaypositionAfterS
     EXPECT_DOUBLE_EQ(1.0, mixer.crossfader.get());
     EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
     EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+}
+
+TEST_F(AutoDJProcessorTest, FixedSilenceGap_GapThenCueEntry) {
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedSilenceGap);
+
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    // Crossfader starts on the left.
+    mixer.crossfader.set(-1.0);
+    // Pretend a track is playing on deck 1.
+    TrackPointer pTrack = newTestTrack();
+    // Pretend that track is 2 minutes long.
+    pTrack->setDuration(120);
+    // Load track and mark it playing.
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    // Indicate the track loaded successfully.
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    // Enable AutoDJ, we immediately transition into IDLE and request a track
+    // load on deck2.
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Pretend the track load succeeds.
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    // FixedSilenceGap cues the next track at its marked start point
+    // (0:00 without cues) regardless of the transition time sign.
+    pProcessor->setTransitionTime(-12);
+    EXPECT_DOUBLE_EQ(0.0, deck2.playposition.get());
+
+    // The to deck starts only after the silence gap elapses. Simulate the
+    // QTimer hold elapsing by playing the deck immediately.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
+    EXPECT_CALL(*pProcessor, startTransitionHold(_, _))
+            .WillOnce([](DeckAttributes* pDeck, double) { pDeck->play(); });
+
+    // Seek the playing track to its end to start the transition.
+    deck1.playposition.set(1.0);
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.playposition.get());
+
+    // Advance the to deck to trigger the FADING -> IDLE handover.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+    deck2.playposition.set(0.5);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, mixer.crossfader.get());
+}
+
+TEST_F(AutoDJProcessorTest, FadeNow_FixedSilenceGap_KeepsSilenceAndCrossfader) {
+    pProcessor->setTransitionMode(AutoDJProcessor::TransitionMode::FixedSilenceGap);
+
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    mixer.crossfader.set(-1.0);
+    TrackPointer pTrack = newTestTrack();
+    pTrack->setDuration(120);
+    deck1.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            true);
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    deck2.slotLoadTrack(pTrack,
+#ifdef __STEM__
+            mixxx::StemChannelSelection(),
+#endif
+            false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+    EXPECT_DOUBLE_EQ(0.0, deck2.playposition.get());
+
+    // A positive transition time works the same: the gap duration is the
+    // absolute value, so the sign is irrelevant in this mode.
+    pProcessor->setTransitionTime(3);
+
+    // Simulate the cortina playing halfway.
+    deck1.playposition.set(0.5);
+
+    // Fade now keeps the crossfader fade-out and still schedules the
+    // real-silence gap instead of playing the next deck right away.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_LEFT_FADING));
+    EXPECT_CALL(*pProcessor, startTransitionHold(_, _))
+            .WillOnce([](DeckAttributes* pDeck, double) { pDeck->play(); });
+    pProcessor->fadeNow();
+
+    // The next position update starts the handover: the crossfader sweeps
+    // (the from deck keeps playing and fades out) instead of cutting hard.
+    deck1.playposition.set(0.51);
+
+    EXPECT_EQ(AutoDJProcessor::ADJ_LEFT_FADING, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    // The crossfader is in the middle of the sweep (not hard left or right).
+    EXPECT_GT(mixer.crossfader.get(), -1.0);
+    EXPECT_LT(mixer.crossfader.get(), 1.0);
+    // The to deck starts from its cued start point after the gap elapses.
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.playposition.get());
 }
