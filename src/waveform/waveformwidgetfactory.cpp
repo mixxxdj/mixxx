@@ -91,7 +91,8 @@ const ConfigKey kFrameRateKey =
 const ConfigKey kVSyncKey = ConfigKey(kWaveformGroup, QStringLiteral("VSync"));
 const ConfigKey kBeatGridAlpha = ConfigKey(kWaveformGroup, QStringLiteral("beatGridAlpha"));
 const ConfigKey kDownbeatsEnabledKey = ConfigKey(kWaveformGroup, QStringLiteral("show_downbeats"));
-const ConfigKey kDownbeatsDistanceKey = ConfigKey(kWaveformGroup, QStringLiteral("downbeats_distance"));
+const ConfigKey kDownbeatsDistanceKey =
+        ConfigKey(kWaveformGroup, QStringLiteral("downbeats_distance"));
 
 ConfigKey visualGainKey(int index) {
     return ConfigKey(kWaveformGroup, QStringLiteral("VisualGain_") + QString::number(index));

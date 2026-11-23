@@ -47,8 +47,11 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& skinCont
     auto readStyle = [&](const QString& prefix, const QColor& lineColor) {
         LineStyle style;
         style.lineWidth = std::max(0.f,
-                skinContext.selectFloat(node, prefix + QStringLiteral("LineWidth"), style.lineWidth));
-        const QString shape = skinContext.selectString(node, prefix + QStringLiteral("MarkerShape"));
+                skinContext.selectFloat(node,
+                        prefix + QStringLiteral("LineWidth"),
+                        style.lineWidth));
+        const QString shape = skinContext.selectString(
+                node, prefix + QStringLiteral("MarkerShape"));
         if (shape == QLatin1String("triangle")) {
             style.markerShape = MarkerShape::Triangle;
         } else if (shape == QLatin1String("tick")) {
