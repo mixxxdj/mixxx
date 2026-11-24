@@ -429,6 +429,9 @@ WOverview QLabel {
   #KeyText, #KeyTextSmall {
     qproperty-alignment: 'AlignCenter';
   }
+  #KeyControls {
+    qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  }
 
 #DeckRow_2_3_ArtistTitleTime {
   }

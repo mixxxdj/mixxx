@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/keycontrol.h"
 #include "engine/defs_keylock.h"
 #include "engine/engine.h"
 #include "engine/enginebuffer.h"
@@ -97,7 +98,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = std::make_unique<ControlObject>(
-        ConfigKey(getGroup(), "duration"));
+            ConfigKey(getGroup(), "duration"));
 
     // Track color of the current track
     m_pTrackColor = std::make_unique<ControlObject>(
@@ -553,9 +554,9 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack,
         bool bPlay) {
 #endif
-    //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
-    // Before loading the track, ensure we have access. This uses lazy
-    // evaluation to make sure track isn't NULL before we dereference it.
+    // qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup() << pNewTrack.get();
+    //  Before loading the track, ensure we have access. This uses lazy
+    //  evaluation to make sure track isn't NULL before we dereference it.
     if (pNewTrack) {
         auto fileInfo = pNewTrack->getFileInfo();
         if (!Sandbox::askForAccess(&fileInfo)) {
@@ -618,12 +619,71 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& rea
     m_pPrevFailedTrackId = TrackId();
 }
 
+QString BaseTrackPlayerImpl::otherMainDeckGroup() const {
+    const QString thisGroup = getGroup();
+    const EngineChannel::ChannelOrientation thisOrientation = m_pChannel->getOrientation();
+    const int numDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_decks"))));
+    QString fallback;
+    for (int i = 0; i < numDecks; ++i) {
+        const QString group = PlayerManager::groupForDeck(i);
+        if (group == thisGroup) {
+            continue;
+        }
+        EngineChannel* pOther = m_pEngineMixer->getChannel(group);
+        // Samplers, preview decks, and microphones are not in this list.
+        // Skip any non-primary channel registered under a deck group.
+        if (pOther == nullptr || !pOther->isPrimaryDeck()) {
+            continue;
+        }
+        const EngineChannel::ChannelOrientation orientation = pOther->getOrientation();
+        const bool opposite =
+                (thisOrientation == EngineChannel::LEFT &&
+                        orientation == EngineChannel::RIGHT) ||
+                (thisOrientation == EngineChannel::RIGHT &&
+                        orientation == EngineChannel::LEFT);
+        if (opposite) {
+            return group;
+        }
+        if (fallback.isEmpty()) {
+            fallback = group;
+        }
+    }
+    return fallback;
+}
+
+void BaseTrackPlayerImpl::maybeHarmonizeManualLoad() {
+    // Main decks only. Preview, sampler, and microphone players never reach
+    // here with isPrimaryDeck() (microphones are not BaseTrackPlayerImpl).
+    if (!m_pChannel->isPrimaryDeck()) {
+        return;
+    }
+    // An AutoDJ autoload is harmonized by AutoDJProcessor, once.
+    if (isPendingAutoDjAutoload() || m_pChannelToCloneFrom != nullptr) {
+        return;
+    }
+    if (!KeyControl::shouldHarmonizeOnLoad(getGroup(), m_pConfig)) {
+        return;
+    }
+    QString target = KeyControl::keyLeaderGroup(getGroup());
+    if (target.isEmpty()) {
+        target = otherMainDeckGroup();
+    }
+    if (target.isEmpty()) {
+        return;
+    }
+    KeyControl::applyMatchKeyPitch(getGroup(), target, m_pConfig);
+}
+
 void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
-                                          TrackPointer pOldTrack) {
-    //qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
+        TrackPointer pOldTrack) {
+    // qDebug() << "BaseTrackPlayerImpl::slotTrackLoaded" << pNewTrack.get() << pOldTrack.get();
     if (!pNewTrack &&
             pOldTrack &&
             pOldTrack == m_pLoadedTrack) {
+        // A failed or ejected AutoDJ load must not stick and suppress the
+        // next manual harmonize. The next autoload sets the flag again.
+        setPendingAutoDjAutoload(false);
         // eject Track
         unloadTrack();
 
@@ -654,8 +714,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pKey->set(m_pLoadedTrack->getKey());
         slotSetTrackColor(m_pLoadedTrack->getColor());
 
-        if(m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
+        if (m_pConfig->getValue(
+                    ConfigKey("[Mixer Profile]", "EqAutoReset"), false)) {
             if (m_pLowFilter) {
                 m_pLowFilter->set(1.0);
             }
@@ -676,7 +736,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
         }
         if (m_pConfig->getValue(
-                ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
+                    ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
             m_pPreGain->set(1.0);
         }
 
@@ -704,6 +764,10 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                     m_pPitchAdjust->set(0.0);
                 }
             }
+            // After the file key is published and the load reset has run.
+            // AutoDJ autoloads are marked pending and harmonized by
+            // AutoDJProcessor instead, so this cannot apply a second offset.
+            maybeHarmonizeManualLoad();
         } else {
             // perform a clone of the given channel
 
@@ -996,8 +1060,8 @@ void BaseTrackPlayerImpl::setupEqControls() {
 }
 
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
-    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
-            && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
+    if (v <= WaveformWidgetRenderer::s_waveformMaxZoom &&
+            v >= WaveformWidgetRenderer::s_waveformMinZoom) {
         m_pWaveformZoom->setAndConfirm(v);
     }
 }

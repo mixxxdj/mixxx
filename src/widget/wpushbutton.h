@@ -54,6 +54,11 @@ class WPushButton : public WWidget {
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
 
+    // Right-click uses the left-click action. An already-on button ignores it.
+    void setRightClickMatchesLeft(bool enable) {
+        m_rightClickMatchesLeft = enable;
+    }
+
     // Sets the number of states associated with this button, and removes
     // associated pixmaps.
     void setStates(int iStates);
@@ -112,6 +117,10 @@ class WPushButton : public WWidget {
     // short click toggle button long click push button
     mixxx::control::ButtonMode m_leftButtonMode;
     mixxx::control::ButtonMode m_rightButtonMode;
+    // Right-click repeats left-click, and does nothing while that control is on.
+    bool m_rightClickMatchesLeft = false;
+    // The matching right press was ignored, so its release must not write.
+    bool m_rightPressIgnored = false;
     QTimer m_clickTimer;
     QVector<int> m_align;
 

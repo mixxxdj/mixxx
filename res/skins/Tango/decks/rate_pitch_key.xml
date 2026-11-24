@@ -44,6 +44,29 @@ Variables:
                     <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
                   </Template>
+
+                  <PushButton>
+                    <TooltipId>sync_key_leader</TooltipId>
+                    <ObjectName>KeyLeader</ObjectName>
+                    <Size>13f,13f</Size>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>&#9812;</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>&#9812;</Text>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Text>&#9812;</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,sync_key_leader</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Tango],rate_key_controls</ConfigKey>
@@ -57,13 +80,27 @@ Variables:
                 <Size>1me,13f</Size>
                 <Children>
                   <!-- KeyMatch, transparent -->
-                  <Template src="skins:Tango/controls/button_1state_right.xml">
-                    <SetVariable name="TooltipId">sync_reset_key</SetVariable>
-                    <SetVariable name="ObjectName">KeyMatch</SetVariable>
-                    <SetVariable name="Size">26me,13f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,sync_key</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
-                  </Template>
+                  <PushButton>
+                    <TooltipId>sync_reset_key</TooltipId>
+                    <ObjectName>KeyMatch</ObjectName>
+                    <Size>26me,13f</Size>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,sync_key</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,reset_key</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
 
                   <!-- Show/light up if key is not original, like with script.
                         Not working, only once per skin load.

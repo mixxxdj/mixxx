@@ -8,13 +8,48 @@ Item {
 
     required property string group
 
-    implicitWidth: 76
-    implicitHeight: 20
+    // Crown (22) + Sync (40) + Match Key (26) + key text + up/down.
+    implicitWidth: 138
+    implicitHeight: 22
 
     Mixxx.ControlProxy {
         id: keyProxy
         group: root.group
         key: "key"
+    }
+
+    Mixxx.ControlProxy {
+        id: syncKeyProxy
+        group: root.group
+        key: "sync_key"
+    }
+
+    Mixxx.ControlProxy {
+        id: keyLeaderProxy
+        group: root.group
+        key: "sync_key_leader"
+    }
+
+    function keyLeaderIcon() {
+        switch (Math.round(keyLeaderProxy.value)) {
+        case 1:
+            return LateNightTheme.assetDeckLeaderImplicitButton;
+        case 2:
+            return LateNightTheme.assetDeckLeaderExplicitButton;
+        default:
+            return LateNightTheme.assetDeckLeaderButton;
+        }
+    }
+
+    function keyLeaderColor() {
+        switch (Math.round(keyLeaderProxy.value)) {
+        case 1:
+            return LateNightTheme.syncImplicitLeaderColor;
+        case 2:
+            return LateNightTheme.syncExplicitLeaderColor;
+        default:
+            return "transparent";
+        }
     }
 
     Mixxx.ControlProxy {
@@ -35,16 +70,79 @@ Item {
 
     readonly property string displayKeyText: keyDisplayText(keyProxy.value, keyNotationProxy.value)
     readonly property bool showKeyColorStrip: Mixxx.Config.configKeyColorsEnabled && trackLoadedProxy.value > 0 && displayKeyText.length > 0
-    readonly property int keyTextX: showKeyColorStrip ? 30 : 26
+    readonly property int keyTextX: showKeyColorStrip ? 92 : 88
     readonly property bool useSecondaryDeckText: root.group === "[Channel3]" || root.group === "[Channel4]"
     readonly property color keyTextColor: useSecondaryDeckText ? LateNightTheme.secondaryDeckTextColor : LateNightTheme.primaryDeckTextColor
 
-    // Key match/reset button: left-click = sync_key, right-click = reset_key
+    // Crown, then Sync, then Match Key. cycleStates writes 0/1/2 itself
+    // because the key crown is a plain 3-state control. The engine folds 2
+    // back to 1, the same as the beat crown. A lit crown latches key sync.
+    // Turning sync off removes the crown.
     LateNightControlButton {
+        id: keyLeaderButton
+        z: 2
         x: 0
         y: 0
+        width: 22
+        height: 22
+        backgroundSource: LateNightTheme.assetDeckSyncBackground
+        activeBackgroundSuffix: "active"
+        iconSource: root.keyLeaderIcon()
+        group: root.group
+        key: "sync_key_leader"
+        displayKey: "sync_key_leader"
+        numberStates: 3
+        cycleStates: true
+        releaseToZero: false
+        activeOpacity: 1.0
+        inactiveOpacity: 1.0
+        activeColor: root.keyLeaderColor()
+        fillMargin: 0
+    }
+
+    // First press with no key leader lights the crown and does not retune.
+    // A later press matches the leader. Turning sync off removes the crown.
+    // Right-click hold activates sync the same way. While sync is on,
+    // right-click does nothing. Reset stays on the match button.
+    LateNightControlButton {
+        id: keySyncButton
+        z: 2
+        x: 22
+        y: 0
+        width: 40
+        height: 22
+        backgroundSource: LateNightTheme.assetDeckSyncBackground
+        activeBackgroundSuffix: "active"
+        iconSource: syncKeyProxy.value > 0 ? LateNightTheme.assetDeckSyncActiveButton : LateNightTheme.assetDeckSyncButton
+        group: root.group
+        key: "sync_key"
+        rightClickMatchesLeft: true
+        longPressLatching: true
+        numberStates: 2
+        longPressLatchOverlayColor: LateNightTheme.syncInactiveBackgroundColor
+        longPressLatchOverlayBackgroundSource: LateNightTheme.assetDeckSyncBackground
+        longPressLatchOverlayIconSource: LateNightTheme.assetDeckSyncButton
+        activeOpacity: 1.0
+        inactiveOpacity: 1.0
+        activeColor: LateNightTheme.syncExplicitLeaderColor
+        fillMargin: 0
+        iconBottomPadding: LateNightTheme.isPaleMoon ? 2 : 0
+        iconLeftPadding: LateNightTheme.isPaleMoon ? 2 : LateNightTheme.syncButtonHorizontalPadding
+        iconRightPadding: LateNightTheme.isPaleMoon ? 2 : LateNightTheme.syncButtonHorizontalPadding
+        iconTopPadding: LateNightTheme.isPaleMoon ? 2 : 0
+        rasterizeIconAtPaintedSize: LateNightTheme.isPaleMoon
+        stretchIcon: LateNightTheme.isPaleMoon
+    }
+
+    // Key match/reset button: tap matches once and does not light Sync.
+    // Right-click resets the key. The leader keeps sync and other synced
+    // decks follow. Any other deck turns key sync off.
+    // Hold-to-latch is the Sync button.
+    LateNightControlButton {
+        x: 62
+        y: 0
         width: 26
-        height: 20
+        height: 22
         backgroundSource: LateNightTheme.assetDeckKeyButtonBackground
         iconSource: LateNightTheme.assetDeckKeyMatchButton
         iconLeftPadding: 5
@@ -52,15 +150,18 @@ Item {
         iconTopPadding: 3
         iconBottomPadding: 3
         group: root.group
-        key: "sync_key"
+        key: "match_key"
         rightClickKey: "reset_key"
+        longPressLatching: false
+        numberStates: 2
         activeOpacity: 1.0
         inactiveOpacity: 0.78
         inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
         pressedBackgroundSuffix: "active"
         pressedIconSuffix: LateNightTheme.keyControlsPressedIconSuffix
         pressedActivatesFill: true
-        activeColor: LateNightTheme.keyControlsPressedColor
+        pressedColor: LateNightTheme.keyControlsPressedColor
+        activeColor: "transparent"
         useBorderImageBackground: true
         backgroundBorderTop: 2
         backgroundBorderBottom: 2
@@ -70,8 +171,8 @@ Item {
 
     MixxxControls.KeyColorIndicator {
         fallbackColor: LateNightTheme.accentColor
-        x: 26
-        y: 0
+        x: 88
+        y: 1
         width: 4
         height: 20
         group: root.group
@@ -81,7 +182,7 @@ Item {
     // Key text display
     Rectangle {
         x: root.keyTextX
-        y: 0
+        y: 1
         width: root.width - root.keyTextX - 20
         height: 20
         color: LateNightTheme.deckTopRowBackgroundColor
@@ -136,7 +237,7 @@ Item {
     // Key up/down buttons
     Column {
         x: root.width - 20
-        y: 0
+        y: 1
         width: 20
         height: 20
         spacing: 0

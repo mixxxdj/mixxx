@@ -12,6 +12,7 @@ Variables:
   Align             : alignment of text
   ConfigKey         : left-click control
   ConfigKeyRight    : right-click control
+  LongPressLatchAnimation : false skips the hold sweep. Empty keeps it.
 -->
 <Template>
   <PushButton>
@@ -20,6 +21,7 @@ Variables:
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
     <RightClickIsPushButton>true</RightClickIsPushButton>
+    <LongPressLatchAnimation><Variable name="LongPressLatchAnimation"/></LongPressLatchAnimation>
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>

@@ -390,7 +390,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>p,me</SizePolicy>
                     <MinimumSize>80,20</MinimumSize>
-                    <MaximumSize>120,30</MaximumSize>
+                    <MaximumSize>150,30</MaximumSize>
                     <Children>
                       <Template src="skin:left_right_1state_button.xml">
                         <SetVariable name="TooltipId">pitch_down</SetVariable>
@@ -418,17 +418,24 @@
                         <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_up_small</SetVariable>
                       </Template>
 
-                      <Template src="skin:left_right_1state_button.xml">
+                      <Template src="skin:left_right_2state_button.xml">
                         <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                         <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
                         <SetVariable name="MinimumSize">46,22</SetVariable>
                         <SetVariable name="MaximumSize">46,22</SetVariable>
                         <SetVariable name="SizePolicy">f,f</SetVariable>
                         <SetVariable name="state_0_text">Match</SetVariable>
-                        <SetVariable name="state_0_pressed"></SetVariable>
-                        <SetVariable name="state_0_unpressed"></SetVariable>
+                        <SetVariable name="state_1_text">Match</SetVariable>
                         <SetVariable name="left_connection_control"><Variable name="group"/>,sync_key</SetVariable>
                         <SetVariable name="right_connection_control"><Variable name="group"/>,reset_key</SetVariable>
+                      </Template>
+                      <Template src="skin:left_3state_button.xml">
+                        <SetVariable name="TooltipId">sync_key_leader</SetVariable>
+                        <SetVariable name="ObjectName">KeyLeader</SetVariable>
+                        <SetVariable name="MinimumSize">15,22</SetVariable>
+                        <SetVariable name="MaximumSize">15,22</SetVariable>
+                        <SetVariable name="SizePolicy">f,f</SetVariable>
+                        <SetVariable name="left_connection_control"><Variable name="group"/>,sync_key_leader</SetVariable>
                       </Template>
 
                     </Children>

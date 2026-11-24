@@ -51,6 +51,16 @@ class BaseTrackPlayer : public BasePlayer {
         return false;
     };
 
+    /// Set while an AutoDJ autoload for this player is in flight. The manual
+    /// key-preference harmonize path checks this and does not also run.
+    /// AutoDJProcessor clears it when that autoload finishes.
+    void setPendingAutoDjAutoload(bool pending) {
+        m_pendingAutoDjAutoload = pending;
+    }
+    bool isPendingAutoDjAutoload() const {
+        return m_pendingAutoDjAutoload;
+    }
+
   public slots:
 #ifdef __STEM__
     virtual void slotLoadTrack(TrackPointer pTrack,
@@ -63,8 +73,8 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
-    virtual void slotSetAndConfirmTrackMenuControl(bool){};
-    virtual void slotTrackRatingChangeRequest(int){};
+    virtual void slotSetAndConfirmTrackMenuControl(bool) {};
+    virtual void slotTrackRatingChangeRequest(int) {};
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -77,6 +87,9 @@ class BaseTrackPlayer : public BasePlayer {
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
     void trackMenuChangeRequest(bool show);
+
+  private:
+    bool m_pendingAutoDjAutoload = false;
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -163,6 +176,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     void connectLoadedTrack();
     void disconnectLoadedTrack();
+    /// Other primary deck whose effective key a manual load matches.
+    /// Prefers the opposite left/right deck, then the first other main deck.
+    QString otherMainDeckGroup() const;
+    /// Harmonizes a user load on a main deck. No-op for AutoDJ autoloads,
+    /// clones, samplers, preview decks, and the crowned key leader.
+    void maybeHarmonizeManualLoad();
 
     UserSettingsPointer m_pConfig;
     EngineMixer* m_pEngineMixer;

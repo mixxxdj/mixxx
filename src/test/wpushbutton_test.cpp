@@ -57,3 +57,58 @@ TEST_F(WPushButtonTest, LongPressLatchTest) {
 
     ASSERT_EQ(1.0, pushButton.getControlParameterLeft());
 }
+
+TEST_F(WPushButtonTest, RightClickQuickPressMatchesLeft) {
+    pushButton.setRightClickMatchesLeft(true);
+    QTestEventList events;
+    events.addMousePress(Qt::RightButton);
+    events.addDelay(100);
+    events.addMouseRelease(Qt::RightButton);
+
+    events.simulate(&pushButton);
+
+    ASSERT_EQ(0.0, pushButton.getControlParameterLeft());
+}
+
+TEST_F(WPushButtonTest, RightClickHoldActivatesLikeLeft) {
+    pushButton.setRightClickMatchesLeft(true);
+    QTestEventList events;
+    events.addMousePress(Qt::RightButton);
+    events.addDelay(1000);
+    events.addMouseRelease(Qt::RightButton);
+
+    events.simulate(&pushButton);
+
+    ASSERT_EQ(1.0, pushButton.getControlParameterLeft());
+}
+
+TEST_F(WPushButtonTest, RightClickIgnoredWhileActive) {
+    pushButton.setRightClickMatchesLeft(true);
+    pushControl.set(1.0);
+    QTestEventList events;
+    events.addMousePress(Qt::RightButton);
+    events.addDelay(1000);
+    events.addMouseRelease(Qt::RightButton);
+
+    events.simulate(&pushButton);
+
+    ASSERT_EQ(1.0, pushButton.getControlParameterLeft());
+}
+
+TEST_F(WPushButtonTest, RightClickDuringLeftHoldDoesNotCancel) {
+    pushButton.setRightClickMatchesLeft(true);
+    QTestEventList events;
+    events.addMousePress(Qt::LeftButton);
+    events.addDelay(50);
+    events.addMousePress(Qt::RightButton);
+    events.addDelay(50);
+    events.addMouseRelease(Qt::RightButton);
+    events.simulate(&pushButton);
+    ASSERT_EQ(1.0, pushButton.getControlParameterLeft());
+
+    QTestEventList finish;
+    finish.addDelay(1000);
+    finish.addMouseRelease(Qt::LeftButton);
+    finish.simulate(&pushButton);
+    ASSERT_EQ(1.0, pushButton.getControlParameterLeft());
+}

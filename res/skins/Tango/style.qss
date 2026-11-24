@@ -1316,6 +1316,20 @@ WBeatSpinBox,
   #KeyMatch {
     border: 1px solid #444;
   }
+  #KeyMatch[displayValue="1"],
+  #KeyMatchMini[displayValue="1"] {
+    border: 1px solid #ff4800;
+  }
+  #KeyLeader {
+    font-size: 11px;
+    color: #888;
+  }
+  #KeyLeader[value="1"] {
+    color: #db7700;
+  }
+  #KeyLeader[value="2"] {
+    color: #ff4800;
+  }
     #KeyMatch:hover,
     #KeyMatchMini:hover {
       image: url(skin:/../Tango/buttons/btn_key_match_hover.svg) no-repeat center center;

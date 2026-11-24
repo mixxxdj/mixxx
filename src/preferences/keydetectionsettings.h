@@ -36,20 +36,30 @@ class KeyDetectionSettings {
         Enforced = 2
     };
 
-    KeyDetectionSettings(UserSettingsPointer pConfig) : m_pConfig(pConfig) {}
+    KeyDetectionSettings(UserSettingsPointer pConfig)
+            : m_pConfig(pConfig) {
+    }
 
-    DEFINE_PREFERENCE_HELPERS(KeyDetectionEnabled, bool,
-                              KEY_CONFIG_KEY, KEY_DETECTION_ENABLED, true);
+    DEFINE_PREFERENCE_HELPERS(KeyDetectionEnabled,
+            bool,
+            KEY_CONFIG_KEY,
+            KEY_DETECTION_ENABLED,
+            true);
 
-    DEFINE_PREFERENCE_HELPERS(FastAnalysis, bool,
-                              KEY_CONFIG_KEY, KEY_FAST_ANALYSIS, false);
+    DEFINE_PREFERENCE_HELPERS(FastAnalysis, bool, KEY_CONFIG_KEY, KEY_FAST_ANALYSIS, false);
 
-    DEFINE_PREFERENCE_HELPERS(ReanalyzeWhenSettingsChange, bool,
-                              KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE, false);
+    DEFINE_PREFERENCE_HELPERS(ReanalyzeWhenSettingsChange,
+            bool,
+            KEY_CONFIG_KEY,
+            KEY_REANALYZE_WHEN_SETTINGS_CHANGE,
+            false);
 
     // TODO(rryan): Enum
-    DEFINE_PREFERENCE_HELPERS(KeyNotation, QString,
-                              KEY_CONFIG_KEY, KEY_NOTATION, KEY_NOTATION_TRADITIONAL);
+    DEFINE_PREFERENCE_HELPERS(KeyNotation,
+            QString,
+            KEY_CONFIG_KEY,
+            KEY_NOTATION,
+            KEY_NOTATION_TRADITIONAL);
 
     DEFINE_PREFERENCE_HELPERS(StemStrategy,
             StemStrategy,
@@ -59,25 +69,27 @@ class KeyDetectionSettings {
 
     QString getCustomKeyNotation(mixxx::track::io::key::ChromaticKey key) {
         return m_pConfig->getValue<QString>(ConfigKey(KEY_CONFIG_KEY,
-                                                      KEY_NOTATION_CUSTOM_PREFIX +
-                                                      QString::number(key)));
+                KEY_NOTATION_CUSTOM_PREFIX +
+                        QString::number(key)));
     }
 
     void setCustomKeyNotation(mixxx::track::io::key::ChromaticKey key,
-                              const QString& notation) {
+            const QString& notation) {
         m_pConfig->setValue(ConfigKey(KEY_CONFIG_KEY,
-                                      KEY_NOTATION_CUSTOM_PREFIX +
-                                      QString::number(key)), notation);
+                                    KEY_NOTATION_CUSTOM_PREFIX +
+                                            QString::number(key)),
+                notation);
     }
 
     QString getKeyPluginId() const {
         return m_pConfig->getValue<QString>(ConfigKey(
-            VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
+                VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
     }
 
     void setKeyPluginId(const QString& pluginId) {
         m_pConfig->setValue(ConfigKey(
-            VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID), pluginId);
+                                    VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
+                pluginId);
     }
 
   private:
