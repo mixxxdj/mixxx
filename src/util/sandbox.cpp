@@ -2,6 +2,7 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMutexLocker>
 #include <QObject>
 #include <QtDebug>
 #include <QtGlobal>
@@ -20,11 +21,7 @@
 
 const bool sDebug = false;
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 QRecursiveMutex Sandbox::s_mutex;
-#else
-QMutex Sandbox::s_mutex(QMutex::Recursive);
-#endif
 bool Sandbox::s_bInSandbox = false;
 QSharedPointer<ConfigObject<ConfigValue>> Sandbox::s_pSandboxPermissions;
 QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;
@@ -55,14 +52,14 @@ void Sandbox::checkSandboxed() {
 }
 
 void Sandbox::setPermissionsFilePath(const QString& permissionsFile) {
-    const auto locker = lockMutex(&s_mutex);
+    const auto locker = QMutexLocker(&s_mutex);
     s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
             new ConfigObject<ConfigValue>(permissionsFile));
 }
 
 // static
 void Sandbox::shutdown() {
-    const auto locker = lockMutex(&s_mutex);
+    const auto locker = QMutexLocker(&s_mutex);
     QSharedPointer<ConfigObject<ConfigValue>> pSandboxPermissions = s_pSandboxPermissions;
     s_pSandboxPermissions.clear();
     if (pSandboxPermissions) {
@@ -188,7 +185,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath, bool isDirectory
     if (!enabled()) {
         return false;
     }
-    const auto locker = lockMutex(&s_mutex);
+    const auto locker = QMutexLocker(&s_mutex);
     if (s_pSandboxPermissions == nullptr) {
         return false;
     }
@@ -259,7 +256,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(mixxx::FileInfo* pFileInfo, bool
         return nullptr;
     }
 
-    const auto locker = lockMutex(&s_mutex);
+    const auto locker = QMutexLocker(&s_mutex);
     if (!s_pSandboxPermissions) {
         return nullptr;
     }
@@ -324,7 +321,7 @@ SecurityTokenPointer Sandbox::openSecurityTokenForDir(const QDir& dir, bool crea
         return nullptr;
     }
 
-    const auto locker = lockMutex(&s_mutex);
+    const auto locker = QMutexLocker(&s_mutex);
     if (!s_pSandboxPermissions) {
         return nullptr;
     }

@@ -18,6 +18,7 @@ EffectParameter::EffectParameter(EngineEffect* pEngineEffect,
         setValue(preset.value());
         m_linkType = preset.linkType();
         m_linkInversion = preset.linkInverted();
+        m_displayOrder = preset.displayOrder();
     }
 }
 

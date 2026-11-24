@@ -6,14 +6,13 @@ import "../LateNightTheme"
 import "../Mixer" as MixerControls
 import Mixxx 1.0 as Mixxx
 import QtQuick
-import QtQuick.Layouts
 
 Item {
     id: root
 
     property string group: unitNumber === 1 ? "[Microphone]" : "[Microphone" + unitNumber + "]"
     readonly property bool inputConfigured: inputConfiguredControl.value > 0
-    readonly property Item loadedUnit: unitLoader.item as Item
+    readonly property Item loadedUnit: unitLoader.status === Loader.Ready ? unitLoader.item as Item : null
     required property int unitNumber
 
     implicitHeight: loadedUnit?.implicitHeight ?? 0
@@ -35,101 +34,127 @@ Item {
         id: configuredUnit
 
         Controls.Panel {
+            bottomBorderColor: LateNightTheme.mixerPanelBorderBottom
             color: LateNightTheme.micAuxPanelColor
-            implicitHeight: 59
-            implicitWidth: contentLayout.implicitWidth + contentLayout.anchors.leftMargin + contentLayout.anchors.rightMargin
+            implicitHeight: 61
+            implicitWidth: contentLayout.implicitWidth + 2
+            leftBorderColor: LateNightTheme.mixerPanelBorderLeft
+            rightBorderColor: LateNightTheme.mixerPanelBorderRight
+            topBorderColor: LateNightTheme.mixerPanelBorderTop
 
-            RowLayout {
+            Row {
                 id: contentLayout
 
                 anchors.fill: parent
-                anchors.margins: 2
-                spacing: 2
+                anchors.margins: 1
+                spacing: 0
 
-                ColumnLayout {
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: 43
-                    spacing: 1
+                Item {
+                    height: parent.height
+                    width: Math.max(LateNightTheme.isClassic ? 43 : 42, Math.ceil(configuredLabel.implicitWidth)) + 3
 
                     Text {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 20
+                        id: configuredLabel
+
                         color: LateNightTheme.micAuxLabelTextColor
-                        font.bold: true
                         font.family: "Open Sans"
                         font.pixelSize: 14
+                        font.weight: LateNightTheme.isClassic ? Font.Bold : Font.Medium
+                        height: 20
                         horizontalAlignment: Text.AlignHCenter
+                        leftPadding: 1
+                        renderType: Text.NativeRendering
                         text: "MIC " + root.unitNumber
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    Item {
-                        Layout.fillHeight: true
+                        topPadding: 2
+                        verticalAlignment: Text.AlignTop
+                        width: parent.width - 3
+                        x: 2
                     }
                     DeckControls.LateNightControlButton {
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredHeight: 26
-                        Layout.preferredWidth: 42
                         activeBackgroundSuffix: "active"
                         activeColor: LateNightTheme.activePlayCueColor
                         activeIconSuffix: LateNightTheme.micTalkActiveIconSuffix
                         activeOpacity: 1
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 2
                         backgroundSource: LateNightTheme.lateNightTopRegionButton("medium")
+                        fillMargin: 1
                         group: root.group
+                        height: 26
                         iconSource: LateNightTheme.assetMicTalkButton
                         inactiveOpacity: 1
                         key: "talkover"
                         powerWindow: true
-                        stretchIcon: true
+                        pressedBackgroundSuffix: "active"
+                        solidFillEnabled: true
+                        stretchIcon: false
+                        width: 42
+                        x: 2 + Math.floor((parent.width - 45 + (LateNightTheme.isClassic ? 1 : 0)) / 2)
                     }
                 }
-                Controls.ImageVuMeter {
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.preferredHeight: 55
-                    Layout.preferredWidth: 8
-                    group: root.group
-                    levelKey: "vu_meter"
-                    micAux: true
-                }
-                ColumnLayout {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    Layout.leftMargin: 3
-                    Layout.rightMargin: 3
-                    spacing: 1
+                Item {
+                    height: parent.height
+                    width: 11
 
-                    RowLayout {
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredHeight: 30
+                    Controls.ImageVuMeter {
+                        group: root.group
+                        height: 54
+                        levelKey: "vu_meter"
+                        micAux: true
+                        width: 8
+                        x: 2
+                        y: Math.floor((parent.height - height - (LateNightTheme.isClassic ? 1 : -3)) / 2)
+                    }
+                }
+                Item {
+                    height: parent.height
+                    width: Math.max(65, fxAssignments.assignmentWidth) + (LateNightTheme.isClassic ? 6 : 5)
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 3
+                        height: parent.height - 23
                         spacing: 4
 
                         Controls.Knob {
-                            Layout.preferredHeight: 30
-                            Layout.preferredWidth: 35
                             backgroundSource: LateNightTheme.assetMicAuxGainKnobBackground
                             displayArc: true
                             displayArcColor: LateNightTheme.micAuxGainColor
                             displayArcStart: Controls.Knob.ArcStart.Minimum
                             group: root.group
+                            height: 30
                             indicatorColor: "orange"
                             indicatorKind: "small"
                             key: "pregain"
+                            width: 35
+                            y: Math.floor((parent.height - height) / 2)
                         }
-                        MixerControls.PflButton {
+                        DeckControls.LateNightControlButton {
+                            activeBackgroundSuffix: "active"
+                            activeColor: LateNightTheme.mixerPflActiveFillColor
+                            backgroundSource: LateNightTheme.assetMixerPflBackground
+                            contentOpacity: 1
+                            fillMargin: 1
                             group: root.group
+                            height: 26
+                            iconSource: isActive ? LateNightTheme.assetMixerPflActiveIcon : LateNightTheme.assetMixerPflIcon
+                            inactiveColor: LateNightTheme.deckEmbeddedButtonInactiveColor
+                            key: "pfl"
+                            pressedBackgroundSuffix: "active"
+                            solidFillEnabled: true
+                            toggleable: true
+                            width: 26
+                            y: Math.floor((parent.height - height) / 2)
                         }
                     }
-                    RowLayout {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 22
-                        spacing: 1
+                    MixerControls.FxAssignButtons {
+                        id: fxAssignments
 
-                        MixerControls.FxAssignButtons {
-                            id: fxAssignments
-
-                            Layout.alignment: Qt.AlignHCenter
-                            Layout.preferredHeight: 20
-                            groupName: root.group
-                        }
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: 3
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.horizontalCenterOffset: LateNightTheme.isClassic ? 0 : 0.5
+                        groupName: root.group
                     }
                 }
             }
@@ -139,44 +164,46 @@ Item {
         id: unconfiguredUnit
 
         Controls.Panel {
+            bottomBorderColor: LateNightTheme.mixerPanelBorderBottom
             color: LateNightTheme.micAuxPanelColor
             implicitHeight: 57
-            implicitWidth: 47
+            implicitWidth: Math.ceil(unconfiguredLabel.implicitWidth) + 10
+            leftBorderColor: LateNightTheme.mixerPanelBorderLeft
+            rightBorderColor: LateNightTheme.mixerPanelBorderRight
+            topBorderColor: LateNightTheme.mixerPanelBorderTop
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.bottomMargin: 4
-                anchors.leftMargin: 4
-                anchors.rightMargin: 4
-                anchors.topMargin: 2
-                spacing: 2
+            Text {
+                id: unconfiguredLabel
 
-                Text {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 21
-                    color: LateNightTheme.micAuxUnconfiguredTextColor
-                    font.bold: true
-                    font.family: "Open Sans"
-                    font.pixelSize: 14
-                    horizontalAlignment: Text.AlignHCenter
-                    text: "MIC " + root.unitNumber
-                    verticalAlignment: Text.AlignVCenter
-                }
-                Item {
-                    Layout.fillHeight: true
-                }
-                DeckControls.LateNightControlButton {
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredHeight: 26
-                    Layout.preferredWidth: 26
-                    backgroundSource: LateNightTheme.assetMicAuxUnconfiguredBackground
-                    contentOpacity: 1.0
-                    group: root.group
-                    iconSource: LateNightTheme.assetMicAuxAddButton
-                    inactiveFillEnabled: false
-                    key: "talkover"
-                    stretchIcon: true
-                }
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                anchors.right: parent.right
+                anchors.rightMargin: 5
+                anchors.top: parent.top
+                anchors.topMargin: 4
+                color: LateNightTheme.micAuxUnconfiguredTextColor
+                font.family: "Open Sans"
+                font.pixelSize: 14
+                font.weight: LateNightTheme.isClassic ? Font.Bold : Font.Medium
+                height: 21
+                horizontalAlignment: Text.AlignHCenter
+                renderType: Text.NativeRendering
+                text: "MIC " + root.unitNumber
+                verticalAlignment: Text.AlignVCenter
+            }
+            DeckControls.LateNightControlButton {
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: 6
+                anchors.horizontalCenter: parent.horizontalCenter
+                backgroundSource: LateNightTheme.assetMicAuxUnconfiguredBackground
+                contentOpacity: 1.0
+                group: root.group
+                height: 26
+                iconSource: LateNightTheme.assetMicAuxAddButton
+                inactiveFillEnabled: false
+                key: "talkover"
+                stretchIcon: false
+                width: 26
             }
         }
     }

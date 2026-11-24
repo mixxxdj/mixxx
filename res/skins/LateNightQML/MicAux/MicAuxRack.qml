@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import "../Controls" as Controls
 import "../LateNightTheme"
-import Mixxx 1.0 as Mixxx
 import QtQuick
 import QtQuick.Layouts
 
@@ -15,8 +14,8 @@ Rectangle {
     implicitHeight: Math.max(micRack.implicitHeight, auxRack.implicitHeight) + legacyBottomMargin
 
     RowLayout {
-        anchors.fill: parent
         anchors.bottomMargin: root.legacyBottomMargin
+        anchors.fill: parent
         anchors.topMargin: 0
         spacing: 0
 
@@ -36,18 +35,35 @@ Rectangle {
             MicrophoneDuckingPanel {
                 Layout.alignment: Qt.AlignTop
                 Layout.fillHeight: true
-                visible: numMicrophonesControl.value > 0
+                visible: microphone1.inputConfigured || microphone2.inputConfigured || microphone3.inputConfigured || microphone4.inputConfigured
             }
-            Repeater {
-                model: 4
+            MicUnit {
+                id: microphone1
 
-                MicUnit {
-                    required property int index
+                Layout.alignment: Qt.AlignTop
+                Layout.fillHeight: true
+                unitNumber: 1
+            }
+            MicUnit {
+                id: microphone2
 
-                    Layout.alignment: Qt.AlignTop
-                    Layout.fillHeight: true
-                    unitNumber: index + 1
-                }
+                Layout.alignment: Qt.AlignTop
+                Layout.fillHeight: true
+                unitNumber: 2
+            }
+            MicUnit {
+                id: microphone3
+
+                Layout.alignment: Qt.AlignTop
+                Layout.fillHeight: true
+                unitNumber: 3
+            }
+            MicUnit {
+                id: microphone4
+
+                Layout.alignment: Qt.AlignTop
+                Layout.fillHeight: true
+                unitNumber: 4
             }
         }
         Controls.RackFiller {
@@ -79,11 +95,5 @@ Rectangle {
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
-    }
-    Mixxx.ControlProxy {
-        id: numMicrophonesControl
-
-        group: "[App]"
-        key: "num_microphones"
     }
 }

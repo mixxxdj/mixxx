@@ -608,11 +608,7 @@ BpmFilterNode::BpmFilterNode(
     double bpm = argument.toDouble(&isDouble);
     if (isDouble) {
         // Check if the arg has a decimal separator (even if no digits after that)
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         bool strictMatch = argument.split('.', Qt::SkipEmptyParts).length() > 1;
-#else
-        bool strictMatch = argument.split('.', QString::SkipEmptyParts).length() > 1;
-#endif
         if (fuzzy) {
             // fuzzy search +- n%
             m_matchMode = MatchMode::Fuzzy;
@@ -933,20 +929,16 @@ DateAddedFilterNode::DateAddedFilterNode(QString& argument)
 QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
     // Try ISO format first (YYYY-MM-DD)
     // This is used by the "New" filter of the Analyze feature
-    qWarning() << "--> parse date" << dateStr;
     QDate date = QDate::fromString(dateStr, Qt::ISODate);
 
     if (!date.isValid()) {
         // Try user date format set in library preferences
         const QString dateFormat = BaseTrackTableModel::dateFormat();
-        qWarning() << "--> invalid, try Lib format" << dateFormat;
 #if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
         date = QDate::fromString(dateStr, dateFormat);
         // The Mixxx project was started in 2001 :)
         if (date.isValid() && date.year() < 2000) {
-            qWarning() << "--> -> year" << date.year() << "< 2000, add 100";
             date = date.addYears(100);
-            qWarning() << "--> -> year < 2000, add 100" << date;
         }
 #else
         date = QDate::fromString(dateStr, dateFormat, 2000);
@@ -954,8 +946,6 @@ QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
     }
 
     if (!date.isValid()) {
-        qWarning() << "--> invalid, try locale format"
-                   << QLocale().dateFormat(QLocale::ShortFormat);
         // Maybe custom user format is too esoteric, or user picked
         // their locale's format.
         // Fall back to locale-specific short format
@@ -964,7 +954,6 @@ QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
         date = QLocale().toDate(dateStr, QLocale::ShortFormat);
         // The Mixxx project was started in 2001 :)
         if (date.isValid() && date.year() < 2000) {
-            qWarning() << "--> -> year" << date.year() << "< 2000, add 100";
             date = date.addYears(100);
         }
 #else
@@ -973,10 +962,8 @@ QDateTime DateAddedFilterNode::parseDate(const QString& dateStr) const {
 #endif
     }
     if (!date.isValid()) {
-        qWarning() << "--> invalid, return";
         return {};
     }
-    qWarning() << "--> valid date:" << date;
 
     return QDateTime(date, QTime(0, 0)).toUTC();
 }
