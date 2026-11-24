@@ -109,7 +109,7 @@ case "$1" in
             libid3tag0-dev \
             liblilv-dev \
             libmad0-dev \
-            libmodplug-dev \
+            libopenmpt-dev \
             libmp3lame-dev \
             libmsgsl-dev \
             libopus-dev \
