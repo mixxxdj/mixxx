@@ -10,7 +10,6 @@
 #include "rendergraph/material/rgbamaterial.h"
 #include "rendergraph/vertexupdaters/rgbavertexupdater.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "widget/wskincolor.h"
 
 namespace {
