@@ -91,9 +91,7 @@ WSpinnyBase::WSpinnyBase(
             &WSpinnyBase::slotCoverInfoSelected);
     connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WSpinnyBase::slotReloadCoverArt);
 
-#ifdef MIXXX_USE_QOPENGL
     setTrackDropTarget(this);
-#endif
 }
 
 WSpinnyBase::~WSpinnyBase() {
