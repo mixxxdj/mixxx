@@ -1,7 +1,11 @@
 #include "track/taglib/trackmetadata_ape.h"
 
+#include <optional>
+
+#include "track/taglib/fmpsrating.h"
 #include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
+#include "track/trackrecord.h"
 #include "util/logger.h"
 
 namespace mixxx {
@@ -47,9 +51,51 @@ void writeItem(
     }
 }
 
+// FMPS Rating - APE item for cross-application rating compatibility
+// https://www.freedesktop.org/wiki/Specifications/free-media-player-specs/
+// APE keys must be uppercase to match TagLib's case normalization on save/reload
+const TagLib::String kItemKeyFMPSRating = "FMPS_RATING";
+
 } // anonymous namespace
 
 namespace ape {
+
+std::optional<int> importRatingFromTag(const TagLib::APE::Tag& tag) {
+    QString fmpsRating;
+    if (!readItem(tag, kItemKeyFMPSRating, &fmpsRating) ||
+            fmpsRating.isEmpty()) {
+        return std::nullopt;
+    }
+    const std::optional<int> rating = parseFmpsRating(fmpsRating);
+    if (!rating) {
+        kLogger.warning()
+                << "Ignoring invalid FMPS_RATING value in APE tag:"
+                << fmpsRating;
+    }
+    return rating;
+}
+
+bool exportRatingIntoTag(
+        TagLib::APE::Tag* pTag,
+        int rating) {
+    DEBUG_ASSERT(pTag);
+    if (rating == TrackRecord::kNoRating) {
+        // Remove any existing FMPS_RATING item if the rating is cleared
+        pTag->removeItem(kItemKeyFMPSRating);
+        return true;
+    }
+    const std::optional<QString> fmpsRating = formatFmpsRating(rating);
+    if (!fmpsRating) {
+        kLogger.warning()
+                << "Invalid rating value for export:" << rating;
+        return false;
+    }
+    writeItem(
+            pTag,
+            kItemKeyFMPSRating,
+            toTString(*fmpsRating));
+    return true;
+}
 
 bool importCoverImageFromTag(QImage* pCoverArt, const TagLib::APE::Tag& tag) {
     if (!pCoverArt) {

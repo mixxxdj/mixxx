@@ -443,6 +443,11 @@ class Track : public QObject {
     // export is deferred to prevent race conditions when writing into
     // files that are still opened for reading.
     void markForMetadataExport();
+    // AI-generated: Schedule an export attempt for when the track is no
+    // longer in use, without forcing it. Unlike markForMetadataExport()
+    // the file is left untouched if its tags already match. (AI-generated)
+    void markForDeferredMetadataExport();
+    // True if an export has been requested explicitly or is pending.
     bool isMarkedForMetadataExport() const;
 
     void setAudioProperties(
@@ -614,6 +619,10 @@ class Track : public QObject {
     // Flag indicating that the user has explicitly requested to save
     // the metadata.
     bool m_bMarkedForMetadataExport;
+
+    // AI-generated: An export attempt is pending after a deferred save.
+    // It does not bypass the check for unmodified file tags. (AI-generated)
+    bool m_bMetadataExportDeferred;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

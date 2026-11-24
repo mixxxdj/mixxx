@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QImage>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "track/trackmetadata.h"
@@ -60,6 +61,20 @@ class MetadataSource {
     virtual std::pair<ExportResult, QDateTime> exportTrackMetadata(
             const TrackMetadata& /*trackMetadata*/) const {
         return std::make_pair(ExportResult::Unsupported, QDateTime());
+    }
+
+    /// Import rating from file tags using FMPS_Rating standard.
+    /// Returns the rating (0-5) if found, nullopt otherwise.
+    /// Default implementation returns nullopt (no rating support).
+    virtual std::optional<int> importRating() const {
+        return std::nullopt;
+    }
+
+    /// Export rating to file tags using FMPS_Rating standard.
+    /// Returns true if export succeeded, false otherwise.
+    /// Default implementation returns false (no rating support).
+    virtual bool exportRating(int /*rating*/) const {
+        return false;
     }
 };
 
