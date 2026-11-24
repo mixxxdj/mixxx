@@ -42,11 +42,13 @@ void EngineDelay::process(CSAMPLE* pInOut, const std::size_t bufferSize) {
     /// Process the prefader EngineEffectChains on the pInOut buffer, modifying
     /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
+    std::span<CSAMPLE> inOutSpan = mixxx::spanutil::spanFromPtrLen(pInOut, bufferSize);
             m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
             pInOut[i] = m_pDelayBuffer[delaySourcePos];
             pInOut[i] = m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix);
             pInOut[i] += m_pDelayBuffer[delaySourcePos] * crossMix;
             pInOut,
+                pInOut,
             CSAMPLE* pInOut,
     mixxx::SampleBuffer pInOut(numSamples);
     SampleUtil::copy(pInOut.data(), inputBuffer, numSamples);

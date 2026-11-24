@@ -1,84 +1,107 @@
 #include "engine/effects/engineeffectsdelay.h"
 
+#include <span>
+
 #include "moc_engineeffectsdelay.cpp"
-#include "util/rampingvalue.h"
+#include "util/math.h"
 #include "util/sample.h"
+#include "util/span.h"
+
+namespace {
+SINT readWithMaxDelay(std::span<CSAMPLE> inOutSpan,
+        RingDelayBuffer& delayBuffer) {
+    // In this situation, the sum of the size of the inOutSpan
+    // and the provided delay is greater than the ring buffer.
+    // The wrong delay is minimized by using the maximum possible delay
+    // for handling with the ring buffer.
+    const SINT maxDelaySamples = math_max(
+            kDelayBufferSize - static_cast<int>(inOutSpan.size()), 0);
+    delayBuffer.read(inOutSpan, maxDelaySamples);
+
+    return maxDelaySamples;
+}
+
+} // anonymous namespace
 
 EngineEffectsDelay::EngineEffectsDelay()
         : m_currentDelaySamples(0),
           m_prevDelaySamples(0),
-          m_delayBufferWritePos(0) {
-    m_pDelayBuffer = SampleUtil::alloc(kDelayBufferSize);
-    SampleUtil::clear(m_pDelayBuffer, kDelayBufferSize);
+          m_currentDelayBuffer(kDelayBufferSize),
+          m_delayBuffer(kDelayBufferSize) {
 }
 
 EngineEffectsDelay::~EngineEffectsDelay() {
-    SampleUtil::free(m_pDelayBuffer);
 }
 
 void EngineEffectsDelay::process(CSAMPLE* pInOut,
         const std::size_t bufferSize) {
+    std::span<CSAMPLE> inOutSpan = mixxx::spanutil::spanFromPtrLen(pInOut, bufferSize);
+
     if (m_prevDelaySamples == 0 && m_currentDelaySamples == 0) {
-        for (std::size_t i = 0; i < bufferSize; ++i) {
-            // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
+        // We can keep writing without reading due to the implementation
+        // of the RingDelayBuffer. The implementation is specific,
+        // that the RingDelayBuffer works only with the write position only
+        // (not with the reading position). Based on that, we can keep writing
+        // and the old unread data are rewritten with the new one.
+        // So, the ring buffer can't be full.
+        const SINT writtenSamples = m_delayBuffer.write(inOutSpan);
+        VERIFY_OR_DEBUG_ASSERT(writtenSamples == static_cast<SINT>(bufferSize)) {
+            // It is not needed to return from here
+            // based on the return that follows after.
         }
 
         return;
     }
 
-    // The "+ kDelayBufferSize" addition ensures positive values for the modulo calculation.
-    // From a mathematical point of view, this addition can be removed. Anyway,
-    // from the cpp point of view, the modulo operator for negative values
-    // (for example, x % y, where x is a negative value) produces negative results
-    // (but in math the result value is positive).
-    int delaySourcePos =
-            (m_delayBufferWritePos + kDelayBufferSize - m_currentDelaySamples) %
-            kDelayBufferSize;
-
     if (m_prevDelaySamples == m_currentDelaySamples) {
-        for (std::size_t i = 0; i < bufferSize; ++i) {
-            // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
+        const SINT writtenSamples = m_delayBuffer.write(inOutSpan);
+        VERIFY_OR_DEBUG_ASSERT(writtenSamples == static_cast<SINT>(bufferSize)) {
+            return;
+        }
 
-            // Take a delayed sample from the delay buffer
-            // and copy it to the destination buffer.
-            pInOut[i] = m_pDelayBuffer[delaySourcePos];
-            delaySourcePos = (delaySourcePos + 1) % kDelayBufferSize;
+        const SINT readSamples = m_delayBuffer.read(inOutSpan, m_currentDelaySamples);
+        VERIFY_OR_DEBUG_ASSERT(readSamples == static_cast<SINT>(bufferSize)) {
+            m_currentDelaySamples = readWithMaxDelay(inOutSpan, m_delayBuffer);
         }
 
     } else {
-        // The "+ kDelayBufferSize" addition ensures positive values for the modulo calculation.
-        // From a mathematical point of view, this addition can be removed. Anyway,
-        // from the cpp point of view, the modulo operator for negative values
-        // (for example, x % y, where x is a negative value) produces negative results
-        // (but in math the result value is positive).
-        int oldDelaySourcePos =
-                (m_delayBufferWritePos + kDelayBufferSize - m_prevDelaySamples) %
-                kDelayBufferSize;
-
-        const RampingValue<CSAMPLE_GAIN> delayChangeRamped(
-                0.0f, 1.0f, static_cast<int>(bufferSize));
-
-        for (std::size_t i = 0; i < bufferSize; ++i) {
-            // Put samples into delay buffer.
-            m_pDelayBuffer[m_delayBufferWritePos] = pInOut[i];
-            m_delayBufferWritePos = (m_delayBufferWritePos + 1) % kDelayBufferSize;
-
-            // Take delayed samples from the delay buffer
-            // and with the use of ramping (cross-fading),
-            // calculate the result sample value
-            // and put it into the dest buffer.
-            CSAMPLE_GAIN crossMix = delayChangeRamped.getNth(static_cast<int>(i));
-
-            pInOut[i] = m_pDelayBuffer[oldDelaySourcePos] * (1.0f - crossMix);
-            pInOut[i] += m_pDelayBuffer[delaySourcePos] * crossMix;
-
-            oldDelaySourcePos = (oldDelaySourcePos + 1) % kDelayBufferSize;
-            delaySourcePos = (delaySourcePos + 1) % kDelayBufferSize;
+        const SINT writtenSamples = m_delayBuffer.write(inOutSpan);
+        VERIFY_OR_DEBUG_ASSERT(writtenSamples == static_cast<SINT>(bufferSize)) {
+            return;
         }
+
+        // Read the samples using the previous group delay samples.
+        SINT readSamples = m_delayBuffer.read(inOutSpan, m_prevDelaySamples);
+        VERIFY_OR_DEBUG_ASSERT(readSamples == static_cast<SINT>(bufferSize)) {
+            // In this situation, it is not possible that the delay
+            // will be greater than possible. For the first call,
+            // the m_prevDelaySamples value is 0 and before assigning
+            // the m_currentDelaySamples into m_prevDelaySamples all delays
+            // which are too big are clamped.
+
+            // This VERIFY_OR_DEBUG_ASSERT can be false only for the situation,
+            // where the inOutSpan size is just too much big
+            // for the RingDelayBuffer size based on the incorrectly
+            // chosen size.
+
+            // Based on that, the inOutSpan is unchanged and the input data
+            // are kept as output.
+            return;
+        }
+
+        // Read the samples using the current group delay samples.
+        auto tmpBufferView = m_currentDelayBuffer.span().first(inOutSpan.size());
+
+        readSamples = m_delayBuffer.read(tmpBufferView, m_currentDelaySamples);
+        VERIFY_OR_DEBUG_ASSERT(readSamples == static_cast<SINT>(bufferSize)) {
+            m_currentDelaySamples = readWithMaxDelay(inOutSpan, m_delayBuffer);
+        }
+
+        SampleUtil::linearCrossfadeBuffersOut(
+                pInOut,
+                tmpBufferView.data(),
+                static_cast<SINT>(bufferSize),
+                mixxx::kEngineChannelOutputCount);
 
         m_prevDelaySamples = m_currentDelaySamples;
     }
