@@ -1030,19 +1030,6 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         }
     };
 
-    const stemsStateConnection = engine.makeConnection(group, "stem_count", function() {
-        if (engine.getValue(group, "stem_count") > 0) {
-            isStemsTrackLoaded = true;
-            setAllStemPadLeds();
-        } else {
-            isStemsTrackLoaded = false;
-            if (currentPadMode === 4) {
-                NumarkMixtrackGo.led.setAllPadsOff(deckIndex);
-            }
-        }
-        setAcapelAndInstruLed();
-    });
-
     // stem led coordination
     const setAcapelAndInstruLed = function() {
         const isDrumStemMuted = engine.getValue(drumsStemGroup, "mute") === 1;
@@ -1066,6 +1053,19 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
             NumarkMixtrackGo.led.setInstruOff(deckIndex);
         }
     };
+
+    const stemsStateConnection = engine.makeConnection(group, "stem_count", function() {
+        if (engine.getValue(group, "stem_count") > 0) {
+            isStemsTrackLoaded = true;
+            setAllStemPadLeds();
+        } else {
+            isStemsTrackLoaded = false;
+            if (currentPadMode === 4) {
+                NumarkMixtrackGo.led.setAllPadsOff(deckIndex);
+            }
+        }
+        setAcapelAndInstruLed();
+    });
 
     // these next 4 makeConnections set each their corresponding pad led
     // and refresh the state of the acapel and instru leds
