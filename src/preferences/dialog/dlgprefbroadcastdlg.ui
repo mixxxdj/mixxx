@@ -411,6 +411,38 @@
              </property>
             </widget>
            </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_15_2">
+             <property name="text">
+              <string>Pregain threshold</string>
+             </property>
+             <property name="buddy">
+              <cstring>spinBoxPregainThreshold</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QDoubleSpinBox" name="spinBoxPregainThreshold">
+              <property name="toolTip">
+              <string>Minimum pregain for a playing deck to be audible enough for playing when live broadcasting.</string>
+              </property>
+              <property name="decimals">
+              <number>2</number>
+              </property>
+              <property name="minimum">
+              <double>0.00</double>
+              </property>
+              <property name="maximum">
+              <double>1.00</double>
+              </property>
+              <property name="singleStep">
+              <double>0.05</double>
+              </property>
+              <property name="value">
+              <double>0.25</double>
+              </property>
+            </widget>
+           </item>
            <item row="3" column="1">
             <widget class="QLineEdit" name="custom_title">
              <property name="text">
@@ -428,7 +460,7 @@
              </property>
             </widget>
            </item>
-           <item row="4" column="0" colspan="2">
+           <item row="5" column="0" colspan="2">
             <widget class="QCheckBox" name="ogg_dynamicupdate">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -444,14 +476,14 @@
              </property>
             </widget>
            </item>
-           <item row="5" column="0" colspan="2">
+           <item row="6" column="0" colspan="2">
             <widget class="QCheckBox" name="enableUtf8Metadata">
              <property name="text">
               <string>Use UTF-8 encoding for metadata.</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
+           <item row="7" column="1">
             <spacer name="verticalSpacer_3">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -483,14 +515,14 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <layout class="QGridLayout">
-           <item row="7" column="0">
+           <item row="8" column="0">
             <widget class="QLabel" name="stream_ICQ_label">
              <property name="text">
               <string>ICQ</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
+           <item row="7" column="0">
             <widget class="QLabel" name="stream_AIM_label">
              <property name="text">
               <string>AIM</string>
@@ -620,7 +652,7 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
-           <item row="4" column="1">
+           <item row="5" column="1">
             <widget class="QLineEdit" name="stream_genre">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -640,20 +672,20 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
+           <item row="6" column="0">
             <widget class="QLabel" name="stream_IRC_label">
              <property name="text">
               <string>IRC</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
+           <item row="6" column="1">
             <widget class="QLineEdit" name="stream_IRC"/>
            </item>
-           <item row="6" column="1">
+           <item row="7" column="1">
             <widget class="QLineEdit" name="stream_AIM"/>
            </item>
-           <item row="7" column="1">
+           <item row="8" column="1">
             <widget class="QLineEdit" name="stream_ICQ"/>
            </item>
           </layout>
