@@ -4,6 +4,7 @@
 
 #include "library/coverart.h"
 #include "library/export/coverartcopyworker.h"
+#include "util/parented_ptr.h"
 
 class QAction;
 
@@ -16,9 +17,11 @@ class WCoverArtMenu : public QMenu {
     Q_OBJECT
   public:
     explicit WCoverArtMenu(QWidget *parent = nullptr);
-    ~WCoverArtMenu() override;
 
     void setCoverArt(const CoverInfo& coverInfo);
+
+  public slots:
+    void slotUnset();
 
   signals:
     void coverInfoSelected(const CoverInfoRelative& coverInfo);
@@ -26,7 +29,8 @@ class WCoverArtMenu : public QMenu {
 
   private slots:
     void slotChange();
-    void slotUnset();
+    void slotExtractCover();
+    void slotShowCoverInFileBrowser();
     void slotStarted();
     void slotAskOverwrite(const QString& coverArtAbsolutePath,
             std::promise<CoverArtCopyWorker::OverwriteAnswer>* promise);
@@ -37,9 +41,11 @@ class WCoverArtMenu : public QMenu {
   private:
     void createActions();
 
-    QAction* m_pChange;
-    QAction* m_pReload;
-    QAction* m_pUnset;
+    parented_ptr<QAction> m_pChange;
+    parented_ptr<QAction> m_pReload;
+    parented_ptr<QAction> m_pUnset;
+    parented_ptr<QAction> m_pExtractCover;
+    parented_ptr<QAction> m_pShowCoverFileInBrowser;
 
     CoverInfo m_coverInfo;
 
