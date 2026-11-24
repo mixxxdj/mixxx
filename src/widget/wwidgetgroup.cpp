@@ -240,3 +240,67 @@ void WWidgetGroup::setHighlight(int highlight) {
     update();
     emit highlightChanged(m_highlight);
 }
+
+QSize WWidgetGroup::sizeHint() const {
+    if (layout()) {
+        return QFrame::sizeHint();
+    }
+
+    // No layout: children use absolute positioning via <Pos> and usually
+    // have a fixed size.
+    // Compute the bounding box of visible children.
+    // if (objectName() == "RateSliderBox[Channel1]") {
+    //     qWarning() << "WGroup no-layout
+    //     sizeHint___________________________________RateSliderAndCenter";
+    // }
+    return visibleChildrenBoundingBox();
+}
+
+QSize WWidgetGroup::minimumSizeHint() const {
+    // Same as sizeHint(), just for minimumSizeHint()
+    if (layout()) {
+        return QFrame::minimumSizeHint();
+    }
+
+    // if (objectName() == "RateSliderAndCenter[Channel1]") {
+    //     qWarning() << "WGroup no-layout
+    //     minSizeHint___________________________________RateSliderAndCenter";
+    // }
+    return visibleChildrenBoundingBox();
+}
+
+QSize WWidgetGroup::visibleChildrenBoundingBox() const {
+    VERIFY_OR_DEBUG_ASSERT(layout() == nullptr) {
+        return QSize();
+    }
+
+    QSize maxSize(0, 0);
+    const QList<QWidget*> children = findChildren<QWidget*>(QString(), Qt::FindDirectChildrenOnly);
+    // if (objectName() == "RateSliderAndCenter[Channel1]") {
+    //     qWarning() <<
+    //     "visibleChildrenBoundingBox____________________________________________________________________";
+    // }
+
+    for (QWidget* pChild : children) {
+        if (pChild && pChild->isVisible()) {
+            // if (objectName() == "RateSliderAndCenter[Channel1]") {
+            //     qWarning() << "  -> ch:" << pChild->objectName()
+            //                << "| pos:" << pChild->pos()
+            //                << "| size:" << pChild->size()
+            //                << "| total:" << QSize(pChild->size() +
+            //                QSize(pChild->pos().x(), pChild->pos().y()));
+            // }
+            int right = pChild->x() + pChild->width();
+            int bottom = pChild->y() + pChild->height();
+            maxSize = maxSize.expandedTo(QSize(right, bottom));
+        }
+    }
+
+    // if (objectName() == "RateSliderAndCenter[Channel1]") {
+    //     qWarning() << "  == return BoundingBox" << maxSize <<
+    //     "___________________________________RateSliderAndCenter"; qWarning()
+    //     << ".";
+    // }
+
+    return maxSize;
+}
