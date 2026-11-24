@@ -4,6 +4,7 @@
 #include <QList>
 #include <QPair>
 #include <QtDebug>
+#include <random>
 #include <vector>
 
 #include "util/sample.h"
@@ -464,6 +465,51 @@ TEST_F(SampleUtilTest, mixMultichannelToStereo) {
     EXPECT_FLOAT_EQ(destination[1], 0.1f + 0.3f + 0.5f /* + 0.7f*/);
     EXPECT_FLOAT_EQ(destination[2], 0.8f + 1.0f + 1.2f /* + 1.4f*/);
     EXPECT_FLOAT_EQ(destination[3], 0.9f + 1.1f + 1.3f /* + 1.5f*/);
+}
+
+// Every path of mixMultichannelToStereo() (the single pass kernel for 8 channels
+// without excluded stems, the loops for the rest) against a plain reference. The
+// kernel adds the stems in another order, so the comparison has a tolerance.
+TEST_F(SampleUtilTest, mixMultichannelToStereoMatchesReference) {
+    constexpr SINT kFrames = 1031; // not a multiple of anything the kernels step by
+    std::mt19937 gen(12345);
+    std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+    for (int channels : {4, 6, 8, 12}) {
+        const int stems = channels / 2;
+        std::vector<CSAMPLE> source(kFrames * channels);
+        for (CSAMPLE& sample : source) {
+            sample = dist(gen);
+        }
+        const auto numChannels = mixxx::audio::ChannelCount::fromInt(channels);
+        for (int mask : {0, 0b1, 0b10, 0b101, (1 << stems) - 2}) {
+            std::vector<CSAMPLE> reference(kFrames * 2, 0.0f);
+            for (SINT i = 0; i < kFrames; ++i) {
+                for (int stem = 0; stem < stems; ++stem) {
+                    if ((mask >> stem) & 1) {
+                        continue;
+                    }
+                    reference[i * 2] += source[i * channels + stem * 2];
+                    reference[i * 2 + 1] += source[i * channels + stem * 2 + 1];
+                }
+            }
+            std::vector<CSAMPLE> destination(kFrames * 2, 123.0f);
+            SampleUtil::mixMultichannelToStereo(
+                    destination.data(), source.data(), kFrames, numChannels, mask);
+            for (SINT i = 0; i < kFrames * 2; ++i) {
+                ASSERT_NEAR(destination[i], reference[i], 1e-5f)
+                        << "channels " << channels << " mask " << mask << " sample " << i;
+            }
+            if (mask == 0) {
+                std::fill(destination.begin(), destination.end(), 123.0f);
+                SampleUtil::mixMultichannelToStereo(
+                        destination.data(), source.data(), kFrames, numChannels);
+                for (SINT i = 0; i < kFrames * 2; ++i) {
+                    ASSERT_NEAR(destination[i], reference[i], 1e-5f)
+                            << "channels " << channels << " (no mask) sample " << i;
+                }
+            }
+        }
+    }
 }
 
 static void BM_MemCpy(benchmark::State& state) {
