@@ -19,6 +19,7 @@ class ReverbGroupState : public EffectState {
               sendPrevious(0) {
         reverb.init(sampleRate);
     }
+    
     ~ReverbGroupState() override = default;
 
     float sampleRate;
@@ -54,6 +55,7 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     EngineEffectParameterPointer m_pBandWidthParameter;
     EngineEffectParameterPointer m_pDampingParameter;
     EngineEffectParameterPointer m_pSendParameter;
+  
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };
