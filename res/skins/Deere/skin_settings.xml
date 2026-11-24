@@ -283,6 +283,24 @@
         </Children>
       </WidgetGroup>
 
+      <!-- Highlighting -->
+      <Template src="skins:Deere/skinsettings_category_button.xml">
+        <SetVariable name="text">External Highlighting</SetVariable>
+      </Template>
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <Template src="skins:Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">highlight_input_allow</SetVariable>
+            <SetVariable name="text">Allow Highlighting</SetVariable>
+            <SetVariable name="skinsetting">[Skin],highlight_input_allow</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
       <Template src="skins:Deere/spacer_v.xml"/>
 
     </Children>
