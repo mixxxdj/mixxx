@@ -1,0 +1,2538 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4.0+">
+    <info>
+        <name>Denon Prime 4 - Mixxx Mapping</name>
+        <author>Levi "Whanake" Williams</author>
+        <description>This is a Work-In-Progress mapping to allow the Denon Prime 4 to be used with Mixxx, ideally with the same (if not more) functionality that the Prime 4 provides as a standalone device.</description>
+        <wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-Prime-4</wiki>
+        <forum>https://mixxx.discourse.group/t/denon-prime-4-mapping/22404</forum>
+    </info>
+    <controller id="denonprime4">
+        <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file filename="Denon-Prime-4-scripts.js" functionprefix="Prime4"/>
+        </scriptfiles>
+        <controls>
+            <!-- FX RACKS + MASTER SECTION-->
+            <control> <!-- Master Gain Knob -->
+              <group>[Master]</group>
+              <key>gain</key>
+              <description>MIDI Learned from 506 messages.</description>
+              <status>0xBF</status>
+              <midino>0x0F</midino>
+              <options>
+                <normal/>
+              </options>
+            </control>
+
+            <control> <!-- FX1 - Effect 1 Button -->
+	      <group></group>
+          <key>Prime4.effectBank[0].enableButtons[1].input</key>
+              <status>0x96</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Button -->
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[2].input</key>
+              <description></description>
+              <status>0x96</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Button -->
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[3].input</key>
+              <description></description>
+              <status>0x96</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[0].effectFocusButton.input</key>
+              <description></description>
+              <status>0x96</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Button -->
+	      <group></group>
+          <key>Prime4.effectBank[0].enableButtons[1].input</key>
+              <status>0x86</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Button -->
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[2].input</key>
+              <description></description>
+              <status>0x86</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Button -->
+              <group></group>
+          <key>Prime4.effectBank[0].enableButtons[3].input</key>
+              <description></description>
+              <status>0x86</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[0].effectFocusButton.input</key>
+              <description></description>
+              <status>0x86</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Knob -->
+	      <group></group>
+          <key>Prime4.effectBank[0].knobs[1].input</key>
+              <status>0xB6</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[0].knobs[2].input</key>
+              <description></description>
+              <status>0xB6</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[0].knobs[3].input</key>
+              <description></description>
+              <status>0xB6</status>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Dry/Wet Knob -->
+              <group></group>
+              <key>Prime4.effectBank[0].dryWetKnob.input</key>
+              <description></description>
+              <status>0xB6</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <control> <!-- FX1 - Effect 1 Button -->
+	      <group></group>
+          <key>Prime4.effectBank[1].enableButtons[1].input</key>
+              <status>0x97</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[2].input</key>
+              <description></description>
+              <status>0x97</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[3].input</key>
+              <description></description>
+              <status>0x97</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[1].effectFocusButton.input</key>
+              <description></description>
+              <status>0x97</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Button -->
+	      <group></group>
+          <key>Prime4.effectBank[1].enableButtons[1].input</key>
+              <status>0x87</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[2].input</key>
+              <description></description>
+              <status>0x87</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Button -->
+              <group></group>
+          <key>Prime4.effectBank[1].enableButtons[3].input</key>
+              <description></description>
+              <status>0x87</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect Focus Button -->
+              <group></group>
+              <key>Prime4.effectBank[1].effectFocusButton.input</key>
+              <description></description>
+              <status>0x87</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 1 Knob -->
+	      <group></group>
+          <key>Prime4.effectBank[1].knobs[1].input</key>
+              <status>0xB7</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 2 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[1].knobs[2].input</key>
+              <description></description>
+              <status>0xB7</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Effect 3 Knob -->
+              <group></group>
+              <key>Prime4.effectBank[1].knobs[3].input</key>
+              <description></description>
+              <status>0xB7</status>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- FX1 - Dry/Wet Knob -->
+              <group></group>
+              <key>Prime4.effectBank[1].dryWetKnob.input</key>
+              <description></description>
+              <status>0xB7</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <!-- MIDDLE MIXER SECTION -->
+            <control> <!-- Library Scroll Encoder -->
+              <group>[Library]</group>
+              <key>MoveVertical</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0xBF</status>
+              <midino>0x05</midino>
+              <options>
+                <selectknob/>
+              </options>
+            </control>
+            <control> <!-- Library Scroll Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.encoderLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Library Scroll Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.encoderLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- BACK Button -->
+              <group></group>
+              <key>Prime4.moveBack.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>n
+            <control> <!-- FWD Button -->
+              <group></group>
+              <key>Prime4.moveForward.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- BACK Button -->
+              <group></group>
+              <key>Prime4.moveBack.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x03</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>n
+            <control> <!-- FWD Button -->
+              <group></group>
+              <key>Prime4.moveForward.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Load to Right Deck Button -->
+              <group></group>
+              <key>Prime4.rightDeck.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Load to Left Deck Button -->
+              <group></group>
+              <key>Prime4.leftDeck.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Load to Left Deck Button -->
+              <group></group>
+              <key>Prime4.leftDeck.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x9F</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Load to Right Deck Button -->
+              <group></group>
+              <key>Prime4.rightDeck.deckLoad.input</key>
+              <description>MIDI Learned from 210 messages.</description>
+              <status>0x8F</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+			<control> <!-- VIEW Button -->
+				<group>[Master]</group>
+				<key>Prime4.maxView.input</key>
+				<description>Maximize Mixxx Library View</description>
+				<status>0x9F</status>
+				<midino>0x07</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Master]</group>
+				<key>Prime4.maxView.input</key>
+				<description>Maximize Mixxx Library View</description>
+				<status>0x8F</status>
+				<midino>0x07</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+            <control> <!-- Headphone Gain Knob -->
+              <group>[Master]</group>
+              <key>headGain</key>
+              <description>MIDI Learned from 408 messages.</description>
+              <status>0xBF</status>
+              <midino>0x0A</midino>
+              <options>
+                <normal/>
+              </options>
+            </control>
+            <control> <!-- Headphone PFL/Master Mix Knob -->
+              <group>[Master]</group>
+              <key>headMix</key>
+              <description>MIDI Learned from 390 messages.</description>
+              <status>0xBF</status>
+              <midino>0x09</midino>
+              <options>
+                <normal/>
+              </options>
+            </control>
+            <control> <!-- Headphone Split Button -->
+              <group></group>
+              <key>Prime4.split.input</key>
+              <description>MIDI Learned from 28 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Headphone Split Button -->
+              <group></group>
+              <key>Prime4.split.input</key>
+              <description>MIDI Learned from 28 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Crossfader -->
+              <group>[Master]</group>
+              <key>crossfader</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0xBF</status>
+              <midino>0x0E</midino>
+              <options>
+                <normal/>
+              </options>
+            </control>
+
+            <control> <!-- Sweep FX - Filter -->
+              <group></group>
+              <key>Prime4.sweepFilter.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Echo -->
+              <group></group>
+              <key>Prime4.sweepEcho.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Wash -->
+              <group></group>
+              <key>Prime4.sweepWash.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Noise -->
+              <group></group>
+              <key>Prime4.sweepNoise.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x9F</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Filter -->
+              <group></group>
+              <key>Prime4.sweepFilter.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Echo -->
+              <group></group>
+              <key>Prime4.sweepEcho.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Wash -->
+              <group></group>
+              <key>Prime4.sweepWash.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Sweep FX - Noise -->
+              <group></group>
+              <key>Prime4.sweepNoise.input</key>
+              <description>MIDI Learned from 1089 messages.</description>
+              <status>0x8F</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+	    <control> <!-- Deck 1 - Crossfader Assign Switch -->
+	      <group>[Channel1]</group>
+	      <key>Prime4.mixerA.xFaderSwitch.input</key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x90</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+	    <control> <!-- Deck 2 - Crossfader Assign Switch -->
+	      <group>[Channel2]</group>
+	      <key>Prime4.mixerB.xFaderSwitch.input</key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x91</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+	    <control> <!-- Deck 3 - Crossfader Assign Switch -->
+	      <group>[Channel3]</group>
+	      <key>Prime4.mixerC.xFaderSwitch.input</key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x92</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+	    <control> <!-- Deck 4 - Crossfader Assign Switch -->
+	      <group>[Channel4]</group>
+	      <key>Prime4.mixerD.xFaderSwitch.input</key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0x93</status>
+	      <midino>0x0F</midino>
+	      <options>
+		<Script-Binding/>
+	      </options>
+	    </control>
+	    <control> <!-- Crossfader Curve Knob -->
+	      <group></group>
+	      <key></key>
+	      <description>Entered manually with Emacs</description>
+	      <status>0xBF</status>
+	      <midino>0x1A</midino>
+	      <options>
+	      </options>
+	    </control>
+
+            <control> <!-- Deck 1 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerA.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x90</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 1 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerA.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x90</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 1 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerA.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x80</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 1 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerA.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x80</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 1 - Gain Knob -->
+                <group></group>
+                <key>Prime4.mixerA.gain.input</key>
+                <description>MIDI Learned from 576 messages.</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 1 - EQ High Knob -->
+                <group></group>
+                <key>Prime4.mixerA.eqHigh.input</key>
+                <description>MIDI Learned from 540 messages.</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 1 - EQ Mid Knob -->
+                <group></group>
+                <key>Prime4.mixerA.eqMid.input</key>
+                <description>MIDI Learned from 528 messages.</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 1 - EQ Low Knob -->
+                <group></group>
+                <key>Prime4.mixerA.eqLow.input</key>
+                <description>MIDI Learned from 518 messages.</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+			<control> <!-- Deck 1 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control> <!-- Deck 1 - PFL Button -->
+                <group>[Channel1]</group>
+                <key>Prime4.mixerA.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x90</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 1 - PFL Button -->
+                <group>[Channel1]</group>
+                <key>Prime4.mixerA.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x80</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 1 - Volume Fader -->
+                <group></group>
+                <key>Prime4.mixerA.volumeFader.input</key>
+                <description>Deck 1 Volume Slider</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control> <!-- Deck 2 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerB.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x91</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 2 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerB.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x91</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 2 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerB.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x81</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 2 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerB.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x81</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 2 - Gain Knob -->
+                <group></group>
+                <key>Prime4.mixerB.gain.input</key>
+                <description>MIDI Learned from 576 messages.</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 2 - EQ High Knob -->
+                <group></group>
+                <key>Prime4.mixerB.eqHigh.input</key>
+                <description>MIDI Learned from 540 messages.</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 2 - EQ Mid Knob -->
+                <group></group>
+                <key>Prime4.mixerB.eqMid.input</key>
+                <description>MIDI Learned from 528 messages.</description>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 2 - EQ Low Knob -->
+                <group></group>
+                <key>Prime4.mixerB.eqLow.input</key>
+                <description>MIDI Learned from 518 messages.</description>
+                <status>0xB1</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+			<control> <!-- Deck 2 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel2]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control> <!-- Deck 2 - PFL Button -->
+                <group>[Channel2]</group>
+                <key>Prime4.mixerB.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x91</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 2 - PFL Button -->
+                <group>[Channel2]</group>
+                <key>Prime4.mixerB.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x81</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 2 - Volume Fader -->
+                <group></group>
+                <key>Prime4.mixerB.volumeFader.input</key>
+                <description>Deck 2 Volume Slider</description>
+                <status>0xB1</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control> <!-- Deck 3 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerC.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x92</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 3 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerC.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x92</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 3 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerC.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x82</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 3 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerC.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x82</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 3 - Gain Knob -->
+                <group></group>
+                <key>Prime4.mixerC.gain.input</key>
+                <description>MIDI Learned from 576 messages.</description>
+                <status>0xB2</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 3 - EQ High Knob -->
+                <group></group>
+                <key>Prime4.mixerC.eqHigh.input</key>
+                <description>MIDI Learned from 540 messages.</description>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 3 - EQ Mid Knob -->
+                <group></group>
+                <key>Prime4.mixerC.eqMid.input</key>
+                <description>MIDI Learned from 528 messages.</description>
+                <status>0xB2</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 3 - EQ Low Knob -->
+                <group></group>
+                <key>Prime4.mixerC.eqLow.input</key>
+                <description>MIDI Learned from 518 messages.</description>
+                <status>0xB2</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+			<control> <!-- Deck 3 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel3]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB2</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control> <!-- Deck 3 - PFL Button -->
+                <group>[Channel3]</group>
+                <key>Prime4.mixerC.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 3 - PFL Button -->
+                <group>[Channel3]</group>
+                <key>Prime4.mixerC.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x82</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 3 - Volume Fader -->
+                <group></group>
+                <key>Prime4.mixerC.volumeFader.input</key>
+                <description>Deck 3 Volume Slider</description>
+                <status>0xB2</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control> <!-- Deck 4 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerD.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x93</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 4 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerD.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x93</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 4 - FX1 Button -->
+              <group></group>
+              <key>Prime4.mixerD.fxBankSelect[1].input</key>
+              <description>MIDI Learned from 50 messages.</description>
+              <status>0x83</status>
+              <midino>0x01</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 4 - FX2 Button -->
+              <group></group>
+              <key>Prime4.mixerD.fxBankSelect[2].input</key>
+              <description>MIDI Learned from 52 messages.</description>
+              <status>0x83</status>
+              <midino>0x02</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck 4 - Gain Knob -->
+                <group></group>
+                <key>Prime4.mixerD.gain.input</key>
+                <description>MIDI Learned from 576 messages.</description>
+                <status>0xB3</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 4 - EQ High Knob -->
+                <group></group>
+                <key>Prime4.mixerD.eqHigh.input</key>
+                <description>MIDI Learned from 540 messages.</description>
+                <status>0xB3</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 4 - EQ Mid Knob -->
+                <group></group>
+                <key>Prime4.mixerD.eqMid.input</key>
+                <description>MIDI Learned from 528 messages.</description>
+                <status>0xB3</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 4 - EQ Low Knob -->
+                <group></group>
+                <key>Prime4.mixerD.eqLow.input</key>
+                <description>MIDI Learned from 518 messages.</description>
+                <status>0xB3</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+			<control> <!-- Deck 4 - Sweep FX Knob -->
+                <group>[QuickEffectRack1_[Channel4]]</group>
+                <key>super1</key>
+                <description>Assigned manually using Vim.</description>
+                <status>0xB3</status>
+                <midino>0x0B</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control> <!-- Deck 4 - PFL Button -->
+                <group>[Channel4]</group>
+                <key>Prime4.mixerD.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 4 - PFL Button -->
+                <group>[Channel4]</group>
+                <key>Prime4.mixerD.headphoneCue.input</key>
+                <description>MIDI Learned from 2 messages.</description>
+                <status>0x83</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control> <!-- Deck 4 - Volume Fader -->
+                <group></group>
+                <key>Prime4.mixerD.volumeFader.input</key>
+                <description>Deck 4 Volume Slider</description>
+                <status>0xB3</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+
+            <!-- LEFT DECK (Deck A) -->
+            <control> <!-- Deck A - Loop In Button -->
+              <group></group>
+              <key>Prime4.leftDeck.loopInButton.input</key>
+              <description>Deck 1-3 Loop In</description>
+              <status>0x94</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop In Button -->
+              <group></group>
+              <key>Prime4.leftDeck.loopInButton.input</key>
+              <description>Deck 1-3 Loop In</description>
+              <status>0x84</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Out Button -->
+              <group></group>
+              <key>Prime4.leftDeck.loopOutButton.input</key>
+              <description>Deck 1-3 Loop Out</description>
+              <status>0x94</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Out Button -->
+              <group></group>
+              <key>Prime4.leftDeck.loopOutButton.input</key>
+              <description>Deck 1-3 Loop Out</description>
+              <status>0x84</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Encoder -->
+              <group></group>
+              <key>Prime4.leftDeck.loopEncoder.input</key>
+              <description></description>
+              <status>0xB4</status>
+              <midino>0x20</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Encoder Button On -->
+              <group></group>
+              <key>Prime4.leftDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x94</status>
+              <midino>0x27</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Encoder Button Off -->
+              <group></group>
+              <key>Prime4.leftDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x84</status>
+              <midino>0x27</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+			<control> <!-- Deck A - Censor Button ON -->
+			  <group>[Channel1]</group>
+			  <key>Prime4.leftDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x94</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
+			<control> <!-- Deck A - Censor Button OFF -->
+			  <group>[Channel1]</group>
+			  <key>Prime4.leftDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x84</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
+			<control> <!-- Deck 1 Button -->
+				<key>Prime4.assignmentButtons[0].input</key>
+				<description></description>
+				<status>0x9F</status>
+				<midino>0x1C</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.assignmentButtons[0].input</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1C</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Deck 3 Button -->
+				<key>Prime4.assignmentButtons[2].input</key>
+				<description></description>
+				<status>0x9F</status>
+				<midino>0x1E</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.assignmentButtons[2].input</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1E</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+            <control> <!-- Deck A - Track Skip Back Button -->
+              <group></group>
+              <key>Prime4.leftDeck.skipBackButton.input</key>
+              <description>Previous Track</description>
+              <status>0x94</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Track Skip Forward Button -->
+              <group></group>
+              <key>Prime4.leftDeck.skipFwdButton.input</key>
+              <description>Next Track</description>
+              <status>0x94</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Track Skip Back Button -->
+              <group></group>
+              <key>Prime4.leftDeck.skipBackButton.input</key>
+              <description>Previous Track</description>
+              <status>0x84</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Track Skip Forward Button -->
+              <group></group>
+              <key>Prime4.leftDeck.skipFwdButton.input</key>
+              <description>Next Track</description>
+              <status>0x84</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beat Jump Back Button -->
+              <group></group>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <description>Beat-Jump Back</description>
+              <status>0x94</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key>Prime4.leftDeck.bjumpBackButton.input</key>
+              <description>Beat-Jump Back</description>
+              <status>0x84</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beat Jump Forward Button -->
+			  <group></group>
+              <key>Prime4.leftDeck.bjumpFwdButton.input</key>
+              <description>Beat-Jump Forward</description>
+              <status>0x94</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key>Prime4.leftDeck.bjumpFwdButton.input</key>
+              <description>Beat-Jump Forward</description>
+              <status>0x84</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Sync Button -->
+              <group></group>
+              <key>Prime4.leftDeck.syncButton.input</key>
+              <description>Sync</description>
+              <status>0x94</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Sync Button Release -->
+              <group></group>
+              <key>Prime4.leftDeck.syncButton.input</key>
+              <description>Sync</description>
+              <status>0x84</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Cue Button ON -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.cueButton.input</key>
+              <description>Deck A - Cue Button</description>
+              <status>0x94</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Cue Button OFF -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.cueButton.input</key>
+              <description>Deck A - Cue Button</description>
+              <status>0x84</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Play/Stop Button / Stutter Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.playButton.input</key>
+              <description>Deck A - Play/Stop Button</description>
+              <status>0x94</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Play/Stop Button / Stutter Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.playButton.input</key>
+              <description>Deck A - Play/Stop Button</description>
+              <status>0x84</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x94</status>
+              <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x84</status>
+              <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Jog Wheel -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputWheelMSB</key>
+              <description></description>
+              <status>0xB4</status>
+              <midino>0x37</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Jog Wheel -->
+              <group></group>
+              <key>Prime4.leftDeck.jogWheel.inputWheelLSB</key>
+              <description></description>
+              <status>0xB4</status>
+              <midino>0x4D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Parameter Left Button -->
+              <group></group>
+              <key></key>
+              <description>Parameter Left</description>
+              <status>0x94</status>
+              <midino>0x17</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Parameter Right Button -->
+              <group></group>
+              <key></key>
+              <description>Parameter Right</description>
+              <status>0x94</status>
+              <midino>0x18</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridShiftLeft.input</key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x94</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridShiftRight.input</key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x94</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridShiftLeft.input</key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x84</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridShiftRight.input</key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x84</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Edit Beatgrid Button / Reset Beatgrid Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridEditButton.input</key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x94</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Edit Beatgrid Button / Reset Beatgrid Button -->
+              <group></group>
+              <key>Prime4.leftDeck.gridEditButton.input</key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x84</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Shift Button -->
+              <group>[Shift]</group>
+              <key>Prime4.shiftState</key>
+              <description>Shift Button</description>
+              <status>0x94</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Shift Button -->
+              <group>[Shift]</group>
+              <key>Prime4.shiftState</key>
+              <description>Shift Button</description>
+              <status>0x84</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+			<control> <!-- Pitch Fader LSB -->
+				<key>Prime4.leftDeck.tempoFader.inputLSB</key>
+				<status>0xB4</status>
+				<midino>0x4B</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Pitch Fader MSB -->
+				<key>Prime4.leftDeck.tempoFader.inputMSB</key>
+				<status>0xB4</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+            <control> <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
+              <group></group>
+              <key>Prime4.leftDeck.pitchBendDown.input</key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x94</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Pitch Bend Up Button / Pitch Range Increase Button -->
+              <group></group>
+              <key>Prime4.leftDeck.pitchBendUp.input</key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x94</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Pitch Bend Down Button / Pitch Range Decrease Button -->
+              <group></group>
+              <key>Prime4.leftDeck.pitchBendDown.input</key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x84</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Pitch Bend Up Button / Pitch Range Increase Button -->
+              <group></group>
+              <key>Prime4.leftDeck.pitchBendUp.input</key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x84</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Key Lock Button / Reset Key Button / Key Sync Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.keylockButton.input</key>
+              <description>Key Lock / Reset Keylock (Key Sync)</description>
+              <status>0x94</status>
+              <midino>0x22</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Vinyl Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.vinylButton.input</key>
+              <description>Vinyl Mode</description>
+              <status>0x94</status>
+              <midino>0x23</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Slip Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.slipButton.input</key>
+              <description>Slip Mode</description>
+              <status>0x94</status>
+              <midino>0x24</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Slip Button -->
+              <group>[Channel1]</group>
+              <key>Prime4.leftDeck.slipButton.input</key>
+              <description>Slip Mode</description>
+              <status>0x84</status>
+              <midino>0x24</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <control> <!-- Deck A - Hot Cue Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>HOT CUE</description>
+              <status>0x94</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Pad / Autoloop Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x94</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Roll Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>ROLL</description>
+              <status>0x94</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Slicer Pad / Slicer Loop Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x94</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Hot Cue Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>HOT CUE</description>
+              <status>0x84</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Loop Pad / Autoloop Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x84</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Roll Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>ROLL</description>
+              <status>0x84</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Slicer Pad / Slicer Loop Pad -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x84</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <control> <!-- Deck A - Performance Pad 1 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 1</description>
+              <status>0x94</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 2 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 2</description>
+              <status>0x94</status>
+              <midino>0x10</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 3 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 3</description>
+              <status>0x94</status>
+              <midino>0x11</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 4 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 4</description>
+              <status>0x94</status>
+              <midino>0x12</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 5 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 5</description>
+              <status>0x94</status>
+              <midino>0x13</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 6 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 6</description>
+              <status>0x94</status>
+              <midino>0x14</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 7 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 7</description>
+              <status>0x94</status>
+              <midino>0x15</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 8 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 8</description>
+              <status>0x94</status>
+              <midino>0x16</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 1 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 1</description>
+              <status>0x84</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 2 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 2</description>
+              <status>0x84</status>
+              <midino>0x10</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 3 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 3</description>
+              <status>0x84</status>
+              <midino>0x11</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 4 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 4</description>
+              <status>0x84</status>
+              <midino>0x12</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 5 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 5</description>
+              <status>0x84</status>
+              <midino>0x13</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 6 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 6</description>
+              <status>0x84</status>
+              <midino>0x14</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 7 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 7</description>
+              <status>0x84</status>
+              <midino>0x15</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck A - Performance Pad 8 -->
+              <group></group>
+              <key>Prime4.leftDeck.padGrid.performancePad</key>
+              <description>Hotcue 8</description>
+              <status>0x84</status>
+              <midino>0x16</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <!-- RIGHT DECK (Deck B)-->
+            <control> <!-- Deck B - Loop In Button -->
+              <group></group>
+              <key>Prime4.rightDeck.loopInButton.input</key>
+              <description>Deck 2-4 Loop In</description>
+              <status>0x95</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Out Button -->
+              <group></group>
+              <key>Prime4.rightDeck.loopOutButton.input</key>
+              <description>Deck 2-4 Loop Out</description>
+              <status>0x95</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop In Button -->
+              <group></group>
+              <key>Prime4.rightDeck.loopInButton.input</key>
+              <description>Deck 2-4 Loop In</description>
+              <status>0x85</status>
+              <midino>0x25</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Out Button -->
+              <group></group>
+              <key>Prime4.rightDeck.loopOutButton.input</key>
+              <description>Deck 2-4 Loop Out</description>
+              <status>0x85</status>
+              <midino>0x26</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Encoder -->
+              <group></group>
+              <key>Prime4.rightDeck.loopEncoder.input</key>
+              <description></description>
+              <status>0xB5</status>
+              <midino>0x20</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Encoder Button On -->
+              <group></group>
+              <key>Prime4.rightDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x95</status>
+              <midino>0x27</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Encoder Button Off -->
+              <group></group>
+              <key>Prime4.rightDeck.beatLoopTrigger.input</key>
+              <description></description>
+              <status>0x85</status>
+              <midino>0x27</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+			<control> <!-- Deck B - Censor Button ON -->
+			  <group>[Channel2]</group>
+			  <key>Prime4.rightDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x95</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
+			<control> <!-- Deck B - Censor Button OFF -->
+			  <group>[Channel2]</group>
+			  <key>Prime4.rightDeck.censorButton.input</key>
+			  <description>Censor + Reverse button for left deck</description>
+			  <status>0x85</status>
+			  <midino>0x01</midino>
+			  <options>
+				<Script-Binding/>
+			  </options>
+			</control>
+			<control> <!-- Deck 2 Button -->
+				<key>Prime4.assignmentButtons[1].input</key>
+				<description></description>
+				<status>0x9F</status>
+				<midino>0x1D</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.assignmentButtons[1].input</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1D</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Deck 4 Button -->
+				<key>Prime4.assignmentButtons[3].input</key>
+				<description></description>
+				<status>0x9F</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<key>Prime4.assignmentButtons[3].input</key>
+				<description></description>
+				<status>0x8F</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+            <control> <!-- Deck B - Track Skip Back Button -->
+              <group></group>
+              <key>Prime4.rightDeck.skipBackButton.input</key>
+              <description>Previous Track</description>
+              <status>0x95</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Track Skip Forward Button -->
+              <group></group>
+              <key>Prime4.rightDeck.skipFwdButton.input</key>
+              <description>Next Track</description>
+              <status>0x95</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Track Skip Back Button -->
+              <group></group>
+              <key>Prime4.rightDeck.skipBackButton.input</key>
+              <description>Previous Track</description>
+              <status>0x85</status>
+              <midino>0x04</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Track Skip Forward Button -->
+              <group></group>
+              <key>Prime4.rightDeck.skipFwdButton.input</key>
+              <description>Next Track</description>
+              <status>0x85</status>
+              <midino>0x05</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Beat Jump Back Button -->
+              <group></group>
+              <key>Prime4.rightDeck.bjumpBackButton.input</key>
+              <description>Beat-Jump Back</description>
+              <status>0x95</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key>Prime4.rightDeck.bjumpBackButton.input</key>
+              <description>Beat-Jump Back</description>
+              <status>0x85</status>
+              <midino>0x06</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Beat Jump Forward Button -->
+              <group></group>
+              <key>Prime4.rightDeck.bjumpFwdButton.input</key>
+              <description>Beat-Jump Forward</description>
+              <status>0x95</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control>
+              <group></group>
+              <key>Prime4.rightDeck.bjumpFwdButton.input</key>
+              <description>Beat-Jump Forward</description>
+              <status>0x85</status>
+              <midino>0x07</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Sync Button -->
+              <group></group>
+              <key>Prime4.rightDeck.syncButton.input</key>
+              <description>Sync</description>
+              <status>0x95</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Sync Button -->
+              <group></group>
+              <key>Prime4.rightDeck.syncButton.input</key>
+              <description>Sync</description>
+              <status>0x85</status>
+              <midino>0x08</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Cue Button ON -->
+              <group>[Channel2]</group>
+              <key>Prime4.rightDeck.cueButton.input</key>
+              <description>Cue</description>
+              <status>0x95</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Cue Button OFF -->
+              <group>[Channel2]</group>
+              <key>Prime4.rightDeck.cueButton.input</key>
+              <description>Cue</description>
+              <status>0x85</status>
+              <midino>0x09</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Play/Stop Button / Stutter Button -->
+              <group>[Channel2]</group>
+			  <key>Prime4.rightDeck.playButton.input</key>
+              <description>Play/Stop</description>
+              <status>0x95</status>
+              <midino>0x0A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x95</status>
+              <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel Surface Touch -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputTouch</key>
+              <description></description>
+              <status>0x85</status>
+              <midino>0x21</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputWheelMSB</key>
+              <description></description>
+              <status>0xB5</status>
+              <midino>0x37</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Jog Wheel -->
+              <group></group>
+              <key>Prime4.rightDeck.jogWheel.inputWheelLSB</key>
+              <description></description>
+              <status>0xB5</status>
+              <midino>0x4D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Parameter Left Button -->
+              <group></group>
+              <key></key>
+              <description>Parameter Left</description>
+              <status>0x95</status>
+              <midino>0x17</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Parameter Right Button -->
+              <group></group>
+              <key></key>
+              <description>Parameter Right</description>
+              <status>0x95</status>
+              <midino>0x18</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridShiftLeft.input</key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x95</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridShiftRight.input</key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x95</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Beatgrid Downbeat Left Button / Beatgrid Half Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridShiftLeft.input</key>
+              <description>Beatgrid Downbeat Left / Beatgrid Half</description>
+              <status>0x85</status>
+              <midino>0x19</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Beatgrid Downbeat Right Button / Beatgrid Double Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridShiftRight.input</key>
+              <description>Beatgrid Downbeat Right / Beatgrid Double</description>
+              <status>0x85</status>
+              <midino>0x1A</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Edit Beatgrid Button / Reset Beatgrid Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridEditButton.input</key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x95</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Edit Beatgrid Button / Reset Beatgrid Button -->
+              <group></group>
+              <key>Prime4.rightDeck.gridEditButton.input</key>
+              <description>Edit Beatgrid / Reset Beatgrid</description>
+              <status>0x85</status>
+              <midino>0x1B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Shift Button -->
+              <group></group>
+              <key>Prime4.shiftState</key>
+              <description>Shift Button</description>
+              <status>0x95</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Shift Button -->
+              <group></group>
+              <key>Prime4.shiftState</key>
+              <description>Shift Button</description>
+              <status>0x85</status>
+              <midino>0x1C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+			<control> <!-- Pitch Fader LSB -->
+				<key>Prime4.rightDeck.tempoFader.inputLSB</key>
+				<status>0xB5</status>
+				<midino>0x4B</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control> <!-- Pitch Fader MSB -->
+				<key>Prime4.rightDeck.tempoFader.inputMSB</key>
+				<status>0xB5</status>
+				<midino>0x1F</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+            <control> <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
+              <group></group>
+              <key>Prime4.rightDeck.pitchBendDown.input</key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x95</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- D"eck B - Pitch Bend Up Button / Pitch Range Increase Button -->
+              <group></group>
+              <key>Prime4.rightDeck.pitchBendUp.input</key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x95</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Pitch Bend Down Button / Pitch Range Decrease Button -->
+              <group></group>
+              <key>Prime4.rightDeck.pitchBendDown.input</key>
+              <description>Pitch Bend Down / Pitch Bend Range Down</description>
+              <status>0x85</status>
+              <midino>0x1D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Pitch Bend Up Button / Pitch Range Increase Button -->
+              <group></group>
+              <key>Prime4.rightDeck.pitchBendUp.input</key>
+              <description>Pitch Bend Up / Pitch Bend Range Up</description>
+              <status>0x85</status>
+              <midino>0x1E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Key Lock Button / Reset Key Button / Key Sync Button -->
+              <group></group>
+              <key>Prime4.rightDeck.keylockButton.input</key>
+              <description>Key Lock / Reset Keylock (Key Sync)</description>
+              <status>0x95</status>
+              <midino>0x22</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Vinyl Button -->
+              <group></group>
+              <key></key>
+              <description>Vinyl Mode</description>
+              <status>0x95</status>
+              <midino>0x23</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Slip Button -->
+              <group>[Channel2]</group>
+              <key>Prime4.rightDeck.slipButton.input</key>
+              <description>Slip Mode</description>
+              <status>0x95</status>
+              <midino>0x24</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+            <control> <!-- Deck B - Hot Cue Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>HOT CUE</description>
+              <status>0x95</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Pad / Autoloop Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x95</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Roll Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>ROLL</description>
+              <status>0x95</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Slicer Pad / Slicer Loop Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x95</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Hot Cue Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>HOT CUE</description>
+              <status>0x85</status>
+              <midino>0x0B</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Loop Pad / Autoloop Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>LOOP / AUTOLOOP</description>
+              <status>0x85</status>
+              <midino>0x0C</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Roll Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>ROLL</description>
+              <status>0x85</status>
+              <midino>0x0D</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Slicer Pad / Slicer Loop Pad -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+              <description>SLICER / SLICER LOOP</description>
+              <status>0x85</status>
+              <midino>0x0E</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 1 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 1</description>
+              <status>0x95</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 2 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 2</description>
+              <status>0x95</status>
+              <midino>0x10</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 3 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 3</description>
+              <status>0x95</status>
+              <midino>0x11</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 4 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 4</description>
+              <status>0x95</status>
+              <midino>0x12</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 5 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 5</description>
+              <status>0x95</status>
+              <midino>0x13</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 6 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 6</description>
+              <status>0x95</status>
+              <midino>0x14</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 7 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 7</description>
+              <status>0x95</status>
+              <midino>0x15</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 8 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 8</description>
+              <status>0x95</status>
+              <midino>0x16</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 1 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 1</description>
+              <status>0x85</status>
+              <midino>0x0F</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 2 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 2</description>
+              <status>0x85</status>
+              <midino>0x10</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 3 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 3</description>
+              <status>0x85</status>
+              <midino>0x11</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 4 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 4</description>
+              <status>0x85</status>
+              <midino>0x12</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 5 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 5</description>
+              <status>0x85</status>
+              <midino>0x13</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 6 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 6</description>
+              <status>0x85</status>
+              <midino>0x14</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 7 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 7</description>
+              <status>0x85</status>
+              <midino>0x15</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+            <control> <!-- Deck B - Performance Pad 8 -->
+              <group></group>
+              <key>Prime4.rightDeck.padGrid.performancePad</key>
+              <description>Hotcue 8</description>
+              <status>0x85</status>
+              <midino>0x16</midino>
+              <options>
+                <Script-Binding/>
+              </options>
+            </control>
+
+          </controls>
+        <outputs>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
