@@ -37,7 +37,7 @@ DJCStarlight.bendScale = 1.0;
 // TODO: Functions that could be implemented to the script:
 // * Tweak/map base LED to other functions (if possible).
 // * FX:
-//   - Potentially pre-select/load effects into deck and set parameters
+//   - Potentially preselect/load effects into deck and set parameters
 // * Fix behavior when adjusting tempo slider after pressing [Sync] (tempo
 //   adjustment should be relative, not absolute).
 // ****************************************************************************
