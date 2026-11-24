@@ -120,23 +120,6 @@
 
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
-      <StatusLight>
-        <TooltipId>autodj_status</TooltipId>
-        <ObjectName>AutoDjStatus</ObjectName>
-        <Size>30f,22f</Size>
-        <NumberPos>3</NumberPos>
-        <PathStatusLight1>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight1>
-        <PathStatusLight2>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight2>
-        <PathStatusLight3>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight3>
-        <Connection>
-          <ConfigKey>[AutoDJ],enabled</ConfigKey>
-        </Connection>
-        <Connection>
-          <ConfigKey>[AutoDJ],enabled</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </StatusLight>
-
       <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
         <Layout>horizontal</Layout>
@@ -217,6 +200,33 @@
       </WidgetGroup><!-- BatteryBox -->
 
       <WidgetGroup><Size>9f,min</Size></WidgetGroup>
+
+      <StatusLight>
+        <TooltipId>autodj_status</TooltipId>
+        <ObjectName>AutoDjStatus</ObjectName>
+        <Size>30f,22f</Size>
+        <NumberPos>3</NumberPos>
+        <PathStatusLight1>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight1>
+        <PathStatusLight2>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight2>
+        <PathStatusLight3>skins:LateNight/<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight3>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+        </Connection>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </StatusLight>
+
+      <!-- AutoDJ button -->
+      <Template src="skins:LateNight/controls/button_2state.xml">
+          <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+          <SetVariable name="TooltipId">autodj_status</SetVariable>
+          <SetVariable name="Size">64f,20f</SetVariable>
+          <SetVariable name="state_0_text">AUTO DJ</SetVariable>
+          <SetVariable name="state_1_text">AUTO DJ</SetVariable>
+          <SetVariable name="ConfigKey">[AutoDJ],enabled</SetVariable>
+      </Template>
 
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
