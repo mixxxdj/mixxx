@@ -202,6 +202,9 @@ std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::rel
     // Check if the new dir is a child of an existing dir.
     bool newIsChildOfExistingDir = false;
     for (const auto& rootDir : loadAllDirectories(true /* skipInvalidOrMissing */)) {
+        if (rootDir.location() == oldDirectory) {
+            continue;
+        }
         const auto rootDirLocation = rootDir.canonicalLocation();
         DEBUG_ASSERT(!rootDirLocation.isEmpty());
         if (mixxx::FileInfo::isRootSubCanonicalLocation(
