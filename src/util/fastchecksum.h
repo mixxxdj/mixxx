@@ -3,37 +3,47 @@
 #include <QByteArrayView>
 #include <QtGlobal>
 #include <cstddef>
-#include <cstring>
 
 namespace mixxx {
 
+namespace detail {
+
+/// Eight 256-entry tables for the slicing-by-8 CRC-16/X-25.
+/// Computed at compile time.
+struct FastChecksumTables {
+    quint16 t[8][256];
+};
+
+constexpr FastChecksumTables makeFastChecksumTables() {
+    FastChecksumTables tables{};
+    for (unsigned i = 0; i < 256; i++) {
+        quint16 crc = static_cast<quint16>(i);
+        for (int bit = 0; bit < 8; bit++) {
+            crc = (crc & 1) ? static_cast<quint16>((crc >> 1) ^ 0x8408)
+                            : static_cast<quint16>(crc >> 1);
+        }
+        tables.t[0][i] = crc;
+    }
+    for (unsigned i = 0; i < 256; i++) {
+        for (int k = 1; k < 8; k++) {
+            const quint16 prev = tables.t[k - 1][i];
+            tables.t[k][i] = static_cast<quint16>((prev >> 8) ^ tables.t[0][prev & 0xFF]);
+        }
+    }
+    return tables;
+}
+
+inline constexpr FastChecksumTables kFastChecksumTables = makeFastChecksumTables();
+
+} // namespace detail
+
 /// The same value as qChecksum(data) (Qt::ChecksumIso3309, CRC-16/X-25), eight
 /// bytes per step. qChecksum goes through a 16 entry table one nibble at a
-/// time (about 2 lookups per byte), this is about 24x faster. The checksum is
-/// stored in the database (analysis.data_checksum), so the algorithm cannot
+/// time (about 2 lookups per byte), this is roughly 14x faster. The checksum
+/// is stored in the database (analysis.data_checksum), so the algorithm cannot
 /// change.
 inline quint16 fastChecksum(const char* pData, std::size_t length) {
-    struct Tables {
-        quint16 t[8][256];
-        Tables() {
-            for (unsigned i = 0; i < 256; i++) {
-                quint16 crc = static_cast<quint16>(i);
-                for (int bit = 0; bit < 8; bit++) {
-                    crc = (crc & 1) ? static_cast<quint16>((crc >> 1) ^ 0x8408)
-                                    : static_cast<quint16>(crc >> 1);
-                }
-                t[0][i] = crc;
-            }
-            for (unsigned i = 0; i < 256; i++) {
-                for (int k = 1; k < 8; k++) {
-                    const quint16 prev = t[k - 1][i];
-                    t[k][i] = static_cast<quint16>((prev >> 8) ^ t[0][prev & 0xFF]);
-                }
-            }
-        }
-    };
-    static const Tables tables;
-
+    const auto& tables = detail::kFastChecksumTables;
     const auto* p = reinterpret_cast<const unsigned char*>(pData);
     quint32 crc = 0xFFFF;
     while (length >= 8) {

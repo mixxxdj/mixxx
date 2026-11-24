@@ -8,6 +8,15 @@
 
 namespace {
 
+// Known answers of CRC-16/X-25, independent of Qt: the values stored in
+// analysis.data_checksum must not change even if qChecksum ever does.
+// 0x906E is the standard "check" value of CRC-16/X-25 for "123456789".
+TEST(FastChecksumTest, KnownAnswers) {
+    constexpr char kCheck[] = "123456789";
+    EXPECT_EQ(0x906E, mixxx::fastChecksum(kCheck, sizeof(kCheck) - 1));
+    EXPECT_EQ(0x0000, mixxx::fastChecksum(kCheck, 0));
+}
+
 TEST(FastChecksumTest, MatchesQChecksum) {
     std::mt19937 rng(42);
     std::uniform_int_distribution<int> byteDist(0, 255);
