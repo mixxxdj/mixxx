@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QString>
+#include <optional>
 
+#include "analyzer/plugins/constantbeatgrid.h"
 #include "audio/frame.h"
 #include "track/beats.h"
 #include "track/bpm.h"
@@ -75,6 +77,12 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
     }
     virtual QVector<mixxx::audio::FramePos> getBeats() const {
         return {};
+    }
+    // A constant tempo grid that the plugin estimated over the whole track.
+    // When the fixed tempo assumption is enabled it is used instead of fitting
+    // a grid to getBeats().
+    virtual std::optional<ConstantBeatGrid> getConstantBeatGrid() const {
+        return std::nullopt;
     }
 };
 

@@ -1,7 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <array>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
@@ -42,6 +44,10 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
         return m_resultBeats;
     }
 
+    std::optional<ConstantBeatGrid> getConstantBeatGrid() const override {
+        return m_constantBeatGrid;
+    }
+
   private:
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
@@ -49,7 +55,12 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     int m_windowSize;
     int m_stepSizeFrames;
     std::vector<double> m_detectionResults;
+    // kConstantBeatGridLowBands spectrum magnitude sums per detection result,
+    // and the first spectrum bin of each low band (and of none, at the end).
+    std::vector<float> m_lowBandMagnitudes;
+    std::array<int, kConstantBeatGridLowBands + 1> m_lowBandBins;
     QVector<mixxx::audio::FramePos> m_resultBeats;
+    std::optional<ConstantBeatGrid> m_constantBeatGrid;
 };
 
 } // namespace mixxx

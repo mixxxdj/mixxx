@@ -1196,6 +1196,7 @@ add_library(
   src/analyzer/plugins/analyzerqueenmarykey.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
+  src/analyzer/plugins/constantbeatgrid.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
   src/audio/signalinfo.cpp
@@ -2890,6 +2891,7 @@ if(BUILD_TESTING)
     src/test/colormapperjsproxy_test.cpp
     src/test/colorpalette_test.cpp
     src/test/configobject_test.cpp
+    src/test/constantbeatgridtest.cpp
     src/test/controller_mapping_validation_test.cpp
     src/test/controller_mapping_settings_test.cpp
     src/test/controllers/controller_columnid_regression_test.cpp

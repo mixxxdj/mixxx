@@ -1,6 +1,9 @@
 #include <dsp/onsets/DetectionFunction.h>
 #include <dsp/tempotracking/TempoTrackV2.h>
 
+#include <cmath>
+#include <numeric>
+
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
@@ -55,11 +58,23 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
             makeDetectionFunctionConfig(m_stepSizeFrames, m_windowSize));
     qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << m_stepSizeFrames;
 
+    for (int band = 0; band <= kConstantBeatGridLowBands; ++band) {
+        m_lowBandBins[band] = static_cast<int>(std::ceil(
+                kConstantBeatGridLowBandEdgesHz[band] * m_windowSize / m_sampleRate));
+    }
+
     m_helper.initialize(
             m_windowSize, m_stepSizeFrames, [this](double* pWindow, size_t) {
                 // TODO(rryan) reserve?
                 m_detectionResults.push_back(
                         m_pDetectionFunction->processTimeDomain(pWindow));
+                const double* pMagnitude = m_pDetectionFunction->getSpectrumMagnitude();
+                for (int band = 0; band < kConstantBeatGridLowBands; ++band) {
+                    m_lowBandMagnitudes.push_back(static_cast<float>(
+                            std::accumulate(pMagnitude + m_lowBandBins[band],
+                                    pMagnitude + m_lowBandBins[band + 1],
+                                    0.0)));
+                }
                 return true;
             });
     return true;
@@ -93,6 +108,11 @@ bool AnalyzerQueenMaryBeats::finalize() {
     for (std::size_t i = 2; i < nonZeroCount; ++i) {
         df.push_back(m_detectionResults.at(i));
     }
+    // The low band magnitudes of the same frames.
+    const std::vector<float> lowBands(
+            m_lowBandMagnitudes.begin() +
+                    (nonZeroCount - df.size()) * kConstantBeatGridLowBands,
+            m_lowBandMagnitudes.begin() + nonZeroCount * kConstantBeatGridLowBands);
 
     TempoTrackV2 tt(m_sampleRate, m_stepSizeFrames);
     tt.calculateBeatPeriod(df, beatPeriod);
@@ -108,6 +128,9 @@ bool AnalyzerQueenMaryBeats::finalize() {
                 (beats.at(i) * m_stepSizeFrames) + m_stepSizeFrames / 2);
         m_resultBeats.push_back(result);
     }
+
+    m_constantBeatGrid = refineConstantBeatGrid(
+            df, lowBands, beats, m_sampleRate, m_stepSizeFrames);
 
     m_pDetectionFunction.reset();
     return true;
