@@ -1070,7 +1070,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
     // these next 4 makeConnections set each their corresponding pad led
     // and refresh the state of the acapel and instru leds
     engine.makeConnection(drumsStemGroup, "mute", function() {
-        if (isStemsTrackLoaded && currentPadMode === 4) {
+        if (currentPadMode === 4) {
             if (engine.getValue(drumsStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad1Off(deckIndex);
             } else {
@@ -1080,7 +1080,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         setAcapelAndInstruLed();
     });
     engine.makeConnection(bassStemGroup, "mute", function() {
-        if (isStemsTrackLoaded && currentPadMode === 4) {
+        if (currentPadMode === 4) {
             if (engine.getValue(bassStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad2Off(deckIndex);
             } else {
@@ -1090,7 +1090,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         setAcapelAndInstruLed();
     });
     engine.makeConnection(synthsStemGroup, "mute", function() {
-        if (isStemsTrackLoaded && currentPadMode === 4) {
+        if (currentPadMode === 4) {
             if (engine.getValue(synthsStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad3Off(deckIndex);
             } else {
@@ -1100,7 +1100,7 @@ NumarkMixtrackGo.Deck = function(deckIndex, deckNumber) {
         setAcapelAndInstruLed();
     });
     engine.makeConnection(voiceStemGroup, "mute", function() {
-        if (isStemsTrackLoaded && currentPadMode === 4) {
+        if (currentPadMode === 4) {
             if (engine.getValue(voiceStemGroup, "mute") === 1) {
                 NumarkMixtrackGo.led.setPad4Off(deckIndex);
             } else {
