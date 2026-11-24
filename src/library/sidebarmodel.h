@@ -3,7 +3,10 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
+#include <QPersistentModelIndex>
 #include <QVariant>
+
+#include "preferences/usersettings.h"
 
 class LibraryFeature;
 class QTimer;
@@ -22,6 +25,7 @@ class SidebarModel : public QAbstractItemModel {
     Q_ENUM(Roles);
 
     explicit SidebarModel(
+            UserSettingsPointer pConfig = UserSettingsPointer(),
             QObject* parent = nullptr);
     ~SidebarModel() override = default;
 
@@ -29,6 +33,7 @@ class SidebarModel : public QAbstractItemModel {
     QModelIndex getDefaultSelection();
     void setDefaultSelection(unsigned int index);
     void activateDefaultSelection();
+    bool restoreLastSelection();
 
     // Required for QAbstractItemModel
     QModelIndex index(int row, int column,
@@ -83,6 +88,7 @@ class SidebarModel : public QAbstractItemModel {
 
   signals:
     void selectIndex(const QModelIndex& index, bool scrollTo);
+    void selectionSaved();
 
   private slots:
     void slotPressedUntilClickedTimeout();
@@ -98,6 +104,14 @@ class SidebarModel : public QAbstractItemModel {
 
     QTimer* const m_pressedUntilClickedTimer;
     QModelIndex m_pressedIndex;
+
+    UserSettingsPointer m_pConfig;
+    QTimer* const m_saveTimer;
+    QPersistentModelIndex m_pendingSelection;
+
+    void scheduleSelectionSave(const QModelIndex& index);
+    void performSave();
+    void saveSelectionToConfig(const QModelIndex& index);
 
     void startPressedUntilClickedTimer(const QModelIndex& pressedIndex);
     void stopPressedUntilClickedTimer();
