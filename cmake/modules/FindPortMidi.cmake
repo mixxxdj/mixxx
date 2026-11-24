@@ -54,6 +54,12 @@ find_library(PortMidi_LIBRARY NAMES portmidi portmidi_s DOC "PortMidi library")
 mark_as_advanced(PortMidi_LIBRARY)
 
 find_library(PortTime_LIBRARY NAMES porttime DOC "PortTime library")
+if(PortTime_LIBRARY AND NOT EXISTS "${PortTime_LIBRARY}")
+  # The cached value points to a nonexistent file. This can happen when the
+  # system package was upgraded and porttime was merged into the portmidi
+  # library (e.g. Debian/Ubuntu). Clear the cache entry so it is searched again.
+  set(PortTime_LIBRARY "PortTime_LIBRARY-NOTFOUND" CACHE FILEPATH "" FORCE)
+endif()
 mark_as_advanced(PortTime_LIBRARY)
 
 if(DEFINED PC_PortMidi_VERSION AND NOT PC_PortMidi_VERSION STREQUAL "")
