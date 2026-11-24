@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QDir>
+#include <QFileSystemWatcher>
 #include <QList>
 #include <QSet>
+#include <QTimer>
 #include <atomic>
 #include <memory>
 #include <mutex>
@@ -118,6 +120,9 @@ class TrackCollectionManager : public QObject,
   public slots:
     void startLibraryScan();
     void stopLibraryScan();
+    void slotIncomingDirectoryChanged();
+    void slotScanFinished();
+    void slotInitalIncomingDirScan();
 
   private:
     void afterTrackAdded(const TrackPointer& pTrack) const;
@@ -126,6 +131,9 @@ class TrackCollectionManager : public QObject,
 
     // Callback for GlobalTrackCache
     void saveEvictedTrack(Track* pTrack) noexcept override;
+
+    void initIncomingDirWatcher();
+    void updateIncomingDirWatcher(const QString& incomingTracksDir);
 
     // Might be called from any thread
     enum class TrackMetadataExportMode {
@@ -150,4 +158,8 @@ class TrackCollectionManager : public QObject,
     std::atomic_bool m_libraryScanActive{false};
     std::mutex m_libraryScanSummaryMutex;
     std::optional<LibraryScanResultSummary> m_pendingLibraryScanSummary;
+
+    QFileSystemWatcher m_incomingDirWatcher;
+    QTimer m_incomingDirTimer;
+    bool m_incomingDirChangePending;
 };

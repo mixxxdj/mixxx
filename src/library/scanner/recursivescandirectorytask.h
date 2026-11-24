@@ -14,7 +14,8 @@ class RecursiveScanDirectoryTask : public ScannerTask {
     RecursiveScanDirectoryTask(LibraryScanner* pScanner,
             const ScannerGlobalPointer& scannerGlobal,
             const mixxx::FileAccess&& dirAccess,
-            bool scanUnhashed);
+            bool scanUnhashed,
+            bool recursive);
     ~RecursiveScanDirectoryTask() override = default;
 
     void run() override;
@@ -22,4 +23,5 @@ class RecursiveScanDirectoryTask : public ScannerTask {
   private:
     const mixxx::FileAccess m_dirAccess;
     const bool m_scanUnhashed;
+    const bool m_recursive;
 };
