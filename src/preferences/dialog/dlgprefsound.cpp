@@ -434,8 +434,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     connect(m_pSoundManager.get(),
             &SoundManager::outputRegistered,
             this,
-            [this](const AudioOutput& output, AudioSource* source) {
-                Q_UNUSED(source);
+            [this](const AudioOutput& output, AudioSource*) {
                 addPath(output);
                 loadSettings();
             });
@@ -443,8 +442,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     connect(m_pSoundManager.get(),
             &SoundManager::inputRegistered,
             this,
-            [this](const AudioInput& input, AudioDestination* dest) {
-                Q_UNUSED(dest);
+            [this](const AudioInput& input, AudioDestination*) {
                 addPath(input);
                 loadSettings();
             });

@@ -175,12 +175,10 @@ inline void writeToFile(
             s_logMaxFileSizeReached.store(true, std::memory_order_relaxed);
             flush = true;
         }
-        const int written = s_logfile.write(formattedMessage);
-        Q_UNUSED(written);
+        [[maybe_unused]] const int written = s_logfile.write(formattedMessage);
         DEBUG_ASSERT(written == formattedMessage.size());
         if (flush) {
-            const bool flushed = s_logfile.flush();
-            Q_UNUSED(flushed);
+            [[maybe_unused]] const bool flushed = s_logfile.flush();
             DEBUG_ASSERT(flushed);
         }
     }
@@ -199,17 +197,15 @@ inline void writeToStdErr(
                     .toLocal8Bit();
 
     const auto locked = QMutexLocker(&s_mutexStdErr);
-    const std::size_t written = fwrite(
+    [[maybe_unused]] const std::size_t written = fwrite(
             formattedMessage.constData(), sizeof(char), formattedMessage.size(), stderr);
-    Q_UNUSED(written);
     DEBUG_ASSERT(written == static_cast<size_t>(formattedMessage.size()));
     if (flush) {
         // Flushing stderr might not be necessary, because message
         // should end with a newline character. Flushing occurs
         // only infrequently (log level >= Critical), so better safe
         // than sorry.
-        const int ret = fflush(stderr);
-        Q_UNUSED(ret);
+        [[maybe_unused]] const int ret = fflush(stderr);
         DEBUG_ASSERT(ret == 0);
     }
 }

@@ -123,9 +123,8 @@ class WBaseWidget {
     // Whenever a connected control is changed, onConnectedControlChanged is
     // called. This allows the widget implementer to respond to the change and
     // gives them both the parameter and its corresponding value.
-    virtual void onConnectedControlChanged(double dParameter, double dValue) {
-        Q_UNUSED(dParameter);
-        Q_UNUSED(dValue);
+    virtual void onConnectedControlChanged(
+            [[maybe_unused]] double parameter, [[maybe_unused]] double value) {
     }
 
     void resetControlParameter();

@@ -94,11 +94,8 @@ void DistortionEffect::processChannel(
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
-        const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-    Q_UNUSED(enableState);
-
+        const EffectEnableState,
+        const GroupFeatureState&) {
     // TODO: anti-aliasing
 
     SINT numSamples = engineParameters.samplesPerBuffer();

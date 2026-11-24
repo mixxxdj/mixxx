@@ -181,8 +181,7 @@ void BroadcastSettings::onProfileNameChanged(const QString& oldName, const QStri
     }
 }
 
-void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
-    Q_UNUSED(newStatus);
+void BroadcastSettings::onConnectionStatusChanged(int) {
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {

@@ -56,8 +56,7 @@ const QStringList SoundSourceProviderMediaFoundation::kSupportedFileTypes = {
 };
 
 SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
-        const QString& supportedFileType) const {
-    Q_UNUSED(supportedFileType)
+        const QString&) const {
     // On Windows SoundSourceMediaFoundation is the preferred decoder for all
     // supported audio formats.
     return SoundSourceProviderPriority::Higher;

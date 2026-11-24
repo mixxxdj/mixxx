@@ -49,9 +49,8 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 }
 
 // Reimplementing WNumber::setValue
-void WNumberPos::setValue(double dValue) {
+void WNumberPos::setValue(double) {
     // Ignore midi-scaled signals from the skin connection.
-    Q_UNUSED(dValue);
     // Update our value with the old value.
     slotSetTimeElapsed(m_dOldTimeElapsed);
 }
@@ -100,8 +99,7 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
 // m_pTimeElapsed is not updated when paused at the beginning of a track,
 // but m_pTimeRemaining is updated in that case. So, call slotSetTimeElapsed to
 // update this widget's text.
-void WNumberPos::slotTimeRemainingUpdated(double dTimeRemaining) {
-    Q_UNUSED(dTimeRemaining);
+void WNumberPos::slotTimeRemainingUpdated(double) {
     double dTimeElapsed = m_pTimeElapsed->get();
     if (dTimeElapsed == 0.0) {
         slotSetTimeElapsed(dTimeElapsed);

@@ -51,19 +51,15 @@ class MusicBrainzRecordingsTaskTest : public MixxxTest {
 };
 
 void MockMusicBrainzReceiver::slotMusicBrainzTaskSucceeded(
-        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
-    Q_UNUSED(guessedTrackReleases);
+        const QList<mixxx::musicbrainz::TrackRelease>&) {
     qDebug() << "MockMusicBrainzReceiver::slotMusicBrainzTaskSucceeded";
     MocSucceeded();
 }
 
 void MockMusicBrainzReceiver::slotMusicBrainzTaskFailed(
-        const mixxx::network::WebResponse& response,
-        int errorCode,
-        const QString& errorMessage) {
-    Q_UNUSED(response);
-    Q_UNUSED(errorCode);
-    Q_UNUSED(errorMessage);
+        const mixxx::network::WebResponse&,
+        int,
+        const QString&) {
     qDebug() << "MockMusicBrainzReceiver::slotMusicBrainzTaskFailed";
     MocFailed();
 }
@@ -74,12 +70,9 @@ void MockMusicBrainzReceiver::slotMusicBrainzTaskAborted() {
 }
 
 void MockMusicBrainzReceiver::slotMusicBrainzTaskNetworkError(
-        QNetworkReply::NetworkError errorCode,
-        const QString& errorString,
-        const mixxx::network::WebResponseWithContent& responseWithContent) {
-    Q_UNUSED(errorCode);
-    Q_UNUSED(errorString);
-    Q_UNUSED(responseWithContent);
+        QNetworkReply::NetworkError,
+        const QString&,
+        const mixxx::network::WebResponseWithContent&) {
     qDebug() << "MockMusicBrainzReceiver::slotMusicBrainzTaskNetworkError";
     MocNetworkError();
 }

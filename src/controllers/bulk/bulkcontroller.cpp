@@ -472,8 +472,7 @@ int BulkController::close() {
     return 0;
 }
 
-void BulkController::send(const QList<int>& data, unsigned int length) {
-    Q_UNUSED(length);
+void BulkController::send(const QList<int>& data, unsigned int) {
     QByteArray temp;
 
     foreach (int datum, data) {

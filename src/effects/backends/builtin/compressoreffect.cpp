@@ -194,9 +194,7 @@ void CompressorEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     if (enableState == EffectEnableState::Enabling) {
         pState->clear(engineParameters);
     } else {

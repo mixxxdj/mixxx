@@ -66,8 +66,7 @@ class EngineChannel : public EngineObject {
     virtual void postProcessLocalBpm() {
     }
 
-    virtual void postProcess(const std::size_t bufferSize) {
-        Q_UNUSED(bufferSize)
+    virtual void postProcess([[maybe_unused]] const std::size_t bufferSize) {
     }
 
     // TODO(XXX) This hack needs to be removed.

@@ -94,9 +94,7 @@ void FilterEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     double hpf;
     double lpf;
     double q = m_pQ->value();

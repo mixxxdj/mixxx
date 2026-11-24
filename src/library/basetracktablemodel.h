@@ -249,14 +249,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             int role) const;
 
     virtual bool setTrackValueForColumn(
-            const TrackPointer& pTrack,
-            int column,
-            const QVariant& value,
-            int role) {
-        Q_UNUSED(pTrack);
-        Q_UNUSED(column);
-        Q_UNUSED(value);
-        Q_UNUSED(role);
+            [[maybe_unused]] const TrackPointer& pTrack,
+            [[maybe_unused]] int column,
+            [[maybe_unused]] const QVariant& value,
+            [[maybe_unused]] int role) {
         return false;
     }
 

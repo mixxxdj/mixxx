@@ -56,9 +56,8 @@ void LibraryTableModel::setTableModel() {
     setHeaderData(fi, Qt::Horizontal, tr("Sort items randomly"), Qt::ToolTipRole);
 }
 
-int LibraryTableModel::addTracks(const QModelIndex& index,
+int LibraryTableModel::addTracks(const QModelIndex&,
         const QList<QString>& locations) {
-    Q_UNUSED(index);
     const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
             locations);
     if (trackIds.size() > 0) {

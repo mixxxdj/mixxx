@@ -939,9 +939,9 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
 
 void WTrackMenu::generateTrackLoadMenu(const QString& group,
         const QString& label,
-        TrackPointer pTrack,
+        [[maybe_unused]] TrackPointer pTrack,
         QMenu* pParentMenu,
-        bool primaryDeck,
+        [[maybe_unused]] bool primaryDeck,
         bool enabled) {
 #ifdef __STEM__
     if (pTrack && !pTrack->hasStreamInfoFromSource()) {
@@ -965,9 +965,6 @@ void WTrackMenu::generateTrackLoadMenu(const QString& group,
                 });
         pParentMenu->addMenu(pStemMenu);
     } else
-#else
-    Q_UNUSED(pTrack)
-    Q_UNUSED(primaryDeck)
 #endif
     {
         QAction* pAction = new QAction(label, this);

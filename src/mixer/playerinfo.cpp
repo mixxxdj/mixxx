@@ -128,8 +128,7 @@ bool PlayerInfo::isFileLoaded(const QString& track_location) const {
     return false;
 }
 
-void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
-    Q_UNUSED(pTimerEvent);
+void PlayerInfo::timerEvent(QTimerEvent*) {
     updateCurrentPlayingDeck();
 }
 

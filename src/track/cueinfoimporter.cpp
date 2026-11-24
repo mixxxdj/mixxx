@@ -16,12 +16,9 @@ bool CueInfoImporter::hasCueOfType(CueType cueType) const {
 }
 
 double CueInfoImporter::guessTimingOffsetMillis(
-        const QString& filePath,
-        const QString& fileType,
-        const audio::SignalInfo& signalInfo) const {
-    Q_UNUSED(filePath);
-    Q_UNUSED(fileType);
-    Q_UNUSED(signalInfo);
+        const QString&,
+        const QString&,
+        const audio::SignalInfo&) const {
     return 0;
 };
 

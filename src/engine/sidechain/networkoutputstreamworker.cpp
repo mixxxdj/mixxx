@@ -21,8 +21,7 @@ NetworkOutputStreamWorker::NetworkOutputStreamWorker()
 void NetworkOutputStreamWorker::outputAvailable() {
 }
 
-void NetworkOutputStreamWorker::setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo) {
-    Q_UNUSED(pOutputFifo);
+void NetworkOutputStreamWorker::setOutputFifo(QSharedPointer<FIFO<CSAMPLE>>) {
 }
 
 QSharedPointer<FIFO<CSAMPLE>> NetworkOutputStreamWorker::getOutputFifo() {

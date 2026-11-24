@@ -79,7 +79,7 @@ void Controller::stopEngine() {
     emit engineStopped();
 }
 
-bool Controller::applyMapping(const QString& resourcePath) {
+bool Controller::applyMapping([[maybe_unused]] const QString& resourcePath) {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
     // Load the script code into the engine
@@ -103,8 +103,6 @@ bool Controller::applyMapping(const QString& resourcePath) {
     m_pScriptEngineLegacy->setModulePaths(getMappingModules());
     m_pScriptEngineLegacy->setInfoScreens(getMappingInfoScreens());
     m_pScriptEngineLegacy->setResourcePath(resourcePath);
-#else
-    Q_UNUSED(resourcePath);
 #endif
     return m_pScriptEngineLegacy->initialize();
 }
@@ -120,11 +118,10 @@ void Controller::stopLearning() {
 
 }
 
-void Controller::send(const QList<int>& data, unsigned int length) {
+void Controller::send(const QList<int>& data, unsigned int) {
     // If you change this implementation, also change it in HidController (That
     // function is required due to HID devices having report IDs)
 
-    Q_UNUSED(length);
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
 

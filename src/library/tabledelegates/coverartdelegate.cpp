@@ -105,7 +105,6 @@ void CoverArtDelegate::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap) {
-    Q_UNUSED(pixmap);
     if (pRequester != this) {
         return;
     }

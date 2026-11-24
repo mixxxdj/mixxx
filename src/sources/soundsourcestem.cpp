@@ -50,8 +50,7 @@ QStringList SoundSourceProviderSTEM::getSupportedFileTypes() const {
 }
 
 SoundSourceProviderPriority SoundSourceProviderSTEM::getPriorityHint(
-        const QString& supportedFileType) const {
-    Q_UNUSED(supportedFileType)
+        const QString&) const {
     return SoundSourceProviderPriority::Higher;
 }
 

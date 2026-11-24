@@ -2314,9 +2314,8 @@ TrackPointer TrackDAO::getOrAddTrack(
     // If the track wasn't in the library already then it has not yet
     // been checked for cover art.
     if (!pAddedTrack->getCoverInfo().hasImage()) {
-        const auto future = guessTrackCoverInfoConcurrently(pAddedTrack);
+        [[maybe_unused]] const auto future = guessTrackCoverInfoConcurrently(pAddedTrack);
         // Don't wait for the result and keep running in the background
-        Q_UNUSED(future)
     }
     return pAddedTrack;
 }

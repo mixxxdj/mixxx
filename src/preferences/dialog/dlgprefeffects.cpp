@@ -290,8 +290,7 @@ void DlgPrefEffects::slotHideUnhideEffect() {
     pTargetList->resizeColumnToContents(0);
 }
 
-void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selected) {
-    Q_UNUSED(selected);
+void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection&) {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }

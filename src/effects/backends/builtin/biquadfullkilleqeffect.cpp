@@ -169,9 +169,7 @@ void BiquadFullKillEQEffect::processChannel(
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(groupFeatures);
-
+        const GroupFeatureState&) {
     if (pState->m_oldSampleRate != engineParameters.sampleRate() ||
             (pState->m_loFreqCorner != m_pLoFreqCorner.get()) ||
             (pState->m_highFreqCorner != m_pHiFreqCorner.get())) {
