@@ -13,7 +13,8 @@ namespace allshader {
 
 WaveformRendererHSV::WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget,
         ::WaveformRendererSignalBase::Options options)
-        : WaveformRendererSignalBase(waveformWidget, options) {
+        : WaveformRendererSignalBase(waveformWidget, options),
+          m_options(options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }
@@ -125,32 +126,27 @@ bool WaveformRendererHSV::preprocessInner() {
 
         const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
 
-        // per channel
+        const bool splitStereo = m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal;
+
+        // For mono rendering we only need one combined envelope, so a single pass
+        // over the sample span avoids redundant left/right scans in the hot path.
         float maxLow[2]{};
         float maxMid[2]{};
         float maxHigh[2]{};
         float maxAll[2]{};
         float eqGain[2] = {1.0f, 1.0f};
 
-        for (int chn = 0; chn < 2; chn++) {
-            // Find the max values for low, mid, high and all in the waveform data
+        auto collectChannelMax = [&] (int chn) {
             float maxLowU = 0.0f;
             float maxMidU = 0.0f;
             float maxHighU = 0.0f;
             float maxAllU = 0.0f;
-            // data is interleaved left / right
             for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                 const WaveformData& waveformData = data[i];
 
-                maxLowU = math_max(maxLowU,
-                        static_cast<float>(
-                                waveformData.filtered.low));
-                maxMidU = math_max(maxMidU,
-                        static_cast<float>(
-                                waveformData.filtered.mid));
-                maxHighU = math_max(maxHighU,
-                        static_cast<float>(
-                                waveformData.filtered.high));
+                maxLowU = math_max(maxLowU, static_cast<float>(waveformData.filtered.low));
+                maxMidU = math_max(maxMidU, static_cast<float>(waveformData.filtered.mid));
+                maxHighU = math_max(maxHighU, static_cast<float>(waveformData.filtered.high));
                 maxAllU = math_max(maxAllU, static_cast<float>(waveformData.filtered.all));
             }
 
@@ -159,10 +155,45 @@ bool WaveformRendererHSV::preprocessInner() {
             maxHigh[chn] = maxHighU * highGain;
             maxAll[chn] = maxAllU;
 
-            float allUnscaled = maxLowU + maxMidU + maxHighU;
+            const float allUnscaled = maxLowU + maxMidU + maxHighU;
             if (allUnscaled > 0.0f) {
                 eqGain[chn] = (maxLow[chn] + maxMid[chn] + maxHigh[chn]) / allUnscaled;
             }
+        };
+
+        if (splitStereo) {
+            for (int chn = 0; chn < 2; ++chn) {
+                collectChannelMax(chn);
+            }
+        } else {
+            float maxLowU = 0.0f;
+            float maxMidU = 0.0f;
+            float maxHighU = 0.0f;
+            float maxAllU = 0.0f;
+            for (int i = visualIndexStart; i <= visualIndexStop; ++i) {
+                const WaveformData& waveformData = data[i];
+
+                maxLowU = math_max(maxLowU, static_cast<float>(waveformData.filtered.low));
+                maxMidU = math_max(maxMidU, static_cast<float>(waveformData.filtered.mid));
+                maxHighU = math_max(maxHighU, static_cast<float>(waveformData.filtered.high));
+                maxAllU = math_max(maxAllU, static_cast<float>(waveformData.filtered.all));
+            }
+
+            maxLow[0] = maxLowU * lowGain;
+            maxMid[0] = maxMidU * midGain;
+            maxHigh[0] = maxHighU * highGain;
+            maxAll[0] = maxAllU;
+
+            const float allUnscaled = maxLowU + maxMidU + maxHighU;
+            if (allUnscaled > 0.0f) {
+                eqGain[0] = (maxLow[0] + maxMid[0] + maxHigh[0]) / allUnscaled;
+            }
+
+            maxLow[1] = maxLow[0];
+            maxMid[1] = maxMid[0];
+            maxHigh[1] = maxHigh[0];
+            maxAll[1] = maxAll[0];
+            eqGain[1] = eqGain[0];
         }
 
         float total{};

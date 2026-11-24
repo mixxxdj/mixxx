@@ -16,7 +16,8 @@ WaveformRendererFiltered::WaveformRendererFiltered(
         bool bRgbStacked,
         ::WaveformRendererSignalBase::Options options)
         : WaveformRendererSignalBase(waveformWidget, options),
-          m_bRgbStacked(bRgbStacked) {
+          m_bRgbStacked(bRgbStacked),
+          m_options(options) {
     initForRectangles<RGBMaterial>(0);
     setUsePreprocess(true);
 }
@@ -156,31 +157,42 @@ bool WaveformRendererFiltered::preprocessInner() {
 
         const float fpos = static_cast<float>(pos) * invDevicePixelRatio;
 
-        // 3 bands, 2 channels
+        // 3 bands, 2 channels. In the mono/default path, the visual envelope is
+        // shared for both channels, so we can compute a single combined max per
+        // band and reuse it instead of double-scanning the stereo samples.
         float max[3][2]{};
         uchar u8max[3][2]{};
-        for (int chn = 0; chn < 2; chn++) {
-            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+        const bool splitStereo = m_options & ::WaveformRendererSignalBase::Option::SplitStereoSignal;
+        if (splitStereo) {
+            for (int chn = 0; chn < 2; chn++) {
+                for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                    const WaveformData& waveformData = data[i];
+
+                    u8max[0][chn] = math_max(u8max[0][chn], waveformData.filtered.low);
+                    u8max[1][chn] = math_max(u8max[1][chn], waveformData.filtered.mid);
+                    u8max[2][chn] = math_max(u8max[2][chn], waveformData.filtered.high);
+                }
+                max[0][chn] = static_cast<float>(u8max[0][chn]) * bandGain[0];
+                max[1][chn] = static_cast<float>(u8max[1][chn]) * bandGain[1];
+                max[2][chn] = static_cast<float>(u8max[2][chn]) * bandGain[2];
+            }
+        } else {
+            for (int i = visualIndexStart; i <= visualIndexStop; ++i) {
                 const WaveformData& waveformData = data[i];
 
-                u8max[0][chn] = math_max(u8max[0][chn], waveformData.filtered.low);
-                u8max[1][chn] = math_max(u8max[1][chn], waveformData.filtered.mid);
-                u8max[2][chn] = math_max(u8max[2][chn], waveformData.filtered.high);
+                u8max[0][0] = math_max(u8max[0][0], waveformData.filtered.low);
+                u8max[1][0] = math_max(u8max[1][0], waveformData.filtered.mid);
+                u8max[2][0] = math_max(u8max[2][0], waveformData.filtered.high);
             }
-            // Cast to float
-            max[0][chn] = static_cast<float>(u8max[0][chn]);
-            max[1][chn] = static_cast<float>(u8max[1][chn]);
-            max[2][chn] = static_cast<float>(u8max[2][chn]);
+            max[0][0] = static_cast<float>(u8max[0][0]) * bandGain[0];
+            max[1][0] = static_cast<float>(u8max[1][0]) * bandGain[1];
+            max[2][0] = static_cast<float>(u8max[2][0]) * bandGain[2];
+            max[0][1] = max[0][0];
+            max[1][1] = max[1][0];
+            max[2][1] = max[2][0];
         }
 
-        // TODO: this can be optimized by using one geometrynode per band
-        // + one for the horizontal axis, and uniform color materials,
-        // instead of passing constant color as vertex.
-
         for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
-            max[bandIndex][0] *= bandGain[bandIndex];
-            max[bandIndex][1] *= bandGain[bandIndex];
-
             vertexUpdater[bandIndex].addRectangle(
                     {fpos - halfPixelSize,
                             halfBreadth - heightFactor * max[bandIndex][0]},
