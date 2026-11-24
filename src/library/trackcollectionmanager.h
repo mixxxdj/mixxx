@@ -57,7 +57,7 @@ class TrackCollectionManager : public QObject,
             const TrackRef& trackRef) const;
     QList<TrackId> resolveTrackIds(
             const QList<mixxx::FileInfo>& fileInfos,
-            QObject* pSource) const;
+            QObject* pSource = nullptr) const;
     QList<TrackId> resolveTrackIdsFromUrls(
             const QList<QUrl>& urls,
             bool addMissing) const;

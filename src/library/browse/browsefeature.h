@@ -37,6 +37,8 @@ class BrowseFeature : public LibraryFeature {
 
     TreeItemModel* sidebarModel() const override;
 
+    QList<QUrl> collectTrackUrls(const QModelIndex& index) override;
+
     void releaseBrowseThread();
 
   public slots:
