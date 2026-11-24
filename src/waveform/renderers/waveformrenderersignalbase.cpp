@@ -11,7 +11,7 @@ const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]")
 } // namespace
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
-        WaveformWidgetRenderer* waveformWidgetRenderer, Options)
+        WaveformWidgetRenderer* waveformWidgetRenderer, Options options)
         : WaveformRendererAbstract(waveformWidgetRenderer),
           m_alignment(Qt::AlignCenter),
           m_orientation(Qt::Horizontal),
@@ -19,6 +19,7 @@ WaveformRendererSignalBase::WaveformRendererSignalBase(
           m_lowVisualGain(1),
           m_midVisualGain(1),
           m_highVisualGain(1),
+          m_ignoreEqGain(options.testFlag(Option::IgnoreEqGain)),
           m_axesColor_r(0),
           m_axesColor_g(0),
           m_axesColor_b(0),
@@ -60,6 +61,10 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() = default;
 bool WaveformRendererSignalBase::init() {
     m_pEQEnabled = std::make_unique<ControlProxy>(
             m_waveformRenderer->getGroup(), QStringLiteral("filterWaveformEnable"));
+    if (m_ignoreEqGain) {
+        // Without the EQ knob and kill switch proxies, they are not visualized
+        return onInit();
+    }
     const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
     m_pLowFilterControlObject = std::make_unique<ControlProxy>(
             effectGroup, QStringLiteral("parameter1"));

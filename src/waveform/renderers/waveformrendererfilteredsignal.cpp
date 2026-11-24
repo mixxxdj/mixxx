@@ -273,21 +273,21 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
             lineThickness,
             Qt::SolidLine,
             Qt::FlatCap));
-    if (m_pLowKillControlObject && m_pLowKillControlObject->get() == 0.0) {
-       painter->drawLines(&m_lowLines[0], actualLowLineNumber);
+    if (!m_pLowKillControlObject || m_pLowKillControlObject->get() == 0.0) {
+        painter->drawLines(&m_lowLines[0], actualLowLineNumber);
     }
     painter->setPen(QPen(QBrush(pColors->getMidColor()),
             lineThickness,
             Qt::SolidLine,
             Qt::FlatCap));
-    if (m_pMidKillControlObject && m_pMidKillControlObject->get() == 0.0) {
+    if (!m_pMidKillControlObject || m_pMidKillControlObject->get() == 0.0) {
         painter->drawLines(&m_midLines[0], actualMidLineNumber);
     }
     painter->setPen(QPen(QBrush(pColors->getHighColor()),
             lineThickness,
             Qt::SolidLine,
             Qt::FlatCap));
-    if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 0.0) {
+    if (!m_pHighKillControlObject || m_pHighKillControlObject->get() == 0.0) {
         painter->drawLines(&m_highLines[0], actualHighLineNumber);
     }
 }

@@ -63,14 +63,24 @@ class WaveformWidgetAbstractHandle {
         return m_backends.contains(WaveformWidgetBackend::None);
     }
 
-#ifdef MIXXX_USE_QOPENGL
     WaveformRendererSignalBase::Options supportedOptions(
             WaveformWidgetBackend backend) const {
-        return backend == WaveformWidgetBackend::AllShader
-                ? m_supportedOption
-                : WaveformRendererSignalBase::Option::None;
-    }
+#ifdef MIXXX_USE_QOPENGL
+        if (backend == WaveformWidgetBackend::AllShader) {
+            return m_supportedOption;
+        }
 #endif
+        // The other backends only implement IgnoreEqGain, and Simple has no per-band gains
+        switch (m_type) {
+        case WaveformWidgetType::Filtered:
+        case WaveformWidgetType::HSV:
+        case WaveformWidgetType::RGB:
+        case WaveformWidgetType::Stacked:
+            return WaveformRendererSignalBase::Option::IgnoreEqGain;
+        default:
+            return WaveformRendererSignalBase::Option::None;
+        }
+    }
 
     QString getDisplayName() const;
     static QString getDisplayName(WaveformWidgetType::Type type);
@@ -79,7 +89,7 @@ class WaveformWidgetAbstractHandle {
     WaveformWidgetType::Type m_type;
     QList<WaveformWidgetBackend> m_backends;
 #ifdef MIXXX_USE_QOPENGL
-    // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
+    // Options of the Allshader (accelerated) backend
     WaveformRendererSignalBase::Options m_supportedOption;
 #endif
 
