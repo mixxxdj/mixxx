@@ -69,6 +69,17 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetOverviewMinuteMarkers(bool minuteMarkers);
     void slotSetOverviewScaling();
 
+    // BPM & Key display options
+    void slotSetShowBpmCurve(bool checked);
+    void slotSetShowBpmMarkers(bool checked);
+    void slotSetShowBpmLabels(bool checked);
+    void slotSetShowKeyMarkers(bool checked);
+    void slotSetShowKeyLabels(bool checked);
+    void slotSetShowLancelotWheel(bool checked);
+    void slotSetOverviewShowBpmCurve(bool checked);
+    void slotSetOverviewShowBpmMarkers(bool checked);
+    void slotSetOverviewShowKeyMarkers(bool checked);
+
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
@@ -84,6 +95,17 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     std::unique_ptr<ControlPushButton> m_pTypeControl;
     std::unique_ptr<ControlObject> m_pOverviewMinuteMarkersControl;
     std::unique_ptr<ControlObject> m_pOverviewStereoControl;
+
+    // BPM & Key display ControlProxies
+    std::unique_ptr<ControlObject> m_pShowBpmCurve;
+    std::unique_ptr<ControlObject> m_pShowBpmMarkers;
+    std::unique_ptr<ControlObject> m_pShowBpmLabels;
+    std::unique_ptr<ControlObject> m_pShowKeyMarkers;
+    std::unique_ptr<ControlObject> m_pShowKeyLabels;
+    std::unique_ptr<ControlObject> m_pShowLancelotWheel;
+    std::unique_ptr<ControlObject> m_pOverviewShowBpmCurve;
+    std::unique_ptr<ControlObject> m_pOverviewShowBpmMarkers;
+    std::unique_ptr<ControlObject> m_pOverviewShowKeyMarkers;
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

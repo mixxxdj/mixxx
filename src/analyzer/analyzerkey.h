@@ -12,7 +12,7 @@
 
 class AnalyzerKey : public Analyzer {
   public:
-    explicit AnalyzerKey(const KeyDetectionSettings& keySettings);
+    explicit AnalyzerKey(UserSettingsPointer pConfig);
     ~AnalyzerKey() override = default;
 
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
@@ -32,6 +32,7 @@ class AnalyzerKey : public Analyzer {
 
     bool shouldAnalyze(TrackPointer tio) const;
 
+    UserSettingsPointer m_pConfig;
     KeyDetectionSettings m_keySettings;
     std::unique_ptr<mixxx::AnalyzerKeyPlugin> m_pPlugin;
     QString m_pluginId;
@@ -44,4 +45,6 @@ class AnalyzerKey : public Analyzer {
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
+
+    bool saveKeySegmentsJson(TrackPointer pTrack, const QJsonArray& segmentsArray);
 };
