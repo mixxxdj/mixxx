@@ -16,6 +16,7 @@
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 #include "mixer/playermanager.h"
 #include "moc_qmlapplication.cpp"
 #include "preferences/configobject.h"
@@ -349,6 +350,12 @@ QmlApplication::QmlApplication(
 
     QmlCoreServices::instance()->setInitializationProgress(65, tr("skin"));
     QmlCoreServices::instance()->setReady();
+
+    if (CmdlineArgs::Instance().getStartAutoDJ() ||
+            m_pCoreServices->getSettings()->getValue(
+                    ConfigKey("[Auto DJ]", "StartOnLaunch"), false)) {
+        m_pCoreServices->getLibrary()->startAutoDJ();
+    }
 
     connect(&m_autoReload,
             &QmlAutoReload::triggered,

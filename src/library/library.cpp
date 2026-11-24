@@ -789,6 +789,14 @@ void Library::showAutoDJ() {
     m_pSidebarModel->slotFeatureSelect(m_pAutoDJFeature, QModelIndex(), false);
 }
 
+void Library::startAutoDJ() {
+    const ConfigKey enabledKey(QStringLiteral("[AutoDJ]"), QStringLiteral("enabled"));
+    ControlObject::set(enabledKey, 1.0);
+    if (ControlObject::get(enabledKey) == 0.0) {
+        qWarning() << "Could not start Auto DJ; check the queue and deck assignments";
+    }
+}
+
 #ifdef __ENGINEPRIME__
 std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
         QWidget* parent) {

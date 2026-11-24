@@ -251,6 +251,8 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     Q_PROPERTY(bool configStartInFullscreenKey READ configStartInFullscreenKey
                     WRITE set_configStartInFullscreenKey NOTIFY
                             configStartInFullscreenKeyChanged);
+    Q_PROPERTY(bool autoDJStartOnLaunch READ autoDJStartOnLaunch WRITE
+                    set_autoDJStartOnLaunch NOTIFY autoDJStartOnLaunchChanged);
     Q_PROPERTY(QString configScheme READ configScheme WRITE set_configScheme
                     NOTIFY configSchemeChanged);
     Q_PROPERTY(QString configSkin READ configSkin WRITE set_configSkin
@@ -449,6 +451,7 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     PROPERTY_DECL_ACCESSOR(QString, configKeyColorPalette);
     PROPERTY_DECL_ACCESSOR(bool, configKeyColorsEnabled);
     PROPERTY_DECL_ACCESSOR(bool, configStartInFullscreenKey);
+    PROPERTY_DECL_ACCESSOR(bool, autoDJStartOnLaunch);
     PROPERTY_DECL_ACCESSOR(QString, configScheme);
     PROPERTY_DECL_ACCESSOR(QString, configSkin);
 
@@ -555,6 +558,7 @@ class QmlConfigProxy : public QmlConfigProxyBase {
     void configKeyColorPaletteChanged();
     void configKeyColorsEnabledChanged();
     void configStartInFullscreenKeyChanged();
+    void autoDJStartOnLaunchChanged();
     void configSkinChanged();
     void bpmSyncLockAlgorithmChanged();
     void librarySyncTrackMetadataExportChanged();

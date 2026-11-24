@@ -433,12 +433,11 @@ void MixxxMainWindow::initialize() {
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
 
-    // Start Auto DJ if the cmdline arg is passed.
-    if (CmdlineArgs::Instance().getStartAutoDJ()) {
-        qDebug("Enabling Auto DJ from CLI flag.");
-        ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+    if (CmdlineArgs::Instance().getStartAutoDJ() ||
+            pConfig->getValue(ConfigKey("[Auto DJ]", "StartOnLaunch"), false)) {
         // Switch to Auto DJ feature
         auto* pLibrary = m_pCoreServices->getLibrary().get();
+        pLibrary->startAutoDJ();
         // Note: auto-scroll is disabled but that doesn't really matter here
         // because the sidebar is still in its initial state (top feature visible,
         // AutoDj is second from the top by default, all features collapsed).
