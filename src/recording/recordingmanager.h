@@ -29,7 +29,7 @@ class RecordingManager : public QObject {
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.
     // The method computes the filename based on date/time information.
-    void startRecording();
+    void startRecording(const QString& recordingLocation = {});
     void stopRecording();
     bool isRecordingActive() const;
     void setRecordingDir();
