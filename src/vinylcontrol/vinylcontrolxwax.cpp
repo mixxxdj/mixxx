@@ -26,6 +26,14 @@ namespace {
 constexpr int kChannels = 2;
 } // namespace
 
+// ANSI color for a drift value in seconds for the debug print
+#define DRIFT_COLOR(driftSeconds)                                                \
+    (fabs(driftSeconds) >= 1.0                   ? "\033[31m"       /* red */    \
+                    : fabs(driftSeconds) >= 0.1  ? "\033[38;5;208m" /* orange */ \
+                    : fabs(driftSeconds) >= 0.01 ? "\033[35m"       /* yellow */ \
+                                                 : "\033[32m")      /* green */
+#define DRIFT_COLOR_RESET "\033[0m"
+
 // Sample threshold below which we consider there to be no signal.
 constexpr double kMinSignal = 75.0 / SAMPLE_MAXIMUM;
 
@@ -445,7 +453,16 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 m_deltaRelativeDriftAmount = calcDeltaRelativeDriftAmount(m_deltaFilePos);
             }
 
-            //qDebug() << "drift" << m_dDriftAmt;
+            // qDebug().noquote()
+            //         << "drift"
+            //         << QString::asprintf("%s%+3f%s",
+            //         DRIFT_COLOR(m_dDriftAmt), m_dDriftAmt, DRIFT_COLOR_RESET)
+            //         << "| relative drift"
+            //         << QString::asprintf("%s%+3f%s",
+            //         DRIFT_COLOR(m_deltaRelativeDriftAmount),
+            //         m_deltaRelativeDriftAmount, DRIFT_COLOR_RESET)
+            //         << "| vinyl position"
+            //         << QString::asprintf("%+3f", m_dVinylPosition);
 
             if (m_bForceResync) {
                 //if forceresync was set but we're no longer absolute,
@@ -606,6 +623,7 @@ double VinylControlXwax::calcDeltaRelativeDriftAmount(double deltaFilePos) {
             m_passthroughEnabled.toBool() || reverseButton->toBool() ||
             m_scratchPositionEnabled.toBool()) {
         m_initialRelativeDriftAmt = m_dDriftAmt;
+        // qDebug() << "NEEDLE DROPPED!!!";
     }
 
     return m_dDriftAmt - m_initialRelativeDriftAmt;
