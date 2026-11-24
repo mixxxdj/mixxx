@@ -38,6 +38,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void slotEqOnlyToggled(bool checked);
     void slotSingleEqToggled(bool checked);
     void slotEqAutoResetToggled(bool checked);
+    void slotEqKillAutoResetToggled(bool checked);
     void slotGainAutoResetToggled(bool checked);
 #ifdef __STEM__
     void slotStemAutoResetToggled(bool checked);
@@ -86,6 +87,12 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     void setUpMainEQ();
     void updateMainEQ();
 
+    // Keeps the "Reset EQ kill switches" checkbox in sync with the "Reset
+    // equalizers" checkbox: resetting the equalizers always resets the kill
+    // switches too, so the kill option is forced on and disabled while
+    // equalizer reset is enabled.
+    void updateEqKillAutoResetState();
+
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getDeckEqManifests() const;
     const QList<EffectManifestPointer> getMainEqManifests() const;
@@ -127,6 +134,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_singleEq;
     bool m_eqEffectsOnly;
     bool m_eqAutoReset;
+    bool m_eqKillAutoReset;
     bool m_gainAutoReset;
 #ifdef __STEM__
     bool m_stemAutoReset;
