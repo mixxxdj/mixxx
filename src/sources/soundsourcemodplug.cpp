@@ -85,8 +85,12 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
         bool resetMissingTagMetadata) const {
     if (pTrackMetadata != nullptr) {
         QFile modFile(getLocalFileName());
-        [[maybe_unused]] auto result = modFile.open(QIODevice::ReadOnly);
-        DEBUG_ASSERT(result);
+        if (!modFile.open(QIODevice::ReadOnly)) {
+            kLogger.warning() << "Failed to open module file"
+                              << modFile.fileName() << ":"
+                              << modFile.errorString();
+            return std::make_pair(ImportResult::Failed, QDateTime());
+        }
         const QByteArray fileBuf(modFile.readAll());
         modFile.close();
 
