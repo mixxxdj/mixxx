@@ -385,7 +385,17 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjusts the gain of the high EQ filter.")
             << resetWithRightAndDoubleClick;
 
+    add("filterSuperHigh")
+            << tr("SuperHigh EQ")
+            << tr("Adjusts the gain of the super high EQ filter.")
+            << resetWithRightAndDoubleClick;
+
     QString eqKillLatch = tr("Hold-to-kill or short click for latching.");
+    add("filterSuperHighKill")
+            << tr("SuperHigh EQ Kill")
+            << tr("Holds the gain of the super high EQ to zero while active.")
+            << eqKillLatch;
+
     add("filterHighKill")
             << tr("High EQ Kill")
             << tr("Holds the gain of the high EQ to zero while active.")

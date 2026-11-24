@@ -27,6 +27,7 @@ EffectsManager::EffectsManager(
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_loEqFreq(ConfigKey(kMixerProfile, kLowEqFrequency), 0., 22040),
+          m_midEqFreq(ConfigKey(kMixerProfile, kMidEqFrequency), 0., 22040),
           m_hiEqFreq(ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040),
           m_initializedFromEffectsXml(false) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
