@@ -239,7 +239,9 @@ void CachingReader::process() {
             // Result of a read request (with a chunk)
             // Every request comes back exactly once, read or discarded
             DEBUG_ASSERT(m_readRequestsInFlight > 0);
-            --m_readRequestsInFlight;
+            if (m_readRequestsInFlight > 0) {
+                --m_readRequestsInFlight;
+            }
             DEBUG_ASSERT(m_state.loadRelaxed() != STATE_IDLE);
             DEBUG_ASSERT(
                     update.status == CHUNK_READ_SUCCESS ||
@@ -286,6 +288,11 @@ void CachingReader::process() {
                 }
                 // Reset the readable frame index range
                 m_readableFrameIndexRange = update.readableFrameIndexRange();
+                // The worker has discarded all pending read requests of the
+                // old track before it reported the new one, and every
+                // discarded chunk has been counted above. Start from zero so a
+                // count that ever drifts cannot silence fast search for good.
+                m_readRequestsInFlight = 0;
                 m_state.storeRelease(STATE_TRACK_LOADED);
             } else {
                 DEBUG_ASSERT(update.status == TRACK_UNLOADED);
@@ -544,20 +551,25 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList, bool fastSearch
         return;
     }
 
-    // Fast search: the playhead passes several chunks
-    // per callback, so every callback hints chunks that are not cached yet.
-    // Left alone that queues a new seek-and-decode per callback, the request
-    // FIFO fills, and the worker keeps decoding chunks the deck has long since
-    // passed -- for seconds after the wheel stops. Pick up results first so
-    // the count below is current, then keep a single request in flight: the
-    // next one is issued from wherever the playhead is by the time the last
-    // one comes back, which is all a search can play anyway.
+    // Fast search: the playhead passes several chunks per callback, so every
+    // callback hints chunks that are not cached yet. Left alone that queues a
+    // new seek-and-decode per callback, the request FIFO fills, and the worker
+    // keeps decoding chunks the deck has long since passed -- for seconds
+    // after the wheel stops. Pick up results first so the count below is
+    // current, then keep a single request in flight: the next one is issued
+    // from wherever the playhead is by the time the last one comes back, which
+    // is all a search can play anyway.
+    //
+    // This only limits NEW requests. All hints are still visited, so the READY
+    // chunks of every hint (slip position, hotcues, loops, intro/outro) are
+    // freshened in every callback and are not the ones the LRU expires.
+    bool mayRequest = true;
     if (fastSearch) {
         process();
-        if (m_state.loadRelaxed() != STATE_TRACK_LOADED ||
-                m_readRequestsInFlight > 0) {
+        if (m_state.loadRelaxed() != STATE_TRACK_LOADED) {
             return;
         }
+        mayRequest = m_readRequestsInFlight == 0;
     }
 
     // For every chunk that the hints indicated, check if it is in the cache. If
@@ -600,6 +612,11 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList, bool fastSearch
         for (int chunkIndex = firstChunkIndex; chunkIndex <= lastChunkIndex; ++chunkIndex) {
             CachingReaderChunkForOwner* pChunk = lookupChunk(chunkIndex);
             if (!pChunk) {
+                if (!mayRequest) {
+                    // Request limit reached: allocate nothing (that would
+                    // expire the LRU chunk), but go on with the other hints.
+                    continue;
+                }
                 shouldWake = true;
                 pChunk = allocateChunkExpireLRU(chunkIndex);
                 if (!pChunk) {
@@ -619,21 +636,23 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList, bool fastSearch
                             << request.chunk;
                 }
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {
+                    kLogger.warning()
+                            << "Failed to submit read request for chunk"
+                            << chunkIndex;
                     // Revoke the chunk from the worker and free it
                     pChunk->takeFromWorker();
                     freeChunk(pChunk);
-                    // The worker is behind and its queue is full. Every
-                    // remaining chunk of every remaining hint would fail the
-                    // same way, and logging each one allocates in the audio
-                    // callback. Hints are ordered by urgency, so stop here:
-                    // the next callback re-hints whatever is still missing.
-                    m_worker.workReady();
-                    return;
+                    // The worker is behind and its queue is full: every other
+                    // missing chunk would fail the same way (and log, which
+                    // allocates in the audio callback). Stop requesting, but
+                    // keep visiting the hints to freshen their READY chunks.
+                    // The next callback re-hints whatever is still missing.
+                    mayRequest = false;
+                    continue;
                 }
                 ++m_readRequestsInFlight;
                 if (fastSearch) {
-                    m_worker.workReady();
-                    return;
+                    mayRequest = false;
                 }
             } else if (pChunk->getState() == CachingReaderChunkForOwner::READY) {
                 // This will cause the chunk to be 'freshened' in the cache. The

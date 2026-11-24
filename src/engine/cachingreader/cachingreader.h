@@ -113,8 +113,9 @@ class CachingReader : public QObject {
     // from the engine callback.
     //
     // fastSearch says the playhead is moving far faster than any decoder
-    // keeps up with (jog wheel search). Then at most one read request is kept
-    // in flight, see the implementation.
+    // keeps up with (search, not scratching). Then at most one read request
+    // is kept in flight, see the implementation. Hints are still all visited
+    // so that the cached chunks they need stay fresh.
     void hintAndMaybeWake(const HintVector& hintList, bool fastSearch = false);
 
     // Request that the CachingReader load a new track. These requests are
