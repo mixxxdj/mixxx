@@ -3,6 +3,7 @@
 #include <QIcon>
 #include <QList>
 #include <QString>
+#include <QUrl>
 #include <QVariant>
 #include <memory>
 
@@ -112,6 +113,13 @@ class TreeItem final {
         return m_data;
     }
 
+    void setUrl(const QUrl& url) {
+        m_url = url;
+    }
+    const QUrl& getUrl() const {
+        return m_url;
+    }
+
     void setIcon(const QIcon& icon) {
         m_icon = icon;
     }
@@ -145,6 +153,7 @@ class TreeItem final {
 
     QString m_label;
     QVariant m_data;
+    QUrl m_url;
     QIcon m_icon;
     bool m_bold;
 };
