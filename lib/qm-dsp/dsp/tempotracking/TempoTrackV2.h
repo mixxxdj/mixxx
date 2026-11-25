@@ -37,9 +37,10 @@ public:
     TempoTrackV2(float sampleRate, int dfIncrement);
     ~TempoTrackV2();
 
-    // Returned beat periods are given in df increment units; inputtempo and tempi in bpm
+    // Returned beat periods are given in df increment units, one per 128 df
+    // increments, to a fraction of an increment; inputtempo and tempi in bpm
     void calculateBeatPeriod(const std::vector<double> &df,
-                             std::vector<int> &beatPeriod) {
+                             std::vector<double> &beatPeriod) {
         calculateBeatPeriod(df, beatPeriod, 120.0, false);
     }
 
@@ -47,12 +48,12 @@ public:
     // MEPD 28/11/12 Expose inputtempo and constraintempo parameters
     // Note, if inputtempo = 120 and constraintempo = false, then functionality is as it was before
     void calculateBeatPeriod(const std::vector<double> &df,
-                             std::vector<int> &beatPeriod,
+                             std::vector<double> &beatPeriod,
                              double inputtempo, bool constraintempo);
 
     // Returned beat positions are given in df increment units
     void calculateBeats(const std::vector<double> &df,
-                        const std::vector<int> &beatPeriod,
+                        const std::vector<double> &beatPeriod,
                         std::vector<double> &beats) {
         calculateBeats(df, beatPeriod, beats, 0.9, 4.0);
     }
@@ -61,7 +62,7 @@ public:
     // MEPD 28/11/12 Expose alpha and tightness parameters
     // Note, if alpha = 0.9 and tightness = 4, then functionality is as it was before
     void calculateBeats(const std::vector<double> &df,
-                        const std::vector<int> &beatPeriod,
+                        const std::vector<double> &beatPeriod,
                         std::vector<double> &beats,
                         double alpha, double tightness);
 
@@ -78,7 +79,7 @@ private:
     double mean_array(const d_vec_t &dfin, int start, int end);
     void filter_df(d_vec_t &df);
     void get_rcf(const d_vec_t &dfframe, const d_vec_t &wv, d_vec_t &rcf);
-    void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &bp);
+    void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &bp);
     double get_max_val(const d_vec_t &df);
     int get_max_ind(const d_vec_t &df);
     void normalise_vec(d_vec_t &df);

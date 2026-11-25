@@ -100,7 +100,7 @@ TempoTrackV2::filter_df(d_vec_t &df)
 // as it was before
 void
 TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
-                                  vector<int> &beat_period,
+                                  vector<double> &beat_period,
                                   double inputtempo, bool constraintempo)
 {
     // to follow matlab.. split into 512 sample frames with a 128 hop size
@@ -265,7 +265,7 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
 }
 
 void
-TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &beat_period)
+TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &beat_period)
 {
     // following Kevin Murphy's Viterbi decoding to get best path of
     // beat periods through rfcmat
@@ -332,7 +332,7 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &
         }
     }
 
-    i_vec_t &bestpath = beat_period;
+    i_vec_t bestpath(T);
     // find starting point - best beat period for "last" frame
     bestpath[T-1] = get_max_ind(delta[T-1]);
 
@@ -343,6 +343,26 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &
 
     // weird but necessary hack -- couldn't get above loop to terminate at t >= 0
     bestpath[0] = psi[1][bestpath[1]];
+
+    // Mixxx: refine each period to a fraction of a df increment by a
+    // parabola through the rcf at the chosen lag and its neighbours. An
+    // integer period is off by up to half an increment, about 1 % around
+    // 120 BPM (a beat is ~43 increments of 512 samples at 44.1 kHz), which
+    // makes the beats drift against the music where onsets are weak.
+    for (std::size_t t = 0; t < T && t < beat_period.size(); t++) {
+        const int k = bestpath[t];
+        double period = k;
+        if (k > 0 && k + 1 < int(Q)) {
+            const double left = rcfmat[t][k - 1];
+            const double center = rcfmat[t][k];
+            const double right = rcfmat[t][k + 1];
+            const double denominator = left - 2 * center + right;
+            if (center >= left && center >= right && denominator < 0) {
+                period += 0.5 * (left - right) / denominator;
+            }
+        }
+        beat_period[t] = period;
+    }
 }
 
 double
@@ -398,7 +418,7 @@ TempoTrackV2::normalise_vec(d_vec_t &df)
 // the default value of alpha = 0.9 and tightness = 4
 void
 TempoTrackV2::calculateBeats(const vector<double> &df,
-                             const vector<int> &beat_period,
+                             const vector<double> &beat_period,
                              vector<double> &beats, double alpha, double tightness)
 {
     if (df.empty() || beat_period.empty()) return;
@@ -421,7 +441,7 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 //    std::cerr << "alpha" << alpha << std::endl;
 //    std::cerr << "tightness" << tightness << std::endl;
 
-    int old_period = 0;
+    double old_period = 0;
     int txwt_len = 0;
     d_vec_t txwt;
 
@@ -437,11 +457,11 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
         // or grove or intended abrupt tempo changes. It may follow a previous
         // dominant even if we are in a new tempo window with lower onsets.
 
-        int period = beat_period[i/128];
-        int prange_min = period * -2;
+        const double period = beat_period[i/128];
+        const int prange_min = -int(std::lround(2 * period));
         if (period != old_period)  {
             old_period = period;
-            int prange_max = period / -2;
+            const int prange_max = -int(period / 2);
 
             // transition range
             txwt_len = prange_max - prange_min + 1;
@@ -449,7 +469,7 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 	        txwt.clear();
 	        txwt.reserve(txwt_len);
 	        for (int j = 0; j < txwt_len; j++) {
-	            double mu = double(period);
+	            double mu = period;
                 txwt.push_back(exp( -0.5*pow(tightness * log((round(2*mu)-j)/mu),2)));
 	        }
 	    }
@@ -477,12 +497,13 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
 
     // STARTING POINT, I.E. LAST BEAT.. PICK A STRONG POINT IN cumscore VECTOR
     d_vec_t tmp_vec;
-    for (int i = df_len - beat_period[beat_period.size()-1] ; i < df_len; i++) {
+    const int last_period = int(std::lround(beat_period[beat_period.size()-1]));
+    for (int i = df_len - last_period ; i < df_len; i++) {
         tmp_vec.push_back(cumscore[i]);
     }
 
     int startpoint = get_max_ind(tmp_vec) +
-        df_len - beat_period[beat_period.size()-1] ;
+        df_len - last_period ;
 
     // can happen if no results obtained earlier (e.g. input too short)
     if (startpoint >= int(backlink.size())) {
