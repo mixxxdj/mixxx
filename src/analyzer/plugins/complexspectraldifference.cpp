@@ -1,5 +1,6 @@
 #include "analyzer/plugins/complexspectraldifference.h"
 
+#include <dsp/transforms/FFTWPlannerMutex.h>
 #include <fftw3.h>
 
 #include <algorithm>
@@ -8,14 +9,6 @@
 #include <numbers>
 
 namespace mixxx {
-
-namespace {
-
-// Creating and destroying FFTW plans is not thread-safe, and analyzers run in
-// several threads. Executing a plan is.
-std::mutex s_fftwPlannerMutex;
-
-} // namespace
 
 ComplexSpectralDifference::ComplexSpectralDifference(int windowSize)
         : m_windowSize(windowSize),
@@ -29,7 +22,7 @@ ComplexSpectralDifference::ComplexSpectralDifference(int windowSize)
           m_previousPhasor(windowSize / 2 + 1, 1.0),
           m_olderPhasor(windowSize / 2 + 1, 1.0) {
     {
-        const std::lock_guard lock(s_fftwPlannerMutex);
+        const std::lock_guard lock(fftwPlannerMutex());
         m_pPlan.reset(fftwf_plan_dft_r2c_1d(windowSize,
                 m_pInput.get(),
                 reinterpret_cast<fftwf_complex*>(m_pSpectrum.get()),
@@ -44,7 +37,7 @@ ComplexSpectralDifference::ComplexSpectralDifference(int windowSize)
 ComplexSpectralDifference::~ComplexSpectralDifference() = default;
 
 void ComplexSpectralDifference::FftwDeleter::operator()(fftwf_plan_s* pPlan) const {
-    const std::lock_guard lock(s_fftwPlannerMutex);
+    const std::lock_guard lock(fftwPlannerMutex());
     fftwf_destroy_plan(pPlan);
 }
 

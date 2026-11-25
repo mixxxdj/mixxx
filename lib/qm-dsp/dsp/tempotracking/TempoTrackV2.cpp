@@ -15,15 +15,79 @@
 
 #include "TempoTrackV2.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <mutex>
 
+#include <fftw3.h>
+
+#include "dsp/transforms/FFTWPlannerMutex.h"
 #include "maths/MathUtilities.h"
 
 using std::vector;
 
 #define   EPS 0.0000008 // just some arbitrary small number
+
+// acf[lag] = mean over n of frame[n] * frame[n + lag], for all lags of a frame
+// of fixed length. The sums are the inverse FFT of the power spectrum of the
+// frame zero padded to at least twice its length (so the circular
+// autocorrelation is the linear one), in single precision.
+class TempoTrackV2::Autocorrelation
+{
+public:
+    explicit Autocorrelation(int length) :
+        m_length(length),
+        m_fftSize(MathUtilities::nextPowerOfTwo(2 * length)),
+        m_buffer(fftwf_alloc_real(m_fftSize)),
+        m_spectrum(fftwf_alloc_complex(m_fftSize / 2 + 1)) {
+        std::lock_guard<std::mutex> lock(fftwPlannerMutex());
+        m_forward = fftwf_plan_dft_r2c_1d(
+            m_fftSize, m_buffer, m_spectrum, FFTW_ESTIMATE);
+        m_backward = fftwf_plan_dft_c2r_1d(
+            m_fftSize, m_spectrum, m_buffer, FFTW_ESTIMATE);
+    }
+    ~Autocorrelation() {
+        {
+            std::lock_guard<std::mutex> lock(fftwPlannerMutex());
+            fftwf_destroy_plan(m_backward);
+            fftwf_destroy_plan(m_forward);
+        }
+        fftwf_free(m_spectrum);
+        fftwf_free(m_buffer);
+    }
+    Autocorrelation(const Autocorrelation&) = delete;
+    Autocorrelation& operator=(const Autocorrelation&) = delete;
+
+    void compute(const vector<double> &frame, vector<double> &acf) {
+        for (int n = 0; n < m_length; n++) {
+            m_buffer[n] = float(frame[n]);
+        }
+        std::fill(m_buffer + m_length, m_buffer + m_fftSize, 0.f);
+        fftwf_execute(m_forward);
+        for (int i = 0; i <= m_fftSize / 2; i++) {
+            const float re = m_spectrum[i][0];
+            const float im = m_spectrum[i][1];
+            m_spectrum[i][0] = re * re + im * im;
+            m_spectrum[i][1] = 0.f;
+        }
+        // The unnormalised inverse transform scales by m_fftSize.
+        fftwf_execute(m_backward);
+        const double scale = 1. / m_fftSize;
+        for (int lag = 0; lag < m_length; lag++) {
+            acf[lag] = m_buffer[lag] * scale / (m_length - lag);
+        }
+    }
+
+private:
+    const int m_length;
+    const int m_fftSize;
+    float* m_buffer;
+    fftwf_complex* m_spectrum;
+    fftwf_plan m_forward;
+    fftwf_plan m_backward;
+};
 
 TempoTrackV2::TempoTrackV2(float rate, int increment) :
     m_rate(rate), m_increment(increment) {
@@ -149,6 +213,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
     rcfmat.reserve(df_len / hopsize + 1);
     d_vec_t dfframe(winlen);
     d_vec_t rcf(wv_len);
+    Autocorrelation autocorrelation(winlen);
 
     // Loop over the onset detection function half a window padding on both ends
     for (int i = -winlen / 2; i < df_len - winlen / 2; i += hopsize) {
@@ -170,7 +235,7 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
 
         // Apply the resonator comb filter (RCF) bank to the window
         // The result is a vector of filter responses for different periods.
-        get_rcf(dfframe, wv, rcf);
+        get_rcf(dfframe, wv, rcf, autocorrelation);
 
         // Append the result to rcfmat as a new column 
         rcfmat.push_back(d_vec_t());
@@ -185,7 +250,8 @@ TempoTrackV2::calculateBeatPeriod(const vector<double> &df,
 
 
 void
-TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf)
+TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf,
+                      Autocorrelation &autocorrelation)
 {
     // calculate autocorrelation function
     // then rcf
@@ -202,16 +268,7 @@ TempoTrackV2::get_rcf(const d_vec_t &dfframe_in, const d_vec_t &wv, d_vec_t &rcf
     
     d_vec_t acf(dfframe_len);
 
-    for (int lag = 0; lag < dfframe_len; lag++) {
-        double sum = 0.;
-        double tmp = 0.;
-
-        for (int n = 0; n < (dfframe_len - lag); n++) {
-            tmp = dfframe[n] * dfframe[n + lag];
-            sum += tmp;
-        }
-        acf[lag] = double(sum/ (dfframe_len - lag));
-    }
+    autocorrelation.compute(dfframe, acf);
 
     // now apply comb filtering
     int numelem = 4;

@@ -77,7 +77,10 @@ private:
     void adapt_thresh(d_vec_t &df);
     double mean_array(const d_vec_t &dfin, int start, int end);
     void filter_df(d_vec_t &df);
-    void get_rcf(const d_vec_t &dfframe, const d_vec_t &wv, d_vec_t &rcf);
+    // Autocorrelation of the detection function frames with FFTW.
+    class Autocorrelation;
+    void get_rcf(const d_vec_t &dfframe, const d_vec_t &wv, d_vec_t &rcf,
+                 Autocorrelation &autocorrelation);
     void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &bp);
     double get_max_val(const d_vec_t &df);
     int get_max_ind(const d_vec_t &df);

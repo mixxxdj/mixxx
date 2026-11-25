@@ -4810,6 +4810,7 @@ target_link_libraries(mixxx-lib PRIVATE ReplayGain)
 
 # Single precision FFTW, used by the QM beat detector
 find_package(FFTW3f REQUIRED)
+target_link_libraries(QueenMaryDsp PRIVATE FFTW3::fftw3f)
 target_link_libraries(mixxx-lib PRIVATE FFTW3::fftw3f)
 
 # Reverb
