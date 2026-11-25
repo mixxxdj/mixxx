@@ -55,10 +55,10 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     int m_windowSize;
     int m_stepSizeFrames;
     std::vector<double> m_detectionResults;
-    // kConstantBeatGridLowBands spectrum magnitude sums per detection result,
-    // and the first spectrum bin of each low band (and of none, at the end).
-    std::vector<float> m_lowBandMagnitudes;
-    std::array<int, kConstantBeatGridLowBands + 1> m_lowBandBins;
+    // kQmOnsetBands spectrum magnitude sums per detection result, and the
+    // first spectrum bin of each band, plus the end bin of the last band.
+    std::vector<float> m_bandMagnitudes;
+    std::array<int, kQmOnsetBands + 1> m_bandBins;
     QVector<mixxx::audio::FramePos> m_resultBeats;
     std::optional<ConstantBeatGrid> m_constantBeatGrid;
 };

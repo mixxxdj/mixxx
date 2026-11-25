@@ -1197,6 +1197,7 @@ add_library(
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
   src/analyzer/plugins/constantbeatgrid.cpp
+  src/analyzer/plugins/qmhalfbeat.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
   src/audio/signalinfo.cpp
@@ -2951,6 +2952,7 @@ if(BUILD_TESTING)
     src/test/playlisttest.cpp
     src/test/portmidicontroller_test.cpp
     src/test/portmidienumeratortest.cpp
+    src/test/qmhalfbeattest.cpp
     src/test/queryutiltest.cpp
     src/test/rangelist_test.cpp
     src/test/readaheadmanager_test.cpp

@@ -5,17 +5,23 @@
 #include <array>
 #include <cmath>
 
+#include "analyzer/plugins/onsetutils.h"
 #include "track/beatutils.h"
 
 namespace mixxx {
 
 namespace {
 
-// Resolution of the folded onset histogram, in bins per onset frame.
-constexpr int kBinsPerFrame = 4;
-// Circular smoothing of the folded histogram, +-0.75 onset frames.
-constexpr std::array<double, 7> kFoldKernel = {1, 2, 3, 4, 3, 2, 1};
-constexpr double kFoldKernelSum = 16;
+using onsetutils::bandLevel;
+using onsetutils::foldKernelSmoothed;
+using onsetutils::kBinsPerFrame;
+using onsetutils::kFoldKernel;
+using onsetutils::kFoldKernelSum;
+using onsetutils::median;
+using onsetutils::wrap;
+using onsetutils::wrapCentered;
+using onsetutils::wrapIndex;
+
 
 // Tempo search: +-1 % around the tracker tempo in 0.02 % steps, then +-0.02 %
 // in 0.0005 % steps.
@@ -24,18 +30,41 @@ constexpr int kCoarseSteps = 101;
 constexpr double kFineRange = 0.0002;
 constexpr int kFineSteps = 81;
 
-// BPM rounding range: the periods around the best one (up to +-0.4 %, in
-// 0.005 % steps) whose fold sharpness is within 2 % of the best one.
-constexpr double kRoundingStep = 0.00005;
-constexpr int kMaxRoundingSteps = 80;
-constexpr double kRoundingTolerance = 0.02;
+// Dotted tempo: in drum and bass and other breakbeat music the tracker often
+// follows 2/3 of the tempo (e.g. 116 instead of 174 BPM): its comb filter
+// favours tempos near 120 BPM, and the kick and snare pattern has strong
+// onsets 1.5 beats apart. The onsets folded at that period spread over three
+// peaks a third of a period apart, so the fold at 2/3 of the period (3/2 of the
+// tempo) is about as sharp or sharper, while it is clearly less sharp at the
+// right tempo. The tempo is taken 3/2 higher if the fold there is at least
+// kDottedMinSharpnessRatio times as sharp and the onsets are clearly periodic
+// (kDottedMinSharpness): on a flat fold the two are close by chance.
+constexpr double kDottedMinSharpnessRatio = 0.95;
+constexpr double kDottedMinSharpness = 1.4;
 
+// BPM rounding range: the periods whose beats drift less than
+// kRoundingMaxDriftSecs from the best ones over the whole track, but at most
+// kRoundingMaxRange away.
+constexpr double kRoundingMaxRange = 0.004;
+constexpr double kRoundingMaxDriftSecs = 0.04;
+
+// Tracker beat intervals within this relative error of a period count as
+// following that period, see octaveFollowedLongest().
+constexpr double kOctaveMaxIntervalError = 0.06;
 // Tracker beats further than this from the grid are ignored for the phase.
 constexpr double kMaxSecsPhaseError = 0.025;
 
 // Weight of each low band onset log ratio relative to the detection function's
-// in the half beat decision.
-constexpr double kLowBandWeight = 0.5;
+// in the half beat decision. It is low because a bass line on the off-beats
+// often has stronger low band onsets than the kicks on the beats, which show
+// in the detection function. The tracker's phase wins a close decision.
+constexpr double kLowBandWeight = 0.15;
+constexpr double kTrackerPhaseBias = 0.1;
+// Below this tempo a beat often spans a kick and a snare of a twice as fast
+// pulse (half-time drum and bass at 85-88 BPM): the detection function peaks
+// at the snare on the half beat, while the low bands follow the kicks.
+constexpr double kHalfTimeMaxBpm = 90;
+constexpr double kHalfTimeLowBandWeight = 0.5;
 
 // Beat timing: finally the grid moves to the highest peak of the detection
 // function folded at the beat period (kBinsPerFrame bins per frame, smoothed
@@ -43,19 +72,9 @@ constexpr double kLowBandWeight = 0.5;
 // tracker beats are whole frames (11.6 ms).
 constexpr int kAlignSmoothBins = 2;
 constexpr double kMaxAlignFrames = 5;
-// The aligned beats are on average 2 ms earlier than the rekordbox beats (and
-// than the Pixabay reference beats); the grid is moved by that much.
+// The aligned beats are on average 2 ms earlier than reference beat grids;
+// the grid is moved by that much.
 constexpr double kBeatDelaySecs = 0.002;
-
-double wrap(double x, double period) {
-    return x - period * std::floor(x / period);
-}
-
-// x wrapped into (-period / 2, period / 2].
-double wrapCentered(double x, double period) {
-    x = wrap(x, period);
-    return x > period / 2 ? x - period : x;
-}
 
 // Sharpness of the onsets folded at a period (in onset frames): peak of the
 // smoothed circular histogram divided by its mean. Folds kFoldBatch periods
@@ -119,20 +138,9 @@ class FoldSharpness {
 
   private:
     static double peakToMean(const double* pBins, int numBins, double sum) {
-        constexpr int kHalfKernel = static_cast<int>(kFoldKernel.size()) / 2;
         double peak = 0;
         for (int i = 0; i < numBins; ++i) {
-            double smoothed = 0;
-            for (int k = -kHalfKernel; k <= kHalfKernel; ++k) {
-                int index = i + k;
-                if (index < 0) {
-                    index += numBins;
-                } else if (index >= numBins) {
-                    index -= numBins;
-                }
-                smoothed += kFoldKernel[k + kHalfKernel] * pBins[index];
-            }
-            peak = std::max(peak, smoothed);
+            peak = std::max(peak, foldKernelSmoothed(pBins, numBins, i));
         }
         const double mean = kFoldKernelSum * sum / numBins;
         return peak / (mean + 1e-12);
@@ -167,10 +175,32 @@ double findSharpestPeriod(FoldSharpness& foldSharpness,
     return bestPeriod;
 }
 
-double median(std::vector<double> values) {
-    const std::size_t n = values.size();
-    std::sort(values.begin(), values.end());
-    return n % 2 ? values[n / 2] : (values[n / 2 - 1] + values[n / 2]) / 2;
+// The period among half, once and twice period that the intervals of beats
+// match for the longest total time. The tracker often follows half or double
+// the tempo in parts of a track. BeatUtils::makeConstBpm() takes the tempo of
+// the longest constant region, while the beats at the other tempo may be split
+// into many shorter regions that together last longer.
+double octaveFollowedLongest(const std::vector<double>& beats, double period) {
+    const auto timeAt = [&beats](double target) {
+        double time = 0;
+        for (std::size_t i = 1; i < beats.size(); ++i) {
+            const double interval = beats[i] - beats[i - 1];
+            if (std::abs(interval / target - 1) < kOctaveMaxIntervalError) {
+                time += interval;
+            }
+        }
+        return time;
+    };
+    const double timeAtPeriod = timeAt(period);
+    const double timeAtHalf = timeAt(period / 2);
+    const double timeAtDouble = timeAt(period * 2);
+    if (timeAtHalf > timeAtPeriod && timeAtHalf >= timeAtDouble) {
+        return period / 2;
+    }
+    if (timeAtDouble > timeAtPeriod) {
+        return period * 2;
+    }
+    return period;
 }
 
 // Mean of the per beat maximum of x within +-1 frame around phase + k * period.
@@ -218,15 +248,90 @@ std::vector<double> foldMean(const std::vector<double>& x, double period, int bi
     return histogram;
 }
 
-// Returns the phase (in frames) of the highest peak of the onsets folded at the
-// period within kMaxAlignFrames of phase, to a fraction of a frame.
-double alignToOnsetPeak(const std::vector<double>& onsets, double phase, double period) {
+// 2/3 of period if the tracker followed the dotted tempo, see kDottedMinSharpness.
+double correctDottedPeriod(const std::vector<double>& onsets, double period) {
+    FoldSharpness foldSharpness(onsets);
+    double sharpness;
+    findSharpestPeriod(foldSharpness, period, kCoarseRange, kCoarseSteps, &sharpness);
+    double dottedSharpness;
+    const double dottedPeriod = findSharpestPeriod(foldSharpness,
+            period * 2 / 3,
+            kCoarseRange,
+            kCoarseSteps,
+            &dottedSharpness);
+    if (sharpness >= kDottedMinSharpness &&
+            dottedSharpness >= kDottedMinSharpnessRatio * sharpness) {
+        return dottedPeriod;
+    }
+    return period;
+}
+
+// The phase of the tracker beats on a grid of period (all in onset frames):
+// the median offset of the beats modulo half a beat, then the mean of the
+// offsets within maxPhaseErrorFrames of it (as in BeatUtils::adjustPhase).
+// Modulo half a beat, since the tracker often follows the off-beat in some
+// parts of a track only, and the median of the two clusters would fall
+// between them.
+double trackerPhase(
+        const std::vector<double>& beats, double period, double maxPhaseErrorFrames) {
+    const double halfPeriod = period / 2;
+    std::vector<double> offsets;
+    offsets.reserve(beats.size());
+    for (const double beat : beats) {
+        offsets.push_back(wrapCentered(beat - beats.front(), halfPeriod));
+    }
+    double phase = wrap(beats.front() + median(offsets), period);
+    double offsetSum = 0;
+    int offsetCount = 0;
+    for (const double beat : beats) {
+        const double offset = wrapCentered(beat - phase, halfPeriod);
+        if (std::abs(offset) < maxPhaseErrorFrames) {
+            offsetSum += offset;
+            ++offsetCount;
+        }
+    }
+    if (offsetCount > 0) {
+        phase = wrap(phase + offsetSum / offsetCount, period);
+    }
+    return phase;
+}
+
+// > 0 if the beats at phase are stronger than the off-beats: the log ratio of
+// the detection function plus lowBandWeight times that of the flux of each
+// low band.
+double halfBeatScore(const std::vector<double>& onsets,
+        const std::vector<float>& bands,
+        double phase,
+        double period,
+        double lowBandWeight) {
+    double score = onOffBeatLogRatio(onsets, phase, period);
+    std::vector<double> flux(onsets.size());
+    for (int band = 0; band < kConstantBeatGridLowBands; ++band) {
+        double previous = 0;
+        for (std::size_t i = 0; i < onsets.size(); ++i) {
+            const double magnitude = bandLevel(bands[i * kQmOnsetBands + band]);
+            flux[i] = i > 0 ? std::max(0.0, magnitude - previous) : 0.0;
+            previous = magnitude;
+        }
+        score += lowBandWeight * onOffBeatLogRatio(flux, phase, period);
+    }
+    return score;
+}
+
+} // namespace
+
+ConstantBeatGrid ConstantBeatGrid::movedByHalfBeat(mixxx::audio::SampleRate sampleRate) const {
+    const double beatLength = beatLengthFrames(sampleRate);
+    return {bpm, mixxx::audio::FramePos(wrap(firstBeat.value() + beatLength / 2, beatLength))};
+}
+
+double alignPhaseToOnsets(const std::vector<double>& onsets, double phase, double period) {
     const int binCount = std::max(1, static_cast<int>(std::lround(period)) * kBinsPerFrame);
     const std::vector<double> folded = foldMean(onsets, period, binCount);
     std::vector<double> histogram(binCount, 0.0);
     for (int bin = 0; bin < binCount; ++bin) {
         for (int k = -kAlignSmoothBins; k <= kAlignSmoothBins; ++k) {
-            histogram[bin] += folded[((bin + k) % binCount + binCount) % binCount];
+            histogram[bin] += folded[wrapIndex(bin + k, binCount)];
         }
     }
     const double binsPerFrame = binCount / period;
@@ -253,17 +358,38 @@ double alignToOnsetPeak(const std::vector<double>& onsets, double phase, double 
     return wrap((bestBin + offset) / binsPerFrame, period);
 }
 
-} // namespace
+mixxx::Bpm findRoundedOnsetBpm(const std::vector<double>& onsets,
+        double centerPeriod,
+        double framesPerMinute) {
+    if (onsets.empty() || centerPeriod <= 0) {
+        return {};
+    }
+    FoldSharpness foldSharpness(onsets);
+    double sharpness;
+    double period = findSharpestPeriod(foldSharpness,
+            centerPeriod,
+            kCoarseRange,
+            kCoarseSteps,
+            &sharpness);
+    period = findSharpestPeriod(foldSharpness, period, kFineRange, kFineSteps, &sharpness);
+    const double range = std::min(kRoundingMaxRange,
+            kRoundingMaxDriftSecs * framesPerMinute / 60 / static_cast<double>(onsets.size()));
+    const double minPeriod = period * (1 - range);
+    const double maxPeriod = period * (1 + range);
+    return BeatUtils::roundBpmWithinRange(mixxx::Bpm(framesPerMinute / maxPeriod),
+            mixxx::Bpm(framesPerMinute / period),
+            mixxx::Bpm(framesPerMinute / minPeriod));
+}
 
 std::optional<ConstantBeatGrid> refineConstantBeatGrid(
         const std::vector<double>& onsets,
-        const std::vector<float>& lowBands,
+        const std::vector<float>& bands,
         const std::vector<double>& beats,
         mixxx::audio::SampleRate sampleRate,
         int stepSizeFrames) {
     if (!sampleRate.isValid() || stepSizeFrames <= 0 || beats.size() < 2 ||
             onsets.empty() ||
-            lowBands.size() != onsets.size() * kConstantBeatGridLowBands) {
+            bands.size() != onsets.size() * kQmOnsetBands) {
         return std::nullopt;
     }
 
@@ -279,90 +405,32 @@ std::optional<ConstantBeatGrid> refineConstantBeatGrid(
     if (!trackerBpm.isValid()) {
         return std::nullopt;
     }
+    const double framesPerMinute = 60.0 * sampleRate / stepSizeFrames;
+    const double trackerPeriod = correctDottedPeriod(onsets,
+            octaveFollowedLongest(beats, framesPerMinute / trackerBpm.value()));
 
     // Tempo
-    const double framesPerMinute = 60.0 * sampleRate / stepSizeFrames;
-    FoldSharpness foldSharpness(onsets);
-    double sharpness;
-    double period = findSharpestPeriod(foldSharpness,
-            framesPerMinute / trackerBpm.value(),
-            kCoarseRange,
-            kCoarseSteps,
-            &sharpness);
-    period = findSharpestPeriod(foldSharpness, period, kFineRange, kFineSteps, &sharpness);
-    // Widen the range step by step in both directions while the fold stays
-    // nearly as sharp.
-    double minPeriod = period;
-    double maxPeriod = period;
-    for (int direction = -1; direction <= 1; direction += 2) {
-        bool sharp = true;
-        for (int i = 1; sharp && i <= kMaxRoundingSteps; i += kFoldBatch) {
-            const int count = std::min(kFoldBatch, kMaxRoundingSteps - i + 1);
-            FoldPeriods candidates{};
-            for (int j = 0; j < count; ++j) {
-                candidates[j] = period * (1 + direction * (i + j) * kRoundingStep);
-            }
-            const FoldPeriods candidateSharpness = foldSharpness(candidates, count);
-            for (int j = 0; j < count; ++j) {
-                if (candidateSharpness[j] < sharpness * (1 - kRoundingTolerance)) {
-                    sharp = false;
-                    break;
-                }
-                minPeriod = std::min(minPeriod, candidates[j]);
-                maxPeriod = std::max(maxPeriod, candidates[j]);
-            }
-        }
-    }
-    const mixxx::Bpm bpm = BeatUtils::roundBpmWithinRange(
-            mixxx::Bpm(framesPerMinute / maxPeriod),
-            mixxx::Bpm(framesPerMinute / period),
-            mixxx::Bpm(framesPerMinute / minPeriod));
+    const mixxx::Bpm bpm = findRoundedOnsetBpm(onsets, trackerPeriod, framesPerMinute);
     if (!bpm.isValid()) {
         return std::nullopt;
     }
-    period = framesPerMinute / bpm.value();
+    const double period = framesPerMinute / bpm.value();
 
-    // Phase: median offset of the tracker beats to the grid, then the mean of
-    // the offsets close to it (as in BeatUtils::adjustPhase).
-    std::vector<double> offsets;
-    offsets.reserve(beats.size());
-    for (const double beat : beats) {
-        offsets.push_back(wrapCentered(beat - beats.front(), period));
-    }
-    double phase = wrap(beats.front() + median(offsets), period);
-    const double maxPhaseErrorFrames = kMaxSecsPhaseError * sampleRate / stepSizeFrames;
-    double offsetSum = 0;
-    int offsetCount = 0;
-    for (const double beat : beats) {
-        const double offset = wrapCentered(beat - phase, period);
-        if (std::abs(offset) < maxPhaseErrorFrames) {
-            offsetSum += offset;
-            ++offsetCount;
-        }
-    }
-    if (offsetCount > 0) {
-        phase = wrap(phase + offsetSum / offsetCount, period);
-    }
+    // Phase, up to half a beat: the half beat check below decides between
+    // beat and off-beat.
+    double phase = trackerPhase(
+            beats, period, kMaxSecsPhaseError * sampleRate / stepSizeFrames);
 
     // Half beat: compare on-beat and off-beat strength of the detection function
     // and of the low band onsets (half-wave rectified log magnitude flux).
-    double score = onOffBeatLogRatio(onsets, phase, period);
-    std::vector<double> flux(onsets.size());
-    for (int band = 0; band < kConstantBeatGridLowBands; ++band) {
-        double previous = 0;
-        for (std::size_t i = 0; i < onsets.size(); ++i) {
-            const double magnitude = std::log1p(
-                    10.0 * lowBands[i * kConstantBeatGridLowBands + band]);
-            flux[i] = i > 0 ? std::max(0.0, magnitude - previous) : 0.0;
-            previous = magnitude;
-        }
-        score += kLowBandWeight * onOffBeatLogRatio(flux, phase, period);
-    }
-    if (score < 0) {
+    const bool halfTime = bpm.value() < kHalfTimeMaxBpm;
+    const double lowBandWeight = halfTime ? kHalfTimeLowBandWeight : kLowBandWeight;
+    const double score = halfBeatScore(onsets, bands, phase, period, lowBandWeight);
+    if (score + (halfTime ? 0 : kTrackerPhaseBias) < 0) {
         phase = wrap(phase + period / 2, period);
     }
 
-    phase = alignToOnsetPeak(onsets, phase, period);
+    phase = alignPhaseToOnsets(onsets, phase, period);
     phase = wrap(phase + kBeatDelaySecs * static_cast<double>(sampleRate) / stepSizeFrames,
             period);
 
