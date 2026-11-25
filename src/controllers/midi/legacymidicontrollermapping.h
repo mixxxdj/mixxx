@@ -16,6 +16,10 @@ class LegacyMidiControllerMapping final : public LegacyControllerMapping {
 
     virtual bool isMappable() const override;
 
+    std::shared_ptr<LegacyControllerMapping> clone() const override {
+        return std::make_shared<LegacyMidiControllerMapping>(*this);
+    }
+
     // Input mappings
     void addInputMapping(uint16_t key, const MidiInputMapping& mapping);
     void removeInputMapping(uint16_t key);

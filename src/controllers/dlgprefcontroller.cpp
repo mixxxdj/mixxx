@@ -270,10 +270,9 @@ DlgPrefController::DlgPrefController(
     connect(this,
             &DlgPrefController::applyMapping,
             m_pControllerManager.get(),
-            &ControllerManager::slotApplyMapping,
-            Qt::BlockingQueuedConnection);
-    // Wait until the mapping has been cloned in the controller thread
-    // and we can continue to edit our copy
+            &ControllerManager::slotApplyMapping);
+    // Not blocking: opening a controller with screens on the controller
+    // thread waits for this thread, see ControllerRenderingEngine::setup().
 
     // Update GUI
     connect(m_pControllerManager.get(),
@@ -384,7 +383,7 @@ void DlgPrefController::showLearningWizard() {
 
     if (!m_pMapping) {
         m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
-        emit applyMapping(m_pController, m_pMapping, true);
+        emit applyMapping(m_pController, m_pMapping->clone(), true);
         // shortcut for creating and assigning required I/O table models
         showMapping(m_pMapping);
     }
@@ -442,7 +441,7 @@ void DlgPrefController::slotStopLearning() {
                 qDebug() << "Mapping saved as" << mappingPath;
                 m_pMapping->setFilePath(mappingPath);
                 m_pMapping->setDirty(false);
-                emit applyMapping(m_pController, m_pMapping, true);
+                emit applyMapping(m_pController, m_pMapping->clone(), true);
                 enumerateMappings(mappingPath);
             } else {
                 qDebug() << "Failed to save mapping as" << mappingPath;
@@ -738,9 +737,8 @@ void DlgPrefController::slotApply() {
     }
 
     // Load the resulting mapping (which has been mutated by the input/output
-    // table models). The controller clones the mapping so we aren't touching
-    // the same mapping.
-    emit applyMapping(m_pController, m_pMapping, bEnabled);
+    // table models). Hand over a copy, so we can go on editing ours.
+    emit applyMapping(m_pController, m_pMapping ? m_pMapping->clone() : nullptr, bEnabled);
 
     // Mark the dialog as not dirty
     setDirty(false);

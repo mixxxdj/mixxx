@@ -448,8 +448,9 @@ void ControllerManager::closeController(Controller* pController) {
             ConfigKey("[Controller]", sanitizeDeviceName(pController->getName())), 0);
 }
 
-// This needs to be called in a Qt::BlockingQueuedConnection so that the
-// signaling thread can't alter the LegacyControllerMapping during applying
+// pMapping must not be used by the signaling thread anymore. Must not be
+// called with a Qt::BlockingQueuedConnection: opening a controller with screens
+// waits for the main thread, see ControllerRenderingEngine::setup().
 void ControllerManager::slotApplyMapping(Controller* pController,
         std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
@@ -486,13 +487,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         return;
     }
 
-    // Note: openController() may call ControllerRenderingEngine::setup()
-    // Which has a blocking invokeMethod() call for QOffscreenSurface::create()
-    // That why we need to return from this blocking call first.
-    QMetaObject::invokeMethod(
-            this,
-            [this, pController]() { openController(pController); },
-            Qt::QueuedConnection);
+    openController(pController);
 }
 
 // static
