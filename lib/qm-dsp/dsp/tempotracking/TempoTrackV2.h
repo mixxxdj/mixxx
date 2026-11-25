@@ -82,7 +82,6 @@ private:
     void get_rcf(const d_vec_t &dfframe, const d_vec_t &wv, d_vec_t &rcf,
                  Autocorrelation &autocorrelation);
     void viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &bp);
-    double get_max_val(const d_vec_t &df);
     int get_max_ind(const d_vec_t &df);
     void normalise_vec(d_vec_t &df);
 };

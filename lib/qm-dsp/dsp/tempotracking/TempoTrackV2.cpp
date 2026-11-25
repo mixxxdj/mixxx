@@ -30,6 +30,29 @@ using std::vector;
 
 #define   EPS 0.0000008 // just some arbitrary small number
 
+namespace {
+
+// The largest product a[k] * b[k] for 0 <= k < n, with k the first index where
+// it occurs. As in a search for a larger value starting from 0, it is 0 with
+// k = -1 if no product is positive.
+double max_product(const double *a, const double *b, int n, int &k)
+{
+    double maxval = 0.;
+    for (int i = 0; i < n; i++) {
+        maxval = std::max(maxval, a[i] * b[i]);
+    }
+    k = -1;
+    for (int i = 0; maxval > 0. && i < n; i++) {
+        if (a[i] * b[i] == maxval) {
+            k = i;
+            break;
+        }
+    }
+    return maxval;
+}
+
+} // namespace
+
 // acf[lag] = mean over n of frame[n] * frame[n + lag], for all lags of a frame
 // of fixed length. The sums are the inverse FFT of the power spectrum of the
 // frame zero padded to at least twice its length (so the circular
@@ -312,8 +335,10 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &
     // formed of Gaussians on diagonal - implies slow tempo change
     double sigma = 8.;
     // don't want really short beat periods, or really long ones
-    for (std::size_t i = 20; i  < Q - 20; i++) {
-        for (int j = 20; j < Q - 20; j++) {
+    const std::size_t qmin = 20;
+    const std::size_t qmax = Q - 20;
+    for (std::size_t i = qmin; i < qmax; i++) {
+        for (std::size_t j = qmin; j < qmax; j++) {
             double mu = double(i);
             tmat[i][j] = exp( (-1.*pow((j-mu),2.)) / (2.*pow(sigma,2.)) );
         }
@@ -338,20 +363,17 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &
         delta[0][i] /= (deltasum + EPS);
     }
 
+    // tmat is zero outside rows and columns [qmin, qmax), and delta is not
+    // negative, so outside that block delta and psi stay 0, as a search over
+    // all periods finds.
     for (std::size_t t=1; t < T; t++)
     {
-        d_vec_t tmp_vec(Q);
-
-        for (std::size_t j = 0; j < Q; j++) {
-            for (std::size_t i = 0; i < Q; i++) {
-                tmp_vec[i] = delta[t-1][i] * tmat[j][i];
-            }
-
-            delta[t][j] = get_max_val(tmp_vec);
-
-            psi[t][j] = get_max_ind(tmp_vec);
-
-            delta[t][j] *= rcfmat[t][j];
+        for (std::size_t j = qmin; j < qmax; j++) {
+            int k;
+            const double maxval = max_product(&delta[t-1][qmin], &tmat[j][qmin],
+                                              int(qmax - qmin), k);
+            delta[t][j] = maxval * rcfmat[t][j];
+            psi[t][j] = k < 0 ? 0 : int(qmin) + k;
         }
 
         // normalise current delta column
@@ -375,21 +397,6 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, i_vec_t &
 
     // weird but necessary hack -- couldn't get above loop to terminate at t >= 0
     bestpath[0] = psi[1][bestpath[1]];
-}
-
-double
-TempoTrackV2::get_max_val(const d_vec_t &df)
-{
-    double maxval = 0.;
-    int df_len = int(df.size());
-    
-    for (int i = 0; i < df_len; i++) {
-        if (maxval < df[i]) {
-            maxval = df[i];
-        }
-    }
-
-    return maxval;
 }
 
 int
@@ -490,14 +497,15 @@ TempoTrackV2::calculateBeats(const vector<double> &df,
         // to check for resonance using the txwt pattern.
         double vv = 0; // the maximum value, high if there is likely beat
         int xx = 0; // index of the maximum
-        for (int j = 0; j < txwt_len; j++) {
-            int cscore_ind = i + prange_min + j;
-            if (cscore_ind >= 0) {
-                double scorecands = txwt[j] * cumscore[cscore_ind];
-                if (scorecands > vv) {
-                    vv = scorecands;
-                    xx = cscore_ind;
-                }
+        // txwt[j] weights cumscore[past + j]; only indices from 0 on count.
+        const int past = i + prange_min;
+        const int jstart = std::max(0, -past);
+        if (jstart < txwt_len) {
+            int k;
+            vv = max_product(&txwt[jstart], &cumscore[past + jstart],
+                             txwt_len - jstart, k);
+            if (k >= 0) {
+                xx = past + jstart + k;
             }
         }
 
