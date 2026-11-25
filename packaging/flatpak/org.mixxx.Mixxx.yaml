@@ -47,6 +47,7 @@ modules:
   - modules/portaudio.yaml
   - modules/portmidi.yaml
   - modules/hidapi.yaml
+  - modules/fftw3f.yaml
   - modules/chromaprint.yaml
   - modules/rubberband.yaml
   - modules/soundtouch.yaml

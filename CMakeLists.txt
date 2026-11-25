@@ -1196,6 +1196,7 @@ add_library(
   src/analyzer/plugins/analyzerqueenmarykey.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
+  src/analyzer/plugins/complexspectraldifference.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
   src/audio/signalinfo.cpp
@@ -2889,6 +2890,7 @@ if(BUILD_TESTING)
     src/test/colorconfig_test.cpp
     src/test/colormapperjsproxy_test.cpp
     src/test/colorpalette_test.cpp
+    src/test/complexspectraldifference_test.cpp
     src/test/configobject_test.cpp
     src/test/controller_mapping_validation_test.cpp
     src/test/controller_mapping_settings_test.cpp
@@ -4805,6 +4807,11 @@ target_link_libraries(mixxx-lib PRIVATE QueenMaryDsp)
 add_library(ReplayGain STATIC EXCLUDE_FROM_ALL lib/replaygain/replaygain.cpp)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/replaygain)
 target_link_libraries(mixxx-lib PRIVATE ReplayGain)
+
+# Single precision FFTW, used by the QM beat detector
+find_package(FFTW3f REQUIRED)
+target_link_libraries(QueenMaryDsp PRIVATE FFTW3::fftw3f)
+target_link_libraries(mixxx-lib PRIVATE FFTW3::fftw3f)
 
 # Reverb
 add_library(Reverb STATIC EXCLUDE_FROM_ALL lib/reverb/Reverb.cc)
