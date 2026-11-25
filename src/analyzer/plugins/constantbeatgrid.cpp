@@ -42,11 +42,9 @@ constexpr int kFineSteps = 81;
 constexpr double kDottedMinSharpnessRatio = 0.95;
 constexpr double kDottedMinSharpness = 1.4;
 
-// BPM rounding range: the periods whose beats drift less than
-// kRoundingMaxDriftSecs from the best ones over the whole track, but at most
-// kRoundingMaxRange away.
-constexpr double kRoundingMaxRange = 0.004;
-constexpr double kRoundingMaxDriftSecs = 0.04;
+// BPM rounding range: the periods whose beats drift less than this from the
+// best ones over the rounding length, as in BeatUtils::makeConstBpm().
+constexpr double kRoundingMaxDriftSecs = 0.025;
 
 // Tracker beat intervals within this relative error of a period count as
 // following that period, see octaveFollowedLongest().
@@ -360,8 +358,9 @@ double alignPhaseToOnsets(const std::vector<double>& onsets, double phase, doubl
 
 mixxx::Bpm findRoundedOnsetBpm(const std::vector<double>& onsets,
         double centerPeriod,
-        double framesPerMinute) {
-    if (onsets.empty() || centerPeriod <= 0) {
+        double framesPerMinute,
+        double roundingLength) {
+    if (onsets.empty() || centerPeriod <= 0 || roundingLength <= 0) {
         return {};
     }
     FoldSharpness foldSharpness(onsets);
@@ -372,8 +371,7 @@ mixxx::Bpm findRoundedOnsetBpm(const std::vector<double>& onsets,
             kCoarseSteps,
             &sharpness);
     period = findSharpestPeriod(foldSharpness, period, kFineRange, kFineSteps, &sharpness);
-    const double range = std::min(kRoundingMaxRange,
-            kRoundingMaxDriftSecs * framesPerMinute / 60 / static_cast<double>(onsets.size()));
+    const double range = kRoundingMaxDriftSecs * framesPerMinute / 60 / roundingLength;
     const double minPeriod = period * (1 - range);
     const double maxPeriod = period * (1 + range);
     return BeatUtils::roundBpmWithinRange(mixxx::Bpm(framesPerMinute / maxPeriod),
@@ -400,8 +398,12 @@ std::optional<ConstantBeatGrid> refineConstantBeatGrid(
     for (const double beat : beats) {
         beatFrames.push_back(mixxx::audio::FramePos(beat * stepSizeFrames + stepSizeFrames / 2));
     }
+    mixxx::audio::FrameDiff_t roundingLength = 0;
     const mixxx::Bpm trackerBpm = BeatUtils::makeConstBpm(
-            BeatUtils::retrieveConstRegions(beatFrames, sampleRate), sampleRate, nullptr);
+            BeatUtils::retrieveConstRegions(beatFrames, sampleRate),
+            sampleRate,
+            nullptr,
+            &roundingLength);
     if (!trackerBpm.isValid()) {
         return std::nullopt;
     }
@@ -410,7 +412,12 @@ std::optional<ConstantBeatGrid> refineConstantBeatGrid(
             octaveFollowedLongest(beats, framesPerMinute / trackerBpm.value()));
 
     // Tempo
-    const mixxx::Bpm bpm = findRoundedOnsetBpm(onsets, trackerPeriod, framesPerMinute);
+    // The BPM is rounded as far as the beats drift by less than 25 ms over the
+    // tracker's longest constant region, like BeatFactory's grid.
+    const mixxx::Bpm bpm = findRoundedOnsetBpm(onsets,
+            trackerPeriod,
+            framesPerMinute,
+            std::max(1.0, roundingLength / stepSizeFrames));
     if (!bpm.isValid()) {
         return std::nullopt;
     }

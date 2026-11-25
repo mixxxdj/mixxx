@@ -35,11 +35,13 @@ static_assert(kQmOnsetBandEdgesHz[kConstantBeatGridLowBands] == 250);
 
 // The tempo step of refineConstantBeatGrid(): the BPM of the sharpest fold of
 // onsets within 1 % of centerPeriod (in onset frames), rounded with
-// BeatUtils::roundBpmWithinRange() as far as the beats drift by less than 40 ms
-// over the whole track. Returns an invalid BPM if none can be found.
+// BeatUtils::roundBpmWithinRange() as far as the beats drift by less than 25 ms
+// over roundingLength (in onset frames), as BeatUtils::makeConstBpm() does.
+// Returns an invalid BPM if none can be found.
 mixxx::Bpm findRoundedOnsetBpm(const std::vector<double>& onsets,
         double centerPeriod,
-        double framesPerMinute);
+        double framesPerMinute,
+        double roundingLength);
 
 // The alignment of refineConstantBeatGrid(): the phase (in onset frames) of
 // the highest peak of the onsets folded at period within 5 frames of phase, to

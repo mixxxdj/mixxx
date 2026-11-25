@@ -140,7 +140,8 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
 mixxx::Bpm BeatUtils::makeConstBpm(
         const QVector<BeatUtils::ConstRegion>& constantRegions,
         mixxx::audio::SampleRate sampleRate,
-        mixxx::audio::FramePos* pFirstBeat) {
+        mixxx::audio::FramePos* pFirstBeat,
+        mixxx::audio::FrameDiff_t* pRoundingLength) {
     DEBUG_ASSERT(!constantRegions.isEmpty());
     DEBUG_ASSERT(sampleRate.isValid());
     DEBUG_ASSERT(!pFirstBeat || pFirstBeat->isValid());
@@ -308,6 +309,9 @@ mixxx::Bpm BeatUtils::makeConstBpm(
     const mixxx::Bpm roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
     if (!roundBpm.isValid()) {
         return {};
+    }
+    if (pRoundingLength) {
+        *pRoundingLength = longestRegionLength;
     }
 
     if (pFirstBeat) {
