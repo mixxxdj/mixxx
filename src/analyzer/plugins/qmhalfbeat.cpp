@@ -60,6 +60,10 @@ class PositionSampler {
         }
     }
 
+    bool empty() const {
+        return m_frames.empty();
+    }
+
     // Mean of the detection function.
     double meanOnset() const {
         return mean([this](std::size_t frame) { return m_onsets[frame]; });
@@ -139,6 +143,20 @@ std::array<double, kFeatureCount> offBeatFeatures(
 }
 
 } // namespace
+
+double qmLowBandFluxLogRatio(const std::vector<double>& positions,
+        const std::vector<double>& otherPositions,
+        const std::vector<double>& onsets,
+        const std::vector<float>& bands,
+        int stepSizeFrames) {
+    const PositionSampler sampler(onsets, bands, stepSizeFrames, positions);
+    const PositionSampler otherSampler(onsets, bands, stepSizeFrames, otherPositions);
+    if (sampler.empty() || otherSampler.empty()) {
+        return 0;
+    }
+    return logRatio(sampler.meanFlux(0, kConstantBeatGridLowBands),
+            otherSampler.meanFlux(0, kConstantBeatGridLowBands));
+}
 
 double qmOffBeatScore(const std::vector<double>& beats,
         const std::vector<double>& onsets,

@@ -13,6 +13,14 @@
 #include "track/beatfactory.h"
 #include "track/track.h"
 
+namespace {
+
+// Sub version key of beats analyzed without the fixed tempo assumption by a
+// plugin that builds its own beat map.
+const QString kBeatMapVersionInfoKey = QStringLiteral("beat_map");
+
+} // namespace
+
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> plugins;
@@ -114,6 +122,7 @@ bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
         }
 
         if (m_pPlugin) {
+            m_pPlugin->setBeatMapEnabled(!m_bPreferencesFixedTempo);
             if (m_pPlugin->initialize(m_sampleRate)) {
                 qDebug() << "Beat calculation started with plugin" << m_pluginId;
             } else {
@@ -180,8 +189,12 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
             m_bPreferencesFixedTempo);
     QString newSubVersion = BeatFactory::getPreferredSubVersion(
             extraVersionInfo);
+    // A plugin's beat map is stored as a constant grid when the plugin found a
+    // constant tempo, see AnalyzerBeatsPlugin::getConstantBeatGrid().
+    const bool beatMapAsGrid = extraVersionInfo.contains(kBeatMapVersionInfoKey) &&
+            version == BEAT_GRID_2_VERSION;
 
-    if (version == newVersion && subVersion == newSubVersion) {
+    if ((version == newVersion || beatMapAsGrid) && subVersion == newSubVersion) {
         // If the version and settings have not changed then if the world is
         // sane, re-analyzing will do nothing.
         return false;
@@ -263,13 +276,20 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
         QVector<mixxx::audio::FramePos> beats = m_pPlugin->getBeats();
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis, m_bPreferencesFixedTempo);
+        const QString subVersion = BeatFactory::getPreferredSubVersion(extraVersionInfo);
         const auto constantGrid = m_pPlugin->getConstantBeatGrid();
-        if (m_bPreferencesFixedTempo && constantGrid) {
+        if (constantGrid) {
             pBeats = mixxx::Beats::fromConstTempo(m_sampleRate,
                     constantGrid->firstBeat.toNearestFrameBoundary(),
                     constantGrid->bpm,
-                    BeatFactory::getPreferredSubVersion(extraVersionInfo));
+                    subVersion);
         } else {
+            const QVector<mixxx::audio::FramePos> beatMap = m_pPlugin->getBeatMap();
+            if (beatMap.size() >= 2) {
+                pBeats = mixxx::Beats::fromBeatPositions(m_sampleRate, beatMap, subVersion);
+            }
+        }
+        if (!pBeats) {
             pBeats = BeatFactory::makePreferredBeats(
                     beats,
                     extraVersionInfo,
@@ -298,10 +318,17 @@ QHash<QString, QString> AnalyzerBeats::getExtraVersionInfo(
         const QString& pluginId, bool bPreferencesFastAnalysis, bool bPreferencesFixedTempo) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
-    if (bPreferencesFixedTempo && pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id()) {
+    if (pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id()) {
         // Version 2: constant grid refined over the whole track
-        // (refineConstantBeatGrid). Beat maps are unchanged.
+        // (refineConstantBeatGrid), beat map with extended, refined and
+        // merged regions, the half beat correction and a constant grid for
+        // constant tempo tracks (makeQmBeatMap).
         extraVersionInfo["qm_version"] = "2";
+        if (!bPreferencesFixedTempo) {
+            // Tells a constant grid from the beat map apart from one made
+            // with the fixed tempo assumption.
+            extraVersionInfo[kBeatMapVersionInfoKey] = "1";
+        }
     }
     if (bPreferencesFastAnalysis) {
         extraVersionInfo["fast_analysis"] = "1";

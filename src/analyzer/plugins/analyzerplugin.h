@@ -78,11 +78,21 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
     virtual QVector<mixxx::audio::FramePos> getBeats() const {
         return {};
     }
-    // A constant tempo grid that the plugin estimated over the whole track.
-    // When the fixed tempo assumption is enabled it is used instead of fitting
-    // a grid to getBeats().
+    // A constant tempo grid that the plugin estimated over the whole track,
+    // or, with the beat map enabled, that it found while building its beat
+    // map. It is used instead of getBeats() and getBeatMap().
     virtual std::optional<ConstantBeatGrid> getConstantBeatGrid() const {
         return std::nullopt;
+    }
+    // A beat map that the plugin built from getBeats() itself. With the beat
+    // map enabled and no constant grid, it is used instead of ironing
+    // getBeats() with BeatUtils if it has at least two beats.
+    virtual QVector<mixxx::audio::FramePos> getBeatMap() const {
+        return {};
+    }
+    // Whether finalize() builds getBeatMap(), which is not used with the fixed
+    // tempo assumption. Enabled by default.
+    virtual void setBeatMapEnabled(bool /*enabled*/) {
     }
 };
 

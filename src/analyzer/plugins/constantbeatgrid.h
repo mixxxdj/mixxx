@@ -23,7 +23,7 @@ struct ConstantBeatGrid {
 };
 
 // Number of bands per onset detection frame that refineConstantBeatGrid() and
-// the half beat model expect: magnitude sums of the detection function's spectrum
+// makeQmBeatMap() expect: magnitude sums of the detection function's spectrum
 // from these lower edges up to the next one, the last band up to the Nyquist
 // frequency.
 constexpr int kQmOnsetBands = 8;
@@ -49,7 +49,8 @@ mixxx::Bpm findRoundedOnsetBpm(const std::vector<double>& onsets,
 double alignPhaseToOnsets(const std::vector<double>& onsets, double phase, double period);
 
 // Fits a constant tempo grid to a whole track, starting from the beats of the
-// QM tempo tracker. It is used when the fixed tempo assumption is enabled.
+// QM tempo tracker. It is used when the fixed tempo assumption is enabled, and
+// by makeQmBeatMap() for tracks with a constant tempo.
 //
 // - Tempo: the start is the tempo of the longest constant region of the
 //   tracker beats, or half or twice that if the tracker follows that for

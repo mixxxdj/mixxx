@@ -8,6 +8,7 @@
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
+#include "analyzer/plugins/qmbeatmap.h"
 
 class DetectionFunction;
 
@@ -45,7 +46,15 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     }
 
     std::optional<ConstantBeatGrid> getConstantBeatGrid() const override {
-        return m_constantBeatGrid;
+        return m_resultBeatMap.constantGrid;
+    }
+
+    QVector<mixxx::audio::FramePos> getBeatMap() const override {
+        return m_resultBeatMap.beats;
+    }
+
+    void setBeatMapEnabled(bool enabled) override {
+        m_beatMapEnabled = enabled;
     }
 
   private:
@@ -60,7 +69,8 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     std::vector<float> m_bandMagnitudes;
     std::array<int, kQmOnsetBands + 1> m_bandBins;
     QVector<mixxx::audio::FramePos> m_resultBeats;
-    std::optional<ConstantBeatGrid> m_constantBeatGrid;
+    QmBeatMap m_resultBeatMap;
+    bool m_beatMapEnabled = true;
 };
 
 } // namespace mixxx

@@ -54,7 +54,7 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     m_detectionResults.clear();
     m_bandMagnitudes.clear();
     m_resultBeats.clear();
-    m_constantBeatGrid.reset();
+    m_resultBeatMap = {};
     m_sampleRate = sampleRate;
     m_stepSizeFrames = static_cast<int>(m_sampleRate * kStepSecs);
     m_windowSize = MathUtilities::nextPowerOfTwo(m_sampleRate / kMaximumBinSizeHz);
@@ -136,12 +136,18 @@ bool AnalyzerQueenMaryBeats::finalize() {
         m_resultBeats.push_back(result);
     }
 
-    m_constantBeatGrid = checkQmConstantGridHalfBeat(
-            refineConstantBeatGrid(df, bands, beats, m_sampleRate, m_stepSizeFrames),
-            df,
-            bands,
-            m_sampleRate,
-            m_stepSizeFrames);
+    const auto constantGrid = refineConstantBeatGrid(
+            df, bands, beats, m_sampleRate, m_stepSizeFrames);
+    if (m_beatMapEnabled) {
+        m_resultBeatMap = makeQmBeatMap(
+                m_resultBeats, df, bands, m_sampleRate, m_stepSizeFrames, constantGrid);
+    } else {
+        // Without the beat map the half beat model checks the constant grid
+        // itself.
+        m_resultBeatMap = {{},
+                checkQmConstantGridHalfBeat(
+                        constantGrid, df, bands, m_sampleRate, m_stepSizeFrames)};
+    }
 
     m_pDetectionFunction.reset();
     return true;

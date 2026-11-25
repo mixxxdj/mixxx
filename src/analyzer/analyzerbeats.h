@@ -29,8 +29,7 @@ class AnalyzerBeats : public Analyzer {
 
   private:
     bool shouldAnalyze(TrackPointer pTrack) const;
-    static QHash<QString, QString> getExtraVersionInfo(
-            const QString& pluginId,
+    static QHash<QString, QString> getExtraVersionInfo(const QString& pluginId,
             bool bPreferencesFastAnalysis,
             bool bPreferencesFixedTempo);
 

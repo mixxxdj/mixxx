@@ -8,8 +8,8 @@
 
 #include "util/assert.h"
 
-// Small helpers shared by refineConstantBeatGrid() and the half
-// beat model.
+// Small helpers shared by refineConstantBeatGrid(), makeQmBeatMap() and the
+// half beat model.
 namespace mixxx::onsetutils {
 
 // Resolution of a folded onset histogram, in bins per onset frame.
