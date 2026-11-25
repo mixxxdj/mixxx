@@ -7,9 +7,9 @@
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
 
-class DetectionFunction;
-
 namespace mixxx {
+
+class ComplexSpectralDifference;
 
 class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
   public:
@@ -43,7 +43,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     }
 
   private:
-    std::unique_ptr<DetectionFunction> m_pDetectionFunction;
+    std::unique_ptr<ComplexSpectralDifference> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
     mixxx::audio::SampleRate m_sampleRate;
     int m_windowSize;

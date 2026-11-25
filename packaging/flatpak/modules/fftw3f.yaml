@@ -1,0 +1,36 @@
+# Single precision FFTW, used by the QM beat detector. The KDE runtime only
+# ships the double precision library.
+name: fftw3f
+config-opts:
+  - --enable-float
+  - --enable-shared
+  - --disable-static
+  - --disable-fortran
+build-options:
+  arch:
+    x86_64:
+      config-opts:
+        - --enable-sse2
+        - --enable-avx
+        - --enable-avx2
+    aarch64:
+      config-opts:
+        - --enable-neon
+sources:
+  - type: archive
+    url: https://www.fftw.org/fftw-3.3.11.tar.gz
+    sha256: 5630c24cdeb33b131612f7eb4b1a9934234754f9f388ff8617458d0be6f239a1
+    x-checker-data:
+      type: anitya
+      project-id: 803
+      stable-only: true
+      url-template: https://www.fftw.org/fftw-$version.tar.gz
+cleanup:
+  - /bin
+  - /include
+  - /lib/cmake
+  - /lib/pkgconfig
+  - /share/info
+  - /share/man
+post-install:
+  - install -Dm644 -t ${FLATPAK_DEST}/share/licenses/fftw3f COPYING

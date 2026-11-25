@@ -1,11 +1,10 @@
-#include <dsp/onsets/DetectionFunction.h>
-#include <dsp/tempotracking/TempoTrackV2.h>
-
-// Class header comes after library includes here since our preprocessor
-// definitions interfere with qm-dsp's headers.
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 
+#include <dsp/tempotracking/TempoTrackV2.h>
+#include <maths/MathUtilities.h>
+
 #include "analyzer/constants.h"
+#include "analyzer/plugins/complexspectraldifference.h"
 
 namespace mixxx {
 namespace {
@@ -22,20 +21,6 @@ constexpr float kStepSecs = 0.01161f;
 // results in 43 Hz @ 44.1 kHz / 47 Hz @ 48 kHz / 47 Hz @ 96 kHz
 constexpr int kMaximumBinSizeHz = 50; // Hz
 
-DFConfig makeDetectionFunctionConfig(int stepSizeFrames, int windowSize) {
-    // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
-    // 2.0.
-    DFConfig config;
-    config.DFType = DF_COMPLEXSD;
-    config.stepSize = stepSizeFrames;
-    config.frameLength = windowSize;
-    config.dbRise = 3;
-    config.adaptiveWhitening = false;
-    config.whiteningRelaxCoeff = -1;
-    config.whiteningFloor = -1;
-    return config;
-}
-
 } // namespace
 
 AnalyzerQueenMaryBeats::AnalyzerQueenMaryBeats()
@@ -51,15 +36,16 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     m_sampleRate = sampleRate;
     m_stepSizeFrames = static_cast<int>(m_sampleRate * kStepSecs);
     m_windowSize = MathUtilities::nextPowerOfTwo(m_sampleRate / kMaximumBinSizeHz);
-    m_pDetectionFunction = std::make_unique<DetectionFunction>(
-            makeDetectionFunctionConfig(m_stepSizeFrames, m_windowSize));
+    // The complex spectral difference detection function (DF_COMPLEXSD) of the
+    // VAMP beat tracker plugin we used in Mixxx 2.0, without adaptive whitening.
+    m_pDetectionFunction = std::make_unique<ComplexSpectralDifference>(m_windowSize);
     qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << m_stepSizeFrames;
 
     m_helper.initialize(
             m_windowSize, m_stepSizeFrames, [this](double* pWindow, size_t) {
                 // TODO(rryan) reserve?
                 m_detectionResults.push_back(
-                        m_pDetectionFunction->processTimeDomain(pWindow));
+                        m_pDetectionFunction->process(pWindow));
                 return true;
             });
     return true;
