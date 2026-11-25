@@ -22,7 +22,6 @@ using onsetutils::wrap;
 using onsetutils::wrapCentered;
 using onsetutils::wrapIndex;
 
-
 // Tempo search: +-1 % around the tracker tempo in 0.02 % steps, then +-0.02 %
 // in 0.0005 % steps.
 constexpr double kCoarseRange = 0.01;

@@ -60,7 +60,6 @@ class PositionSampler {
         }
     }
 
-
     // Mean of the detection function.
     double meanOnset() const {
         return mean([this](std::size_t frame) { return m_onsets[frame]; });

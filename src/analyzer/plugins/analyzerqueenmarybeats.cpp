@@ -7,10 +7,9 @@
 
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
+#include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "analyzer/plugins/qmhalfbeat.h"
-
-#include "analyzer/constants.h"
 
 namespace mixxx {
 namespace {
