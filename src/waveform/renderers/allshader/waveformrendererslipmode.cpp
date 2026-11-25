@@ -46,12 +46,12 @@ void WaveformRendererSlipMode::draw(QPainter* painter, QPaintEvent* event) {
 bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
-    if (m_waveformRenderer->getGroup().isEmpty()) {
+    if (m_pWaveformRenderer->getGroup().isEmpty()) {
         m_pSlipModeControl.reset();
         return true;
     }
     m_pSlipModeControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
+            m_pWaveformRenderer->getGroup(), QStringLiteral("slip_enabled"));
 
     return true;
 }
@@ -86,15 +86,19 @@ void WaveformRendererSlipMode::preprocess() {
 
 bool WaveformRendererSlipMode::preprocessInner() {
     if (!m_pSlipModeControl || !m_pSlipModeControl->toBool() ||
-            !m_waveformRenderer->isSlipActive()) {
+            !m_pWaveformRenderer->isSlipActive()) {
         return false;
     }
 
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+#ifdef __STEM__
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
     const bool isStemTrack = pTrack && pTrack->hasStem() &&
             pTrack->getWaveform() && pTrack->getWaveform()->hasStem();
     const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
+#else
+    constexpr bool splitStemTracks = false;
+#endif
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
@@ -106,8 +110,8 @@ bool WaveformRendererSlipMode::preprocessInner() {
     const float alpha = std::clamp(0.25f + 0.5f * blinkIntensity, 0.0f, 1.0f);
 
     const float posx1 = 0.f;
-    const float posx2 = m_waveformRenderer->getLength();
-    const float breadth = m_waveformRenderer->getBreadth();
+    const float posx2 = m_pWaveformRenderer->getLength();
+    const float breadth = m_pWaveformRenderer->getBreadth();
 
     const int numBoxes = splitStemTracks ? mixxx::kMaxSupportedStems : 1;
     const float boxBreadth = splitStemTracks

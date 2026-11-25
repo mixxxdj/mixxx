@@ -225,8 +225,8 @@ class WaveformMark {
     // Check if a point (in image coordinates) lies on drawn image.
     bool contains(QPoint point, Qt::Orientation orientation) const;
 
-    QImage generateImage(float devicePixelRatio);
-    QImage generateEndImage(float devicePixelRatio);
+    QImage generateImage(qreal devicePixelRatio);
+    QImage generateEndImage(qreal devicePixelRatio);
 
     QColor m_textColor;
     QString m_text;
@@ -273,7 +273,7 @@ class WaveformMark {
     // there are issues, the first one is returned
     std::optional<WaveformMark::WaveformMarkConstructionError> validate() const;
 
-    QImage performImageGeneration(float devicePixelRatio,
+    QImage performImageGeneration(qreal devicePixelRatio,
             const QString& pixmapPath,
             const QString& text,
             WaveformMarkLabel* labelMark,

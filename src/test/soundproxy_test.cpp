@@ -1021,12 +1021,12 @@ TEST_F(SoundSourceProxyTest, getTypeFromMissingFile) {
 #ifdef __STEM__
 TEST_F(SoundSourceProxyTest, getTypeFromMissingNIStemFile) {
     const QFileInfo missingFileWithUppercaseSuffix(
-            getTestDir().filePath(QStringLiteral("id3-test-data/missing_file.stem.mp4")));
+            getTestDir().filePath(QStringLiteral("id3-test-data/missing_file.stem.MP4")));
 
     ASSERT_FALSE(missingFileWithUppercaseSuffix.exists());
 
-    // The missing file doesn't contains a STEM atom, so it is considered like a standard mp4
-    EXPECT_STREQ(qPrintable("mp4"),
+    // The missing file doesn't contain a STEM atom, so use the file extension
+    EXPECT_STREQ(qPrintable("stem.mp4"),
             qPrintable(mixxx::SoundSource::getTypeFromFile(
                     QFileInfo(missingFileWithUppercaseSuffix))));
 }

@@ -159,25 +159,38 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
-    void loadTrack(Deck* pDeck, TrackPointer pTrack) {
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+    testing::AssertionResult loadTrack(Deck* pDeck, const TrackPointer& pTrack) {
+        auto* pEngineBuffer = pDeck->getEngineDeck()->getEngineBuffer();
+        bool trackControlsUpdated = false;
+        QObject observer;
+        QObject::connect(pDeck,
+                &BaseTrackPlayerImpl::newTrackLoaded,
+                &observer,
+                [&](TrackPointer pLoadedTrack) {
+                    if (pLoadedTrack == pTrack) {
+                        trackControlsUpdated = true;
+                    }
+                });
+
         pDeck->slotEjectTrack(1.0);
-        DEBUG_ASSERT(!pEngineDeck->getEngineBuffer()->isTrackLoaded());
+        DEBUG_ASSERT(!pEngineBuffer->isTrackLoaded());
         pDeck->slotLoadTrack(pTrack,
 #ifdef __STEM__
                 mixxx::StemChannelSelection(),
 #endif
                 false);
 
-        // Wait for the track to load.
         ProcessBuffer();
-        for (int i = 0; i < 2000; ++i) {
-            if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
-                break;
-            }
-            QTest::qSleep(1); // sleep 1 ms for waiting 2 s at max
+
+        constexpr int kLoadTimeoutMs = 5000;
+        if (QTest::qWaitFor(
+                    [&] { return trackControlsUpdated && pEngineBuffer->isTrackLoaded(); },
+                    kLoadTimeoutMs)) {
+            return testing::AssertionSuccess();
         }
-        DEBUG_ASSERT(pEngineDeck->getEngineBuffer()->isTrackLoaded());
+        return testing::AssertionFailure()
+                << "Timed out loading " << qPrintable(pTrack->getLocation())
+                << " on " << qPrintable(pDeck->getGroup());
     }
 
     // Asserts that the contents of the output buffer matches a reference
@@ -290,9 +303,9 @@ class SignalPathTest : public BaseSignalPathTest {
         const QString kTrackLocationTest = getTestDir().filePath(QStringLiteral("sine-30.wav"));
         TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
 
-        loadTrack(m_pMixerDeck1.get(), pTrack);
-        loadTrack(m_pMixerDeck2.get(), pTrack);
-        loadTrack(m_pMixerDeck3.get(), pTrack);
+        ASSERT_TRUE(loadTrack(m_pMixerDeck1.get(), pTrack));
+        ASSERT_TRUE(loadTrack(m_pMixerDeck2.get(), pTrack));
+        ASSERT_TRUE(loadTrack(m_pMixerDeck3.get(), pTrack));
     }
 
     void TearDown() override {

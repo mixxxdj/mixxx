@@ -228,15 +228,15 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy,
 class ControllerScriptEngineLegacyTimerTest : public ControllerScriptEngineLegacyTest {
   protected:
     std::unique_ptr<ControlPotmeter> m_pCo;
-    std::unique_ptr<ControlPotmeter> m_pCoTimerId;
+    // Timer IDs come from Qt's process-wide allocator and grow with every
+    // timer started before, so use an unbounded ControlObject here.
+    std::unique_ptr<ControlObject> m_pCoTimerId;
 
     void SetUp() override {
         ControllerScriptEngineLegacyTest::SetUp();
         m_pCo = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"), -10.0, 10.0);
         m_pCo->setParameter(0.0);
-        m_pCoTimerId = std::make_unique<ControlPotmeter>(
-                ConfigKey("[Test]", "coTimerId"), -10.0, 50.0);
-        m_pCoTimerId->setParameter(0.0);
+        m_pCoTimerId = std::make_unique<ControlObject>(ConfigKey("[Test]", "coTimerId"));
         EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', 0.0);"));
         EXPECT_DOUBLE_EQ(0.0, m_pCo->get());
     }

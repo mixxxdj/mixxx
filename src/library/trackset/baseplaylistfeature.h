@@ -4,6 +4,7 @@
 #include <QPointer>
 #include <QSet>
 #include <QString>
+#include <gsl/pointers>
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
@@ -90,8 +91,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
 
-    /// borrows pChild which must not be null, TODO: use gsl::not_null
-    virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
+    /// borrows pChild which must not be null
+    virtual void decorateChild(gsl::strict_not_null<TreeItem*> pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
     int playlistIdFromIndex(const QModelIndex& index) const;

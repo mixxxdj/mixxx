@@ -28,8 +28,7 @@ if(PACKAGE_VERSION MATCHES "^[0-9]+\\.[0-9]+[A-Za-z0-9.+~-]*$")
   else()
     string(REPLACE "-g" "+g" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
     string(
-      REPLACE
-      "-"
+      REPLACE "-"
       "+r"
       CPACK_DEBIAN_PACKAGE_VERSION
       "${CPACK_DEBIAN_PACKAGE_VERSION}"

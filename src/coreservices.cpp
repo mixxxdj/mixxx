@@ -899,6 +899,9 @@ void CoreServices::finalize() {
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
+    // OverviewCache depends on Config and the DB connection pool
+    OverviewCache::destroy();
+
     Clipboard::destroy();
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config

@@ -24,7 +24,7 @@ QtVSyncTestWidget::~QtVSyncTestWidget() {
 }
 
 void QtVSyncTestWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void QtVSyncTestWidget::paintEvent(QPaintEvent* event) {

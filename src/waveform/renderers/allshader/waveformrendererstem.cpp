@@ -58,11 +58,11 @@ bool WaveformRendererStem::init() {
     m_stackOrder.resize(mixxx::kMaxSupportedStems);
     std::iota(m_stackOrder.begin(), m_stackOrder.end(), 0);
 
-    if (m_waveformRenderer->getGroup().isEmpty()) {
+    if (m_pWaveformRenderer->getGroup().isEmpty()) {
         return true;
     }
     for (int stemIdx = 0; stemIdx < mixxx::kMaxSupportedStems; stemIdx++) {
-        QString stemGroup = EngineDeck::getGroupForStem(m_waveformRenderer->getGroup(), stemIdx);
+        QString stemGroup = EngineDeck::getGroupForStem(m_pWaveformRenderer->getGroup(), stemIdx);
         m_pStemGain.emplace_back(
                 std::make_unique<ControlProxy>(stemGroup,
                         QStringLiteral("volume")));
@@ -116,9 +116,9 @@ void WaveformRendererStem::preprocess() {
 }
 
 bool WaveformRendererStem::preprocessInner() {
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    TrackPointer pTrack = m_pWaveformRenderer->getTrackInfo();
 
-    if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+    if (!pTrack || (m_isSlipRenderer && !m_pWaveformRenderer->isSlipActive())) {
         return false;
     }
 
@@ -149,21 +149,21 @@ bool WaveformRendererStem::preprocessInner() {
         return false;
     }
 
-    uint selectedStems = m_waveformRenderer->getSelectedStems();
+    uint selectedStems = m_pWaveformRenderer->getSelectedStems();
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const int length = static_cast<int>(m_waveformRenderer->getLength());
-    const int pixelLength = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
+    const int length = static_cast<int>(m_pWaveformRenderer->getLength());
+    const int pixelLength = static_cast<int>(m_pWaveformRenderer->getLength() * devicePixelRatio);
     const int stripLength = static_cast<int>(std::ceil(pixelLength / kPixelPerStrip));
-    const float invDevicePixelRatio = kPixelPerStrip / devicePixelRatio;
-    const float halfStripSize = kPixelPerStrip / 2.0f / devicePixelRatio;
+    const qreal invDevicePixelRatio = kPixelPerStrip / devicePixelRatio;
+    const qreal halfStripSize = kPixelPerStrip / 2.0 / devicePixelRatio;
 
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
     const double firstVisualFrame =
-            m_waveformRenderer->getFirstDisplayedPosition(positionType) * visualFramesSize;
+            m_pWaveformRenderer->getFirstDisplayedPosition(positionType) * visualFramesSize;
     const double lastVisualFrame =
-            m_waveformRenderer->getLastDisplayedPosition(positionType) * visualFramesSize;
+            m_pWaveformRenderer->getLastDisplayedPosition(positionType) * visualFramesSize;
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
@@ -177,7 +177,7 @@ bool WaveformRendererStem::preprocessInner() {
     float allGain(1.0);
     getGains(&allGain, nullptr, nullptr, nullptr);
 
-    const float breadth = static_cast<float>(m_waveformRenderer->getBreadth());
+    const float breadth = static_cast<float>(m_pWaveformRenderer->getBreadth());
     const float stemBreadth = m_splitStemTracks ? breadth / 4.0f : 0;
     const float halfBreadth = (m_splitStemTracks ? stemBreadth : breadth) / 2.0f;
 
@@ -226,7 +226,7 @@ bool WaveformRendererStem::preprocessInner() {
                 const int visualIndexStop =
                         std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
-                const float fVisualIdx = static_cast<float>(visualIdx) * invDevicePixelRatio;
+                const qreal rVisualIdx = visualIdx * invDevicePixelRatio;
 
                 // Find the max values for current eq in the waveform data.
                 // - Max of left and right
@@ -267,9 +267,9 @@ bool WaveformRendererStem::preprocessInner() {
                 }
                 const int yIndex = m_splitStemTracks ? stemIdx : stemLayer;
                 vertexUpdater.addRectangle(
-                        {fVisualIdx - halfStripSize,
+                        {static_cast<float>(rVisualIdx - halfStripSize),
                                 yIndex * stemBreadth + halfBreadth - height},
-                        {fVisualIdx + halfStripSize,
+                        {static_cast<float>(rVisualIdx + halfStripSize),
                                 m_isSlipRenderer
                                         ? yIndex * stemBreadth + halfBreadth
                                         : yIndex * stemBreadth + halfBreadth + height},
