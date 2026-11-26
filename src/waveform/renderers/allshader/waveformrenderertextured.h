@@ -1,10 +1,8 @@
 #pragma once
 
-#include "shaders/rgbshader.h"
+#include "shaders/textureshader.h"
 #include "track/track_decl.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/rgbdata.h"
-#include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 class QOpenGLFramebufferObject;
@@ -45,10 +43,8 @@ class allshader::WaveformRendererTextured : public QObject,
     bool loadShaders();
     bool loadTexture();
 
-    void createGeometry();
     void createFrameBuffers();
 
-    GLint m_unitQuadListId;
     GLuint m_textureId;
 
     TrackPointer m_loadedTrack;
@@ -62,4 +58,10 @@ class allshader::WaveformRendererTextured : public QObject,
     Type m_type;
     const QString m_pFragShader;
     std::unique_ptr<QOpenGLShaderProgram> m_frameShaderProgram;
+    int m_matrixLocation;
+    int m_positionLocation;
+    int m_texcoordLocation;
+
+    // Shader used to blit the rendered frame buffer onto the widget.
+    mixxx::TextureShader m_textureShader;
 };
