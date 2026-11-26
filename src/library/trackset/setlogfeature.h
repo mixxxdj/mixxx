@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QPointer>
+#include <gsl/pointers>
 
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
@@ -36,7 +37,7 @@ class SetlogFeature : public BasePlaylistFeature {
 
   protected:
     QModelIndex constructChildModel(int selectedId);
-    void decorateChild(TreeItem* pChild, int playlistId) override;
+    void decorateChild(gsl::strict_not_null<TreeItem*> pChild, int playlistId) override;
 
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);

@@ -56,6 +56,49 @@ class StemFixture : public MixxxTest, public ::testing::WithParamInterface<StemP
     }
 };
 
+using ShortStemTest = MixxxTest;
+
+TEST_F(ShortStemTest, PadShortStemWithSilence) {
+    constexpr SINT kShortStemEnd = 4410;
+    const QUrl url = QUrl::fromLocalFile(
+            getTestDir().filePath("stems/short-second-stem.stem.mp4"));
+    for (const auto channels : {audio::ChannelCount::stereo(), audio::ChannelCount::stem()}) {
+        SoundSourceSTEM source(url);
+        AudioSource::OpenParams config;
+        config.setChannelCount(channels);
+        ASSERT_EQ(source.open(AudioSource::OpenMode::Strict, config),
+                AudioSource::OpenResult::Succeeded);
+
+        for (const SINT start : {kShortStemEnd - 4, kShortStemEnd + 4}) {
+            constexpr SINT kFrames = 8;
+            SampleBuffer buffer(kFrames * channels);
+            const auto range = IndexRange::forward(start, kFrames);
+            const auto decoded = source.readSampleFrames(WritableSampleFrames(
+                    range, SampleBuffer::WritableSlice(buffer)));
+            ASSERT_EQ(decoded.frameIndexRange(), range);
+            ASSERT_EQ(decoded.readableLength(), buffer.size());
+
+            for (SINT frame = 0; frame < kFrames; ++frame) {
+                const auto* samples = decoded.readableData(frame * channels);
+                const float secondStem = start + frame < kShortStemEnd ? 0.125f : 0.0f;
+                if (channels == audio::ChannelCount::stereo()) {
+                    EXPECT_FLOAT_EQ(samples[0], 0.625f + secondStem);
+                    EXPECT_FLOAT_EQ(samples[1], 0.625f + secondStem);
+                } else {
+                    EXPECT_FLOAT_EQ(samples[0], 0.25f);
+                    EXPECT_FLOAT_EQ(samples[1], 0.25f);
+                    EXPECT_FLOAT_EQ(samples[2], secondStem);
+                    EXPECT_FLOAT_EQ(samples[3], secondStem);
+                    EXPECT_FLOAT_EQ(samples[4], 0.125f);
+                    EXPECT_FLOAT_EQ(samples[5], 0.125f);
+                    EXPECT_FLOAT_EQ(samples[6], 0.25f);
+                    EXPECT_FLOAT_EQ(samples[7], 0.25f);
+                }
+            }
+        }
+    }
+}
+
 TEST_P(StemFixture, FetchStemInfo) {
     auto sourceStemPath = GetStemFilePath();
     TrackPointer pTrack(Track::newTemporary(sourceStemPath));

@@ -20,7 +20,7 @@ class allshader::DigitsRenderNode : public rendergraph::GeometryNode {
     void updateTexture(rendergraph::Context* pContext,
             float fontPointSize,
             float maxHeight,
-            float devicePixelRatio);
+            qreal devicePixelRatio);
 
     void update(
             float x,
@@ -45,6 +45,6 @@ class allshader::DigitsRenderNode : public rendergraph::GeometryNode {
     float m_fontPointSize{};
     float m_height{};
     float m_maxHeight{};
-    float m_devicePixelRatio{};
+    qreal m_devicePixelRatio{};
     DISALLOW_COPY_AND_ASSIGN(DigitsRenderNode);
 };

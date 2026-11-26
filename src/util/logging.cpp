@@ -408,9 +408,15 @@ void Logging::initialize(
         // Since the message handler is not installed yet, we can touch s_logfile
         // without the lock.
         s_logfile.setFileName(logFilePath);
-        [[maybe_unused]] auto result = s_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-        DEBUG_ASSERT(result);
-        s_logFlushLevel = logFlushLevel;
+        if (!s_logfile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            fprintf(stderr,
+                    "Failed to open log file %s: %s\n",
+                    logFilePath.toLocal8Bit().constData(),
+                    s_logfile.errorString().toLocal8Bit().constData());
+            s_logFlushLevel = LogLevel::Critical;
+        } else {
+            s_logFlushLevel = logFlushLevel;
+        }
     }
 
     s_debugAssertBreak = flags.testFlag(LogFlag::DebugAssertBreak);

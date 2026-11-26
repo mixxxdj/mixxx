@@ -20,7 +20,7 @@ EmptyWaveformWidget::~EmptyWaveformWidget() {
 }
 
 void EmptyWaveformWidget::castToQWidget() {
-    m_widget = this;
+    m_pWidget = this;
 }
 
 void EmptyWaveformWidget::paintEvent(QPaintEvent* event) {

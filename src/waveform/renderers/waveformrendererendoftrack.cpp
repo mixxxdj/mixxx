@@ -28,9 +28,9 @@ bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
     m_pEndOfTrackControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), "end_of_track");
+            m_pWaveformRenderer->getGroup(), "end_of_track");
     m_pTimeRemainingControl = std::make_unique<ControlProxy>(
-            m_waveformRenderer->getGroup(), "time_remaining");
+            m_pWaveformRenderer->getGroup(), "time_remaining");
     return true;
 }
 
@@ -72,40 +72,42 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
     painter->resetTransform();
     painter->setOpacity(0.5 * blinkIntensity);
     painter->setPen(m_pen);
-    painter->drawRect(1, 1,
-            m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2);
+    painter->drawRect(1,
+            1,
+            m_pWaveformRenderer->getWidth() - 2,
+            m_pWaveformRenderer->getHeight() - 2);
 
     painter->setOpacity(0.5 * 0.25 * criticalIntensity * blinkIntensity);
     painter->setPen(QPen(Qt::transparent));
     painter->setBrush(m_color);
     painter->drawRects(m_backRects);
     // This is significant slower
-    //painter->setOpacity(0.5 * criticalIntensity * blinkIntensity);
-    //painter->fillRect(m_waveformRenderer->getWidth()/2, 1,
-    //        m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2,
+    // painter->setOpacity(0.5 * criticalIntensity * blinkIntensity);
+    // painter->fillRect(m_pWaveformRenderer->getWidth()/2, 1,
+    //        m_pWaveformRenderer->getWidth() - 2, m_pWaveformRenderer->getHeight() - 2,
     //        m_gradient);
 }
 
 void WaveformRendererEndOfTrack::generateBackRects() {
     m_backRects.resize(4);
     for (int i = 0; i < 4; i++) {
-        if (m_waveformRenderer->getOrientation() == Qt::Vertical) {
-            m_backRects[i].setTop(m_waveformRenderer->getHeight() / 2 +
-                    i * m_waveformRenderer->getHeight() / 8);
-            m_backRects[i].setBottom(m_waveformRenderer->getHeight());
+        if (m_pWaveformRenderer->getOrientation() == Qt::Vertical) {
+            m_backRects[i].setTop(m_pWaveformRenderer->getHeight() / 2 +
+                    i * m_pWaveformRenderer->getHeight() / 8);
+            m_backRects[i].setBottom(m_pWaveformRenderer->getHeight());
             m_backRects[i].setLeft(0);
-            m_backRects[i].setRight(m_waveformRenderer->getWidth());
+            m_backRects[i].setRight(m_pWaveformRenderer->getWidth());
         } else {
             m_backRects[i].setTop(0);
-            m_backRects[i].setBottom(m_waveformRenderer->getHeight());
-            m_backRects[i].setLeft(m_waveformRenderer->getWidth() / 2 +
-                    i * m_waveformRenderer->getWidth() / 8);
-            m_backRects[i].setRight(m_waveformRenderer->getWidth());
+            m_backRects[i].setBottom(m_pWaveformRenderer->getHeight());
+            m_backRects[i].setLeft(m_pWaveformRenderer->getWidth() / 2 +
+                    i * m_pWaveformRenderer->getWidth() / 8);
+            m_backRects[i].setRight(m_pWaveformRenderer->getWidth());
         }
     }
     // This is significant slower
-    //m_gradient.setStart(m_waveformRenderer->getWidth() / 2, 0);
-    //m_gradient.setFinalStop(m_waveformRenderer->getWidth(), 0);
-    //m_gradient.setColorAt(0, Qt::transparent);
-    //m_gradient.setColorAt(1, m_color);
+    // m_gradient.setStart(m_pWaveformRenderer->getWidth() / 2, 0);
+    // m_gradient.setFinalStop(m_pWaveformRenderer->getWidth(), 0);
+    // m_gradient.setColorAt(0, Qt::transparent);
+    // m_gradient.setColorAt(1, m_color);
 }

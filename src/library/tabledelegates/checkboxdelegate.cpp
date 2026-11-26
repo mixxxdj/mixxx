@@ -50,10 +50,27 @@ void CheckboxDelegate::paintItem(QPainter* painter,
     // This however enables some default styles and clears the custom background
     // color (track color), see bug #12355 ¯\_(ツ)_/¯ Qt is fun!
     // Fix that by setting the bg color explicitly here.
+    //
+    // Workaround for a Qt6 bug occurring on Wayland with Breeze and Adwaita
+    // theme (maybe also with other OS or compositors),
+    // see https://github.com/mixxxdj/mixxx/issues/17037:
+    // Paint background color from model if available and not selected to
+    // ensure the alpha channel is respected.
     paintItemBackground(painter, option, index);
 
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
+    // Clear the background brush so the style does not paint it a second time.
+    // This would be the case when a skin does NOT set a style for
+    // #LibraryBPMButton::item or #LibraryPlayedCheckbox::item, like
+    // #LibraryBPMButton::item { border: 0px;} mentioned above.
+    opt.backgroundBrush = QBrush();
+    // KDE's Breeze (and possibly similar styles) paints the alternate row
+    // background inside CE_ItemViewItem. That opaque fill would cover the
+    // translucent track color we just painted. It has already been painted by
+    // PE_PanelItemViewRow before the delegate ran (QTableViewPrivate::drawCell),
+    // so drop the flag to prevent repainting it.
+    opt.features &= ~QStyleOptionViewItem::Alternate;
 
     // The checkbox uses the QTableView's qss style, therefore it's not picking
     // up the 'missing' or 'played' text color via ForegroundRole from

@@ -123,8 +123,7 @@ if(
 
   # Remove the extension from the filename (note that our buildenv names contain two dots)
   string(
-    REGEX REPLACE
-    "\\.[^.]*$"
+    REGEX REPLACE "\\.[^.]*$"
     ""
     BUILDENV_NAME
     "${FILENAME_WITH_EXTENSION}"
@@ -145,15 +144,64 @@ if(
     endif()
 
     if(NOT EXISTS "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip")
+      set(
+        BUILDENV_DOWNLOAD_MAX_ATTEMPTS
+        3
+        CACHE STRING
+        "Maximum number of attempts to download the build environment archive"
+      )
       message(
         STATUS
         "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
       )
-      file(
-        DOWNLOAD ${BUILDENV_URL} "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
-        SHOW_PROGRESS
-        TLS_VERIFY ON
+
+      set(BUILDENV_DOWNLOAD_WAIT_SECONDS 1)
+      foreach(
+        BUILDENV_DOWNLOAD_ATTEMPT
+        RANGE 1 ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}
       )
+        file(
+          DOWNLOAD ${BUILDENV_URL}
+          "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip"
+          STATUS BUILDENV_DOWNLOAD_STATUS
+          SHOW_PROGRESS
+          TLS_VERIFY ON
+        )
+
+        # Extract status code and status message from file(DOWNLOAD ... STATUS ...)
+        list(GET BUILDENV_DOWNLOAD_STATUS 0 BUILDENV_DOWNLOAD_STATUS_CODE)
+        list(GET BUILDENV_DOWNLOAD_STATUS 1 BUILDENV_DOWNLOAD_STATUS_MESSAGE)
+
+        if(BUILDENV_DOWNLOAD_STATUS_CODE EQUAL 0)
+          break()
+        endif()
+
+        if(BUILDENV_DOWNLOAD_ATTEMPT LESS BUILDENV_DOWNLOAD_MAX_ATTEMPTS)
+          math(
+            EXPR
+            BUILDENV_DOWNLOAD_NEXT_ATTEMPT
+            "${BUILDENV_DOWNLOAD_ATTEMPT} + 1"
+          )
+          message(
+            STATUS
+            "Retrying download of file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} (attempt ${BUILDENV_DOWNLOAD_NEXT_ATTEMPT}/${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}) ..."
+          )
+          execute_process(
+            COMMAND ${CMAKE_COMMAND} -E sleep ${BUILDENV_DOWNLOAD_WAIT_SECONDS}
+          )
+          # Exponential backoff: 1s, 2s, 4s, ...
+          math(
+            EXPR
+            BUILDENV_DOWNLOAD_WAIT_SECONDS
+            "${BUILDENV_DOWNLOAD_WAIT_SECONDS} * 2"
+          )
+        else()
+          message(
+            FATAL_ERROR
+            "Failed to download ${BUILDENV_URL} to ${BUILDENV_BASEPATH} after ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS} attempts: ${BUILDENV_DOWNLOAD_STATUS_MESSAGE}"
+          )
+        endif()
+      endforeach()
     else()
       # Reference to suppress intentionally unused variable warnings
       set(_dummy "${BUILDENV_URL}")
@@ -162,7 +210,7 @@ if(
     if(NOT ${BUILDENV_SHA256} STREQUAL "")
       message(
         STATUS
-        "Verify SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
+        "Verifying  SHA256 of downloaded file ${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip ..."
       )
       file(SHA256 "${BUILDENV_BASEPATH}/${BUILDENV_NAME}.zip" actual_sha256)
 
@@ -708,8 +756,7 @@ if(MSVC)
     string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
   elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     string(
-      REPLACE
-      "/Zi"
+      REPLACE "/Zi"
       "/Z7"
       CMAKE_CXX_FLAGS_RELEASE
       "${CMAKE_CXX_FLAGS_RELEASE}"
@@ -717,15 +764,13 @@ if(MSVC)
     string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
   elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     string(
-      REPLACE
-      "/Zi"
+      REPLACE "/Zi"
       "/Z7"
       CMAKE_CXX_FLAGS_RELWITHDEBINFO
       "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
     )
     string(
-      REPLACE
-      "/Zi"
+      REPLACE "/Zi"
       "/Z7"
       CMAKE_C_FLAGS_RELWITHDEBINFO
       "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
@@ -757,8 +802,7 @@ if(MSVC)
       add_compile_options(/O2) # this implies /Od2
       # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
       string(
-        REPLACE
-        "/RTC1"
+        REPLACE "/RTC1"
         ""
         CMAKE_CXX_FLAGS_DEBUG
         "${CMAKE_CXX_FLAGS_DEBUG}"
@@ -768,15 +812,13 @@ if(MSVC)
       # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
       # /O2 is applied by CMake and this implies /Od2
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_CXX_FLAGS_RELWITHDEBINFO
         "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
       )
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
@@ -791,8 +833,7 @@ if(MSVC)
       # The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the GUI or in CMakeSettings.json,
       # therefore we can't rely on the default.
       string(
-        FIND
-        CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
+        FIND CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
         "/INCREMENTAL:NO"
         INCREMENTAL_NO_POSITION
       )
@@ -802,8 +843,7 @@ if(MSVC)
           "Overwriting /INCREMENTAL by /INCREMENTAL:NO to allow link time code optimization"
         )
         string(
-          REPLACE
-          "/INCREMENTAL"
+          REPLACE "/INCREMENTAL"
           "/INCREMENTAL:NO"
           CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO
           "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}"
@@ -859,16 +899,14 @@ if(MSVC)
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
       # Remove optimize flags set by cmake defaults
       string(
-        REPLACE
-        "/O2"
+        REPLACE "/O2"
         ""
         CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE}"
       )
       string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
       string(
-        REPLACE
-        "/Ob2"
+        REPLACE "/Ob2"
         ""
         CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE}"
@@ -879,30 +917,26 @@ if(MSVC)
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
       # Remove optimize flags set by cmake defaults
       string(
-        REPLACE
-        "/O2"
+        REPLACE "/O2"
         ""
         CMAKE_CXX_FLAGS_RELWITHDEBINFO
         "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
       )
       string(
-        REPLACE
-        "/O2"
+        REPLACE "/O2"
         ""
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
       )
       # For some reasons cmake uses /Ob1 in RelWithDebInfo https://gitlab.kitware.com/cmake/cmake/-/issues/20812
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_CXX_FLAGS_RELWITHDEBINFO
         "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}"
       )
       string(
-        REPLACE
-        "/Ob1"
+        REPLACE "/Ob1"
         ""
         CMAKE_C_FLAGS_RELWITHDEBINFO
         "${CMAKE_C_FLAGS_RELWITHDEBINFO}"
@@ -1025,7 +1059,11 @@ if(MSVC)
   else()
     message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE;CMAKE_DISABLE_PRECOMPILE_HEADERS")
+  default_option(
+    SCCACHE_SUPPORT
+    "Enable sccache support"
+    "SCCACHE_EXECUTABLE;CMAKE_DISABLE_PRECOMPILE_HEADERS"
+  )
   message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
   if(SCCACHE_SUPPORT)
     if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
@@ -1045,7 +1083,11 @@ else()
   else()
     message(STATUS "Could NOT find ccache (missing executable)")
   endif()
-  default_option(CCACHE_SUPPORT "Enable ccache support" "CCACHE_EXECUTABLE;NOT ANDROID")
+  default_option(
+    CCACHE_SUPPORT
+    "Enable ccache support"
+    "CCACHE_EXECUTABLE;NOT ANDROID"
+  )
 
   if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
     set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CCACHE_SUPPORT})
@@ -1111,7 +1153,11 @@ if(NOT MSVC)
   if(MOLD_SYMLINK)
     set(MOLD_SYMLINK_FOUND TRUE)
   endif()
-  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_FUSE_FOUND OR MOLD_SYMLINK_FOUND")
+  default_option(
+    MOLD_SUPPORT
+    "Use 'mold' for linking"
+    "MOLD_FUSE_FOUND OR MOLD_SYMLINK_FOUND"
+  )
   if(MOLD_SUPPORT AND NOT ANDROID)
     if(MOLD_FUSE_FOUND)
       message(STATUS "Selecting mold as linker")
@@ -1135,8 +1181,7 @@ if(NOT MSVC)
     )
     if(LLD_VERSION_STRING)
       string(
-        REGEX MATCH
-        "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)"
+        REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)"
         LLD_VERSION_MATCH
         "${LLD_VERSION_STRING}"
       )
@@ -1151,7 +1196,11 @@ if(NOT MSVC)
       endif()
     endif()
     # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
-    default_option(LLD_SUPPORT "Use 'ld.lld' for linking" "LLD_VERSION VERSION_GREATER 10.0.0")
+    default_option(
+      LLD_SUPPORT
+      "Use 'ld.lld' for linking"
+      "LLD_VERSION VERSION_GREATER 10.0.0"
+    )
     if(LLD_SUPPORT)
       if(LLD_VERSION_STRING)
         if(LLD_VERSION VERSION_GREATER 10.0.0)
@@ -2042,6 +2091,13 @@ else()
   )
 endif()
 
+# This can be uses to not optimize single files for better debugging
+# set_source_files_properties(
+#   src/...
+#   src/...
+#   PROPERTIES COMPILE_OPTIONS "-O0;-g;-fno-inline;-fno-omit-frame-pointer"
+# )
+
 set_source_files_properties(
   src/util/moc_included_test.cpp
   PROPERTIES SKIP_PRECOMPILE_HEADERS ON
@@ -2394,30 +2450,20 @@ if(ANDROID)
     PROPERTIES
       QT_ANDROID_APPLICATION_ARGUMENTS "--qml --log-level debug --developer"
   )
-  qt_add_android_permission(mixxx
-  NAME android.permission.ACCESS_NETWORK_STATE
+  qt_add_android_permission(mixxx NAME android.permission.ACCESS_NETWORK_STATE)
+  qt_add_android_permission(mixxx NAME android.permission.INTERNET)
+  qt_add_android_permission(mixxx NAME android.permission.MODIFY_AUDIO_SETTINGS)
+  qt_add_android_permission(mixxx NAME android.permission.RECORD_AUDIO)
+  qt_add_android_permission(
+    mixxx
+    NAME android.permission.WRITE_EXTERNAL_STORAGE
   )
-  qt_add_android_permission(mixxx
-  NAME android.permission.INTERNET
+  qt_add_android_permission(
+    mixxx
+    NAME android.permission.MANAGE_EXTERNAL_STORAGE
   )
-  qt_add_android_permission(mixxx
-  NAME android.permission.MODIFY_AUDIO_SETTINGS
-  )
-  qt_add_android_permission(mixxx
-  NAME android.permission.RECORD_AUDIO
-  )
-  qt_add_android_permission(mixxx
-  NAME android.permission.WRITE_EXTERNAL_STORAGE
-  )
-  qt_add_android_permission(mixxx
-  NAME android.permission.MANAGE_EXTERNAL_STORAGE
-  )
-  qt_add_android_permission(mixxx
-  NAME android.permission.WAKE_LOCK
-  )
-  qt_add_android_permission(mixxx
-  NAME android.permission.USB_PERMISSION
-  )
+  qt_add_android_permission(mixxx NAME android.permission.WAKE_LOCK)
+  qt_add_android_permission(mixxx NAME android.permission.USB_PERMISSION)
   set(
     CMAKE_LINKER
     "${CMAKE_ANDROID_NDK}/toolchains/llvm/prebuilt/${ANDROID_NDK_HOST_SYSTEM_NAME}/bin/ld"
@@ -2551,6 +2597,7 @@ if(WIN32)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
     set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY true)
   endif()
+  set(CMAKE_INSTALL_OPENMP_LIBRARIES TRUE)
   include(InstallRequiredSystemLibraries)
 endif()
 
@@ -2728,8 +2775,7 @@ if(MSVC)
     FILES $<TARGET_PDB_FILE:mixxx>
     CONFIGURATIONS Debug RelWithDebInfo
     DESTINATION "${MIXXX_INSTALL_BINDIR}"
-    COMPONENT
-      PDB # No spaces allowed
+    COMPONENT PDB # No spaces allowed
   )
 endif()
 
@@ -2874,6 +2920,7 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/basetrackcache_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp
@@ -2889,6 +2936,8 @@ if(BUILD_TESTING)
     src/test/colorconfig_test.cpp
     src/test/colormapperjsproxy_test.cpp
     src/test/colorpalette_test.cpp
+    src/test/colorpaletteeditormodel_test.cpp
+    src/test/columncache_test.cpp
     src/test/configobject_test.cpp
     src/test/controller_mapping_validation_test.cpp
     src/test/controller_mapping_settings_test.cpp
@@ -3130,7 +3179,8 @@ if(
   )
   message(STATUS "Downloading manual from ${MANUAL_URL}...")
   file(
-    DOWNLOAD "${MANUAL_URL}" "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
+    DOWNLOAD "${MANUAL_URL}"
+    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
     SHOW_PROGRESS
     STATUS MANUAL_PDF_DOWNLOAD
     TLS_VERIFY ON
@@ -3149,8 +3199,7 @@ if(
     )
   endif()
   file(
-    RENAME
-    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
+    RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
     "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
   )
 endif()
@@ -3350,8 +3399,7 @@ if(ENGINEPRIME)
     # CMake does not pass lists of paths properly to external projects.
     # This is worked around by changing the list separator.
     string(
-      REPLACE
-      ";"
+      REPLACE ";"
       "|"
       PIPE_DELIMITED_CMAKE_PREFIX_PATH
       "${CMAKE_PREFIX_PATH}"
@@ -3365,8 +3413,7 @@ if(ENGINEPRIME)
     set(DJINTEROP_EXTRA_CMAKE_ARGS "")
     if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
       list(
-        APPEND
-        DJINTEROP_EXTRA_CMAKE_ARGS
+        APPEND DJINTEROP_EXTRA_CMAKE_ARGS
         -DCMAKE_CXX_FLAGS=-Wno-error=deprecated-literal-operator
       )
     endif()
@@ -3530,8 +3577,7 @@ if(KEYFINDER)
     # CMake does not pass lists of paths properly to external projects.
     # This is worked around by changing the list separator.
     string(
-      REPLACE
-      ";"
+      REPLACE ";"
       "|"
       PIPE_DELIMITED_CMAKE_PREFIX_PATH
       "${CMAKE_PREFIX_PATH}"
@@ -3782,7 +3828,11 @@ if(PIPEWIRE)
 endif()
 
 # PortMidi
-default_option(PORTMIDI "Enable the PortMidi backend for MIDI controllers" "NOT ANDROID")
+default_option(
+  PORTMIDI
+  "Enable the PortMidi backend for MIDI controllers"
+  "NOT ANDROID"
+)
 if(PORTMIDI)
   target_compile_definitions(mixxx-lib PUBLIC __PORTMIDI__)
   find_package(PortMidi REQUIRED)
@@ -3881,6 +3931,15 @@ if(QT_KNOWN_POLICY_QTP0002 AND ANDROID)
   qt6_policy(SET QTP0002 NEW)
 endif()
 
+# The QuickShapes module carries the static QML plugin registration used
+# by qt_finalize_target(), while QuickShapesPrivate only provides the
+# C++ API.  Link the module where it exists (the vcpkg buildenvs) so the
+# plugin import does not depend on the Qt flavor; system Qts without the
+# module keep linking QuickShapesPrivate alone.
+if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes)
+endif()
+
 if(QML)
   target_sources(mixxx-lib PRIVATE src/skin/qml/qmlskin.cpp)
 
@@ -3926,6 +3985,12 @@ if(QML)
       )
     endforeach()
   endif()
+  if(TARGET Qt${QT_VERSION_MAJOR}::QuickShapes)
+    target_link_libraries(
+      mixxx-qml-lib
+      PUBLIC Qt${QT_VERSION_MAJOR}::QuickShapes
+    )
+  endif()
   set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
   set_source_files_properties(
     res/qml/Mixxx/MathUtils.mjs
@@ -3941,7 +4006,8 @@ if(QML)
     res/qml/Mixxx/PlayerDropArea.qml
     PROPERTIES QT_RESOURCE_ALIAS PlayerDropArea.qml
   )
-  qt_add_qml_module(mixxx-qml-lib
+  qt_add_qml_module(
+    mixxx-qml-lib
     URI Mixxx
     VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
@@ -3976,7 +4042,8 @@ if(QML)
 
   qt_add_library(mixxx-qml-mixxxcontrols STATIC)
   set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES AUTOMOC ON)
-  qt_add_qml_module(mixxx-qml-mixxxcontrols
+  qt_add_qml_module(
+    mixxx-qml-mixxxcontrols
     URI Mixxx.Controls
     VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
@@ -4720,7 +4787,7 @@ if(APPLE OR WIN32)
     # contain just shortcuts to load the qtbase, qtmultimedia etc files.
     FILES_MATCHING
     REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
   )
 endif()
 
@@ -4992,7 +5059,11 @@ find_package(MP4)
 find_package(MP4v2)
 # It is enabled by default on Linux only, because other targets have other
 # solutions. It requires MP4 or MP4v2.
-default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;MP4_FOUND OR MP4v2_FOUND")
+default_option(
+  FAAD
+  "FAAD AAC audio file decoder support"
+  "UNIX;NOT APPLE;MP4_FOUND OR MP4v2_FOUND"
+)
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(
@@ -5201,7 +5272,18 @@ if(OPUS)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
   if(BUILD_TESTING)
-    target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    # The static buildenv links libsndfile (whose ogg_opus encoder pulls in
+    # libopus), libopusfile and libopus; wrap them in a rescan group so the
+    # single-pass link resolves the order dependency.
+    if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+      target_link_libraries(
+        mixxx-test
+        PRIVATE
+          "$<LINK_GROUP:RESCAN,SndFile::sndfile;OpusFile::OpusFile;Opus::Opus>"
+      )
+    else()
+      target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
+    endif()
   endif()
 endif()
 
@@ -5549,14 +5631,12 @@ if(QT_VERSION VERSION_GREATER_EQUAL 6.8)
 endif()
 if(QML)
   list(
-    APPEND
-    CPACK_DEBIAN_PACKAGE_DEPENDS
+    APPEND CPACK_DEBIAN_PACKAGE_DEPENDS
     "qml6-module-qt-labs-folderlistmodel"
   )
   list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qt-labs-qmlmodels")
   list(
-    APPEND
-    CPACK_DEBIAN_PACKAGE_DEPENDS
+    APPEND CPACK_DEBIAN_PACKAGE_DEPENDS
     "qml6-module-qt5compat-graphicaleffects"
   )
   list(APPEND CPACK_DEBIAN_PACKAGE_DEPENDS "qml6-module-qtcore")
@@ -5580,21 +5660,18 @@ set(
   "${CPACK_DEBIAN_PACKAGE_DESCRIPTION}"
 )
 string(
-  PREPEND
-  CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
+  PREPEND CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
   "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}"
   "\n"
 )
 string(
-  REPLACE
-  "\n\n"
+  REPLACE "\n\n"
   "\n.\n"
   CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
   "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}"
 )
 string(
-  REPLACE
-  "\n"
+  REPLACE "\n"
   "\n "
   CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED
   "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}"
@@ -5667,7 +5744,7 @@ if(WIN32)
   set(CPACK_WIX_INSTALL_SCOPE "perMachine")
   file(
     GENERATE OUTPUT
-    "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
+      "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/MixxxUpgradePatch.xml"
     INPUT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/MixxxUpgradePatch.xml.in"
   )
   set(

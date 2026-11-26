@@ -93,13 +93,13 @@ class WaveformWidgetHolder {
     WaveformWidgetHolder& operator=(WaveformWidgetHolder&&) = default;
   private:
     WaveformWidgetHolder(
-            WaveformWidgetAbstract* waveformWidget,
-            WWaveformViewer* waveformViewer,
+            WaveformWidgetAbstract* pWaveformWidget,
+            WWaveformViewer* pWaveformViewer,
             const QDomNode& skinNode,
             const SkinContext& parentContext);
 
-    WaveformWidgetAbstract* m_waveformWidget;
-    WWaveformViewer* m_waveformViewer;
+    WaveformWidgetAbstract* m_pWaveformWidget;
+    WWaveformViewer* m_pWaveformViewer;
     QDomNode m_skinNodeCache;
     SkinContext m_skinContextCache;
 
@@ -178,16 +178,32 @@ class WaveformWidgetFactory : public QObject,
     bool widgetTypeSupportsUntilMark() const;
     bool widgetTypeSupportsStems() const;
 
+    // Defaults of the "beats/time until next marker" waveform options.
+    // Align and height limit are stored as combobox indices, see
+    // toUntilMarkAlign() and toUntilMarkTextHeightLimit().
+    static constexpr bool kUntilMarkShowBeatsDefault = false;
+    static constexpr bool kUntilMarkShowTimeDefault = false;
+    static constexpr int kUntilMarkAlignDefaultIndex = 1; // Center
+    static constexpr int kUntilMarkTextPointSizeDefault = 24;
+    static constexpr int kUntilMarkTextHeightLimitDefaultIndex = 0; // 1/3 of viewer
+
+    // Defaults of the stem waveform options.
+    static constexpr bool kStemReorderOnChangeDefault = true;
+    static constexpr double kStemOpacityDefault = 0.75;
+    static constexpr double kStemOutlineOpacityDefault = 0.15;
+
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPointSize(int value);
     void setUntilMarkTextHeightLimit(float value);
 
+#ifdef __STEM__
     void setStemReorderOnChange(bool value);
     void setStemOutlineOpacity(float value);
     void setStemOpacity(float value);
     void setStemSplitTracks(bool value);
+#endif
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -204,6 +220,7 @@ class WaveformWidgetFactory : public QObject,
     float getUntilMarkTextHeightLimit() const {
         return m_untilMarkTextHeightLimit;
     }
+#ifdef __STEM__
     bool isStemReorderOnChange() const {
         return m_stemReorderOnChange;
     }
@@ -216,6 +233,7 @@ class WaveformWidgetFactory : public QObject,
     bool isStemSplitTracks() const {
         return m_stemSplitTracks;
     }
+#endif
     static Qt::Alignment toUntilMarkAlign(int index);
     static int toUntilMarkAlignIndex(Qt::Alignment align);
     static float toUntilMarkTextHeightLimit(int index);
@@ -303,10 +321,12 @@ class WaveformWidgetFactory : public QObject,
     void untilMarkTextPointSizeChanged(int value);
     void untilMarkTextHeightLimitChanged(float value);
 
+#ifdef __STEM__
     void stemReorderOnChangeChanged(bool value);
     void stemOutlineOpacityChanged(float value);
     void stemOpacityChanged(float value);
     void stemSplitTracksChanged(bool value);
+#endif
 
   public slots:
     void slotSkinLoaded();
@@ -374,12 +394,13 @@ class WaveformWidgetFactory : public QObject,
     int m_untilMarkTextPointSize;
     float m_untilMarkTextHeightLimit;
 
+#ifdef __STEM__
     bool m_stemReorderOnChange;
     float m_stemOutlineOpacity;
     float m_stemOpacity;
     bool m_stemSplitTracks;
     std::unique_ptr<ControlObject> m_pStemSplitTracksControl;
-
+#endif
     bool m_openGlAvailable;
 #ifdef MIXXX_USE_QOPENGL
     bool m_openGlesAvailable;
@@ -388,7 +409,7 @@ class WaveformWidgetFactory : public QObject,
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
 
-    VSyncThread* m_vsyncThread;
+    VSyncThread* m_pVsyncThread;
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
 

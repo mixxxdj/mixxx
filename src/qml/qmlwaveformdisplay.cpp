@@ -432,7 +432,8 @@ QSGNode* QmlWaveformDisplay::updatePaintNode(QSGNode* node, UpdatePaintNodeData*
                 window()->devicePixelRatio());
     }
 
-    onPreRender(this);
+    fetchVSyncPositions(this);
+    onPreRender();
 
     for (auto* pRenderer : std::as_const(m_rendererStack)) {
         pRenderer->update();

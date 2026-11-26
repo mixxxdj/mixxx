@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QVariant>
+#include <gsl/pointers>
 
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
@@ -42,7 +43,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotDeleteAllUnlockedPlaylists();
 
   protected:
-    void decorateChild(TreeItem* pChild, int playlistId) override;
+    void decorateChild(gsl::strict_not_null<TreeItem*> pChild, int playlistId) override;
     QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
 

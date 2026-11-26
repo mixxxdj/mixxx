@@ -167,7 +167,7 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <VuMeter>
-                    <TooltipId>audio_latency_usage</TooltipId>
+                    <TooltipId>audio_latency_and_overload_indicator</TooltipId>
                     <Size>59f,5f</Size>
                     <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/latency_bg.png</PathBack>
                     <PathVu>skins:LateNight/<Variable name="StyleScheme"/>/style/latency_over.png</PathVu>
@@ -188,7 +188,7 @@
               </WidgetGroup><!-- LatencyMeterBox -->
               <Label>
                 <ObjectName>LatencyLabel</ObjectName>
-                <TooltipId>audio_latency_usage</TooltipId>
+                <TooltipId>audio_latency_and_overload_indicator</TooltipId>
                 <Size>0min,10f</Size>
                 <Alignment>center</Alignment>
                 <Text>Buffer %</Text>
