@@ -53,8 +53,8 @@ class MappingInfo {
     inline const QString getForumLink() const {
         return m_forumlink;
     }
-    inline const QString getWikiLink() const {
-        return m_wikilink;
+    inline const QString getManualLink() const {
+        return m_manuallink;
     }
     inline const QString getAuthor() const {
         return m_author;
@@ -75,6 +75,6 @@ class MappingInfo {
     QString m_author;
     QString m_description;
     QString m_forumlink;
-    QString m_wikilink;
+    QString m_manuallink;
     QList<ProductInfo> m_products;
 };
