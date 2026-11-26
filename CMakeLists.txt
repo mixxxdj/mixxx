@@ -4124,6 +4124,7 @@ else()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
+          Qt${QT_VERSION_MAJOR}::QuickControls2
           Qt${QT_VERSION_MAJOR}::QuickControls2Impl
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
@@ -4138,15 +4139,6 @@ else()
             Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
             Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
             Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
-            DESTINATION
-            "${MIXXX_INSTALL_DATADIR}"
-            COMPONENT
-            applocal
-        )
-      else()
-        install(
-          IMPORTED_RUNTIME_ARTIFACTS
-            Qt${QT_VERSION_MAJOR}::QuickControls2
             DESTINATION
             "${MIXXX_INSTALL_DATADIR}"
             COMPONENT
@@ -4218,16 +4210,23 @@ else()
         endif()
       endif()
 
-      if(QT_VERSION VERSION_LESS 6.4)
-        # From Qt 6.4 integrated in QuickControls2
-        install(
-          IMPORTED_RUNTIME_ARTIFACTS
-            Qt${QT_VERSION_MAJOR}::QuickTemplates2
-            DESTINATION
-            "${MIXXX_INSTALL_DATADIR}"
-            COMPONENT
-            applocal
+      if(TARGET Qt${QT_VERSION_MAJOR}::QuickTemplates2)
+        get_target_property(
+          _QuickTemplates2_Type
+          Qt${QT_VERSION_MAJOR}::QuickTemplates2
+          TYPE
         )
+        # QML plugins can require this library even if the executable does not.
+        if(_QuickTemplates2_Type STREQUAL "SHARED_LIBRARY")
+          install(
+            IMPORTED_RUNTIME_ARTIFACTS
+              Qt${QT_VERSION_MAJOR}::QuickTemplates2
+              DESTINATION
+              "${MIXXX_INSTALL_DATADIR}"
+              COMPONENT
+              applocal
+          )
+        endif()
       endif()
 
       install(
@@ -5484,17 +5483,23 @@ include(CPack)
 if(APPLOCAL_COMPONENT_DEFINED)
   cpack_add_component(applocal HIDDEN REQUIRED)
 
-  # In order to run Mixx from the build directory install applocal components
-  add_custom_command(
-    TARGET mixxx
-    POST_BUILD
+  # Both executables need runtime plugins. Share one deployment step to avoid
+  # concurrent installs when mixxx and mixxx-test are built together.
+  add_custom_target(
+    mixxx-applocal
     COMMAND
       "${CMAKE_COMMAND}" -DCOMPONENT=applocal
-      -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P
-      cmake_install.cmake
+      "-DCMAKE_INSTALL_CONFIG_NAME=$<CONFIG>"
+      "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}" -P
+      "${CMAKE_CURRENT_BINARY_DIR}/cmake_install.cmake"
     COMMENT
-      "Install applocal components to allow Mixxx to be run from the build directory."
+      "Install applocal components to run executables from the build directory."
+    VERBATIM
   )
+  add_dependencies(mixxx mixxx-applocal)
+  if(BUILD_TESTING)
+    add_dependencies(mixxx-test mixxx-applocal)
+  endif()
 endif()
 
 if(APPLE AND MACOS_BUNDLE)
