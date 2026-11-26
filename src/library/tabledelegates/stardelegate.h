@@ -22,12 +22,11 @@ class StarDelegate : public TableItemDelegate {
 
     // called when an editor is created to initialize it with data from the
     // model
-    void setEditorData(QWidget* editor, const QModelIndex& index) const;
+    void setEditorData(QWidget* pEditor, const QModelIndex& index) const;
 
     // called when editing is finished, to commit data from the editor to the
     // model
-    void setModelData(QWidget* editor, QAbstractItemModel* model,
-                      const QModelIndex& index) const;
+    void setModelData(QWidget* pEditor, QAbstractItemModel* pModel, const QModelIndex& index) const;
 
   private slots:
     void commitAndCloseEditor();

@@ -61,6 +61,10 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_talkover(kMaxEngineSamples),
           m_talkoverHeadphones(kMaxEngineSamples),
           m_sidechainMix(kMaxEngineSamples),
+          // Two areas of kMaxEngineSamples samples: a per-sub-channel work
+          // buffer for the stem mixing and the mix buffer of the headphone
+          // pass (see ChannelMixer::applyEffects.. methods).
+          m_channelMixerTempBuffer(2 * kMaxEngineSamples),
           m_pWorkerScheduler(make_parented<EngineWorkerScheduler>(this)),
           m_pEngineSync(std::make_unique<EngineSync>(pConfig)),
           m_pMainGain(std::make_unique<ControlAudioTaperPot>(
@@ -362,7 +366,7 @@ void EngineMixer::processChannels(std::size_t bufferSize) {
 void EngineMixer::process(const std::size_t bufferSize) {
     DEBUG_ASSERT(bufferSize <= static_cast<int>(kMaxEngineSamples));
 
-    static bool haveSetName = false;
+    static thread_local bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
         haveSetName = true;
@@ -412,7 +416,8 @@ void EngineMixer::process(const std::size_t bufferSize) {
                 m_headphoneHandle.handle(),
                 bufferSize,
                 m_sampleRate,
-                m_pEngineEffectsManager);
+                m_pEngineEffectsManager,
+                m_channelMixerTempBuffer.data());
 
         // Process headphone channel effects
         if (m_pEngineEffectsManager) {
@@ -446,7 +451,8 @@ void EngineMixer::process(const std::size_t bufferSize) {
             m_mainHandle.handle(),
             bufferSize,
             m_sampleRate,
-            m_pEngineEffectsManager);
+            m_pEngineEffectsManager,
+            m_channelMixerTempBuffer.data());
 
     // Process effects on all microphones mixed together
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
@@ -501,7 +507,8 @@ void EngineMixer::process(const std::size_t bufferSize) {
                 m_mainHandle.handle(),
                 bufferSize,
                 m_sampleRate,
-                m_pEngineEffectsManager);
+                m_pEngineEffectsManager,
+                m_channelMixerTempBuffer.data());
     }
 
     // Process crossfader orientation bus channel effects

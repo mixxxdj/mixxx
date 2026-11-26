@@ -26,6 +26,13 @@ DlgAbout::DlgAbout()
     platform_label->setText(VersionStore::platform());
     QLocale locale;
     date_label->setText(locale.toString(VersionStore::date().toLocalTime(), QLocale::LongFormat));
+    trademark_label->setText(
+            QString("<a style=\"color:%1;\" href=\"%2\"><small>%3</small></a>")
+                    .arg(Color::blendColors(palette().link().color(),
+                                 palette().text().color())
+                                    .name(),
+                            MIXXX_TRADEMARK_URL,
+                            tr("Mixxx is a registered trademark of Mixxx e.V.")));
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {
@@ -47,7 +54,6 @@ DlgAbout::DlgAbout()
 
     QStringList thisReleaseDevelopers;
     thisReleaseDevelopers
-            << "RJ Skerry-Ryan"
             << "Owen Williams"
             << "Daniel Sch&uuml;rmann"
             << "S&eacute;bastien Blaisot"
@@ -66,52 +72,30 @@ DlgAbout::DlgAbout()
     // New Contributors are added at the end.
     QStringList recentContributors;
     recentContributors
-            << "Be"
             << "Uwe Klotz"
             << "D&aacute;vid Szak&aacute;llas"
             << "Christian"
-            << "Geraldo Nascimento"
-            << "Allen Wittenauer"
-            << "Raphael Bigal"
             << "Filok"
-            << "Tobias Oszlanyi (OsZ)"
-            << "Neil Naveen"
             << "David Chocholat&yacute;"
             << "Jakob Leifhelm"
             << "Jakub Kopa&nacute;ko"
-            << "Saksham Hans"
-            << "Robbert van der Helm"
-            << "Andrew Burns"
-            << "Michael Wigard"
             << "Alexandre Bique"
             << "Milkii Brewster"
             << "djantti"
             << "Eugene Erokhin"
-            << "Ben Duval"
             << "Nicolau Leal Werneck"
-            << "David Guglielmi"
-            << "Chris H. Meyer"
-            << "Mariano Ntrougkas"
             << "Daniel Fernandes"
             << "Gr&eacute;goire Locqueville"
             << "grizeldi"
             << "codingspiderfox"
             << "Ashnidh Khandelwal"
             << "Sergey"
-            << "Raphael Quast"
             << "Christophe Henry"
             << "Lukas Waslowski"
-            << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
-            << "HorstBaerbel"
-            << "gqzomer"
-            << "Bacadam"
             << "Leon Eckardt"
             << "Th&eacute;odore Noel"
-            << "Aquassaut"
             << "Morgan Nunan"
             << "FrankwaP"
-            << "Markus Kohlhase"
-            << "Frank Grimy"
             << "Al Hadebe"
             << "Emilien Colombier"
             << "DJ aK"
@@ -194,7 +178,26 @@ DlgAbout::DlgAbout()
             << "Felicia Hummel"
             << "Pranav Jadhav"
             << "Spgamer0407"
-            << "marcelomar21";
+            << "marcelomar21"
+            << "Felix Schnabel"
+            << "Kyohei Okuno"
+            << "MelGrubb"
+            << "nomiapps"
+            << "sergioalexo"
+            << "Ram&oacute;n Arnau"
+            << "Kameron Markham"
+            << "Samarth Deshpande"
+            << "rishipadalwar"
+            << "v1vendi"
+            << "Wouter Doeland"
+            << "muskan-creates352"
+            << "Nicolas Predella"
+            << "JCCoynel"
+            << "Konstantin Smirnov"
+            << "Louis Grandvaux"
+            << "Shubham Shukla"
+            << "Jing Yu"
+            << "Bhavesh Chawla";
 
     QStringList specialThanks;
     specialThanks
@@ -214,7 +217,8 @@ DlgAbout::DlgAbout()
             << "Pau Arum&iacute;"
             << "David Garcia"
             << "Seb Ruiz"
-            << "Joseph Mattiello";
+            << "Joseph Mattiello"
+            << "timklop";
 
     QStringList pastDevelopers;
     pastDevelopers
@@ -245,7 +249,9 @@ DlgAbout::DlgAbout()
             << "Marcos Cardinot"
             << "Nicu Badescu"
             << "Sean Pappalardo"
-            << "S. Brandt";
+            << "S. Brandt"
+            << "RJ Skerry-Ryan"
+            << "Be";
 
     QStringList pastContributors;
     pastContributors
@@ -481,7 +487,28 @@ DlgAbout::DlgAbout()
             << "Alice Psykose"
             << "Florian Goth"
             << "Chase Durand"
-            << "John Last";
+            << "John Last"
+            << "Geraldo Nascimento"
+            << "Allen Wittenauer"
+            << "Raphael Bigal"
+            << "Tobias Oszlanyi (OsZ)"
+            << "Neil Naveen"
+            << "Saksham Hans"
+            << "Robbert van der Helm"
+            << "Andrew Burns"
+            << "Michael Wigard"
+            << "Ben Duval"
+            << "David Guglielmi"
+            << "Chris H. Meyer"
+            << "Mariano Ntrougkas"
+            << "Raphael Quast"
+            << "Marcin Cie&#x15B;lak" // &#x15B; = &sacute; in HTML 5.0
+            << "HorstBaerbel"
+            << "gqzomer"
+            << "Bacadam"
+            << "Aquassaut"
+            << "Markus Kohlhase"
+            << "Frank Grimy";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
@@ -499,7 +526,7 @@ DlgAbout::DlgAbout()
     textBrowser->setHtml(sections.join(""));
 
     textWebsiteLink->setText(
-            QString("<a style=\"color:%1;\" href=\"%2\">%3</a>")
+            QStringLiteral("<a style=\"color:%1;\" href=\"%2\">%3</a>")
                     .arg(Color::blendColors(palette().link().color(),
                                  palette().text().color())
                                     .name(),

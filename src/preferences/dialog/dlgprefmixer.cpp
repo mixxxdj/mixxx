@@ -531,9 +531,9 @@ void DlgPrefMixer::slotResetToDefaults() {
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
     Q_UNUSED(effectIndex);
-    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    auto* pComboBox = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
-    if (!c || m_ignoreEqQuickEffectBoxSignals) {
+    if (!pComboBox || m_ignoreEqQuickEffectBoxSignals) {
         return;
     }
 
@@ -548,9 +548,9 @@ void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
 
 void DlgPrefMixer::slotQuickEffectSelectionChanged(int effectIndex) {
     Q_UNUSED(effectIndex);
-    QComboBox* c = qobject_cast<QComboBox*>(sender());
+    auto* pComboBox = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
-    if (!c || m_ignoreEqQuickEffectBoxSignals) {
+    if (!pComboBox || m_ignoreEqQuickEffectBoxSignals) {
         return;
     }
 
@@ -689,6 +689,9 @@ void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
 
     // Update slider label
     int index = m_mainEQSliders.indexOf(pSlider);
+    VERIFY_OR_DEBUG_ASSERT(index >= 0 && index < m_mainEQValues.size()) {
+        return;
+    }
     QLabel* pValueLabel = m_mainEQValues[index];
     VERIFY_OR_DEBUG_ASSERT(pValueLabel) {
         return;

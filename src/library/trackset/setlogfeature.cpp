@@ -328,14 +328,19 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                 itemList.push_back(std::move(pNewGroupItem));
             }
 
-            TreeItem* pItem = pGroupItem->appendChild(label, id);
+            TreeItem* pRawItem = pGroupItem->appendChild(label, id);
+            VERIFY_OR_DEBUG_ASSERT(pRawItem != nullptr) {
+                continue;
+            }
+            gsl::strict_not_null<TreeItem*> pItem{pRawItem};
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem, id);
         } else {
             // add most recent top-level playlist
             auto pItem = std::make_unique<TreeItem>(label, id);
-            pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
-            decorateChild(pItem.get(), id);
+            gsl::strict_not_null<TreeItem*> pStrictItem{pItem.get()};
+            pStrictItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
+            decorateChild(pStrictItem, id);
 
             itemList.push_back(std::move(pItem));
         }
@@ -347,7 +352,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     return indexFromPlaylistId(selectedId);
 }
 
-void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
+void SetlogFeature::decorateChild(gsl::strict_not_null<TreeItem*> item, int playlistId) {
     if (playlistId == m_currentPlaylistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlistId)) {
