@@ -39,8 +39,23 @@ install(
 )
 install(
   FILES "${MIXXX_APPIMAGE_DESKTOP_FILE}"
-  DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
-  RENAME "mixxx-appimage.desktop"
+  # usr/share/applications, not ${CMAKE_INSTALL_DATADIR}/applications: the
+  # AppImage AppDir is not a usr-prefixed tree, and appstreamcli's tree
+  # validation resolves the appdata's launchable against usr/share/applications.
+  DESTINATION "usr/share/applications"
+  RENAME "org.mixxx.Mixxx.desktop"
+)
+# AppStream metadata, so appimagetool's validation and AppStream-aware
+# launchers find upstream metadata in the AppImage.  appimagetool derives the
+# expected file name from the AppImage desktop file (org.mixxx.Mixxx.desktop ->
+# org.mixxx.Mixxx.appdata.xml) and, with appstreamcli installed, validates the
+# tree, so the metadata must live under usr/share/metainfo under that name
+# with a matching component id and launchable (the reverse-DNS id matches the
+# AppDir's desktop file).  It is the unmodified upstream metadata.
+install(
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
+  DESTINATION "usr/share/metainfo"
+  RENAME "org.mixxx.Mixxx.appdata.xml"
 )
 
 # Custom AppRun: the CPack AppImage generator uses an AppRun installed in
@@ -121,9 +136,18 @@ install(
     "^libwayland-client\\.so.*"
     # Sound server client libraries (must match the local sound server)
     "^libasound\\.so.*"
-    "^libjack\\.so.*"
+    # The vcpkg jack2 port is an unversioned weak-API shim (libjack.so) that
+    # loads the system JACK at runtime; bundle the shim but keep the real,
+    # versioned JACK library delegated so it matches the host's sound server.
+    "^libjack\\.so\\.[0-9].*"
     "^libpipewire.*"
-    # Low-level font stack and other system essentials
+    # fontconfig is delegated so it matches the host's font cache and
+    # configuration (bundling a different fontconfig version makes it read
+    # cache files written by other applications, which can crash).  freetype
+    # and harfbuzz are bundled instead: the 2.6 buildenv builds Qt against
+    # their current versions, and the glibc-2.28 target systems ship older
+    # libraries that do not export the symbols Qt references (e.g.
+    # FT_Get_Color_Glyph_Paint), so delegating them would break at runtime.
     "^libfontconfig\\.so.*"
     "^libfreetype\\.so.*"
     "^libharfbuzz\\.so.*"

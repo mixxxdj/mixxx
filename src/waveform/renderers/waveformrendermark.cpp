@@ -143,12 +143,10 @@ void WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
 void WaveformRenderMark::updateEndMarkImage(WaveformMarkPointer pMark) {
     if (m_pWaveformRenderer->getOrientation() == Qt::Horizontal) {
         pMark->m_pEndGraphics = std::make_unique<ImageGraphics>(
-                pMark->generateEndImage(static_cast<float>(
-                        m_pWaveformRenderer->getDevicePixelRatio())));
+                pMark->generateEndImage(m_pWaveformRenderer->getDevicePixelRatio()));
     } else {
-        pMark->m_pEndGraphics = std::make_unique<ImageGraphics>(pMark
-                        ->generateEndImage(static_cast<float>(
-                                m_pWaveformRenderer->getDevicePixelRatio()))
+        pMark->m_pEndGraphics = std::make_unique<ImageGraphics>(
+                pMark->generateEndImage(m_pWaveformRenderer->getDevicePixelRatio())
                         .transformed(QTransform().rotate(90)));
     }
 }

@@ -407,6 +407,36 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   endif()
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND DEFINED MIXXX_VCPKG_ROOT)
+  # The Linux buildenvs are built on the glibc-2.28 Rocky 8 floor.  A host with
+  # an older glibc cannot run them, so fail at configure time with a clear
+  # message instead of a confusing link or load error.  A newer host is fine:
+  # the glibc __exp_finite shims below cover the known case of linking the
+  # 2.28-built SoundTouch on a newer glibc.
+  set(MIXXX_BUILDENV_GLIBC_FLOOR 2.28)
+  execute_process(
+    COMMAND ldd --version
+    OUTPUT_VARIABLE MIXXX_LDD_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(MIXXX_LDD_VERSION MATCHES "GLIBC ([0-9]+\\.[0-9]+)")
+    set(MIXXX_HOST_GLIBC "${CMAKE_MATCH_1}")
+    if(MIXXX_HOST_GLIBC VERSION_LESS MIXXX_BUILDENV_GLIBC_FLOOR)
+      message(
+        FATAL_ERROR
+        "The vcpkg buildenv requires glibc ${MIXXX_BUILDENV_GLIBC_FLOOR}, "
+        "but the host provides ${MIXXX_HOST_GLIBC}. Build inside a container "
+        "matching the buildenv base (rockylinux:8) instead."
+      )
+    else()
+      message(
+        STATUS
+        "Host glibc ${MIXXX_HOST_GLIBC} >= buildenv floor ${MIXXX_BUILDENV_GLIBC_FLOOR}"
+      )
+    endif()
+  endif()
+endif()
+
 if(NOT DEFINED VCPKG_TARGET_TRIPLET)
   if(DEFINED ENV{VCPKG_TARGET_TRIPLET})
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}")
@@ -2682,11 +2712,20 @@ endif()
 
 # Additional Linux-only files
 if(UNIX AND NOT APPLE)
-  # .desktop file for KDE/GNOME menu
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
-    DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
-  )
+  # .desktop file for KDE/GNOME menu.  The AppImage ships its own AppImage-
+  # adjusted desktop file (Exec=mixxx, Icon=mixxx-512), so skip this one there
+  # to avoid installing two desktop files with the same name.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.desktop"
+      DESTINATION "${CMAKE_INSTALL_DATADIR}/applications"
+    )
+  endif()
+
+  # AppImage-specific install rules (desktop file, shared libraries).
+  if(MIXXX_APPIMAGE)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/appimage/appimage.cmake")
+  endif()
 
   # AppImage-specific install rules (desktop file, shared libraries).
   if(MIXXX_APPIMAGE)
@@ -2701,11 +2740,15 @@ if(UNIX AND NOT APPLE)
     PATTERN ic_mixxx.ico EXCLUDE
   )
 
-  # .metainfo.xml file for KDE/GNOME AppStream initiative
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
-    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
-  )
+  # .metainfo.xml file for KDE/GNOME AppStream initiative.  The AppImage ships
+  # the same metadata as org.mixxx.Mixxx.appdata.xml (see appimage.cmake), so
+  # skip this copy there to avoid a duplicate install.
+  if(NOT MIXXX_APPIMAGE)
+    install(
+      FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/org.mixxx.Mixxx.metainfo.xml"
+      DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
+    )
+  endif()
 
   option(
     INSTALL_USER_UDEV_RULES
@@ -2883,8 +2926,20 @@ if(FFMPEG)
       __STDC_LIMIT_MACROS
       __STDC_FORMAT_MACROS
   )
-
-  target_link_libraries(mixxx-lib PRIVATE FFmpeg::FFmpeg)
+  # Static FFmpeg libraries have circular cross-references (e.g. libavformat
+  # references libavcodec); wrap the resolved library paths in a single
+  # LINK_GROUP:RESCAN so the GNU linker resolves them.  fdk-aac (for a
+  # static libavcodec built with --enable-libfdk-aac) is added by
+  # FindFFmpeg.cmake above; a static libavcodec built with --enable-libopus
+  # is resolved via the Opus targets linked below.
+  if(UNIX AND NOT APPLE AND CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+    target_link_libraries(
+      mixxx-lib
+      PRIVATE "$<LINK_GROUP:RESCAN,${FFmpeg_LIBRARIES}>"
+    )
+  else()
+    target_link_libraries(mixxx-lib PRIVATE "${FFmpeg_LIBRARIES}")
+  endif()
   target_include_directories(mixxx-lib PUBLIC "${FFmpeg_INCLUDE_DIRS}")
 endif()
 
@@ -4916,6 +4971,25 @@ endif()
 # SoundTouch
 find_package(SoundTouch 2.1.2 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND DEFINED MIXXX_VCPKG_ROOT)
+  # The Linux buildenv links SoundTouch built on the glibc-2.28 floor with
+  # -ffast-math, whose __exp_finite/__exp2_finite symbols glibc >= 2.31 hides.
+  # Provide them in the executables that pull SoundTouch in, as object files so
+  # they are always in the link regardless of static archive order (mixxx-lib.a
+  # is scanned before libSoundTouch.a, so an archive member would be missed).
+  # Skip the precompiled header, a C++ header that would break the C source's
+  # build rule.  Gate on the buildenv so this can be removed once the buildenv
+  # is retired.
+  set_source_files_properties(
+    src/util/compatibility/glibc_compat.c
+    PROPERTIES SKIP_PRECOMPILE_HEADERS ON
+  )
+  target_sources(mixxx PRIVATE src/util/compatibility/glibc_compat.c)
+  if(TARGET mixxx-test)
+    target_sources(mixxx-test PRIVATE src/util/compatibility/glibc_compat.c)
+  endif()
+endif()
 
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
