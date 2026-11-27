@@ -858,8 +858,9 @@ void CueControl::loadCuesFromTrack() {
     }
 
     DEBUG_ASSERT(mainCuePosition.isValid());
-    const auto quantizedMainCuePosition = quantizeCuePoint(mainCuePosition);
-    m_pCuePoint->set(quantizedMainCuePosition.toEngineSamplePosMaybeInvalid());
+    // Like hotcues, the main cue is only quantized when it is set. Quantizing
+    // it here would move an existing cue whenever quantize is toggled.
+    m_pCuePoint->set(mainCuePosition.toEngineSamplePosMaybeInvalid());
 }
 
 void CueControl::trackAnalyzed() {
@@ -908,8 +909,7 @@ void CueControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 void CueControl::quantizeChanged(double v) {
     Q_UNUSED(v);
 
-    // check if we were at the cue point before
-    bool wasTrackAtCue = getTrackAt() == TrackAt::Cue;
+    // check if we were at the intro start before
     bool wasTrackAtIntro = isTrackAtIntroCue();
 
     loadCuesFromTrack();
@@ -919,13 +919,6 @@ void CueControl::quantizeChanged(double v) {
         return;
     }
 
-    // Retrieve new cue pos and follow
-    const auto cuePosition =
-            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                    m_pCuePoint->get());
-    if (wasTrackAtCue && cuePosition.isValid()) {
-        seekExact(cuePosition);
-    }
     // Retrieve new intro start pos and follow
     const auto introPosition =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
