@@ -12,6 +12,8 @@
 #include <QStringList>
 #include <QTextCodec>
 #include <QtDebug>
+#include <algorithm>
+#include <cstdint>
 
 #include "engine/engine.h"
 #include "library/dao/trackschema.h"
@@ -858,6 +860,12 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
+mixxx::audio::FramePos anlzLoopEndFrame(
+        uint32_t time, int timingOffset, double sampleRateKhz) {
+    const double offsetTime = std::max(1.0, static_cast<double>(time) - timingOffset);
+    return mixxx::audio::FramePos(sampleRateKhz * offsetTime);
+}
+
 void setHotCue(TrackPointer track,
         mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPosition,
@@ -879,7 +887,13 @@ void setHotCue(TrackPointer track,
     }
 
     if (pCue) {
+        if (type == mixxx::CueType::HotCue) {
+            pCue->setType(type);
+        }
         pCue->setStartAndEndPosition(startPosition, endPosition);
+        if (type == mixxx::CueType::Loop) {
+            pCue->setType(type);
+        }
     } else {
         pCue = track->createAndAddCue(
                 type,
@@ -990,6 +1004,15 @@ void readAnalyze(TrackPointer track,
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
+                    const bool isLoop =
+                            cueEntry->type() == rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP;
+                    const auto endPosition = isLoop
+                            ? anlzLoopEndFrame(
+                                      cueEntry->loop_time(), timingOffset, sampleRateKhz)
+                            : mixxx::audio::kInvalidFramePos;
+                    if (isLoop && endPosition <= position) {
+                        break;
+                    }
                     int hotCueIndex = static_cast<int>(cueEntry->hot_cue() - 1);
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
@@ -997,7 +1020,7 @@ void readAnalyze(TrackPointer track,
                     setHotCue(
                             track,
                             position,
-                            mixxx::audio::kInvalidFramePos,
+                            endPosition,
                             hotCueIndex,
                             QString(),
                             mixxx::RgbColor::nullopt());
@@ -1056,13 +1079,22 @@ void readAnalyze(TrackPointer track,
                     }
                 } break;
                 case rekordbox_anlz_t::CUE_LIST_TYPE_HOT_CUES: {
+                    const bool isLoop =
+                            cueExtendedEntry->type() == rekordbox_anlz_t::CUE_ENTRY_TYPE_LOOP;
+                    const auto endPosition = isLoop
+                            ? anlzLoopEndFrame(
+                                      cueExtendedEntry->loop_time(), timingOffset, sampleRateKhz)
+                            : mixxx::audio::kInvalidFramePos;
+                    if (isLoop && endPosition <= position) {
+                        break;
+                    }
                     int hotCueIndex = static_cast<int>(cueExtendedEntry->hot_cue() - 1);
                     if (hotCueIndex > lastHotCueIndex) {
                         lastHotCueIndex = hotCueIndex;
                     }
                     setHotCue(track,
                             position,
-                            mixxx::audio::kInvalidFramePos,
+                            endPosition,
                             hotCueIndex,
                             fromUtf16BeString(cueExtendedEntry->comment()),
                             mixxx::RgbColor(qRgb(
