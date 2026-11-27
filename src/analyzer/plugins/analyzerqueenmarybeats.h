@@ -1,11 +1,14 @@
 #pragma once
 
 #include <QObject>
+#include <array>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
+#include "analyzer/plugins/qmbeatmap.h"
 
 class DetectionFunction;
 
@@ -42,6 +45,18 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
         return m_resultBeats;
     }
 
+    std::optional<ConstantBeatGrid> getConstantBeatGrid() const override {
+        return m_resultBeatMap.constantGrid;
+    }
+
+    QVector<mixxx::audio::FramePos> getBeatMap() const override {
+        return m_resultBeatMap.beats;
+    }
+
+    void setBeatMapEnabled(bool enabled) override {
+        m_beatMapEnabled = enabled;
+    }
+
   private:
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
@@ -49,7 +64,13 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     int m_windowSize;
     int m_stepSizeFrames;
     std::vector<double> m_detectionResults;
+    // kQmOnsetBands spectrum magnitude sums per detection result, and the
+    // first spectrum bin of each band, plus the end bin of the last band.
+    std::vector<float> m_bandMagnitudes;
+    std::array<int, kQmOnsetBands + 1> m_bandBins;
     QVector<mixxx::audio::FramePos> m_resultBeats;
+    QmBeatMap m_resultBeatMap;
+    bool m_beatMapEnabled = true;
 };
 
 } // namespace mixxx

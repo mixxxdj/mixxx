@@ -1245,6 +1245,9 @@ add_library(
   src/analyzer/plugins/analyzerqueenmarykey.cpp
   src/analyzer/plugins/analyzersoundtouchbeats.cpp
   src/analyzer/plugins/buffering_utils.cpp
+  src/analyzer/plugins/constantbeatgrid.cpp
+  src/analyzer/plugins/qmbeatmap.cpp
+  src/analyzer/plugins/qmhalfbeat.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
   src/audio/signalinfo.cpp
@@ -2939,6 +2942,7 @@ if(BUILD_TESTING)
     src/test/colorpaletteeditormodel_test.cpp
     src/test/columncache_test.cpp
     src/test/configobject_test.cpp
+    src/test/constantbeatgridtest.cpp
     src/test/controller_mapping_validation_test.cpp
     src/test/controller_mapping_settings_test.cpp
     src/test/controllers/controller_columnid_regression_test.cpp
@@ -2997,6 +3001,8 @@ if(BUILD_TESTING)
     src/test/playlisttest.cpp
     src/test/portmidicontroller_test.cpp
     src/test/portmidienumeratortest.cpp
+    src/test/qmbeatmaptest.cpp
+    src/test/qmhalfbeattest.cpp
     src/test/queryutiltest.cpp
     src/test/rangelist_test.cpp
     src/test/readaheadmanager_test.cpp
