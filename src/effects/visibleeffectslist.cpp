@@ -19,6 +19,9 @@ int VisibleEffectsList::indexOf(EffectManifestPointer pManifest) const {
 }
 
 const EffectManifestPointer VisibleEffectsList::at(int index) const {
+    if (m_list.isEmpty()) {
+        return EffectManifestPointer();
+    }
     VERIFY_OR_DEBUG_ASSERT(index >= 0) {
         index = 0;
     }
@@ -29,9 +32,12 @@ const EffectManifestPointer VisibleEffectsList::at(int index) const {
 }
 
 const EffectManifestPointer VisibleEffectsList::next(const EffectManifestPointer pManifest) const {
+    if (m_list.isEmpty()) {
+        return EffectManifestPointer();
+    }
     int index = m_list.indexOf(pManifest);
     index++;
-    if (index == m_list.size()) {
+    if (index >= m_list.size() || index <= 0) {
         index = 0;
     }
     return m_list.at(index);
@@ -39,6 +45,9 @@ const EffectManifestPointer VisibleEffectsList::next(const EffectManifestPointer
 
 const EffectManifestPointer VisibleEffectsList::previous(
         const EffectManifestPointer pManifest) const {
+    if (m_list.isEmpty()) {
+        return EffectManifestPointer();
+    }
     int index = m_list.indexOf(pManifest);
     index--;
     if (index < 0) {
