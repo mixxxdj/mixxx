@@ -6,6 +6,7 @@
 #include <cmath>
 
 #include "moc_multilineeditdelegate.cpp"
+#include "util/assert.h"
 
 MultiLineEditor::MultiLineEditor(QWidget* pParent,
         QTableView* pTableView,
@@ -213,6 +214,9 @@ QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
 
 void MultiLineEditDelegate::commitAndCloseEditor() {
     MultiLineEditor* pEditor = qobject_cast<MultiLineEditor*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pEditor) {
+        return;
+    }
     emit commitData(pEditor);
     emit closeEditor(pEditor);
 }
