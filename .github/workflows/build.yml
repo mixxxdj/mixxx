@@ -176,32 +176,10 @@ jobs:
           - name: AppImage Linux aarch64
             # Build the 2.6 AppImage in a glibc-2.28 Rocky 8 container against
             # the Rocky-8-built buildenv, so the resulting binaries stay at
-            # glibc 2.28.
-            # The gcc-toolset-12 compiler is pinned explicitly because CMake's
-            # automatic detection of it fails inside the rockylinux:8
-            # container ("compiler identification is unknown"), while the
-            # compiler itself compiles, links and runs fine.
-            # GCC 12 emits false-positive -Warray-bounds in Qt QVariant code;
-            # suppress it while keeping -Werror for everything else.
+            # glibc 2.28. The build steps live in tools/appimage_build.sh,
+            # which local builds run in the same container.
             os: ubuntu-24.04-arm
             container: rockylinux:8
-            # -Wl,--allow-shlib-undefined permits a bundled shared library to
-            # reference a symbol that the host's system libraries do not
-            # provide at link time; the AppImage ships its own copy of that
-            # library, which satisfies the reference at runtime.
-            cmake_args: >-
-              -DQT6=ON
-              -DQML=ON
-              -DMIXXX_APPIMAGE=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-              -DCMAKE_C_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/cc
-              -DCMAKE_CXX_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/c++
-              -DCMAKE_CXX_FLAGS=-Wno-error=array-bounds
-              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
-              -DCMAKE_INSTALL_PREFIX=/usr
-              -DCMAKE_INSTALL_LIBDIR=lib
-              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
-            ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
@@ -217,23 +195,6 @@ jobs:
             # (glibc 2.28) container and buildenv approach.
             os: ubuntu-24.04
             container: rockylinux:8
-            # -Wl,--allow-shlib-undefined permits a bundled shared library to
-            # reference a symbol that the host's system libraries do not
-            # provide at link time; the AppImage ships its own copy of that
-            # library, which satisfies the reference at runtime.
-            cmake_args: >-
-              -DQT6=ON
-              -DQML=ON
-              -DMIXXX_APPIMAGE=ON
-              -DINSTALL_USER_UDEV_RULES=OFF
-              -DCMAKE_C_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/cc
-              -DCMAKE_CXX_COMPILER=/opt/rh/gcc-toolset-12/root/usr/bin/c++
-              -DCMAKE_CXX_FLAGS=-Wno-error=array-bounds
-              -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O2 -DNDEBUG"
-              -DCMAKE_INSTALL_PREFIX=/usr
-              -DCMAKE_INSTALL_LIBDIR=lib
-              -DCMAKE_EXE_LINKER_FLAGS="-Wl,--allow-shlib-undefined"
-            ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: /home/runner/.cache/ccache
             compiler_cache_id: appimage-qt6
@@ -411,16 +372,21 @@ jobs:
       - name: "[Ubuntu/macOS] Set up ccache"
         # The limit applies to the compressed size. Uncompressed, the Ubuntu
         # build with debug info exceeds 2G and evicts its own objects.
+        # The AppImage jobs configure ccache in tools/appimage_build.sh.
         run: |
           ${{ matrix.compiler_cache }} --zero-stats
           ${{ matrix.compiler_cache }} --max-size=2G
           echo "CCACHE_BUILD_START=$(date +%s)" >> "$GITHUB_ENV"
-        if: runner.os != 'windows'
+        if: runner.os != 'windows' && matrix.cpack_generator != 'AppImage'
 
       - name: "Create build directory"
+        # The AppImage jobs create it in tools/appimage_build.sh.
+        if: matrix.cpack_generator != 'AppImage'
         run: mkdir build
 
       - name: "Configure"
+        # The AppImage jobs run tools/appimage_build.sh instead.
+        if: matrix.cpack_generator != 'AppImage'
         run: >-
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DCMAKE_BUILD_TYPE=RelWithDebInfo
@@ -454,14 +420,50 @@ jobs:
 
       - name: "Build"
         # Ninja (macOS/Windows) uses all cores by default, make (Linux) only one
+        if: matrix.cpack_generator != 'AppImage'
         run: cmake --build . --config RelWithDebInfo ${{ runner.os == 'Linux' && '--parallel "$(nproc)"' || '' }}
         working-directory: build
         env:
           CC: ${{ matrix.cc }}
           CXX: ${{ matrix.cxx }}
 
+      - name: "[AppImage] Import signing GPG key"
+        # Sign the AppImage with the release GPG key, like the Flatpak
+        # publishing.  The secret is only passed on release builds; on develop
+        # and pull-request builds it is empty and the step is a no-op.  The
+        # import and the MIXXX_APPIMAGE_SIGN switch make CPackConfig.cmake pass
+        # --sign to appimagetool.
+        # This job runs in a container, where run blocks use /bin/sh (unlike
+        # the host-runner Ubuntu job below), so feed the key over stdin instead
+        # of bash-only process substitution.
+        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "${GPG_PRIVATE_KEY}" ]; then
+            printf '%s' "${GPG_PRIVATE_KEY}" | gpg --batch --import
+            echo "MIXXX_APPIMAGE_SIGN=ON" >> "${GITHUB_ENV}"
+          fi
+
+      - name: "Build AppImage with tools/appimage_build.sh"
+        # The same script runs the whole AppImage build locally in a
+        # rockylinux:8 container, so CI and local builds share one
+        # implementation of the steps. The tools, CMake and the buildenv were
+        # already set up by the steps above, which the script detects.
+        if: matrix.cpack_generator == 'AppImage'
+        env:
+          MIXXX_APPIMAGE_IN_CONTAINER: "1"
+          MIXXX_SOURCE_DIR: ${{ github.workspace }}
+          MIXXX_BUILD_DIR: ${{ github.workspace }}/build
+          # The container home is /github/home, so ccache would use
+          # /github/home/.ccache while the cache steps archive
+          # compiler_cache_path. Point both at the same directory.
+          CCACHE_DIR: ${{ matrix.compiler_cache_path }}
+        run: tools/appimage_build.sh
+
       - name: "[Ubuntu/macOS] Print compiler cache stats"
-        if: runner.os != 'windows'
+        # The AppImage jobs print the stats from tools/appimage_build.sh.
+        if: runner.os != 'windows' && matrix.cpack_generator != 'AppImage'
         run: |
           ${{ matrix.compiler_cache }} --show-stats
           ${{ matrix.compiler_cache }} --cleanup
@@ -510,7 +512,8 @@ jobs:
           KEY_PREFIX: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ inputs.branch }}-
 
       - name: "Test"
-        if: matrix.crosscompile != true
+        # The AppImage jobs run the tests from tools/appimage_build.sh.
+        if: matrix.crosscompile != true && matrix.cpack_generator != 'AppImage'
         run: ctest --timeout 45 ${{ matrix.ctest_args }}
         working-directory: build
         env:
@@ -570,27 +573,10 @@ jobs:
           dotnet.exe tool install --global wix --version 6.0.2
           wix extension add --global WixToolset.UI.wixext/6.0.2
 
-      - name: "[AppImage] Import signing GPG key"
-        # Sign the AppImage with the release GPG key, like the Flatpak
-        # publishing.  The secret is only passed on release builds; on develop
-        # and pull-request builds it is empty and the step is a no-op.  The
-        # import and the MIXXX_APPIMAGE_SIGN switch make CPackConfig.cmake pass
-        # --sign to appimagetool.
-        # This job runs in a container, where run blocks use /bin/sh (unlike
-        # the host-runner Ubuntu job below), so feed the key over stdin instead
-        # of bash-only process substitution.
-        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.DASCHUER_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
-        run: |
-          if [ -n "${GPG_PRIVATE_KEY}" ]; then
-            printf '%s' "${GPG_PRIVATE_KEY}" | gpg --batch --import
-            echo "MIXXX_APPIMAGE_SIGN=ON" >> "${GITHUB_ENV}"
-          fi
-
       - name: "Package"
         id: package
-        if: matrix.cpack_generator != null
+        # The AppImage is packaged by tools/appimage_build.sh.
+        if: matrix.cpack_generator != null && matrix.cpack_generator != 'AppImage'
         # Use retry loop to work around a race condition on macOS causing
         # 'Resource busy' errors with 'hdiutil'. See
         # https://github.com/actions/runner-images/issues/7522
@@ -602,46 +588,6 @@ jobs:
           command: |
             cd build
             cpack -G ${{ matrix.cpack_generator }} -V
-
-      - name: "[AppImage] Check floor dependencies"
-        # The AppImage delegates fontconfig, alsa and the base system stack to
-        # the host (freetype and harfbuzz are bundled), so the shipped binary
-        # must not reference symbols or symbol versions the floor (the Rocky 8
-        # build host, glibc 2.28) cannot provide.  Headers from newer vcpkg
-        # ports can introduce them; walk the packaged AppImage's
-        # dynamic-linking closure against its bundled libraries and the build
-        # host's own libraries and fail on anything unsatisfiable.
-        if: matrix.cpack_generator == 'AppImage'
-        run: |
-          APPIMAGE=$(ls build/*.AppImage | head -1)
-          echo "Checking ${APPIMAGE}"
-          python3 tools/check_appimage_floor_deps.py "${APPIMAGE}"
-
-      - name: "[AppImage] Smoke test"
-        # Run the packaged AppImage once.  This catches loader-level failures
-        # (e.g. the ld.so assertion a broken linker produces, or missing
-        # bundled libraries) that a build-only pipeline cannot see.  The
-        # container has no display, so --version may exit non-zero after
-        # initializing Qt — reaching Mixxx startup is what matters.
-        if: matrix.cpack_generator == 'AppImage'
-        run: |
-          APPIMAGE=$(ls build/*.AppImage | head -1)
-          echo "Smoke-testing ${APPIMAGE}"
-          set +e
-          APPIMAGE_EXTRACT_AND_RUN=1 timeout 60 "${APPIMAGE}" --version >/tmp/smoke.log 2>&1
-          rc=$?
-          set -e
-          if grep -qE "Inconsistency detected by ld.so|error while loading shared libraries|cannot open shared object file" /tmp/smoke.log; then
-            echo "FAIL: AppImage failed at loader level (rc=${rc})"
-            cat /tmp/smoke.log
-            exit 1
-          fi
-          if ! grep -qE "Mixxx [0-9]|Using preferences|Selected Qt style|ConfigObject:" /tmp/smoke.log; then
-            echo "FAIL: AppImage did not reach Mixxx startup (rc=${rc})"
-            cat /tmp/smoke.log
-            exit 1
-          fi
-          echo "SMOKE OK"
 
       - name: Upload failed packaging logs
         if: always() && steps.package.outcome == 'failure' && runner.os == 'windows'
