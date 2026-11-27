@@ -82,7 +82,8 @@ jobs:
     needs:
       - build
     uses: ./.github/workflows/appimage.yml
-    if: ${{ (github.ref_type == 'tag' && !contains('-', github.ref_name)) || github.ref_name == 'main' }}
+    # Publish the AppImage for stable tags and the 2.6/main branches.
+    if: ${{ (github.ref_type == 'tag' && !contains('-', github.ref_name)) || github.ref_name == '2.6' || github.ref_name == 'main' }}
     with:
       ref: ${{ github.ref }}
       run_id: ${{ github.run_id }}

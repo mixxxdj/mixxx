@@ -8,6 +8,23 @@ if [ -z "${GITHUB_ENV}" ] && ! $(return 0 2>/dev/null); then
   exit 1
 fi
 
+# CI runs this script as a child process (GITHUB_ENV is set), where `return`
+# is invalid outside of a function; use this helper so failures actually
+# fail the run instead of letting it succeed silently.
+if $(return 0 2>/dev/null); then
+  _mixxx_fail() { return 1; }
+else
+  _mixxx_fail() { exit 1; }
+fi
+
+# GitHub Actions containers (e.g. rockylinux:8) run as root and have no
+# sudo; use it on non-root machines only.
+if [ "$(id -u)" -eq 0 ]; then
+  SUDO=""
+else
+  SUDO="sudo"
+fi
+
 mixxx_realpath() {
     # Local helper; a plain "realpath" would shadow the system command for
     # the sourced shell session.  return instead of exit so a failure does
@@ -118,7 +135,7 @@ case "$1" in
             # system one; put it on PATH explicitly.
             export PATH="/snap/bin:$PATH"
             echo "Using Snap CMake (>= 4.2)"
-        elif command -v apt-get >/dev/null 2>&1 && sudo apt-get update && sudo apt-get satisfy "cmake (>= 4.2)"; then
+        elif command -v apt-get >/dev/null 2>&1 && $SUDO apt-get update && $SUDO apt-get satisfy "cmake (>= 4.2)"; then
             echo "CMake >= 4.2 installed via apt"
         else
             echo "CMake >= 4.2 is required for the AppImage CPack generator, but no"
@@ -138,8 +155,79 @@ case "$1" in
         # headers and utilities (Qt platform). All other third-party libraries
         # come from the VCPKG buildenv. (The vcpkg toolchain prepends the
         # buildenv to CMAKE_PREFIX_PATH, so identical system packages are not used.)
-        if command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update
+        if command -v dnf >/dev/null 2>&1; then
+            # RHEL-family (Rocky 8 / CentOS 8): mirror the apt list below.  The
+            # buildenv itself is built in a glibc-2.28 Rocky 8 container, so
+            # compiling on the same base keeps the AppImage at glibc 2.28.
+            $SUDO dnf install -y epel-release dnf-plugins-core >/dev/null 2>&1 || true
+            $SUDO dnf config-manager --set-enabled powertools >/dev/null 2>&1 \
+                || $SUDO dnf config-manager --set-enabled crb >/dev/null 2>&1 || true
+            # XCB packages needed to link the static Qt plugin from the
+            # buildenv; keep in sync with the buildenv's Qt build.
+            # binutils (readelf) and the delegated floor libraries (harfbuzz,
+            # fontconfig, freetype, alsa, jack) feed the AppImage floor-deps
+            # check, which resolves the packaged binary's closure against the
+            # build host's system libraries; install the runtime packages so
+            # the check runs against the actual glibc-2.28 floor.
+            # gpg signs the release AppImage (appimagetool --sign); the
+            # rockylinux:8 base image does not ship it.
+            $SUDO dnf install -y \
+                gcc-toolset-12 \
+                ccache \
+                make \
+                pkgconfig \
+                patchelf \
+                file \
+                desktop-file-utils \
+                appstream \
+                gpg \
+                fuse-libs \
+                unzip \
+                squashfs-tools \
+                libsecret-devel \
+                libgcrypt-devel \
+                libgpg-error-devel \
+                mesa-libGL-devel \
+                mesa-libGLU-devel \
+                mesa-libEGL-devel \
+                libX11-devel \
+                libXrender-devel \
+                libXi-devel \
+                libxkbcommon-devel \
+                libxkbcommon-x11-devel \
+                libSM-devel \
+                libXrandr-devel \
+                libXext-devel \
+                libudev-devel \
+                libxcb-devel \
+                xcb-util-devel \
+                xcb-util-wm-devel \
+                xcb-util-image-devel \
+                xcb-util-keysyms-devel \
+                xcb-util-renderutil-devel \
+                xcb-util-cursor-devel \
+                glibc-devel \
+                kernel-headers \
+                pipewire-libs \
+                binutils \
+                harfbuzz \
+                fontconfig \
+                freetype \
+                alsa-lib \
+                jack-audio-connection-kit \
+                || { echo "ERROR: Failed to install AppImage system packages"; _mixxx_fail; return $?; }
+            # The gcc-toolset-12 toolchain provides the compiler used for the
+            # buildenv; enable it so mixxx is compiled with the same one.  In
+            # CI the script runs as a child process, so persist the toolchain
+            # PATH/LD_LIBRARY_PATH into GITHUB_ENV for the later build steps.
+            # shellcheck disable=SC1091
+            source /opt/rh/gcc-toolset-12/enable
+            if [ -n "${GITHUB_ENV}" ]; then
+                echo "PATH=${PATH}" >> "${GITHUB_ENV}"
+                echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}" >> "${GITHUB_ENV}"
+            fi
+        elif command -v apt-get >/dev/null 2>&1; then
+            $SUDO apt-get update
             # libfuse2t64 is the t64-transitioned name (Debian 13 / Ubuntu 24.04+);
             # libfuse2 is the older name (Ubuntu 22.04).  Install whichever is available.
             FUSE_PKG="libfuse2t64"
@@ -148,7 +236,25 @@ case "$1" in
             fi
             # XCB packages needed to link the static Qt plugin from the
             # buildenv; keep in sync with the buildenv's Qt build.
-            sudo apt-get install -y --no-install-recommends \
+            # binutils (readelf) feeds the appimage_floor_deps check; the
+            # libharfbuzz0b/libfontconfig1/libfreetype6/libasound2/libjack0
+            # runtime packages are the delegated floor libraries the check
+            # resolves against, and libpipewire is a delegated dependency of
+            # the AppImage that the bare runner lacks.
+            # libasound2t64/libfontconfig1t64/libfreetype6t64/libharfbuzz0bt64
+            # are the time_t-transitioned names on Ubuntu 24.04+, where the
+            # base names are virtual packages; Ubuntu 22.04 uses the base
+            # names.  Pick per library like FUSE_PKG above so local setup
+            # works on both.
+            ASOUND_PKG="libasound2t64"
+            if ! apt-cache show libasound2t64 &>/dev/null; then ASOUND_PKG="libasound2"; fi
+            FONTCONFIG_PKG="libfontconfig1t64"
+            if ! apt-cache show libfontconfig1t64 &>/dev/null; then FONTCONFIG_PKG="libfontconfig1"; fi
+            FREETYPE_PKG="libfreetype6t64"
+            if ! apt-cache show libfreetype6t64 &>/dev/null; then FREETYPE_PKG="libfreetype6"; fi
+            HARFBUZZ_PKG="libharfbuzz0bt64"
+            if ! apt-cache show libharfbuzz0bt64 &>/dev/null; then HARFBUZZ_PKG="libharfbuzz0b"; fi
+            $SUDO apt-get install -y --no-install-recommends \
                 ccache \
                 g++ \
                 make \
@@ -156,9 +262,17 @@ case "$1" in
                 patchelf \
                 file \
                 desktop-file-utils \
+                appstream \
                 "${FUSE_PKG}" \
                 unzip \
                 squashfs-tools \
+                binutils \
+                "${HARFBUZZ_PKG}" \
+                "${FONTCONFIG_PKG}" \
+                "${FREETYPE_PKG}" \
+                "${ASOUND_PKG}" \
+                libjack0 \
+                libpipewire-0.3-0 \
                 libsecret-1-dev \
                 libgcrypt20-dev \
                 libgpg-error-dev \
@@ -194,9 +308,9 @@ case "$1" in
                 || { echo "ERROR: Failed to install AppImage system packages"; return 1; }
         else
             echo "WARNING: The AppImage buildenv system-dependency step currently only"
-            echo "automates Debian-based systems. Please install the equivalent"
-            echo "packages for your distribution, or consider contributing a"
-            echo "script for it."
+            echo "automates Debian- and RHEL-based (dnf) systems. Please install the"
+            echo "equivalent packages for your distribution, or consider contributing"
+            echo "a script for it."
         fi
 
         # appimagetool is required by the CPack AppImage generator, which searches
@@ -206,13 +320,33 @@ case "$1" in
         # (libfuse2t64 is installed above where apt-get is available).
         # Pinned to a tagged release — the "continuous" tag is a moving
         # target that would make builds non-reproducible.
+        # The CI container has no /dev/fuse, so run appimagetool extracted.
+        export APPIMAGE_EXTRACT_AND_RUN=1
+        # Verify the downloaded appimagetool against the SHA-256 digest GitHub
+        # publishes for the 1.9.1 release asset, so a replaced or tampered
+        # asset cannot inject code into the build.
+        case "${HOST_ARCH}" in
+            x86_64)
+                APPIMAGETOOL_SHA256="ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0"
+                ;;
+            aarch64)
+                APPIMAGETOOL_SHA256="f0837e7448a0c1e4e650a93bb3e85802546e60654ef287576f46c71c126a9158"
+                ;;
+            *)
+                echo "ERROR: Unsupported architecture for appimagetool: ${HOST_ARCH}"
+                _mixxx_fail
+                return $?
+                ;;
+        esac
         APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-${HOST_ARCH}.AppImage"
-        sudo curl -fsSL --connect-timeout 15 --max-time 120 \
+        $SUDO curl -fsSL --connect-timeout 15 --max-time 120 \
             -o /usr/local/bin/appimagetool \
             "${APPIMAGETOOL_URL}" \
-            || { echo "ERROR: Failed to download appimagetool"; return 1; }
-        sudo chmod +x /usr/local/bin/appimagetool \
-            || { echo "ERROR: Failed to make appimagetool executable"; return 1; }
+            || { echo "ERROR: Failed to download appimagetool"; _mixxx_fail; return $?; }
+        echo "${APPIMAGETOOL_SHA256}  /usr/local/bin/appimagetool" | sha256sum -c - \
+            || { echo "ERROR: appimagetool SHA-256 mismatch"; _mixxx_fail; return $?; }
+        $SUDO chmod +x /usr/local/bin/appimagetool \
+            || { echo "ERROR: Failed to make appimagetool executable"; _mixxx_fail; return $?; }
 
         echo_exported_variables() {
             echo "BUILDENV_NAME=${BUILDENV_NAME}"
@@ -222,6 +356,10 @@ case "$1" in
             echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
+            # The CPack AppImage generator runs appimagetool (itself an
+            # AppImage); the CI container has no /dev/fuse, so run it
+            # extracted.
+            echo "APPIMAGE_EXTRACT_AND_RUN=1"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then
