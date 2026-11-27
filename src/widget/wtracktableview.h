@@ -172,7 +172,6 @@ class WTrackTableView : public WLibraryTableView {
 
     void paintEvent(QPaintEvent* e) override;
 
-    void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
                           const QItemSelection &deselected) override;
 
@@ -207,10 +206,9 @@ class WTrackTableView : public WLibraryTableView {
     QColor m_dropIndicatorColor;
     bool m_sorting;
 
-    // Control the delay to load a cover art.
+    // Delays trackSelected() until the user stopped scrolling or selecting
     mixxx::Duration m_lastUserAction;
     bool m_selectionChangedSinceLastGuiTick;
-    bool m_loadCachedOnly;
 
     ControlProxy* m_pCOTGuiTick;
     ControlProxy* m_pKeyNotation;
