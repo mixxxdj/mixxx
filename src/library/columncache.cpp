@@ -259,6 +259,13 @@ void ColumnCache::slotSetKeySortOrder(double notationValue) {
     if (keyColumnIndex < 0) {
         return;
     }
+    if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY_ID] < 0) {
+        // This table has a textual "key" column but no numeric "key_id" column
+        // to sort by. Keep the default sort clause, which is the "key" column
+        // itself, instead of emitting SQL that references a column that does
+        // not exist: such a query fails as a whole, leaving the view empty.
+        return;
+    }
 
     // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
     // see GitHub PR#649

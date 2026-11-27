@@ -17,6 +17,7 @@
 #define MIXXX_SUPPORT_URL       "https://www.mixxx.org/support/"
 #define MIXXX_TRANSLATION_URL "https://explore.transifex.com/mixxx-dj-software/"
 #define MIXXX_DONATE_URL "https://mixxx.org/donate"
+#define MIXXX_TRADEMARK_URL "https://mixxx.org/trademark/"
 
 #define MIXXX_CONTROLLER_FORUMS_URL \
     "https://mixxx.discourse.group/c/controller-mappings/10"

@@ -36,6 +36,9 @@ class EffectParameterPreset {
     EffectManifestParameter::LinkInversion linkInverted() const {
         return m_linkInversion;
     }
+    int displayOrder() const {
+        return m_displayOrder;
+    }
     bool hidden() const {
         return m_bHidden;
     }
@@ -46,4 +49,5 @@ class EffectParameterPreset {
     EffectManifestParameter::LinkType m_linkType;
     EffectManifestParameter::LinkInversion m_linkInversion;
     bool m_bHidden;
+    int m_displayOrder = -1;
 };

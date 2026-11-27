@@ -21,7 +21,7 @@ void GLWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
 }
 
 void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    ConstWaveformPointer pWaveform = m_pWaveformRenderer->getWaveform();
     if (pWaveform.isNull()) {
         return;
     }
@@ -41,17 +41,17 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
         return;
     }
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_pWaveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
 
     auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples / audioVisualRatio);
+            m_pWaveformRenderer->getFirstDisplayedPosition() * trackSamples / audioVisualRatio);
     auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio);
+            m_pWaveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio);
     const auto lineWidth = static_cast<GLfloat>(
-            1.0 / m_waveformRenderer->getVisualSamplePerPixel() + 1);
+            1.0 / m_pWaveformRenderer->getVisualSamplePerPixel() + 1);
 
     const auto firstIndex = static_cast<int>(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex%2;

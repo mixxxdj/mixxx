@@ -45,6 +45,31 @@ struct DeviceMode {
 #ifdef __LINUX__
 constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 #endif
+
+QString describeRouting(const AudioPath& path, const SoundDevicePointer& pDevice) {
+    const ChannelGroup channelGroup = path.getChannelGroup();
+    const int firstChannel = channelGroup.getChannelBase() + 1;
+    const int channelCount = channelGroup.getChannelCount().value();
+
+    if (channelCount == 0) {
+        return QStringLiteral("%1 -> %2 no channels")
+                .arg(path.getString(), pDevice->getDisplayName());
+    }
+
+    if (channelCount == 1) {
+        return QStringLiteral("%1 -> %2 channel %3")
+                .arg(path.getString(),
+                        pDevice->getDisplayName(),
+                        QString::number(firstChannel));
+    }
+
+    const int lastChannel = firstChannel + channelCount - 1;
+    return QStringLiteral("%1 -> %2 channels %3-%4")
+            .arg(path.getString(),
+                    pDevice->getDisplayName(),
+                    QString::number(firstChannel),
+                    QString::number(lastChannel));
+}
 } // anonymous namespace
 
 SoundManager::SoundManager(
@@ -93,6 +118,13 @@ SoundManager::SoundManager(
     }
 
     checkConfig();
+
+    // Initialize the engine sample rate from the validated, persisted sound
+    // configuration before VinylControlXwax instances are constructed. Audio
+    // devices update this control with their actual sample rate when opened,
+    // but vinyl control inputs are configured before that happens.
+    ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")),
+            m_config.getSampleRate());
 
     // Don't write config to disk, yet -- it may be reset to defaults in case
     // previously configured devices were not found.
@@ -159,6 +191,16 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
 
 QList<QString> SoundManager::getHostAPIList() const {
     return m_pEnumerator->getAPIs();
+}
+
+int SoundManager::getDefaultOutputDeviceIndex(const QString& api) const {
+    for (PaHostApiIndex i = 0; i < Pa_GetHostApiCount(); i++) {
+        const PaHostApiInfo* pApiInfo = Pa_GetHostApiInfo(i);
+        if (pApiInfo && api == pApiInfo->name) {
+            return pApiInfo->defaultOutputDevice;
+        }
+    }
+    return paNoDevice;
 }
 
 void SoundManager::closeDevices(
@@ -350,6 +392,8 @@ SoundDeviceStatus SoundManager::setupDevices() {
                 goto closeAndError;
             }
 
+            qInfo().noquote() << "Sound hardware input:" << describeRouting(in, pDevice);
+
             if (!isPipewireSelected()) {
                 // PipeWire manages input/output configuration itself
                 configureInput(in);
@@ -387,6 +431,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
             status = pDevice->addOutput(aob);
             if (status != SoundDeviceStatus::Ok) {
                 goto closeAndError;
+            }
+
+            if (pDevice->getDeviceId().name != kNetworkDeviceInternalName) {
+                qInfo().noquote() << "Sound hardware output:" << describeRouting(out, pDevice);
             }
 
             if (!m_config.getForceNetworkClock() || jackApiUsed()) {

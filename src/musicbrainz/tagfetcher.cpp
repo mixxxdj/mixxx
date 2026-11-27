@@ -361,18 +361,23 @@ void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
         const mixxx::network::WebResponseWithContent& responseWithContent) {
-    // TODO(XXX) Handle the error better for Cover Art Archive Links.
-    Q_UNUSED(errorCode);
-    Q_UNUSED(errorString);
-    Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_pCoverArtArchiveLinksTask.get() != sender()) {
         // stray call from an already aborted try
         return;
     }
-
-    emit coverArtLinkNotFound();
     terminate();
+
+    if (errorCode == QNetworkReply::ContentNotFoundError) {
+        emit coverArtLinkNotFound();
+        return;
+    }
+
+    emit networkError(
+            responseWithContent.statusCode(),
+            QStringLiteral("CoverArtArchive"),
+            errorString,
+            errorCode);
 }
 
 void TagFetcher::slotCoverArtArchiveLinksTaskFailed(

@@ -25,6 +25,7 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
@@ -111,6 +112,7 @@ bool createLibraryTable(QSqlDatabase& database, const QString& tableName) {
             "    bitrate TEXT,"
             "    bpm FLOAT,"
             "    key TEXT,"
+            "    key_id INTEGER,"
             "    rating INTEGER,"
             "    analyze_path TEXT UNIQUE,"
             "    device TEXT,"
@@ -401,6 +403,11 @@ void insertTrack(
     query.bindValue(":comment", comment);
     query.bindValue(":tracknumber", tracknumber);
     query.bindValue(":key", key);
+    // Store the semantic key alongside its Rekordbox spelling: it is what the
+    // Key column is sorted by, and it lets the column be rendered in the
+    // notation the user picked. Invalid keys fall back to the text above.
+    query.bindValue(":key_id",
+            static_cast<int>(KeyUtils::guessKeyFromText(key)));
     query.bindValue(":bpm", bpm);
     query.bindValue(":bitrate", bitrate);
     query.bindValue(":analyze_path", anlzPath);
@@ -485,10 +492,10 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
     query.prepare("INSERT INTO " + kRekordboxLibraryTable +
             " (rb_id, artist, title, album, year,"
             "genre,comment,tracknumber,bpm, bitrate,duration, location,"
-            "rating,key,analyze_path,device,color) VALUES (:rb_id, :artist, "
+            "rating,key,key_id,analyze_path,device,color) VALUES (:rb_id, :artist, "
             ":title, :album, :year,:genre,"
             ":comment, :tracknumber,:bpm, :bitrate,:duration, :location,"
-            ":rating,:key,:analyze_path,:device,:color)");
+            ":rating,:key,:key_id,:analyze_path,:device,:color)");
 
     int audioFilesCount = 0;
 
@@ -503,8 +510,12 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
+    // Access to the device was requested on the main thread before this
+    // worker started (see RekordboxFeature::activateChild()); no dialogs can
+    // be shown here. Keep the security token open while the database is read.
     mixxx::FileInfo fileInfo(dbPath);
-    if (!Sandbox::askForAccess(&fileInfo)) {
+    const auto securityToken = Sandbox::openSecurityToken(&fileInfo, true);
+    if (!Sandbox::canAccess(&fileInfo)) {
         return QString();
     }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
@@ -893,6 +904,9 @@ void readAnalyze(TrackPointer track,
 
     qDebug() << "Rekordbox ANLZ path:" << anlzPath << " for: " << track->getTitle();
 
+    // Hold sandbox access for the ANLZ file while it is read.
+    mixxx::FileInfo anlzFileInfo(anlzPath);
+    const auto securityToken = Sandbox::openSecurityToken(&anlzFileInfo, true);
     std::ifstream ifs(anlzPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
@@ -1317,6 +1331,7 @@ bool RekordboxPlaylistModel::isColumnHiddenByDefault(int column) {
 
 bool RekordboxPlaylistModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_REKORDBOX_ANALYZE_PATH) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
             BaseExternalPlaylistModel::isColumnInternal(column);
 }
 
@@ -1342,6 +1357,7 @@ RekordboxFeature::RekordboxFeature(
             LIBRARYTABLE_BITRATE,
             LIBRARYTABLE_BPM,
             LIBRARYTABLE_KEY,
+            LIBRARYTABLE_KEY_ID,
             LIBRARYTABLE_COLOR,
             REKORDBOX_ANALYZE_PATH};
 
@@ -1536,6 +1552,15 @@ void RekordboxFeature::activateChild(const QModelIndex& index) {
 
     if (doParseDeviceDB) {
         qDebug() << "Parse Rekordbox Device DB: " << playlist;
+
+        // parseDeviceDB() runs on a worker thread, which must not show the
+        // sandbox permission dialogs, so ask for access here. Ask for the
+        // whole device (playlist holds its path): that also covers the ANLZ
+        // files and the tracks, so loading a track from it doesn't ask again.
+        mixxx::FileInfo deviceInfo(playlist);
+        if (!Sandbox::askForAccess(&deviceInfo)) {
+            return;
+        }
 
         // Let a worker thread do the XML parsing
         m_tracksFuture = QtConcurrent::run(parseDeviceDB, static_cast<Library*>(parent())->dbConnectionPool(), item);

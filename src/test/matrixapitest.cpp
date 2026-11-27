@@ -168,4 +168,39 @@ TEST_F(MatrixApiTest, InverseProperty) {
     fmat_free(I);
 }
 
+TEST_F(MatrixApiTest, InverseSingular) {
+    // 2x2 with linearly dependent rows, inverted into a caller provided matrix
+    struct fmatrix* A = fmat_alloc(2, 2);
+    ASSERT_NE(A, nullptr);
+
+    fmat_set(A, 0, 0, 1);
+    fmat_set(A, 0, 1, 2);
+    fmat_set(A, 1, 0, 2);
+    fmat_set(A, 1, 1, 4);
+
+    struct fmatrix* Ainv = fmat_alloc(2, 2);
+    ASSERT_NE(Ainv, nullptr);
+
+    // fmat_inv() must return NULL here
+    EXPECT_EQ(fmat_inv(Ainv, A), nullptr);
+
+    // The caller provided matrix must still be valid
+    fmat_set(Ainv, 1, 1, 3.0);
+    EXPECT_DOUBLE_EQ(fmat_get(Ainv, 1, 1), 3.0);
+
+    // 4x4 with an all-zero row, inverted via LU decomposition
+    struct fmatrix* B = fmat_alloc(4, 4);
+    ASSERT_NE(B, nullptr);
+
+    fmat_set(B, 0, 0, 1);
+    fmat_set(B, 1, 1, 1);
+    fmat_set(B, 2, 2, 1);
+
+    EXPECT_EQ(fmat_inv(nullptr, B), nullptr);
+
+    fmat_free(A);
+    fmat_free(Ainv);
+    fmat_free(B);
+}
+
 } // namespace

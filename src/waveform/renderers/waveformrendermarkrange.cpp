@@ -19,10 +19,10 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& con
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(
                     WaveformMarkRange(
-                            m_waveformRenderer->getGroup(),
+                            m_pWaveformRenderer->getGroup(),
                             child,
                             context,
-                            *m_waveformRenderer->getWaveformSignalColors()));
+                            *m_pWaveformRenderer->getWaveformSignalColors()));
         }
         child = child.nextSibling();
     }
@@ -53,15 +53,17 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         double startSample = markRange.start();
         double endSample = markRange.end();
 
-        double startPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(startSample);
-        double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
+        double startPosition =
+                m_pWaveformRenderer->transformSamplePositionInRendererWorld(
+                        startSample);
+        double endPosition = m_pWaveformRenderer->transformSamplePositionInRendererWorld(endSample);
         // The painter would extend the rectangle to the entire width while
         // span is < 1 AND span != 0.25 * [1;3], i.e. works with span = [.25; 0.75] px
         // TODO(xxx) Figure what's wrong with QPainter / the renderer
         const double span = std::max(endPosition - startPosition, 1.0);
 
         //range not in the current display
-        if (startPosition > m_waveformRenderer->getLength() || endPosition < 0) {
+        if (startPosition > m_pWaveformRenderer->getLength() || endPosition < 0) {
             continue;
         }
 
@@ -72,10 +74,10 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         // draw the corresponding portion of the selected image
         // this shouldn't involve *any* scaling it should be fast even in software mode
         QRectF rect;
-        if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-            rect.setRect(startPosition, 0, span, m_waveformRenderer->getHeight());
+        if (m_pWaveformRenderer->getOrientation() == Qt::Horizontal) {
+            rect.setRect(startPosition, 0, span, m_pWaveformRenderer->getHeight());
         } else {
-            rect.setRect(0, startPosition, m_waveformRenderer->getWidth(), span);
+            rect.setRect(0, startPosition, m_pWaveformRenderer->getWidth(), span);
         }
         painter->drawImage(rect, *selectedImage, rect);
     }
@@ -83,7 +85,7 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
 
 void WaveformRenderMarkRange::generateImages() {
     for (auto&& markRange: m_markRanges) {
-        markRange.generateImage(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+        markRange.generateImage(m_pWaveformRenderer->getWidth(), m_pWaveformRenderer->getHeight());
     }
     setDirty(false);
 }

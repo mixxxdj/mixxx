@@ -425,6 +425,7 @@ QmlApplication::~QmlApplication() {
     WaveformWidgetFactory::setQmlMode(false);
 #endif
     m_visualsManager.reset();
+    QmlCoreServices::destroy();
     QmlApplicationProxy::registerVinylControlManager(nullptr);
     m_pCoreServices.reset();
 }

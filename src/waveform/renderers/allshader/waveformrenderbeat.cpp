@@ -45,16 +45,20 @@ void WaveformRenderBeat::preprocess() {
 }
 
 bool WaveformRenderBeat::preprocessInner() {
-    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
+    const TrackPointer trackInfo = m_pWaveformRenderer->getTrackInfo();
 
-    if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
+    if (!trackInfo || (m_isSlipRenderer && !m_pWaveformRenderer->isSlipActive())) {
         return false;
     }
 
+#ifdef __STEM__
     const bool isStemTrack = trackInfo && trackInfo->hasStem() &&
             trackInfo->getWaveform() && trackInfo->getWaveform()->hasStem();
     const bool splitStemTracks = isStemTrack && WaveformWidgetFactory::isCreated() &&
             WaveformWidgetFactory::instance()->isStemSplitTracks();
+#else
+    constexpr bool splitStemTracks = false;
+#endif
 
     auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
                                          : ::WaveformRendererAbstract::Play;
@@ -65,7 +69,7 @@ bool WaveformRenderBeat::preprocessInner() {
     }
 
 #ifndef __SCENEGRAPH__
-    int alpha = m_waveformRenderer->getBeatGridAlpha();
+    int alpha = m_pWaveformRenderer->getBeatGridAlpha();
     if (alpha == 0) {
         return false;
     }
@@ -77,17 +81,17 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
 
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    const qreal devicePixelRatio = m_pWaveformRenderer->getDevicePixelRatio();
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_pWaveformRenderer->getTrackSamples();
     if (trackSamples <= 0.0) {
         return false;
     }
 
     const double firstDisplayedPosition =
-            m_waveformRenderer->getFirstDisplayedPosition(positionType);
+            m_pWaveformRenderer->getFirstDisplayedPosition(positionType);
     const double lastDisplayedPosition =
-            m_waveformRenderer->getLastDisplayedPosition(positionType);
+            m_pWaveformRenderer->getLastDisplayedPosition(positionType);
 
     const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(
             firstDisplayedPosition * trackSamples);
@@ -98,7 +102,7 @@ bool WaveformRenderBeat::preprocessInner() {
         return false;
     }
 
-    const float rendererBreadth = m_waveformRenderer->getBreadth();
+    const float rendererBreadth = m_pWaveformRenderer->getBreadth();
 
     const int numVerticesPerLine = 6; // 2 triangles
 
@@ -130,7 +134,7 @@ bool WaveformRenderBeat::preprocessInner() {
             ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                m_pWaveformRenderer->transformSamplePositionInRendererWorld(
                         beatPosition, positionType);
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
