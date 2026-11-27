@@ -8,6 +8,7 @@
 #include "encoder/encodermp3settings.h"
 #include "moc_dlgprefrecord.cpp"
 #include "recording/defs_recording.h"
+#include "util/assert.h"
 #include "util/sandbox.h"
 
 namespace {
@@ -223,8 +224,11 @@ void DlgPrefRecord::slotBrowseRecordingsDir() {
 }
 
 void DlgPrefRecord::slotFormatChanged() {
-    QObject *senderObj = sender();
-    m_selFormat = EncoderFactory::getFactory().getFormatFor(senderObj->objectName());
+    auto* pSender = sender();
+    VERIFY_OR_DEBUG_ASSERT(pSender) {
+        return;
+    }
+    m_selFormat = EncoderFactory::getFactory().getFormatFor(pSender->objectName());
     setupEncoderUI();
 }
 
@@ -235,7 +239,9 @@ void DlgPrefRecord::setupEncoderUI() {
     if (settings->usesQualitySlider()) {
         qualityGroup->setVisible(true);
         SliderQuality->setMinimum(0);
-        SliderQuality->setMaximum(settings->getQualityValues().size()-1);
+        SliderQuality->setMaximum(settings->getQualityValues().isEmpty()
+                        ? 0
+                        : static_cast<int>(settings->getQualityValues().size()) - 1);
         SliderQuality->setValue(settings->getQualityIndex());
         updateTextQuality();
     } else {
@@ -244,7 +250,9 @@ void DlgPrefRecord::setupEncoderUI() {
     if (settings->usesCompressionSlider()) {
         compressionGroup->setVisible(true);
         SliderCompression->setMinimum(0);
-        SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
+        SliderCompression->setMaximum(settings->getCompressionValues().isEmpty()
+                        ? 0
+                        : static_cast<int>(settings->getCompressionValues().size()) - 1);
         SliderCompression->setValue(settings->getCompression());
         updateTextCompression();
     } else {
@@ -321,12 +329,24 @@ void DlgPrefRecord::updateTextQuality() {
             }
         }
     }
+    const int sliderValue = SliderQuality->value();
     if (isVbr) {
-        EncoderMp3Settings* settingsmp3 = static_cast<EncoderMp3Settings*>(&(*settings));
-        quality = settingsmp3->getVBRQualityValues().at(SliderQuality->value());
+        auto* pSettingsMp3 = dynamic_cast<EncoderMp3Settings*>(settings.get());
+        VERIFY_OR_DEBUG_ASSERT(pSettingsMp3) {
+            return;
+        }
+        const auto& qualityValues = pSettingsMp3->getVBRQualityValues();
+        VERIFY_OR_DEBUG_ASSERT(sliderValue >= 0 && sliderValue < qualityValues.size()) {
+            return;
+        }
+        quality = qualityValues.at(sliderValue);
         TextQuality->setText(QString(QString::number(quality) + " kbit/s"));
     } else {
-        quality = settings->getQualityValues().at(SliderQuality->value());
+        const auto& qualityValues = settings->getQualityValues();
+        VERIFY_OR_DEBUG_ASSERT(sliderValue >= 0 && sliderValue < qualityValues.size()) {
+            return;
+        }
+        quality = qualityValues.at(sliderValue);
         TextQuality->setText(QString(QString::number(quality) + " kbit/s"));
     }
 }
@@ -340,7 +360,12 @@ void DlgPrefRecord::updateTextCompression() {
     EncoderRecordingSettingsPointer settings =
             EncoderFactory::getFactory().getEncoderRecordingSettings(
                     m_selFormat, m_pConfig);
-    int quality = settings->getCompressionValues().at(SliderCompression->value());
+    const auto& compressionValues = settings->getCompressionValues();
+    const int sliderValue = SliderCompression->value();
+    VERIFY_OR_DEBUG_ASSERT(sliderValue >= 0 && sliderValue < compressionValues.size()) {
+        return;
+    }
+    int quality = compressionValues.at(sliderValue);
     TextCompression->setText(QString::number(quality));
 }
 
