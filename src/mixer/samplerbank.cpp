@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QStandardPaths>
 
+#include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "mixer/sampler.h"
@@ -19,6 +20,9 @@ const ConfigKey kConfigkeyLastImportExportDirectory(
 // This is used in multiple tr() calls below which accepts const char* as a key.
 // lupdate finds the single string here.
 const char kSamplerFileType[] = QT_TRANSLATE_NOOP("SamplerBank", "Mixxx Sampler Banks (*.xml)");
+
+const QString kRepeat = QStringLiteral("repeat");
+const QString kQuantize = QStringLiteral("quantize");
 
 } // anonymous namespace
 
@@ -114,7 +118,12 @@ bool SamplerBank::saveSamplerBankToPath(const QString& samplerBankPath) {
         }
         QDomElement samplerNode = doc.createElement(QStringLiteral("sampler"));
 
-        samplerNode.setAttribute(QStringLiteral("group"), pSampler->getGroup());
+        const QString group = pSampler->getGroup();
+        samplerNode.setAttribute(QStringLiteral("group"), group);
+        samplerNode.setAttribute(kRepeat,
+                ControlObject::toBool(ConfigKey(group, kRepeat)) ? 1 : 0);
+        samplerNode.setAttribute(kQuantize,
+                ControlObject::toBool(ConfigKey(group, kQuantize)) ? 1 : 0);
 
         TrackPointer pTrack = pSampler->getLoadedTrack();
         if (pTrack) {
@@ -220,6 +229,15 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                                 false);
                     } else {
                         m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
+                    }
+
+                    if (e.hasAttribute(kRepeat)) {
+                        ControlObject::set(ConfigKey(group, kRepeat),
+                                e.attribute(kRepeat).toInt() > 0 ? 1.0 : 0.0);
+                    }
+                    if (e.hasAttribute(kQuantize)) {
+                        ControlObject::set(ConfigKey(group, kQuantize),
+                                e.attribute(kQuantize).toInt() > 0 ? 1.0 : 0.0);
                     }
                 }
             }
