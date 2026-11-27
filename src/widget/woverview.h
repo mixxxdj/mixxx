@@ -204,6 +204,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     PollingControlProxy m_trackSampleRateControl;
     PollingControlProxy m_trackSamplesControl;
     PollingControlProxy m_playpositionControl;
+    // Seeks that keep the beat in the bar while playing
+    PollingControlProxy m_playposBarAlignedControl;
     parented_ptr<ControlProxy> m_pPassthroughControl;
     parented_ptr<ControlProxy> m_pTypeControl;
     parented_ptr<ControlProxy> m_pStereoControl;
