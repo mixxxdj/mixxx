@@ -922,8 +922,8 @@ void DlgPrefWaveform::slotSetUntilMarkTextHeightLimit(int index) {
 }
 
 #ifdef __STEM__
-void DlgPrefWaveform::slotStemOpacity(float value) {
-    WaveformWidgetFactory::instance()->setStemOpacity(value);
+void DlgPrefWaveform::slotStemOpacity(double value) {
+    WaveformWidgetFactory::instance()->setStemOpacity(static_cast<float>(value));
 }
 
 void DlgPrefWaveform::slotStemReorderOnChange(bool value) {

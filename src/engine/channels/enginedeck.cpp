@@ -132,7 +132,7 @@ void EngineDeck::processStem(CSAMPLE* pOut, const std::size_t bufferSize) {
     mixxx::audio::ChannelCount chCount = m_pBuffer->getChannelCount();
     unsigned int stemCount = chCount / mixxx::kEngineChannelOutputCount;
     VERIFY_OR_DEBUG_ASSERT(stemCount <= m_stems.size() &&
-            m_stemVuMeter.size() <= chCount && stemCount <= m_stemMute.size() &&
+            stemCount <= m_stemVuMeter.size() && stemCount <= m_stemMute.size() &&
             stemCount <= m_stemGain.size()) {
         // Cannot mix the stems without their controls, output silence.
         m_activeStemCount = 0;

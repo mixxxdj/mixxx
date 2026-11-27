@@ -77,10 +77,10 @@ class WaveformMarkNode : public rendergraph::GeometryNode {
                 geometry().vertexDataAs<Geometry::TexturedPoint2D>()};
         // End mark images have the line centered, see WaveformMark::performImageGeneration
         const float linePosition = m_isEndMark
-                ? static_cast<float>(m_textureWidth / devicePixelRatio / 2.f)
+                ? m_textureWidth / static_cast<float>(devicePixelRatio) / 2.f
                 : m_pOwner->m_linePosition;
-        const float u1 = (m_pOwner->m_linePosition - 1.5f) / logicalTextureWidth;
-        const float u2 = (m_pOwner->m_linePosition + 1.5f) / logicalTextureWidth;
+        const float u1 = (linePosition - 1.5f) / logicalTextureWidth;
+        const float u2 = (linePosition + 1.5f) / logicalTextureWidth;
         const float vLine = (labelBoxIdx == 0) ? 0.9f : 0.1f;
         for (int boxIdx = 0; boxIdx < numBoxes; ++boxIdx) {
             const float y = boxIdx * boxBreadth + yOffset;
@@ -393,7 +393,7 @@ void allshader::WaveformRenderMark::update() {
     updateMarkImages();
 
     const double playPosition = m_pWaveformRenderer->getTruePosSample(positionType);
-    double nextMarkPosition = std::numeric_limits<double>::max();
+    double nextMarkPosition = m_defaultNextMarkPosition;
 
     GeometryNode* pRangeChild = static_cast<GeometryNode*>(m_pRangeNodesParent->firstChild());
 

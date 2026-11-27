@@ -881,7 +881,7 @@ void WaveformWidgetFactory::renderSelf() {
                 // We do this first for all Waveforms, to render all Waveforms at the same position
                 pWaveformWidget->fetchVSyncPositions(m_pVsyncThread);
             }
-            // qDebug() << "prerender" << m_vsyncThread->elapsed();
+            // qDebug() << "prerender" << m_pVsyncThread->elapsed();
 
             // It may happen that there is an artificially delayed due to
             // anti tearing driver settings
@@ -896,7 +896,7 @@ void WaveformWidgetFactory::renderSelf() {
                 }
                 pWaveformWidget->onPreRender();
                 pWaveformWidget->render();
-                // qDebug() << "render" << i << m_vsyncThread->elapsed();
+                // qDebug() << "render" << i << m_pVsyncThread->elapsed();
             }
         }
 
@@ -909,9 +909,9 @@ void WaveformWidgetFactory::renderSelf() {
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
-        // int t1 = m_vsyncThread->elapsed();
+        // int t1 = m_pVsyncThread->elapsed();
         emit waveformUpdateTick();
-        // qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
+        // qDebug() << "emit" << m_pVsyncThread->elapsed() - t1;
 
         m_frameCnt += 1.0f;
         mixxx::Duration timeCnt = m_time.elapsed();
@@ -926,7 +926,7 @@ void WaveformWidgetFactory::renderSelf() {
     m_pVisualsManager->process(m_endOfTrackWarningTime);
     m_pGuiTick->process();
 
-    // qDebug() << "refresh end" << m_vsyncThread->elapsed();
+    // qDebug() << "refresh end" << m_pVsyncThread->elapsed();
 }
 
 bool WaveformWidgetFactory::reportQmlFrame() {
@@ -966,7 +966,7 @@ void WaveformWidgetFactory::swapSelf() {
     if (!m_skipRender) {
         if (m_type) { // no regular updates for an empty waveform
             // Show rendered buffer from last render() run
-            // qDebug() << "swap() start" << m_vsyncThread->elapsed();
+            // qDebug() << "swap() start" << m_pVsyncThread->elapsed();
             for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
                 WaveformWidgetAbstract* pWaveformWidget = holder.m_pWaveformWidget;
 
@@ -983,7 +983,7 @@ void WaveformWidgetFactory::swapSelf() {
                     pGlw->swapBuffers();
                     pGlw->doneCurrent();
                 }
-                // qDebug() << "swap x" << m_vsyncThread->elapsed();
+                // qDebug() << "swap x" << m_pVsyncThread->elapsed();
             }
         }
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
@@ -1189,7 +1189,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createAllshaderWaveformWidget(
     // current GL context, e.g. HighDetail from a previous desktop OpenGL
     // session when running on OpenGL ES. Mask them out here, so an
     // unsupported renderer like WaveformRendererTextured is never created.
-    WaveformRendererSignalBase::Options options = getWaveformOptions() &
+    allshader::WaveformRendererSignalBase::Options options = getWaveformOptions() &
             getWaveformOptionsSupportedByType(type, WaveformWidgetBackend::AllShader);
     return new allshader::WaveformWidget(pViewer, type, pViewer->getGroup(), options);
 }
