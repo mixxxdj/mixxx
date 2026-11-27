@@ -86,10 +86,16 @@ endfunction()
 function(qt_finalize_target target)
 endfunction()
 
-function(qt6_add_android_permission target)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "" "NAME" "ATTRIBUTES")
-endfunction()
-
 function(qt_add_android_permission target)
-    cmake_parse_arguments(PARSE_ARGV 1 arg "" "NAME" "ATTRIBUTES")
+    # gersemi: hints { ATTRIBUTES: pairs }
+    set(options "")
+    set(oneValueArgs NAME)
+    set(multiValueArgs ATTRIBUTES)
+    cmake_parse_arguments(
+        PARSE_ARGV 1
+        ARG
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+    )
 endfunction()
