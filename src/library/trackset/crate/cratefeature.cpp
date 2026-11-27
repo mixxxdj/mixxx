@@ -404,13 +404,25 @@ void CrateFeature::onRightClickChild(
     menu.addSeparator();
     menu.addAction(m_pAutoDjTrackSourceAction.get());
     menu.addSeparator();
-    menu.addAction(m_pAnalyzeCrateAction.get());
-    menu.addSeparator();
-    menu.addAction(m_pImportPlaylistAction.get());
-    menu.addAction(m_pExportPlaylistAction.get());
-    menu.addAction(m_pExportTrackFilesAction.get());
+
+    QMenu* moreMenu;
+    bool showMoreMenu = true;
+    if (showMoreMenu) {
+        moreMenu = new QMenu(&menu);
+        moreMenu->setTitle(tr("More"));
+        moreMenu->setObjectName("MoreMenu");
+        menu.addMenu(moreMenu);
+    } else {
+        moreMenu = &menu;
+    }
+
+    moreMenu->addAction(m_pAnalyzeCrateAction.get());
+    moreMenu->addSeparator();
+    moreMenu->addAction(m_pImportPlaylistAction.get());
+    moreMenu->addAction(m_pExportPlaylistAction.get());
+    moreMenu->addAction(m_pExportTrackFilesAction.get());
 #ifdef __ENGINEPRIME__
-    menu.addAction(m_pExportCrateAction.get());
+    moreMenu->addAction(m_pExportCrateAction.get());
 #endif
     menu.exec(globalPos);
 }
