@@ -2584,11 +2584,48 @@ install(
     "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Keyboard-Shortcuts.pdf"
   DESTINATION "${MIXXX_INSTALL_DOCDIR}"
 )
+# Ship the manual PDF: use a pre-existing res/Mixxx-Manual.pdf as-is,
+# otherwise DOWNLOAD_MANUAL fetches it into the build tree.  Resolve it before
+# installing (a download after the install rule would never be packaged) and
+# install from the build tree instead of renaming into the source tree (which
+# is cross-device in a container).  Reuse an already-downloaded copy.
+option(DOWNLOAD_MANUAL "Download Manual PDF from Mixxx website" OFF)
+set(MIXXX_MANUAL_PDF "")
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
-  install(
-    FILES "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
-    DESTINATION "${MIXXX_INSTALL_DOCDIR}"
-  )
+  set(MIXXX_MANUAL_PDF "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+elseif(DOWNLOAD_MANUAL)
+  set(MIXXX_MANUAL_PDF "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf")
+  if(NOT EXISTS "${MIXXX_MANUAL_PDF}")
+    set(
+      MANUAL_URL
+      "https://downloads.mixxx.org/manual/${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}/mixxx-manual-${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}-en.pdf"
+    )
+    message(STATUS "Downloading manual from ${MANUAL_URL}...")
+    file(
+      DOWNLOAD "${MANUAL_URL}"
+      "${MIXXX_MANUAL_PDF}.part"
+      SHOW_PROGRESS
+      STATUS MANUAL_PDF_DOWNLOAD
+      TLS_VERIFY ON
+    )
+    list(GET MANUAL_PDF_DOWNLOAD 0 MANUAL_PDF_DOWNLOAD_ERROR)
+    if(NOT MANUAL_PDF_DOWNLOAD_ERROR EQUAL 0)
+      list(GET MANUAL_PDF_DOWNLOAD 1 MANUAL_PDF_DOWNLOAD_MESSAGE)
+      message(
+        FATAL_ERROR
+        "Manual PDF download failed with: "
+        "${MANUAL_PDF_DOWNLOAD_MESSAGE} Code: ${MANUAL_PDF_DOWNLOAD_ERROR}. "
+        "Either download it yourself and move it to "
+        "'${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
+        "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
+        "manual."
+      )
+    endif()
+    file(RENAME "${MIXXX_MANUAL_PDF}.part" "${MIXXX_MANUAL_PDF}")
+  endif()
+endif()
+if(MIXXX_MANUAL_PDF)
+  install(FILES "${MIXXX_MANUAL_PDF}" DESTINATION "${MIXXX_INSTALL_DOCDIR}")
 endif()
 
 # Additional Linux-only files
@@ -3074,42 +3111,6 @@ endif() # BUILD_TESTING
 # library. Doing this would require initialization using Q_INIT_RESOURCE()
 # calls that are not present at the moment. Further information can be found
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
-option(DOWNLOAD_MANUAL "Download Manual PDF from Mixxx website" OFF)
-if(
-  DOWNLOAD_MANUAL
-  AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
-)
-  set(
-    MANUAL_URL
-    "https://downloads.mixxx.org/manual/${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}/mixxx-manual-${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}-en.pdf"
-  )
-  message(STATUS "Downloading manual from ${MANUAL_URL}...")
-  file(
-    DOWNLOAD "${MANUAL_URL}"
-    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
-    SHOW_PROGRESS
-    STATUS MANUAL_PDF_DOWNLOAD
-    TLS_VERIFY ON
-  )
-  list(GET MANUAL_PDF_DOWNLOAD 0 MANUAL_PDF_DOWNLOAD_ERROR)
-  if(NOT MANUAL_PDF_DOWNLOAD_ERROR EQUAL 0)
-    list(GET MANUAL_PDF_DOWNLOAD 1 MANUAL_PDF_DOWNLOAD_MESSGAE)
-    message(
-      FATAL_ERROR
-      "Manual PDF download failed with: "
-      "${MANUAL_PDF_DOWNLOAD_MESSGAE} Code: ${MANUAL_PDF_DOWNLOAD_ERROR}. "
-      "Either download it yourself and move it to "
-      "'${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
-      "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
-      "manual."
-    )
-  endif()
-  file(
-    RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
-    "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
-  )
-endif()
-
 target_sources(mixxx PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx PROPERTIES AUTORCC ON)
 if(BUILD_TESTING)
