@@ -75,7 +75,7 @@ enum class IDForColor : uint8_t {
 };
 
 constexpr mixxx::RgbColor kColorForIDPink(0xF870F8);
-constexpr mixxx::RgbColor kColorForIDRed(0xF870900);
+constexpr mixxx::RgbColor kColorForIDRed(0xF80000);
 constexpr mixxx::RgbColor kColorForIDOrange(0xF8A030);
 constexpr mixxx::RgbColor kColorForIDYellow(0xF8E331);
 constexpr mixxx::RgbColor kColorForIDGreen(0x1EE000);

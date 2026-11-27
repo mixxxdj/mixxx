@@ -35,7 +35,7 @@ constexpr mixxx::RgbColor kMixxxTrackColorBattleshipGrey(0x888888);
 
 // Rekordbox Track Color Palette
 constexpr mixxx::RgbColor kRekordboxTrackColorPink(0xF870F8);
-constexpr mixxx::RgbColor kRekordboxTrackColorRed(0xF870900);
+constexpr mixxx::RgbColor kRekordboxTrackColorRed(0xF80000);
 constexpr mixxx::RgbColor kRekordboxTrackColorOrange(0xF8A030);
 constexpr mixxx::RgbColor kRekordboxTrackColorYellow(0xF8E331);
 constexpr mixxx::RgbColor kRekordboxTrackColorGreen(0x1EE000);
