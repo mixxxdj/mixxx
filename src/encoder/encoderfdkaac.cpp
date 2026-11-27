@@ -126,11 +126,12 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
             !aacEncEncode ||
             !aacEncInfo ||
             !aacEncoder_SetParam) {
+        const QString libraryFileName = m_pLibrary->fileName();
         m_pLibrary->unload();
         m_pLibrary = nullptr;
 
         kLogger.warning() << "Failed to load AAC encoder library: Interface of"
-                          << m_pLibrary->fileName() << "is not as expected";
+                          << libraryFileName << "is not as expected";
 
         kLogger.debug() << "aacEncGetLibInfo:" << reinterpret_cast<void*>(aacEncGetLibInfo);
         kLogger.debug() << "aacEncOpen:" << reinterpret_cast<void*>(aacEncOpen);
