@@ -3,10 +3,10 @@
 # Build the Mixxx AppImage in the same glibc-2.28 Rocky 8 container as CI.
 #
 # This one file is used in two ways. CI runs it inside its rockylinux:8
-# container, where it only runs the build steps because the workflow has
-# already installed the tools, CMake and the buildenv. Run on a normal host,
-# it starts a rockylinux:8 container itself and re-runs this same file inside,
-# so the steps live in one place and CI exercises them on every build.
+# container, and a normal host runs it, which starts the same container and
+# re-runs this file inside, so the steps live in one place and CI exercises
+# them on every build. In both cases the script installs the tools, CMake and
+# the buildenv.
 #
 # The paths come from the environment so the same steps work in both layouts.
 # MIXXX_SOURCE_DIR is the repository checkout and MIXXX_BUILD_DIR the build
@@ -33,9 +33,9 @@ if [ "${MIXXX_APPIMAGE_IN_CONTAINER:-0}" = "1" ]; then
     BUILDENV_BASEPATH="${BUILDENV_BASEPATH:-/tmp/buildenv}"
     export BUILDENV_BASEPATH
 
-    # CI installs the tools, CMake and the buildenv in earlier workflow steps
-    # and exports them to this step; do it here only when this script drives
-    # the container (local runs).
+    # Install the tools, CMake and the buildenv unless the caller already
+    # provided them (the CI workflow only pre-installs git and python before
+    # checkout, so this runs for CI and local builds alike).
     if [ -z "${MIXXX_VCPKG_ROOT:-}" ]; then
         echo "---- [Rocky8] Install base tools ----"
         dnf install -y git python39 curl
@@ -56,16 +56,14 @@ if [ "${MIXXX_APPIMAGE_IN_CONTAINER:-0}" = "1" ]; then
             # The CPack AppImage generator requires CMake >= 4.2, which dnf
             # does not provide on Rocky 8. Install the pinned release into
             # MIXXX_CMAKE_DIR and put it first on PATH.
-            CMAKE_VERSION="${CMAKE_VERSION:-4.2.8}"
+            CMAKE_VERSION=4.2.8
             arc=$(uname -m)
             cm_fname="cmake-${CMAKE_VERSION}-linux-${arc}.tar.gz"
             if [ ! -x "${MIXXX_CMAKE_DIR}/v${CMAKE_VERSION}/bin/cmake" ]; then
                 curl -fsSL --retry 3 --connect-timeout 15 \
-                    --speed-limit 1024 --speed-time 60 \
                     -o /tmp/cmake.tar.gz \
                     "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/${cm_fname}"
                 csha=$(curl -fsSL --retry 3 --connect-timeout 15 \
-                    --speed-limit 1024 --speed-time 60 \
                     "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-SHA-256.txt" \
                     | awk -v a="${cm_fname}" '$2 == a {print $1}')
                 [ -n "${csha}" ] || { echo "ERROR: no SHA-256 entry for ${cm_fname}" >&2; exit 1; }
@@ -213,9 +211,7 @@ Options:
   --build-dir DIR      build/output dir (default <repo>/build-appimage)
   --cache-dir DIR      dnf/cmake/ccache/buildenv cache base
                        (default ${XDG_CACHE_HOME:-$HOME/.cache}/mixxx-appimage)
-  --network MODE       docker --network value (e.g. host)
   --proxy URL          HTTP(S)/SOCKS proxy for downloads inside the container
-  --cmake-version VER  pin CMake instead of 4.2.8
   --help
 EOF
 }
@@ -233,19 +229,15 @@ MIXXX_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 MODE=build
 BUILD_DIR=${MIXXX_ROOT}/build-appimage
 CACHE_DIR=${XDG_CACHE_HOME:-${HOME}/.cache}/mixxx-appimage
-NETWORK=
 PROXY_URL=
 IMAGE=rockylinux:8
-CMAKE_VERSION=
 
 while [ $# -gt 0 ]; do
     case "$1" in
         build|shell) MODE=$1 ;;
         --build-dir) need_value "$@"; BUILD_DIR=$2; shift ;;
         --cache-dir) need_value "$@"; CACHE_DIR=$2; shift ;;
-        --network) need_value "$@"; NETWORK=$2; shift ;;
         --proxy) need_value "$@"; PROXY_URL=$2; shift ;;
-        --cmake-version) need_value "$@"; CMAKE_VERSION=$2; shift ;;
         -h|--help) usage; exit 0 ;;
         *) echo "ERROR: unknown option: $1" >&2; usage >&2; exit 2 ;;
     esac
@@ -271,7 +263,6 @@ BUILD_DIR="$(cd "${BUILD_DIR}" && pwd -P)"
 CACHE_DIR="$(cd "${CACHE_DIR}" && pwd -P)"
 
 netproxy_flags=()
-[ -n "${NETWORK}" ] && netproxy_flags+=(--network "${NETWORK}")
 if [ -n "${PROXY_URL}" ]; then
     netproxy_flags+=(-e ALL_PROXY="${PROXY_URL}" -e all_proxy="${PROXY_URL}")
     netproxy_flags+=(-e HTTP_PROXY="${PROXY_URL}" -e http_proxy="${PROXY_URL}")
@@ -282,10 +273,8 @@ else
     done
 fi
 
-# Docker silently creates empty dirs for bind sources it cannot see (a remote
-# or containerized daemon), so probe for a file in the repository. Keep
-# docker's own output, because it names the real problem, for example a
-# missing client, an unreachable daemon or an image that cannot be pulled.
+# Docker silently creates empty dirs for bind sources it cannot see, so probe
+# for a file in the repository and print docker's own error when it fails.
 probe_status=0
 probe_output=$(docker run --rm ${netproxy_flags[@]+"${netproxy_flags[@]}"} \
         -v "${MIXXX_ROOT}:/p/src:ro" \
@@ -294,24 +283,8 @@ probe_output=$(docker run --rm ${netproxy_flags[@]+"${netproxy_flags[@]}"} \
         "${IMAGE}" bash -c 'test -f /p/src/CMakeLists.txt -a -d /p/build -a -d /p/cache' \
         2>&1) || probe_status=$?
 if [ "${probe_status}" -ne 0 ]; then
-    echo "ERROR: the probe container failed with exit code ${probe_status}." >&2
-    if [ -n "${probe_output}" ]; then
-        printf '%s\n' "${probe_output}" >&2
-    fi
-    cat >&2 <<EOF
-
-The probe mounts these paths into ${IMAGE}:
-  ${MIXXX_ROOT} -> /p/src
-  ${BUILD_DIR} -> /p/build
-  ${CACHE_DIR} -> /p/cache
-
-Check that docker is installed and the daemon runs with 'docker info', that
-your user may use docker (the docker group, sudo, or the rules of a snap or
-rootless installation), that a daemon in another container or host can see
-the paths above, and that the ${IMAGE} image can be pulled.
-If the daemon cannot see the paths, pass them through to it or choose
---build-dir/--cache-dir on shared storage.
-EOF
+    [ -n "${probe_output}" ] && printf '%s\n' "${probe_output}" >&2
+    echo "ERROR: docker cannot mount ${MIXXX_ROOT}, ${BUILD_DIR} and ${CACHE_DIR} into ${IMAGE}." >&2
     exit 2
 fi
 
@@ -334,7 +307,6 @@ run_flags=(
     -e MIXXX_APPIMAGE_IN_CONTAINER=1
     -e "WRAPPER_MODE=${MODE}"
 )
-[ -n "${CMAKE_VERSION}" ] && run_flags+=(-e "CMAKE_VERSION=${CMAKE_VERSION}")
 run_flags+=(${netproxy_flags[@]+"${netproxy_flags[@]}"})
 
 echo "== Running ${IMAGE} (mode: ${MODE}) =="

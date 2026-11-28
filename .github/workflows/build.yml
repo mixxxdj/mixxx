@@ -319,28 +319,18 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
           echo "APPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> $GITHUB_ENV
 
-      - name: "[AppImage] Set up cmake"
-        # The CPack AppImage generator requires CMake >= 4.2, which is not
-        # available from dnf on the rockylinux:8 container.
-        if: startsWith(matrix.buildenv_script, 'tools/appimage_')
-        uses: jwlawson/actions-setup-cmake@v2.2
-        with:
-          cmake-version: "4.2.x"
+      - name: "[AppImage] Read buildenv name"
+        # The ccache cache key uses BUILDENV_NAME, so a new buildenv
+        # invalidates it. The script installs CMake and the buildenv itself.
+        if: matrix.cpack_generator == 'AppImage'
+        run: ${{ matrix.buildenv_script }} name
 
       - name: "[macOS/Linux] Set up build environment"
-        if: matrix.buildenv_script != null && runner.os != 'Windows'
+        if: matrix.buildenv_script != null && runner.os != 'Windows' && matrix.cpack_generator != 'AppImage'
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-      - name: "[Rocky8] Config ALSA null device"
-        # The container has no sound card; point ALSA at a null device so the
-        # test suite can initialize the audio engine.  The alsa-lib package
-        # installs its own /etc/asound.conf during the setup step above, so
-        # this must run after it.  Both the default and the sysdefault PCM
-        # (which PortAudio requests) map to the null type.
-        if: matrix.container == 'rockylinux:8'
-        run: printf 'pcm.!default {\n  type null\n}\npcm.sysdefault null\n' > /etc/asound.conf
       - name: "[Windows] Set up build environment"
         if: matrix.buildenv_script != null && runner.os == 'Windows'
         # With the cmd shell the ERRORLEVEL is checked
@@ -448,8 +438,8 @@ jobs:
       - name: "Build AppImage with tools/appimage_build.sh"
         # The same script runs the whole AppImage build locally in a
         # rockylinux:8 container, so CI and local builds share one
-        # implementation of the steps. The tools, CMake and the buildenv were
-        # already set up by the steps above, which the script detects.
+        # implementation of the steps. It installs the tools, CMake and the
+        # buildenv itself.
         if: matrix.cpack_generator == 'AppImage'
         env:
           MIXXX_APPIMAGE_IN_CONTAINER: "1"
