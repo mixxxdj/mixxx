@@ -1,6 +1,7 @@
 #include "engine/enginebuffer.h"
 
 #include <QtDebug>
+#include <utility>
 
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
@@ -717,6 +718,9 @@ void EngineBuffer::notifyTrackLoaded(
 }
 
 void EngineBuffer::slotPassthroughChanged(double enabled) {
+    // calculateSpeed() is not called while passthrough is active, so the
+    // ramp state would be stale when track playback resumes
+    m_pRateControl->requestRampReset();
     if (enabled != 0) {
         // If passthrough was enabled, stop playing the current track.
         slotControlStop(1.0);
@@ -1403,7 +1407,14 @@ void EngineBuffer::processSeek(bool paused) {
                 return;
             }
             position = pOtherChannel->getEngineBuffer()->getExactPlayPos();
+
+            // Let EngineControls, in particular RateControl know this start is a
+            // clone to avoid a spin-up ramp.
+            for (const auto& pControl : std::as_const(m_engineControls)) {
+                pControl->notifyCloneSeek();
+            }
         } break;
+
         default:
             DEBUG_ASSERT(!"Unhandled seek request type");
             m_queuedSeek.setValue(kNoQueuedSeek);

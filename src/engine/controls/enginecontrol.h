@@ -83,6 +83,13 @@ class EngineControl : public QObject {
         Q_UNUSED(position);
     };
 
+    /// Called when a clone seek (SEEK_CLONE) is about to be processed.
+    /// Allows EngineControls to distinguish a cloned start from a
+    /// regular Play press. Called from processSeek() before the seek
+    /// is applied.
+    virtual void notifyCloneSeek() {
+    }
+
     virtual void trackLoaded(TrackPointer pNewTrack);
     virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
 
