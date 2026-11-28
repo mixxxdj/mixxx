@@ -156,6 +156,7 @@ AutoDJProcessor::AutoDJProcessor(
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault),
+          m_transitionHoldDeck(nullptr),
           m_pPlayerManager(pPlayerManager),
           m_coCrossfader(QStringLiteral("[Master]"), QStringLiteral("crossfader")),
           m_coCrossfaderReverse(QStringLiteral("[Mixer Profile]"), QStringLiteral("xFaderReverse")),
@@ -182,6 +183,10 @@ AutoDJProcessor::AutoDJProcessor(
     m_enabledAutoDJ.setButtonMode(mixxx::control::ButtonMode::Toggle);
     m_enabledAutoDJ.connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
+
+    // Single-shot timer for the real-silence gap of the FixedSilenceGap mode.
+    m_transitionHoldTimer.setSingleShot(true);
+    connect(&m_transitionHoldTimer, &QTimer::timeout, this, &AutoDJProcessor::slotHoldElapsed);
 
     connect(pPlayerManager,
             &PlayerManagerInterface::numberOfDecksChanged,
@@ -904,7 +909,16 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                     setCrossfader(thisDeck->isLeft() ? 1.0 : -1.0);
                 }
 
-                if (!otherDeckPlaying) {
+                if (m_transitionMode == TransitionMode::FixedSilenceGap) {
+                    // FixedSilenceGap: do not start the next track yet. The
+                    // from deck fades out first (if any), then a real silence
+                    // gap of |transitionTime| seconds elapses before the next
+                    // track starts from its cued start point.
+                    const double fadeSeconds =
+                            (thisDeck->fadeEndPos - thisDeck->fadeBeginPos) *
+                            getEndSecond(thisDeck);
+                    startTransitionHold(otherDeck, fadeSeconds);
+                } else if (!otherDeckPlaying) {
                     otherDeck->play();
                 }
 
@@ -1592,6 +1606,28 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 getLastSoundSecond(pFromDeck),
                 toDeckStartSecond);
     } break;
+    case TransitionMode::FixedSilenceGap: {
+        // Cut at the end of the track, insert |transition time| of real
+        // silence and start the next track from its marked start point
+        // (intro start cue, first sound or 0:00). Never crossfades; the gap
+        // duration is the absolute transition time (sign-independent). The
+        // silence is created in playerPositionChanged (startTransitionHold)
+        // and is independent of the audio file's lead-in content.
+        double startPoint;
+        pToDeck->fadeBeginPos = toDeckEndPosition;
+        if (seekToStartPoint || toDeckPositionSeconds >= pToDeck->fadeBeginPos) {
+            // toDeckPosition >= pToDeck->fadeBeginPos happens when the
+            // user has seeked or played the to track behind fadeBeginPos of
+            // the fade after the next.
+            // In this case we recue the track just before the transition.
+            startPoint = getIntroStartSecond(pToDeck);
+        } else {
+            startPoint = toDeckPositionSeconds;
+        }
+        pFromDeck->fadeBeginPos = fromDeckEndPosition;
+        pFromDeck->fadeEndPos = fromDeckEndPosition;
+        pToDeck->startPos = startPoint;
+    } break;
     case TransitionMode::FixedFullTrack:
     default: {
         double startPoint;
@@ -1676,6 +1712,27 @@ void AutoDJProcessor::useFixedFadeTime(
         pFromDeck->fadeEndPos = fadeEndSecond;
         pToDeck->startPos = toDeckStartSecond + m_transitionTime;
     }
+}
+
+void AutoDJProcessor::startTransitionHold(
+        DeckAttributes* pToDeck, double fadeSeconds) {
+    m_transitionHoldDeck = pToDeck;
+    // Wait for the from deck's fade (if any) to finish, then the real-silence
+    // gap of |transition time| seconds. QTimer::start restarts the timer.
+    const double holdMs =
+            (fadeSeconds + fabs(m_transitionTime)) * 1000.0;
+    m_transitionHoldTimer.start(holdMs < 1.0 ? 1 : static_cast<int>(holdMs));
+}
+
+void AutoDJProcessor::slotHoldElapsed() {
+    if (m_eState != ADJ_LEFT_FADING && m_eState != ADJ_RIGHT_FADING) {
+        // The transition was aborted (AutoDJ disabled or the user took over).
+        return;
+    }
+    if (!m_transitionHoldDeck || m_transitionHoldDeck->isPlaying()) {
+        return;
+    }
+    m_transitionHoldDeck->play();
 }
 
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
