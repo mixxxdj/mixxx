@@ -231,8 +231,8 @@
             <ObjectName>LoopControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>78,52</MinimumSize>
-            <MaximumSize>104,52</MaximumSize>
+            <MinimumSize>78f,52f</MinimumSize>
+            <MaximumSize>112f,52f</MaximumSize>
             <Children>
               <WidgetGroup><!-- loop enable + beatloop size -->
                 <ObjectName>AlignLeftTop</ObjectName>
