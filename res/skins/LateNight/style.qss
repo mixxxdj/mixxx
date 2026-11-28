@@ -23,7 +23,9 @@ WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector,
 WEffectChainPresetSelector QAbstractScrollArea,
+WComboBox,
 #fadeModeCombobox,
+WComboBox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryFeatureControls QPushButton,
 #LibraryFeatureControls QLabel,
@@ -124,17 +126,20 @@ WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea {
   min-width: 160px;
 }
+WComboBox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   min-width: 185px;
   }
   WEffectSelector::indicator:checked,
   WEffectChainPresetSelector::indicator:checked,
+  WComboBox::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     margin: 2px;
   }
   WEffectSelector::down-arrow,
   WEffectChainPresetSelector::down-arrow,
   WSearchLineEdit::down-arrow,
+  WComboBox::down-arrow,
   #fadeModeCombobox::down-arrow,
   WTrackTableView::indicator {
     border: 0;
@@ -154,9 +159,13 @@ WSearchLineEdit::checked,
 WSearchLineEdit::indicator,
 WSearchLineEdit::indicator:unchecked,
 WSearchLineEdit::drop-down,
+WComboBox::checked,
 #fadeModeCombobox::checked,
+WComboBox::indicator,
 #fadeModeCombobox::indicator,
+WComboBox::indicator:unchecked,
 #fadeModeCombobox::indicator:unchecked,
+WComboBox::drop-down,
 #fadeModeCombobox::drop-down {
   padding: 0px;
   margin: 0px;
@@ -168,6 +177,7 @@ WSearchLineEdit::drop-down,
 WEffectSelector::item:selected,
 WEffectChainPresetSelector:item:selected,
 WSearchLineEdit::item:selected,
+WComboBox::item:selected,
 #fadeModeCombobox::item:selected {
   border: 0px;
 }
@@ -185,6 +195,7 @@ WSearchLineEdit::item:selected,
   }
   WEffectSelector::indicator:checked,
   WEffectChainPresetSelector::indicator:checked,
+  WComboBox::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     width: 13px;
     height: 13px;
@@ -243,7 +254,9 @@ WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector,
 WEffectChainPresetSelector QAbstractScrollArea,
+WComboBox,
 #fadeModeCombobox,
+WComboBox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryFeatureControls QLabel,
 #SkinSettingsButton,
@@ -656,6 +669,7 @@ WEffectSelector {
 WEffectChainPresetSelector {
   border:  0px;
 }
+WComboBox,
 #fadeModeCombobox {
   height: 18px;
   margin: 0px 0px 3px 1px;
@@ -692,6 +706,7 @@ WEffectChainPresetSelector {
   WEffectSelector QAbstractScrollArea,
   WEffectChainPresetSelector QAbstractScrollArea,
   WSearchLineEdit QAbstractScrollArea,
+  WComboBox QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     border: 1px solid #444;
     border-radius: 2px;
@@ -701,6 +716,7 @@ WEffectChainPresetSelector {
   /* checked item */
   WEffectSelector:checked,
   WEffectChainPresetSelector:checked,
+  WComboBox:checked,
   #fadeModeCombobox:checked {
     /* not applied
     padding-left: 5px;	*/
@@ -712,6 +728,7 @@ WEffectChainPresetSelector {
   WEffectSelector::item:selected,
   WEffectChainPresetSelector::item:selected,
   WSearchLineEdit::item:selected,
+  WComboBox::item:selected,
   #fadeModeCombobox::item:selected {
   /* Already one of those properties destroys font config and
      puts tick mark behind text:
@@ -719,6 +736,7 @@ WEffectChainPresetSelector {
     padding: 0px; */
   }
   WEffectSelector::indicator,
+  WComboBox::indicator,
   #fadeModeCombobox::indicator {
   /* This is sufficient to completely hide the tick mark, but
     this alone would show an empty, shadowed box instead of tick mark

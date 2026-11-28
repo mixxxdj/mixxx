@@ -13,6 +13,7 @@
 #include "recording/defs_recording.h"
 #include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "visualizer/visualizercontrols.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
@@ -1510,6 +1511,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Library Maximize/Restore"),
             tr("Maximize the track library to take up all the available screen "
                "space."),
+            pGuiMenu);
+
+    pGuiMenu->addSeparator();
+
+    addControl(mixxx::kVisualizerShowWindowConfigKey.group,
+            mixxx::kVisualizerShowWindowConfigKey.item,
+            tr("Visualizer Window Show/Hide"),
+            tr("Show/hide the separate window with visuals that react to the music"),
+            pGuiMenu);
+    addControl(mixxx::kVisualizerBassIntensityConfigKey.group,
+            mixxx::kVisualizerBassIntensityConfigKey.item,
+            tr("Visualizer Bass Intensity"),
+            tr("Adjust how strongly the bass distorts the visuals"),
+            pGuiMenu,
+            true);
+    addControl(mixxx::kVisualizerMidIntensityConfigKey.group,
+            mixxx::kVisualizerMidIntensityConfigKey.item,
+            tr("Visualizer Mids Intensity"),
+            tr("Adjust how strongly the mids distort the visuals"),
+            pGuiMenu,
+            true);
+    addControl(mixxx::kVisualizerHighIntensityConfigKey.group,
+            mixxx::kVisualizerHighIntensityConfigKey.item,
+            tr("Visualizer Highs Intensity"),
+            tr("Adjust how strongly the highs distort the visuals"),
+            pGuiMenu,
+            true);
+    addControl(mixxx::kVisualizerStyleConfigKey.group,
+            mixxx::kVisualizerStyleConfigKey.item,
+            tr("Visualizer Style"),
+            tr("Select the next style of the visuals"),
             pGuiMenu);
 
     pGuiMenu->addSeparator();

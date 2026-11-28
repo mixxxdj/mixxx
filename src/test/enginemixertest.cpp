@@ -7,15 +7,18 @@
 #include <tuple>
 #include <vector>
 
+#include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
+#include "engine/enginebandmeter.h"
 #include "engine/enginemixer.h"
 #include "gtest/gtest.h"
 #include "test/signalpathtest.h"
 #include "util/sample.h"
 #include "util/types.h"
 
-using ::testing::Return;
 using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
 
 namespace {
 
@@ -153,6 +156,83 @@ TEST_P(EngineMixerTest, OutputWorks) {
     m_pEngineMixer->process(static_cast<int>(channels.at(0).second.size()));
 
     assertBuffers();
+}
+
+class EngineMixerBandMeterTest : public BaseSignalPathTest {
+  protected:
+    static constexpr std::size_t kBufferSize = 2048;
+    static constexpr CSAMPLE kSignal = 0.5f;
+    static constexpr double kTolerance = 0.01;
+
+    // Processes enough buffers for the gain ramp and the filters of the band
+    // meter to settle.
+    void processUntilSettled() {
+        for (int bufferIndex = 0; bufferIndex < 20; ++bufferIndex) {
+            m_pEngineMixer->process(kBufferSize);
+        }
+    }
+};
+
+TEST_F(EngineMixerBandMeterTest, bandMetersFollowThePostFaderSignal) {
+    const QString group = QStringLiteral("[TestDeck]");
+    const ConfigKey lowKey(group, QStringLiteral("band_meter_low"));
+    const ConfigKey midKey(group, QStringLiteral("band_meter_mid"));
+    const ConfigKey highKey(group, QStringLiteral("band_meter_high"));
+    const ConfigKey volumeKey(group, QStringLiteral("volume"));
+    const ConfigKey enabledKey(QStringLiteral("[App]"), QStringLiteral("band_meters_enabled"));
+
+    auto pChannelOwner = std::make_unique<EngineChannelMock>(
+            group, EngineChannel::CENTER, m_pEngineMixer.get());
+    EngineChannelMock* pChannel = pChannelOwner.get();
+    m_pEngineMixer->addChannel(std::move(pChannelOwner));
+
+    EXPECT_CALL(*pChannel, updateActiveState())
+            .WillRepeatedly(Return(EngineChannel::ActiveState::Active));
+    EXPECT_CALL(*pChannel, isActive()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*pChannel, isMainMixEnabled()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*pChannel, isPflEnabled()).WillRepeatedly(Return(false));
+    EXPECT_CALL(*pChannel, collectFeatures(_)).Times(AnyNumber());
+    EXPECT_CALL(*pChannel, postProcess(_)).Times(AnyNumber());
+    // The channel outputs a constant signal, which only the low band passes.
+    EXPECT_CALL(*pChannel, process(_, _))
+            .WillRepeatedly([](CSAMPLE* pBuffer, std::size_t bufferSize) {
+                SampleUtil::fill(pBuffer, kSignal, static_cast<SINT>(bufferSize));
+            });
+
+    processUntilSettled();
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(lowKey));
+
+    ControlObject::set(enabledKey, 1.0);
+    processUntilSettled();
+    EXPECT_NEAR(kSignal, ControlObject::get(lowKey), kTolerance);
+    EXPECT_NEAR(0.0, ControlObject::get(midKey), kTolerance);
+    EXPECT_NEAR(0.0, ControlObject::get(highKey), kTolerance);
+
+    ControlObject::set(volumeKey, 0.5);
+    processUntilSettled();
+    EXPECT_NEAR(kSignal * 0.5, ControlObject::get(lowKey), kTolerance);
+
+    ControlObject::set(volumeKey, 0.0);
+    processUntilSettled();
+    EXPECT_NEAR(0.0, ControlObject::get(lowKey), kTolerance);
+
+    ControlObject::set(volumeKey, 1.0);
+    processUntilSettled();
+    EXPECT_NEAR(kSignal, ControlObject::get(lowKey), kTolerance);
+
+    ControlObject::set(enabledKey, 0.0);
+    processUntilSettled();
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(lowKey));
+
+    // A request switches the meters on without touching the control.
+    {
+        const mixxx::EngineBandMeterRequest request;
+        processUntilSettled();
+        EXPECT_NEAR(kSignal, ControlObject::get(lowKey), kTolerance);
+        EXPECT_DOUBLE_EQ(0.0, ControlObject::get(enabledKey));
+    }
+    processUntilSettled();
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(lowKey));
 }
 
 } // namespace

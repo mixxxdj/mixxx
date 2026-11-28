@@ -1408,6 +1408,7 @@ add_library(
   src/engine/effects/engineeffectchain.cpp
   src/engine/effects/engineeffectsdelay.cpp
   src/engine/effects/engineeffectsmanager.cpp
+  src/engine/enginebandmeter.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp
   src/engine/enginemixer.cpp
@@ -1513,6 +1514,7 @@ add_library(
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
+  src/library/playercoverartwatcher.cpp
   src/library/playlisttablemodel.cpp
   src/library/proxytrackmodel.cpp
   src/library/recording/dlgrecording.cpp
@@ -1761,6 +1763,8 @@ add_library(
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
+  src/visualizer/visualizercontrols.cpp
+  src/visualizer/visualizerlayout.cpp
   src/waveform/guitick.cpp
   src/waveform/overviewtype.cpp
   src/waveform/renderers/glwaveformrenderbackground.cpp
@@ -2046,6 +2050,8 @@ if(QOPENGL)
   target_sources(
     mixxx-lib
     PRIVATE
+      src/shaders/covercombineshader.cpp
+      src/shaders/coverdistortionshader.cpp
       src/shaders/endoftrackshader.cpp
       src/shaders/slipmodeshader.cpp
       src/shaders/patternshader.cpp
@@ -2056,6 +2062,8 @@ if(QOPENGL)
       src/shaders/unicolorshader.cpp
       src/shaders/vinylqualityshader.cpp
       src/util/opengltexture2d.cpp
+      src/visualizer/visualizerdeck.cpp
+      src/visualizer/visualizerwindow.cpp
       src/waveform/renderers/allshader/digitsrenderer.cpp
       src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
       src/waveform/renderers/allshader/waveformrenderbackground.cpp
@@ -2961,6 +2969,7 @@ if(BUILD_TESTING)
     src/test/durationutiltest.cpp
     #TODO: write useful tests for refactored effects system
     #src/test/effectchainslottest.cpp
+    src/test/enginebandmeter_test.cpp
     src/test/enginebufferscalelineartest.cpp
     src/test/enginebuffertest.cpp
     src/test/enginefilterbiquadtest.cpp
@@ -2993,6 +3002,7 @@ if(BUILD_TESTING)
     src/test/musicbrainzrecordingstasktest.cpp
     src/test/performancetimer_test.cpp
     src/test/playcountertest.cpp
+    src/test/playercoverartwatcher_test.cpp
     src/test/playermanagertest.cpp
     src/test/playlisttest.cpp
     src/test/portmidicontroller_test.cpp
@@ -3029,6 +3039,10 @@ if(BUILD_TESTING)
     src/test/trackreftest.cpp
     src/test/trackupdate_test.cpp
     src/test/uuid_test.cpp
+    src/test/visualizercontrols_test.cpp
+    src/test/visualizerdeck_test.cpp
+    src/test/visualizerlayout_test.cpp
+    src/test/visualizerwindow_test.cpp
     src/test/wbatterytest.cpp
     src/test/wpushbutton_test.cpp
     src/test/wwidgetstack_test.cpp

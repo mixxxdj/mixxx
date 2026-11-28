@@ -10,6 +10,7 @@
 #include "util/parented_ptr.h"
 
 class ControlObject;
+class ControlProxy;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
@@ -22,6 +23,7 @@ struct LibraryScanResultSummary;
 namespace mixxx {
 
 class CoreServices;
+class VisualizerWindow;
 
 namespace skin {
 class SkinLoader;
@@ -68,6 +70,11 @@ class MixxxMainWindow : public QMainWindow {
     void slotLibraryScanSummaryDlg(const LibraryScanResultSummary& result);
     /// show keywheel
     void slotShowKeywheel(bool toggle);
+    /// show or hide the visualizer window
+    void slotShowVisualizer(double show);
+    /// ask for the image of the visualizer style that shows an image in place
+    /// of the covers
+    void slotSelectVisualizerImage(double pressed);
     /// toggle full screen mode
     void slotViewFullScreen(bool toggle);
     /// open the developer tools dialog.
@@ -151,6 +158,9 @@ class MixxxMainWindow : public QMainWindow {
 
     DlgPreferences* m_pPrefDlg;
     parented_ptr<DlgKeywheel> m_pKeywheel;
+    parented_ptr<ControlProxy> m_pShowVisualizer;
+    parented_ptr<ControlProxy> m_pSelectVisualizerImage;
+    std::unique_ptr<mixxx::VisualizerWindow> m_pVisualizerWindow;
 
 #ifdef __ENGINEPRIME__
     // Library exporter

@@ -33,6 +33,10 @@ class EngineSync;
 class EngineTalkoverDucking;
 class EngineDelay;
 
+namespace mixxx {
+class EngineBandMeter;
+} // namespace mixxx
+
 // The number of channels to pre-allocate in various structures in the
 // engine. Prevents memory allocation in EngineMixer::addChannel.
 static constexpr int kPreallocatedChannels = 64;
@@ -116,14 +120,14 @@ class EngineMixer : public QObject, public AudioSource {
     CSAMPLE_GAIN getMainGain(int channelIndex) const;
 
     struct ChannelInfo {
-        ChannelInfo(int index)
-                : m_index(index) {
-        }
+        explicit ChannelInfo(int index);
+        ~ChannelInfo();
         ChannelHandle m_handle;
         std::unique_ptr<EngineChannel> m_pChannel;
         mixxx::SampleBuffer m_pBuffer;
         std::unique_ptr<ControlObject> m_pVolumeControl;
         std::unique_ptr<ControlPushButton> m_pMuteControl;
+        std::unique_ptr<mixxx::EngineBandMeter> m_pBandMeter;
         GroupFeatureState m_features;
         int m_index;
     };
@@ -260,6 +264,7 @@ class EngineMixer : public QObject, public AudioSource {
     // m_activeTalkoverChannels with each channel that is active for the
     // respective output.
     void processChannels(std::size_t bufferSize);
+    void processBandMeters(std::size_t bufferSize);
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMainEffects(std::size_t bufferSize);
@@ -353,6 +358,10 @@ class EngineMixer : public QObject, public AudioSource {
     // Mix two Mono channels. This is useful for outdoor gigs
     std::unique_ptr<ControlObject> m_pMainMonoMixdown;
     std::unique_ptr<ControlObject> m_pMicMonitorMode;
+
+    // The band meters of the decks only run while this is set or while a
+    // mixxx::EngineBandMeterRequest exists.
+    std::unique_ptr<ControlObject> m_pBandMetersEnabled;
 
     // TODO (Swiftb0y): remove volatile (probably supposed to be std::atomic instead).
     volatile bool m_bBusOutputConnected[3];

@@ -15,6 +15,7 @@
 #include "util/desktophelper.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "visualizer/visualizercontrols.h"
 
 namespace {
 
@@ -368,6 +369,22 @@ void WMainMenuBar::initialize() {
     m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
     connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
     pViewMenu->addAction(m_pViewKeywheel);
+
+    //: menu title
+    QString visualizerTitle = tr("Show Visualizer");
+    //: tooltip text
+    QString visualizerText = tr("Show a separate window with visuals that react to the music");
+    auto* pViewVisualizer = new QAction(visualizerTitle, this);
+    pViewVisualizer->setCheckable(true);
+    m_pKeyboard->registerMenuBarActionSetShortcut(
+            pViewVisualizer,
+            ConfigKey(kKbdShortcutsGroup, QStringLiteral("ViewMenu_ShowVisualizer")),
+            QStringLiteral("Ctrl+7"));
+    pViewVisualizer->setShortcutContext(Qt::ApplicationShortcut);
+    pViewVisualizer->setStatusTip(visualizerText);
+    pViewVisualizer->setWhatsThis(buildWhatsThis(visualizerTitle, visualizerText));
+    createVisibilityControl(pViewVisualizer, mixxx::kVisualizerShowWindowConfigKey);
+    pViewMenu->addAction(pViewVisualizer);
 
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +

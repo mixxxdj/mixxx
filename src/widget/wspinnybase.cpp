@@ -7,6 +7,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "library/playercoverartwatcher.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_wspinnybase.cpp"
@@ -41,6 +42,7 @@ WSpinnyBase::WSpinnyBase(
           m_pSignalEnabled(nullptr),
           m_pSlipEnabled(nullptr),
           m_pShowCoverProxy(nullptr),
+          m_pCoverArtWatcher(make_parented<mixxx::PlayerCoverArtWatcher>(pPlayer, this)),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
@@ -72,18 +74,18 @@ WSpinnyBase::WSpinnyBase(
     // Drag and drop
     setAcceptDrops(true);
 
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache) {
-        connect(pCache,
-                &CoverArtCache::coverFound,
-                this,
-                &WSpinnyBase::slotCoverFound);
-    }
-
-    if (m_pPlayer != nullptr) {
-        connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WSpinnyBase::slotLoadTrack);
-        connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WSpinnyBase::slotLoadingTrack);
-    }
+    connect(m_pCoverArtWatcher,
+            &mixxx::PlayerCoverArtWatcher::trackChanged,
+            this,
+            &WSpinnyBase::slotTrackChanged);
+    connect(m_pCoverArtWatcher,
+            &mixxx::PlayerCoverArtWatcher::coverOutdated,
+            m_pCoverArtWatcher,
+            &mixxx::PlayerCoverArtWatcher::requestCover);
+    connect(m_pCoverArtWatcher,
+            &mixxx::PlayerCoverArtWatcher::coverFound,
+            this,
+            &WSpinnyBase::slotCoverFound);
 
     connect(m_pCoverMenu,
             &WCoverArtMenu::coverInfoSelected,
@@ -140,7 +142,7 @@ void WSpinnyBase::setup(const QDomNode& node,
         const ConfigKey& showCoverConfigKey) {
     if (m_pPlayer) {
         // just in case a track is already loaded
-        slotLoadTrack(m_pPlayer->getLoadedTrack());
+        m_pCoverArtWatcher->slotLoadTrack(m_pPlayer->getLoadedTrack());
     }
 
     // Set images
@@ -228,73 +230,30 @@ void WSpinnyBase::setLoadedCover(const QPixmap& pixmap) {
     m_loadedCoverScaled = scaleToSize(pixmap);
 }
 
-void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
-    if (m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.get(),
-                &Track::coverArtUpdated,
-                this,
-                &WSpinnyBase::slotTrackCoverArtUpdated);
-    }
-    m_lastRequestedCover = CoverInfo();
-
-    setLoadedCover(QPixmap());
-
-    m_pLoadedTrack = pTrack;
-    if (m_pLoadedTrack) {
-        connect(m_pLoadedTrack.get(),
-                &Track::coverArtUpdated,
-                this,
-                &WSpinnyBase::slotTrackCoverArtUpdated);
-    }
-
-    slotTrackCoverArtUpdated();
-}
-
-void WSpinnyBase::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    if (m_pLoadedTrack && pOldTrack == m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.get(),
-                &Track::coverArtUpdated,
-                this,
-                &WSpinnyBase::slotTrackCoverArtUpdated);
-    }
-    m_pLoadedTrack.reset();
-    m_lastRequestedCover = CoverInfo();
-
+void WSpinnyBase::slotTrackChanged() {
     setLoadedCover(QPixmap());
     coverChanged();
 }
 
-void WSpinnyBase::slotTrackCoverArtUpdated() {
-    if (m_pLoadedTrack) {
-        CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
-    }
-}
-
-void WSpinnyBase::slotCoverFound(
-        const QObject* pRequester,
-        const CoverInfo& coverInfo,
-        const QPixmap& pixmap) {
-    if (pRequester == this &&
-            m_pLoadedTrack &&
-            m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
-        setLoadedCover(pixmap);
-        coverChanged();
-    }
+void WSpinnyBase::slotCoverFound(const QPixmap& pixmap) {
+    setLoadedCover(pixmap);
+    coverChanged();
 }
 
 void WSpinnyBase::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    if (m_pLoadedTrack != nullptr) {
-        // Will trigger slotTrackCoverArtUpdated().
-        m_pLoadedTrack->setCoverInfo(coverInfo);
+    const TrackPointer pLoadedTrack = m_pCoverArtWatcher->loadedTrack();
+    if (pLoadedTrack) {
+        // Will make the watcher request the new cover.
+        pLoadedTrack->setCoverInfo(coverInfo);
     }
 }
 
 void WSpinnyBase::slotReloadCoverArt() {
-    if (!m_pLoadedTrack) {
+    const TrackPointer pLoadedTrack = m_pCoverArtWatcher->loadedTrack();
+    if (!pLoadedTrack) {
         return;
     }
-    const auto future = guessTrackCoverInfoConcurrently(m_pLoadedTrack);
+    const auto future = guessTrackCoverInfoConcurrently(pLoadedTrack);
     // Don't wait for the result and keep running in the background
     Q_UNUSED(future)
 }
@@ -534,7 +493,7 @@ void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
-    if (m_pLoadedTrack == nullptr) {
+    if (!m_pCoverArtWatcher->loadedTrack()) {
         return;
     }
 
@@ -573,7 +532,7 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
         mouseMoveEvent(e);
     } else {
         if (!m_loadedCover.isNull()) {
-            m_pDlgCoverArt->init(m_pLoadedTrack);
+            m_pDlgCoverArt->init(m_pCoverArtWatcher->loadedTrack());
         } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
             m_pCoverMenu->popup(e->globalPosition().toPoint());
         }
