@@ -644,6 +644,58 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
     </widget>
    </item>
    <item row="2" column="0">
+    <widget class="QGroupBox" name="groupBoxHardwarePerformanceOptions">
+     <property name="title">
+      <string>Hardware and Performance options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayoutHardwarePerformance">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCachedChunks">
+        <property name="text">
+         <string>Audio cache size per deck</string>
+        </property>
+        <property name="buddy">
+         <cstring>comboBoxCachedChunks</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBoxCachedChunks">
+        <property name="toolTip">
+         <string>Amount of decoded audio kept in RAM for each track or stem channel loaded on a deck .
+Higher values use more memory and allow larger seeking distances without cache misses.
+Requires restarting Mixxx to take effect.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelPreloadCache">
+        <property name="text">
+         <string>Preload audio cache</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxPreloadCache</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="checkBoxPreloadCache">
+        <property name="toolTip">
+         <string>Gradually preload the track from the beginning into the audio cache without waiting for playback to reach it, until the cache is full or the entire track is cached.
+Requires restarting Mixxx to take effect.</string>
+        </property>
+        <property name="text">
+         <string>Preload track into audio cache</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <spacer name="verticalSpacer2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -685,6 +737,8 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>spinBoxTemporaryRateCoarse</tabstop>
   <tabstop>spinBoxPermanentRateFine</tabstop>
   <tabstop>spinBoxPermanentRateCoarse</tabstop>
+  <tabstop>comboBoxCachedChunks</tabstop>
+  <tabstop>checkBoxPreloadCache</tabstop>
  </tabstops>
  <resources/>
  <buttongroups>
