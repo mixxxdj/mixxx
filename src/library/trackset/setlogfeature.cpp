@@ -75,12 +75,6 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotJoinWithPrevious);
 
-    m_pMarkTracksPlayedAction = new QAction(tr("Mark all tracks played"), this);
-    connect(m_pMarkTracksPlayedAction,
-            &QAction::triggered,
-            this,
-            &SetlogFeature::slotMarkAllTracksPlayed);
-
     m_pStartNewPlaylist = new QAction(tr("Finish current and start new"), this);
     connect(m_pStartNewPlaylist,
             &QAction::triggered,
@@ -461,42 +455,6 @@ void SetlogFeature::slotJoinWithPrevious() {
              << " previous:" << previousPlaylistId;
     if (m_playlistDao.copyPlaylistTracks(clickedPlaylistId, previousPlaylistId)) {
         m_playlistDao.deletePlaylist(clickedPlaylistId);
-    }
-}
-
-void SetlogFeature::slotMarkAllTracksPlayed() {
-    // qDebug() << "SetlogFeature::slotMarkAllTracksPlayed()";
-    if (!m_lastRightClickedIndex.isValid()) {
-        return;
-    }
-
-    int clickedPlaylistId = playlistIdFromIndex(m_lastRightClickedIndex);
-    if (clickedPlaylistId == kInvalidPlaylistId) {
-        return;
-    }
-
-    if (clickedPlaylistId == m_currentPlaylistId) {
-        return;
-    }
-
-    // Right-clicked playlist may not be loaded. Use a temporary model to
-    // keep sidebar selection and table view in sync
-    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
-            std::make_unique<PlaylistTableModel>(this,
-                    m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export");
-    pPlaylistTableModel->selectPlaylist(clickedPlaylistId);
-    // mark all the Tracks in the previous Playlist as played
-    pPlaylistTableModel->select();
-    int rows = pPlaylistTableModel->rowCount();
-    for (int i = 0; i < rows; ++i) {
-        QModelIndex index = pPlaylistTableModel->index(i, 0);
-        if (index.isValid()) {
-            TrackPointer pTrack = pPlaylistTableModel->getTrack(index);
-            DEBUG_ASSERT(pTrack != nullptr);
-            // Do not update the play count, just set played status.
-            pTrack->updatePlayedStatusKeepPlayCount(true);
-        }
     }
 }
 
