@@ -55,7 +55,6 @@ jobs:
           cmake \
             -DCMAKE_BUILD_TYPE=Debug \
             -DWARNINGS_FATAL=ON \
-            -DQT6=ON \
             -DOPTIMIZE=off \
             -DBATTERY=ON \
             -DBROADCAST=ON \
@@ -86,7 +85,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=Debug \
             -DCLANG_TIDY="$GITHUB_WORKSPACE/ctcache/clang-tidy" \
             -DWARNINGS_FATAL=ON \
-            -DQT6=ON \
             -DBATTERY=ON \
             -DBROADCAST=ON \
             -DBULK=ON \
@@ -114,7 +112,6 @@ jobs:
           cmake \
             -DCMAKE_BUILD_TYPE=Debug \
             -DOPTIMIZE=off \
-            -DQT6=ON \
             -DQML=ON \
             -DCOVERAGE=ON \
             -DWARNINGS_FATAL=OFF \
