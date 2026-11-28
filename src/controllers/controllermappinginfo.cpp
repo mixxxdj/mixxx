@@ -21,6 +21,32 @@ QVersionNumber sanitizeVersion(QString rawVersion) {
 }
 } // namespace
 
+bool operator==(const BulkEndpointInfo& a, const BulkEndpointInfo& b) {
+    return a.direction == b.direction &&
+            a.address == b.address &&
+            a.length == b.length;
+}
+
+size_t qHash(const BulkEndpointInfo& endpoint) {
+    return qHash(endpoint.direction) +
+            qHash(endpoint.address) +
+            qHash(endpoint.length);
+}
+
+bool operator==(const BulkInterfaceInfo& a, const BulkInterfaceInfo& b) {
+    return a.number == b.number &&
+            a.endpoints == b.endpoints;
+}
+
+size_t qHash(const BulkInterfaceInfo& bulkInterface) {
+    size_t hash = qHash(bulkInterface.number);
+    for (const auto& endpoint : bulkInterface.endpoints) {
+        hash += qHash(endpoint);
+    }
+
+    return hash;
+}
+
 bool operator==(const ProductInfo& a, const ProductInfo& b) {
     return a.protocol == b.protocol &&
             a.vendor_id == b.vendor_id &&
@@ -28,19 +54,21 @@ bool operator==(const ProductInfo& a, const ProductInfo& b) {
             a.interface_number == b.interface_number &&
             a.usage_page == b.usage_page &&
             a.usage == b.usage &&
-            a.in_epaddr == b.in_epaddr &&
-            a.out_epaddr == b.out_epaddr;
+            a.bulkInterfaces == b.bulkInterfaces;
 }
 
 size_t qHash(const ProductInfo& product) {
-    return qHash(product.protocol) +
+    size_t hash = qHash(product.protocol) +
             qHash(product.vendor_id) +
             qHash(product.product_id) +
             qHash(product.interface_number) +
             qHash(product.usage_page) +
-            qHash(product.usage) +
-            qHash(product.in_epaddr) +
-            qHash(product.out_epaddr);
+            qHash(product.usage);
+    for (const auto& bulkInterface : product.bulkInterfaces) {
+        hash += qHash(bulkInterface);
+    }
+
+    return hash;
 }
 
 QDebug operator<<(QDebug dbg, const ProductInfo& product) {
@@ -126,7 +154,10 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
                     if (protocol == QStringLiteral("hid")) {
                         product = parseHIDProduct(xml.attributes());
                     } else if (protocol == QStringLiteral("bulk")) {
-                        product = parseBulkProduct(xml.attributes());
+                        // Consumes the whole <product> element including its
+                        // end element, which is not seen by this loop then
+                        product = parseBulkProduct(xml);
+                        --xmlHierachyDepth;
                     } else if (protocol == QStringLiteral("midi")) {
                         qCInfo(kLogger) << "MIDI product info parsing not yet implemented";
                     } else {
@@ -181,10 +212,17 @@ MappingInfo::MappingInfo(const QFileInfo& fileInfo) {
     }
 }
 
-ProductInfo MappingInfo::parseBulkProduct(const QXmlStreamAttributes& xmlElementAttributes) {
-    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105"
-    // in_epaddr="0x82" out_epaddr="0x03" interface_number="0x04" />
-    // All number strings must be hex prefixed with 0x
+ProductInfo MappingInfo::parseBulkProduct(QXmlStreamReader& xml) {
+    // Bulk device <product> element parsing. Example of valid element:
+    //   <product protocol="bulk" vendor_id="0x17cc" product_id="0x2305">
+    //       <interface number="0x00">
+    //           <endpoint direction="in" address="0x81" length="32" />
+    //           <endpoint direction="in" address="0x84" length="32" />
+    //           <endpoint direction="out" address="0x01" length="32" />
+    //       </interface>
+    //   </product>
+    // All number strings must be hex prefixed with 0x, except lengths which are decimal.
+    const QXmlStreamAttributes xmlElementAttributes = xml.attributes();
 
     ProductInfo productInfo;
     productInfo.protocol = xmlElementAttributes.value(QStringLiteral("protocol")).toString();
@@ -198,14 +236,55 @@ ProductInfo MappingInfo::parseBulkProduct(const QXmlStreamAttributes& xmlElement
     if (xmlElementAttributes.hasAttribute(QStringLiteral("usage"))) {
         qCCritical(kLogger) << "Product info element for bulk contains unallowed Usage attribute";
     }
-    productInfo.in_epaddr = xmlElementAttributes.value(QStringLiteral("in_epaddr")).toString();
-    productInfo.out_epaddr = xmlElementAttributes.value(QStringLiteral("out_epaddr")).toString();
-    productInfo.interface_number =
-            xmlElementAttributes.value(QStringLiteral("interface_number"))
-                    .toString();
+    // Interfaces and endpoints are described by child elements
+    for (const auto& attribute : {QStringLiteral("in_epaddr"),
+                 QStringLiteral("out_epaddr"),
+                 QStringLiteral("interface_number")}) {
+        if (xmlElementAttributes.hasAttribute(attribute)) {
+            qCWarning(kLogger) << "Product info element for bulk contains unsupported"
+                               << attribute
+                               << "attribute, use <interface> and <endpoint> "
+                                  "child elements instead";
+        }
+    }
     productInfo.friendlyName = xmlElementAttributes.value("friendly_name").toString();
-
     productInfo.visualUrl = QUrl(xmlElementAttributes.value("image").toString());
+
+    while (xml.readNextStartElement()) {
+        if (xml.name() != QStringLiteral("interface")) {
+            xml.skipCurrentElement();
+            continue;
+        }
+
+        BulkInterfaceInfo interfaceInfo;
+        interfaceInfo.number = xml.attributes().value(QStringLiteral("number")).toString();
+        while (xml.readNextStartElement()) {
+            if (xml.name() != QStringLiteral("endpoint")) {
+                xml.skipCurrentElement();
+                continue;
+            }
+
+            const QXmlStreamAttributes endpointAttributes = xml.attributes();
+            BulkEndpointInfo endpointInfo;
+            endpointInfo.direction =
+                    endpointAttributes.value(QStringLiteral("direction"))
+                            .toString();
+            endpointInfo.address = endpointAttributes.value(QStringLiteral("address")).toString();
+            endpointInfo.length = endpointAttributes.value(QStringLiteral("length")).toString();
+
+            if (endpointInfo.direction != QStringLiteral("in") &&
+                    endpointInfo.direction != QStringLiteral("out")) {
+                qCWarning(kLogger) << "Bulk endpoint" << endpointInfo.address
+                                   << "has invalid direction" << endpointInfo.direction;
+            }
+
+            interfaceInfo.endpoints.append(std::move(endpointInfo));
+            xml.skipCurrentElement();
+        }
+
+        productInfo.bulkInterfaces.append(std::move(interfaceInfo));
+    }
+
     return productInfo;
 }
 
