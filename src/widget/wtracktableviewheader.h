@@ -92,6 +92,7 @@ class WTrackTableViewHeader : public QHeaderView {
 
   private slots:
     void showOrHideColumn(int);
+    void slotResetColumns();
 
   private:
     int hiddenCount();
