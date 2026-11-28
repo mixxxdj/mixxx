@@ -8,6 +8,7 @@
 #include "track/globaltrackcache.h"
 #include "track/keyutils.h"
 #include "track/track.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/performancetimer.h"
 
 namespace {
@@ -451,6 +452,10 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
                                    QHash<TrackId, int>* trackToIndex) {
     // Skip processing if there are no tracks to filter or sort.
     if (trackIds.size() == 0) {
+        // Do not leave stale ids in m_trackOrder/trackToIndex; they would
+        // otherwise feed the sort-only path as a frozen membership.
+        m_trackOrder.resize(0);
+        trackToIndex->clear();
         return;
     }
 
@@ -604,6 +609,64 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
                 (*trackToIndex)[m_trackOrder[i]] = i;
             }
         }
+    }
+}
+
+void BaseTrackCache::sort(const QString& orderByClause,
+        QHash<TrackId, int>* trackToIndex) {
+    // Sort only: re-order the current result set without re-applying the
+    // search filter. The set of tracks in the result (membership) is frozen
+    // from the last filterAndSort() call, so tracks neither disappear nor
+    // pop in when only the sort column or order changes.
+    //
+    // Sorting is done in SQL (ORDER BY), so the order always matches what
+    // the database returns, there are no data() calls per comparison and no
+    // global track cache locks on the GUI thread. This keeps the order
+    // consistent with compareColumnValues(), which is used to insertion-sort
+    // dirty tracks in filterAndSort().
+    //
+    // No index build is needed here: sort() only reads the frozen membership
+    // (m_trackOrder) and executes the ORDER BY query directly.
+
+    // Freeze the membership: the ids that are currently in the result set.
+    // If there is no previous result, there is nothing to sort.
+    if (m_trackOrder.isEmpty()) {
+        trackToIndex->clear();
+        return;
+    }
+
+    QSet<TrackId> membership;
+    membership.reserve(m_trackOrder.size());
+    for (const auto& trackId : std::as_const(m_trackOrder)) {
+        membership.insert(trackId);
+    }
+
+    QString queryString = QString("SELECT %1 FROM %2 %3")
+                                  .arg(m_idColumn, m_tableName, orderByClause);
+
+    if (sDebug) {
+        qDebug() << this << "sort() executing:" << queryString;
+    }
+
+    FwdSqlQuery query(m_database, queryString);
+
+    if (!query.execPrepared()) {
+        return;
+    }
+
+    auto idColumn = query.fieldIndex(m_idColumn);
+
+    m_trackOrder.resize(0); // keeps allocated memory
+    trackToIndex->clear();
+
+    // Collect tracks in SQL order, but only those in the frozen membership.
+    while (query.next()) {
+        TrackId trackId(query.fieldValue(idColumn));
+        if (!membership.contains(trackId)) {
+            continue;
+        }
+        (*trackToIndex)[trackId] = m_trackOrder.size();
+        m_trackOrder.append(trackId);
     }
 }
 
