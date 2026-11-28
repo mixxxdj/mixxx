@@ -50,6 +50,14 @@ constexpr double kLinearScalerElipsis =
 // Rate at which the playpos slider is updated
 constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
+// Playback rate (in track frames per output frame) above which the deck
+// counts as fast-searching for the reader, see
+// CachingReader::hintAndMaybeWake(). Twice the FWD/BACK search speed (4x) and
+// far above anything musical; jog wheel search modes of controllers (e.g.
+// SHIFT + jog) run much faster. Never applied while scratching: scratch flicks
+// and backspins also pass this rate and must keep the full read-ahead.
+constexpr double kFastSearchRate = 8.0;
+
 const QString kAppGroup = QStringLiteral("[App]");
 
 } // anonymous namespace
@@ -1212,7 +1220,7 @@ void EngineBuffer::processTrackLocked(
 
     // Give the Reader hints as to which chunks of the current song we
     // really care about. It will try very hard to keep these in memory
-    hintReader(rate);
+    hintReader(rate, is_scratching);
 }
 
 void EngineBuffer::process(CSAMPLE* pOutput, const std::size_t bufferSize) {
@@ -1567,7 +1575,7 @@ void EngineBuffer::updateIndicators(double speed, std::size_t bufferSize) {
     m_pClockControl->updateIndicators(speed * m_baserate_old, m_playPos, m_sampleRate);
 }
 
-void EngineBuffer::hintReader(const double dRate) {
+void EngineBuffer::hintReader(const double dRate, const bool scratching) {
     m_hintList.clear();
     m_pReadAheadManager->hintReader(dRate, &m_hintList, m_channelCount);
 
@@ -1587,7 +1595,7 @@ void EngineBuffer::hintReader(const double dRate) {
     for (const auto& pControl : std::as_const(m_engineControls)) {
         pControl->hintReader(&m_hintList);
     }
-    m_pReader->hintAndMaybeWake(m_hintList);
+    m_pReader->hintAndMaybeWake(m_hintList, !scratching && fabs(dRate) > kFastSearchRate);
 }
 
 // WARNING: This method runs in the GUI thread

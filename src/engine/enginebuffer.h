@@ -296,7 +296,7 @@ class EngineBuffer : public EngineObject {
 
     void updateIndicators(double rate, std::size_t bufferSize);
 
-    void hintReader(const double rate);
+    void hintReader(const double rate, const bool scratching = false);
 
     double fractionalPlayposFromAbsolute(mixxx::audio::FramePos position);
 
