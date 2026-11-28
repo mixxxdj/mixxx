@@ -81,24 +81,10 @@ bool allowLoadToPlayer(
     if (ControlObject::get(ConfigKey(group, "play")) <= 0.0) {
         return true;
     }
-
-    bool allowLoadTrackIntoPlayingDeck = false;
-    if (pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
-        int loadWhenDeckPlaying =
-                pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
-        switch (static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying)) {
-        case LoadWhenDeckPlaying::Allow:
-        case LoadWhenDeckPlaying::AllowButStopDeck:
-            allowLoadTrackIntoPlayingDeck = true;
-            break;
-        case LoadWhenDeckPlaying::Reject:
-            break;
-        }
-    } else {
-        // support older version of this flag
-        allowLoadTrackIntoPlayingDeck =
-                pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
-    }
+    auto decision = TrackLoader::canLoadTrackIntoPlayingDeck(m_pConfig, group);
+        
+    bool allowLoadTrackIntoPlayingDeck = decision.canLoad;
+    
     return allowLoadTrackIntoPlayingDeck;
 }
 
