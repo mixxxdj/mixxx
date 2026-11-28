@@ -144,6 +144,7 @@ class WTrackMenu : public QMenu {
 
     // Reset
     void slotClearBeats();
+    void slotResetPlayedState();
     void slotClearPlayCount();
     void slotClearRating();
     void slotClearComment();
@@ -361,6 +362,7 @@ class WTrackMenu : public QMenu {
 
     // Clear track metadata actions
     parented_ptr<QAction> m_pClearBeatsAction;
+    parented_ptr<QAction> m_pClearPlayedAction;
     parented_ptr<QAction> m_pClearPlayCountAction;
     parented_ptr<QAction> m_pClearRatingAction;
     parented_ptr<QAction> m_pClearMainCueAction;
