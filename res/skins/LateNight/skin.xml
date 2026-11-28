@@ -46,7 +46,13 @@
       <!-- general -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
+      <!-- Hotcue count: 0 = 4 hotcues, 1 = 8 hotcues, 2 = 16 hotcues.
+           Kept mutually exclusive with `trigger` controls in the hotcue WidgetStack's
+           show_N_hotcues (see decks/hotcues.xml). -->
+      <attribute persist="true" config_key="[Skin],hotcue_count">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_4_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_16_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_loop_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_beatjump_controls">1</attribute>
