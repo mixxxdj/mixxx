@@ -7,8 +7,8 @@
 
 #include "audio/types.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddevicejack.h"
 #include "soundio/sounddeviceportaudio.h"
-#include "util/versionstore.h"
 
 #ifdef Q_OS_IOS
 #include "soundio/soundmanagerios.h"
@@ -248,8 +248,24 @@ void PortAudioEnumerator::initialize() {
             double  defaultSampleRate
          */
         const auto deviceTypeId = paApiIndexToTypeId.value(deviceInfo->hostApi);
-        auto currentDevice = QSharedPointer<SoundDevicePortAudio>::create(
-                m_pConfig, m_pSoundManager, deviceInfo, deviceTypeId, i);
+        SoundDevicePointer currentDevice;
+#if defined(MIXXX_HAVE_JACK) && defined(__linux__)
+        const PaHostApiInfo* hostApiInfo = Pa_GetHostApiInfo(deviceInfo->hostApi);
+        if (hostApiInfo && QString::fromUtf8(hostApiInfo->name) == SoundManagerConfig::kAPIJack) {
+            currentDevice = QSharedPointer<SoundDeviceJack>::create(
+                    m_pConfig,
+                    m_pSoundManager,
+                    QString::fromUtf8(deviceInfo->name),
+                    deviceInfo->maxInputChannels,
+                    deviceInfo->maxOutputChannels,
+                    mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate),
+                    i);
+        } else
+#endif
+        {
+            currentDevice = QSharedPointer<SoundDevicePortAudio>::create(
+                    m_pConfig, m_pSoundManager, deviceInfo, deviceTypeId, i);
+        }
         m_devices.push_back(currentDevice);
         if (Pa_GetHostApiInfo(deviceInfo->hostApi)->name == SoundManagerConfig::kAPIJack) {
             m_jackSampleRate = static_cast<mixxx::audio::SampleRate::value_t>(
@@ -290,7 +306,7 @@ void PortAudioEnumerator::setJACKName() const {
             // PortAudio does not make a copy of the string we provide it so we
             // need to make sure it will last forever so we intentionally leak
             // this string.
-            char* jackNameCopy = strdup(VersionStore::applicationName().toLocal8Bit().constData());
+            char* jackNameCopy = strdup("mixxx");
             if (!func(jackNameCopy)) {
                 qDebug() << "JACK client name set";
             }
