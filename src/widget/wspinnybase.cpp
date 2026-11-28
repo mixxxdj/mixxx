@@ -58,7 +58,7 @@ WSpinnyBase::WSpinnyBase(
           m_iStartMouseY(-1),
           m_iFullRotations(0),
           m_dPrevTheta(0.),
-          m_dRotationsPerSecond(MIXXX_VINYL_SPEED_33_NUM / 60),
+          m_dRotationsPerSecond(kVinylSpeed33Num / 60),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
@@ -185,7 +185,7 @@ void WSpinnyBase::setup(const QDomNode& node,
     if (m_pVCManager) {
         m_iVinylInput = m_pVCManager->vinylInputFromGroup(m_group);
     }
-    m_iVinylScopeSize = MIXXX_VINYL_SCOPE_SIZE;
+    m_iVinylScopeSize = kVinylScopeSize;
     setupVinylSignalQuality();
     m_bDrawVinylSignalQuality = false;
 #endif
