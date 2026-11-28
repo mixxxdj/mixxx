@@ -25,10 +25,15 @@ class BeatUtils {
             mixxx::audio::FramePos lowerFrame,
             mixxx::audio::FramePos upperFrame);
 
+    // The BPM is rounded within the tempos whose beats drift by less than
+    // 25 ms over the longest constant region, joined with the regions of the
+    // same tempo and phase. Its length is returned in
+    // pRoundingLength if not null.
     static mixxx::Bpm makeConstBpm(
             const QVector<ConstRegion>& constantRegions,
             mixxx::audio::SampleRate sampleRate,
-            mixxx::audio::FramePos* pFirstBeat);
+            mixxx::audio::FramePos* pFirstBeat,
+            mixxx::audio::FrameDiff_t* pRoundingLength = nullptr);
 
     static mixxx::audio::FramePos adjustPhase(
             mixxx::audio::FramePos firstBeat,

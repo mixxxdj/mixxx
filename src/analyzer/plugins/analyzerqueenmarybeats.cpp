@@ -1,11 +1,15 @@
 #include <dsp/onsets/DetectionFunction.h>
 #include <dsp/tempotracking/TempoTrackV2.h>
 
+#include <algorithm>
+#include <cmath>
+#include <numeric>
+
 // Class header comes after library includes here since our preprocessor
 // definitions interfere with qm-dsp's headers.
-#include "analyzer/plugins/analyzerqueenmarybeats.h"
-
 #include "analyzer/constants.h"
+#include "analyzer/plugins/analyzerqueenmarybeats.h"
+#include "analyzer/plugins/qmhalfbeat.h"
 
 namespace mixxx {
 namespace {
@@ -48,6 +52,9 @@ AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 
 bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     m_detectionResults.clear();
+    m_bandMagnitudes.clear();
+    m_resultBeats.clear();
+    m_constantBeatGrid.reset();
     m_sampleRate = sampleRate;
     m_stepSizeFrames = static_cast<int>(m_sampleRate * kStepSecs);
     m_windowSize = MathUtilities::nextPowerOfTwo(m_sampleRate / kMaximumBinSizeHz);
@@ -55,11 +62,27 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
             makeDetectionFunctionConfig(m_stepSizeFrames, m_windowSize));
     qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << m_stepSizeFrames;
 
+    // The spectrum has m_windowSize / 2 + 1 bins, the last band reaches up to it.
+    const int binCount = m_windowSize / 2 + 1;
+    for (int band = 0; band < kQmOnsetBands; ++band) {
+        m_bandBins[band] = std::min(binCount,
+                static_cast<int>(std::ceil(
+                        kQmOnsetBandEdgesHz[band] * m_windowSize / m_sampleRate)));
+    }
+    m_bandBins[kQmOnsetBands] = binCount;
+
     m_helper.initialize(
             m_windowSize, m_stepSizeFrames, [this](double* pWindow, size_t) {
                 // TODO(rryan) reserve?
                 m_detectionResults.push_back(
                         m_pDetectionFunction->processTimeDomain(pWindow));
+                const double* pMagnitude = m_pDetectionFunction->getSpectrumMagnitude();
+                for (int band = 0; band < kQmOnsetBands; ++band) {
+                    m_bandMagnitudes.push_back(static_cast<float>(
+                            std::accumulate(pMagnitude + m_bandBins[band],
+                                    pMagnitude + m_bandBins[band + 1],
+                                    0.0)));
+                }
                 return true;
             });
     return true;
@@ -93,6 +116,10 @@ bool AnalyzerQueenMaryBeats::finalize() {
     for (std::size_t i = 2; i < nonZeroCount; ++i) {
         df.push_back(m_detectionResults.at(i));
     }
+    // The band magnitudes of the same frames.
+    const std::vector<float> bands(
+            m_bandMagnitudes.begin() + (nonZeroCount - df.size()) * kQmOnsetBands,
+            m_bandMagnitudes.begin() + nonZeroCount * kQmOnsetBands);
 
     TempoTrackV2 tt(m_sampleRate, m_stepSizeFrames);
     tt.calculateBeatPeriod(df, beatPeriod);
@@ -108,6 +135,13 @@ bool AnalyzerQueenMaryBeats::finalize() {
                 (beats.at(i) * m_stepSizeFrames) + m_stepSizeFrames / 2);
         m_resultBeats.push_back(result);
     }
+
+    m_constantBeatGrid = checkQmConstantGridHalfBeat(
+            refineConstantBeatGrid(df, bands, beats, m_sampleRate, m_stepSizeFrames),
+            df,
+            bands,
+            m_sampleRate,
+            m_stepSizeFrames);
 
     m_pDetectionFunction.reset();
     return true;

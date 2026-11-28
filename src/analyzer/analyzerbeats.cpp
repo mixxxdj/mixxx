@@ -174,7 +174,8 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     QString version = pBeats->getVersion();
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             pluginID,
-            m_bPreferencesFastAnalysis);
+            m_bPreferencesFastAnalysis,
+            m_bPreferencesFixedTempo);
     QString newVersion = BeatFactory::getPreferredVersion(
             m_bPreferencesFixedTempo);
     QString newSubVersion = BeatFactory::getPreferredSubVersion(
@@ -261,12 +262,20 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     if (m_pPlugin->supportsBeatTracking()) {
         QVector<mixxx::audio::FramePos> beats = m_pPlugin->getBeats();
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
-                m_pluginId, m_bPreferencesFastAnalysis);
-        pBeats = BeatFactory::makePreferredBeats(
-                beats,
-                extraVersionInfo,
-                m_bPreferencesFixedTempo,
-                m_sampleRate);
+                m_pluginId, m_bPreferencesFastAnalysis, m_bPreferencesFixedTempo);
+        const auto constantGrid = m_pPlugin->getConstantBeatGrid();
+        if (m_bPreferencesFixedTempo && constantGrid) {
+            pBeats = mixxx::Beats::fromConstTempo(m_sampleRate,
+                    constantGrid->firstBeat.toNearestFrameBoundary(),
+                    constantGrid->bpm,
+                    BeatFactory::getPreferredSubVersion(extraVersionInfo));
+        } else {
+            pBeats = BeatFactory::makePreferredBeats(
+                    beats,
+                    extraVersionInfo,
+                    m_bPreferencesFixedTempo,
+                    m_sampleRate);
+        }
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
                  << "beats. Predominant BPM:"
                  << (pBeats ? pBeats->getBpmInRange(
@@ -286,9 +295,14 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
 
 // static
 QHash<QString, QString> AnalyzerBeats::getExtraVersionInfo(
-        const QString& pluginId, bool bPreferencesFastAnalysis) {
+        const QString& pluginId, bool bPreferencesFastAnalysis, bool bPreferencesFixedTempo) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
+    if (bPreferencesFixedTempo && pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id()) {
+        // Version 2: constant grid refined over the whole track
+        // (refineConstantBeatGrid). Beat maps are unchanged.
+        extraVersionInfo["qm_version"] = "2";
+    }
     if (bPreferencesFastAnalysis) {
         extraVersionInfo["fast_analysis"] = "1";
     }
