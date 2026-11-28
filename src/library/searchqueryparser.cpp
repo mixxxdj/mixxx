@@ -222,15 +222,12 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             auto [argument, matchMode] = getTextArgument(textFilterMatch.captured(2), &tokens);
 
             if (argument == kMissingFieldSearchTerm) {
-                qDebug() << "argument explicit empty";
                 if (field == "crate") {
                     pNode = std::make_unique<NoCrateFilterNode>(
                           &m_pTrackCollection->crates());
-                    qDebug() << pNode->toSql();
                 } else {
                     pNode = std::make_unique<NullOrEmptyTextFilterNode>(
                           m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
-                    qDebug() << pNode->toSql();
                 }
             } else if (!argument.isEmpty()) {
                 if (field == "crate") {
