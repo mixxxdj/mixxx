@@ -2,6 +2,8 @@
 
 #include <xiphcomment.h>
 
+#include <optional>
+
 #include "track/taglib/trackmetadata_file.h"
 
 namespace mixxx {
@@ -10,12 +12,32 @@ namespace taglib {
 
 namespace xiph {
 
+/// Import rating from Xiph/Vorbis comment (FMPS_RATING field)
+/// Returns std::nullopt if no rating is found, or a value 0-5 if found
+std::optional<int> importRatingFromTag(const TagLib::Ogg::XiphComment& tag);
+
+/// Export rating to Xiph/Vorbis comment as FMPS_RATING field
+/// Rating should be 0-5, where 0 means unrated (removes existing field)
+/// Returns true on success, false on invalid rating
+bool exportRatingIntoTag(
+        TagLib::Ogg::XiphComment* pTag,
+        int rating);
+
 bool importCoverImageFromTag(
         QImage* pCoverArt,
         TagLib::Ogg::XiphComment& tag);
 
 QImage importCoverImageFromPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures);
+
+/// Import the play count from Vorbis comment (FMPS_Playcount)
+std::optional<int> importPlayCountFromTag(const TagLib::Ogg::XiphComment& tag);
+
+/// Export the play count to Vorbis comment (FMPS_Playcount)
+/// Returns true on success, false on a negative play count
+bool exportPlayCountIntoTag(
+        TagLib::Ogg::XiphComment* pTag,
+        int playCount);
 
 void importTrackMetadataFromTag(
         TrackMetadata* pTrackMetadata,

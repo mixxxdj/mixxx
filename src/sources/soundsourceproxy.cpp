@@ -4,6 +4,7 @@
 #include <QMimeType>
 #include <QRegularExpression>
 #include <QStandardPaths>
+#include <optional>
 
 #include "sources/audiosourcetrackproxy.h"
 
@@ -638,6 +639,35 @@ inline bool shouldImportSeratoTagsFromSource(
             syncParams.syncSeratoMetadata;
 }
 
+// A play counter only ever increases. If both the file tags and the
+// library hold a value the higher one is the more recent, regardless
+// of which side has been modified last. Returns true if the track's
+// play counter has been raised to the value from the file tags.
+bool importHigherPlayCountFromSource(
+        Track* pTrack,
+        const mixxx::MetadataSource& metadataSource) {
+    DEBUG_ASSERT(pTrack);
+    const std::optional<int> filePlayCount = metadataSource.importPlayCount();
+    if (!filePlayCount) {
+        return false;
+    }
+    PlayCounter playCounter = pTrack->getPlayCounter();
+    if (*filePlayCount <= playCounter.getTimesPlayed()) {
+        return false;
+    }
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Imported play count"
+                << *filePlayCount
+                << "(was" << playCounter.getTimesPlayed() << ")"
+                << "from file"
+                << pTrack->getLocation();
+    }
+    playCounter.setTimesPlayed(*filePlayCount);
+    pTrack->setPlayCounter(playCounter);
+    return true;
+}
+
 } // namespace
 
 SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromSource(
@@ -758,14 +788,51 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
         // Only import and merge extra metadata that might be missing
         // in the database.
         DEBUG_ASSERT(!pCoverImg);
+
+        // During a partial import the file has not changed since the
+        // last synchronization, so an existing rating in Mixxx is newer
+        // than the value in the file tags and must not be overwritten.
+        // Only fill in a missing rating, e.g. after the import option
+        // has been enabled for an existing library. Changed files are
+        // handled by the full import below, where file tags take
+        // precedence.
+        bool ratingImported = false;
+        if (syncParams.importRatingFromFile && m_pSoundSource &&
+                m_pTrack->getRating() == mixxx::TrackRecord::kNoRating) {
+            const auto rating = m_pSoundSource->importRating();
+            const int newRating = rating.value_or(mixxx::TrackRecord::kNoRating);
+            if (newRating != mixxx::TrackRecord::kNoRating) {
+                m_pTrack->setRating(newRating);
+                ratingImported = true;
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug()
+                            << "Imported missing rating"
+                            << newRating
+                            << "from file"
+                            << getUrl().toString(QUrl::PreferLocalFile);
+                }
+            }
+        }
+
+        if (syncParams.importPlayCountFromFile && m_pSoundSource &&
+                importHigherPlayCountFromSource(m_pTrack.get(), *m_pSoundSource)) {
+            // Reuses the flag: both are extra data merged from the file
+            ratingImported = true;
+        }
+
         if (metadataImportResult == mixxx::MetadataSource::ImportResult::Succeeded) {
             if (m_pTrack->mergeExtraMetadataFromSource(trackMetadata)) {
+                return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
+            } else if (ratingImported) {
                 return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
             } else {
                 return UpdateTrackFromSourceResult::NotUpdated;
             }
         } else {
             // Nothing to do if no metadata has been imported
+            if (ratingImported) {
+                return UpdateTrackFromSourceResult::ExtraMetadataImportedAndMerged;
+            }
             return UpdateTrackFromSourceResult::NotUpdated;
         }
     }
@@ -850,6 +917,33 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
             sourceSynchronizedAt);
+
+    // Import the rating from file tags if enabled. The file is either
+    // being imported for the first time or has changed since the last
+    // synchronization, so the file tags take precedence over the value
+    // stored in Mixxx.
+    if (syncParams.importRatingFromFile && m_pSoundSource) {
+        auto rating = m_pSoundSource->importRating();
+        if (rating.has_value()) {
+            int newRating = rating.value();
+            int currentRating = m_pTrack->getRating();
+            if (newRating != currentRating) {
+                m_pTrack->setRating(newRating);
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug()
+                            << "Imported rating"
+                            << newRating
+                            << "(was" << currentRating << ")"
+                            << "from file"
+                            << getUrl().toString(QUrl::PreferLocalFile);
+                }
+            }
+        }
+    }
+
+    if (syncParams.importPlayCountFromFile && m_pSoundSource) {
+        importHigherPlayCountFromSource(m_pTrack.get(), *m_pSoundSource);
+    }
 
     const bool pendingBeatsImport =
             m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;

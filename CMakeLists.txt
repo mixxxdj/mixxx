@@ -1686,6 +1686,8 @@ add_library(
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
+  src/track/taglib/fmpsplaycount.cpp
+  src/track/taglib/fmpsrating.cpp
   src/track/taglib/trackmetadata_ape.cpp
   src/track/taglib/trackmetadata_common.cpp
   src/track/taglib/trackmetadata_file.cpp
@@ -2996,9 +2998,11 @@ if(BUILD_TESTING)
     src/test/playermanagertest.cpp
     src/test/playlisttest.cpp
     src/test/portmidicontroller_test.cpp
+    src/test/playcountexportimport_test.cpp
     src/test/portmidienumeratortest.cpp
     src/test/queryutiltest.cpp
     src/test/rangelist_test.cpp
+    src/test/ratingexportimport_test.cpp
     src/test/readaheadmanager_test.cpp
     src/test/replaygaintest.cpp
     src/test/rescalertest.cpp

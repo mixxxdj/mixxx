@@ -55,6 +55,7 @@ BasePlaylistFeature::BasePlaylistFeature(
 
     initActions();
     connectPlaylistDAO();
+
     connect(m_pLibrary,
             &Library::trackSelected,
             this,

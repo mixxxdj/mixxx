@@ -54,6 +54,14 @@ extern const ConfigKey kResetMissingTagMetadataOnImportConfigKey;
 
 extern const ConfigKey kSyncSeratoMetadataConfigKey;
 
+extern const ConfigKey kExportRatingToFileTagsConfigKey;
+
+extern const ConfigKey kImportRatingFromFileTagsConfigKey;
+
+extern const ConfigKey kExportPlayCountToFileTagsConfigKey;
+
+extern const ConfigKey kImportPlayCountFromFileTagsConfigKey;
+
 extern const ConfigKey kUseRelativePathOnExportConfigKey;
 
 extern const ConfigKey kCoverArtFetcherQualityConfigKey;
