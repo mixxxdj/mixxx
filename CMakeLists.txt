@@ -4124,7 +4124,6 @@ else()
 
       install(
         IMPORTED_RUNTIME_ARTIFACTS
-          Qt${QT_VERSION_MAJOR}::QuickControls2
           Qt${QT_VERSION_MAJOR}::QuickControls2Impl
           DESTINATION
           "${MIXXX_INSTALL_DATADIR}"
@@ -4139,6 +4138,15 @@ else()
             Qt${QT_VERSION_MAJOR}::QuickControls2BasicStyleImpl
             Qt${QT_VERSION_MAJOR}::QuickControls2Fusion
             Qt${QT_VERSION_MAJOR}::QuickControls2FusionStyleImpl
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
+        )
+      else()
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickControls2
             DESTINATION
             "${MIXXX_INSTALL_DATADIR}"
             COMPONENT
@@ -4210,23 +4218,16 @@ else()
         endif()
       endif()
 
-      if(TARGET Qt${QT_VERSION_MAJOR}::QuickTemplates2)
-        get_target_property(
-          _QuickTemplates2_Type
-          Qt${QT_VERSION_MAJOR}::QuickTemplates2
-          TYPE
+      if(QT_VERSION VERSION_LESS 6.4)
+        # From Qt 6.4 integrated in QuickControls2
+        install(
+          IMPORTED_RUNTIME_ARTIFACTS
+            Qt${QT_VERSION_MAJOR}::QuickTemplates2
+            DESTINATION
+            "${MIXXX_INSTALL_DATADIR}"
+            COMPONENT
+            applocal
         )
-        # QML plugins can require this library even if the executable does not.
-        if(_QuickTemplates2_Type STREQUAL "SHARED_LIBRARY")
-          install(
-            IMPORTED_RUNTIME_ARTIFACTS
-              Qt${QT_VERSION_MAJOR}::QuickTemplates2
-              DESTINATION
-              "${MIXXX_INSTALL_DATADIR}"
-              COMPONENT
-              applocal
-          )
-        endif()
       endif()
 
       install(
@@ -5483,6 +5484,32 @@ include(CPack)
 if(APPLOCAL_COMPONENT_DEFINED)
   cpack_add_component(applocal HIDDEN REQUIRED)
 
+  # QML controller tests need these DLLs without linking them directly. Copy
+  # them only into the build directory: vcpkg already installs them with mixxx.
+  set(_applocal_qml_commands)
+  if(WIN32 AND QT6 AND QML AND NOT Qt_IS_STATIC)
+    foreach(_qml_runtime_library QuickControls2 QuickTemplates2)
+      if(TARGET Qt${QT_VERSION_MAJOR}::${_qml_runtime_library})
+        get_target_property(
+          _qml_runtime_type
+          Qt${QT_VERSION_MAJOR}::${_qml_runtime_library}
+          TYPE
+        )
+        if(_qml_runtime_type STREQUAL "SHARED_LIBRARY")
+          list(
+            APPEND _applocal_qml_commands
+            COMMAND
+            "${CMAKE_COMMAND}"
+            -E
+            copy_if_different
+            "$<TARGET_FILE:Qt${QT_VERSION_MAJOR}::${_qml_runtime_library}>"
+            "${CMAKE_CURRENT_BINARY_DIR}"
+          )
+        endif()
+      endif()
+    endforeach()
+  endif()
+
   # Both executables need runtime plugins. Share one deployment step to avoid
   # concurrent installs when mixxx and mixxx-test are built together.
   add_custom_target(
@@ -5492,6 +5519,7 @@ if(APPLOCAL_COMPONENT_DEFINED)
       "-DCMAKE_INSTALL_CONFIG_NAME=$<CONFIG>"
       "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}" -P
       "${CMAKE_CURRENT_BINARY_DIR}/cmake_install.cmake"
+      ${_applocal_qml_commands}
     COMMENT
       "Install applocal components to run executables from the build directory."
     VERBATIM
