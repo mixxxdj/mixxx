@@ -164,6 +164,9 @@ class AnalyzerWaveform : public Analyzer {
     void storeIfGreater(float* pDest, float source);
 
     mutable AnalysisDao m_analysisDao;
+    UserSettingsPointer m_pConfig;
+    double m_lowMidFrequency = 250.0;
+    double m_midHighFrequency = 2500.0;
 
     WaveformPointer m_waveform;
     WaveformPointer m_waveformSummary;
