@@ -2,7 +2,10 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
 #include <QStandardPaths>
+#include <QSysInfo>
 #include <QtGlobal>
 #include <utility>
 
@@ -49,6 +52,34 @@ QString ebur128Version() {
                     QString::number(minor),
                     QString::number(patch));
 }
+
+#ifdef __LINUX__
+/// Returns the value of the given key from an os-release file
+/// (https://www.freedesktop.org/software/systemd/man/latest/os-release.html)
+/// or the null string if the file cannot be read or does not contain the
+/// key. The values of the keys may be wrapped in double or single quotes.
+QString readOsReleaseValue(const QString& osReleasePath, const QString& key) {
+    QFile file(osReleasePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return QString();
+    }
+    const QByteArray keyWithSeparator = key.toUtf8() + '=';
+    while (!file.atEnd()) {
+        const QByteArray line = file.readLine().trimmed();
+        if (!line.startsWith(keyWithSeparator)) {
+            continue;
+        }
+        QByteArray value = line.mid(keyWithSeparator.size());
+        if (value.size() >= 2 &&
+                (value.startsWith('"') || value.startsWith('\''))) {
+            value.chop(1);
+            value.remove(0, 1);
+        }
+        return QString::fromUtf8(value);
+    }
+    return QString();
+}
+#endif
 
 } // namespace
 
@@ -132,6 +163,125 @@ QString VersionStore::applicationName() {
 
 QString VersionStore::platform() {
     return QStringLiteral(OS_VERSION_STR " " PLATFORM_STR);
+}
+
+// static
+QString VersionStore::distribution() {
+    return distribution(QStringLiteral("/etc/os-release"));
+}
+
+// static
+QString VersionStore::distribution(const QString& osReleasePath) {
+#ifdef __LINUX__
+    // Prefer the PRETTY_NAME field of /etc/os-release, which contains a
+    // human-readable distribution name, e.g. "Ubuntu Studio 26.04 LTS".
+    // Note that inside a Flatpak sandbox this may report the runtime
+    // instead of the host distribution, which is an acceptable fallback.
+    const QString prettyName =
+            readOsReleaseValue(osReleasePath, QStringLiteral("PRETTY_NAME"));
+    if (!prettyName.isEmpty()) {
+        return prettyName;
+    }
+    // Fall back to QSysInfo if the os-release file is unreadable or does
+    // not provide a PRETTY_NAME field.
+    const QString productType = QSysInfo::productType();
+    const QString productVersion = QSysInfo::productVersion();
+    if (productType.isEmpty() || productType == QLatin1String("unknown") ||
+            productVersion.isEmpty() ||
+            productVersion == QLatin1String("unknown")) {
+        return QString();
+    }
+    return productType + QChar(' ') + productVersion;
+#else
+    Q_UNUSED(osReleasePath);
+    return QString();
+#endif
+}
+
+// static
+QString VersionStore::cpuArchitecture() {
+    const QString architecture = QSysInfo::currentCpuArchitecture();
+    if (architecture.isEmpty() || architecture == QLatin1String("unknown")) {
+        return QString();
+    }
+    return architecture;
+}
+
+// static
+QString VersionStore::sessionType() {
+#ifdef __LINUX__
+    // XDG_SESSION_TYPE is the standard way to determine the type of the
+    // graphical session on Linux ("x11", "wayland", "tty", ...).
+    const QString sessionType = qEnvironmentVariable("XDG_SESSION_TYPE");
+    if (sessionType.compare(QLatin1String("wayland"), Qt::CaseInsensitive) == 0) {
+        return QStringLiteral("Wayland");
+    }
+    if (sessionType.compare(QLatin1String("x11"), Qt::CaseInsensitive) == 0) {
+        return QStringLiteral("X11");
+    }
+    // Session types other than Wayland and X11 are omitted instead of being
+    // reported with a placeholder value.
+#endif
+    // The session type is an XDG-specific concept. There is no meaningful
+    // equivalent to report on other platforms.
+    return QString();
+}
+
+// static
+QString VersionStore::installationMethod() {
+    return installationMethod(QCoreApplication::applicationDirPath());
+}
+
+// static
+QString VersionStore::installationMethod(const QString& applicationDirPath) {
+#ifdef __LINUX__
+    const QString canonicalApplicationDir =
+            QFileInfo(applicationDirPath).canonicalFilePath();
+
+    // Flatpak: the Flatpak runtime sets FLATPAK_ID inside the sandbox.
+    // https://docs.flatpak.org/en/latest/variables.html
+    if (!qEnvironmentVariableIsEmpty("FLATPAK_ID")) {
+        return QStringLiteral("Flatpak");
+    }
+
+    // Snap: the Snap runtime provides a set of SNAP_* variables, e.g. SNAP_NAME.
+    // https://snapcraft.io/docs/environment-variables
+    if (!qEnvironmentVariableIsEmpty("SNAP_NAME")) {
+        return QStringLiteral("Snap");
+    }
+
+    // AppImage: the official AppImage runtime sets APPIMAGE to the absolute
+    // path of the running AppImage file.
+    // https://docs.appimage.org/packaging/environment-variables.html
+    if (!qEnvironmentVariableIsEmpty("APPIMAGE")) {
+        return QStringLiteral("AppImage");
+    }
+
+    // A path that does not exist has no canonical form, and neither has a
+    // directory that is absent from this file system. Comparing those two null
+    // strings would match and report a false result, so stop before comparing
+    // any paths: the installation method of a nonexistent location is unknown.
+    if (canonicalApplicationDir.isEmpty()) {
+        return QString();
+    }
+
+    // Distribution packages install the executable in /usr/bin. Any other
+    // location is a build of the sources, either run from the CMake build
+    // directory or installed with `make install` (by default to /usr/local).
+    // A portable archive extracted elsewhere is reported as a source build as
+    // well, because it cannot be told apart from one without further hints.
+    if (canonicalApplicationDir ==
+            QFileInfo(QStringLiteral("/usr/bin")).canonicalFilePath()) {
+        return QStringLiteral("distro package");
+    }
+    return QStringLiteral("source build");
+#else
+    Q_UNUSED(applicationDirPath);
+#endif
+    // On Windows and macOS the installation method (installer, portable
+    // archive, DMG, App bundle, Homebrew, ...) cannot be detected reliably,
+    // so the entry is omitted entirely.
+    return QString();
 }
 
 // static
@@ -235,4 +385,69 @@ void VersionStore::logBuildDetails() {
              << QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     qDebug() << "QCoreApplication::applicationDirPath()"
              << QCoreApplication::applicationDirPath();
+}
+
+// static
+QString VersionStore::diagnosticInfo(
+        const QString& skin, const QString& skinType) {
+    // This dump is a technical text for bug reports. The keys are stable
+    // English identifiers and must NOT be translated.
+    QList<QPair<QString, QString>> entries;
+    // Available fields only: an entry whose value is unknown is left out
+    // instead of being reported with a placeholder.
+    const auto add = [&entries](const QString& key, const QString& value) {
+        if (!value.isEmpty()) {
+            entries.append({key, value});
+        }
+    };
+
+    add(QStringLiteral("Version"), version());
+
+    // gitVersion() also contains the branch name (if available), but falls
+    // back to "unknown" if the build does not provide the git information.
+    if (!gitDescribe().isEmpty()) {
+        add(QStringLiteral("Git version"), gitVersion());
+    }
+
+    // This is the date of the last commit of the source tree the binary was
+    // built from, not the build date. Use UTC to make the date unambiguous in
+    // bug reports.
+    const QDateTime lastCommitDate = date();
+    if (lastCommitDate.isValid()) {
+        add(QStringLiteral("Last commit"),
+                lastCommitDate.toUTC().toString(Qt::ISODate));
+    }
+
+    add(QStringLiteral("Qt"), qtVersion());
+
+#ifdef __LINUX__
+    add(QStringLiteral("Distribution"), distribution());
+#else
+    const QString productName = QSysInfo::prettyProductName();
+    if (productName != QLatin1String("unknown")) {
+        add(QStringLiteral("OS"), productName);
+    }
+#endif
+
+    add(QStringLiteral("Architecture"), cpuArchitecture());
+    add(QStringLiteral("Session type"), sessionType());
+    add(QStringLiteral("Installation method"), installationMethod());
+    add(QStringLiteral("Skin"), skin);
+    add(QStringLiteral("Skin type"), skinType);
+    add(QStringLiteral("Dependencies"),
+            dependencyVersions().join(QStringLiteral(", ")));
+
+    // All values start at the same column, after the longest key.
+    qsizetype keyWidth = 0;
+    for (const auto& entry : entries) {
+        keyWidth = qMax(keyWidth, entry.first.length());
+    }
+
+    QStringList lines;
+    lines.reserve(entries.size());
+    for (const auto& entry : entries) {
+        lines.append(entry.first.leftJustified(keyWidth) + QChar(' ') +
+                entry.second);
+    }
+    return lines.join(QChar('\n'));
 }
