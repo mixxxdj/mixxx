@@ -83,7 +83,6 @@ QLabel#labelRecFilename {
 QToolTip,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
-WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,

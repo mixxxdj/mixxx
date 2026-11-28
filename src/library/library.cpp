@@ -459,6 +459,11 @@ void Library::bindLibraryWidget(
         feature->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
     }
 
+    connect(this,
+            &Library::setTrackTableFont,
+            m_pLibraryWidget,
+            &WLibrary::setFeaturePageFont);
+
     // Set the current font and row height on all the WTrackTableViews that were
     // just connected to us.
     emit setTrackTableFont(m_trackTableFont);

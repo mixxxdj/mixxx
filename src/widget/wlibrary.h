@@ -30,7 +30,7 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     // registration was successful. Registered widget must implement the
     // LibraryView interface.
     bool registerView(const QString& name, QWidget* view);
-
+    void setFeaturePageFont(const QFont& font);
     LibraryView* getActiveView() const;
     WTrackTableView* getCurrentTrackTableView() const;
     // This returns true if the current view is or has a WTracksTableView and

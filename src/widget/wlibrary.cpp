@@ -1,12 +1,14 @@
 #include "widget/wlibrary.h"
 
 #include <QKeyEvent>
+#include <QTextDocument>
 #include <QtDebug>
 
 #include "library/libraryview.h"
 #include "moc_wlibrary.cpp"
 #include "skin/legacy/skincontext.h"
 #include "util/math.h"
+#include "widget/wlibrarytextbrowser.h"
 #include "widget/wtracktableview.h"
 
 WLibrary::WLibrary(QWidget* parent)
@@ -30,6 +32,14 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
                     kDefaultTrackTableBackgroundColorOpacity),
             kMinTrackTableBackgroundColorOpacity,
             kMaxTrackTableBackgroundColorOpacity);
+}
+void WLibrary::setFeaturePageFont(const QFont& font) {
+    for (int i = 0; i < count(); ++i) {
+        auto* pBrowser = qobject_cast<WLibraryTextBrowser*>(widget(i));
+        if (pBrowser) {
+            pBrowser->document()->setDefaultFont(font);
+        }
+    }
 }
 
 bool WLibrary::registerView(const QString& name, QWidget* pView) {
