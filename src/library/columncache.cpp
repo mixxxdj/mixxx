@@ -52,6 +52,9 @@ constexpr ColumnProperties kColumnPropertiesByEnum[] = {
         DI(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST){&LIBRARYTABLE_ALBUMARTIST,
                 QT_TRANSLATE_NOOP("BaseTrackTableModel", "Album Artist"),
                 kDefaultColumnWidth * 4},
+        DI(ColumnCache::COLUMN_LIBRARYTABLE_RECORDLABEL){&LIBRARYTABLE_RECORDLABEL,
+                QT_TRANSLATE_NOOP("BaseTrackTableModel", "Record Label"),
+                kDefaultColumnWidth * 4},
         DI(ColumnCache::COLUMN_LIBRARYTABLE_YEAR){&LIBRARYTABLE_YEAR,
                 QT_TRANSLATE_NOOP("BaseTrackTableModel", "Year"),
                 kDefaultColumnWidth},
@@ -234,6 +237,7 @@ void ColumnCache::setColumns(QStringList columns) {
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TITLE, kSortNoCaseLex);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUM, kSortNoCaseLex);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUMARTIST, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_RECORDLABEL, kSortNoCaseLex);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_YEAR, kSortNoCase);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_GENRE, kSortNoCaseLex);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMPOSER, kSortNoCaseLex);
