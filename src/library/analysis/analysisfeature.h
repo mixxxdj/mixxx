@@ -31,13 +31,13 @@ class AnalysisFeature : public LibraryFeature {
 
     TreeItemModel* sidebarModel() const override;
     void refreshLibraryModels();
+    void activate() override;
 
   signals:
     void analysisActive(bool bActive);
     void trackProgress(TrackId trackId, AnalyzerProgress progress);
 
   public slots:
-    void activate() override;
     void analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks);
 
     void suspendAnalysis();

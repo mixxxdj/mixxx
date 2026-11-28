@@ -15,13 +15,15 @@ class SetlogFeature : public BasePlaylistFeature {
   public:
     SetlogFeature(Library* pLibrary,
             UserSettingsPointer pConfig);
-    virtual ~SetlogFeature();
+    ~SetlogFeature() override;
 
     QVariant title() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
     void activatePlaylist(int playlistId) override;
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   public slots:
     void onRightClick(const QPoint& globalPos) override;
@@ -32,8 +34,6 @@ class SetlogFeature : public BasePlaylistFeature {
     void slotUnlockAllChildPlaylists();
     void slotDeletePlaylist() override;
     void slotGetNewPlaylist();
-    void activate() override;
-    void activateChild(const QModelIndex& index) override;
 
   protected:
     QModelIndex constructChildModel(int selectedId);
@@ -63,4 +63,5 @@ class SetlogFeature : public BasePlaylistFeature {
     int m_yearNodeId;
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
+    bool m_inhibitConstructChildModel;
 };
