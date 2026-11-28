@@ -26,6 +26,7 @@ enum class ExportTrackMetadataResult {
     Succeeded,
     Failed,
     Skipped,
+    Queued,
 };
 
 enum class HotcueSortMode {
@@ -37,3 +38,4 @@ enum class HotcueSortMode {
 const QString kShowTrackMenuKey = QStringLiteral("show_track_menu");
 
 Q_DECLARE_METATYPE(TrackPointer);
+Q_DECLARE_METATYPE(ExportTrackMetadataResult);
