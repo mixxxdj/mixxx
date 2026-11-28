@@ -1104,7 +1104,7 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
     if (pMapping) {
         pMapping->loadSettings(m_pConfig, m_pController->getName());
         auto settings = pMapping->getSettings();
-        auto* pLayout = pMapping->getSettingsLayout();
+        const auto* pLayout = pMapping->getSettingsLayout();
 
         QLayoutItem* pItem;
         while ((pItem = m_ui.settingsTab->layout()->takeAt(0)) != nullptr) {
@@ -1132,7 +1132,7 @@ void DlgPrefController::showMapping(std::shared_ptr<LegacyControllerMapping> pMa
                 const QString title = pBox->title();
                 pBox->setCheckable(true);
                 // The collapsed state is saved/restored via the groupbox' title.
-                // Note: If multiple top-levle groups happen to have the same title
+                // Note: If multiple top-level groups happen to have the same title
                 // (which should not normally happen in well-behaved controller mappings,
                 // but is not strictly prohibited), the last one to be expanded/
                 // collapsed determines the state that will be restored.
