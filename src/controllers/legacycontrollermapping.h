@@ -359,6 +359,9 @@ class LegacyControllerMapping {
 
     virtual bool isMappable() const = 0;
 
+    /// Returns a deep copy, for handing the mapping to another thread.
+    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
+
     void loadSettings(UserSettingsPointer pConfig,
             const QString& controllerName) const;
     void saveSettings(UserSettingsPointer pConfig,

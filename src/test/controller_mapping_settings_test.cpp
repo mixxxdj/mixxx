@@ -382,6 +382,10 @@ class LegacyDummyMapping : public LegacyControllerMapping {
     bool isMappable() const override {
         return false;
     }
+
+    std::shared_ptr<LegacyControllerMapping> clone() const override {
+        return std::make_shared<LegacyDummyMapping>(*this);
+    }
 };
 
 class LegacyDummyMappingFileHandler : public LegacyControllerMappingFileHandler {

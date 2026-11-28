@@ -167,6 +167,10 @@ class MockLegacyControllerMapping : public LegacyControllerMapping {
     bool isMappable() const override {
         throw std::runtime_error("not implemented");
     }
+
+    std::shared_ptr<LegacyControllerMapping> clone() const override {
+        throw std::runtime_error("not implemented");
+    }
 };
 
 TEST_F(LegacyControllerMappingFileHandlerTest, canParseSimpleMapping) {
