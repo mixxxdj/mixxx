@@ -406,7 +406,11 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// failure.
     std::optional<BeatsPointer> tryTranslateBeats(double xBeats) const;
 
-    /// Scale the position of every beat in the song by `scale`.
+    /// Scale the BPM of the song by `scale`. The position of the first beat
+    /// is kept, all other beats are placed at the positions of the original
+    /// beats with a scaled beat index (interpolated between two original
+    /// beats if the scaled index is fractional, rounded to the frame
+    /// boundary).
     //
     /// Returns a pointer to the modified beats object, or `nullopt` on
     /// failure.
