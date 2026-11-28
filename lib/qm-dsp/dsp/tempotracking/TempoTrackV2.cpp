@@ -352,15 +352,18 @@ TempoTrackV2::viterbi_decode(const d_mat_t &rcfmat, const d_vec_t &wv, d_vec_t &
     for (std::size_t t = 0; t < T && t < beat_period.size(); t++) {
         const int k = bestpath[t];
         double period = k;
+        
         if (k > 0 && k + 1 < int(Q)) {
             const double left = rcfmat[t][k - 1];
             const double center = rcfmat[t][k];
             const double right = rcfmat[t][k + 1];
             const double denominator = left - 2 * center + right;
+            
             if (center >= left && center >= right && denominator < 0) {
                 period += 0.5 * (left - right) / denominator;
             }
         }
+        
         beat_period[t] = period;
     }
 }
