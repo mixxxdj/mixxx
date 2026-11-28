@@ -20,3 +20,34 @@ cd build && gcc ../tools/dummy_hid_device.c -lhidapi-hidraw -o dummy_hid_device 
 # Allow the created hidraw device to be accessed by the user. You may also set the write udev rules. Finally, you can also run Mixxx as root, but that's not recommended.
 sudo chown "$USER" "$(ls -1t /dev/hidraw* | head -n 1)"
 ```
+
+## AppImage
+
+The AppImage has to be built on Rocky 8 (glibc 2.28), which a modern distro
+cannot provide. `tools/appimage_build.sh` builds it in the same
+`rockylinux:8` container as CI. Run from the repository root:
+
+```sh
+tools/appimage_build.sh              # build into build-appimage/
+tools/appimage_build.sh shell        # open a shell in the container after setup
+tools/appimage_build.sh --proxy socks5h://127.0.0.1:1080
+```
+
+CI runs the same script inside its `rockylinux:8` container. When it is run on
+a host, it starts the container and re-runs itself inside, so the build steps
+live in one place. The dnf, CMake, ccache and buildenv caches persist under
+`${XDG_CACHE_HOME:-$HOME/.cache}/mixxx-appimage`, so repeated builds only
+recompile what changed.
+
+CMake downloads the buildenv archive of about 1.3GB during configure, the
+manual PDF is downloaded with `DOWNLOAD_MANUAL`, and appimagetool fetches the
+AppImage runtime when packaging. The first build therefore needs network
+access, about 10 to 20GB of free space for the build directory and the caches,
+and `--proxy` when the downloads need a proxy. Keep `BUILDENV_BASEPATH`
+outside the repository, because a buildenv inside the source tree makes Qt
+pull its static FFmpeg media plugin into the link line.
+
+Build AppImages with this script instead of configuring a build on the host.
+A native build uses whatever tools the host provides, for example
+appstream-util instead of appstreamcli for the AppStream metadata, and can
+fail in ways that do not happen in CI.
