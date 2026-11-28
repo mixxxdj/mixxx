@@ -1765,6 +1765,7 @@ add_library(
   src/waveform/overviewtype.cpp
   src/waveform/renderers/glwaveformrenderbackground.cpp
   src/waveform/renderers/glvsynctestrenderer.cpp
+  src/waveform/renderers/rgb3bandlevels.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
@@ -2067,6 +2068,7 @@ if(QOPENGL)
       src/waveform/renderers/allshader/waveformrendererhsv.cpp
       src/waveform/renderers/allshader/waveformrendererpreroll.cpp
       src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb3band.cpp
       src/waveform/renderers/allshader/waveformrenderertextured.cpp
       src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
       src/waveform/renderers/allshader/waveformrenderersimple.cpp
@@ -4110,6 +4112,7 @@ if(QML)
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererpreroll.cpp
       src/waveform/renderers/allshader/waveformrendererrgb.cpp
+      src/waveform/renderers/allshader/waveformrendererrgb3band.cpp
       src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
       src/waveform/renderers/allshader/waveformrendermark.cpp
       src/waveform/renderers/allshader/waveformrendermarkrange.cpp

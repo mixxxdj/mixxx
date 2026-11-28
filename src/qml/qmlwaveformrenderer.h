@@ -237,6 +237,28 @@ class QmlWaveformRendererFiltered
     bool m_stacked{false};
 };
 
+class QmlWaveformRendererRGB3Band
+        : public QmlWaveformRendererSignal {
+    Q_OBJECT
+    Q_PROPERTY(QColor lowMidColor MEMBER m_lowMidColor NOTIFY lowMidColorChanged REQUIRED)
+
+    QML_NAMED_ELEMENT(WaveformRendererRGB3Band)
+
+  public:
+    QmlWaveformRendererRGB3Band()
+            : QmlWaveformRendererSignal(WaveformWidgetType::RGB3Band) {
+    }
+    Renderer create(WaveformWidgetRenderer* waveformWidget,
+            mixxx::qml::WaveformRendererSignalBaseOptions options)
+            const override;
+
+  signals:
+    void lowMidColorChanged(const QColor&);
+
+  private:
+    QColor m_lowMidColor;
+};
+
 class QmlWaveformRendererHSV
         : public QmlWaveformRendererFactory {
     Q_OBJECT

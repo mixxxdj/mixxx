@@ -19,6 +19,9 @@ class WaveformWidgetType {
         Stacked = 16,  // 16 RGB Stacked
         Invalid,       // Don't use! Used to indicate invalid/unknown type, as
                        // Count_WaveformWidgetType used to.
+        // Values up to 27 were used by removed types that may still be in
+        // old configs, see upgradeToAllShaders()
+        RGB3Band = 28,
     };
     static constexpr std::array kValues = {
             WaveformWidgetType::Empty,
@@ -28,6 +31,7 @@ class WaveformWidgetType {
             WaveformWidgetType::VSyncTest,
             WaveformWidgetType::RGB,
             WaveformWidgetType::Stacked,
+            WaveformWidgetType::RGB3Band,
     };
 };
 
