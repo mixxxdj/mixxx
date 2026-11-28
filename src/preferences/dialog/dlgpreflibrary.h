@@ -82,6 +82,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg {
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
     bool m_bAddedDirectory;
+    bool m_bRelocatedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
     // Listen to rate range changes in order to update the fuzzy BPM range
