@@ -98,6 +98,7 @@ public:
 
     void relocateCachedTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator) const;
+    void forceRelocateTrackById(TrackId trackId, mixxx::FileAccess newFileAccess);
 
     void purgeTrackId(const TrackId& trackId);
 
@@ -229,6 +230,7 @@ class GlobalTrackCache : public QObject {
 
     void relocateTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator);
+    void forceRelocateTrackById(TrackId trackId, mixxx::FileAccess newFileAccess);
 
     TrackPointer lookupById(
             const TrackId& trackId);

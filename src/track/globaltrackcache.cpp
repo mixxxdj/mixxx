@@ -119,6 +119,12 @@ void GlobalTrackCacheLocker::relocateCachedTracks(
     m_pInstance->relocateTracks(pRelocator);
 }
 
+void GlobalTrackCacheLocker::forceRelocateTrackById(
+        TrackId trackId, mixxx::FileAccess newFileAccess) {
+    DEBUG_ASSERT(m_pInstance);
+    m_pInstance->forceRelocateTrackById(std::move(trackId), std::move(newFileAccess));
+}
+
 void GlobalTrackCacheLocker::purgeTrackId(const TrackId& trackId) {
     DEBUG_ASSERT(m_pInstance);
     m_pInstance->purgeTrackId(trackId);
@@ -362,6 +368,32 @@ void GlobalTrackCache::relocateTracks(
                 i->second));
     }
     m_tracksByCanonicalLocation = std::move(relocatedTracksByCanonicalLocation);
+}
+
+void GlobalTrackCache::forceRelocateTrackById(
+        TrackId trackId, mixxx::FileAccess newFileAccess) {
+    const auto trackById = m_tracksById.find(trackId);
+    if (trackById == m_tracksById.end()) {
+        return;
+    }
+    Track* plainPtr = trackById->second->getPlainPtr();
+
+    const QString oldCanonicalLocation = TrackRef::fromFileInfo(
+            plainPtr->getFileInfo(), trackId)
+                                                 .getCanonicalLocation();
+    if (!oldCanonicalLocation.isEmpty()) {
+        m_tracksByCanonicalLocation.erase(oldCanonicalLocation);
+    }
+
+    plainPtr->relocate(newFileAccess);
+
+    const QString newCanonicalLocation = TrackRef::fromFileInfo(
+            newFileAccess.info(), trackId)
+                                                 .getCanonicalLocation();
+    if (!newCanonicalLocation.isEmpty()) {
+        m_tracksByCanonicalLocation.insert(
+                std::make_pair(newCanonicalLocation, trackById->second));
+    }
 }
 
 void GlobalTrackCache::saveEvictedTrack(Track* pEvictedTrack) const {
