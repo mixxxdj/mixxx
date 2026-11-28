@@ -98,6 +98,28 @@ CUP mode:
         </property>
        </widget>
       </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="labelAutoHotcues">
+        <property name="text">
+         <string>Hot cues</string>
+        </property>
+        <property name="buddy">
+         <cstring>checkBoxAutoHotcues</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="2">
+       <widget class="QCheckBox" name="checkBoxAutoHotcues">
+        <property name="toolTip">
+         <string>When the beats of a track are detected, up to 8 hot cues are set
+at the largest changes of loudness and bass level.
+Tracks that already have hot cues are left alone.</string>
+        </property>
+        <property name="text">
+         <string>Set hot cues at section changes when analyzing tracks</string>
+        </property>
+       </widget>
+      </item>
       <item row="6" column="0">
        <widget class="QLabel" name="labelCloneDeckOnLoadDoubleTap">
         <property name="text">
@@ -669,6 +691,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>comboBoxLoadPoint</tabstop>
   <tabstop>comboBoxLoadWhenDeckPlaying</tabstop>
   <tabstop>checkBoxCloneDeckOnLoadDoubleTap</tabstop>
+  <tabstop>checkBoxAutoHotcues</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>checkBoxInvertSpeedSlider</tabstop>
   <tabstop>checkBoxResetPitch</tabstop>

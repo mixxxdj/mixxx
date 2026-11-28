@@ -29,6 +29,7 @@ constexpr double kDefaultPositionDisplayType =
 // to playermanager.cpp
 const QString kAppGroup = QStringLiteral("[App]");
 const QString kControlsGroup = QStringLiteral("[Controls]");
+const ConfigKey kAutoHotcuesConfigKey(QStringLiteral("[Library]"), QStringLiteral("AutoHotcues"));
 } // namespace
 
 DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
@@ -442,6 +443,7 @@ DlgPrefDeck::~DlgPrefDeck() {
 }
 
 void DlgPrefDeck::slotUpdate() {
+    checkBoxAutoHotcues->setChecked(m_pConfig->getValue(kAutoHotcuesConfigKey, false));
     checkBoxIntroStartMove->setChecked(m_pConfig->getValue(
             ConfigKey(kControlsGroup, QStringLiteral("SetIntroStartAtMainCue")), false));
 
@@ -535,6 +537,7 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     // Clone decks by double-tapping Load button.
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
+    checkBoxAutoHotcues->setChecked(false);
 
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
@@ -695,6 +698,7 @@ void DlgPrefDeck::slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex) {
 }
 
 void DlgPrefDeck::slotApply() {
+    m_pConfig->setValue(kAutoHotcuesConfigKey, checkBoxAutoHotcues->isChecked());
     m_pConfig->set(ConfigKey(kControlsGroup, QStringLiteral("SetIntroStartAtMainCue")),
             ConfigValue(m_bSetIntroStartAtMainCue));
 
