@@ -74,8 +74,7 @@ EffectManifestPointer BiquadFullKillEQEffect::getManifest() {
 
 BiquadFullKillEQEffectGroupState::BiquadFullKillEQEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_pLowBuf(engineParameters.samplesPerBuffer()),
+        : m_pLowBuf(engineParameters.samplesPerBuffer()),
           m_pBandBuf(engineParameters.samplesPerBuffer()),
           m_pHighBuf(engineParameters.samplesPerBuffer()),
           m_tempBuf(engineParameters.samplesPerBuffer()),

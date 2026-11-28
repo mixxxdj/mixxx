@@ -20,9 +20,8 @@ constexpr double kMaxLfoBeats = 32.0;
 } // anonymous namespace
 
 struct FlangerGroupState : public EffectState {
-    FlangerGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              delayPos(0),
+    FlangerGroupState()
+            : delayPos(0),
               lfoFrames(0),
               previousPeriodFrames(-1),
               prev_regen(0),

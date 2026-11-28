@@ -21,8 +21,7 @@ template<class LPF>
 class LVMixEQEffectGroupState : public EffectState {
   public:
     explicit LVMixEQEffectGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              m_oldLow(0.0),
+            : m_oldLow(0.0),
               m_oldMid(0.0),
               m_oldHigh(1.0),
               m_rampHoldOff(LVMixEQEffectGroupStateConstants::kRampDone),

@@ -67,8 +67,7 @@ EffectManifestPointer FilterEffect::getManifest() {
 }
 
 FilterGroupState::FilterGroupState(const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_loFreq(kMaxCorner),
+        : m_loFreq(kMaxCorner),
           m_q(0.707106781),
           m_hiFreq(kMinCorner) {
     m_buffer = mixxx::SampleBuffer(engineParameters.samplesPerBuffer());

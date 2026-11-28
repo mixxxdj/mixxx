@@ -53,8 +53,7 @@
 /// relatively small compared to the additional code complexity.)
 class EffectState {
   public:
-    EffectState(const mixxx::EngineParameters&) {
-    };
+    EffectState() {};
     virtual ~EffectState(){};
 };
 
@@ -242,7 +241,13 @@ class EffectProcessorImpl : public EffectProcessor {
     /// subclasses for built-in effects should not.
     virtual EffectSpecificState* createSpecificState(
             const mixxx::EngineParameters& engineParameters) {
-        EffectSpecificState* pState = new EffectSpecificState(engineParameters);
+        EffectSpecificState* pState;
+        if constexpr (std::is_constructible_v<EffectSpecificState,
+                              const mixxx::EngineParameters&>) {
+            pState = new EffectSpecificState(engineParameters);
+        } else {
+            pState = new EffectSpecificState();
+        }
         if (kEffectDebugOutput) {
             qDebug() << this << "EffectProcessorImpl creating EffectState" << pState;
         }

@@ -58,9 +58,8 @@ static constexpr int panMaxDelay = 3300; // allows a 30 Hz filter at 97346;
 
 class AutoPanGroupState : public EffectState {
   public:
-    AutoPanGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              time(0),
+    AutoPanGroupState()
+            : time(0),
               pDelay(std::make_unique<EngineFilterPanSingle<panMaxDelay>>()),
               m_dPreviousPeriod(-1.0) {
     }

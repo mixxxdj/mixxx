@@ -56,8 +56,7 @@ EffectManifestPointer DistortionEffect::getManifest() {
 
 DistortionGroupState::DistortionGroupState(
         const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_driveGain(1),
+        : m_driveGain(1),
           m_crossfadeParameter(0),
           m_samplerate(engineParameters.sampleRate()),
           m_previousMakeUpGain(1),

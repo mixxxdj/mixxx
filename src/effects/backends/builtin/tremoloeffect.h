@@ -8,12 +8,11 @@
 
 class TremoloState : public EffectState {
   public:
-    TremoloState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              gain(0),
+    TremoloState()
+            : gain(0),
               currentFrame(0),
               quantizeEnabled(false),
-              tripletEnabled(false){};
+              tripletEnabled(false) {};
     ~TremoloState() override = default;
 
     double gain;

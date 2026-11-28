@@ -17,8 +17,7 @@ constexpr double kMaxDelay = 2.0;
 
 class GlitchGroupState : public EffectState {
   public:
-    GlitchGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
+    GlitchGroupState(const mixxx::EngineParameters& engineParameters) {
         audioParametersChanged(engineParameters);
         clear();
     }

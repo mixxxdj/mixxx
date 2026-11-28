@@ -9,8 +9,7 @@
 
 class PhaserGroupState final : public EffectState {
   public:
-    PhaserGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
+    PhaserGroupState() {
         clear();
     }
     ~PhaserGroupState() override = default;

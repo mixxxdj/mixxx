@@ -78,7 +78,7 @@ void LV2EffectProcessor::processChannel(
 
 LV2EffectGroupState* LV2EffectProcessor::createSpecificState(
         const mixxx::EngineParameters& engineParameters) {
-    LV2EffectGroupState* pState = new LV2EffectGroupState(engineParameters);
+    LV2EffectGroupState* pState = new LV2EffectGroupState();
     LilvInstance* pInstance = pState->lilvInstance(m_pPlugin, engineParameters);
     VERIFY_OR_DEBUG_ASSERT(pInstance) {
         return pState;

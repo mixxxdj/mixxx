@@ -60,8 +60,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
 
 MoogLadder4FilterGroupState::MoogLadder4FilterGroupState(
         const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_loFreq(kMaxCorner),
+        : m_loFreq(kMaxCorner),
           m_resonance(0),
           m_hiFreq(kMinCorner),
           m_samplerate(engineParameters.sampleRate()) {

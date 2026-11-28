@@ -76,8 +76,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
 }
 
 GraphicEQEffectGroupState::GraphicEQEffectGroupState(
-        const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters) {
+        const mixxx::EngineParameters& engineParameters) {
     m_oldLow = 0;
     for (int i = 0; i < 6; i++) {
         m_oldMid.append(1.0);

@@ -15,8 +15,7 @@
 class KeyComparisonGroupState final : public EffectState {
   public:
     explicit KeyComparisonGroupState(
-            const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters) {
+            const mixxx::EngineParameters& engineParameters) {
         audioParametersChanged(engineParameters);
     }
     ~KeyComparisonGroupState() override = default;

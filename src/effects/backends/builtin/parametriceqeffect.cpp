@@ -101,8 +101,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
 
 ParametricEQEffectGroupState::ParametricEQEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_oldSampleRate(44100) {
+        : m_oldSampleRate(44100) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
         m_oldQ.append(1.75);

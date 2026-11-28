@@ -10,9 +10,8 @@
 // Refer to EffectProcessor for documentation
 class LV2EffectGroupState final : public EffectState {
   public:
-    LV2EffectGroupState(const mixxx::EngineParameters& engineParameters)
-            : EffectState(engineParameters),
-              m_pInstance(nullptr) {
+    LV2EffectGroupState()
+            : m_pInstance(nullptr) {
     }
 
     ~LV2EffectGroupState() override {
