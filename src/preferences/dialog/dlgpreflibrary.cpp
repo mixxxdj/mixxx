@@ -38,6 +38,7 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_bAddedDirectory(false),
+          m_bRelocatedDirectory(false),
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx),
           m_pRateRangeDeck1(make_parented<ControlProxy>(
                   QStringLiteral("[Channel1]"), QStringLiteral("rateRange"), this)) {
@@ -194,21 +195,38 @@ DlgPrefLibrary::~DlgPrefLibrary() = default;
 
 void DlgPrefLibrary::slotShow() {
     m_bAddedDirectory = false;
+    m_bRelocatedDirectory = false;
 }
 
 void DlgPrefLibrary::slotHide() {
     resetLibraryFont();
-    if (!m_bAddedDirectory) {
+    if (!m_bAddedDirectory && !m_bRelocatedDirectory) {
         return;
     }
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
-    msgBox.setWindowTitle(tr("Music Directory Added"));
-    msgBox.setText(tr(
-            "You added one or more music directories. The tracks in "
-            "these directories won't be available until you rescan "
-            "your library. Would you like to rescan now?"));
+    if (m_bRelocatedDirectory) {
+        msgBox.setWindowTitle(tr("Music Directories Changed"));
+        if (m_bAddedDirectory) {
+            msgBox.setText(tr(
+                    "You added and relinked music directories. You need to rescan your "
+                    "library to look for tracks in new directories that are "
+                    "not currently in your library and verify tracks in relinked directories. "
+                    "Would you like to rescan now?"));
+        } else {
+            msgBox.setText(tr(
+                    "You relinked one or more music directories. You may rescan "
+                    "your library to verify tracks in these directories. "
+                    "Would you like to rescan now?"));
+        }
+    } else {
+        msgBox.setWindowTitle(tr("Music Directory Added"));
+        msgBox.setText(tr(
+                "You added one or more music directories. The tracks in "
+                "these directories won't be available until you rescan "
+                "your library. Would you like to rescan now?"));
+    }
     QPushButton* scanButton = msgBox.addButton(
             tr("Scan"), QMessageBox::AcceptRole);
     msgBox.addButton(QMessageBox::Cancel);
@@ -565,6 +583,7 @@ void DlgPrefLibrary::slotRelocateDir() {
 
     if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
         populateDirList();
+        m_bRelocatedDirectory = true;
     }
 }
 
