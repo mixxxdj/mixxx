@@ -1,5 +1,9 @@
 #include "mixxxapplication.h"
 
+#include <QPalette>
+#include <QProxyStyle>
+#include <QStyle>
+#include <QStyleHints>
 #include <QThreadPool>
 #include <QTouchEvent>
 #include <QtDebug>
@@ -170,4 +174,79 @@ bool MixxxApplication::notify(QObject* pTarget, QEvent* pEvent) {
     }
 
     return ret;
+}
+
+namespace {
+
+/// fusion without permanent shortcut underlines in menus and labels
+class DarkDialogStyle : public QProxyStyle {
+  public:
+    using QProxyStyle::QProxyStyle;
+    int styleHint(StyleHint hint,
+            const QStyleOption* pOption,
+            const QWidget* pWidget,
+            QStyleHintReturn* pReturnData) const override {
+        if (hint == QStyle::SH_UnderlineShortcut) {
+            return 0;
+        }
+        return QProxyStyle::styleHint(hint, pOption, pWidget, pReturnData);
+    }
+};
+
+} // namespace
+
+void MixxxApplication::setDarkDialogs(bool dark) {
+    static bool s_dark = false;
+    if (dark == s_dark) {
+        return;
+    }
+    s_dark = dark;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    // dark title bars, native dark appearance on macos
+    QGuiApplication::styleHints()->setColorScheme(
+            dark ? Qt::ColorScheme::Dark : Qt::ColorScheme::Unknown);
+#endif
+#ifndef __APPLE__ // the macos style follows the color scheme, ignores palettes
+    static QString s_platformStyle;
+    if (!dark) {
+        QApplication::setStyle(s_platformStyle);
+        s_platformStyle.clear();
+        QApplication::setPalette(QPalette()); // back to the platform theme
+        return;
+    }
+    // windowsvista ignores palettes, fusion follows them everywhere
+    s_platformStyle = QApplication::style()->name();
+    QApplication::setStyle(new DarkDialogStyle(QStringLiteral("Fusion")));
+    QPalette palette(QColor(0x141414)); // button, other shades derive
+    palette.setColor(QPalette::Window, Qt::black);
+    // fields, checkbox and radio indicators: fusion outlines vanish on black
+    palette.setColor(QPalette::Base, QColor(0x1c1c1c));
+    palette.setColor(QPalette::AlternateBase, QColor(0x232323));
+    palette.setColor(QPalette::ToolTipBase, Qt::black);
+    for (const auto role : {QPalette::WindowText,
+                 QPalette::Text,
+                 QPalette::ButtonText,
+                 QPalette::ToolTipText,
+                 QPalette::HighlightedText,
+                 QPalette::BrightText}) {
+        palette.setColor(role, Qt::white);
+        palette.setColor(QPalette::Disabled, role, QColor(0x6e6e6e));
+    }
+    palette.setColor(QPalette::PlaceholderText, QColor(0x8a8a8a));
+    palette.setColor(QPalette::Highlight, QColor(0x1e64c8));
+    palette.setColor(QPalette::Link, QColor(0x4da3ff));
+    QApplication::setPalette(palette);
+    // linux platform themes add per-class palettes (labels, buttons, views)
+    for (const char* pClassName : {"QAbstractButton",
+                 "QAbstractItemView",
+                 "QGroupBox",
+                 "QHeaderView",
+                 "QLabel",
+                 "QMenu",
+                 "QMenuBar",
+                 "QTabBar",
+                 "QTextEdit"}) {
+        QApplication::setPalette(palette, pClassName);
+    }
+#endif
 }
