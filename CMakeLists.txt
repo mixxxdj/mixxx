@@ -5485,17 +5485,50 @@ include(CPack)
 if(APPLOCAL_COMPONENT_DEFINED)
   cpack_add_component(applocal HIDDEN REQUIRED)
 
-  # In order to run Mixx from the build directory install applocal components
-  add_custom_command(
-    TARGET mixxx
-    POST_BUILD
+  # QML controller tests need these DLLs without linking them directly. Copy
+  # them only into the build directory: vcpkg already installs them with mixxx.
+  set(_applocal_qml_commands)
+  if(WIN32 AND QT6 AND QML AND NOT Qt_IS_STATIC)
+    foreach(_qml_runtime_library QuickControls2 QuickTemplates2)
+      if(TARGET Qt${QT_VERSION_MAJOR}::${_qml_runtime_library})
+        get_target_property(
+          _qml_runtime_type
+          Qt${QT_VERSION_MAJOR}::${_qml_runtime_library}
+          TYPE
+        )
+        if(_qml_runtime_type STREQUAL "SHARED_LIBRARY")
+          list(
+            APPEND _applocal_qml_commands
+            COMMAND
+            "${CMAKE_COMMAND}"
+            -E
+            copy_if_different
+            "$<TARGET_FILE:Qt${QT_VERSION_MAJOR}::${_qml_runtime_library}>"
+            "${CMAKE_CURRENT_BINARY_DIR}"
+          )
+        endif()
+      endif()
+    endforeach()
+  endif()
+
+  # Both executables need runtime plugins. Share one deployment step to avoid
+  # concurrent installs when mixxx and mixxx-test are built together.
+  add_custom_target(
+    mixxx-applocal
     COMMAND
       "${CMAKE_COMMAND}" -DCOMPONENT=applocal
-      -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P
-      cmake_install.cmake
+      "-DCMAKE_INSTALL_CONFIG_NAME=$<CONFIG>"
+      "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}" -P
+      "${CMAKE_CURRENT_BINARY_DIR}/cmake_install.cmake"
+      ${_applocal_qml_commands}
     COMMENT
-      "Install applocal components to allow Mixxx to be run from the build directory."
+      "Install applocal components to run executables from the build directory."
+    VERBATIM
   )
+  add_dependencies(mixxx mixxx-applocal)
+  if(BUILD_TESTING)
+    add_dependencies(mixxx-test mixxx-applocal)
+  endif()
 endif()
 
 if(APPLE AND MACOS_BUNDLE)

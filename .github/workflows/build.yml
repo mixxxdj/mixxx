@@ -452,6 +452,19 @@ jobs:
         if: runner.os == 'Windows'
         uses: ammaraskar/msvc-problem-matcher@0.3.0
 
+      - name: "[Windows] Test before building the application"
+        if: runner.os == 'Windows'
+        working-directory: build
+        env:
+          QT_PLUGIN_PATH: ""
+          QT_QPA_PLATFORM_PLUGIN_PATH: ""
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          cmake --build . --target mixxx-test --config RelWithDebInfo
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (Test-Path mixxx.exe) { throw "The application must not be built before this check." }
+          ctest --build-config RelWithDebInfo --no-tests=error --output-on-failure --timeout 45 --tests-regex '^(UuidTest\.|HidMappings/MappingTestFixture\.LoadMapping/.*Dummy Device Screen\.hid\.xml)'
+
       - name: "Build"
         # Ninja (macOS/Windows) uses all cores by default, make (Linux) only one
         run: cmake --build . --config RelWithDebInfo ${{ runner.os == 'Linux' && '--parallel "$(nproc)"' || '' }}
