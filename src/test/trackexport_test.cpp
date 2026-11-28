@@ -306,3 +306,26 @@ TEST_F(TrackExporterTest, MungeFilename) {
     // Remove the track we created.
     tempPath.remove(kOggTestFile);
 }
+
+TEST_F(TrackExporterTest, MissingFileIsReported) {
+    // 1. Existing valid track file
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath(kOggTestFile));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+
+    // 2. Non-existent track file
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("does-not-exist.mp3"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
+
+    TrackPointerList tracks;
+    tracks.append(track1);
+    tracks.append(track2);
+
+    TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    m_answerer.reset(new FakeOverwriteAnswerer(&worker));
+
+    worker.run();
+    EXPECT_TRUE(worker.wait(10000));
+
+    // Check failed track collection count
+    EXPECT_EQ(1, worker.failedTracks().size());
+}
