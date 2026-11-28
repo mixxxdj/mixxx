@@ -183,7 +183,13 @@ GlobalTrackCacheResolver::~GlobalTrackCacheResolver() {
         // incomplete Track. Others are suspended during construction.
         // This call wakes them up.
         m_pInstance->discardIncompleteTrack();
+        // Unlock before releasing our reference: if it is the last one
+        // (e.g. adding the track to the database failed) the deleter runs
+        // GlobalTrackCache::slotEvictAndSave() synchronously on the main
+        // thread, which locks the non-recursive cache mutex again.
+        unlockCache();
     }
+    m_strongPtr.reset();
 }
 
 void GlobalTrackCacheResolver::initLookupResult(
