@@ -105,7 +105,7 @@ if(
         "Downloading file ${BUILDENV_URL} to ${BUILDENV_BASEPATH} ..."
       )
 
-      set(BUILDENV_DOWNLOAD_WAIT_SECONDS 1)
+      set(BUILDENV_DOWNLOAD_WAIT_SECONDS 10)
       foreach(
         BUILDENV_DOWNLOAD_ATTEMPT
         RANGE 1 ${BUILDENV_DOWNLOAD_MAX_ATTEMPTS}
