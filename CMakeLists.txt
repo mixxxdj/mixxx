@@ -1939,6 +1939,7 @@ set(
   src/util/cache.h
   src/util/circularbuffer.h
   src/util/class.h
+  src/util/cloudfilehelper.h
   src/util/cmdlineargs.h
   src/util/color/color.h
   src/util/color/colorpalette.h
@@ -2150,7 +2151,7 @@ if(APPLE)
       target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
     endif()
   else()
-    target_sources(mixxx-lib PRIVATE src/util/darkappearance.mm)
+    target_sources(mixxx-lib PRIVATE src/util/cloudfilehelper.mm src/util/darkappearance.mm)
 
     option(
       MACOS_ITUNES_LIBRARY
