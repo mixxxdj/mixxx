@@ -42,6 +42,26 @@ Any text (PR description, commit message body, code comments, documentation) tha
 autonomously by an AI Agent **must** be framed with an disclaimer that the text is autonomously generated
 by the AI Agent, at both the start and the end of that text block.
 
+## Code Formatting
+
+Space code out with blank lines:
+
+- Before and after `if` and `for` statements, unless the variable declared directly before
+  is the loop iterator or checked in the `if` clause.
+- Before `return`, unless the function has fewer than three lines.
+- Between logical groups of variables and statements.
+
+## Functions
+
+Based on the [Linux kernel coding style](https://www.kernel.org/doc/html/latest/process/coding-style.html#functions):
+
+- Functions are short and do one thing: at most one or two screenfuls.
+- The more complex and deeply indented a function, the shorter it must be. Only conceptually
+  simple ones (e.g. one long `switch`) may be longer.
+- Split complex functions into helpers with descriptive names.
+- Use at most 5-10 local variables, otherwise split the function.
+- If no descriptive imperative name fits (e.g. `findSharpestPeriod`), split the function.
+
 ## Key Architecture
 
 - **ControlObject/ControlProxy**: `[Group], key_name` inter-component communication.
