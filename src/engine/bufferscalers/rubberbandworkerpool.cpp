@@ -22,6 +22,7 @@ RubberBandWorkerPool::RubberBandWorkerPool(UserSettingsPointer pConfig)
     qDebug() << "RubberBand will use" << numRBTasks << "tasks to scale the audio signal";
 
     setThreadPriority(QThread::HighPriority);
+
     // The RB pool will only be used to scale n-1 buffer sample, so the engine
     // thread takes care of the last buffer and doesn't have to be idle.
     setMaxThreadCount(numRBTasks - 1);

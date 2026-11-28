@@ -33,9 +33,9 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     // Enable short window if available (only for R3)
     void useOptionWindowShort(bool enable);
 
-    void setScaleParameters(double base_rate,
-                            double* pTempoRatio,
-                            double* pPitchRatio) override;
+    void setScaleParameters(double baseRate,
+            double* pTempoRatio,
+            double* pPitchRatio) override;
 
     double scaleBuffer(
             CSAMPLE* pOutputBuffer,
@@ -51,10 +51,12 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     /// Calls `m_pRubberBand->getPreferredStartPad()`, with backwards
     /// compatibility for older librubberband versions.
     size_t getPreferredStartPad() const;
+
     /// Calls `m_pRubberBand->getStartDelay()`, with backwards compatibility for
     /// older librubberband versions.
     size_t getStartDelay() const;
     int runningEngineVersion();
+
     /// Reset the rubberband instance and run the prerequisite amount of padding
     /// through it. This should be used instead of calling
     /// `m_pRubberBand->reset()` directly.
@@ -72,6 +74,7 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     /// receive processed audio from Rubber Band. This is needed because Mixxx
     /// uses interleaved buffers in most other places.
     std::vector<mixxx::SampleBuffer> m_buffers;
+
     /// These point to the buffers in `m_buffers`. They can be defined here
     /// since this object cannot be moved or copied.
     std::vector<float*> m_bufferPtrs;
@@ -82,6 +85,7 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
 
     // Holds the playback direction
     bool m_bBackwards;
+
     /// The amount of silence padding that still needs to be dropped from the
     /// retrieve samples in `retrieveAndDeinterleave()`. See the `reset()`
     /// function for an explanation.
