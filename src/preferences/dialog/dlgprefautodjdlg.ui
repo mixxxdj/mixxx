@@ -76,11 +76,8 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="toolTip">
-          <string>Uncheck, to ignore all played tracks.</string>
-         </property>
          <property name="text">
-          <string>Suspend track in Track Source from re-queue</string>
+          <string>Allow played tracks again after a waiting time</string>
          </property>
           <property name="buddy">
            <cstring>RequeueIgnoreCheckBox</cstring>
@@ -90,9 +87,6 @@
 
        <item row="1" column="1">
         <widget class="QCheckBox" name="RequeueIgnoreCheckBox">
-         <property name="toolTip">
-          <string>Uncheck, to ignore all played tracks.</string>
-         </property>
          <property name="text">
           <string/>
          </property>
@@ -108,7 +102,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Suspension period for track selection</string>
+          <string>Waiting time before a played track can be selected again</string>
          </property>
         </widget>
        </item>
@@ -116,7 +110,7 @@
        <item row="2" column="1">
         <widget class="QTimeEdit" name="RequeueIgnoreTimeEdit">
          <property name="toolTip">
-          <string>Duration after which a track is eligible for selection by Auto DJ again</string>
+          <string>Duration (hh:mm, max. 23:59) after which a track is eligible for selection by Auto DJ again</string>
          </property>
          <property name="displayFormat">
           <string>hh:mm</string>
