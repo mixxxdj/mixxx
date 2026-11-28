@@ -7,6 +7,8 @@
 
 #include "control/controlproxy.h"
 
+class QTimer;
+
 namespace mixxx {
 namespace qml {
 
@@ -22,6 +24,13 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     Q_PROPERTY(bool initialized READ isInitialized NOTIFY initializedChanged)
     Q_PROPERTY(double value READ getValue WRITE setValue NOTIFY valueChanged)
     Q_PROPERTY(double parameter READ getParameter WRITE setParameter NOTIFY parameterChanged)
+    /// Minimum time in ms between value/parameter change notifications caused
+    /// by the control changing (0 = notify on every change, the default). Use
+    /// it for controls that change on every audio callback (playposition,
+    /// vu_meter) but only feed text. The last value is always delivered, at
+    /// most updateInterval ms late. Writes from QML notify immediately.
+    Q_PROPERTY(int updateInterval READ getUpdateInterval WRITE setUpdateInterval
+                    NOTIFY updateIntervalChanged)
     QML_NAMED_ELEMENT(ControlProxy)
 
   public:
@@ -52,6 +61,11 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     void setParameter(double newValue);
     double getParameter() const;
 
+    void setUpdateInterval(int intervalMs);
+    int getUpdateInterval() const {
+        return m_updateIntervalMs;
+    }
+
     bool isKeyValid() const;
     bool isInitialized() const;
 
@@ -67,10 +81,14 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     void initializedChanged(bool initialized);
     void valueChanged(double newValue);
     void parameterChanged(double newParameter);
+    void updateIntervalChanged(int intervalMs);
 
   private slots:
     /// Emits both the valueChanged and parameterChanged signals
     void slotControlProxyValueChanged(double newValue);
+    /// Throttled path for changes coming from the control (see updateInterval)
+    void slotControlValueChangedThrottled(double newValue);
+    void slotThrottleTimeout();
 
   private:
     /// (Re-)Initializes or resets the pointer to the underlying control proxy.
@@ -85,6 +103,11 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     /// QML object creation is complete.
     bool m_isComponentComplete;
     std::unique_ptr<ControlProxy> m_pControlProxy;
+
+    int m_updateIntervalMs;
+    /// Created on first use, only for proxies with updateInterval > 0.
+    QTimer* m_pThrottleTimer;
+    bool m_throttlePending;
 };
 
 } // namespace qml
