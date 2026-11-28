@@ -193,6 +193,38 @@ TEST_F(PlaylistTest, CsvEndOfLine) {
     EXPECT_TRUE(entries.at(1).endsWith(QStringLiteral("lf.mp3")));
 }
 
+TEST_F(PlaylistTest, CsvWithoutFinalNewline) {
+    const QList<QByteArray> contents = {
+            "Title,Location\r\nFirst,first.mp3\r\nLast,last.mp3",
+            "\"Title\",\"Location\"\r\n\"First\",\"first.mp3\"\r\n\"Last\",\"last.mp3\"",
+            "Location\nfirst.mp3\nlast.mp3",
+            "Location,Title\nfirst.mp3,First\nlast.mp3,Last"};
+    for (const auto& content : contents) {
+        SCOPED_TRACE(content.constData());
+        QTemporaryFile csvFile;
+        ASSERT_TRUE(csvFile.open());
+        csvFile.write(content);
+        csvFile.close();
+
+        EXPECT_EQ((QList<QString>{"first.mp3", "last.mp3"}),
+                ParserCsv::parseAllLocations(csvFile.fileName()));
+    }
+}
+
+TEST_F(PlaylistTest, CsvWithoutFinalNewlineNonAsciiLocation) {
+    const QString location = QStringLiteral("caf\u00e9.mp3");
+    const QList<QByteArray> encodedLocations = {location.toUtf8(), location.toLatin1()};
+    for (const auto& encodedLocation : encodedLocations) {
+        QTemporaryFile csvFile;
+        ASSERT_TRUE(csvFile.open());
+        csvFile.write("Title,Location\nLast," + encodedLocation);
+        csvFile.close();
+
+        EXPECT_EQ(QList<QString>{location},
+                ParserCsv::parseAllLocations(csvFile.fileName()));
+    }
+}
+
 TEST_F(PlaylistTest, PlsEndOfLine) {
     QTemporaryFile plsFile;
     ASSERT_TRUE(plsFile.open());
