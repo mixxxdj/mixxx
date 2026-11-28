@@ -1,11 +1,15 @@
 #include "mixxxmainwindow.h"
 
+#include <QApplication>
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QDebug>
 #include <QFileDialog>
+#include <QList>
+#include <QMessageBox>
 #include <QOpenGLContext>
 #include <QUrl>
+#include <QWidget>
 
 #if defined(__LINUX__) && !defined(__ANDROID__)
 #include <QDBusConnection>
@@ -1599,17 +1603,56 @@ bool MixxxMainWindow::confirmExit() {
             return false;
         }
     }
-    if (m_pPrefDlg && m_pPrefDlg->isVisible()) {
-        QMessageBox::StandardButton btn = QMessageBox::question(
-            this, tr("Confirm Exit"),
-            tr("The preferences window is still open.") + "<br>" +
-            tr("Discard any changes and exit Mixxx?"),
-            QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+
+    return confirmCloseOpenWindows();
+}
+
+bool MixxxMainWindow::confirmCloseOpenWindows() {
+    QList<QWidget*> windowsToClose;
+    bool requireWarning = false;
+    bool prefDlgOpen = false;
+
+    const QWidgetList topLevelWidgets = QApplication::topLevelWidgets();
+    for (QWidget* pWidget : topLevelWidgets) {
+        // Parentless windows with WA_QuitOnClose prevent lastWindowClosed, so close them.
+        if (pWidget == this || !pWidget->isVisible() || pWidget->parentWidget() ||
+                !pWidget->testAttribute(Qt::WA_QuitOnClose)) {
+            continue;
+        }
+
+        if (pWidget == m_pPrefDlg) {
+            requireWarning = true;
+            prefDlgOpen = true;
+        } else if (!qobject_cast<DlgAbout*>(pWidget) &&
+                !qobject_cast<QMessageBox*>(pWidget)) {
+            requireWarning = true;
+        }
+
+        windowsToClose.append(pWidget);
+    }
+
+    if (requireWarning) {
+        const QString reason = prefDlgOpen
+                ? tr("The preferences window is still open.")
+                : tr("Another window is still open.");
+
+        QMessageBox::StandardButton btn = QMessageBox::question(this,
+                tr("Confirm Exit"),
+                reason + "<br>" + tr("Discard any changes and exit Mixxx?"),
+                QMessageBox::Yes | QMessageBox::No,
+                QMessageBox::No);
+
         if (btn == QMessageBox::No) {
             return false;
         }
-        else {
-            m_pPrefDlg->close();
+    }
+
+    while (!windowsToClose.isEmpty()) {
+        auto* pWidget = windowsToClose.takeFirst();
+        if (!pWidget->close()) {
+            // The window ignored the close event. Don't quit, otherwise Mixxx
+            // would keep running in the background without a main window.
+            return false;
         }
     }
 
