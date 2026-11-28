@@ -558,12 +558,18 @@ void DlgPrefWaveform::updateWaveformTypeOptions(bool useWaveform) {
     splitLeftRightCheckBox->setEnabled(useWaveform &&
             (supportedOptions &
                     allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
+    // Stacked waveform always supports stereo coloration, so auto-tick it
+    if (type == WaveformWidgetType::Stacked) {
+        splitLeftRightCheckBox->setChecked(true);
+    } else {
+        splitLeftRightCheckBox->setChecked(useWaveform &&
+                (supportedOptions &
+                        allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
+    }
+
     highDetailCheckBox->setEnabled(useWaveform &&
             (supportedOptions &
                     allshader::WaveformRendererSignalBase::Option::HighDetail));
-    splitLeftRightCheckBox->setChecked(splitLeftRightCheckBox->isEnabled() &&
-            (currentOptions &
-                    allshader::WaveformRendererSignalBase::Option::SplitStereoSignal));
     highDetailCheckBox->setChecked(highDetailCheckBox->isEnabled() &&
             (currentOptions & allshader::WaveformRendererSignalBase::Option::HighDetail));
 #else
