@@ -149,8 +149,10 @@ void EchoEffect::processChannel(
         delay_seconds = period;
     }
     VERIFY_OR_DEBUG_ASSERT(delay_seconds > 0) {
-        delay_seconds = 1 / engineParameters.sampleRate();
+        delay_seconds = 1.0 / engineParameters.sampleRate();
     }
+    delay_seconds = std::min<double>(
+            delay_seconds, EchoGroupState::kMaxDelaySeconds);
 
     int delay_frames = static_cast<int>(delay_seconds *
             engineParameters.sampleRate());
