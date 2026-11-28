@@ -101,8 +101,7 @@ void WKey::paintEvent(QPaintEvent* event) {
     option.initFrom(this);
     QStylePainter painter(this);
 
-    const QStyle* pStyle = style();
-    const QRect contRect = pStyle->subElementRect(QStyle::SE_FrameContents, &option, this);
+    const QRect contRect = contentsRect();
 
     const int rectWidth = 4;
     const int splitHeight = static_cast<int>(contRect.height() * splitPoint);
