@@ -1,5 +1,10 @@
 #include "engine/sidechain/shoutconnection.h"
 
+#include <QDir>
+#include <QFile>
+#include <QSslCertificate>
+#include <QSslConfiguration>
+#include <QTemporaryFile>
 #include <QTextCodec>
 #include <QUrl>
 
@@ -42,6 +47,45 @@ constexpr int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
 
+// Returns the path of a PEM file with the system CA certificates, or an empty
+// QByteArray if there are none.
+// Libshout only checks the OpenSSL default paths, which are empty with the
+// OpenSSL bundled on Windows and macOS. Qt can read the native certificate
+// stores, so we pass its certificates to libshout.
+QByteArray systemCaBundlePath() {
+#ifndef QT_NO_SSL
+    static const QByteArray s_path = [] {
+        const QList<QSslCertificate> certificates =
+                QSslConfiguration::systemCaCertificates();
+        if (certificates.isEmpty()) {
+            kLogger.warning() << "No system CA certificates found";
+            return QByteArray();
+        }
+        // The file is removed when Mixxx exits
+        static QTemporaryFile s_file(
+                QDir::temp().filePath(QStringLiteral("mixxx-ca-XXXXXX.pem")));
+        if (!s_file.open()) {
+            kLogger.warning() << "Could not write system CA certificates to"
+                              << s_file.fileName() << s_file.errorString();
+            return QByteArray();
+        }
+        for (const QSslCertificate& certificate : certificates) {
+            s_file.write(certificate.toPem());
+        }
+        s_file.close();
+#ifdef __WINDOWS__
+        // OpenSSL expects UTF-8 file names on Windows
+        return s_file.fileName().toUtf8();
+#else
+        return QFile::encodeName(s_file.fileName());
+#endif
+    }();
+    return s_path;
+#else
+    return QByteArray();
+#endif
+}
+
 } // namespace
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
@@ -79,14 +123,24 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
     setState(NETWORKSTREAMWORKER_STATE_INIT);
 
     // shout_init() should've already been called by now
-    if (!(m_pShout = shout_new())) {
-        errorDialog(tr("Mixxx encountered a problem"),
-                tr("Could not allocate shout_t"));
-    }
+    resetShout();
 
     if (!(m_pShoutMetaData = shout_metadata_new())) {
         errorDialog(tr("Mixxx encountered a problem"),
                 tr("Could not allocate shout_metadata_t"));
+    }
+}
+
+bool ShoutConnection::resetShout() {
+    if (m_pShout) {
+        shout_close(m_pShout);
+        shout_free(m_pShout);
+    }
+
+    if (!(m_pShout = shout_new())) {
+        errorDialog(tr("Mixxx encountered a problem"),
+                tr("Could not allocate shout_t"));
+        return false;
     }
 
     setFunctionCode(14);
@@ -95,15 +149,15 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
                 shout_get_error(m_pShout));
     }
 
-#ifdef SHOUT_TLS
     // Libshout defaults to SHOUT_TLS_AUTO if build with SHOUT_TLS
     // Sometimes autodetection fails, resulting into no metadata send
     // https://github.com/mixxxdj/mixxx/issues/9599
+    // The TLS mode of the profile is set in updateFromPreferences()
     if (shout_set_tls(m_pShout, SHOUT_TLS_DISABLED) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting tls mode:"),
                 shout_get_error(m_pShout));
     }
-#endif
+    return true;
 }
 
 ShoutConnection::~ShoutConnection() {
@@ -122,7 +176,7 @@ ShoutConnection::~ShoutConnection() {
 
     // Signal user if thread doesn't die
     VERIFY_OR_DEBUG_ASSERT(!isRunning()) {
-       qWarning() << "ShoutOutput::~ShoutOutput(): Thread didn't die.\
+        qWarning() << "ShoutOutput::~ShoutOutput(): Thread didn't die.\
        Ignored but file a bug report if problems rise!";
     }
 }
@@ -149,8 +203,7 @@ void ShoutConnection::applySettings() {
     // processDisconnect manually
 
     int dStatus = getStatus();
-    if((dStatus == BroadcastProfile::STATUS_UNCONNECTED
-            || dStatus == BroadcastProfile::STATUS_FAILURE)) {
+    if ((dStatus == BroadcastProfile::STATUS_UNCONNECTED || dStatus == BroadcastProfile::STATUS_FAILURE)) {
         serverConnect();
     }
 }
@@ -162,7 +215,7 @@ QByteArray ShoutConnection::encodeString(const QString& string) {
     return string.toLatin1();
 }
 
-void ShoutConnection::insertMetaData(const char *pName, const char *pValue) {
+void ShoutConnection::insertMetaData(const char* pName, const char* pValue) {
     int ret = shout_metadata_add(m_pShoutMetaData, pName, pValue);
     if (ret != SHOUTERR_SUCCESS) {
         kLogger.warning() << "shout_metadata_add" << pName << "fails with error code" << ret;
@@ -190,6 +243,13 @@ void ShoutConnection::updateFromPreferences() {
     DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
     m_encoder.reset();
 
+    // Libshout never resets the TLS mode used for the last connection.
+    // Reusing the shout_t would ignore a changed TLS mode and fail to
+    // reconnect after a RFC 2817 upgrade, so use a new one for each connection.
+    if (!resetShout()) {
+        return;
+    }
+
     m_format_is_mp3 = false;
     m_format_is_ov = false;
     m_format_is_aac = false;
@@ -211,7 +271,7 @@ void ShoutConnection::updateFromPreferences() {
                     << " defaulting to ISO-8859-1.";
         } else {
             // Indicates our metadata is in the provided charset.
-            insertMetaData("charset",  baCodec.constData());
+            insertMetaData("charset", baCodec.constData());
         }
     }
 
@@ -286,33 +346,28 @@ void ShoutConnection::updateFromPreferences() {
     int format;
     int protocol;
 
-    if (shout_set_host(m_pShout, serverUrl.host().toLatin1().constData())
-            != SHOUTERR_SUCCESS) {
+    if (shout_set_host(m_pShout, serverUrl.host().toLatin1().constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting hostname!"), shout_get_error(m_pShout));
         return;
     }
 
     if (shout_set_port(m_pShout,
-            static_cast<unsigned short>(serverUrl.port(BROADCAST_DEFAULT_PORT)))
-            != SHOUTERR_SUCCESS) {
+                static_cast<unsigned short>(serverUrl.port(BROADCAST_DEFAULT_PORT))) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting port!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_password(m_pShout, baPassword.constData())
-            != SHOUTERR_SUCCESS) {
+    if (shout_set_password(m_pShout, baPassword.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting password!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_mount(m_pShout, serverUrl.path().toLatin1().constData())
-            != SHOUTERR_SUCCESS) {
+    if (shout_set_mount(m_pShout, serverUrl.path().toLatin1().constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting mount!"), shout_get_error(m_pShout));
         return;
     }
 
-    if (shout_set_user(m_pShout, serverUrl.userName().toLatin1().constData())
-            != SHOUTERR_SUCCESS) {
+    if (shout_set_user(m_pShout, serverUrl.userName().toLatin1().constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting username!"), shout_get_error(m_pShout));
         return;
     }
@@ -419,24 +474,22 @@ void ShoutConnection::updateFromPreferences() {
         errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
                        "supported. Please try a different sample rate or switch "
                        "to a different encoding."),
-                    tr("See https://github.com/mixxxdj/mixxx/issues/5701 for more "
-                       "information."));
+                tr("See https://github.com/mixxxdj/mixxx/issues/5701 for more "
+                   "information."));
         return;
     }
 
 #ifdef __OPUS__
     if (m_format_is_opus && mainSamplerate != EncoderOpus::getMainSampleRate()) {
         errorDialog(
-            EncoderOpus::getInvalidSamplerateMessage(),
-            tr("Unsupported sample rate")
-        );
+                EncoderOpus::getInvalidSamplerateMessage(),
+                tr("Unsupported sample rate"));
         return;
     }
 #endif
 
     if (shout_set_audio_info(
-            m_pShout, SHOUT_AI_BITRATE,
-            QByteArray::number(iBitrate).constData()) != SHOUTERR_SUCCESS) {
+                m_pShout, SHOUT_AI_BITRATE, QByteArray::number(iBitrate).constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting bitrate"), shout_get_error(m_pShout));
         return;
     }
@@ -467,11 +520,43 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
+    // Don't use SHOUT_TLS_AUTO, it falls back to an unencrypted connection
+    // and sometimes autodetection fails
+    // https://github.com/mixxxdj/mixxx/issues/9599
+    int tlsMode = SHOUT_TLS_DISABLED;
+    const QString profileTlsMode = m_pProfile->getTlsMode();
+    if (profileTlsMode == BROADCAST_TLS_REQUIRED) {
+        tlsMode = SHOUT_TLS_RFC2818;
+    } else if (profileTlsMode == BROADCAST_TLS_UPGRADE) {
+        if (!m_protocol_is_icecast2) {
+            errorDialog(tr("Error setting TLS mode!"),
+                    tr("Upgrading a connection to TLS is only supported by Icecast 2"));
+            return;
+        }
+        tlsMode = SHOUT_TLS_RFC2817;
+    }
+
+    // This fails if libshout is build without SHOUT_TLS
+    if (shout_set_tls(m_pShout, tlsMode) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting TLS mode!"), shout_get_error(m_pShout));
+        return;
+    }
+
+    if (tlsMode != SHOUT_TLS_DISABLED) {
+        const QByteArray caBundlePath = systemCaBundlePath();
+        if (!caBundlePath.isEmpty() &&
+                shout_set_ca_file(m_pShout, caBundlePath.constData()) !=
+                        SHOUTERR_SUCCESS) {
+            errorDialog(tr("Error setting TLS certificates!"), shout_get_error(m_pShout));
+            return;
+        }
+    }
+
     // Initialize m_encoder
     EncoderSettingsPointer pBroadcastSettings =
             std::make_shared<EncoderBroadcastSettings>(m_pProfile);
     m_encoder = EncoderFactory::getFactory().createEncoder(
-                    pBroadcastSettings, this);
+            pBroadcastSettings, this);
 
     QString userErrorMsg;
     int ret = -1;
@@ -531,7 +616,7 @@ bool ShoutConnection::processConnect() {
     m_iMetaDataLife = 31337;
     // clear metadata, to make sure the first track is not skipped
     // because it was sent via an previous connection (see metaDataHasChanged)
-    if(m_pMetaData) {
+    if (m_pMetaData) {
         m_pMetaData.reset();
     }
     // If static metadata is available, we only need to send metadata one time
@@ -546,9 +631,8 @@ bool ShoutConnection::processConnect() {
         }
 
         if ((m_iShoutStatus == SHOUTERR_BUSY) ||
-            (m_iShoutStatus == SHOUTERR_CONNECTED) ||
-            (m_iShoutStatus == SHOUTERR_SUCCESS))
-        {
+                (m_iShoutStatus == SHOUTERR_CONNECTED) ||
+                (m_iShoutStatus == SHOUTERR_SUCCESS)) {
             break;
         }
 
@@ -557,9 +641,9 @@ bool ShoutConnection::processConnect() {
         // SHOUTERR_NOLOGIN The server refused login
         // SHOUTERR_MALLOC There wasn't enough memory to complete the operation
         if (m_iShoutStatus == SHOUTERR_INSANE ||
-            m_iShoutStatus == SHOUTERR_UNSUPPORTED ||
-            m_iShoutStatus == SHOUTERR_NOLOGIN ||
-            m_iShoutStatus == SHOUTERR_MALLOC) {
+                m_iShoutStatus == SHOUTERR_UNSUPPORTED ||
+                m_iShoutStatus == SHOUTERR_NOLOGIN ||
+                m_iShoutStatus == SHOUTERR_MALLOC) {
             m_lastErrorStr = shout_get_error(m_pShout);
             qWarning() << "Streaming server made fatal error. Can't continue connecting:"
                        << m_lastErrorStr;
@@ -576,15 +660,15 @@ bool ShoutConnection::processConnect() {
 
     // If we don't have any fatal errors let's try to connect
     if ((m_iShoutStatus == SHOUTERR_BUSY ||
-             m_iShoutStatus == SHOUTERR_CONNECTED ||
-             m_iShoutStatus == SHOUTERR_SUCCESS) &&
-             m_iShoutFailures < kMaxShoutFailures) {
+                m_iShoutStatus == SHOUTERR_CONNECTED ||
+                m_iShoutStatus == SHOUTERR_SUCCESS) &&
+            m_iShoutFailures < kMaxShoutFailures) {
         m_iShoutFailures = 0;
         int timeout = 0;
         while (m_iShoutStatus == SHOUTERR_BUSY &&
                 timeout < kConnectRetries &&
                 m_pProfile->getEnabled()) {
-        	setState(NETWORKSTREAMWORKER_STATE_WAITING);
+            setState(NETWORKSTREAMWORKER_STATE_WAITING);
             kLogger.debug() << "Connection pending. Waiting...";
             m_iShoutStatus = shout_get_connected(m_pShout);
 
@@ -601,16 +685,16 @@ bool ShoutConnection::processConnect() {
                 m_enabledMutex.unlock();
             }
 
-            ++ timeout;
+            ++timeout;
         }
         if (m_iShoutStatus == SHOUTERR_CONNECTED) {
-        	setState(NETWORKSTREAMWORKER_STATE_READY);
+            setState(NETWORKSTREAMWORKER_STATE_READY);
             kLogger.debug() << "***********Connected to streaming server...";
 
             m_retryCount = 0;
 
-            if(m_pOutputFifo->readAvailable()) {
-            	m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
+            if (m_pOutputFifo->readAvailable()) {
+                m_pOutputFifo->flushReadData(m_pOutputFifo->readAvailable());
             }
             m_threadWaiting = true;
 
@@ -624,6 +708,18 @@ bool ShoutConnection::processConnect() {
             kLogger.warning()
                     << "processConnect() socket error."
                     << "Is socket already in use?";
+        } else if (m_iShoutStatus == SHOUTERR_TLSBADCERT) {
+            // shout_get_error() returns "No error" in this case
+            m_lastErrorStr = QStringLiteral(
+                    "The TLS certificate of the server is not valid for this host");
+            kLogger.warning()
+                    << "processConnect() error:"
+                    << m_iShoutStatus << m_lastErrorStr;
+        } else if (m_iShoutStatus == SHOUTERR_NOTLS) {
+            m_lastErrorStr = QStringLiteral("The server does not support TLS");
+            kLogger.warning()
+                    << "processConnect() error:"
+                    << m_iShoutStatus << m_lastErrorStr;
         } else if (timeout >= kConnectRetries) {
             // Not translated, because shout_get_error() returns also English only
             m_lastErrorStr = QStringLiteral("Connection establishment time-out");
@@ -656,7 +752,7 @@ bool ShoutConnection::processDisconnect() {
     kLogger.debug() << "processDisconnect()";
     bool disconnected = false;
     if (isConnected()) {
-    	m_threadWaiting = false;
+        m_threadWaiting = false;
 
         // We are connected but broadcast is disabled. Disconnect.
         shout_close(m_pShout);
@@ -671,10 +767,9 @@ bool ShoutConnection::processDisconnect() {
     return disconnected;
 }
 
-void ShoutConnection::write(const unsigned char* header, const unsigned char* body,
-                            int headerLen, int bodyLen) {
+void ShoutConnection::write(const unsigned char* header, const unsigned char* body, int headerLen, int bodyLen) {
     setFunctionCode(7);
-	if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
+    if (!m_pShout || m_iShoutStatus != SHOUTERR_CONNECTED) {
         // This happens when the decoder calls flush() and the connection is
         // already down
         return;
@@ -682,12 +777,12 @@ void ShoutConnection::write(const unsigned char* header, const unsigned char* bo
 
     // Send header if there is one
     if (headerLen > 0) {
-        if(!writeSingle(header, headerLen)) {
+        if (!writeSingle(header, headerLen)) {
             return;
         }
     }
 
-    if(!writeSingle(body, bodyLen)) {
+    if (!writeSingle(body, bodyLen)) {
         return;
     }
 
@@ -794,7 +889,7 @@ bool ShoutConnection::metaDataHasChanged() {
     if (m_pMetaData) {
         if (!pTrack->getId().isValid() || !m_pMetaData->getId().isValid()) {
             if ((pTrack->getArtist() == m_pMetaData->getArtist()) &&
-                (pTrack->getTitle() == m_pMetaData->getArtist())) {
+                    (pTrack->getTitle() == m_pMetaData->getArtist())) {
                 return false;
             }
         } else if (pTrack->getId() == m_pMetaData->getId()) {
@@ -878,10 +973,9 @@ void ShoutConnection::updateMetaData() {
         // Otherwise we might use static metadata
         // If we use static metadata, we only need to call the following line once
         if (m_custom_metadata && !m_firstCall) {
-
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-            	setFunctionCode(12);
+                setFunctionCode(12);
                 insertMetaData("artist", encodeString(m_customArtist).constData());
                 insertMetaData("title", encodeString(m_customTitle).constData());
             } else {
@@ -909,10 +1003,11 @@ void ShoutConnection::errorDialog(const QString& text, const QString& detailedEr
     props->setType(DLG_WARNING);
     props->setTitle(tr("Connection error"));
     props->setText(tr("One of the Live Broadcasting connections raised this error:<br>"
-            "<b>Error with connection '%1':</b><br>")
-            .arg(profile()->getProfileName()) + text);
+                      "<b>Error with connection '%1':</b><br>")
+                           .arg(profile()->getProfileName()) +
+            text);
     props->setDetails(detailedError);
-    props->setKey(detailedError);   // To prevent multiple windows for the same error
+    props->setKey(detailedError); // To prevent multiple windows for the same error
     props->setDefaultButton(QMessageBox::Close);
     props->setModal(false);
     ErrorDialogHandler::instance()->requestErrorDialog(props);
@@ -924,7 +1019,8 @@ void ShoutConnection::infoDialog(const QString& text, const QString& detailedInf
     props->setType(DLG_INFO);
     props->setTitle(tr("Connection message"));
     props->setText(tr("<b>Message from Live Broadcasting connection '%1':</b><br>")
-            .arg(profile()->getProfileName()) + text);
+                           .arg(profile()->getProfileName()) +
+            text);
     props->setDetails(detailedInfo);
     props->setKey(text + detailedInfo);
     props->setDefaultButton(QMessageBox::Close);
@@ -974,14 +1070,14 @@ void ShoutConnection::tryReconnect() {
         QString errorText;
         if (m_retryCount > 0) {
             errorText = tr("Lost connection to streaming server and %1 attempts to reconnect have failed.")
-                    .arg(m_retryCount);
+                                .arg(m_retryCount);
         } else {
             errorText = tr("Lost connection to streaming server.");
         }
         errorDialog(errorText,
-                    originalErrorStr + "\n" +
-                    m_lastErrorStr + "\n" +
-                    tr("Please check your connection to the Internet."));
+                originalErrorStr + "\n" +
+                        m_lastErrorStr + "\n" +
+                        tr("Please check your connection to the Internet."));
     }
 }
 
@@ -1026,14 +1122,14 @@ void ShoutConnection::run() {
 
     setStatus(BroadcastProfile::STATUS_CONNECTED);
 
-    while(true) {
+    while (true) {
         // Stop the thread if broadcasting is turned off
         if (!m_pProfile->getEnabled() || !m_broadcastEnabled.toBool() ||
                 getStatus() == BroadcastProfile::STATUS_FAILURE ||
                 getStatus() == BroadcastProfile::STATUS_UNCONNECTED) {
             m_threadWaiting = false;
             kLogger.debug() << "run: Connection disabled or failed. Disconnecting";
-            if(processDisconnect()) {
+            if (processDisconnect()) {
                 setStatus(BroadcastProfile::STATUS_UNCONNECTED);
             }
             setFunctionCode(2);
@@ -1042,7 +1138,7 @@ void ShoutConnection::run() {
 
         setFunctionCode(1);
         incRunCount();
-        if(!m_readSema.tryAcquire(1, 1000)) {
+        if (!m_readSema.tryAcquire(1, 1000)) {
             continue;
         }
 
@@ -1055,8 +1151,7 @@ void ShoutConnection::run() {
             ring_buffer_size_t size2;
 
             // We use size1 and size2, so we can ignore the return value
-            (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1,
-                    &dataPtr2, &size2);
+            (void)m_pOutputFifo->aquireReadRegions(readAvailable, &dataPtr1, &size1, &dataPtr2, &size2);
 
             // Push frames to the encoder.
             process(dataPtr1, size1);

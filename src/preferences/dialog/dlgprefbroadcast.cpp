@@ -94,10 +94,36 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
     m_pBroadcastEnabled->connectValueChanged(this,
             &DlgPrefBroadcast::broadcastEnabledChanged);
 
-    //Server type combobox
+    // Server type combobox
     comboBoxServerType->addItem(tr("Icecast 2"), BROADCAST_SERVER_ICECAST2);
     comboBoxServerType->addItem(tr("Shoutcast 1"), BROADCAST_SERVER_SHOUTCAST);
     comboBoxServerType->addItem(tr("Icecast 1"), BROADCAST_SERVER_ICECAST1);
+
+    // Encryption combobox
+    comboBoxTlsMode->addItem(tr("None"), BROADCAST_TLS_DISABLED);
+    comboBoxTlsMode->addItem(tr("TLS"), BROADCAST_TLS_REQUIRED);
+    comboBoxTlsMode->addItem(tr("Upgrade to TLS (RFC 2817)"), BROADCAST_TLS_UPGRADE);
+    // Only Icecast 2 supports the upgrade to TLS
+    connect(comboBoxServerType,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            [this]() {
+                const bool isIcecast2 = comboBoxServerType->currentData() ==
+                        BROADCAST_SERVER_ICECAST2;
+                const int upgradeIndex =
+                        comboBoxTlsMode->findData(BROADCAST_TLS_UPGRADE);
+                if (isIcecast2 && upgradeIndex < 0) {
+                    comboBoxTlsMode->addItem(tr("Upgrade to TLS (RFC 2817)"),
+                            BROADCAST_TLS_UPGRADE);
+                } else if (!isIcecast2 && upgradeIndex >= 0) {
+                    if (comboBoxTlsMode->currentIndex() == upgradeIndex) {
+                        // Don't fall back to an unencrypted connection
+                        comboBoxTlsMode->setCurrentIndex(
+                                comboBoxTlsMode->findData(BROADCAST_TLS_REQUIRED));
+                    }
+                    comboBoxTlsMode->removeItem(upgradeIndex);
+                }
+            });
 
     // Encoding bitrate combobox
     QString kbps_pattern = QString("%1 kbps");
@@ -114,62 +140,62 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
                << BROADCAST_BITRATE_64KBPS
                << BROADCAST_BITRATE_48KBPS
                << BROADCAST_BITRATE_32KBPS;
-     foreach (int kbps, valid_kpbs) {
-         comboBoxEncodingBitrate->addItem(
-                 kbps_pattern.arg(QString::number(kbps)), kbps);
-     }
+    foreach (int kbps, valid_kpbs) {
+        comboBoxEncodingBitrate->addItem(
+                kbps_pattern.arg(QString::number(kbps)), kbps);
+    }
 
-     // Encoding format combobox
-     connect(comboBoxEncodingFormat,
-             QOverload<int>::of(&QComboBox::currentIndexChanged),
-             this,
-             [this]() {
-                 ogg_dynamicupdate->setEnabled(
-                         comboBoxEncodingFormat->currentData() == ENCODING_OGG);
-             });
-     comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
-     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
+    // Encoding format combobox
+    connect(comboBoxEncodingFormat,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            [this]() {
+                ogg_dynamicupdate->setEnabled(
+                        comboBoxEncodingFormat->currentData() == ENCODING_OGG);
+            });
+    comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
+    comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
 #ifdef __OPUS__
-     comboBoxEncodingFormat->addItem(tr("Opus"), ENCODING_OPUS);
+    comboBoxEncodingFormat->addItem(tr("Opus"), ENCODING_OPUS);
 #endif
-     comboBoxEncodingFormat->addItem(tr("AAC"), ENCODING_AAC);
-     comboBoxEncodingFormat->addItem(tr("HE-AAC"), ENCODING_HEAAC);
-     comboBoxEncodingFormat->addItem(tr("HE-AACv2"), ENCODING_HEAACV2);
+    comboBoxEncodingFormat->addItem(tr("AAC"), ENCODING_AAC);
+    comboBoxEncodingFormat->addItem(tr("HE-AAC"), ENCODING_HEAAC);
+    comboBoxEncodingFormat->addItem(tr("HE-AACv2"), ENCODING_HEAACV2);
 
-     // Encoding channels combobox
-     comboBoxEncodingChannels->addItem(tr("Automatic"),
-             static_cast<int>(EncoderSettings::ChannelMode::AUTOMATIC));
-     comboBoxEncodingChannels->addItem(tr("Mono"),
-             static_cast<int>(EncoderSettings::ChannelMode::MONO));
-     comboBoxEncodingChannels->addItem(tr("Stereo"),
-             static_cast<int>(EncoderSettings::ChannelMode::STEREO));
+    // Encoding channels combobox
+    comboBoxEncodingChannels->addItem(tr("Automatic"),
+            static_cast<int>(EncoderSettings::ChannelMode::AUTOMATIC));
+    comboBoxEncodingChannels->addItem(tr("Mono"),
+            static_cast<int>(EncoderSettings::ChannelMode::MONO));
+    comboBoxEncodingChannels->addItem(tr("Stereo"),
+            static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
-     connect(checkBoxEnableReconnect,
+    connect(checkBoxEnableReconnect,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-             &QCheckBox::checkStateChanged,
+            &QCheckBox::checkStateChanged,
 #else
-             &QCheckBox::stateChanged,
+            &QCheckBox::stateChanged,
 #endif
-             this,
-             &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
-     connect(checkBoxLimitReconnects,
+            this,
+            &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
+    connect(checkBoxLimitReconnects,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-             &QCheckBox::checkStateChanged,
+            &QCheckBox::checkStateChanged,
 #else
-             &QCheckBox::stateChanged,
+            &QCheckBox::stateChanged,
 #endif
-             this,
-             &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
-     connect(enableCustomMetadata,
+            this,
+            &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
+    connect(enableCustomMetadata,
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
-             &QCheckBox::checkStateChanged,
+            &QCheckBox::checkStateChanged,
 #else
-             &QCheckBox::stateChanged,
+            &QCheckBox::stateChanged,
 #endif
-             this,
-             &DlgPrefBroadcast::enableCustomMetadataChanged);
+            this,
+            &DlgPrefBroadcast::enableCustomMetadataChanged);
 
-     setScrollSafeGuardForAllInputWidgets(this);
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {
@@ -337,9 +363,7 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 
 void DlgPrefBroadcast::btnCreateConnectionClicked() {
     if (m_pSettingsModel->rowCount() >= BROADCAST_MAX_CONNECTIONS) {
-        QMessageBox::warning(this, tr("Action failed"),
-                tr("You can't create more than %1 source connections.")
-                .arg(BROADCAST_MAX_CONNECTIONS));
+        QMessageBox::warning(this, tr("Action failed"), tr("You can't create more than %1 source connections.").arg(BROADCAST_MAX_CONNECTIONS));
         return;
     }
 
@@ -353,7 +377,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
         profileNumber++;
         newName = tr("Source connection %1").arg(profileNumber);
         existingProfile = m_pSettingsModel->getProfileByName(newName);
-    } while(!existingProfile.isNull());
+    } while (!existingProfile.isNull());
 
     BroadcastProfilePtr newProfile(new BroadcastProfile(newName));
     if (m_pProfileListSelection) {
@@ -367,7 +391,8 @@ void DlgPrefBroadcast::connectionListItemSelected(const QModelIndex& selected) {
     setValuesToProfile(m_pProfileListSelection);
 
     QString selectedName = m_pSettingsModel->data(selected,
-            Qt::DisplayRole).toString();
+                                                   Qt::DisplayRole)
+                                   .toString();
     BroadcastProfilePtr profile =
             m_pSettingsModel->getProfileByName(selectedName);
     if (profile) {
@@ -445,6 +470,17 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
         tmp_index = 0;
     }
     comboBoxServerType->setCurrentIndex(tmp_index);
+
+    // Encryption combo list
+    tmp_index = comboBoxTlsMode->findData(profile->getTlsMode());
+    if (tmp_index < 0) {
+        // Set default if invalid.
+        tmp_index = comboBoxTlsMode->findData(
+                profile->getTlsMode() == BROADCAST_TLS_UPGRADE
+                        ? BROADCAST_TLS_REQUIRED
+                        : BROADCAST_TLS_DISABLED);
+    }
+    comboBoxTlsMode->setCurrentIndex(tmp_index);
 
     // Mountpoint
     mountpoint->setText(profile->getMountpoint());
@@ -562,13 +598,22 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 
     // Combo boxes, make sure to load their data not their display strings.
     profile->setServertype(comboBoxServerType->itemData(
+<<<<<<< HEAD
+                                                     comboBoxServerType->currentIndex())
+                                   .toString());
+=======
             comboBoxServerType->currentIndex()).toString());
+>>>>>>> 200b11b67231296b41f9676981bc9da5fd5dea36
+    profile->setTlsMode(comboBoxTlsMode->currentData().toString());
     profile->setBitrate(comboBoxEncodingBitrate->itemData(
-            comboBoxEncodingBitrate->currentIndex()).toInt());
+                                                       comboBoxEncodingBitrate->currentIndex())
+                                .toInt());
     profile->setFormat(comboBoxEncodingFormat->itemData(
-            comboBoxEncodingFormat->currentIndex()).toString());
+                                                     comboBoxEncodingFormat->currentIndex())
+                               .toString());
     profile->setChannels(comboBoxEncodingChannels->itemData(
-            comboBoxEncodingChannels->currentIndex()).toInt());
+                                                         comboBoxEncodingChannels->currentIndex())
+                                 .toInt());
 
     mountpoint->setText(mountpoint->text().trimmed());
     profile->setMountPoint(mountpoint->text());
@@ -613,16 +658,13 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 
 void DlgPrefBroadcast::btnRemoveConnectionClicked() {
     if (m_pSettingsModel->rowCount() < 2) {
-        QMessageBox::information(this, tr("Action failed"),
-                tr("At least one source connection is required."));
+        QMessageBox::information(this, tr("Action failed"), tr("At least one source connection is required."));
         return;
     }
 
     if (m_pProfileListSelection) {
         QString profileName = m_pProfileListSelection->getProfileName();
-        auto response = QMessageBox::question(this, tr("Confirmation required"),
-                    tr("Are you sure you want to delete '%1'?")
-                    .arg(profileName), QMessageBox::Yes, QMessageBox::No);
+        auto response = QMessageBox::question(this, tr("Confirmation required"), tr("Are you sure you want to delete '%1'?").arg(profileName), QMessageBox::Yes, QMessageBox::No);
 
         if (response == QMessageBox::Yes) {
             m_pSettingsModel->deleteProfileFromModel(m_pProfileListSelection);
@@ -636,9 +678,7 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
 
         bool ok = false;
         QString newName =
-                QInputDialog::getText(this, tr("Renaming '%1'").arg(profileName),
-                        tr("New name for '%1':").arg(profileName),
-                        QLineEdit::Normal, profileName, &ok);
+                QInputDialog::getText(this, tr("Renaming '%1'").arg(profileName), tr("New name for '%1':").arg(profileName), QLineEdit::Normal, profileName, &ok);
         if (ok && newName != profileName) {
             BroadcastProfilePtr existingProfile = m_pSettingsModel->getProfileByName(newName);
             if (!existingProfile) {
@@ -660,7 +700,8 @@ void DlgPrefBroadcast::btnDisconnectAllClicked() {
     auto response = QMessageBox::question(this,
             tr("Confirmation required"),
             tr("Are you sure you want to disconnect every active source connection?"),
-            QMessageBox::Yes, QMessageBox::No);
+            QMessageBox::Yes,
+            QMessageBox::No);
 
     if (response == QMessageBox::Yes) {
         m_pBroadcastEnabled->set(false);
